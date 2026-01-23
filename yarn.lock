@@ -416,8 +416,8 @@ __metadata:
   linkType: hard
 
 "@dotenvx/dotenvx@npm:^1.48.4":
-  version: 1.51.4
-  resolution: "@dotenvx/dotenvx@npm:1.51.4"
+  version: 1.52.0
+  resolution: "@dotenvx/dotenvx@npm:1.52.0"
   dependencies:
     commander: "npm:^11.1.0"
     dotenv: "npm:^17.2.1"
@@ -430,7 +430,7 @@ __metadata:
     which: "npm:^4.0.0"
   bin:
     dotenvx: src/cli/dotenvx.js
-  checksum: 10c0/b89aa2c3aca5018755c86fa954c6224fa3eda15c0f312d5d5d4a511ec6a27c1563716de9b8669d8d98a05c216250409d52abf53720f860f4e96d905f2c095f75
+  checksum: 10c0/dde557dbb11c16460267ec0e3e4551298f89ea88c6b98fb6fc210dc2c3aa892b15e8e13a9dcb5d30ea1aa0afc4f37045f9150ad670b01c3b9b8e9f778a1eefcf
   languageName: node
   linkType: hard
 
@@ -2152,42 +2152,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/auth-js@npm:2.91.0":
-  version: 2.91.0
-  resolution: "@supabase/auth-js@npm:2.91.0"
+"@supabase/auth-js@npm:2.91.1":
+  version: 2.91.1
+  resolution: "@supabase/auth-js@npm:2.91.1"
   dependencies:
     tslib: "npm:2.8.1"
-  checksum: 10c0/5e5ce9914b2d05d86308cb459a39b3b1658907919420116455e6205fb93af9c1bbf5d25bf7b86983ddaaa4da2f3a00aa0aa00a1b60cee87b4718d9d9658f0137
+  checksum: 10c0/6c12ed06dc5a74107df21b09008c81d4ad181cde9ee9c48e0b13959ea7c338e9941dd0d6722657c9d00054829a15dc72af86ab293a499d90a4b4e5852cdcc128
   languageName: node
   linkType: hard
 
-"@supabase/functions-js@npm:2.91.0":
-  version: 2.91.0
-  resolution: "@supabase/functions-js@npm:2.91.0"
+"@supabase/functions-js@npm:2.91.1":
+  version: 2.91.1
+  resolution: "@supabase/functions-js@npm:2.91.1"
   dependencies:
     tslib: "npm:2.8.1"
-  checksum: 10c0/ee0924ffc014419d44c5587ccbe62b95af2012f9b756a802ba89214dbe793a7bc8306c4419714cb26ab36255337dc286cbb94fb1549ee2728caee0302eaed361
+  checksum: 10c0/2e85fed923a2121e8e98251108bc9e7c519ab7c9155e647bbc98248970b55e271fa32692e11c4f673fcd40d3b54a7b2680e775830b17f8a7d9c4ae6b4401a825
   languageName: node
   linkType: hard
 
-"@supabase/postgrest-js@npm:2.91.0":
-  version: 2.91.0
-  resolution: "@supabase/postgrest-js@npm:2.91.0"
+"@supabase/postgrest-js@npm:2.91.1":
+  version: 2.91.1
+  resolution: "@supabase/postgrest-js@npm:2.91.1"
   dependencies:
     tslib: "npm:2.8.1"
-  checksum: 10c0/858478c0a0bc2562511fc4fb90be8b20b318d2afba6fe182fe48f7cc1c9cb484364ef7adc3cebc2d1ada6c5a6923d894097fba82a7c6ff14dc71bc773fae9079
+  checksum: 10c0/15599028af1b5e3d5bb3a366be565b839c371dbf909fdd07ddb39f060f6740a045c7cd602dfbc401051ebd24b0d68ee809f7f083dbdb7e71eb4f95390a4abdaf
   languageName: node
   linkType: hard
 
-"@supabase/realtime-js@npm:2.91.0":
-  version: 2.91.0
-  resolution: "@supabase/realtime-js@npm:2.91.0"
+"@supabase/realtime-js@npm:2.91.1":
+  version: 2.91.1
+  resolution: "@supabase/realtime-js@npm:2.91.1"
   dependencies:
     "@types/phoenix": "npm:^1.6.6"
     "@types/ws": "npm:^8.18.1"
     tslib: "npm:2.8.1"
     ws: "npm:^8.18.2"
-  checksum: 10c0/cb2d3080a14fc7bed9a999bebff6b6ebd14f8c93ad48a993fe0edba6dfda8fb2466d54c3c9a0bfe6716817461dbcf9afa64c33dce731c1aab3518df522fcce0e
+  checksum: 10c0/988fd45555a591d45d6ae950213300bd2c49f93ac078d4d170e12fb77c7e0efa002d76f564f903f795f40731237347187a6161dc2d00e2a1c7d3d4d6e96f2182
   languageName: node
   linkType: hard
 
@@ -2202,26 +2202,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/storage-js@npm:2.91.0":
-  version: 2.91.0
-  resolution: "@supabase/storage-js@npm:2.91.0"
+"@supabase/storage-js@npm:2.91.1":
+  version: 2.91.1
+  resolution: "@supabase/storage-js@npm:2.91.1"
   dependencies:
     iceberg-js: "npm:^0.8.1"
     tslib: "npm:2.8.1"
-  checksum: 10c0/fd860ae6ec263810954a8fe67112d16441ce6b926e6995d8efa04dc8d5404bac484f225e66b38a7cd71b25f825a0b06c9acdbc3efe959f16fe8d69fb60913970
+  checksum: 10c0/2c59ba129ec11ad196855c3d311679df4087976c5d0fee3bd1d308f641920c82cae82b52625d7afcbeb3ad08ea9b610ade5963923481ecc6f20712765a315c8d
   languageName: node
   linkType: hard
 
 "@supabase/supabase-js@npm:latest":
-  version: 2.91.0
-  resolution: "@supabase/supabase-js@npm:2.91.0"
+  version: 2.91.1
+  resolution: "@supabase/supabase-js@npm:2.91.1"
   dependencies:
-    "@supabase/auth-js": "npm:2.91.0"
-    "@supabase/functions-js": "npm:2.91.0"
-    "@supabase/postgrest-js": "npm:2.91.0"
-    "@supabase/realtime-js": "npm:2.91.0"
-    "@supabase/storage-js": "npm:2.91.0"
-  checksum: 10c0/0c1335e5b295707c78026d54f4a8986c95e489a84e4de020cf8e28ee4425f75e786cab277aed3c5c1b42903d68204789c1d34fa12ec72b922d5d8a6933fd75e5
+    "@supabase/auth-js": "npm:2.91.1"
+    "@supabase/functions-js": "npm:2.91.1"
+    "@supabase/postgrest-js": "npm:2.91.1"
+    "@supabase/realtime-js": "npm:2.91.1"
+    "@supabase/storage-js": "npm:2.91.1"
+  checksum: 10c0/6d89437fedcf52f49d55ea289c0c2e485fb69017ff92caa0ab0f74d6a77a0bf2bdfba94c1d940fd171deac1d627cf0eefb5a8ac2ae3dea36d110ad1be9954928
   languageName: node
   linkType: hard
 
@@ -2363,7 +2363,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^20.19.30":
+"@types/node@npm:*":
+  version: 25.0.10
+  resolution: "@types/node@npm:25.0.10"
+  dependencies:
+    undici-types: "npm:~7.16.0"
+  checksum: 10c0/9edc3c812b487c32c76eebac7c87acae1f69515a0bc3f6b545806d513eb9e918c3217bf751dc93da39f60e06bf1b0caa92258ef3a6dd6457124b2e761e54f61f
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.19.30":
   version: 20.19.30
   resolution: "@types/node@npm:20.19.30"
   dependencies:
@@ -2977,6 +2986,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"async-generator-function@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "async-generator-function@npm:1.0.0"
+  checksum: 10c0/2c50ef856c543ad500d8d8777d347e3c1ba623b93e99c9263ecc5f965c1b12d2a140e2ab6e43c3d0b85366110696f28114649411cbcd10b452a92a2318394186
+  languageName: node
+  linkType: hard
+
 "autoprefixer@npm:^10.4.20":
   version: 10.4.23
   resolution: "autoprefixer@npm:10.4.23"
@@ -3182,9 +3198,9 @@ __metadata:
   linkType: hard
 
 "caniuse-lite@npm:^1.0.30001579, caniuse-lite@npm:^1.0.30001759, caniuse-lite@npm:^1.0.30001760":
-  version: 1.0.30001765
-  resolution: "caniuse-lite@npm:1.0.30001765"
-  checksum: 10c0/2bab28b322ec040dde2b6f56019ffd1e0bbd719111e45f58cb0fb06a783812d8ba8df65755320fd253aa1926dffc7bf0864adc11f6b231ac2b3a5b8221199c29
+  version: 1.0.30001766
+  resolution: "caniuse-lite@npm:1.0.30001766"
+  checksum: 10c0/cecc8f9a3758c486fc68434a3cca5f4ca7077db5ac9cdb1689786abf63c4aa9891bf70f2df2c3e549d5e284e8da36a218d0e131ebb26dd59280bc99db49640f6
   languageName: node
   linkType: hard
 
@@ -3382,12 +3398,12 @@ __metadata:
   linkType: hard
 
 "cors@npm:^2.8.5":
-  version: 2.8.5
-  resolution: "cors@npm:2.8.5"
+  version: 2.8.6
+  resolution: "cors@npm:2.8.6"
   dependencies:
     object-assign: "npm:^4"
     vary: "npm:^1"
-  checksum: 10c0/373702b7999409922da80de4a61938aabba6929aea5b6fd9096fefb9e8342f626c0ebd7507b0e8b0b311380744cc985f27edebc0a26e0ddb784b54e1085de761
+  checksum: 10c0/ab2bc57b8af8ef8476682a59647f7c55c1a7d406b559ac06119aa1c5f70b96d35036864d197b24cf86e228e4547231088f1f94ca05061dbb14d89cc0bc9d4cab
   languageName: node
   linkType: hard
 
@@ -3774,9 +3790,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.5.263":
-  version: 1.5.267
-  resolution: "electron-to-chromium@npm:1.5.267"
-  checksum: 10c0/0732bdb891b657f2e43266a3db8cf86fff6cecdcc8d693a92beff214e136cb5c2ee7dc5945ed75fa1db16e16bad0c38695527a020d15f39e79084e0b2e447621
+  version: 1.5.278
+  resolution: "electron-to-chromium@npm:1.5.278"
+  checksum: 10c0/50ca2da7e509fce7f077d720755e46190cf942451bb229a78353039cf17933ea73e543f598bf61e2899b908750f111b2c24ea61194c1d98c0e1eb6c9b1438161
   languageName: node
   linkType: hard
 
@@ -4718,20 +4734,23 @@ __metadata:
   linkType: hard
 
 "get-intrinsic@npm:^1.2.4, get-intrinsic@npm:^1.2.5, get-intrinsic@npm:^1.2.6, get-intrinsic@npm:^1.2.7, get-intrinsic@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "get-intrinsic@npm:1.3.0"
+  version: 1.3.1
+  resolution: "get-intrinsic@npm:1.3.1"
   dependencies:
+    async-function: "npm:^1.0.0"
+    async-generator-function: "npm:^1.0.0"
     call-bind-apply-helpers: "npm:^1.0.2"
     es-define-property: "npm:^1.0.1"
     es-errors: "npm:^1.3.0"
     es-object-atoms: "npm:^1.1.1"
     function-bind: "npm:^1.1.2"
+    generator-function: "npm:^2.0.0"
     get-proto: "npm:^1.0.1"
     gopd: "npm:^1.2.0"
     has-symbols: "npm:^1.1.0"
     hasown: "npm:^2.0.2"
     math-intrinsics: "npm:^1.1.0"
-  checksum: 10c0/52c81808af9a8130f581e6a6a83e1ba4a9f703359e7a438d1369a5267a25412322f03dcbd7c549edaef0b6214a0630a28511d7df0130c93cfd380f4fa0b5b66a
+  checksum: 10c0/9f4ab0cf7efe0fd2c8185f52e6f637e708f3a112610c88869f8f041bb9ecc2ce44bf285dfdbdc6f4f7c277a5b88d8e94a432374d97cca22f3de7fc63795deb5d
   languageName: node
   linkType: hard
 
@@ -8167,6 +8186,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici-types@npm:~7.16.0":
+  version: 7.16.0
+  resolution: "undici-types@npm:7.16.0"
+  checksum: 10c0/3033e2f2b5c9f1504bdc5934646cb54e37ecaca0f9249c983f7b1fc2e87c6d18399ebb05dc7fd5419e02b2e915f734d872a65da2e3eeed1813951c427d33cc9a
+  languageName: node
+  linkType: hard
+
 "unicorn-magic@npm:^0.3.0":
   version: 0.3.0
   resolution: "unicorn-magic@npm:0.3.0"
@@ -8648,8 +8674,8 @@ __metadata:
   linkType: hard
 
 "zod@npm:^3.25 || ^4.0, zod@npm:^4.3.5":
-  version: 4.3.5
-  resolution: "zod@npm:4.3.5"
-  checksum: 10c0/5a2db7e59177a3d7e202543f5136cb87b97b047b77c8a3d824098d3fa8b80d3aa40a0a5f296965c3b82dfdccdd05dbbfacce91347f16a39c675680fd7b1ab109
+  version: 4.3.6
+  resolution: "zod@npm:4.3.6"
+  checksum: 10c0/860d25a81ab41d33aa25f8d0d07b091a04acb426e605f396227a796e9e800c44723ed96d0f53a512b57be3d1520f45bf69c0cb3b378a232a00787a2609625307
   languageName: node
   linkType: hard

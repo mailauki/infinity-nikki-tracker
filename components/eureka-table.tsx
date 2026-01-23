@@ -13,26 +13,26 @@ import { Item, ItemContent, ItemMedia } from "@/components/ui/item"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { Check } from "lucide-react"
-// import { handleObtained } from "@/app/actions"
+import { handleObtained } from "@/app/(tracker)/eureka/actions"
 import { percent } from "@/hooks/count"
-import { Eureka } from "@/lib/types/types"
-import { getObtainedEureka } from "@/hooks/get-obtained-count"
+import { EurekaSet } from "@/lib/types/types"
+import { getObtainedSetCount } from "@/hooks/get-obtained-count"
 import ProgressBadge from "./progress-badge"
 
-export function EurekaTable({
-	eureka,
+export default function EurekaTable({
+	eurekaSet,
 } : {
-	eureka: Eureka,
+	eurekaSet: EurekaSet,
 }) {
-	const obtainedEureka = getObtainedEureka(eureka)
+	const obtainedSetCount = getObtainedSetCount(eurekaSet)
 
 	return (
 		<>
 		<Table>
 			<TableHeader>
 				<TableRow>
-					<TableHead className="text-center">{eureka.name}</TableHead>
-					{eureka.colors.map((color) => (
+					<TableHead className="text-center">{eurekaSet.name}</TableHead>
+					{eurekaSet.colors.map((color) => (
 						<TableHead key={color.name} className="text-center">
 							{color.name}
 						</TableHead>
@@ -41,7 +41,7 @@ export function EurekaTable({
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				{eureka.categories.map((category) => (
+				{eurekaSet.categories.map((category) => (
 					<TableRow key={category.name}>
 						<TableHead>
 								<Item className="flex-col">
@@ -63,7 +63,7 @@ export function EurekaTable({
 							<TableCell key={color.slug}>
 								<Button
 									variant="ghost"
-									// onClick={() => handleObtained(color.slug)}
+									onClick={() => handleObtained(color.slug)}
 									className="h-fit relative"
 								>
 									{color.image_url && <Image
@@ -81,8 +81,8 @@ export function EurekaTable({
 
 					<TableCell key={category.name} className="text-center">
 						<div className="flex flex-col justify-between items-center">
-							<ProgressBadge percentage={percent(obtainedEureka.categories.find((value) => value.name === category.name)!.obtained, obtainedEureka.categories.find((value) => value.name === category.name)!.total)} />
-							{percent(obtainedEureka.categories.find((value) => value.name === category.name)!.obtained, obtainedEureka.categories.find((value) => value.name === category.name)!.total)}%
+							<ProgressBadge percentage={percent(obtainedSetCount.categories.find((value) => value.name === category.name)!.obtained, obtainedSetCount.categories.find((value) => value.name === category.name)!.total)} />
+							{percent(obtainedSetCount.categories.find((value) => value.name === category.name)!.obtained, obtainedSetCount.categories.find((value) => value.name === category.name)!.total)}%
 						</div>
 					</TableCell>
 					</TableRow>
@@ -91,8 +91,11 @@ export function EurekaTable({
 			<TableFooter>
 				<TableRow>
 					<TableHead className="text-center">Total</TableHead>
-					{obtainedEureka.colors.map((color) => (
-						<TableCell key={color.name} className="text-center">
+					{obtainedSetCount.colors.map((color) => (
+						<TableCell
+							key={color.name}
+							className="text-center"
+						>
 							<div className="flex flex-col justify-between items-center">
 								<ProgressBadge percentage={percent(color.obtained, color.total)} />
 								{percent(color.obtained, color.total)}%

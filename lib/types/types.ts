@@ -1,4 +1,4 @@
-export interface Eureka {
+export interface EurekaSet {
 	id: number;
 	name: string;
 	quality: number;

@@ -1,10 +1,10 @@
 import { createClient } from "@/lib/supabase/client";
-import { Eureka } from "@/lib/types/types";
+import { EurekaSet } from "@/lib/types/types";
 import { Tables } from "@/lib/types/supabase";
 
 type Obtained = Tables<'obtained'>
 
-export async function getEurekaItems(obtained?: Obtained[]) {
+export async function getEurekaSets(obtained?: Obtained[]) {
 	const supabase = await createClient()
 
 	const { data: eureka } = await supabase
@@ -60,7 +60,7 @@ function isObtained(slug: string) {
 		return obtained.find((item) => item.eureka === eureka && item.color === color && item.category === category) ? true : false
 	}
 
-	const items = eureka?.map((item) => (
+	const eurekaSets = eureka?.map((item) => (
 		Object.assign({
 			...item,
 			slug: item.name.split(" ").join("-").toLowerCase(),
@@ -86,12 +86,12 @@ function isObtained(slug: string) {
 				}
 			))
 		}))
-	) as Eureka[]
+	) as EurekaSet[]
 
-	return items
+	return eurekaSets
 }
 
-export async function getEurekaItem(slug: string, obtained?: Obtained[]) {
+export async function getEurekaSet(slug: string, obtained?: Obtained[]) {
 	const supabase = await createClient()
 
 	// const name = slug
@@ -154,7 +154,7 @@ export async function getEurekaItem(slug: string, obtained?: Obtained[]) {
 		return obtained.find((item) => item.eureka === eureka && item.color === color && item.category === category) ? true : false
 	}
 
-	const item = eureka && Object.assign({
+	const eurekaSet = eureka && Object.assign({
 			...eureka,
 			slug: eureka.name.replace(" ", "-").toLowerCase(),
 			image_url: findImage({ eureka: eureka.name, isDefault: true }),
@@ -178,7 +178,7 @@ export async function getEurekaItem(slug: string, obtained?: Obtained[]) {
 					))
 				}
 			))
-		}) as Eureka|null
+		}) as EurekaSet|null
 
-		return item
+		return eurekaSet
 	}

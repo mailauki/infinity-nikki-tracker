@@ -1,11 +1,11 @@
 import { Suspense } from "react"
-import EurekaItem from "@/components/eureka-item"
+import EurekaSet from "@/components/eureka-set"
 
 export async function generateStaticParams() {
   return [{ slug: 'hello-world' }]
 }
 
-export default async function EurekaItemPage({
+export default async function EurekaSetPage({
   params,
 }: {
   params: Promise<{ slug: string }>
@@ -16,7 +16,7 @@ export default async function EurekaItemPage({
     <div className="flex flex-col p-6 gap-6">
 			<Suspense>
 				<h1 className="capitalize">{slug}</h1>
-				<EurekaItem slug={slug} />
+				<EurekaSet slug={slug} />
 			</Suspense>
     </div>
   )

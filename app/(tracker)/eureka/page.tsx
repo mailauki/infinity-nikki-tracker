@@ -1,10 +1,10 @@
-import EurekaItems from "@/components/eureka-items";
+import EurekaSets from "@/components/eureka-sets";
 import { Suspense } from "react";
 
-export default async function EurekaPage() {
+export default async function EurekaSetsPage() {
 	return (
 		<Suspense>
-			<EurekaItems />
+			<EurekaSets />
 		</Suspense>
 	)
 }

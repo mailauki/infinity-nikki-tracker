@@ -13,16 +13,16 @@ import Image from "next/image"
 import { AuthButton } from "./auth-button"
 import { ThemeSwitcher } from "./theme-switcher"
 import { NavSecondary } from "./nav-secondary"
-import { ExternalLinkIcon, LayoutDashboardIcon } from "lucide-react"
+import { ExternalLinkIcon } from "lucide-react"
 import { NavMain } from "./nav-main"
 
 const data = {
 	navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboardIcon,
-    },
+    // {
+    //   title: "Dashboard",
+    //   url: "/dashboard",
+    //   icon: LayoutDashboardIcon,
+    // },
 		{
 			title: "Eureka",
 			url: "/eureka",

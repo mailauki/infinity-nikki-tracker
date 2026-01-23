@@ -1,4 +1,4 @@
-import { Eureka } from "@/lib/types/types";
+import { EurekaSet } from "@/lib/types/types";
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -6,40 +6,39 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
-import Image from "next/image";
 import { SparkleIcon } from "lucide-react";
 import { percent } from "@/hooks/count";
 import ProgressBadge from "./progress-badge";
 import Link from "next/link";
-import { getObtainedEureka } from "@/hooks/get-obtained-count";
+import { getObtainedSetCount } from "@/hooks/get-obtained-count";
+import EurekaHeader from "./eureka-header";
 
-export default function EurekaCard({
-	eureka,
+export default function EurekaSetCard({
+	eurekaSet,
 }: {
-	eureka: Eureka,
+	eurekaSet: EurekaSet,
 }) {
-	const obtainedEureka = getObtainedEureka(eureka)
-	const percentage = obtainedEureka ? percent(obtainedEureka!.obtained, obtainedEureka!.total) : 0
+	const obtainedSetCount = getObtainedSetCount(eurekaSet)
+	const percentage = obtainedSetCount ? percent(obtainedSetCount!.obtained, obtainedSetCount!.total) : 0
 
   return (
     <Card>
 			<Button className="relative flex flex-col flex-1 min-w-xs w-full h-full justify-between items-start" variant="ghost" asChild>
-				<Link href={`/eureka/${eureka.slug}`}>
-					<CardHeader className="w-full p-4 pb-0">
+				<Link href={`/eureka/${eurekaSet.slug}`}>
+					{/* <CardHeader className="w-full p-4 pb-0">
 						<Image
-							src={eureka.image_url}
-							alt={eureka.name}
+							src={eurekaSet.image_url}
+							alt={eurekaSet.name}
 							width={100}
 							height={100}
 						/>
-						<CardTitle>{eureka.name}</CardTitle>
-					</CardHeader>
+						<CardTitle>{eurekaSet.name}</CardTitle>
+					</CardHeader> */}
+					<EurekaHeader name={eurekaSet.name} image={eurekaSet.image_url} />
 					<CardContent className="w-full p-4 flex flex-col gap-4">
 						<div className="flex items-center gap-1">
-							{Array.from({ length: eureka.quality }, (_, index) => (
+							{Array.from({ length: eurekaSet.quality }, (_, index) => (
 								<SparkleIcon
 									key={index}
 									color="var(--card-foreground)"
@@ -48,7 +47,7 @@ export default function EurekaCard({
 								/>
 							))}
 						</div>
-						{obtainedEureka && (
+						{obtainedSetCount && (
 							<div className="flex justify-between gap-2">
 								<ProgressBadge percentage={percentage} />
 								<CardDescription>{percentage}%</CardDescription>
@@ -56,7 +55,7 @@ export default function EurekaCard({
 						)}
 					</CardContent>
 					<div className="absolute right-2 top-2">
-						<Badge variant="outline">{eureka.labels}</Badge>
+						<Badge variant="outline">{eurekaSet.labels}</Badge>
 					</div>
 				</Link>
 			</Button>
