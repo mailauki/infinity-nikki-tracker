@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client"
 import { Tables } from "@/lib/types/supabase"
-import { Eureka, Quantity } from "@/lib/types/types"
+import { Eureka } from "@/lib/types/types"
 import { useEffect, useState } from "react"
 import EurekaCard from "./eureka-card"
 
@@ -10,22 +10,19 @@ type Obtained = Tables<'obtained'>
 
 const supabase = createClient()
 
-export default function RealtimeEureka({
+export default function RealtimeEurekaItems({
 	serverItems,
 	serverObtained,
-	serverObtainedCount,
 }: {
 	serverItems: Eureka[],
 	serverObtained: Obtained[],
-	serverObtainedCount: Quantity[],
 }) {
 	const [items, setItems] = useState(serverItems)
 	const [obtained, setObtained] = useState(serverObtained)
-	const [obtainedCount, setObtainedCount] = useState(serverObtainedCount)
 
 	function isObtained(slug: string) {
 		const splitSlug = slug.split("-")
-		const eureka = splitSlug[0].split("_").join(" ")
+		const eureka = splitSlug[0].replace("_", " ")
 		const category = splitSlug[1]
 		const color = splitSlug[2]
 		
@@ -61,7 +58,7 @@ export default function RealtimeEureka({
 						colors: category.colors.map((color) => Object.assign(
 							{
 								...color,
-								obtained: isObtained(`${item.name.split(" ").join("_")}-${category.name}-${color.name}`)
+								obtained: isObtained(`${item.name.replace(" ", "_")}-${category.name}-${color.name}`)
 							}
 						))
 					}
@@ -69,25 +66,27 @@ export default function RealtimeEureka({
 			}))
 		) as Eureka[]
 
-		const updatedObtainedCount = updatedItems.map((item) => Object.assign({
-			name: item.name,
-			trial: item.trial,
-			obtained: item.categories.map((category) => category.colors.map(color => color.obtained).flat()).flat().filter((value) => value === true).length,
-			total: item.categories.map(category => category.colors.map(color => color.obtained).flat()).flat().length,
-			colors: item.colors.map((itemColor) => Object.assign({
-				name: itemColor.name,
-				obtained: item.categories.map((category) => category.colors.filter((color) => color.name === itemColor.name)).flat().filter((value) => value.obtained === true).length,
-				total: item.categories.map((category) => category.colors.filter((color) => color.name === itemColor.name)).flat().length
-			})),
-			categories: item.categories.map((category) => Object.assign({
-				name: category.name,
-				obtained: category.colors.map((color) => color.obtained === true).flat().filter((value) => value === true).length,
-				total: category.colors.length,
-			}))
-		})) as Quantity[]
+		// const updatedObtainedCount = updatedItems.map((item) => Object.assign({
+		// 	name: item.name,
+		// 	trial: item.trial,
+		// 	obtained: item.categories.map((category) => category.colors.map(color => color.obtained).flat()).flat().filter((value) => value === true).length,
+		// 	total: item.categories.map(category => category.colors.map(color => color.obtained).flat()).flat().length,
+		// 	colors: item.colors.map((itemColor) => Object.assign({
+		// 		name: itemColor.name,
+		// 		obtained: item.categories.map((category) => category.colors.filter((color) => color.name === itemColor.name)).flat().filter((value) => value.obtained === true).length,
+		// 		total: item.categories.map((category) => category.colors.filter((color) => color.name === itemColor.name)).flat().length
+		// 	})),
+		// 	categories: item.categories.map((category) => Object.assign({
+		// 		name: category.name,
+		// 		obtained: category.colors.map((color) => color.obtained === true).flat().filter((value) => value === true).length,
+		// 		total: category.colors.length,
+		// 	}))
+		// })) as Quantity[]
+
+		// const updatedObtainedCount = getObtainedCount(updatedItems)
 
 		setItems(updatedItems)
-		setObtainedCount(updatedObtainedCount)
+		// setObtainedCount(updatedObtainedCount)
 		
 		return () => {
 			supabase.removeChannel(obtainedChannel)
@@ -96,12 +95,11 @@ export default function RealtimeEureka({
 	}, [obtained])
 
 	return (
-		<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
+		<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
 			{items.map((eureka) => (
 				<EurekaCard
 					key={eureka.id}
 					eureka={eureka}
-					obtainedCount={(obtained.length > 0) ? obtainedCount : []}
 				/>
 			))}
 		</div>

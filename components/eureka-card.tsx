@@ -1,4 +1,4 @@
-import { Eureka, Quantity } from "@/lib/types/types";
+import { Eureka } from "@/lib/types/types";
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -14,14 +14,14 @@ import { SparkleIcon } from "lucide-react";
 import { percent } from "@/hooks/count";
 import ProgressBadge from "./progress-badge";
 import Link from "next/link";
+import { getObtainedEureka } from "@/hooks/get-obtained-count";
 
 export default function EurekaCard({
-	eureka, obtainedCount,
+	eureka,
 }: {
 	eureka: Eureka,
-	obtainedCount: Quantity[],
 }) {
-	const obtainedEureka = obtainedCount.find((count)=> count.name == eureka.name)
+	const obtainedEureka = getObtainedEureka(eureka)
 	const percentage = obtainedEureka ? percent(obtainedEureka!.obtained, obtainedEureka!.total) : 0
 
   return (

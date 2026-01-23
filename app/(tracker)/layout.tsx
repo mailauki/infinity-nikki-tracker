@@ -10,7 +10,7 @@ export default function Layout({
 	return (
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
-			<SidebarInset className="">
+			<SidebarInset>
 				<SiteHeader />
 				<div className="h-[calc(100vh-80px)] overflow-auto mt-2">
 					{children}
