@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/client"
 import { Tables } from "@/lib/types/supabase"
 import { Eureka, Quantity } from "@/lib/types/types"
 import { useEffect, useState } from "react"
+import EurekaCard from "./eureka-card"
 
 type Obtained = Tables<'obtained'>
 
@@ -21,6 +22,15 @@ export default function RealtimeEureka({
 	const [items, setItems] = useState(serverItems)
 	const [obtained, setObtained] = useState(serverObtained)
 	const [obtainedCount, setObtainedCount] = useState(serverObtainedCount)
+
+	function isObtained(slug: string) {
+		const splitSlug = slug.split("-")
+		const eureka = splitSlug[0].split("_").join(" ")
+		const category = splitSlug[1]
+		const color = splitSlug[2]
+		
+		return obtained?.find((item) => item.eureka === eureka && item.color === color && item.category === category) ? true : false
+	}
 	
 	useEffect(() => {
 		const obtainedChannel = supabase.channel('obtained-insert-channel')
@@ -82,20 +92,18 @@ export default function RealtimeEureka({
 		return () => {
 			supabase.removeChannel(obtainedChannel)
 		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [obtained])
 
-	function isObtained(slug: string) {
-		const splitSlug = slug.split("-")
-		const eureka = splitSlug[0].split("_").join(" ")
-		const category = splitSlug[1]
-		const color = splitSlug[2]
-		
-		return obtained?.find((item) => item.eureka === eureka && item.color === color && item.category === category) ? true : false
-	}
-
 	return (
-		<>
-			<pre>{JSON.stringify(obtainedCount, null, 2)}</pre>
-		</>
+		<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
+			{items.map((eureka) => (
+				<EurekaCard
+					key={eureka.id}
+					eureka={eureka}
+					obtainedCount={(obtained.length > 0) ? obtainedCount : []}
+				/>
+			))}
+		</div>
 	)
 }

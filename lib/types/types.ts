@@ -5,10 +5,12 @@ export interface Eureka {
 	style: string;
 	labels: string;
 	trial: string;
+	slug: string;
+	image_url: string;
 	colors: {
 		name: string;
+		image_url: string;
 	}[];
-	image_url: string;
 	categories: {
 		name: string;
 		image_url: string;
