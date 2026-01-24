@@ -15,7 +15,6 @@ export default async function EurekaSetPage({
   return (
     <div className="flex flex-col p-6 gap-6">
 			<Suspense>
-				<h1 className="capitalize">{slug}</h1>
 				<EurekaSet slug={slug} />
 			</Suspense>
     </div>

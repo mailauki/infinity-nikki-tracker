@@ -5,10 +5,7 @@ import { Tables } from "@/lib/types/supabase"
 import { EurekaSet } from "@/lib/types/types"
 import { useEffect, useState } from "react"
 import EurekaTable from "./eureka-table"
-import { Card, CardContent } from "./ui/card"
 import EurekaHeader from "./eureka-header"
-import { SparkleIcon } from "lucide-react"
-import { Badge } from "./ui/badge"
 
 type Obtained = Tables<'obtained'>
 
@@ -78,24 +75,7 @@ export default function RealtimeEurekaSet({
 
 	return (
 		<>
-			<Card className="relative">
-				<EurekaHeader name={eurekaSet.name} image={eurekaSet.image_url} />
-				<CardContent className="w-full p-4 flex flex-col gap-4">
-					<div className="flex items-center gap-1">
-						{Array.from({ length: eurekaSet.quality }, (_, index) => (
-							<SparkleIcon
-								key={index}
-								color="var(--card-foreground)"
-								fill="var(--card-foreground)"
-								size={14}
-							/>
-						))}
-					</div>
-				</CardContent>
-				<div className="absolute right-2 top-2">
-					<Badge variant="outline">{eurekaSet.labels}</Badge>
-				</div>
-			</Card>
+			<EurekaHeader eurekaSet={eurekaSet} variant="large" />
 			<EurekaTable
 				eurekaSet={eurekaSet!}
 			/>

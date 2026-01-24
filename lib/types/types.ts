@@ -14,12 +14,7 @@ export interface EurekaSet {
 	categories: {
 		name: string;
 		image_url: string;
-		colors: {
-			name: string;
-			slug: string;
-			image_url: string;
-			obtained: boolean;
-		}[];
+		colors: EurekaColor[];
 	}[];
 }
 
@@ -36,4 +31,11 @@ export interface Count {
 	name?: string,
 	obtained: number,
 	total: number,
+}
+
+export interface EurekaColor {
+	name: string;
+	slug: string;
+	image_url: string;
+	obtained: boolean;
 }
