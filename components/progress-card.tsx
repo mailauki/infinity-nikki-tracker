@@ -12,8 +12,8 @@ export default function ProgressCard({
 	set: Category[] | Color[],
 }) {
 	return (
-		<Item key={item.name} variant="outline" className="relative">
-			<ItemHeader>
+		<Item key={item.name} variant="outline" className={`${item.name === "Iridescent" ? "col-start-3 row-start-1 row-end-3 md:col-start-5 md:row-end-1 order-last" : ""} relative flex-col justify-between rounded-xl`}>
+			<ItemHeader className="w-full flex-0">
 				<ItemMedia>
 					{set.find((setItem) => setItem.name === item.name)!.image_url && (
 						<Image
@@ -26,13 +26,13 @@ export default function ProgressCard({
 					)}
 				</ItemMedia>
 			</ItemHeader>
-			<ItemContent>
+			<ItemContent className="w-full flex-0 grow">
 				<ItemDescription>{item.name}</ItemDescription>
 				<ItemTitle className="text-lg">
 					{percent(item.obtained, item.total)}%
 				</ItemTitle>
 			</ItemContent>
-			<ItemFooter>
+			<ItemFooter className="w-full flex-0">
 				<Progress value={percent(item.obtained, item.total)} className="bg-muted" />
 			</ItemFooter>
 			<div className="absolute right-2 top-2">
