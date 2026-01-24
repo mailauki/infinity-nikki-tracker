@@ -14,6 +14,7 @@ import { EurekaSet } from "@/lib/types/types";
 import ProgressBadge from "./progress-badge";
 import Image from "next/image";
 import QualityStars from "./quality-stars";
+import { Progress } from "./ui/progress";
 
 export default function EurekaHeader({
 	eurekaSet, variant="default",
@@ -55,17 +56,18 @@ export default function EurekaHeader({
 					<QualityStars quality={eurekaSet.quality} />
 				</ItemContent>
 			)}
-			<ItemFooter>
+			<ItemFooter className="flex-col">
 				{obtainedSetCount && (
-					<div className="flex flex-1 justify-between items-center gap-2">
+					<div className="w-full flex flex-1 justify-between items-center gap-2">
 						<ProgressBadge percentage={percentage} />
-						<ItemDescription className="text-2xl">{percentage}%</ItemDescription>
+						<ItemTitle className="text-2xl">{percentage}%</ItemTitle>
 					</div>
 				)}
+				<Progress value={percentage} className="bg-muted" />
 			</ItemFooter>
-				<div className="absolute right-2 top-2">
-					<Badge variant="outline">{eurekaSet.labels}</Badge>
-				</div>
+			<div className="absolute right-2 top-2">
+				<Badge variant="outline">{eurekaSet.labels}</Badge>
+			</div>
 		</Item>
   )
 }

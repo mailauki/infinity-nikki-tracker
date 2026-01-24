@@ -7,15 +7,8 @@ export interface EurekaSet {
 	trial: string;
 	slug: string;
 	image_url: string;
-	colors: {
-		name: string;
-		image_url: string;
-	}[];
-	categories: {
-		name: string;
-		image_url: string;
-		colors: EurekaColor[];
-	}[];
+	colors: Color[];
+	categories: Category[];
 }
 
 export interface Quantity {
@@ -38,4 +31,15 @@ export interface EurekaColor {
 	slug: string;
 	image_url: string;
 	obtained: boolean;
+}
+
+export interface Category {
+	name: string;
+	image_url: string;
+	colors: EurekaColor[];
+}
+
+export interface Color {
+	name: string;
+	image_url: string;
 }
