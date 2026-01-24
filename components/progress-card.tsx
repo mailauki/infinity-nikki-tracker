@@ -9,23 +9,25 @@ export default function ProgressCard({
 	item, set,
 } : {
 	item: Count,
-	set: Category[] | Color[],
+	set?: Category[] | Color[],
 }) {
 	return (
 		<Item key={item.name} variant="outline" className={`${item.name === "Iridescent" ? "col-start-3 row-start-1 row-end-3 md:col-start-5 md:row-end-1 order-last" : ""} relative flex-col justify-between rounded-xl`}>
-			<ItemHeader className="w-full flex-0">
-				<ItemMedia>
-					{set.find((setItem) => setItem.name === item.name)!.image_url && (
-						<Image
-							src={set.find((setItem) => setItem.name === item.name)!.image_url}
-							alt={item.name!}
-							width={Object.keys(set[0]).includes("colors") ? 60 : 20}
-							height={Object.keys(set[0]).includes("colors") ? 60 : 20}
-							className={Object.keys(set[0]).includes("colors") ? "grayscale brightness-[0.4] dark:filter-none" : "filter-none" }
-						/>
-					)}
-				</ItemMedia>
-			</ItemHeader>
+			{set && (
+				<ItemHeader className="w-full flex-0">
+					<ItemMedia>
+						{set.find((setItem) => setItem.name === item.name)!.image_url && (
+							<Image
+								src={set.find((setItem) => setItem.name === item.name)!.image_url}
+								alt={item.name!}
+								width={Object.keys(set[0]).includes("colors") ? 60 : 20}
+								height={Object.keys(set[0]).includes("colors") ? 60 : 20}
+								className={Object.keys(set[0]).includes("colors") ? "grayscale brightness-[0.4] dark:filter-none" : "filter-none" }
+							/>
+						)}
+					</ItemMedia>
+				</ItemHeader>
+			)}
 			<ItemContent className="w-full flex-0 grow">
 				<ItemDescription>{item.name}</ItemDescription>
 				<ItemTitle className="text-lg">

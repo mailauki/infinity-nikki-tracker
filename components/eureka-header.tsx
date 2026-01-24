@@ -26,7 +26,7 @@ export default function EurekaHeader({
 	const percentage = obtainedSetCount ? percent(obtainedSetCount!.obtained, obtainedSetCount!.total) : 0
 
   return (
-		<Item className="relative">
+		<Item className="relative w-full">
 			<ItemHeader>
 				<ItemMedia>
 					{eurekaSet.image_url && (

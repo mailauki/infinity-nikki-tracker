@@ -26,8 +26,14 @@ const data = {
 		{
 			title: "Eureka",
 			url: "/eureka",
-			image: "https://static.wikia.nocookie.net/infinity-nikki/images/5/56/Icon_Eureka.png/revision/latest?cb=20241222110118"
-		}
+			image: "https://static.wikia.nocookie.net/infinity-nikki/images/5/56/Icon_Eureka.png/revision/latest?cb=20241222110118",
+			items: [
+				{
+					title: "Trials",
+					url: "/eureka/trials",
+				}
+			]
+		},
 	],
 	navSecondary: [
 		{
