@@ -8,5 +8,5 @@ export function count(array: Quantity[]|Count[]) {
 }
 
 export function percent(obtained: number, total: number) {
-	return Number((obtained/total * 100).toPrecision(1))
+	return Number((obtained/total * 100).toPrecision(2))
 }

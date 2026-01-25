@@ -7,7 +7,6 @@ import { getUser } from "@/hooks/get-user"
 import { Count, EurekaSet } from "@/lib/types/types"
 import EurekaSetCard from "./eureka-set-card"
 
-
 export default async function Trials() {
 	const user = await getUser()
 	const obtained = await getObtained(user!)
@@ -25,14 +24,15 @@ export default async function Trials() {
 	)) as Count[]
 
 	return (
-		<div className="p-4">
+		<div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 pb-16">
 			{totalTrials.map((trial) => (
-				<div key={trial.name} className="pb-4">
+				<div key={trial.name} className="">
 					<ProgressCard
 						key={trial.name}
 						item={trial}
+						imageSize={500}
 					/>
-					<div className="grid grid-cols-2 gap-4 py-4">
+					<div className="grid grid-cols-2 gap-4 pt-4">
 						{trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
 							<EurekaSetCard
 								key={`${trial.name}-${eurekaSet.name}`}

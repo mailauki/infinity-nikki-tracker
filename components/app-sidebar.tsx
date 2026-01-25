@@ -12,9 +12,9 @@ import Link from "next/link"
 import Image from "next/image"
 import { AuthButton } from "./auth-button"
 import { ThemeSwitcher } from "./theme-switcher"
+import { NavMain } from "./nav-main"
 import { NavSecondary } from "./nav-secondary"
 import { ExternalLinkIcon } from "lucide-react"
-import { NavMain } from "./nav-main"
 
 const data = {
 	navMain: [

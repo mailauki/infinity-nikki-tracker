@@ -4,6 +4,8 @@ import { UserMetadata } from "@supabase/supabase-js";
 export async function getObtained(user: UserMetadata) {
 	const supabase = await createClient()
 
+	if (!user) return null
+	
 	const user_id = user.sub
 
 	const { data: obtained } = await supabase

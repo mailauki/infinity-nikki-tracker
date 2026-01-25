@@ -9,18 +9,15 @@ import { getObtainedSetsCount } from "@/hooks/get-obtained-count"
 import ProgressCard from "./progress-card"
 
 type Obtained = Tables<'obtained'>
-// type Trial = Tables<'trials'>
 
 const supabase = createClient()
 
 export default function RealtimeEurekaSets({
 	serverEurekaSets,
 	serverObtained,
-	// serverTrials,
 }: {
 	serverEurekaSets: EurekaSet[],
 	serverObtained: Obtained[],
-	// serverTrials: Trial[],
 }) {
 	const [eurekaSets, setEurekaSets] = useState(serverEurekaSets)
 	const [obtained, setObtained] = useState(serverObtained)
@@ -30,32 +27,15 @@ export default function RealtimeEurekaSets({
 		image_url: category.image_url,
 		colors: [],
 	}) as Category))])[0]
-	// const trials = [...new Set(eurekaSets.map((eurekaSet) => eurekaSet.trial))]
-	// const trials = [...new Set(eurekaSets.map((eurekaSet) => eurekaSet.trial))].map((trial) => (
-	// 	Object.assign({
-	// 		name: trial,
-	// 		eurekaSets: obtainedSetsCount.filter((eurekaSet) => eurekaSet.trial === trial),
-	// 	})))
-	// const totalObtained = Object.assign({
-	// 	name: "Total",
-	// 	obtained: obtainedSetsCount.reduce((total, setCount) => total + setCount.categories.reduce((sum, current) => sum + current.obtained, 0), 0),
-	// 	total: obtainedSetsCount.reduce((total, setCount) => total + setCount.categories.reduce((sum, current) => sum + current.total, 0), 0)
-	// }) as Count
+
 	const totalCategories = categories.map((eurekaCategory) => (
 		Object.assign({
 			name: eurekaCategory.name,
 			obtained: obtainedSetsCount.reduce((total, setCount) => total + setCount.categories.find((category) => category.name === eurekaCategory.name)!.obtained, 0),
-			total: obtainedSetsCount.reduce((total, setCount) => total + setCount.categories.find((category) => category.name === eurekaCategory.name)!.total, 0)
+			total: obtainedSetsCount.reduce((total, setCount) => total + setCount.categories.find((category) => category.name === eurekaCategory.name)!.total, 0),
+			image_url: eurekaCategory.image_url,
 		})
 	)) as Count[]
-	// const totalTrials = trials.map((trial) => (
-	// 	Object.assign({
-	// 		name: trial,
-	// 		obtained: obtainedSetsCount.filter((eurekaSet) => eurekaSet.trial === trial).map((eurekaSet) => eurekaSet.obtained).reduce((total, current) => total + current),
-	// 		total: obtainedSetsCount.filter((eurekaSet) => eurekaSet.trial === trial).map((eurekaSet) => eurekaSet.total).reduce((total, current) => total + current),
-	// 		eurekaSets: obtainedSetsCount.filter((eurekaSet) => eurekaSet.trial === trial)
-	// 	})
-	// )) as Count[]
 
 	function isObtained(slug: string) {
 		const splitSlug = slug.split("-")
@@ -113,21 +93,11 @@ export default function RealtimeEurekaSets({
 
 	return (
 		<>
-		{/* <pre>{JSON.stringify(totalTrials, null, 2)}</pre> */}
-		{/* <div className="grid grid-cols-4 gap-4 p-4">
-			{totalTrials.map((trial) => (
-				<ProgressCard
-					key={trial.name}
-					item={trial}
-				/>
-			))}
-		</div> */}
 		<div className="grid grid-cols-3 gap-4 p-4">
 			{totalCategories.map((category) => (
 				<ProgressCard
 					key={category.name}
 					item={category}
-					set={categories}
 				/>
 			))}
 		</div>
