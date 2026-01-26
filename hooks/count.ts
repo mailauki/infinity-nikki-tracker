@@ -1,10 +1,12 @@
-import { Count, Quantity } from "@/lib/types/types";
+import { Count, Eureka, ObtainedCount, Quantity } from "@/lib/types/types";
 
-export function count(array: Quantity[]|Count[]) {
+export function count(array: Eureka[]) {
 	return Object.assign({
-		obtained: array.filter((value) => value.obtained === value.total).length,
-		total: array.length,
-	}) as Count
+		// obtained: array.filter((value) => value.obtained === value.total).length,
+		// total: array.length,
+		obtained: array.reduce((sum, item) => sum + (item.obtained ? 1 : 0), 0),
+		total: array.length
+	}) as ObtainedCount
 }
 
 export function percent(obtained: number, total: number) {

@@ -1,47 +1,40 @@
 export interface EurekaSet {
-	id: number
-	name: string
-	quality: number
-	style: string
-	labels: string
-	trial: string
-	slug: string
-	image_url: string
-	colors: Color[]
-	categories: Category[]
+	id: number;
+	slug: string;
+	name: string;
+	quality: number | null;
+	style: string | null;
+	labels: string | null;
+	trial: string | null;
+	image_url: string;
+	eureka: Eureka[];
+	categories: Image[];
+	colors: Image[];
 }
 
-export interface Quantity {
-	name: string
-	trial?: string
-	obtained: number
-	total: number
-	colors: Count[]
-	categories: Count[]
+export interface Eureka {
+	id: number;
+	eureka_set: string | null;
+	color: string | null;
+	category: string | null;
+	image_url: string | null;
+	default: boolean;
+	obtained?: boolean;
 }
 
-export interface Count {
-	name?: string
-	obtained: number
-	total: number
-	image_url?: string
-	eurekaSets?: EurekaSet[]
+export interface ObtainedCount {
+	obtained: number;
+	total: number;
 }
 
-export interface EurekaColor {
-	name: string
-	slug: string
-	image_url: string
-	obtained: boolean
+export interface Image {
+	name: string;
+	image_url: string | null;
 }
 
-export interface Category {
-	name: string
-	image_url: string
-	colors: EurekaColor[]
+export interface Total {
+	name: string;
+	image_url: string | null;
+	eurekaSets?: EurekaSet[];
 }
 
-export interface Color {
-	name: string
-	image_url: string
-}

@@ -63,16 +63,19 @@ export type Database = {
       colors: {
         Row: {
           created_at: string
+          id: number
           image_url: string | null
           name: string
         }
         Insert: {
           created_at?: string
+          id?: number
           image_url?: string | null
           name?: string
         }
         Update: {
           created_at?: string
+          id?: number
           image_url?: string | null
           name?: string
         }
@@ -80,11 +83,64 @@ export type Database = {
       }
       eureka: {
         Row: {
+          category: string | null
+          color: string | null
+          created_at: string
+          default: boolean
+          eureka_set: string | null
+          id: number
+          image_url: string | null
+        }
+        Insert: {
+          category?: string | null
+          color?: string | null
+          created_at?: string
+          default?: boolean
+          eureka_set?: string | null
+          id?: number
+          image_url?: string | null
+        }
+        Update: {
+          category?: string | null
+          color?: string | null
+          created_at?: string
+          default?: boolean
+          eureka_set?: string | null
+          id?: number
+          image_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eureka_category_fkey"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["name"]
+          },
+          {
+            foreignKeyName: "eureka_color_fkey"
+            columns: ["color"]
+            isOneToOne: false
+            referencedRelation: "colors"
+            referencedColumns: ["name"]
+          },
+          {
+            foreignKeyName: "eureka_eureka_set_fkey"
+            columns: ["eureka_set"]
+            isOneToOne: false
+            referencedRelation: "eureka_sets"
+            referencedColumns: ["name"]
+          },
+        ]
+      }
+      eureka_sets: {
+        Row: {
           created_at: string
           id: number
           labels: string | null
           name: string
           quality: number | null
+          slug: string | null
           style: string | null
           trial: string | null
         }
@@ -94,6 +150,7 @@ export type Database = {
           labels?: string | null
           name?: string
           quality?: number | null
+          slug?: string | null
           style?: string | null
           trial?: string | null
         }
@@ -103,6 +160,7 @@ export type Database = {
           labels?: string | null
           name?: string
           quality?: number | null
+          slug?: string | null
           style?: string | null
           trial?: string | null
         }
@@ -116,97 +174,12 @@ export type Database = {
           },
         ]
       }
-      eureka_colors: {
-        Row: {
-          color: string
-          created_at: string
-          eureka: string
-        }
-        Insert: {
-          color: string
-          created_at?: string
-          eureka: string
-        }
-        Update: {
-          color?: string
-          created_at?: string
-          eureka?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "eureka_colors_color_fkey"
-            columns: ["color"]
-            isOneToOne: false
-            referencedRelation: "colors"
-            referencedColumns: ["name"]
-          },
-          {
-            foreignKeyName: "eureka_colors_eureka_fkey"
-            columns: ["eureka"]
-            isOneToOne: false
-            referencedRelation: "eureka"
-            referencedColumns: ["name"]
-          },
-        ]
-      }
-      images: {
-        Row: {
-          category: string | null
-          color: string | null
-          created_at: string
-          default: boolean
-          eureka: string | null
-          id: number
-          image_url: string | null
-        }
-        Insert: {
-          category?: string | null
-          color?: string | null
-          created_at?: string
-          default?: boolean
-          eureka?: string | null
-          id?: number
-          image_url?: string | null
-        }
-        Update: {
-          category?: string | null
-          color?: string | null
-          created_at?: string
-          default?: boolean
-          eureka?: string | null
-          id?: number
-          image_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "images_category_fkey"
-            columns: ["category"]
-            isOneToOne: false
-            referencedRelation: "categories"
-            referencedColumns: ["name"]
-          },
-          {
-            foreignKeyName: "images_color_fkey"
-            columns: ["color"]
-            isOneToOne: false
-            referencedRelation: "colors"
-            referencedColumns: ["name"]
-          },
-          {
-            foreignKeyName: "images_eureka_fkey"
-            columns: ["eureka"]
-            isOneToOne: false
-            referencedRelation: "eureka"
-            referencedColumns: ["name"]
-          },
-        ]
-      }
       obtained: {
         Row: {
           category: string | null
           color: string | null
           created_at: string
-          eureka: string | null
+          eureka_set: string | null
           id: number
           user_id: string | null
         }
@@ -214,7 +187,7 @@ export type Database = {
           category?: string | null
           color?: string | null
           created_at?: string
-          eureka?: string | null
+          eureka_set?: string | null
           id?: number
           user_id?: string | null
         }
@@ -222,7 +195,7 @@ export type Database = {
           category?: string | null
           color?: string | null
           created_at?: string
-          eureka?: string | null
+          eureka_set?: string | null
           id?: number
           user_id?: string | null
         }
@@ -242,10 +215,10 @@ export type Database = {
             referencedColumns: ["name"]
           },
           {
-            foreignKeyName: "obtained_eureka_fkey"
-            columns: ["eureka"]
+            foreignKeyName: "obtained_eureka_set_fkey"
+            columns: ["eureka_set"]
             isOneToOne: false
-            referencedRelation: "eureka"
+            referencedRelation: "eureka_sets"
             referencedColumns: ["name"]
           },
         ]
@@ -254,20 +227,20 @@ export type Database = {
         Row: {
           created_at: string
           id: number
-          name: string
           image_url: string | null
+          name: string
         }
         Insert: {
           created_at?: string
           id?: number
-          name: string
           image_url?: string | null
+          name: string
         }
         Update: {
           created_at?: string
           id?: number
-          name?: string
           image_url?: string | null
+          name?: string
         }
         Relationships: []
       }

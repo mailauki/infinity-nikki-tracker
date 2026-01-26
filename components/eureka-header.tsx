@@ -8,13 +8,12 @@ import {
 	ItemTitle
 } from "@/components/ui/item";
 import { Badge } from "@/components/ui/badge";
-import { percent } from "@/hooks/count";
-import { getObtainedSetCount } from "@/hooks/get-obtained-count";
-import { EurekaSet } from "@/lib/types/types";
+import { count, percent } from "@/hooks/count";
 import ProgressBadge from "./progress-badge";
 import Image from "next/image";
 import QualityStars from "./quality-stars";
 import { Progress } from "./ui/progress";
+import { EurekaSet } from "@/lib/types/types";
 
 export default function EurekaHeader({
 	eurekaSet, variant="default",
@@ -22,8 +21,9 @@ export default function EurekaHeader({
 	eurekaSet: EurekaSet,
 	variant?: "default"|"large"
 }) {
-	const obtainedSetCount = getObtainedSetCount(eurekaSet)
-	const percentage = obtainedSetCount ? percent(obtainedSetCount!.obtained, obtainedSetCount!.total) : 0
+	const hasObtained = Object.keys(eurekaSet.eureka[0]).includes("obtained")
+	const obtainedCount = count(eurekaSet.eureka)
+	const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
   return (
 		<Item className="relative w-full">
@@ -46,25 +46,25 @@ export default function EurekaHeader({
 						<ItemDescription>{eurekaSet.trial}</ItemDescription>
 					</ItemContent>
 					<ItemContent className="text-end">
-						<QualityStars quality={eurekaSet.quality} />
+						<QualityStars quality={eurekaSet.quality!} />
 						<ItemDescription>{eurekaSet.style}</ItemDescription>
 					</ItemContent>
 				</>
 				) : (
 				<ItemContent>
 					<ItemTitle>{eurekaSet.name}</ItemTitle>
-					<QualityStars quality={eurekaSet.quality} />
+					<QualityStars quality={eurekaSet.quality!} />
 				</ItemContent>
 			)}
-			<ItemFooter className="flex-col">
-				{obtainedSetCount && (
+			{hasObtained && (
+				<ItemFooter className="flex-col">
 					<div className="w-full flex flex-1 justify-between items-center gap-2">
 						<ProgressBadge percentage={percentage} />
 						<ItemTitle className="text-2xl">{percentage}%</ItemTitle>
 					</div>
-				)}
-				<Progress value={percentage} className="bg-muted" />
-			</ItemFooter>
+					<Progress value={percentage} className="bg-muted" />
+				</ItemFooter>
+			)}
 			<div className="absolute right-2 top-2">
 				<Badge variant="outline">{eurekaSet.labels}</Badge>
 			</div>

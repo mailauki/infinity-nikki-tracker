@@ -1,8 +1,9 @@
-import { EurekaSet } from "@/lib/types/types";
+// import { EurekaSet } from "@/lib/types/types";
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import Link from "next/link";
 import EurekaHeader from "./eureka-header";
+import { EurekaSet } from "@/lib/types/types";
 
 export default function EurekaSetCard({
 	eurekaSet,

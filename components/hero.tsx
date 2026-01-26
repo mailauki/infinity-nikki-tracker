@@ -12,7 +12,7 @@ export function Hero() {
 				className="w-full h-auto opacity-75 dark:opacity-60"
 			/>
       <h1 className="sr-only">Infinity Nikki Tracker</h1>
-      <p className="text-3xl lg:text-4xl !leading-tight mx-auto max-w-xl text-center">
+      <p className="text-2xl md:text-3xl !leading-tight mx-auto max-w-xl text-center px-4">
 				Track your collection from your favorite cozy open-world game Infinity Nikki
       </p>
       <div className="w-full p-[1px] bg-gradient-to-r from-transparent via-foreground/10 to-transparent my-8" />

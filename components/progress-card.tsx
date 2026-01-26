@@ -1,17 +1,29 @@
-import { percent } from "@/hooks/count";
-import { Category, Color, Count } from "@/lib/types/types";
-import { Item, ItemContent, ItemDescription, ItemFooter, ItemHeader, ItemMedia, ItemTitle } from "@/components/ui/item";
+import { count, percent } from "@/hooks/count";
+import { Eureka, Total } from "@/lib/types/types";
+import {
+	Item,
+	ItemContent,
+	ItemDescription,
+	ItemFooter,
+	ItemHeader,
+	ItemMedia,
+	ItemTitle
+} from "@/components/ui/item";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
 export default function ProgressCard({
-	item, imageSize=60,
+	item, imageSize=60, eureka,
 } : {
-	item: Count,
-	set?: Category[] | Color[],
+	item: Total,
 	imageSize?: number,
+	eureka: Eureka[]
 }) {
+	const hasObtained = Object.keys(eureka[0]).includes("obtained")
+	const obtainedCount = count(eureka)
+	const percentage = percent(obtainedCount.obtained, obtainedCount.total)
+
 	return (
 		<Item key={item.name} variant="outline" className={`${
 			item.name === "Iridescent"
@@ -34,17 +46,23 @@ export default function ProgressCard({
 			)}
 			<ItemContent className="w-full flex-0 grow">
 				<ItemDescription>{item.name}</ItemDescription>
-				<ItemTitle className="text-lg">
-					{percent(item.obtained, item.total)}%
-				</ItemTitle>
+				{hasObtained && (
+					<ItemTitle className="text-lg">
+						{percentage}%
+					</ItemTitle>
+				)}
 			</ItemContent>
-			<ItemFooter className="w-full flex-0">
-				<Progress value={percent(item.obtained, item.total)} className="bg-muted" />
-			</ItemFooter>
+			{hasObtained && (
+				<ItemFooter className="w-full flex-0">
+					<Progress value={percentage} className="bg-muted" />
+				</ItemFooter>
+			)}
 			<div className="absolute right-2 top-2">
-				<Badge variant="outline">
-					{item.obtained}/{item.total}
-				</Badge>
+				{hasObtained && (
+					<Badge variant="outline">
+						{obtainedCount.obtained}/{obtainedCount.total}
+					</Badge>
+				)}
 			</div>
 		</Item>
 	)
