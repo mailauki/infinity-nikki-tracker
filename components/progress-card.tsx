@@ -15,7 +15,7 @@ import Image from "next/image";
 
 export default function ProgressCard({
 	item, imageSize=60, eureka,
-} : {
+}: {
 	item: Total,
 	imageSize?: number,
 	eureka: Eureka[]

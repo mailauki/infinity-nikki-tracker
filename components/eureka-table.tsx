@@ -5,7 +5,7 @@ import EurekaButton from "./eureka-button"
 
 export default function EurekaTable({
 	eurekaSet, hasObtained,
-} : {
+}: {
 	eurekaSet: EurekaSet,
 	hasObtained: boolean,
 }) {

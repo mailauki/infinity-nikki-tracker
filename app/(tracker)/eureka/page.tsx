@@ -19,7 +19,7 @@ async function EurekaSets() {
 
 	return (
 		<>
-			{hasObtained && (
+		{hasObtained && (
 				<div className="grid grid-cols-3 gap-4 p-4">
 					{categories.map((category) => (
 						<ProgressCard

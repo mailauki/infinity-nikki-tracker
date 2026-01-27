@@ -1,6 +1,9 @@
 import { cache } from 'react'
 import { createClient } from './supabase/server'
-import { Eureka, EurekaSet } from './types/types'
+import { Eureka, EurekaSet, Obtained } from './types/types'
+import { createEurekaSet, updateEurekaSet } from '@/hooks/eureka-set'
+import { UUID } from 'crypto'
+import { getUserID } from '@/hooks/user'
 
 export const getEurekaSets = cache(async () => {
 	const supabase = await createClient()
@@ -31,29 +34,6 @@ export const getEurekaSets = cache(async () => {
 	const { data: colors } = await supabase
 	.from('colors')
 	.select('name, image_url')
-
-	// const eurekaSets = eureka?.map((item) => (
-	// 	Object.assign({
-	// 		...item,
-	// 		slug: item.name.split(" ").join("-").toLowerCase(),
-	// 		// image_url: findImage({ eureka: item.name, isDefault: true }),
-	// 		categories: categories?.map((category) => Object.assign(
-	// 			{
-	// 				name: category.name,
-	// 				image_url: category.image_url,
-	// 				colors: item.colors.map((color) => Object.assign(
-	// 					{
-	// 						name: color.name,
-	// 						slug: `${item.name.split(" ").join("_")}-${category.name}-${color.name}`,
-	// 						// image_url: findImage({ eureka: item.name, color: color.name, category: category.name }),
-	// 					}
-	// 				))
-	// 			}
-	// 		))
-	// 	}))
-	// ) as EurekaSet[]
-
-	// const eureka = eurekaSets?.map((set) => getSet(set))
 
 	const eureka = eurekaSets?.map((eurekaSet) => (
 		Object.assign({
@@ -125,41 +105,15 @@ export const getEurekaSet = cache(async (slug: string) => {
 	.from('colors')
 	.select('name, image_url')
 
-	const eureka = Object.assign({
-			...eurekaSet,
-			image_url: eurekaSet?.eureka.find((item) => item.default)?.image_url,
-			categories: categories,
-			colors: [...new Set(eurekaSet?.eureka.map((item) => item.color))].flatMap((item) => colors?.filter((color) => color.name === item))
-		}) as EurekaSet
+	const eureka = createEurekaSet({ eurekaSet, categories, colors })
 
 	const user_id = await getUserID()
 
-	if (!user_id) return eureka
+	const obtained = await getObtained(user_id!)
 
-	const { data: obtained } = await supabase
-	.from("obtained")
-	.select(`
-    id,
-    eureka_set,
-    category,
-    color
-	`)
-	.eq("user_id", user_id)
+	const eurekaWithObtained = updateEurekaSet({ eurekaSet: eureka, obtained })
 
-	const eurekaWithObtained = Object.assign({
-		...eurekaSet,
-		image_url: eurekaSet?.eureka.find((item) => item.default)?.image_url,
-		categories: categories,
-		colors: [...new Set(eurekaSet?.eureka.map((item) => item.color))].flatMap((item) => colors?.filter((color) => color.name === item)),
-		eureka: eurekaSet?.eureka.map((item) => (
-			Object.assign({
-				...item,
-				obtained: obtained?.find((value) => item.eureka_set === value.eureka_set && item.category === value.category && item.color === value.color) ? true : false
-			})
-		)) as Eureka[]
-	}) as EurekaSet
-
-	return eurekaWithObtained
+	return user_id ? eurekaWithObtained : eureka
 })
 
 export const getTrials = cache(async () => {
@@ -173,15 +127,18 @@ export const getTrials = cache(async () => {
 	return trials
 })
 
-export const getUserID = cache(async () => {
+export const getObtained = cache(async (user_id: UUID|string) => {
 	const supabase = await createClient()
-	const { data } = await supabase.auth.getClaims()
 
-	const user = data?.claims.user_metadata
+	const { data: obtained } = await supabase
+	.from("obtained")
+	.select(`
+    id,
+    eureka_set,
+    category,
+    color
+	`)
+	.eq("user_id", user_id)
 
-	if (!user) return null
-	
-	const user_id = user.sub
-	
-  return user_id
+	return obtained as Obtained[]
 })

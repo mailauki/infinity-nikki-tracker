@@ -1,13 +1,12 @@
 "use client"
 
 import { createClient } from "@/lib/supabase/client"
-import { Tables } from "@/lib/types/supabase"
-import { EurekaSet } from "@/lib/types/types"
+import { EurekaSet, Obtained } from "@/lib/types/types"
 import { useEffect, useState } from "react"
 import EurekaTable from "./eureka-table"
 import EurekaHeader from "./eureka-header"
-
-type Obtained = Tables<'obtained'>
+import { updateEurekaSet } from "@/hooks/eureka-set"
+import ProgressCard from "./progress-card"
 
 const supabase = createClient()
 
@@ -20,15 +19,7 @@ export default function RealtimeEurekaSet({
 }) {
 	const [eurekaSet, setEurekaSet] = useState(serverEurekaSet)
 	const [obtained, setObtained] = useState(serverObtained)
-
-	function isObtained(slug: string) {
-		const splitSlug = slug.split("-")
-		const eureka = splitSlug[0].replace("_", " ")
-		const category = splitSlug[1]
-		const color = splitSlug[2]
-		
-		return obtained?.find((item) => item.eureka === eureka && item.color === color && item.category === category) ? true : false
-	}
+	const hasObtained = Object.keys(eurekaSet.eureka[0]).includes("obtained")
 	
 	useEffect(() => {
 		const obtainedChannel = supabase.channel('obtained-insert-channel')
@@ -47,38 +38,45 @@ export default function RealtimeEurekaSet({
 			}
 		)
 		.subscribe()
-
-		const updatedEurekaSet = Object.assign({
-			...eurekaSet,
-			obtained: eurekaSet.categories.map((category) => category.colors.map((color) => color.obtained).flat()).flat().filter((value) => value === true).length,
-			total: eurekaSet.categories.map((category) => category.colors.map((color) => color.obtained).flat()).flat().length,
-			categories: eurekaSet.categories.map((category) => Object.assign(
-				{
-					...category,
-					colors: category.colors.map((color) => Object.assign(
-						{
-							...color,
-							obtained: isObtained(`${eurekaSet.name.replace(" ", "_")}-${category.name}-${color.name}`)
-						}
-					))
-				}
-			))
-		}) as EurekaSet
-
-		setEurekaSet(updatedEurekaSet)
 		
 		return () => {
 			supabase.removeChannel(obtainedChannel)
 		}
+	}, [obtained])
+
+	useEffect(() => {
+		const updatedEurekaSet = updateEurekaSet({ eurekaSet, obtained })
+
+		setEurekaSet(updatedEurekaSet)
+
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [obtained])
 
 	return (
 		<>
 			<EurekaHeader eurekaSet={eurekaSet} variant="large" />
-			<EurekaTable
-				eurekaSet={eurekaSet!}
-			/>
+				{hasObtained && (
+					<div className="grid grid-cols-3 gap-4">
+					{eurekaSet.categories.map((category) => (
+						<ProgressCard
+							key={`${eurekaSet.name}-${category.name}`}
+							item={category}
+							eureka={eurekaSet.eureka}
+						/>
+					))}
+				</div>
+			)}
+			<div className="grid grid-cols-3 md:grid-cols-5 gap-4">
+				{eurekaSet.colors.map((color) => (
+					<ProgressCard
+						key={`${eurekaSet.name}-${color.name}`}
+						item={color}
+						imageSize={20}
+						eureka={eurekaSet.eureka}
+					/>
+				))}
+			</div>
+			<EurekaTable eurekaSet={eurekaSet} hasObtained={hasObtained} />
 		</>
 	)
 }

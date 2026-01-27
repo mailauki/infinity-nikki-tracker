@@ -1,8 +1,7 @@
 import { Suspense } from "react"
-import { getEurekaSet } from "@/lib/data"
-import EurekaHeader from "@/components/eureka-header"
-import EurekaTable from "@/components/eureka-table"
-import ProgressCard from "@/components/progress-card"
+import { getEurekaSet, getObtained } from "@/lib/data"
+import RealtimeEurekaSet from "@/components/realtime-eureka-set"
+import { getUserID } from "@/hooks/user"
 
 export async function generateStaticParams() {
   return [{ slug: 'hello-world' }]
@@ -26,33 +25,13 @@ export default async function EurekaSetPage({
 
 async function EurekaSet({ slug }: { slug: string }) {
 	const eurekaSet = await getEurekaSet(slug)
-	const hasObtained = Object.keys(eurekaSet.eureka[0]).includes("obtained")
+	const user_id = await getUserID()
+	const obtained = await getObtained(user_id!)
 
 	return (
-		<>
-			<EurekaHeader eurekaSet={eurekaSet} variant="large" />
-				{hasObtained && (
-					<div className="grid grid-cols-3 gap-4">
-					{eurekaSet.categories.map((category) => (
-						<ProgressCard
-							key={`${eurekaSet.name}-${category.name}`}
-							item={category}
-							eureka={eurekaSet.eureka}
-						/>
-					))}
-				</div>
-			)}
-			<div className="grid grid-cols-3 md:grid-cols-5 gap-4">
-				{eurekaSet.colors.map((color) => (
-					<ProgressCard
-						key={`${eurekaSet.name}-${color.name}`}
-						item={color}
-						imageSize={20}
-						eureka={eurekaSet.eureka}
-					/>
-				))}
-			</div>
-			<EurekaTable eurekaSet={eurekaSet} hasObtained={hasObtained} />
-		</>
+		<RealtimeEurekaSet
+			serverEurekaSet={eurekaSet}
+			serverObtained={obtained||[]}
+		/>
 	)
 }

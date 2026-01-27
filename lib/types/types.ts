@@ -8,8 +8,8 @@ export interface EurekaSet {
 	trial: string | null;
 	image_url: string;
 	eureka: Eureka[];
-	categories: Image[];
-	colors: Image[];
+	categories: Category[];
+	colors: Category[];
 }
 
 export interface Eureka {
@@ -27,7 +27,7 @@ export interface ObtainedCount {
 	total: number;
 }
 
-export interface Image {
+export interface Category {
 	name: string;
 	image_url: string | null;
 }
@@ -38,3 +38,27 @@ export interface Total {
 	eurekaSets?: EurekaSet[];
 }
 
+export interface Obtained {
+	id: number;
+	eureka_set: string | null;
+	category: string | null;
+	color: string | null;
+}
+
+export interface EurekaSets {
+	id: number;
+	slug: string | null;
+	name: string;
+	quality: number | null;
+	style: string | null;
+	labels: string | null;
+	trial: string | null;
+	eureka: {
+		id: number;
+		eureka_set: string | null;
+		color: string | null;
+		category: string | null;
+		image_url: string | null;
+		default: boolean;
+	}[];
+}

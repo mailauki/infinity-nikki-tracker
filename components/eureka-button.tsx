@@ -1,14 +1,14 @@
 import { handleObtained } from "@/app/(tracker)/eureka/actions";
 import { Button } from "@/components/ui/button";
-import { Eureka } from "@/lib/types/types";
-import { Check } from "lucide-react";
-import Image from "next/image"
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { Check } from "lucide-react";
+import { Eureka } from "@/lib/types/types";
+import Image from "next/image"
 
 export default function EurekaButton({
 	eureka, hasObtained,
-} : {
+}: {
 	eureka: Eureka,
 	hasObtained: boolean,
 }) {
