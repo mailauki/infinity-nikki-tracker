@@ -1,14 +1,10 @@
-"use client"
+'use client'
 
-import {
-  BadgeCheck,
-  ChevronsUpDown,
-} from "lucide-react"
+import { JwtPayload } from '@supabase/supabase-js'
+import { BadgeCheck, ChevronsUpDown } from 'lucide-react'
+import Link from 'next/link'
 
-import {
-  Avatar,
-  AvatarFallback,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,22 +13,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
-import { JwtPayload } from "@supabase/supabase-js"
-import Link from "next/link"
-import { LogoutButton } from "./logout-button"
+} from '@/components/ui/dropdown-menu'
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
 
-export function NavUser({
-  user,
-}: {
-  user: JwtPayload,
-}) {
+import { LogoutButton } from './logout-button'
+
+export function NavUser({ user }: { user: JwtPayload }) {
   const { isMobile } = useSidebar()
 
   return (
@@ -57,7 +43,7 @@ export function NavUser({
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
+            side={isMobile ? 'bottom' : 'right'}
             align="end"
             sideOffset={4}
           >
@@ -74,16 +60,16 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuItem asChild>
-								<Link href="/protected">
-									<BadgeCheck />
-									Account
-								</Link>
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
+            <DropdownMenuGroup>
+              <DropdownMenuItem asChild>
+                <Link href="/protected">
+                  <BadgeCheck />
+                  Account
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
-						<LogoutButton />
+            <LogoutButton />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

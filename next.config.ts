@@ -1,5 +1,6 @@
-import type { NextConfig } from "next";
-import path from "path";
+import path from 'path'
+
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
@@ -7,7 +8,7 @@ const nextConfig: NextConfig = {
     root: path.join(__dirname, '..'), // Sets the root to the parent directory
   },
   images: {
-		remotePatterns: [
+    remotePatterns: [
       {
         protocol: 'https',
         hostname: 'static.wikia.nocookie.net',
@@ -16,6 +17,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-};
+}
 
-export default nextConfig;
+export default nextConfig
