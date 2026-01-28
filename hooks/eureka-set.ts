@@ -21,14 +21,22 @@ export function createEurekaSet({
   return eureka
 }
 
-export function updateEurekaSet({ eurekaSet, obtained }: { eurekaSet: EurekaSet; obtained: Obtained[] | null }) {
+export function updateEurekaSet({
+  eurekaSet,
+  obtained,
+}: {
+  eurekaSet: EurekaSet
+  obtained: Obtained[] | null
+}) {
   const eurekaWithObtained = {
     ...eurekaSet,
     eureka: eurekaSet?.eureka.map((item) => ({
       ...item,
       obtained: !!obtained?.find(
         (value) =>
-          item.eureka_set === value.eureka_set && item.category === value.category && item.color === value.color
+          item.eureka_set === value.eureka_set &&
+          item.category === value.category &&
+          item.color === value.color
       ),
     })) as Eureka[],
   } as EurekaSet

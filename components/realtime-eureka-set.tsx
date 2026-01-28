@@ -21,17 +21,25 @@ export default function RealtimeEurekaSet({
 }) {
   const [eurekaSet, setEurekaSet] = useState(serverEurekaSet)
   const [obtained, setObtained] = useState(serverObtained)
-  const hasObtained = Object.keys(eurekaSet.eureka[0]).includes('obtained')
+  const hasObtained = Object.keys(eurekaSet.eureka[0]).includes('obtained') // used to determine if user is logged in or not
 
   useEffect(() => {
     const obtainedChannel = supabase
       .channel('obtained-insert-channel')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'obtained' }, (payload) => {
-        setObtained([...obtained, payload.new as Obtained])
-      })
-      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'obtained' }, (payload) => {
-        setObtained(obtained.filter((item) => item.id !== payload.old.id))
-      })
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'obtained' },
+        (payload) => {
+          setObtained([...obtained, payload.new as Obtained])
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'obtained' },
+        (payload) => {
+          setObtained(obtained.filter((item) => item.id !== payload.old.id))
+        }
+      )
       .subscribe()
 
     return () => {
@@ -53,16 +61,25 @@ export default function RealtimeEurekaSet({
       {hasObtained && (
         <div className="grid grid-cols-3 gap-4">
           {eurekaSet.categories.map((category) => (
-            <ProgressCard key={`${eurekaSet.name}-${category.name}`} item={category} eureka={eurekaSet.eureka} />
+            <ProgressCard
+              key={`${eurekaSet.name}-${category.name}`}
+              item={category}
+              eureka={eurekaSet.eureka}
+            />
           ))}
         </div>
       )}
       <div className="grid grid-cols-3 gap-4 md:grid-cols-5">
         {eurekaSet.colors.map((color) => (
-          <ProgressCard key={`${eurekaSet.name}-${color.name}`} item={color} imageSize={20} eureka={eurekaSet.eureka} />
+          <ProgressCard
+            key={`${eurekaSet.name}-${color.name}`}
+            item={color}
+            imageSize={20}
+            eureka={eurekaSet.eureka}
+          />
         ))}
       </div>
-      <EurekaTable eurekaSet={eurekaSet} hasObtained={hasObtained} />
+      <EurekaTable eurekaSet={eurekaSet} />
     </>
   )
 }

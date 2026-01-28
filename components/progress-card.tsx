@@ -1,7 +1,15 @@
 import Image from 'next/image'
 
 import { Badge } from '@/components/ui/badge'
-import { Item, ItemContent, ItemDescription, ItemFooter, ItemHeader, ItemMedia, ItemTitle } from '@/components/ui/item'
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemHeader,
+  ItemMedia,
+  ItemTitle,
+} from '@/components/ui/item'
 import { Progress } from '@/components/ui/progress'
 import { count, percent } from '@/hooks/count'
 import { Eureka, Total } from '@/lib/types/types'
@@ -15,7 +23,7 @@ export default function ProgressCard({
   imageSize?: number
   eureka: Eureka[]
 }) {
-  const hasObtained = Object.keys(eureka[0]).includes('obtained')
+  const hasObtained = Object.keys(eureka[0]).includes('obtained') // used to determine if user is logged in or not
   const obtainedCount = count(eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
@@ -24,8 +32,10 @@ export default function ProgressCard({
       key={item.name}
       variant="outline"
       className={`${
-        item.name === 'Iridescent' ? 'order-last col-start-3 row-start-1 row-end-3 md:col-start-5 md:row-end-1' : ''
-      } relative flex-col justify-between rounded-xl`}
+        item.name === 'Iridescent'
+          ? 'order-last col-start-3 row-start-1 row-end-3 md:col-start-5 md:row-end-1'
+          : ''
+      } relative w-full flex-col justify-between rounded-xl text-left`}
     >
       {item.image_url && (
         <ItemHeader className="flex-0 w-full">
@@ -35,7 +45,9 @@ export default function ProgressCard({
               alt={item.name!}
               width={imageSize}
               height={imageSize}
-              className={imageSize === 60 ? 'brightness-[0.4] grayscale dark:filter-none' : 'filter-none'}
+              className={
+                imageSize === 60 ? 'brightness-[0.4] grayscale dark:filter-none' : 'filter-none'
+              }
             />
           </ItemMedia>
         </ItemHeader>

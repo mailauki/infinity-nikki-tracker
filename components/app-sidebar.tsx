@@ -35,6 +35,10 @@ const data = {
           title: 'Trials',
           url: '/eureka/trials',
         },
+        {
+          title: 'Missing',
+          url: '/eureka/missing',
+        },
       ],
     },
   ],

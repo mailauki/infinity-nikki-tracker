@@ -54,7 +54,12 @@ const ThemeSwitcher = () => {
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-content" side={isMobile ? 'bottom' : 'right'} align="end" sideOffset={4}>
+          <DropdownMenuContent
+            className="w-content"
+            side={isMobile ? 'bottom' : 'right'}
+            align="end"
+            sideOffset={4}
+          >
             <DropdownMenuRadioGroup value={theme} onValueChange={(e) => setTheme(e)}>
               <DropdownMenuRadioItem className="flex gap-2" value="light">
                 <Sun size={ICON_SIZE} className="text-muted-foreground" /> <span>Light</span>

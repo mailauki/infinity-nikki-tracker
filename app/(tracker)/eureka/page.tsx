@@ -15,8 +15,9 @@ export default async function EurekaSetsPage() {
 async function EurekaSets() {
   const eurekaSets = await getEurekaSets()
   const categories = [...new Set(eurekaSets.flatMap((eurekaSet) => eurekaSet.categories))]
+  // const colors = [...new Set(eurekaSets.flatMap((eurekaSet) => eurekaSet.colors))]
   const eureka = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka)
-  const hasObtained = Object.keys(eureka[0]).includes('obtained')
+  const hasObtained = Object.keys(eureka[0]).includes('obtained') // used to determine if user is logged in or not
 
   return (
     <>

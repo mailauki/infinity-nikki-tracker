@@ -67,7 +67,9 @@ export const getEurekaSets = cache(async () => {
       ...item,
       obtained: !!obtained?.find(
         (value) =>
-          item.eureka_set === value.eureka_set && item.category === value.category && item.color === value.color
+          item.eureka_set === value.eureka_set &&
+          item.category === value.category &&
+          item.color === value.color
       ),
     })) as Eureka[],
   })) as EurekaSet[]
@@ -119,7 +121,10 @@ export const getEurekaSet = cache(async (slug: string) => {
 export const getTrials = cache(async () => {
   const supabase = await createClient()
 
-  const { data: trials } = await supabase.from('trials').select('name, image_url').order('id', { ascending: true })
+  const { data: trials } = await supabase
+    .from('trials')
+    .select('name, image_url')
+    .order('id', { ascending: true })
 
   return trials
 })

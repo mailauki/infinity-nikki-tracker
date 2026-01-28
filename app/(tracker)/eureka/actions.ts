@@ -33,7 +33,11 @@ export async function handleObtained(slug: string) {
   )
 
   if (isObtained) {
-    const { error } = await supabase.from('obtained').delete().eq('user_id', user_id).eq('id', isObtained!.id)
+    const { error } = await supabase
+      .from('obtained')
+      .delete()
+      .eq('user_id', user_id)
+      .eq('id', isObtained!.id)
     if (error) console.log(error)
   } else {
     const { data, error } = await supabase.from('obtained').insert([addObtained]).select(`

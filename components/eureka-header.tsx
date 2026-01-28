@@ -1,7 +1,15 @@
 import Image from 'next/image'
 
 import { Badge } from '@/components/ui/badge'
-import { Item, ItemContent, ItemDescription, ItemFooter, ItemHeader, ItemMedia, ItemTitle } from '@/components/ui/item'
+import {
+  Item,
+  ItemContent,
+  ItemDescription,
+  ItemFooter,
+  ItemHeader,
+  ItemMedia,
+  ItemTitle,
+} from '@/components/ui/item'
 import { count, percent } from '@/hooks/count'
 import { EurekaSet } from '@/lib/types/types'
 
@@ -16,18 +24,20 @@ export default function EurekaHeader({
   eurekaSet: EurekaSet
   variant?: 'default' | 'large'
 }) {
-  const hasObtained = Object.keys(eurekaSet.eureka[0]).includes('obtained')
   const obtainedCount = count(eurekaSet.eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
+  const hasObtained = Object.keys(eurekaSet.eureka[0]).includes('obtained') // used to determine if user is logged in or not
 
   return (
     <Item className="relative w-full">
       <ItemHeader>
         <ItemMedia>
-          {eurekaSet.image_url && <Image src={eurekaSet.image_url} alt={eurekaSet.name} width={100} height={100} />}
+          {eurekaSet.image_url && (
+            <Image src={eurekaSet.image_url} alt={eurekaSet.name} width={100} height={100} />
+          )}
         </ItemMedia>
       </ItemHeader>
-      {variant == 'large' ? (
+      {variant === 'large' ? (
         <>
           <ItemContent>
             <ItemTitle>{eurekaSet.name}</ItemTitle>

@@ -6,7 +6,13 @@ import { usePathname } from 'next/navigation'
 import { Separator } from '@/components/ui/separator'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from './ui/breadcrumb'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from './ui/breadcrumb'
 
 export function SiteHeader() {
   const pathname = usePathname()
@@ -28,7 +34,9 @@ export function SiteHeader() {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
-              <BreadcrumbItem className="text-base font-medium capitalize">{slug.replace('-', ' ')}</BreadcrumbItem>
+              <BreadcrumbItem className="text-base font-medium capitalize">
+                {slug.replace('-', ' ')}
+              </BreadcrumbItem>
             </BreadcrumbList>
           ) : (
             <BreadcrumbList>

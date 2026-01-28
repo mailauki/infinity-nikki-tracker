@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Eureka } from '@/lib/types/types'
 
-export default function EurekaButton({ eureka, hasObtained }: { eureka: Eureka; hasObtained: boolean }) {
+export default function EurekaButton({ eureka }: { eureka: Eureka }) {
   const slugEurekaSet = eureka.eureka_set!.replace(' ', '_')
   const slug = `${slugEurekaSet}-${eureka.category}-${eureka.color}`
+  const hasObtained = Object.keys(eureka).includes('obtained') // used to determine if user is logged in or not
 
   return (
     <>
@@ -27,6 +28,9 @@ export default function EurekaButton({ eureka, hasObtained }: { eureka: Eureka; 
               {' • '}
               {eureka.color}
             </Badge>
+          </div>
+          <div className="absolute left-2 top-2">
+            <Badge variant="outline">{eureka.eureka_set}</Badge>
           </div>
           <div className="absolute right-2 top-2">
             {eureka.obtained === true && (

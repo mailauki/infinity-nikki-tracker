@@ -63,8 +63,8 @@ export function FetchDataSteps() {
           >
             Table Editor
           </a>{' '}
-          for your Supabase project to create a table and insert some example data. If you&apos;re stuck for creativity,
-          you can copy and paste the following into the{' '}
+          for your Supabase project to create a table and insert some example data. If you&apos;re
+          stuck for creativity, you can copy and paste the following into the{' '}
           <a
             href="https://supabase.com/dashboard/project/_/sql/new"
             className="text-foreground/80 font-bold hover:underline"
@@ -80,8 +80,8 @@ export function FetchDataSteps() {
 
       <TutorialStep title="Enable Row Level Security (RLS)">
         <p>
-          Supabase enables Row Level Security (RLS) by default. To query data from your <code>notes</code> table, you
-          need to add a policy. You can do this in the{' '}
+          Supabase enables Row Level Security (RLS) by default. To query data from your{' '}
+          <code>notes</code> table, you need to add a policy. You can do this in the{' '}
           <a
             href="https://supabase.com/dashboard/project/_/editor"
             className="text-foreground/80 font-bold hover:underline"
@@ -119,7 +119,8 @@ export function FetchDataSteps() {
 
       <TutorialStep title="Query Supabase data from Next.js">
         <p>
-          To create a Supabase client and query data from an Async Server Component, create a new page.tsx file at{' '}
+          To create a Supabase client and query data from an Async Server Component, create a new
+          page.tsx file at{' '}
           <span className="relative rounded border bg-muted px-[0.3rem] py-[0.2rem] font-mono text-xs font-medium text-secondary-foreground">
             /app/notes/page.tsx
           </span>{' '}
@@ -133,12 +134,18 @@ export function FetchDataSteps() {
       <TutorialStep title="Explore the Supabase UI Library">
         <p>
           Head over to the{' '}
-          <a href="https://supabase.com/ui" className="text-foreground/80 font-bold hover:underline">
+          <a
+            href="https://supabase.com/ui"
+            className="text-foreground/80 font-bold hover:underline"
+          >
             Supabase UI library
           </a>{' '}
-          and try installing some blocks. For example, you can install a Realtime Chat block by running:
+          and try installing some blocks. For example, you can install a Realtime Chat block by
+          running:
         </p>
-        <CodeBlock code={'npx shadcn@latest add https://supabase.com/ui/r/realtime-chat-nextjs.json'} />
+        <CodeBlock
+          code={'npx shadcn@latest add https://supabase.com/ui/r/realtime-chat-nextjs.json'}
+        />
       </TutorialStep>
 
       <TutorialStep title="Build in a weekend and scale to millions!">
