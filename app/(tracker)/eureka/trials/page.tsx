@@ -23,7 +23,7 @@ async function Trials() {
   })) as Total[]
 
   return (
-    <div className="grid grid-cols-1 gap-4 p-4 pb-16 md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {totalTrials?.map((trial) => (
         <div key={trial.name}>
           <ProgressCard

@@ -4,7 +4,7 @@ export function Hero() {
   return (
     <div className="flex flex-col items-center gap-16">
       <Image
-        src="https://static.wikia.nocookie.net/infinity-nikki/images/7/78/Infinity_Nikki_Key_Art.png/revision/latest/scale-to-width-down/1000?cb=20241206171432"
+        src="https://static.wikia.nocookie.net/infinity-nikki/images/7/78/Infinity_Nikki_Key_Art.png/revision/latest?cb=20241206171432"
         alt="Infinity Nikki Hero Image"
         width={0}
         height={0}

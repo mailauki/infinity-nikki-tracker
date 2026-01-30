@@ -40,17 +40,16 @@ export default function EurekaFilter({
           value={category}
           onValueChange={(value: CategoryFilter) => setCategory(value)}
         >
-          <div className="grid w-full grid-cols-3 gap-4 p-4">
+          <div className="grid w-full grid-cols-3 gap-4 pb-4">
             {categories.map((category) => (
               <ToggleGroupItem key={category.name} value={category.name} className="h-fit p-0">
-                {/* {category.name} */}
                 <ProgressCard key={category.name} item={category} eureka={eureka} />
               </ToggleGroupItem>
             ))}
           </div>
         </ToggleGroup>
       </div>
-      <div className="grid grid-cols-3 grid-rows-5 gap-4 p-4 pb-16">
+      <div className="grid grid-cols-2 grid-rows-5 gap-4 md:grid-cols-3">
         {filteredEureka.map((eureka) => (
           <EurekaButton key={eureka.id} eureka={eureka} />
         ))}

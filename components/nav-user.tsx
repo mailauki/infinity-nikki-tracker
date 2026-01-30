@@ -1,7 +1,7 @@
 'use client'
 
 import { JwtPayload } from '@supabase/supabase-js'
-import { BadgeCheck, ChevronsUpDown } from 'lucide-react'
+import { BadgeCheck, ChevronsUpDown, User } from 'lucide-react'
 import Link from 'next/link'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -37,7 +37,9 @@ export function NavUser({ user }: { user: JwtPayload }) {
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {user.email?.charAt(0).toUpperCase() || <User size={18} />}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 {/* <span className="truncate font-medium">{user.name}</span> */}
@@ -56,7 +58,7 @@ export function NavUser({ user }: { user: JwtPayload }) {
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{user.email?.charAt(0).toUpperCase() || <User size={18} />}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   {/* <span className="truncate font-medium">{user.name}</span> */}
@@ -67,7 +69,7 @@ export function NavUser({ user }: { user: JwtPayload }) {
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href="/protected">
+                <Link href="/account">
                   <BadgeCheck />
                   Account
                 </Link>

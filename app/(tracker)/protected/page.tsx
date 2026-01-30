@@ -2,7 +2,6 @@ import { InfoIcon } from 'lucide-react'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 
-import { FetchDataSteps } from '@/components/tutorial/fetch-data-steps'
 import { createClient } from '@/lib/supabase/server'
 
 async function UserDetails() {
@@ -32,10 +31,6 @@ export default function ProtectedPage() {
             <UserDetails />
           </Suspense>
         </pre>
-      </div>
-      <div>
-        <h2 className="mb-4 text-2xl font-bold">Next steps</h2>
-        <FetchDataSteps />
       </div>
     </div>
   )

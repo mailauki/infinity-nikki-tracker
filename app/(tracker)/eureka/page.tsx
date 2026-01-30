@@ -22,13 +22,13 @@ async function EurekaSets() {
   return (
     <>
       {hasObtained && (
-        <div className="grid grid-cols-3 gap-4 p-4">
+        <div className="grid grid-cols-3 gap-4 pb-4">
           {categories.map((category) => (
             <ProgressCard key={category.name} item={category} eureka={eureka} />
           ))}
         </div>
       )}
-      <div className="grid grid-cols-2 gap-4 p-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {eurekaSets?.map((eurekaSet) => (
           <EurekaSetCard key={eurekaSet.name} eurekaSet={eurekaSet} />
         ))}
