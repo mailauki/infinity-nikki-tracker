@@ -1,16 +1,22 @@
 import { Check } from 'lucide-react'
 import Image from 'next/image'
 
-import { handleObtained } from '@/app/(tracker)/eureka/actions'
+import { handleObtained } from '@/app/(main)/eureka/actions'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Eureka } from '@/lib/types/types'
 
-export default function EurekaButton({ eureka }: { eureka: Eureka }) {
+export default function EurekaButton({
+	eureka,
+	user
+}: {
+	eureka: Eureka
+	user: boolean
+}) {
   const slugEurekaSet = eureka.eureka_set!.replace(' ', '_')
   const slug = `${slugEurekaSet}-${eureka.category}-${eureka.color}`
-  const hasObtained = Object.keys(eureka).includes('obtained') // used to determine if user is logged in or not
+  // const hasObtained = Object.keys(eureka).includes('obtained') // used to determine if user is logged in or not
 
   return (
     <>
@@ -19,7 +25,7 @@ export default function EurekaButton({ eureka }: { eureka: Eureka }) {
           variant="ghost"
           onClick={() => handleObtained(slug)}
           className="relative h-full w-full"
-          disabled={!hasObtained}
+          disabled={!user}
         >
           {eureka.image_url && <Image src={eureka.image_url} alt={slug} width={100} height={100} />}
           <div className="absolute bottom-2 left-2">

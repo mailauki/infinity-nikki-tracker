@@ -20,13 +20,14 @@ import { Progress } from './ui/progress'
 export default function EurekaHeader({
   eurekaSet,
   variant = 'default',
+	user
 }: {
   eurekaSet: EurekaSet
   variant?: 'default' | 'large'
+	user: boolean
 }) {
   const obtainedCount = count(eurekaSet.eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
-  const hasObtained = Object.keys(eurekaSet.eureka[0]).includes('obtained') // used to determine if user is logged in or not
 
   return (
     <Item className="relative w-full">
@@ -54,7 +55,7 @@ export default function EurekaHeader({
           <QualityStars quality={eurekaSet.quality!} />
         </ItemContent>
       )}
-      {hasObtained && (
+      {user && (
         <ItemFooter className="flex-col">
           <div className="flex w-full flex-1 items-center justify-between gap-2">
             <ProgressBadge percentage={percentage} />

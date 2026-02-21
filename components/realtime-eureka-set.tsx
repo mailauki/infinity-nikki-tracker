@@ -15,13 +15,14 @@ const supabase = createClient()
 export default function RealtimeEurekaSet({
   serverEurekaSet,
   serverObtained,
+	user
 }: {
   serverEurekaSet: EurekaSet
   serverObtained: Obtained[]
+	user: boolean
 }) {
   const [eurekaSet, setEurekaSet] = useState(serverEurekaSet)
   const [obtained, setObtained] = useState(serverObtained)
-  const hasObtained = Object.keys(eurekaSet.eureka[0]).includes('obtained') // used to determine if user is logged in or not
 
   useEffect(() => {
     const obtainedChannel = supabase
@@ -57,8 +58,10 @@ export default function RealtimeEurekaSet({
 
   return (
     <>
-      <EurekaHeader eurekaSet={eurekaSet} variant="large" />
-      {hasObtained && (
+      <EurekaHeader eurekaSet={eurekaSet} variant="large" user={user} />
+      
+      {user && (
+				<>
         <div className="grid grid-cols-3 gap-4">
           {eurekaSet.categories.map((category) => (
             <ProgressCard
@@ -68,7 +71,6 @@ export default function RealtimeEurekaSet({
             />
           ))}
         </div>
-      )}
       <div className="grid grid-cols-3 gap-4 md:grid-cols-5">
         {eurekaSet.colors.map((color) => (
           <ProgressCard
@@ -79,7 +81,17 @@ export default function RealtimeEurekaSet({
           />
         ))}
       </div>
-      <EurekaTable eurekaSet={eurekaSet} />
+			</>
+      )}
+      <EurekaTable eurekaSet={eurekaSet} user={user} />
+			{!user && (
+				<div className="mb-10 flex flex-col items-center">
+			<p className="max-w-sm text-center text-2xl">
+          Sign in or Sign up <br />
+          to track your missing Eureka
+        </p>
+				</div>
+			)}
     </>
   )
 }

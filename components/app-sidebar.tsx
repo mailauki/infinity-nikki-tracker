@@ -68,7 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 alt="Infifity Nikki Logo"
                 width={90}
                 height={40}
-                className="mx-2 mb-4 drop-shadow-md"
+                className="mx-2 mb-4 drop-shadow-md brightness-[0.4] grayscale dark:filter-none"
               />
             </Link>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
@@ -81,7 +81,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter className="pb-16">
+      <SidebarFooter className="pb-4">
         <ThemeSwitcher />
         <React.Suspense>
           <AuthButton />
