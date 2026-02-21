@@ -29,7 +29,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 ### Route Structure
 
 - `app/layout.tsx` — Root layout with `ThemeProvider` (next-themes, Geist font)
-- `app/(tracker)/` — Main app group with sidebar layout (`AppSidebar` + `SiteHeader`)
+- `app/(main)/` — Main app group with sidebar layout (`AppSidebar` + `SiteHeader`)
   - `page.tsx` — Dashboard/home
   - `eureka/page.tsx` — Grid of all Eureka Sets with overall progress
   - `eureka/[slug]/page.tsx` — Individual Eureka Set detail with realtime updates
@@ -47,13 +47,13 @@ Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass t
 2. `hooks/user.ts` — `getUserID()` reads auth claims server-side
 3. `hooks/eureka-set.ts` — Pure functions `createEurekaSet()` and `updateEurekaSet()` for transforming data
 4. `hooks/count.ts` — `count()` and `percent()` utilities for progress calculation
-5. `app/(tracker)/eureka/actions.ts` — Client-side `handleObtained(slug)` toggles obtained state in Supabase
+5. `app/(main)/eureka/actions.ts` — Client-side `handleObtained(slug)` toggles obtained state in Supabase
 
 ### Realtime Pattern
 
 `components/realtime-eureka-set.tsx` is the canonical realtime pattern: server fetches initial data → passes as props → client subscribes to `postgres_changes` on the `obtained` table → local state updates trigger `updateEurekaSet()` recalculation.
 
-The `hasObtained` check (`Object.keys(eureka[0]).includes('obtained')`) is used throughout to distinguish logged-in vs. anonymous users (anonymous data won't have the `obtained` key).
+Auth state is propagated as an explicit `user: boolean` prop from Server Components down through `RealtimeEurekaSet` → `EurekaHeader`, `EurekaTable`, and `EurekaButton`. The slug detail page sets this via `!!(user_id)`.
 
 ### Supabase Clients
 
