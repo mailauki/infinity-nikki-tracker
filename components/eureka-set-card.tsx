@@ -6,7 +6,13 @@ import { EurekaSet } from '@/lib/types/types'
 
 import EurekaHeader from './eureka-header'
 
-export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
+export default function EurekaSetCard({
+	eurekaSet,
+	user
+}: {
+	eurekaSet: EurekaSet
+	user: boolean
+}) {
   return (
     <Card>
       <Button
@@ -15,7 +21,7 @@ export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
         asChild
       >
         <Link href={`/eureka/${eurekaSet.slug}`}>
-          <EurekaHeader eurekaSet={eurekaSet} />
+          <EurekaHeader eurekaSet={eurekaSet} user={user} />
         </Link>
       </Button>
     </Card>
