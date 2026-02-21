@@ -2,6 +2,8 @@
 
 A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/), the cozy open-world fashion game. Track your Eureka outfit progress across sets, categories, colors, and trials — with real-time updates and per-user collection state.
 
+![Infinity Nikki Tracker screenshot](public/screenshot.png)
+
 ## Features
 
 - **Eureka Set Tracking** — Browse all Eureka sets and mark individual pieces as obtained
