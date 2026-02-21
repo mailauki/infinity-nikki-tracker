@@ -4,7 +4,7 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 
 ![Grid of Eureka sets showing outfit cards with name, style tags, and quality star ratings](public/screenshot.png)
 
-![Eureka set detail page for First Snow showing per-category and per-color collection progress cards and an item grid below](public/screenshot-detail.png)
+![Eureka set detail page for First Snow showing the item grid with category and color badges for unauthenticated users](public/screenshot-detail.png)
 
 ## Features
 
