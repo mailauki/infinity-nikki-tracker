@@ -16,7 +16,6 @@ async function Missing() {
   const eurekaSets = await getEurekaSets()
   const categories = [...new Set(eurekaSets.flatMap((eurekaSet) => eurekaSet.categories))]
   const eureka = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka)
-  const hasObtained = Object.keys(eureka[0]).includes('obtained') // used to determine if user is logged in or not
 	const user_id = await getUserID()
 	const user = !!(user_id!)
 
@@ -29,5 +28,5 @@ async function Missing() {
         </p>
       </div>
     )
-  return <EurekaFilter eureka={eureka} categories={categories} />
+  return <EurekaFilter eureka={eureka} categories={categories} user={user} />
 }

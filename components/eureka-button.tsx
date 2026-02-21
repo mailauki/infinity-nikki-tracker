@@ -16,7 +16,6 @@ export default function EurekaButton({
 }) {
   const slugEurekaSet = eureka.eureka_set!.replace(' ', '_')
   const slug = `${slugEurekaSet}-${eureka.category}-${eureka.color}`
-  // const hasObtained = Object.keys(eureka).includes('obtained') // used to determine if user is logged in or not
 
   return (
     <>

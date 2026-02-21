@@ -11,9 +11,11 @@ type EurekaFilter = 'Sets' | 'Eureka' | 'Missing'
 export default function EurekaFilter({
   eureka,
   categories,
+	user
 }: {
   eureka: Eureka[]
   categories: Category[]
+	user: boolean
 }) {
   const [category, setCategory] = useState<CategoryFilter>('')
   const [filteredEureka, setFilteredEureka] = useState<Eureka[]>(eureka)
@@ -51,7 +53,7 @@ export default function EurekaFilter({
       </div>
       <div className="grid grid-cols-2 grid-rows-5 gap-4 md:grid-cols-3">
         {filteredEureka.map((eureka) => (
-          <EurekaButton key={eureka.id} eureka={eureka} />
+          <EurekaButton key={eureka.id} eureka={eureka} user={user} />
         ))}
       </div>
     </>
