@@ -68,6 +68,7 @@ export default function RealtimeEurekaSet({
               key={`${eurekaSet.name}-${category.name}`}
               item={category}
               eureka={eurekaSet.eureka}
+              user={user}
             />
           ))}
         </div>
@@ -78,6 +79,7 @@ export default function RealtimeEurekaSet({
             item={color}
             imageSize={20}
             eureka={eurekaSet.eureka}
+            user={user}
           />
         ))}
       </div>

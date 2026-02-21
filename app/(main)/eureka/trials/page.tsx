@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 
 import EurekaSetCard from '@/components/eureka-set-card'
 import ProgressCard from '@/components/progress-card'
+import { getUserID } from '@/hooks/user'
 import { getEurekaSets, getTrials } from '@/lib/data'
 import { EurekaSet, Total } from '@/lib/types/types'
 
@@ -16,6 +17,8 @@ export default async function TrialsPage() {
 async function Trials() {
   const eurekaSets = await getEurekaSets()
   const trials = await getTrials()
+  const user_id = await getUserID()
+  const user = !!(user_id!)
 
   const totalTrials = trials?.map((trial) => ({
     ...trial,
@@ -31,10 +34,11 @@ async function Trials() {
             item={trial}
             imageSize={500}
             eureka={trial.eurekaSets!.flatMap((eurekaSet) => eurekaSet.eureka)}
+            user={user}
           />
           <div className="grid grid-cols-2 gap-4 pt-4">
             {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
-              <EurekaSetCard key={`${trial.name}-${eurekaSet.name}`} eurekaSet={eurekaSet} />
+              <EurekaSetCard key={`${trial.name}-${eurekaSet.name}`} eurekaSet={eurekaSet} user={user} />
             ))}
           </div>
         </div>

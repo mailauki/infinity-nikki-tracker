@@ -25,7 +25,7 @@ async function EurekaSets() {
       {user && (
         <div className="grid grid-cols-3 gap-4 pb-4">
           {categories.map((category) => (
-            <ProgressCard key={category.name} item={category} eureka={eureka} />
+            <ProgressCard key={category.name} item={category} eureka={eureka} user={user} />
           ))}
         </div>
       )}

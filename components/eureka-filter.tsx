@@ -45,7 +45,7 @@ export default function EurekaFilter({
           <div className="grid w-full grid-cols-3 gap-4 pb-4">
             {categories.map((category) => (
               <ToggleGroupItem key={category.name} value={category.name} className="h-fit p-0">
-                <ProgressCard key={category.name} item={category} eureka={eureka} />
+                <ProgressCard key={category.name} item={category} eureka={eureka} user={user} />
               </ToggleGroupItem>
             ))}
           </div>

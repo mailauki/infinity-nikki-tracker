@@ -18,12 +18,13 @@ export default function ProgressCard({
   item,
   imageSize = 60,
   eureka,
+  user,
 }: {
   item: Total
   imageSize?: number
   eureka: Eureka[]
+  user: boolean
 }) {
-  const hasObtained = Object.keys(eureka[0]).includes('obtained') // used to determine if user is logged in or not
   const obtainedCount = count(eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
@@ -54,15 +55,15 @@ export default function ProgressCard({
       )}
       <ItemContent className="flex-0 w-full grow">
         <ItemDescription>{item.name}</ItemDescription>
-        {hasObtained && <ItemTitle className="text-lg">{percentage}%</ItemTitle>}
+        {user && <ItemTitle className="text-lg">{percentage}%</ItemTitle>}
       </ItemContent>
-      {hasObtained && (
+      {user && (
         <ItemFooter className="flex-0 w-full">
           <Progress value={percentage} className="bg-muted" />
         </ItemFooter>
       )}
       <div className="absolute right-2 top-2">
-        {hasObtained && (
+        {user && (
           <Badge variant="outline">
             {obtainedCount.obtained}/{obtainedCount.total}
           </Badge>
