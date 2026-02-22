@@ -21,7 +21,7 @@ async function EurekaSets() {
 	const user = !!(user_id!)
 
   return (
-    <>
+		<>
       {user && (
         <div className="grid grid-cols-3 gap-4 pb-4">
           {categories.map((category) => (
@@ -33,7 +33,7 @@ async function EurekaSets() {
         {eurekaSets?.map((eurekaSet) => (
           <EurekaSetCard key={eurekaSet.name} eurekaSet={eurekaSet} user={user} />
         ))}
-      </div>
-    </>
+			</div>
+		</>
   )
 }
