@@ -30,9 +30,7 @@ export default function EurekaFilter({
 
     if (category === '') setFilteredEureka(filterMissing)
     else setFilteredEureka(filterMissingCategory)
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category])
+  }, [category, eureka])
 
   return (
     <>

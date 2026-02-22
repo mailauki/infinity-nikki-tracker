@@ -59,39 +59,38 @@ export default function RealtimeEurekaSet({
   return (
     <>
       <EurekaHeader eurekaSet={eurekaSet} variant="large" user={user} />
-      
       {user && (
 				<>
-        <div className="grid grid-cols-3 gap-4">
-          {eurekaSet.categories.map((category) => (
-            <ProgressCard
-              key={`${eurekaSet.name}-${category.name}`}
-              item={category}
-              eureka={eurekaSet.eureka}
-              user={user}
-            />
-          ))}
-        </div>
-      <div className="grid grid-cols-3 gap-4 md:grid-cols-5">
-        {eurekaSet.colors.map((color) => (
-          <ProgressCard
-            key={`${eurekaSet.name}-${color.name}`}
-            item={color}
-            imageSize={20}
-            eureka={eurekaSet.eureka}
-            user={user}
-          />
-        ))}
-      </div>
-			</>
+					<div className="grid grid-cols-3 gap-4">
+						{eurekaSet.categories.map((category) => (
+							<ProgressCard
+								key={`${eurekaSet.name}-${category.name}`}
+								item={category}
+								eureka={eurekaSet.eureka}
+								user={user}
+							/>
+						))}
+					</div>
+					<div className="grid grid-cols-3 gap-4 md:grid-cols-5">
+						{eurekaSet.colors.map((color) => (
+							<ProgressCard
+								key={`${eurekaSet.name}-${color.name}`}
+								item={color}
+								imageSize={20}
+								eureka={eurekaSet.eureka}
+								user={user}
+							/>
+						))}
+					</div>
+				</>
       )}
       <EurekaTable eurekaSet={eurekaSet} user={user} />
 			{!user && (
 				<div className="mb-10 flex flex-col items-center">
-			<p className="max-w-sm text-center text-2xl">
-          Sign in or Sign up <br />
-          to track your missing Eureka
-        </p>
+					<p className="max-w-sm text-center text-2xl">
+						Sign in or Sign up <br />
+						to track your missing Eureka
+					</p>
 				</div>
 			)}
     </>

@@ -75,7 +75,7 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 
 ```
 app/
-  (tracker)/          # Main app (sidebar layout)
+  (main)/          # Main app (sidebar layout)
     page.tsx          # Home / hero
     eureka/
       page.tsx        # All Eureka sets + overall progress
