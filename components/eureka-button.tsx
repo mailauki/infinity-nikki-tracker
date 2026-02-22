@@ -1,7 +1,7 @@
 import { Check } from 'lucide-react'
 import Image from 'next/image'
 
-import { handleObtained } from '@/app/(tracker)/eureka/actions'
+import { handleObtained } from '@/app/(main)/eureka/actions'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
