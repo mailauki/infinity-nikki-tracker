@@ -17,11 +17,11 @@ async function EurekaSets() {
   const eurekaSets = await getEurekaSets()
   const categories = [...new Set(eurekaSets.flatMap((eurekaSet) => eurekaSet.categories))]
   const eureka = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka)
-	const user_id = await getUserID()
-	const user = !!(user_id!)
+  const user_id = await getUserID()
+  const user = !!user_id!
 
   return (
-		<>
+    <>
       {user && (
         <div className="grid grid-cols-3 gap-4 pb-4">
           {categories.map((category) => (
@@ -33,7 +33,7 @@ async function EurekaSets() {
         {eurekaSets?.map((eurekaSet) => (
           <EurekaSetCard key={eurekaSet.name} eurekaSet={eurekaSet} user={user} />
         ))}
-			</div>
-		</>
+      </div>
+    </>
   )
 }

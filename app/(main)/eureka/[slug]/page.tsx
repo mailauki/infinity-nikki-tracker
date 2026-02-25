@@ -24,7 +24,9 @@ async function EurekaSet({ slug }: { slug: string }) {
   const eurekaSet = await getEurekaSet(slug)
   const user_id = await getUserID()
   const obtained = await getObtained(user_id!)
-	const user = !!(user_id!)
+  const user = !!user_id!
 
-  return <RealtimeEurekaSet serverEurekaSet={eurekaSet} serverObtained={obtained || []} user={user} />
+  return (
+    <RealtimeEurekaSet serverEurekaSet={eurekaSet} serverObtained={obtained || []} user={user} />
+  )
 }

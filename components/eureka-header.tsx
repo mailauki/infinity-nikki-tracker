@@ -20,11 +20,11 @@ import { Progress } from './ui/progress'
 export default function EurekaHeader({
   eurekaSet,
   variant = 'default',
-	user
+  user,
 }: {
   eurekaSet: EurekaSet
   variant?: 'default' | 'large'
-	user: boolean
+  user: boolean
 }) {
   const obtainedCount = count(eurekaSet.eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)

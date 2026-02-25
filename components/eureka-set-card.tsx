@@ -7,11 +7,11 @@ import { EurekaSet } from '@/lib/types/types'
 import EurekaHeader from './eureka-header'
 
 export default function EurekaSetCard({
-	eurekaSet,
-	user
+  eurekaSet,
+  user,
 }: {
-	eurekaSet: EurekaSet
-	user: boolean
+  eurekaSet: EurekaSet
+  user: boolean
 }) {
   return (
     <Card>

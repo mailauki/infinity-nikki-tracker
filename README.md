@@ -62,14 +62,14 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `yarn dev` | Start the development server |
-| `yarn build` | Build for production |
-| `yarn start` | Start the production server |
-| `yarn lint` | Run ESLint |
-| `yarn lint:fix` | Run ESLint with auto-fix |
-| `yarn format` | Format all files with Prettier |
+| Command         | Description                    |
+| --------------- | ------------------------------ |
+| `yarn dev`      | Start the development server   |
+| `yarn build`    | Build for production           |
+| `yarn start`    | Start the production server    |
+| `yarn lint`     | Run ESLint                     |
+| `yarn lint:fix` | Run ESLint with auto-fix       |
+| `yarn format`   | Format all files with Prettier |
 
 ## Project Structure
 
@@ -101,14 +101,14 @@ hooks/
 
 ## Database Schema
 
-| Table | Description |
-|---|---|
+| Table         | Description                                                     |
+| ------------- | --------------------------------------------------------------- |
 | `eureka_sets` | Outfit set metadata (name, slug, quality, style, labels, trial) |
-| `eureka` | Individual Eureka items (set FK, color, category, image_url) |
-| `categories` | Category lookup with images |
-| `colors` | Color lookup with images |
-| `obtained` | Per-user collection records |
-| `trials` | Trial lookup with images |
+| `eureka`      | Individual Eureka items (set FK, color, category, image_url)    |
+| `categories`  | Category lookup with images                                     |
+| `colors`      | Color lookup with images                                        |
+| `obtained`    | Per-user collection records                                     |
+| `trials`      | Trial lookup with images                                        |
 
 ## Authentication
 

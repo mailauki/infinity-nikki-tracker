@@ -10,11 +10,9 @@ export default function Layout({
   return (
     <SidebarProvider>
       <AppSidebar variant="inset" />
-      <SidebarInset className='overflow-clip'>
+      <SidebarInset className="overflow-clip">
         <SiteHeader />
-        <div className="h-[calc(100vh-64px)]">
-					{children}
-				</div>
+        <div className="h-[calc(100vh-64px)]">{children}</div>
       </SidebarInset>
     </SidebarProvider>
   )

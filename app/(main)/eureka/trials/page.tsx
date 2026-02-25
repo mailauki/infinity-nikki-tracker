@@ -18,7 +18,7 @@ async function Trials() {
   const eurekaSets = await getEurekaSets()
   const trials = await getTrials()
   const user_id = await getUserID()
-  const user = !!(user_id!)
+  const user = !!user_id!
 
   const totalTrials = trials?.map((trial) => ({
     ...trial,
@@ -38,7 +38,11 @@ async function Trials() {
           />
           <div className="grid grid-cols-2 gap-4 pt-4">
             {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
-              <EurekaSetCard key={`${trial.name}-${eurekaSet.name}`} eurekaSet={eurekaSet} user={user} />
+              <EurekaSetCard
+                key={`${trial.name}-${eurekaSet.name}`}
+                eurekaSet={eurekaSet}
+                user={user}
+              />
             ))}
           </div>
         </div>

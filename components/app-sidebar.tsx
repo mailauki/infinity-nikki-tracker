@@ -68,7 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 alt="Infifity Nikki Logo"
                 width={90}
                 height={40}
-                className="mx-2 mb-4 drop-shadow-md brightness-[0.4] grayscale dark:filter-none"
+                className="mx-2 mb-4 brightness-[0.4] drop-shadow-md grayscale dark:filter-none"
               />
             </Link>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">

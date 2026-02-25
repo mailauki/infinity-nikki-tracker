@@ -11,11 +11,11 @@ type EurekaFilter = 'Sets' | 'Eureka' | 'Missing'
 export default function EurekaFilter({
   eureka,
   categories,
-	user
+  user,
 }: {
   eureka: Eureka[]
   categories: Category[]
-	user: boolean
+  user: boolean
 }) {
   const [category, setCategory] = useState<CategoryFilter>('')
   const [filteredEureka, setFilteredEureka] = useState<Eureka[]>(eureka)

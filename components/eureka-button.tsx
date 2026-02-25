@@ -7,13 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Eureka } from '@/lib/types/types'
 
-export default function EurekaButton({
-	eureka,
-	user
-}: {
-	eureka: Eureka
-	user: boolean
-}) {
+export default function EurekaButton({ eureka, user }: { eureka: Eureka; user: boolean }) {
   const slugEurekaSet = eureka.eureka_set!.replace(' ', '_')
   const slug = `${slugEurekaSet}-${eureka.category}-${eureka.color}`
 

@@ -51,16 +51,15 @@ export function updateEureka({
   eureka: Eureka[]
   obtained: Obtained[] | null
 }) {
-  const eurekaWithObtained = 
-    eureka.map((item) => ({
-      ...item,
-      obtained: !!obtained?.find(
-        (value) =>
-          item.eureka_set === value.eureka_set &&
-          item.category === value.category &&
-          item.color === value.color
-      ),
-    })) as Eureka[]
+  const eurekaWithObtained = eureka.map((item) => ({
+    ...item,
+    obtained: !!obtained?.find(
+      (value) =>
+        item.eureka_set === value.eureka_set &&
+        item.category === value.category &&
+        item.color === value.color
+    ),
+  })) as Eureka[]
 
   return eurekaWithObtained
 }
