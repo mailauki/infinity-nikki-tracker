@@ -1,10 +1,9 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Input } from './ui/input'
 import { Button } from './ui/button'
-import { Camera } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import AvatarPreview from './avatar-preview'
 
 export default function AvatarUpload({
   uid,
@@ -16,26 +15,7 @@ export default function AvatarUpload({
   onUpload: (url: string) => void
 }) {
   const supabase = createClient()
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(url)
   const [uploading, setUploading] = useState(false)
-
-  useEffect(() => {
-    async function downloadImage(path: string) {
-      try {
-        const { data, error } = await supabase.storage.from('avatars').download(path)
-        if (error) {
-          throw error
-        }
-
-        const url = URL.createObjectURL(data)
-        setAvatarUrl(url)
-      } catch (error) {
-        console.log('Error downloading image: ', error)
-      }
-    }
-
-    if (url) downloadImage(url)
-  }, [url, supabase])
 
   const uploadAvatar: React.ChangeEventHandler<HTMLInputElement> = async (event) => {
     try {
@@ -58,7 +38,7 @@ export default function AvatarUpload({
       onUpload(filePath)
     } catch (error) {
       alert('Error uploading avatar!')
-			console.log(error)
+      console.log(error)
     } finally {
       setUploading(false)
     }
@@ -66,14 +46,7 @@ export default function AvatarUpload({
 
   return (
     <div>
-      <Avatar className="my-2 size-40 rounded-lg">
-        <AvatarImage src={avatarUrl!} alt="Avatar" />
-        <AvatarFallback className="rounded-lg">
-          <div className="flex h-full w-full flex-col items-center justify-center bg-card">
-            <Camera className="size-6 text-foreground" />
-          </div>
-        </AvatarFallback>
-      </Avatar>
+      <AvatarPreview url={url} size="large" />
       <label htmlFor="avatar">
         <Input
           className="hidden"
@@ -83,10 +56,10 @@ export default function AvatarUpload({
           onChange={uploadAvatar}
           disabled={uploading}
         />
-        <Button asChild className="w-40">
+        <Button asChild className="my-2 w-40">
           <label htmlFor="avatar">{uploading ? 'Uploading...' : 'Upload Avatar'}</label>
         </Button>
       </label>
-</div>
+    </div>
   )
 }

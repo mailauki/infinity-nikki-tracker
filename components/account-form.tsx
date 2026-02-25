@@ -37,7 +37,7 @@ export default function AccountForm({ user }: { user: User | null }) {
       }
     } catch (error) {
       alert('Error loading user data!')
-			console.log(error)
+      console.log(error)
     } finally {
       setLoading(false)
     }
@@ -69,14 +69,14 @@ export default function AccountForm({ user }: { user: User | null }) {
       alert('Profile updated!')
     } catch (error) {
       alert('Error updating the data!')
-			console.log(error)
+      console.log(error)
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-sm flex-col gap-2 px-2">
+    <div className="mx-auto w-full max-w-sm px-2">
       <div className="mb-4 flex w-full flex-wrap justify-between gap-4">
         <AvatarUpload
           uid={user?.id ?? null}
@@ -96,7 +96,8 @@ export default function AccountForm({ user }: { user: User | null }) {
           </form>
         </div>
       </div>
-      <form>
+
+      <form className="flex flex-col gap-4">
         <Field data-disabled>
           <FieldLabel htmlFor="email">Email</FieldLabel>
           <Input id="email" type="email" placeholder="Email" value={user?.email} disabled />
