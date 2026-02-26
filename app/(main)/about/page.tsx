@@ -166,11 +166,18 @@ export default function AboutPage() {
           </a>
           .
         </p>
-        <Button asChild className="w-fit font-semibold" variant="default">
-          <a href="https://patreon.com/mailauki" target="_blank" rel="noreferrer">
-            Support on Patreon
-          </a>
-        </Button>
+        <div className="flex gap-2">
+          <Button asChild className="w-fit font-semibold" variant="default">
+            <a href="https://patreon.com/mailauki" target="_blank" rel="noreferrer">
+              Support on Patreon
+            </a>
+          </Button>
+          <Button asChild className="w-fit font-semibold" variant="outline">
+            <a href="https://buymeacoffee.com/mailauki" target="_blank" rel="noreferrer">
+              Buy Me a Coffee
+            </a>
+          </Button>
+        </div>
       </section>
       <p className="text-muted-foreground/60 max-w-2xl text-xs">
         &copy; 2026 mailauki. Not affiliated with Infold Games or Infinity Nikki.
