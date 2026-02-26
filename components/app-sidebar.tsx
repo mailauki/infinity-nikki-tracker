@@ -1,4 +1,4 @@
-import { ExternalLinkIcon } from 'lucide-react'
+import { ExternalLinkIcon, InfoIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import * as React from 'react'
@@ -40,6 +40,11 @@ const data = {
           url: '/eureka/missing',
         },
       ],
+    },
+    {
+      title: 'About',
+      url: '/about',
+      icon: InfoIcon,
     },
   ],
   navSecondary: [
