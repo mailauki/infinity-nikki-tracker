@@ -86,6 +86,47 @@ export default function AboutPage() {
         </ul>
       </section>
       <section className="flex max-w-2xl flex-col gap-3">
+        <h2 className="text-lg font-semibold">Collaborate</h2>
+        <p className="text-muted-foreground">
+          This project is open source. Contributions are welcome — whether it&apos;s fixing a bug,
+          improving the UI, or adding new data.
+        </p>
+        <ul className="text-muted-foreground flex flex-col gap-2 list-disc pl-5">
+          <li>
+            <a
+              href="https://github.com/mailauki/infinity-nikki-tracker"
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-4"
+            >
+              View the source on GitHub
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://github.com/mailauki/infinity-nikki-tracker/issues"
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-4"
+            >
+              Open an issue
+            </a>{' '}
+            for bugs or feature requests
+          </li>
+          <li>
+            <a
+              href="https://github.com/mailauki/infinity-nikki-tracker/pulls"
+              target="_blank"
+              rel="noreferrer"
+              className="underline underline-offset-4"
+            >
+              Submit a pull request
+            </a>
+          </li>
+        </ul>
+      </section>
+
+      <section className="flex max-w-2xl flex-col gap-3">
         <h2 className="text-lg font-semibold">Feedback &amp; Support</h2>
         <p className="text-muted-foreground">
           Found a bug or have a suggestion? Reach out via email —{' '}
