@@ -55,7 +55,7 @@ export function NavMain({
           {items.map((item) => (
             <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={item.title}>
+                <SidebarMenuButton asChild tooltip={item.title} size="lg">
                   <Link href={item.url}>
                     {item.icon && <item.icon />}
                     {item.image && (
@@ -67,7 +67,7 @@ export function NavMain({
                         className="brightness-[0.4] grayscale dark:filter-none"
                       />
                     )}
-                    <span>{item.title}</span>
+                    <span className="font-medium">{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
                 {item.items?.length ? (
