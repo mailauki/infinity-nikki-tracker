@@ -93,6 +93,14 @@ export default function AboutPage() {
           </a>
           .
         </p>
+        <a
+          href="https://patreon.com/mailauki"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex w-fit items-center gap-2 rounded-md bg-[#FF424D] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+        >
+          Support on Patreon
+        </a>
       </section>
     </div>
   )
