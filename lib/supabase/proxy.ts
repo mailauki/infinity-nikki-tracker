@@ -41,6 +41,7 @@ export async function updateSession(request: NextRequest) {
   if (
     request.nextUrl.pathname !== '/' &&
     !request.nextUrl.pathname.startsWith('/eureka') &&
+    !request.nextUrl.pathname.startsWith('/about') &&
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&
     !request.nextUrl.pathname.startsWith('/auth')
