@@ -124,6 +124,34 @@ export default function AboutPage() {
             </a>
           </li>
         </ul>
+        <p className="text-muted-foreground">
+          The backend runs on{' '}
+          <a
+            href="https://supabase.com"
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-4"
+          >
+            Supabase
+          </a>
+          . To run the project locally you&apos;ll need your own Supabase project and a{' '}
+          <code className="bg-muted rounded px-1 py-0.5 text-xs">.env.local</code> file with{' '}
+          <code className="bg-muted rounded px-1 py-0.5 text-xs">NEXT_PUBLIC_SUPABASE_URL</code>{' '}
+          and{' '}
+          <code className="bg-muted rounded px-1 py-0.5 text-xs">
+            NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+          </code>
+          . Both values are available in your{' '}
+          <a
+            href="https://supabase.com/dashboard/project/_?showConnect=true"
+            target="_blank"
+            rel="noreferrer"
+            className="underline underline-offset-4"
+          >
+            Supabase project&apos;s API settings
+          </a>
+          .
+        </p>
       </section>
 
       <section className="flex max-w-2xl flex-col gap-3">
