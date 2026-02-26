@@ -1,4 +1,4 @@
-import { ExternalLinkIcon, InfoIcon } from 'lucide-react'
+import { InfoIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import * as React from 'react'
@@ -67,7 +67,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               />
             </Link>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <Link href="/" className="hover:underline">Infinity Nikki Tracker</Link>
+              <Link href="/" className="hover:underline">
+                Infinity Nikki Tracker
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -81,9 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <React.Suspense>
           <AuthButton />
         </React.Suspense>
-        <p className="text-muted-foreground/50 pt-4 px-2 text-xs">
-          &copy; 2026 mailauki
-        </p>
+        <p className="text-muted-foreground/50 px-2 pt-4 text-xs">&copy; 2026 mailauki</p>
       </SidebarFooter>
     </Sidebar>
   )

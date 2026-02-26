@@ -3,13 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 
-export default function AvatarPreview({
-  size,
-  url,
-}: {
-  size?: 'large'
-  url: string | null
-}) {
+export default function AvatarPreview({ size, url }: { size?: 'large'; url: string | null }) {
   const supabase = createClient()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(url)
 

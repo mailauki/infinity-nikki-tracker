@@ -3,7 +3,7 @@ import Link from 'next/link'
 
 export default function AboutPage() {
   return (
-    <div className="flex w-full flex-1 flex-col gap-8 px-6 py-8">
+    <div className="flex w-full flex-1 flex-col gap-8 px-6 pb-8">
       <section className="flex max-w-2xl flex-col gap-3">
         <h1 className="text-3xl !leading-tight md:text-4xl">About</h1>
         <p className="text-muted-foreground">
@@ -23,7 +23,7 @@ export default function AboutPage() {
 
       <section className="flex max-w-2xl flex-col gap-3">
         <h2 className="text-lg font-semibold">How to use</h2>
-        <ol className="text-muted-foreground flex flex-col gap-2 list-decimal pl-5">
+        <ol className="flex list-decimal flex-col gap-2 pl-5 text-muted-foreground">
           <li>
             Browse all Eureka sets from the{' '}
             <Link href="/eureka" className="underline underline-offset-4">
@@ -52,7 +52,7 @@ export default function AboutPage() {
 
       <section className="flex max-w-2xl flex-col gap-3">
         <h2 className="text-lg font-semibold">Links &amp; Resources</h2>
-        <ul className="text-muted-foreground flex flex-col gap-2 list-disc pl-5">
+        <ul className="flex list-disc flex-col gap-2 pl-5 text-muted-foreground">
           <li>
             <a
               href="https://infinity-nikki.fandom.com/"
@@ -88,7 +88,7 @@ export default function AboutPage() {
       <section className="flex max-w-2xl flex-col gap-3">
         <h2 className="text-lg font-semibold">Roadmap</h2>
         <p className="text-muted-foreground">Planned features and improvements:</p>
-        <ul className="text-muted-foreground flex flex-col gap-2 list-disc pl-5">
+        <ul className="flex list-disc flex-col gap-2 pl-5 text-muted-foreground">
           <li>More outfit types — expand tracking beyond Eureka sets</li>
           <li>Item search — search across all items globally</li>
           <li>Admin dashboard — manage backend data directly from the frontend</li>
@@ -101,7 +101,7 @@ export default function AboutPage() {
           This project is open source. Contributions are welcome — whether it&apos;s fixing a bug,
           improving the UI, or adding new data.
         </p>
-        <ul className="text-muted-foreground flex flex-col gap-2 list-disc pl-5">
+        <ul className="flex list-disc flex-col gap-2 pl-5 text-muted-foreground">
           <li>
             <a
               href="https://github.com/mailauki/infinity-nikki-tracker"
@@ -166,22 +166,14 @@ export default function AboutPage() {
           </a>
           .
         </p>
-				<Button asChild
-				className='w-fit font-semibold'
-            variant="default"
-          >
-            <a
-          href="https://patreon.com/mailauki"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Support on Patreon
-        </a>
-          </Button>
+        <Button asChild className="w-fit font-semibold" variant="default">
+          <a href="https://patreon.com/mailauki" target="_blank" rel="noreferrer">
+            Support on Patreon
+          </a>
+        </Button>
       </section>
       <p className="text-muted-foreground/60 max-w-2xl text-xs">
-        &copy; 2026 mailauki. Not affiliated with Infold Games or Infinity
-        Nikki.
+        &copy; 2026 mailauki. Not affiliated with Infold Games or Infinity Nikki.
       </p>
     </div>
   )
