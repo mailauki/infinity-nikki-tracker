@@ -84,6 +84,16 @@ export default function AboutPage() {
           </li>
         </ul>
       </section>
+      <section className="flex max-w-2xl flex-col gap-3">
+        <h2 className="text-lg font-semibold">Feedback &amp; Support</h2>
+        <p className="text-muted-foreground">
+          Found a bug or have a suggestion? Reach out via email —{' '}
+          <a href="mailto:mailauki@gmail.com" className="underline underline-offset-4">
+            mailauki@gmail.com
+          </a>
+          .
+        </p>
+      </section>
     </div>
   )
 }
