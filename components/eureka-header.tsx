@@ -59,7 +59,7 @@ export default function EurekaHeader({
         <ItemFooter className="flex-col">
           <div className="flex w-full flex-1 items-center justify-between gap-2">
             <ProgressBadge percentage={percentage} />
-            <ItemTitle className="text-2xl">{percentage}%</ItemTitle>
+            <ItemTitle className="text-xl">{percentage}%</ItemTitle>
           </div>
           <Progress value={percentage} className="bg-muted" />
         </ItemFooter>

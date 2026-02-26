@@ -180,7 +180,7 @@ export default function AboutPage() {
           </Button>
       </section>
       <p className="text-muted-foreground/60 max-w-2xl text-xs">
-        &copy; {new Date().getFullYear()} mailauki. Not affiliated with Infold Games or Infinity
+        &copy; 2026 mailauki. Not affiliated with Infold Games or Infinity
         Nikki.
       </p>
     </div>

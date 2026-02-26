@@ -34,28 +34,11 @@ export function NavMain({
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
-          {/* {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-							<SidebarMenuButton tooltip={item.title} className={item.image && "h-fit"} asChild>
-								<Link href={item.url}>
-									{item.icon && <item.icon />}
-									{item.image && <Image
-										src={item.image}
-										alt={item.title}
-										width={36}
-										height={36}
-										className="grayscale brightness-[0.4] dark:filter-none"
-									/> }
-									<span>{item.title}</span>
-								</Link>
-							</SidebarMenuButton>
-            </SidebarMenuItem>
-          ))} */}
           {items.map((item) => (
             <Collapsible key={item.title} asChild open>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip={item.title} size="lg">
-                  <Link href={item.url}>
+                  <Link href={item.url} className="hover:underline">
                     {item.icon && <item.icon />}
                     {item.image && (
                       <Image
@@ -75,7 +58,7 @@ export function NavMain({
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild size="lg">
-                            <Link href={subItem.url}>
+                            <Link href={subItem.url} className="hover:underline">
                               <span>{subItem.title}</span>
                             </Link>
                           </SidebarMenuSubButton>

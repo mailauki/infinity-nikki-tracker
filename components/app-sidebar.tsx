@@ -48,16 +48,6 @@ const data = {
       url: '/about',
       icon: InfoIcon,
     },
-    {
-      title: 'Infinity Nikki Wiki',
-      url: 'https://infinity-nikki.fandom.com/',
-      icon: ExternalLinkIcon,
-    },
-    {
-      title: 'Infinity Nikki Official Website',
-      url: 'https://infinitynikki.infoldgames.com/',
-      icon: ExternalLinkIcon,
-    },
   ],
 }
 
@@ -77,7 +67,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               />
             </Link>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <Link href="/">Infinity Nikki Tracker</Link>
+              <Link href="/" className="hover:underline">Infinity Nikki Tracker</Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -91,8 +81,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <React.Suspense>
           <AuthButton />
         </React.Suspense>
-        <p className="text-muted-foreground/50 px-2 text-xs">
-          &copy; {new Date().getFullYear()} mailauki
+        <p className="text-muted-foreground/50 pt-4 px-2 text-xs">
+          &copy; 2026 mailauki
         </p>
       </SidebarFooter>
     </Sidebar>
