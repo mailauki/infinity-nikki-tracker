@@ -514,7 +514,7 @@ const sidebarMenuButtonVariants = cva(
       size: {
         default: 'h-8 text-sm',
         sm: 'h-7 text-xs',
-        lg: 'h-12 text-sm group-data-[collapsible=icon]:!p-0',
+        lg: 'h-12 text-sm group-data-[collapsible=icon]:!p-0 [&>svg]:size-5',
       },
     },
     defaultVariants: {
@@ -709,7 +709,7 @@ const SidebarMenuSubButton = React.forwardRef<
         'data-[active=true]:bg-sidebar-accent data-[active=true]:text-sidebar-accent-foreground',
         size === 'sm' && 'text-xs',
         size === 'md' && 'text-sm',
-        size === 'lg' && 'h-10 text-sm',
+        size === 'lg' && 'h-10 text-sm [&>svg]:size-5',
         'group-data-[collapsible=icon]:hidden',
         className
       )}
