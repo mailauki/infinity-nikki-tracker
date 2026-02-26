@@ -41,13 +41,13 @@ const data = {
         },
       ],
     },
+  ],
+  navSecondary: [
     {
       title: 'About',
       url: '/about',
       icon: InfoIcon,
     },
-  ],
-  navSecondary: [
     {
       title: 'Infinity Nikki Wiki',
       url: 'https://infinity-nikki.fandom.com/',
@@ -91,6 +91,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <React.Suspense>
           <AuthButton />
         </React.Suspense>
+        <p className="text-muted-foreground/50 px-2 text-xs">
+          &copy; {new Date().getFullYear()} mailauki
+        </p>
       </SidebarFooter>
     </Sidebar>
   )

@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
 export default function AboutPage() {
@@ -88,20 +89,28 @@ export default function AboutPage() {
         <h2 className="text-lg font-semibold">Feedback &amp; Support</h2>
         <p className="text-muted-foreground">
           Found a bug or have a suggestion? Reach out via email —{' '}
-          <a href="mailto:mailauki@gmail.com" className="underline underline-offset-4">
-            mailauki@gmail.com
+          <a href="mailto:julie.ux.dev@gmail.com" className="underline underline-offset-4">
+            julie.ux.dev@gmail.com
           </a>
           .
         </p>
-        <a
+				<Button asChild
+				className='w-fit font-semibold'
+            variant="default"
+          >
+            <a
           href="https://patreon.com/mailauki"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex w-fit items-center gap-2 rounded-md bg-[#FF424D] px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
         >
           Support on Patreon
         </a>
+          </Button>
       </section>
+      <p className="text-muted-foreground/60 max-w-2xl text-xs">
+        &copy; {new Date().getFullYear()} mailauki. Not affiliated with Infold Games or Infinity
+        Nikki.
+      </p>
     </div>
   )
 }
