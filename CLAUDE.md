@@ -25,7 +25,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 
 ## Architecture
 
-**Infinity Nikki Tracker** — a Next.js 15 App Router app with Supabase backend for tracking in-game Eureka outfit collection progress.
+**Infinity Nikki Tracker** — a Next.js 16 App Router app with Supabase backend for tracking in-game Eureka outfit collection progress.
 
 ### Route Structure
 

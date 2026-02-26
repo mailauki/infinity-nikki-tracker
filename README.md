@@ -18,7 +18,7 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 
 ## Tech Stack
 
-- **[Next.js 15](https://nextjs.org)** — App Router, Server Components, Server Actions
+- **[Next.js 16](https://nextjs.org)** — App Router, Server Components, Server Actions
 - **[Supabase](https://supabase.com)** — Postgres database, Auth (cookie-based via `@supabase/ssr`), Realtime subscriptions
 - **[shadcn/ui](https://ui.shadcn.com)** — Component library built on Radix UI primitives
 - **[Tailwind CSS](https://tailwindcss.com)** — Styling
