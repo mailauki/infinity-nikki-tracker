@@ -5,7 +5,7 @@ export default function AboutPage() {
   return (
     <div className="flex w-full flex-1 flex-col gap-8 px-6 py-8">
       <section className="flex max-w-2xl flex-col gap-3">
-        <h1 className="text-2xl font-semibold">About</h1>
+        <h1 className="text-3xl !leading-tight md:text-4xl">About</h1>
         <p className="text-muted-foreground">
           Infinity Nikki Tracker is a collection tracker for{' '}
           <a
@@ -86,6 +86,16 @@ export default function AboutPage() {
         </ul>
       </section>
       <section className="flex max-w-2xl flex-col gap-3">
+        <h2 className="text-lg font-semibold">Roadmap</h2>
+        <p className="text-muted-foreground">Planned features and improvements:</p>
+        <ul className="text-muted-foreground flex flex-col gap-2 list-disc pl-5">
+          <li>More outfit types — expand tracking beyond Eureka sets</li>
+          <li>Item search — search across all items globally</li>
+          <li>Admin dashboard — manage backend data directly from the frontend</li>
+        </ul>
+      </section>
+
+      <section className="flex max-w-2xl flex-col gap-3">
         <h2 className="text-lg font-semibold">Collaborate</h2>
         <p className="text-muted-foreground">
           This project is open source. Contributions are welcome — whether it&apos;s fixing a bug,
@@ -134,16 +144,9 @@ export default function AboutPage() {
           >
             Supabase
           </a>
-          . To run the project locally you&apos;ll need your own Supabase project and a{' '}
-          <code className="bg-muted rounded px-1 py-0.5 text-xs">.env.local</code> file with{' '}
-          <code className="bg-muted rounded px-1 py-0.5 text-xs">NEXT_PUBLIC_SUPABASE_URL</code>{' '}
-          and{' '}
-          <code className="bg-muted rounded px-1 py-0.5 text-xs">
-            NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
-          </code>
-          . Both values are available in your{' '}
+          . Data can be manually added from the dashboard, found in the{' '}
           <a
-            href="https://supabase.com/dashboard/project/_?showConnect=true"
+            href="https://supabase.com/dashboard/project/ykfuevyqpjvtxidjnhxm"
             target="_blank"
             rel="noreferrer"
             className="underline underline-offset-4"
