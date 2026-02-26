@@ -12,7 +12,7 @@ export default async function EurekaSetPage({ params }: { params: Promise<{ slug
   const { slug } = await params
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6">
       <Suspense>
         <EurekaSet slug={slug} />
       </Suspense>

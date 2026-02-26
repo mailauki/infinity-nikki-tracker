@@ -1,4 +1,4 @@
-export default function Layout({
+export default function EurekaLayout({
   children,
 }: Readonly<{
   children: React.ReactNode

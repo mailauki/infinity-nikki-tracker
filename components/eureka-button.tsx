@@ -13,7 +13,7 @@ export default function EurekaButton({ eureka, user }: { eureka: Eureka; user: b
 
   return (
     <>
-      <Card key={eureka.id} className={`${eureka.obtained === true ? 'bg-background' : 'bg-card'}`}>
+      <Card key={eureka.id} className={`${eureka.obtained === true ? 'bg-background' : 'bg-card'} overflow-clip`}>
         <Button
           variant="ghost"
           onClick={() => handleObtained(slug)}
