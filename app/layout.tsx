@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
-// import { ThemeProvider } from 'next-themes'
 import './globals.css'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Roboto } from 'next/font/google'
 import { ThemeProvider } from '@mui/material/styles'
 import theme from '@/lib/theme'
+import { CssBaseline } from '@mui/material'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -38,16 +38,11 @@ export default async function RootLayout({
   return (
     <html lang="en" className={roboto.variable}>
       <body className={`${geistSans.className} antialiased`}>
-        {/* <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider> */}
         <AppRouterCacheProvider options={{ key: 'css' }}>
-          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            {children}
+          </ThemeProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

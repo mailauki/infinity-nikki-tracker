@@ -1,41 +1,71 @@
-import { LucideIcon } from 'lucide-react'
 import Link from 'next/link'
-import * as React from 'react'
-
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from '@/components/ui/sidebar'
+import { JSX } from 'react'
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 
 export function NavSecondary({
   items,
-  ...props
+  open,
 }: {
   items: {
     title: string
     url: string
-    icon: LucideIcon
+    icon: JSX.Element
   }[]
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+  open: boolean
+}) {
   return (
-    <SidebarGroup {...props}>
-      <SidebarGroupContent>
-        <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild size="lg">
-                <Link href={item.url} className="hover:underline">
-                  <item.icon />
-                  <span className="font-medium">{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+    <List>
+      {items.map((item) => (
+        <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            component={Link}
+            href={item.url}
+            sx={[
+              {
+                minHeight: 48,
+                px: 2.5,
+              },
+              open
+                ? {
+                    justifyContent: 'initial',
+                  }
+                : {
+                    justifyContent: 'center',
+                  },
+            ]}
+          >
+            <ListItemIcon
+              sx={[
+                {
+                  minWidth: 0,
+                  justifyContent: 'center',
+                },
+                open
+                  ? {
+                      mr: 3.5,
+                    }
+                  : {
+                      mr: 'auto',
+                    },
+              ]}
+            >
+              {item.icon}
+            </ListItemIcon>
+            <ListItemText
+              primary={item.title}
+              sx={[
+                open
+                  ? {
+                      opacity: 1,
+                    }
+                  : {
+                      opacity: 0,
+                    },
+              ]}
+            />
+          </ListItemButton>
+        </ListItem>
+      ))}
+    </List>
   )
 }

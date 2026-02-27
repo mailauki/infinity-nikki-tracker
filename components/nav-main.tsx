@@ -1,27 +1,24 @@
-import { type LucideIcon } from 'lucide-react'
-import Image from 'next/image'
 import Link from 'next/link'
+import ImageIcon from '@mui/icons-material/Image'
 
 import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from '@/components/ui/sidebar'
-
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from './ui/collapsible'
+  Avatar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  useTheme,
+} from '@mui/material'
+import React from 'react'
 
 export function NavMain({
   items,
+  open,
 }: {
   items: {
     title: string
     url: string
-    icon?: LucideIcon
     image?: string
     isActive?: boolean
     items?: {
@@ -29,49 +26,81 @@ export function NavMain({
       url: string
     }[]
   }[]
+  open: boolean
 }) {
+  const theme = useTheme()
+  const isDarkMode = theme.palette.mode === 'dark'
+
   return (
-    <SidebarGroup>
-      <SidebarGroupContent className="flex flex-col gap-2">
-        <SidebarMenu>
-          {items.map((item) => (
-            <Collapsible key={item.title} asChild open>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={item.title} size="lg">
-                  <Link href={item.url} className="hover:underline">
-                    {item.icon && <item.icon />}
-                    {item.image && (
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        width={36}
-                        height={36}
-                        className="brightness-[0.4] grayscale dark:filter-none"
-                      />
-                    )}
-                    <span className="font-medium">{item.title}</span>
-                  </Link>
-                </SidebarMenuButton>
-                {item.items?.length ? (
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {item.items?.map((subItem) => (
-                        <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton asChild size="lg">
-                            <Link href={subItem.url} className="hover:underline">
-                              <span>{subItem.title}</span>
-                            </Link>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                ) : null}
-              </SidebarMenuItem>
-            </Collapsible>
-          ))}
-        </SidebarMenu>
-      </SidebarGroupContent>
-    </SidebarGroup>
+    <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} component="nav">
+      {items.map((item) => (
+        <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
+          <ListItemButton
+            component={Link}
+            href={item.url}
+            sx={[
+              {
+                minHeight: 48,
+                px: 2.5,
+              },
+              open
+                ? {
+                    justifyContent: 'initial',
+                  }
+                : {
+                    justifyContent: 'center',
+                  },
+            ]}
+          >
+            <ListItemAvatar
+              sx={[
+                {
+                  minWidth: 0,
+                  justifyContent: 'center',
+                },
+                open
+                  ? {
+                      mr: 1.5,
+                    }
+                  : {
+                      mr: 'auto',
+                    },
+              ]}
+            >
+              <Avatar
+                src={item.image}
+                alt={item.title}
+                sx={{ filter: isDarkMode ? 'none' : 'brightness(40%)' }}
+              >
+                <ImageIcon />
+              </Avatar>
+            </ListItemAvatar>
+            <ListItemText
+              primary={item.title}
+              sx={[
+                open
+                  ? {
+                      opacity: 1,
+                    }
+                  : {
+                      opacity: 0,
+                    },
+              ]}
+            />
+          </ListItemButton>
+          {item.items?.length && open ? (
+            <List disablePadding>
+              {item.items?.map((subItem) => (
+                <ListItem key={subItem.title} disablePadding sx={{ display: 'block' }}>
+                  <ListItemButton component={Link} href={subItem.url}>
+                    <ListItemText inset primary={subItem.title} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          ) : null}
+        </ListItem>
+      ))}
+    </List>
   )
 }

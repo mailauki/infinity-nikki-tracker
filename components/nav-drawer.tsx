@@ -6,30 +6,19 @@ import Box from '@mui/material/Box'
 import MuiDrawer from '@mui/material/Drawer'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
-import List from '@mui/material/List'
-import CssBaseline from '@mui/material/CssBaseline'
 import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
-import MailIcon from '@mui/icons-material/Mail'
 import InfoIcon from '@mui/icons-material/InfoOutline'
 import DashboardIcon from '@mui/icons-material/Dashboard'
-import Link from 'next/link'
-import Image from 'next/image'
-import ListItemAvatar from '@mui/material/ListItemAvatar'
-import Avatar from '@mui/material/Avatar'
-import ImageIcon from '@mui/icons-material/Image'
 import Stack from '@mui/material/Stack'
-import Breadcrumbs from '@mui/material/Breadcrumbs'
 import { Link as Anchor } from '@mui/material'
+import { NavMain } from './nav-main'
+import { NavSecondary } from './nav-secondary'
+import ThemeToggle from './theme-toggle'
 
 const drawerWidth = 240
 
@@ -145,17 +134,20 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   ],
 }))
 
-const Footer = () => (
-  <AppBar component="footer" position="fixed" sx={{ top: 'auto', bottom: 0 }} color="default">
-    <Toolbar>
-      <Stack direction="row" alignItems="center" justifyContent="center" flex={1}>
-        <Typography variant="caption" color="textDisabled">
-          &copy; 2026 mailauki
-        </Typography>
-      </Stack>
-    </Toolbar>
-  </AppBar>
-)
+function Footer() {
+  return (
+    <AppBar component="footer" position="fixed" sx={{ top: 'auto', bottom: 0 }} color="default">
+      <Toolbar>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" flex={1}>
+          <Typography variant="caption" color="textDisabled">
+            &copy; 2026 mailauki
+          </Typography>
+          <ThemeToggle />
+        </Stack>
+      </Toolbar>
+    </AppBar>
+  )
+}
 
 export default function NavDrawer({
   children,
@@ -176,7 +168,6 @@ export default function NavDrawer({
   return (
     <Stack className="h-screen overflow-hidden">
       <Stack direction="row">
-        <CssBaseline />
         <AppBar position="fixed" open={open}>
           <Toolbar>
             <IconButton
@@ -221,134 +212,12 @@ export default function NavDrawer({
             </IconButton>
           </DrawerHeader>
           <Divider />
-          <List>
-            {navLinksData.navMain.map((data) => (
-              <>
-                <ListItem key={data.title} disablePadding sx={{ display: 'block' }}>
-                  <ListItemButton
-                    component={Link}
-                    href={data.url}
-                    sx={[
-                      {
-                        minHeight: 48,
-                        px: 2.5,
-                      },
-                      open
-                        ? {
-                            justifyContent: 'initial',
-                          }
-                        : {
-                            justifyContent: 'center',
-                          },
-                    ]}
-                  >
-                    <ListItemAvatar
-                      sx={[
-                        {
-                          minWidth: 0,
-                          justifyContent: 'center',
-                        },
-                        open
-                          ? {
-                              mr: 1.5,
-                            }
-                          : {
-                              mr: 'auto',
-                            },
-                      ]}
-                    >
-                      <Avatar
-                        src={data.image}
-                        alt={data.title}
-                        className="brightness-[0.4] grayscale dark:filter-none"
-                      >
-                        <ImageIcon />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={data.title}
-                      sx={[
-                        open
-                          ? {
-                              opacity: 1,
-                            }
-                          : {
-                              opacity: 0,
-                            },
-                      ]}
-                    />
-                  </ListItemButton>
-                </ListItem>
-                {data.items.map((item) => (
-                  <ListItem key={item.title} disablePadding>
-                    <ListItemButton component={Link} href={item.url}>
-                      <ListItemText inset primary={item.title} />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-              </>
-            ))}
-          </List>
+          <NavMain items={navLinksData.navMain} open={open} />
           <Divider />
-          <List>
-            {navLinksData.navSecondary.map((data) => (
-              <ListItem key={data.title} disablePadding sx={{ display: 'block' }}>
-                <ListItemButton
-                  component={Link}
-                  href={data.url}
-                  sx={[
-                    {
-                      minHeight: 48,
-                      px: 2.5,
-                    },
-                    open
-                      ? {
-                          justifyContent: 'initial',
-                        }
-                      : {
-                          justifyContent: 'center',
-                        },
-                  ]}
-                >
-                  <ListItemIcon
-                    sx={[
-                      {
-                        minWidth: 0,
-                        justifyContent: 'center',
-                      },
-                      open
-                        ? {
-                            mr: 3.5,
-                          }
-                        : {
-                            mr: 'auto',
-                          },
-                    ]}
-                  >
-                    {data.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={data.title}
-                    sx={[
-                      open
-                        ? {
-                            opacity: 1,
-                          }
-                        : {
-                            opacity: 0,
-                          },
-                    ]}
-                  />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+
+          <NavSecondary items={navLinksData.navSecondary} open={open} />
         </Drawer>
-        <Box
-          component="main"
-          className="h-screen overflow-hidden"
-          // sx={{ flexGrow: 1, p: 3 }}
-        >
+        <Box component="main" className="h-screen overflow-hidden">
           <DrawerHeader />
           {children}
           <Toolbar />
