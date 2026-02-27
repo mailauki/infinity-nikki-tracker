@@ -1,21 +1,12 @@
 import Image from 'next/image'
 
-import { Badge } from '@/components/ui/badge'
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemFooter,
-  ItemHeader,
-  ItemMedia,
-  ItemTitle,
-} from '@/components/ui/item'
 import { count, percent } from '@/hooks/count'
 import { EurekaSet } from '@/lib/types/types'
 
 import ProgressBadge from './progress-badge'
 import QualityStars from './quality-stars'
 import { Progress } from './ui/progress'
+import { Box, CardContent, CardHeader, CardMedia, Chip, Stack, Typography } from '@mui/material'
 
 export default function EurekaHeader({
   eurekaSet,
@@ -30,43 +21,47 @@ export default function EurekaHeader({
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
   return (
-    <Item className="relative w-full">
-      <ItemHeader>
-        <ItemMedia>
-          {eurekaSet.image_url && (
-            <Image src={eurekaSet.image_url} alt={eurekaSet.name} width={100} height={100} />
-          )}
-        </ItemMedia>
-      </ItemHeader>
+    <>
+      <CardMedia sx={{ p: 1 }}>
+        {eurekaSet.image_url && (
+          <Image src={eurekaSet.image_url} alt={eurekaSet.name} width={100} height={100} />
+        )}
+      </CardMedia>
       {variant === 'large' ? (
-        <>
-          <ItemContent>
-            <ItemTitle>{eurekaSet.name}</ItemTitle>
-            <ItemDescription>{eurekaSet.trial}</ItemDescription>
-          </ItemContent>
-          <ItemContent className="text-end">
-            <QualityStars quality={eurekaSet.quality!} />
-            <ItemDescription>{eurekaSet.style}</ItemDescription>
-          </ItemContent>
-        </>
+        <CardHeader
+          title={
+            <Stack direction="row" justifyContent="space-between">
+              {eurekaSet.name}
+              <QualityStars quality={eurekaSet.quality!} />
+            </Stack>
+          }
+          subheader={
+            <Stack direction="row" justifyContent="space-between">
+              <span>{eurekaSet.trial}</span>
+              <span>{eurekaSet.style}</span>
+            </Stack>
+          }
+        />
       ) : (
-        <ItemContent>
-          <ItemTitle>{eurekaSet.name}</ItemTitle>
-          <QualityStars quality={eurekaSet.quality!} />
-        </ItemContent>
+        <CardHeader
+          title={eurekaSet.name}
+          subheader={<QualityStars quality={eurekaSet.quality!} />}
+        />
       )}
       {user && (
-        <ItemFooter className="flex-col">
-          <div className="flex w-full flex-1 items-center justify-between gap-2">
+        <CardContent component={Stack} spacing={1} sx={{ pt: 0 }}>
+          <Stack direction="row" justifyContent="space-between">
             <ProgressBadge percentage={percentage} />
-            <ItemTitle className="text-xl">{percentage}%</ItemTitle>
-          </div>
+            <Typography variant="h5" component="p">
+              {percentage}%
+            </Typography>
+          </Stack>
           <Progress value={percentage} className="bg-muted" />
-        </ItemFooter>
+        </CardContent>
       )}
-      <div className="absolute right-2 top-2">
-        <Badge variant="outline">{eurekaSet.labels}</Badge>
-      </div>
-    </Item>
+      <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
+        <Chip label={eurekaSet.labels} variant="outlined" size="small" />
+      </Box>
+    </>
   )
 }

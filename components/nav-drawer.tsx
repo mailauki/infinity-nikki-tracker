@@ -217,7 +217,7 @@ export default function NavDrawer({
 
           <NavSecondary items={navLinksData.navSecondary} open={open} />
         </Drawer>
-        <Box component="main" className="h-screen overflow-hidden">
+        <Box component="main" className="h-screen overflow-hidden w-full">
           <DrawerHeader />
           {children}
           <Toolbar />

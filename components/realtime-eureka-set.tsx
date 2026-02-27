@@ -9,6 +9,7 @@ import { EurekaSet, Obtained } from '@/lib/types/types'
 import EurekaHeader from './eureka-header'
 import EurekaTable from './eureka-table'
 import ProgressCard from './progress-card'
+import { Box } from '@mui/material'
 
 const supabase = createClient()
 
@@ -58,7 +59,13 @@ export default function RealtimeEurekaSet({
 
   return (
     <>
-      <EurekaHeader eurekaSet={eurekaSet} variant="large" user={user} />
+      <Box sx={{ position: "relative" }}>
+				<EurekaHeader
+				eurekaSet={eurekaSet}
+				variant="large"
+				user={user}
+				/>
+				</Box>
       {user && (
         <>
           <div className="grid grid-cols-3 gap-4">

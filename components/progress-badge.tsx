@@ -1,12 +1,11 @@
-import { Badge } from '@/components/ui/badge'
+import { Chip } from '@mui/material'
 
 export default function ProgressBadge({ percentage }: { percentage: number }) {
   return (
-    <Badge
-      variant={percentage === 100 ? 'default' : 'secondary'}
-      className="text-md flex w-fit gap-1 rounded-lg"
-    >
-      {percentage === 100 ? 'Complete' : 'Unfinished'}
-    </Badge>
+		<Chip
+		sx={{ fontWeight: 'bold', textTransform: "uppercase" }}
+		color={percentage === 100 ? 'primary' : 'secondary'}
+		label={percentage === 100 ? 'Complete' : 'Unfinished'}
+		/>
   )
 }
