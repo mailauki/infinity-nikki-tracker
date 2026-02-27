@@ -1,7 +1,18 @@
 import type { Metadata } from 'next'
 import { Geist } from 'next/font/google'
-import { ThemeProvider } from 'next-themes'
+// import { ThemeProvider } from 'next-themes'
 import './globals.css'
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
+import { Roboto } from 'next/font/google'
+import { ThemeProvider } from '@mui/material/styles'
+import theme from '@/lib/theme'
+
+const roboto = Roboto({
+  weight: ['300', '400', '500', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-roboto',
+})
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -25,16 +36,19 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={roboto.variable}>
       <body className={`${geistSans.className} antialiased`}>
-        <ThemeProvider
+        {/* <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
           {children}
-        </ThemeProvider>
+        </ThemeProvider> */}
+        <AppRouterCacheProvider options={{ key: 'css' }}>
+          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   )

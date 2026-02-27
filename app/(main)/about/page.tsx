@@ -1,187 +1,305 @@
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import {
+  Button,
+  Typography,
+  Link as Anchor,
+  Stack,
+  ListItem,
+  List,
+  ListItemText,
+} from '@mui/material'
 
 export default function AboutPage() {
   return (
-    <div className="flex w-full flex-1 flex-col gap-8 px-6 pb-8">
-      <section className="flex max-w-2xl flex-col gap-3">
-        <h1 className="text-3xl !leading-tight md:text-4xl">About</h1>
-        <p className="text-muted-foreground">
+    <Stack spacing={3}>
+      <Stack component="section">
+        <Typography variant="h3" component="h1">
+          About
+        </Typography>
+        <Typography variant="subtitle1" color="textSecondary">
           Infinity Nikki Tracker is a collection tracker for{' '}
-          <a
+          <Anchor
             href="https://infinitynikki.infoldgames.com/"
             target="_blank"
             rel="noreferrer"
-            className="underline underline-offset-4"
+            color="textSecondary"
           >
             Infinity Nikki
-          </a>
+          </Anchor>
           , the cozy open-world fashion game. Track your Eureka outfit progress across sets,
           categories, colors, and trials — with real-time updates and per-user collection state.
-        </p>
-      </section>
+        </Typography>
+      </Stack>
 
-      <section className="flex max-w-2xl flex-col gap-3">
-        <h2 className="text-lg font-semibold">How to use</h2>
-        <ol className="flex list-decimal flex-col gap-2 pl-5 text-muted-foreground">
-          <li>
-            Browse all Eureka sets from the{' '}
-            <Link href="/eureka" className="underline underline-offset-4">
-              Eureka
-            </Link>{' '}
-            page.
-          </li>
-          <li>Sign in to enable collection tracking for your account.</li>
-          <li>Open any set and click individual items to mark them as obtained.</li>
-          <li>
-            Use the{' '}
-            <Link href="/eureka/missing" className="underline underline-offset-4">
-              Missing
-            </Link>{' '}
-            view to see items you haven&apos;t collected yet.
-          </li>
-          <li>
-            Use the{' '}
-            <Link href="/eureka/trials" className="underline underline-offset-4">
-              Trials
-            </Link>{' '}
-            view to see your progress grouped by in-game trial.
-          </li>
-        </ol>
-      </section>
+      <Stack component="section">
+        <Typography variant="h4" component="h2">
+          How to use
+        </Typography>
+        <List sx={{ listStyle: 'decimal', pl: 4 }} dense>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Browse all Eureka sets from the{' '}
+                  <Anchor href="/eureka" color="textSecondary">
+                    Eureka
+                  </Anchor>{' '}
+                  page.
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Sign in to enable collection tracking for your account.
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Open any set and click individual items to mark them as obtained.
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Use the{' '}
+                  <Anchor href="/eureka/missing" color="textSecondary">
+                    Missing
+                  </Anchor>{' '}
+                  view to see items you haven&apos;t collected yet.
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Use the{' '}
+                  <Anchor href="/eureka/trials" color="textSecondary">
+                    Trials
+                  </Anchor>{' '}
+                  view to see your progress grouped by in-game trial.
+                </Typography>
+              }
+            />
+          </ListItem>
+        </List>
+      </Stack>
 
-      <section className="flex max-w-2xl flex-col gap-3">
-        <h2 className="text-lg font-semibold">Links &amp; Resources</h2>
-        <ul className="flex list-disc flex-col gap-2 pl-5 text-muted-foreground">
-          <li>
-            <a
-              href="https://infinity-nikki.fandom.com/"
-              target="_blank"
-              rel="noreferrer"
-              className="underline underline-offset-4"
-            >
-              Infinity Nikki Wiki
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://infinitynikki.infoldgames.com/"
-              target="_blank"
-              rel="noreferrer"
-              className="underline underline-offset-4"
-            >
-              Infinity Nikki Official Website
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://github.com/mailauki/infinity-nikki-tracker"
-              target="_blank"
-              rel="noreferrer"
-              className="underline underline-offset-4"
-            >
-              GitHub Repository
-            </a>
-          </li>
-        </ul>
-      </section>
-      <section className="flex max-w-2xl flex-col gap-3">
-        <h2 className="text-lg font-semibold">Roadmap</h2>
-        <p className="text-muted-foreground">Planned features and improvements:</p>
-        <ul className="flex list-disc flex-col gap-2 pl-5 text-muted-foreground">
-          <li>More outfit types — expand tracking beyond Eureka sets</li>
-          <li>Item search — search across all items globally</li>
-          <li>Admin dashboard — manage backend data directly from the frontend</li>
-        </ul>
-      </section>
+      <Stack component="section">
+        <Typography variant="h4" component="h2">
+          Links &amp; Resources
+        </Typography>
+        <List sx={{ listStyle: 'disc', pl: 4 }} dense>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Anchor
+                  href="https://infinity-nikki.fandom.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  color="textSecondary"
+                  variant="body1"
+                >
+                  Infinity Nikki Wiki
+                </Anchor>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Anchor
+                  href="https://infinitynikki.infoldgames.com/"
+                  target="_blank"
+                  rel="noreferrer"
+                  color="textSecondary"
+                  variant="body1"
+                >
+                  Infinity Nikki Official Website
+                </Anchor>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Anchor
+                  href="https://github.com/mailauki/infinity-nikki-tracker"
+                  target="_blank"
+                  rel="noreferrer"
+                  color="textSecondary"
+                  variant="body1"
+                >
+                  GitHub Repository
+                </Anchor>
+              }
+            />
+          </ListItem>
+        </List>
+      </Stack>
 
-      <section className="flex max-w-2xl flex-col gap-3">
-        <h2 className="text-lg font-semibold">Collaborate</h2>
-        <p className="text-muted-foreground">
+      <Stack component="section">
+        <Typography variant="h4" component="h2">
+          Roadmap
+        </Typography>
+        <Typography variant="subtitle1" color="textSecondary">
+          Planned features and improvements:
+        </Typography>
+        <List sx={{ listStyle: 'disc', pl: 4 }} dense>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  More outfit types — expand tracking beyond Eureka sets
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Item search — search across all items globally
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Admin dashboard — manage backend data directly from the frontend
+                </Typography>
+              }
+            />
+          </ListItem>
+        </List>
+      </Stack>
+
+      <Stack component="section">
+        <Typography variant="h4" component="h2">
+          Collaborate
+        </Typography>
+        <Typography variant="body1" color="textSecondary">
           This project is open source. Contributions are welcome — whether it&apos;s fixing a bug,
           improving the UI, or adding new data.
-        </p>
-        <ul className="flex list-disc flex-col gap-2 pl-5 text-muted-foreground">
-          <li>
-            <a
-              href="https://github.com/mailauki/infinity-nikki-tracker"
-              target="_blank"
-              rel="noreferrer"
-              className="underline underline-offset-4"
-            >
-              View the source on GitHub
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://github.com/mailauki/infinity-nikki-tracker/issues"
-              target="_blank"
-              rel="noreferrer"
-              className="underline underline-offset-4"
-            >
-              Open an issue
-            </a>{' '}
-            for bugs or feature requests
-          </li>
-          <li>
-            <a
-              href="https://github.com/mailauki/infinity-nikki-tracker/pulls"
-              target="_blank"
-              rel="noreferrer"
-              className="underline underline-offset-4"
-            >
-              Submit a pull request
-            </a>
-          </li>
-        </ul>
-        <p className="text-muted-foreground">
+        </Typography>
+        <List sx={{ listStyle: 'disc', pl: 4 }} dense>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Anchor
+                  href="https://github.com/mailauki/infinity-nikki-tracker"
+                  target="_blank"
+                  rel="noreferrer"
+                  color="textSecondary"
+                  variant="body1"
+                >
+                  View the source on GitHub
+                </Anchor>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  <Anchor
+                    href="https://github.com/mailauki/infinity-nikki-tracker/issues"
+                    target="_blank"
+                    rel="noreferrer"
+                    color="textSecondary"
+                  >
+                    Open an issue
+                  </Anchor>{' '}
+                  for bugs or feature requests
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Anchor
+                  href="https://github.com/mailauki/infinity-nikki-tracker/pulls"
+                  target="_blank"
+                  rel="noreferrer"
+                  color="textSecondary"
+                  variant="body1"
+                >
+                  Submit a pull request
+                </Anchor>
+              }
+            />
+          </ListItem>
+        </List>
+        <Typography variant="body1" color="textSecondary">
           The backend runs on{' '}
-          <a
+          <Anchor
             href="https://supabase.com"
             target="_blank"
             rel="noreferrer"
-            className="underline underline-offset-4"
+            color="textSecondary"
           >
             Supabase
-          </a>
+          </Anchor>
           . Data can be manually added from the dashboard, found in the{' '}
-          <a
+          <Anchor
             href="https://supabase.com/dashboard/project/ykfuevyqpjvtxidjnhxm"
             target="_blank"
             rel="noreferrer"
-            className="underline underline-offset-4"
+            color="textSecondary"
           >
             Supabase project&apos;s API settings
-          </a>
+          </Anchor>
           .
-        </p>
-      </section>
+        </Typography>
+      </Stack>
 
-      <section className="flex max-w-2xl flex-col gap-3">
-        <h2 className="text-lg font-semibold">Feedback &amp; Support</h2>
-        <p className="text-muted-foreground">
+      <Stack component="section">
+        <Typography variant="h4" component="h2">
+          Feedback &amp; Support
+        </Typography>
+        <Typography variant="subtitle1" color="textSecondary">
           Found a bug or have a suggestion? Reach out via email —{' '}
-          <a href="mailto:julie.ux.dev@gmail.com" className="underline underline-offset-4">
+          <Anchor href="mailto:julie.ux.dev@gmail.com" color="textSecondary">
             julie.ux.dev@gmail.com
-          </a>
+          </Anchor>
           .
-        </p>
-        <div className="flex gap-2">
-          <Button asChild className="w-fit font-semibold" variant="default">
-            <a href="https://patreon.com/mailauki" target="_blank" rel="noreferrer">
-              Support on Patreon
-            </a>
+        </Typography>
+        <Stack direction="row" spacing={1} sx={{ my: 2 }}>
+          <Button
+            href="https://patreon.com/mailauki"
+            target="_blank"
+            rel="noreferrer"
+            variant="contained"
+          >
+            Support on Patreon
           </Button>
-          <Button asChild className="w-fit font-semibold" variant="outline">
-            <a href="https://buymeacoffee.com/mailauki" target="_blank" rel="noreferrer">
-              Buy Me a Coffee
-            </a>
+          <Button
+            href="https://buymeacoffee.com/mailauki"
+            target="_blank"
+            rel="noreferrer"
+            variant="outlined"
+          >
+            Buy Me a Coffee
           </Button>
-        </div>
-      </section>
-      <p className="text-muted-foreground/60 max-w-2xl text-xs">
+        </Stack>
+      </Stack>
+
+      <Typography variant="caption" color="textDisabled">
         &copy; 2026 mailauki. Not affiliated with Infold Games or Infinity Nikki.
-      </p>
-    </div>
+      </Typography>
+    </Stack>
   )
 }
