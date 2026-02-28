@@ -5,8 +5,17 @@ import { EurekaSet } from '@/lib/types/types'
 
 import ProgressBadge from './progress-chip'
 import QualityStars from './quality-stars'
-import { Progress } from './ui/progress'
-import { Box, CardContent, CardHeader, CardMedia, Chip, Stack, Typography } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  Chip,
+  LinearProgress,
+  Stack,
+  Typography,
+} from '@mui/material'
 
 export default function EurekaHeader({
   eurekaSet,
@@ -22,46 +31,57 @@ export default function EurekaHeader({
 
   return (
     <>
-      <CardMedia sx={{ p: 1 }}>
-        {eurekaSet.image_url && (
-          <Image src={eurekaSet.image_url} alt={eurekaSet.name} width={100} height={100} />
-        )}
-      </CardMedia>
       {variant === 'large' ? (
-        <CardHeader
-          title={
-            <Stack direction="row" justifyContent="space-between">
-              {eurekaSet.name}
-              <QualityStars quality={eurekaSet.quality!} />
-            </Stack>
-          }
-          subheader={
-            <Stack direction="row" justifyContent="space-between">
-              <span>{eurekaSet.trial}</span>
-              <span>{eurekaSet.style}</span>
-            </Stack>
-          }
-        />
+        <>
+          <CardMedia>
+            <Image src={eurekaSet.image_url!} alt={eurekaSet.name} width={100} height={100} />
+          </CardMedia>
+          <CardHeader
+            title={
+              <Stack direction="row" justifyContent="space-between">
+                {eurekaSet.name}
+                <QualityStars quality={eurekaSet.quality!} />
+              </Stack>
+            }
+            subheader={
+              <Stack direction="row" justifyContent="space-between">
+                <span>{eurekaSet.trial}</span>
+                <span>{eurekaSet.style}</span>
+              </Stack>
+            }
+            sx={{ pb: 0.5 }}
+          />
+          <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
+            <Chip label={eurekaSet.labels} variant="outlined" size="small" />
+          </Box>
+        </>
       ) : (
         <CardHeader
           title={eurekaSet.name}
           subheader={<QualityStars quality={eurekaSet.quality!} />}
+          avatar={
+            <Avatar>
+              <Image src={eurekaSet.image_url!} alt={eurekaSet.name} width={100} height={100} />
+            </Avatar>
+          }
+          action={<Chip label={eurekaSet.labels} variant="outlined" size="small" />}
+          sx={{ pb: 0.5 }}
         />
       )}
       {isLoggedIn && (
         <CardContent component={Stack} spacing={1} sx={{ pt: 0 }}>
-          <Stack direction="row" justifyContent="space-between">
-            <ProgressBadge percentage={percentage} />
-            <Typography variant="h5" component="p">
+          <Stack direction="row" alignItems="center" justifyContent="space-between">
+            <Typography variant="h6" component="p">
               {percentage}%
             </Typography>
+            <ProgressBadge
+              percentage={percentage}
+              size={variant === 'large' ? 'medium' : 'small'}
+            />
           </Stack>
-          <Progress value={percentage} className="bg-muted" />
+          <LinearProgress value={percentage} variant="determinate" color="inherit" />
         </CardContent>
       )}
-      <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
-        <Chip label={eurekaSet.labels} variant="outlined" size="small" />
-      </Box>
     </>
   )
 }

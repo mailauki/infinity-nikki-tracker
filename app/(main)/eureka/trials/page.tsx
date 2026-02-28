@@ -3,10 +3,20 @@ import { Suspense } from 'react'
 import { getUserID } from '@/hooks/user'
 import { getEurekaSets, getTrials } from '@/lib/data'
 import { Eureka, EurekaSet, Total } from '@/lib/types/types'
-import { Card, CardActions, CardContent, CardHeader, CardMedia, Chip, LinearProgress, List } from '@mui/material'
+import {
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  Chip,
+  LinearProgress,
+  List,
+} from '@mui/material'
 import Image from 'next/image'
 import { count, percent } from '@/hooks/count'
-import EurekaItem from '@/components/eureka-item'
+import EurekaHeader from '@/components/eureka-header'
 
 export default async function TrialsPage() {
   return (
@@ -76,7 +86,9 @@ function TrialCard({
       <CardActions>
         <List sx={{ width: '100%' }}>
           {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
-            <EurekaItem key={eurekaSet.id} eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
+            <CardActionArea key={eurekaSet.id} href={`/eureka/${eurekaSet.slug}`}>
+              <EurekaHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
+            </CardActionArea>
           ))}
         </List>
       </CardActions>

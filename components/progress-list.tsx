@@ -1,4 +1,3 @@
-'use client'
 import { Category, Eureka } from '@/lib/types/types'
 import { List, ListSubheader } from '@mui/material'
 import { ProgressItem } from './progress-item'
