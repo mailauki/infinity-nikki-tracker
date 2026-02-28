@@ -16,13 +16,14 @@ function NavTabs() {
   const title = pathname === '/' ? 'home' : path[1]
   const slug = path.length > 2 ? path[2] : ''
 
-  const activePath = slug ? false : pathname
-
   const navLinks =
     (navLinksData.navMain.find((item) => item.url === `/${title}`) as NavMainLink) ||
     (navLinksData.navSecondary.find((item) => item.url === `/${title}`) as NavSecondaryLink) ||
     (navLinksData.home as NavSecondaryLink)
   const allNavLinks = [navLinks].concat(navLinks.items! || [])
+
+  const isNavLink = !!allNavLinks.find((link) => link.url === pathname)
+  const activePath = slug && !isNavLink ? false : pathname
 
   return (
     <Toolbar disableGutters>

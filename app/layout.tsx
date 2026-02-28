@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Geist } from 'next/font/google'
 import './globals.css'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Roboto } from 'next/font/google'
@@ -25,22 +24,16 @@ export const metadata: Metadata = {
   description: 'Track your collection from your favorite cozy open-world game Infinity Nikki',
 }
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  display: 'swap',
-  subsets: ['latin'],
-})
-
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={roboto.variable}>
-      <body className={`${geistSans.className} antialiased`}>
+    <html lang="en" className={roboto.variable} suppressHydrationWarning>
+      <body>
         <InitColorSchemeScript defaultMode="system" />
-        <AppRouterCacheProvider options={{ key: 'css' }}>
+        <AppRouterCacheProvider options={{ key: "css" }}>
           <ThemeProvider theme={theme} defaultMode="system">
             <CssBaseline />
             {children}

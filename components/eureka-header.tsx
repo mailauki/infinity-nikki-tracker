@@ -60,7 +60,7 @@ export default function EurekaHeader({
           title={eurekaSet.name}
           subheader={<QualityStars quality={eurekaSet.quality!} />}
           avatar={
-            <Avatar>
+            <Avatar sx={{ bgcolor: "transparent" }}>
               <Image src={eurekaSet.image_url!} alt={eurekaSet.name} width={100} height={100} />
             </Avatar>
           }

@@ -6,18 +6,18 @@ export default function ProgressList({
   items,
   eureka,
   filter,
+  value,
+  onValueChange,
 }: {
   items: Category[]
   eureka: Eureka[]
   filter?: 'colors' | 'categories'
+  value?: string
+  onValueChange?: (value: string) => void
 }) {
   return (
     <List
-      sx={{
-        width: '100%',
-        // minWidth: 300,
-        // maxWidth: { xs: "100%", sm: "50%", md: 360 }
-      }}
+      sx={{ width: '100%' }}
       subheader={
         <ListSubheader disableSticky sx={{ textTransform: 'capitalize' }}>
           {filter}
@@ -25,7 +25,14 @@ export default function ProgressList({
       }
     >
       {items.map((item) => (
-        <ProgressItem key={item.name} item={item} eureka={eureka} filter={filter} />
+        <ProgressItem
+          key={item.name}
+          item={item}
+          eureka={eureka}
+          filter={filter}
+          value={value}
+          onValueChange={onValueChange}
+        />
       ))}
     </List>
   )

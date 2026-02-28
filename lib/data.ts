@@ -32,6 +32,7 @@ export const getEurekaSets = cache(async () => {
 			)
 		`
     )
+    .order('id', { ascending: true })
     .order('id', { referencedTable: 'eureka', ascending: true })
   const { data: categories } = await supabase.from('categories').select('name, image_url')
   const { data: colors } = await supabase.from('colors').select('name, image_url')
@@ -101,7 +102,8 @@ export const getEurekaSet = cache(async (slug: string) => {
 			)
 		`
     )
-    .order('id', { referencedTable: 'eureka', ascending: true })
+    .order('id', { ascending: true })
+    .order('id', { referencedTable: 'eureka', ascending: false })
     .eq('slug', slug)
     .single()
   const { data: categories } = await supabase.from('categories').select('name, image_url')
@@ -129,22 +131,6 @@ export const getTrials = cache(async () => {
   return trials
 })
 
-export const getAdminData = cache(async () => {
-  const supabase = await createClient()
-
-  const { data: eurekaSets } = await supabase
-    .from('eureka_sets')
-    .select('id, slug, name, quality, style, labels, trial')
-    .order('id')
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('name, image_url')
-    .order('name')
-  const { data: colors } = await supabase.from('colors').select('name, image_url').order('name')
-
-  return { eurekaSets, categories, colors }
-})
-
 export const getObtained = cache(async (user_id: UUID | string) => {
   const supabase = await createClient()
 
@@ -161,4 +147,20 @@ export const getObtained = cache(async (user_id: UUID | string) => {
     .eq('user_id', user_id)
 
   return obtained as Obtained[]
+})
+
+export const getAdminData = cache(async () => {
+  const supabase = await createClient()
+
+  const { data: eurekaSets } = await supabase
+    .from('eureka_sets')
+    .select('id, slug, name, quality, style, labels, trial')
+    .order('id')
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('name, image_url')
+    .order('name')
+  const { data: colors } = await supabase.from('colors').select('name, image_url').order('name')
+
+  return { eurekaSets, categories, colors }
 })

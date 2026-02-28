@@ -1,9 +1,23 @@
+import { Suspense } from 'react'
 import Container from '@mui/material/Container'
 import NavDrawer from '@/components/nav-drawer'
+import NavSkeleton from '@/components/nav-skeleton'
 import NavTabs from '@/components/nav-tabs'
 import { getUserRole } from '@/hooks/user'
 
 export default async function MainLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <Suspense fallback={<NavSkeleton />}>
+      <NavContainer>{children}</NavContainer>
+    </Suspense>
+  )
+}
+
+async function NavContainer({
   children,
 }: Readonly<{
   children: React.ReactNode
