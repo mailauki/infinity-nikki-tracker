@@ -1,42 +1,65 @@
 'use client'
 
 import {
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
   useColorScheme,
 } from '@mui/material'
-import { ChangeEvent } from 'react'
+import DarkModeIcon from '@mui/icons-material/DarkMode'
+import LightModeIcon from '@mui/icons-material/LightMode'
+import BrightnessMediumIcon from '@mui/icons-material/BrightnessMedium'
+import CheckIcon from '@mui/icons-material/Check'
+import { useState } from 'react'
+
+const modes = [
+  { value: 'system', label: 'System', icon: <BrightnessMediumIcon fontSize="small" /> },
+  { value: 'light', label: 'Light', icon: <LightModeIcon fontSize="small" /> },
+  { value: 'dark', label: 'Dark', icon: <DarkModeIcon fontSize="small" /> },
+] as const
 
 function ThemeToggle() {
   const { mode, setMode } = useColorScheme()
-  if (!mode) {
-    return null
-  }
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
-  function switchTheme(event: ChangeEvent<HTMLInputElement>) {
-    setMode(event.target.value as 'system' | 'light' | 'dark')
-  }
+  if (!mode) return null
+
+  const currentIcon = modes.find((m) => m.value === mode)?.icon ?? <BrightnessMediumIcon />
 
   return (
-    <FormControl>
-      <FormLabel id="theme-toggle" hidden>
-        Theme
-      </FormLabel>
-      <RadioGroup
-        aria-labelledby="theme-toggle"
-        name="theme-toggle"
-        row
-        value={mode}
-        onChange={switchTheme}
+    <>
+      <IconButton
+        onClick={(e) => setAnchorEl(e.currentTarget)}
+        aria-label="Change theme"
+        size="small"
       >
-        <FormControlLabel value="system" control={<Radio />} label="System" />
-        <FormControlLabel value="light" control={<Radio />} label="Light" />
-        <FormControlLabel value="dark" control={<Radio />} label="Dark" />
-      </RadioGroup>
-    </FormControl>
+        {currentIcon}
+      </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        {modes.map(({ value, label, icon }) => (
+          <MenuItem
+            key={value}
+            selected={mode === value}
+            onClick={() => {
+              setMode(value)
+              setAnchorEl(null)
+            }}
+          >
+            <ListItemIcon>{icon}</ListItemIcon>
+            <ListItemText>{label}</ListItemText>
+            {mode === value && <CheckIcon fontSize="small" sx={{ ml: 1 }} />}
+          </MenuItem>
+        ))}
+      </Menu>
+    </>
   )
 }
 
