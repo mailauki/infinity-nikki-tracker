@@ -13,7 +13,7 @@ import {
 import React from 'react'
 import { NavMainLink } from '@/lib/types/types'
 
-export function NavMain({ items, open }: { items: NavMainLink[]; open: boolean }) {
+export function NavMain({ items, open = false }: { items: NavMainLink[]; open?: boolean }) {
   const theme = useTheme()
   const isDarkMode = theme.palette.mode === 'dark'
 

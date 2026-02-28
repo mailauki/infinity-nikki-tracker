@@ -4,6 +4,7 @@ import './globals.css'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Roboto } from 'next/font/google'
 import { ThemeProvider } from '@mui/material/styles'
+import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import theme from '@/lib/theme'
 import { CssBaseline } from '@mui/material'
 
@@ -38,8 +39,9 @@ export default async function RootLayout({
   return (
     <html lang="en" className={roboto.variable}>
       <body className={`${geistSans.className} antialiased`}>
+        <InitColorSchemeScript defaultMode="system" />
         <AppRouterCacheProvider options={{ key: 'css' }}>
-          <ThemeProvider theme={theme}>
+          <ThemeProvider theme={theme} defaultMode="system">
             <CssBaseline />
             {children}
           </ThemeProvider>
