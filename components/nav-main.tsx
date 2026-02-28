@@ -11,23 +11,9 @@ import {
   useTheme,
 } from '@mui/material'
 import React from 'react'
+import { NavMainLink } from '@/lib/types/types'
 
-export function NavMain({
-  items,
-  open,
-}: {
-  items: {
-    title: string
-    url: string
-    image?: string
-    isActive?: boolean
-    items?: {
-      title: string
-      url: string
-    }[]
-  }[]
-  open: boolean
-}) {
+export function NavMain({ items, open }: { items: NavMainLink[]; open: boolean }) {
   const theme = useTheme()
   const isDarkMode = theme.palette.mode === 'dark'
 

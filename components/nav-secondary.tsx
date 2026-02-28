@@ -1,18 +1,9 @@
 import Link from 'next/link'
 import { JSX } from 'react'
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { NavSecondaryLink } from '@/lib/types/types'
 
-export function NavSecondary({
-  items,
-  open,
-}: {
-  items: {
-    title: string
-    url: string
-    icon: JSX.Element
-  }[]
-  open: boolean
-}) {
+export function NavSecondary({ items, open }: { items: NavSecondaryLink[]; open: boolean }) {
   return (
     <List>
       {items.map((item) => (

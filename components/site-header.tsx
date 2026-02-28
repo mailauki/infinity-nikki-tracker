@@ -3,67 +3,84 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-import { Separator } from '@/components/ui/separator'
-import { SidebarTrigger } from '@/components/ui/sidebar'
+import { Toolbar, Tabs, Tab } from '@mui/material'
+import React from 'react'
+import { navLinksData } from '@/lib/nav-links'
+import { NavMainLink } from '@/lib/types/types'
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from './ui/breadcrumb'
-import { Breadcrumbs, Toolbar, Link as Anchor, Typography } from '@mui/material'
+function samePageLinkNavigation(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 || // ignore everything but left-click
+    event.metaKey ||
+    event.ctrlKey ||
+    event.altKey ||
+    event.shiftKey
+  ) {
+    return false
+  }
+  return true
+}
+
+interface LinkTabProps {
+  label?: string
+  href?: string
+  selected?: boolean
+}
+
+function LinkTab(props: LinkTabProps) {
+  return (
+    <Tab
+      component="a"
+      onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        // Routing libraries handle this, you can remove the onClick handle when using them.
+        if (samePageLinkNavigation(event)) {
+          event.preventDefault()
+        }
+      }}
+      aria-current={props.selected && 'page'}
+      {...props}
+    />
+  )
+}
 
 export function SiteHeader() {
   const pathname = usePathname()
   const path = pathname.split('/')
   const title = pathname === '/' ? 'home' : path[1]
   const slug = path.length > 2 ? path[2] : ''
+  const navLink = { title, url: `/${title}` } as NavMainLink
+  const navLinks =
+    (navLinksData.navMain.find((item) => item.url === `/${title}`) as NavMainLink) || navLink
+  const allNavLinks = [navLink].concat(navLinks.items!)
+  const index = allNavLinks.findIndex((item) => item.title.toLowerCase() === slug)
+
+  const [value, setValue] = React.useState(index)
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    // event.type can be equal to focus with selectionFollowsFocus.
+    if (
+      event.type !== 'click' ||
+      (event.type === 'click' &&
+        samePageLinkNavigation(event as React.MouseEvent<HTMLAnchorElement, MouseEvent>))
+    ) {
+      setValue(newValue)
+    }
+  }
 
   return (
-    <Toolbar>
-      {path.length > 2 ? (
-        <Breadcrumbs aria-label="breadcrumb">
-          <Anchor underline="hover" color="inherit" href={`/${title}`} className="capitalize">
-            {title}
-          </Anchor>
-          <Typography sx={{ color: 'text.primary' }} className="capitalize">
-            {slug.replace('-', ' ')}
-          </Typography>
-        </Breadcrumbs>
-      ) : (
-        <Breadcrumbs aria-label="breadcrumb">
-          <Anchor underline="hover" color="inherit" href="/" className="capitalize">
-            {title}
-          </Anchor>
-        </Breadcrumbs>
-      )}
+    <Toolbar disableGutters>
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        aria-label="page nav tabs"
+        role="navigation"
+        sx={{ borderBottom: 1, borderColor: 'divider', flexGrow: 1 }}
+      >
+        {allNavLinks.map((link) => (
+          <LinkTab key={link.title} label={link.title} href={link.url} />
+        ))}
+      </Tabs>
     </Toolbar>
-    // <header className="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-12 shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear">
-    //   <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
-    //     <SidebarTrigger className="-ml-1" />
-    //     <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
-    //     <Breadcrumb>
-    //       {path.length > 2 ? (
-    //         <BreadcrumbList>
-    //           <BreadcrumbItem className="text-base font-medium capitalize">
-    //             <BreadcrumbLink asChild>
-    //               <Link href={`/${title}`}>{title}</Link>
-    //             </BreadcrumbLink>
-    //           </BreadcrumbItem>
-    //           <BreadcrumbSeparator />
-    //           <BreadcrumbItem className="text-base font-medium capitalize">
-    //             {slug.replace('-', ' ')}
-    //           </BreadcrumbItem>
-    //         </BreadcrumbList>
-    //       ) : (
-    //         <BreadcrumbList>
-    //           <BreadcrumbItem className="text-base font-medium capitalize">{title}</BreadcrumbItem>
-    //         </BreadcrumbList>
-    //       )}
-    //     </Breadcrumb>
-    //   </div>
-    // </header>
   )
 }

@@ -12,47 +12,14 @@ import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
-import InfoIcon from '@mui/icons-material/InfoOutline'
-import DashboardIcon from '@mui/icons-material/Dashboard'
 import Stack from '@mui/material/Stack'
 import { Link as Anchor } from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import ThemeToggle from './theme-toggle'
+import { navLinksData } from '@/lib/nav-links'
 
 const drawerWidth = 240
-
-const navLinksData = {
-  navMain: [
-    {
-      title: 'Eureka',
-      url: '/eureka',
-      image: '/icons/eureka.png',
-      items: [
-        {
-          title: 'Trials',
-          url: '/eureka/trials',
-        },
-        {
-          title: 'Missing',
-          url: '/eureka/missing',
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: <DashboardIcon />,
-    },
-    {
-      title: 'About',
-      url: '/about',
-      icon: <InfoIcon />,
-    },
-  ],
-}
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -214,10 +181,9 @@ export default function NavDrawer({
           <Divider />
           <NavMain items={navLinksData.navMain} open={open} />
           <Divider />
-
           <NavSecondary items={navLinksData.navSecondary} open={open} />
         </Drawer>
-        <Box component="main" className="h-screen overflow-hidden w-full">
+        <Box component="main" className="h-screen w-full overflow-hidden">
           <DrawerHeader />
           {children}
           <Toolbar />

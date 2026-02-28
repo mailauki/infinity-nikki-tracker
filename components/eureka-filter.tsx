@@ -4,6 +4,8 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useEffect, useState } from 'react'
 import EurekaButton from './eureka-button'
 import ProgressCard from './progress-card'
+import GridContainer from './grid-container'
+import ProgressList from './progress-list'
 
 type CategoryFilter = '' | 'Head' | 'Hands' | 'Feet'
 type EurekaFilter = 'Sets' | 'Eureka' | 'Missing'
@@ -49,11 +51,17 @@ export default function EurekaFilter({
           </div>
         </ToggleGroup>
       </div>
-      <div className="grid grid-cols-2 grid-rows-5 gap-4 md:grid-cols-3">
-        {filteredEureka.map((eureka) => (
-          <EurekaButton key={eureka.id} eureka={eureka} user={user} />
-        ))}
-      </div>
+
+      <GridContainer
+        mainContent={
+          <div className="grid grid-cols-2 grid-rows-5 gap-4 md:grid-cols-3">
+            {filteredEureka.map((eureka) => (
+              <EurekaButton key={eureka.id} eureka={eureka} user={user} />
+            ))}
+          </div>
+        }
+        sideContent={<ProgressList items={categories} eureka={eureka} filter="categories" />}
+      />
     </>
   )
 }

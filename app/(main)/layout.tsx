@@ -9,6 +9,7 @@ import Image from 'next/image'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
 import NavDrawer from '@/components/nav-drawer'
+import NavTabs from '@/components/nav-tabs'
 
 export default function MainLayout({
   children,
@@ -17,9 +18,12 @@ export default function MainLayout({
 }>) {
   return (
     <NavDrawer>
-      <SiteHeader />
+      {/* <SiteHeader /> */}
+      <NavTabs />
       <div className="h-[calc(100vh-192px)] overflow-y-auto">
-        <Box sx={{ flexGrow: 1, p: 3 }}>{children}</Box>
+        <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+          {children}
+        </Container>
       </div>
     </NavDrawer>
   )

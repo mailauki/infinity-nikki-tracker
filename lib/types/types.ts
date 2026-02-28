@@ -1,3 +1,5 @@
+import { JSX } from 'react'
+
 export interface EurekaSet {
   id: number
   slug: string
@@ -61,4 +63,20 @@ export interface EurekaSets {
     image_url: string | null
     default: boolean
   }[]
+}
+
+export interface NavMainLink {
+  title: string
+  url: string
+  image?: string
+  isActive?: boolean
+  items?: {
+    title: string
+    url: string
+  }[]
+}
+export interface NavSecondaryLink {
+  title: string
+  url: string
+  icon?: JSX.Element
 }

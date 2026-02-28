@@ -26,10 +26,10 @@ export default function EurekaSetCard({
     //     </Link>
     //   </Button>
     // </Card>
-		<Card>
-			<CardActionArea href={`/eureka/${eurekaSet.slug}`}>
-			<EurekaHeader eurekaSet={eurekaSet} user={user} />
-			</CardActionArea>
-		</Card>
+    <Card>
+      <CardActionArea href={`/eureka/${eurekaSet.slug}`}>
+        <EurekaHeader eurekaSet={eurekaSet} user={user} />
+      </CardActionArea>
+    </Card>
   )
 }

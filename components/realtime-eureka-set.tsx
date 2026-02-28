@@ -8,8 +8,9 @@ import { EurekaSet, Obtained } from '@/lib/types/types'
 
 import EurekaHeader from './eureka-header'
 import EurekaTable from './eureka-table'
-import ProgressCard from './progress-card'
 import { Box } from '@mui/material'
+import ProgressList from './progress-list'
+import GridContainer from './grid-container'
 
 const supabase = createClient()
 
@@ -59,39 +60,28 @@ export default function RealtimeEurekaSet({
 
   return (
     <>
-      <Box sx={{ position: "relative" }}>
-				<EurekaHeader
-				eurekaSet={eurekaSet}
-				variant="large"
-				user={user}
-				/>
-				</Box>
-      {user && (
-        <>
-          <div className="grid grid-cols-3 gap-4">
-            {eurekaSet.categories.map((category) => (
-              <ProgressCard
-                key={`${eurekaSet.name}-${category.name}`}
-                item={category}
+      <Box sx={{ position: 'relative', width: '100%' }}>
+        <EurekaHeader eurekaSet={eurekaSet} variant="large" user={user} />
+      </Box>
+      <GridContainer
+        mainContent={
+          <>
+            <EurekaTable eurekaSet={eurekaSet} user={user} />
+          </>
+        }
+        sideContent={
+          user && (
+            <>
+              <ProgressList
+                items={eurekaSet.categories}
                 eureka={eurekaSet.eureka}
-                user={user}
+                filter="categories"
               />
-            ))}
-          </div>
-          <div className="grid grid-cols-3 gap-4 md:grid-cols-5">
-            {eurekaSet.colors.map((color) => (
-              <ProgressCard
-                key={`${eurekaSet.name}-${color.name}`}
-                item={color}
-                imageSize={20}
-                eureka={eurekaSet.eureka}
-                user={user}
-              />
-            ))}
-          </div>
-        </>
-      )}
-      <EurekaTable eurekaSet={eurekaSet} user={user} />
+              <ProgressList items={eurekaSet.colors} eureka={eurekaSet.eureka} filter="colors" />
+            </>
+          )
+        }
+      />
       {!user && (
         <div className="mb-10 flex flex-col items-center">
           <p className="max-w-sm text-center text-2xl">

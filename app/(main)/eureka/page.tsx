@@ -4,6 +4,8 @@ import EurekaSetCard from '@/components/eureka-set-card'
 import ProgressCard from '@/components/progress-card'
 import { getEurekaSets } from '@/lib/data'
 import { getUserID } from '@/hooks/user'
+import GridContainer from '@/components/grid-container'
+import ProgressList from '@/components/progress-list'
 
 export default async function EurekaSetsPage() {
   return (
@@ -22,7 +24,7 @@ async function EurekaSets() {
 
   return (
     <>
-      {user && (
+      {/* {user && (
         <div className="grid grid-cols-3 gap-4 pb-4">
           {categories.map((category) => (
             <ProgressCard key={category.name} item={category} eureka={eureka} user={user} />
@@ -33,7 +35,17 @@ async function EurekaSets() {
         {eurekaSets?.map((eurekaSet) => (
           <EurekaSetCard key={eurekaSet.name} eurekaSet={eurekaSet} user={user} />
         ))}
-      </div>
+      </div> */}
+      <GridContainer
+        mainContent={
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {eurekaSets?.map((eurekaSet) => (
+              <EurekaSetCard key={eurekaSet.name} eurekaSet={eurekaSet} user={user} />
+            ))}
+          </div>
+        }
+        sideContent={<ProgressList items={categories} eureka={eureka} filter="categories" />}
+      />
     </>
   )
 }
