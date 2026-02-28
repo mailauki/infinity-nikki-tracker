@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardMedia,
   Chip,
+  Grid,
   LinearProgress,
   List,
 } from '@mui/material'
@@ -38,17 +39,17 @@ async function Trials() {
   })) as Total[]
 
   return (
-    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <Grid container spacing={2}>
       {totalTrials?.map((trial) => (
-        <div key={trial.name}>
+        <Grid key={trial.name} size={{ xs: 12, md: 6 }}>
           <TrialCard
             trial={trial}
             eureka={trial.eurekaSets!.flatMap((eurekaSet) => eurekaSet.eureka)}
             isLoggedIn={isLoggedIn}
           />
-        </div>
+        </Grid>
       ))}
-    </div>
+    </Grid>
   )
 }
 

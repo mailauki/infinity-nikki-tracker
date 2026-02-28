@@ -6,6 +6,7 @@ import EurekaButton from './eureka-button'
 import ProgressCard from './progress-card'
 import GridContainer from './grid-container'
 import ProgressList from './progress-list'
+import { Grid } from '@mui/material'
 
 type CategoryFilter = '' | 'Head' | 'Hands' | 'Feet'
 type EurekaFilter = 'Sets' | 'Eureka' | 'Missing'
@@ -42,28 +43,27 @@ export default function EurekaFilter({
           value={category}
           onValueChange={(value: CategoryFilter) => setCategory(value)}
         >
-          <div className="grid w-full grid-cols-3 gap-4 pb-4">
+          <Grid container spacing={2} sx={{ width: '100%', pb: 2 }}>
             {categories.map((category) => (
-              <ToggleGroupItem key={category.name} value={category.name} className="h-fit p-0">
-                <ProgressCard
-                  key={category.name}
-                  item={category}
-                  eureka={eureka}
-                  isLoggedIn={isLoggedIn}
-                />
-              </ToggleGroupItem>
+              <Grid key={category.name} size={4}>
+                <ToggleGroupItem value={category.name} className="h-fit w-full p-0">
+                  <ProgressCard item={category} eureka={eureka} isLoggedIn={isLoggedIn} />
+                </ToggleGroupItem>
+              </Grid>
             ))}
-          </div>
+          </Grid>
         </ToggleGroup>
       </div>
 
       <GridContainer
         mainContent={
-          <div className="grid grid-cols-2 grid-rows-5 gap-4 md:grid-cols-3">
+          <Grid container spacing={2}>
             {filteredEureka.map((eureka) => (
-              <EurekaButton key={eureka.id} eureka={eureka} isLoggedIn={isLoggedIn} />
+              <Grid key={eureka.id} size={{ xs: 6, md: 4 }}>
+                <EurekaButton eureka={eureka} isLoggedIn={isLoggedIn} />
+              </Grid>
             ))}
-          </div>
+          </Grid>
         }
         sideContent={<ProgressList items={categories} eureka={eureka} filter="categories" />}
       />

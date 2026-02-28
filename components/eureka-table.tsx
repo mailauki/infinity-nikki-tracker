@@ -1,5 +1,6 @@
 'use client'
 
+import { Grid } from '@mui/material'
 import { EurekaSet } from '@/lib/types/types'
 
 import EurekaButton from './eureka-button'
@@ -12,10 +13,12 @@ export default function EurekaTable({
   isLoggedIn: boolean
 }) {
   return (
-    <div className="grid grid-cols-3 grid-rows-5 gap-4 pb-16">
+    <Grid container spacing={2} sx={{ pb: 8 }}>
       {eurekaSet.eureka.map((eureka) => (
-        <EurekaButton key={eureka.id} eureka={eureka} isLoggedIn={isLoggedIn} />
+        <Grid key={eureka.id} size={4}>
+          <EurekaButton eureka={eureka} isLoggedIn={isLoggedIn} />
+        </Grid>
       ))}
-    </div>
+    </Grid>
   )
 }
