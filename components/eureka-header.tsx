@@ -11,11 +11,11 @@ import { Box, CardContent, CardHeader, CardMedia, Chip, Stack, Typography } from
 export default function EurekaHeader({
   eurekaSet,
   variant = 'default',
-  user,
+  isLoggedIn,
 }: {
   eurekaSet: EurekaSet
   variant?: 'default' | 'large'
-  user: boolean
+  isLoggedIn: boolean
 }) {
   const obtainedCount = count(eurekaSet.eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
@@ -48,7 +48,7 @@ export default function EurekaHeader({
           subheader={<QualityStars quality={eurekaSet.quality!} />}
         />
       )}
-      {user && (
+      {isLoggedIn && (
         <CardContent component={Stack} spacing={1} sx={{ pt: 0 }}>
           <Stack direction="row" justifyContent="space-between">
             <ProgressBadge percentage={percentage} />

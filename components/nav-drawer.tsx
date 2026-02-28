@@ -118,8 +118,10 @@ function Footer() {
 
 export default function NavDrawer({
   children,
+  isAdmin = false,
 }: Readonly<{
   children: React.ReactNode
+  isAdmin?: boolean
 }>) {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
@@ -181,7 +183,10 @@ export default function NavDrawer({
           <Divider />
           <NavMain items={navLinksData.navMain} open={open} />
           <Divider />
-          <NavSecondary items={navLinksData.navSecondary} open={open} />
+          <NavSecondary
+            items={navLinksData.navSecondary.filter((item) => !item.adminOnly || isAdmin)}
+            open={open}
+          />
         </Drawer>
         <Box component="main" className="h-screen w-full overflow-hidden">
           <DrawerHeader />

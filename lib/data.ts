@@ -129,6 +129,22 @@ export const getTrials = cache(async () => {
   return trials
 })
 
+export const getAdminData = cache(async () => {
+  const supabase = await createClient()
+
+  const { data: eurekaSets } = await supabase
+    .from('eureka_sets')
+    .select('id, slug, name, quality, style, labels, trial')
+    .order('id')
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('name, image_url')
+    .order('name')
+  const { data: colors } = await supabase.from('colors').select('name, image_url').order('name')
+
+  return { eurekaSets, categories, colors }
+})
+
 export const getObtained = cache(async (user_id: UUID | string) => {
   const supabase = await createClient()
 

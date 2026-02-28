@@ -17,11 +17,11 @@ const supabase = createClient()
 export default function RealtimeEurekaSet({
   serverEurekaSet,
   serverObtained,
-  user,
+  isLoggedIn,
 }: {
   serverEurekaSet: EurekaSet
   serverObtained: Obtained[]
-  user: boolean
+  isLoggedIn: boolean
 }) {
   const [eurekaSet, setEurekaSet] = useState(serverEurekaSet)
   const [obtained, setObtained] = useState(serverObtained)
@@ -61,16 +61,16 @@ export default function RealtimeEurekaSet({
   return (
     <>
       <Box sx={{ position: 'relative', width: '100%' }}>
-        <EurekaHeader eurekaSet={eurekaSet} variant="large" user={user} />
+        <EurekaHeader eurekaSet={eurekaSet} variant="large" isLoggedIn={isLoggedIn} />
       </Box>
       <GridContainer
         mainContent={
           <>
-            <EurekaTable eurekaSet={eurekaSet} user={user} />
+            <EurekaTable eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
           </>
         }
         sideContent={
-          user && (
+          isLoggedIn && (
             <>
               <ProgressList
                 items={eurekaSet.categories}
@@ -82,7 +82,7 @@ export default function RealtimeEurekaSet({
           )
         }
       />
-      {!user && (
+      {!isLoggedIn && (
         <div className="mb-10 flex flex-col items-center">
           <p className="max-w-sm text-center text-2xl">
             Sign in or Sign up <br />

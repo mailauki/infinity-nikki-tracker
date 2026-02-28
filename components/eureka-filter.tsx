@@ -13,11 +13,11 @@ type EurekaFilter = 'Sets' | 'Eureka' | 'Missing'
 export default function EurekaFilter({
   eureka,
   categories,
-  user,
+  isLoggedIn,
 }: {
   eureka: Eureka[]
   categories: Category[]
-  user: boolean
+  isLoggedIn: boolean
 }) {
   const [category, setCategory] = useState<CategoryFilter>('')
   const [filteredEureka, setFilteredEureka] = useState<Eureka[]>(eureka)
@@ -45,7 +45,7 @@ export default function EurekaFilter({
           <div className="grid w-full grid-cols-3 gap-4 pb-4">
             {categories.map((category) => (
               <ToggleGroupItem key={category.name} value={category.name} className="h-fit p-0">
-                <ProgressCard key={category.name} item={category} eureka={eureka} user={user} />
+                <ProgressCard key={category.name} item={category} eureka={eureka} isLoggedIn={isLoggedIn} />
               </ToggleGroupItem>
             ))}
           </div>
@@ -56,7 +56,7 @@ export default function EurekaFilter({
         mainContent={
           <div className="grid grid-cols-2 grid-rows-5 gap-4 md:grid-cols-3">
             {filteredEureka.map((eureka) => (
-              <EurekaButton key={eureka.id} eureka={eureka} user={user} />
+              <EurekaButton key={eureka.id} eureka={eureka} isLoggedIn={isLoggedIn} />
             ))}
           </div>
         }

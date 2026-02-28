@@ -14,12 +14,12 @@ export default function RealtimeEurekaFilter({
   serverEureka,
   serverCategories,
   serverObtained,
-  user,
+  isLoggedIn,
 }: {
   serverEureka: Eureka[]
   serverCategories: Category[]
   serverObtained: Obtained[]
-  user: boolean
+  isLoggedIn: boolean
 }) {
   const [eureka, setEureka] = useState(serverEureka)
   const [obtained, setObtained] = useState(serverObtained)
@@ -56,5 +56,5 @@ export default function RealtimeEurekaFilter({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [obtained])
 
-  return <EurekaFilter eureka={eureka} categories={serverCategories} user={user} />
+  return <EurekaFilter eureka={eureka} categories={serverCategories} isLoggedIn={isLoggedIn} />
 }

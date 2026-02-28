@@ -5,7 +5,7 @@ import { Eureka } from '@/lib/types/types'
 import { Box, Card, CardActionArea, CardHeader, CardMedia } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 
-export default function EurekaButton({ eureka, user }: { eureka: Eureka; user: boolean }) {
+export default function EurekaButton({ eureka, isLoggedIn }: { eureka: Eureka; isLoggedIn: boolean }) {
   const slugEurekaSet = eureka.eureka_set!.replace(' ', '_')
   const slug = `${slugEurekaSet}-${eureka.category}-${eureka.color}`
 
@@ -13,7 +13,7 @@ export default function EurekaButton({ eureka, user }: { eureka: Eureka; user: b
     <Card key={eureka.id}>
       <CardActionArea
         onClick={() => handleObtained(slug)}
-        disabled={!user}
+        disabled={!isLoggedIn}
         data-active={eureka.obtained === true ? '' : undefined}
         sx={{
           height: '100%',

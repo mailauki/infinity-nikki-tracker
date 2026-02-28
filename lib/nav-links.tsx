@@ -28,6 +28,7 @@ export const navLinksData = {
       title: 'Dashboard',
       url: '/dashboard',
       icon: <DashboardIcon />,
+      adminOnly: true,
     },
     {
       title: 'About',

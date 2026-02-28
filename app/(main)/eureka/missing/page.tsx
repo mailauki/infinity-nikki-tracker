@@ -16,11 +16,11 @@ async function Missing() {
   const eurekaSets = await getEurekaSets()
   const categories = [...new Set(eurekaSets.flatMap((eurekaSet) => eurekaSet.categories))]
   const user_id = await getUserID()
-  const user = !!user_id!
+  const isLoggedIn = !!user_id!
   const obtained = await getObtained(user_id!)
   const eureka = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka)
 
-  if (!user)
+  if (!isLoggedIn)
     return (
       <div className="mt-10 flex flex-col items-center">
         <p className="max-w-sm text-center text-2xl">
@@ -34,7 +34,7 @@ async function Missing() {
       serverEureka={eureka}
       serverCategories={categories}
       serverObtained={obtained || []}
-      user={user}
+      isLoggedIn={isLoggedIn}
     />
   )
 }

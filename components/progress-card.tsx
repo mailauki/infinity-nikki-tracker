@@ -9,12 +9,12 @@ export default function ProgressCard({
   item,
   imageSize = 60,
   eureka,
-  user,
+  isLoggedIn,
 }: {
   item: Total
   imageSize?: number
   eureka: Eureka[]
-  user: boolean
+  isLoggedIn: boolean
 }) {
   const obtainedCount = count(eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)

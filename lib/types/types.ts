@@ -1,4 +1,4 @@
-import { JSX } from 'react'
+import { JSX, ReactNode } from 'react'
 
 export interface EurekaSet {
   id: number
@@ -78,5 +78,6 @@ export interface NavMainLink {
 export interface NavSecondaryLink {
   title: string
   url: string
-  icon?: JSX.Element
+  icon?: ReactNode
+  adminOnly?: boolean
 }
