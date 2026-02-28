@@ -1,10 +1,12 @@
 import { Suspense } from 'react'
 
-import EurekaSetCard from '@/components/eureka-set-card'
-import ProgressCard from '@/components/progress-card'
 import { getUserID } from '@/hooks/user'
 import { getEurekaSets, getTrials } from '@/lib/data'
-import { EurekaSet, Total } from '@/lib/types/types'
+import { Eureka, EurekaSet, Total } from '@/lib/types/types'
+import { Card, CardActions, CardContent, CardHeader, CardMedia, Chip, LinearProgress, List } from '@mui/material'
+import Image from 'next/image'
+import { count, percent } from '@/hooks/count'
+import EurekaItem from '@/components/eureka-item'
 
 export default async function TrialsPage() {
   return (
@@ -29,24 +31,55 @@ async function Trials() {
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {totalTrials?.map((trial) => (
         <div key={trial.name}>
-          <ProgressCard
-            key={trial.name}
-            item={trial}
-            imageSize={500}
+          <TrialCard
+            trial={trial}
             eureka={trial.eurekaSets!.flatMap((eurekaSet) => eurekaSet.eureka)}
             isLoggedIn={isLoggedIn}
           />
-          <div className="grid grid-cols-2 gap-4 pt-4">
-            {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
-              <EurekaSetCard
-                key={`${trial.name}-${eurekaSet.name}`}
-                eurekaSet={eurekaSet}
-                isLoggedIn={isLoggedIn}
-              />
-            ))}
-          </div>
         </div>
       ))}
     </div>
+  )
+}
+
+function TrialCard({
+  trial,
+  eureka,
+  isLoggedIn,
+}: {
+  trial: Total
+  eureka: Eureka[]
+  isLoggedIn: boolean
+}) {
+  const obtainedCount = count(eureka)
+  const percentage = percent(obtainedCount.obtained, obtainedCount.total)
+
+  return (
+    <Card>
+      <CardHeader
+        title={trial.name}
+        subheader={`${percentage}%`}
+        action={
+          <Chip
+            label={`${obtainedCount.obtained} / ${obtainedCount.total}`}
+            variant="outlined"
+            size="small"
+          />
+        }
+      />
+      <CardMedia sx={{ p: 1 }}>
+        <Image src={trial.image_url!} alt={trial.name!} width={500} height={500} />
+      </CardMedia>
+      <CardContent>
+        <LinearProgress value={percentage} variant="determinate" color="inherit" />
+      </CardContent>
+      <CardActions>
+        <List sx={{ width: '100%' }}>
+          {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
+            <EurekaItem key={eurekaSet.id} eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
+          ))}
+        </List>
+      </CardActions>
+    </Card>
   )
 }

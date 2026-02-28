@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { count, percent } from '@/hooks/count'
 import { EurekaSet } from '@/lib/types/types'
 
-import ProgressBadge from './progress-badge'
+import ProgressBadge from './progress-chip'
 import QualityStars from './quality-stars'
 import { Progress } from './ui/progress'
 import { Box, CardContent, CardHeader, CardMedia, Chip, Stack, Typography } from '@mui/material'

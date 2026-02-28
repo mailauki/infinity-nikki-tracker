@@ -25,6 +25,10 @@ async function EurekaSet({ slug }: { slug: string }) {
   const isLoggedIn = !!user_id!
 
   return (
-    <RealtimeEurekaSet serverEurekaSet={eurekaSet} serverObtained={obtained || []} isLoggedIn={isLoggedIn} />
+    <RealtimeEurekaSet
+      serverEurekaSet={eurekaSet}
+      serverObtained={obtained || []}
+      isLoggedIn={isLoggedIn}
+    />
   )
 }
