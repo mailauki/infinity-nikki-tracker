@@ -17,7 +17,7 @@ import {
   TextField,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
-import { toEurekaVariantSlug } from '@/lib/utils'
+import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 
 type EurekaSetOption = { id: number; slug: string | null; name: string }
@@ -44,7 +44,7 @@ export default function AddEurekaVariantForm({
 
   useEffect(() => {
     if (!editSlug && eurekaSet && category && color) {
-      setSlug(toEurekaVariantSlug(eurekaSet, category, color))
+      setSlug(toSlugVariant(eurekaSet, category, color))
     }
   }, [eurekaSet, category, color, editSlug])
 

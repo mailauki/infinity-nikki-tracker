@@ -2,7 +2,7 @@
 
 import { Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { toEurekaVariantSlug } from '@/lib/utils'
+import { toSlugVariant } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 
 type Row = {
@@ -27,7 +27,7 @@ const columns: Column<Row>[] = [
         <IconButton
           size="small"
           color="secondary"
-          href={`/eureka-variant/edit/${v.slug ?? toEurekaVariantSlug(v.eureka_set ?? '', v.category ?? '', v.color ?? '')}`}
+          href={`/eureka-variant/edit/${v.slug ?? toSlugVariant(v.eureka_set ?? '', v.category ?? '', v.color ?? '')}`}
         >
           <EditIcon fontSize="small" />
         </IconButton>

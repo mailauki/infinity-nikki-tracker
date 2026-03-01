@@ -15,7 +15,7 @@ import {
   TextField,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
-import { toEurekaSlug } from '@/lib/utils'
+import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 
 type EurekaSetRow = {
@@ -37,7 +37,7 @@ export default function EditEurekaSetForm({
 }) {
   const router = useRouter()
   const [name, setName] = useState(eurekaSet.name)
-  const [slug, setSlug] = useState(eurekaSet.slug ?? toEurekaSlug(eurekaSet.name))
+  const [slug, setSlug] = useState(eurekaSet.slug ?? toSlug(eurekaSet.name))
   const [quality, setQuality] = useState<number | ''>(eurekaSet.quality ?? '')
   const [style, setStyle] = useState(eurekaSet.style ?? '')
   const [labels, setLabels] = useState(eurekaSet.labels ?? '')

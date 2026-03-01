@@ -16,6 +16,7 @@ import {
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
+import { toSlug } from '@/lib/utils'
 import { getAdminData, getEurekaVariants, getTrialsAdmin } from '@/lib/data'
 
 export default function DashboardPage() {
@@ -135,7 +136,7 @@ async function AdminDashboard() {
         <List disablePadding>
           {[...(trials ?? [])].sort((a, b) => b.id - a.id).slice(0, 5).map((trial) => (
             <ListItem key={trial.id} disablePadding divider>
-              <ListItemButton href={`/trial/edit/${trial.id}`}>
+              <ListItemButton href={`/trial/edit/${trial.slug ?? toSlug(trial.name)}`}>
                 <ListItemText
                   primary={trial.name}
                   secondary={trial.created_at ? new Date(trial.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—'}

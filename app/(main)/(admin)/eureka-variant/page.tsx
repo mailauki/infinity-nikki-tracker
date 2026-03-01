@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { Container } from '@mui/material'
 import { getEurekaVariants } from '@/lib/data'
 import { createClient } from '@/lib/supabase/server'
-import { toEurekaVariantSlug } from '@/lib/utils'
+import { toSlugVariant } from '@/lib/utils'
 import { EurekaVariantTable } from '@/components/admin/eureka-variant-table'
 
 export default function EurekaVariantPage() {
@@ -26,7 +26,7 @@ async function EurekaVariantLoader() {
         supabase
           .from('eureka_variants')
           .update({
-            slug: toEurekaVariantSlug(
+            slug: toSlugVariant(
               variant.eureka_set ?? '',
               variant.category ?? '',
               variant.color ?? ''

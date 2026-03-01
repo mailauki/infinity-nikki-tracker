@@ -2,7 +2,7 @@
 
 import { IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { toEurekaSlug } from '@/lib/utils'
+import { toSlug } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 
 type Row = {
@@ -25,7 +25,7 @@ const columns: Column<Row>[] = [
         <IconButton
           size="small"
           color="secondary"
-          href={`/eureka-set/edit/${set.slug ?? toEurekaSlug(set.name)}`}
+          href={`/eureka-set/edit/${set.slug ?? toSlug(set.name)}`}
         >
           <EditIcon fontSize="small" />
         </IconButton>

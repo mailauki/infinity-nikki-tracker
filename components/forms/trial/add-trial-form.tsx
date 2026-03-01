@@ -5,30 +5,23 @@ import { useRouter } from 'next/navigation'
 import {
   Alert,
   Button,
-  FormControl,
   IconButton,
   InputAdornment,
-  InputLabel,
-  MenuItem,
-  Select,
   Stack,
   TextField,
 } from '@mui/material'
+import { Edit, EditOff } from '@mui/icons-material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
-import { Edit, EditOff } from '@mui/icons-material'
 
-export default function AddEurekaSetForm({ trials }: { trials: { name: string }[] }) {
+export default function AddTrialForm() {
   const router = useRouter()
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
-  const [quality, setQuality] = useState<number | ''>('')
-  const [style, setStyle] = useState('')
-  const [labels, setLabels] = useState('')
-  const [trial, setTrial] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
+  const [editSlug, setEditSlug] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [editSlug, setEditSlug] = useState<boolean>(false)
 
   function handleNameChange(value: string) {
     setName(value)
@@ -41,14 +34,11 @@ export default function AddEurekaSetForm({ trials }: { trials: { name: string }[
     setError(null)
 
     const supabase = createClient()
-    const { error } = await supabase.from('eureka_sets').insert([
+    const { error } = await supabase.from('trials').insert([
       {
         name: name.trim(),
         slug: slug.trim(),
-        quality: quality === '' ? null : quality,
-        style: style.trim() || null,
-        labels: labels.trim() || null,
-        trial: trial || null,
+        image_url: imageUrl.trim() || null,
       },
     ])
 
@@ -57,7 +47,7 @@ export default function AddEurekaSetForm({ trials }: { trials: { name: string }[
     if (error) {
       setError(error.message)
     } else {
-      router.push('/eureka-set')
+      router.push('/trial')
       router.refresh()
     }
   }
@@ -95,49 +85,18 @@ export default function AddEurekaSetForm({ trials }: { trials: { name: string }[
           }}
         />
 
-        <FormControl>
-          <InputLabel>Quality</InputLabel>
-          <Select
-            label="Quality"
-            value={quality}
-            onChange={(e) => setQuality(e.target.value as number | '')}
-          >
-            <MenuItem value="">—</MenuItem>
-            {[1, 2, 3, 4, 5].map((n) => (
-              <MenuItem key={n} value={n}>
-                {n}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <TextField label="Style" value={style} onChange={(e) => setStyle(e.target.value)} />
-
         <TextField
-          label="Labels"
-          value={labels}
-          onChange={(e) => setLabels(e.target.value)}
-          helperText="Comma-separated tags"
+          label="Image URL"
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
         />
 
-        <FormControl>
-          <InputLabel>Trial</InputLabel>
-          <Select label="Trial" value={trial} onChange={(e) => setTrial(e.target.value)}>
-            <MenuItem value="">—</MenuItem>
-            {trials.map((t) => (
-              <MenuItem key={t.name} value={t.name}>
-                {t.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
         <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Button variant="outlined" href="/dashboard">
+          <Button variant="outlined" href="/trial">
             Cancel
           </Button>
           <Button type="submit" variant="contained" disabled={loading}>
-            {loading ? 'Saving...' : 'Add Eureka Set'}
+            {loading ? 'Saving...' : 'Add Trial'}
           </Button>
         </Stack>
       </Stack>

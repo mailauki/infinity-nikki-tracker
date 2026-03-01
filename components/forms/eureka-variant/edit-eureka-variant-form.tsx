@@ -17,7 +17,7 @@ import {
   TextField,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
-import { toEurekaVariantSlug } from '@/lib/utils'
+import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 
 type EurekaVariantRow = {
@@ -52,7 +52,7 @@ export default function EditEurekaVariantForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [slug, setSlug] = useState(
-    variant.slug ?? toEurekaVariantSlug(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? '')
+    variant.slug ?? toSlugVariant(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? '')
   )
   const [editSlug, setEditSlug] = useState<boolean>(false)
 

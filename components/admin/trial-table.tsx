@@ -2,10 +2,12 @@
 
 import { IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
+import { toSlug } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 
 type Row = {
   id: number
+  slug: string | null
   name: string
   image_url: string | null
 }
@@ -16,7 +18,11 @@ const columns: Column<Row>[] = [
     cellSx: { py: 0 },
     cell: (trial) => (
       <Tooltip title={`Edit ${trial.name}`}>
-        <IconButton size="small" color="secondary" href={`/trial/edit/${trial.id}`}>
+        <IconButton
+          size="small"
+          color="secondary"
+          href={`/trial/edit/${trial.slug ?? toSlug(trial.name)}`}
+        >
           <EditIcon fontSize="small" />
         </IconButton>
       </Tooltip>
@@ -28,6 +34,14 @@ const columns: Column<Row>[] = [
     cell: (trial) => (
       <Typography noWrap variant="body2" fontWeight="medium">
         {trial.name}
+      </Typography>
+    ),
+  },
+  {
+    header: 'Slug',
+    cell: (trial) => (
+      <Typography variant="caption" fontFamily="monospace" noWrap>
+        {trial.slug}
       </Typography>
     ),
   },

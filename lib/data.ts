@@ -182,7 +182,7 @@ export const getTrialsAdmin = cache(async () => {
 
   const { data: trials } = await supabase
     .from('trials')
-    .select('id, name, image_url, created_at')
+    .select('id, slug, name, image_url, created_at')
     .order('id', { ascending: true })
 
   return trials
