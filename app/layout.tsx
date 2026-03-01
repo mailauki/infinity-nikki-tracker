@@ -33,7 +33,7 @@ export default async function RootLayout({
     <html lang="en" className={roboto.variable} suppressHydrationWarning>
       <body>
         <InitColorSchemeScript defaultMode="system" />
-        <AppRouterCacheProvider options={{ key: "css" }}>
+        <AppRouterCacheProvider options={{ key: 'css' }}>
           <ThemeProvider theme={theme} defaultMode="system">
             <CssBaseline />
             {children}

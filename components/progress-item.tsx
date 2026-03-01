@@ -50,8 +50,12 @@ export function ProgressItem({
             onClick={() => onValueChange?.(isSelected ? '' : item.name)}
           >
             <ListItemAvatar>
-              <Avatar alt={item.name} sx={{ bgcolor: "transparent" }}>
-                {item.image_url ? <Image src={item.image_url} alt={item.name} width={100} height={100} /> : <CategoryIcon />}
+              <Avatar alt={item.name} sx={{ bgcolor: 'transparent' }}>
+                {item.image_url ? (
+                  <Image src={item.image_url} alt={item.name} width={100} height={100} />
+                ) : (
+                  <CategoryIcon />
+                )}
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary={item.name} secondary={`${percentage}%`} />
@@ -59,8 +63,17 @@ export function ProgressItem({
         ) : (
           <>
             <ListItemAvatar>
-              <Avatar alt={item.name} sx={{ bgcolor: "transparent" }}>
-                {item.image_url ? <Image src={item.image_url} alt={item.name} width={filter === "colors" ? 20 : 100} height={filter === "colors" ? 20 : 100} /> : <PaletteIcon />}
+              <Avatar alt={item.name} sx={{ bgcolor: 'transparent' }}>
+                {item.image_url ? (
+                  <Image
+                    src={item.image_url}
+                    alt={item.name}
+                    width={filter === 'colors' ? 20 : 100}
+                    height={filter === 'colors' ? 20 : 100}
+                  />
+                ) : (
+                  <PaletteIcon />
+                )}
               </Avatar>
             </ListItemAvatar>
             <ListItemText primary={item.name} secondary={`${percentage}%`} />

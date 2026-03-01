@@ -4,10 +4,15 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Link as Anchor,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
@@ -19,7 +24,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.SyntheticEvent) => {
     e.preventDefault()
     const supabase = createClient()
     setIsLoading(true)
@@ -51,59 +56,63 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">Sign up</CardTitle>
-          <CardDescription>Create a new account</CardDescription>
-        </CardHeader>
+        <CardHeader title="Sign up" subheader="Create a new account" />
         <CardContent>
           <form onSubmit={handleSignUp}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="repeat-password">Repeat Password</Label>
-                </div>
-                <Input
-                  id="repeat-password"
-                  type="password"
-                  required
-                  value={repeatPassword}
-                  onChange={(e) => setRepeatPassword(e.target.value)}
-                />
-              </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Creating an account...' : 'Sign up'}
-              </Button>
-            </div>
-            <div className="mt-4 text-center text-sm">
+            <TextField
+              label="Email"
+              id="email"
+              type="email"
+              placeholder="m@example.com"
+              required
+              fullWidth
+              margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              label="Password"
+              id="password"
+              type="password"
+              required
+              fullWidth
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <TextField
+              label="Repeat Password"
+              id="repeat-password"
+              type="password"
+              required
+              fullWidth
+              margin="normal"
+              value={repeatPassword}
+              onChange={(e) => setRepeatPassword(e.target.value)}
+            />
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            <Button
+              type="submit"
+              fullWidth
+              size="large"
+              variant="contained"
+              disabled={isLoading}
+              sx={{ my: 2 }}
+            >
+              {isLoading ? 'Creating an account...' : 'Sign up'}
+            </Button>
+            <Typography color="textSecondary" variant="body1">
               Already have an account?{' '}
-              <Link href="/auth/login" className="underline underline-offset-4">
+              <Anchor
+                color="textSecondary"
+                fontWeight="medium"
+                href="/auth/login"
+                component={Link}
+                underline="hover"
+              >
                 Login
-              </Link>
-            </div>
+              </Anchor>
+            </Typography>
           </form>
         </CardContent>
       </Card>

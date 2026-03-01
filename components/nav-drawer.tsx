@@ -13,11 +13,13 @@ import MenuIcon from '@mui/icons-material/Menu'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import Stack from '@mui/material/Stack'
-import { Link as Anchor } from '@mui/material'
+import { Link as Anchor, Button } from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import ThemeToggle from './theme-toggle'
 import { navLinksData } from '@/lib/nav-links'
+import { NavUser } from './nav-user'
+import { JwtPayload } from '@supabase/supabase-js'
 
 const drawerWidth = 240
 
@@ -119,9 +121,11 @@ function Footer() {
 export default function NavDrawer({
   children,
   isAdmin = false,
+  user,
 }: Readonly<{
   children: React.ReactNode
   isAdmin?: boolean
+  user: JwtPayload
 }>) {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
@@ -163,15 +167,29 @@ export default function NavDrawer({
                 // className="mx-2 mb-4 brightness-[0.4] drop-shadow-md grayscale dark:filter-none"
               />
             </Link> */}
-            <Anchor
-              variant="h6"
-              noWrap
-              sx={{ color: 'inherit', cursor: 'pointer' }}
-              underline="none"
-              href="/"
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ flex: 1 }}
             >
-              Infinity Nikki Tracker
-            </Anchor>
+              <Anchor
+                variant="h6"
+                noWrap
+                sx={{ color: 'inherit', cursor: 'pointer' }}
+                underline="none"
+                href="/"
+              >
+                Infinity Nikki Tracker
+              </Anchor>
+              {!user ? (
+                <Button color="inherit" href="/login">
+                  Login
+                </Button>
+              ) : (
+                <NavUser user={user} />
+              )}
+            </Stack>
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open} className="h-screen overflow-hidden">

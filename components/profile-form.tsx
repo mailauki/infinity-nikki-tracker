@@ -2,13 +2,11 @@
 import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
-import { Field, FieldLabel } from './ui/field'
-import { Input } from './ui/input'
-import { Button } from './ui/button'
 import AvatarUpload from './avatar-upload'
+import { Button, TextField } from '@mui/material'
 import { LogOut } from 'lucide-react'
 
-export default function AccountForm({ user }: { user: User | null }) {
+export default function ProfileForm({ user }: { user: User | null }) {
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
   const [fullname, setFullname] = useState<string | null>(null)
@@ -76,7 +74,7 @@ export default function AccountForm({ user }: { user: User | null }) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-sm px-2">
+    <>
       <div className="mb-4 flex w-full flex-wrap justify-between gap-4">
         <AvatarUpload
           uid={user?.id ?? null}
@@ -89,50 +87,54 @@ export default function AccountForm({ user }: { user: User | null }) {
 
         <div>
           <form action="/auth/signout" method="post">
-            <Button type="submit" variant="outline">
+            <Button type="submit" variant="outlined">
               <LogOut />
               Log out
             </Button>
           </form>
         </div>
       </div>
+      <div className="w-full max-w-sm">
+        <form className="flex flex-col gap-4">
+          <TextField
+            label="Email"
+            id="email"
+            type="email"
+            margin="normal"
+            placeholder="Email"
+            value={user?.email}
+            disabled
+          />
 
-      <form className="flex flex-col gap-4">
-        <Field data-disabled>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input id="email" type="email" placeholder="Email" value={user?.email} disabled />
-        </Field>
-
-        <Field>
-          <FieldLabel htmlFor="fullName">Full Name</FieldLabel>
-          <Input
+          <TextField
+            label="Full Name"
             id="fullName"
             type="text"
+            margin="normal"
             value={fullname || ''}
-            onChange={(e) => setFullname(e.target.value)}
+            onChange={(event) => setFullname(event.target.value)}
           />
-        </Field>
-        <Field>
-          <FieldLabel htmlFor="username">Username</FieldLabel>
-          <Input
+
+          <TextField
+            label="Userame"
             id="username"
             type="text"
+            margin="normal"
             value={username || ''}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={(event) => setUsername(event.target.value)}
           />
-        </Field>
 
-        <div className="my-2 w-full">
           <Button
-            className="w-full"
-            variant="default"
+            fullWidth
+            variant="contained"
+            size="large"
             onClick={() => updateProfile({ fullname, username, avatar_url })}
             disabled={loading}
           >
             {loading ? 'Loading ...' : 'Update'}
           </Button>
-        </div>
-      </form>
-    </div>
+        </form>
+      </div>
+    </>
   )
 }

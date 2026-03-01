@@ -1,10 +1,10 @@
 'use client'
 
-import { LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { createClient } from '@/lib/supabase/client'
+import { ListItemIcon, MenuItem } from '@mui/material'
+import { Logout } from '@mui/icons-material'
 
 export function LogoutButton() {
   const router = useRouter()
@@ -16,9 +16,11 @@ export function LogoutButton() {
   }
 
   return (
-    <DropdownMenuItem onClick={logout}>
-      <LogOut />
-      Log out
-    </DropdownMenuItem>
+    <MenuItem onClick={logout}>
+      <ListItemIcon>
+        <Logout fontSize="small" />
+      </ListItemIcon>
+      Logout
+    </MenuItem>
   )
 }

@@ -1,20 +1,17 @@
 import Image from 'next/image'
 
-import { Progress } from '@/components/ui/progress'
 import { count, percent } from '@/hooks/count'
 import { Eureka, Total } from '@/lib/types/types'
-import { Box, Card, CardActions, CardHeader, CardMedia, Chip } from '@mui/material'
+import { Box, Card, CardActions, CardHeader, CardMedia, Chip, LinearProgress } from '@mui/material'
 
 export default function ProgressCard({
   item,
   imageSize = 60,
   eureka,
-  isLoggedIn,
 }: {
   item: Total
   imageSize?: number
   eureka: Eureka[]
-  isLoggedIn: boolean
 }) {
   const obtainedCount = count(eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
@@ -51,7 +48,7 @@ export default function ProgressCard({
         />
       </Box>
       <CardActions sx={{ px: 2, pb: 2 }}>
-        <Progress value={percentage} className="bg-muted" />
+        <LinearProgress variant="determinate" value={percentage} sx={{ width: '100%' }} />
       </CardActions>
     </Card>
   )

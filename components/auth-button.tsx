@@ -1,9 +1,9 @@
 import Link from 'next/link'
 
-import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/server'
 
 import { NavUser } from './nav-user'
+import { Button } from '@mui/material'
 
 export async function AuthButton() {
   const supabase = await createClient()
@@ -17,11 +17,11 @@ export async function AuthButton() {
     <NavUser user={user} />
   ) : (
     <div className="flex gap-2">
-      <Button asChild size="sm" variant="outline" className="flex-1">
-        <Link href="/auth/login">Sign in</Link>
+      <Button component={Link} variant="outlined" href="/auth/login">
+        Sign in
       </Button>
-      <Button asChild size="sm" variant="default">
-        <Link href="/auth/sign-up">Sign up</Link>
+      <Button component={Link} variant="contained" href="/auth/sign-up">
+        Sign up
       </Button>
     </div>
   )

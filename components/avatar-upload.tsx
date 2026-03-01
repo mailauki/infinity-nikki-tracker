@@ -1,9 +1,8 @@
 'use client'
 import React, { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Input } from './ui/input'
-import { Button } from './ui/button'
 import AvatarPreview from './avatar-preview'
+import { ButtonBase } from '@mui/material'
 
 export default function AvatarUpload({
   uid,
@@ -45,21 +44,38 @@ export default function AvatarUpload({
   }
 
   return (
-    <div>
+    <ButtonBase
+      component="label"
+      role={undefined}
+      tabIndex={-1} // prevent label from tab focus
+      aria-label="Avatar image"
+      sx={{
+        borderRadius: '40px',
+        '&:has(:focus-visible)': {
+          outline: '2px solid',
+          outlineOffset: '2px',
+        },
+      }}
+    >
       <AvatarPreview url={url} size="large" />
-      <label htmlFor="avatar">
-        <Input
-          className="hidden"
-          type="file"
+      <input
+        type="file"
           id="avatar"
-          accept="image/*"
+        accept="image/*"
+        style={{
+          border: 0,
+          clip: 'rect(0 0 0 0)',
+          height: '1px',
+          margin: '-1px',
+          overflow: 'hidden',
+          padding: 0,
+          position: 'absolute',
+          whiteSpace: 'nowrap',
+          width: '1px',
+        }}
           onChange={uploadAvatar}
           disabled={uploading}
-        />
-        <Button asChild className="my-2 w-40">
-          <label htmlFor="avatar">{uploading ? 'Uploading...' : 'Upload Avatar'}</label>
-        </Button>
-      </label>
-    </div>
+      />
+    </ButtonBase>
   )
 }

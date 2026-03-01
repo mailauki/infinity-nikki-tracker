@@ -3,10 +3,15 @@
 import Link from 'next/link'
 import { useState } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import {
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Link as Anchor,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
@@ -16,14 +21,13 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
+  const handleForgotPassword = async (e: React.SyntheticEvent) => {
     e.preventDefault()
     const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
     try {
-      // The url which will be included in the email. This URL needs to be configured in your redirect URLs in the Supabase dashboard at https://supabase.com/dashboard/project/_/auth/url-configuration
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/update-password`,
       })
@@ -40,50 +44,56 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       {success ? (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>Password reset instructions sent</CardDescription>
-          </CardHeader>
+          <CardHeader title="Check Your Email" subheader="Password reset instructions sent" />
           <CardContent>
-            <p className="text-sm text-muted-foreground">
+            <Typography color="textSecondary" variant="body2">
               If you registered using your email and password, you will receive a password reset
               email.
-            </p>
+            </Typography>
           </CardContent>
         </Card>
       ) : (
         <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-            <CardDescription>
-              Type in your email and we&apos;ll send you a link to reset your password
-            </CardDescription>
-          </CardHeader>
+          <CardHeader
+            title="Reset Your Password"
+            subheader="Type in your email and we'll send you a link to reset your password"
+          />
           <CardContent>
             <form onSubmit={handleForgotPassword}>
-              <div className="flex flex-col gap-6">
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="m@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                {error && <p className="text-sm text-red-500">{error}</p>}
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Sending...' : 'Send reset email'}
-                </Button>
-              </div>
-              <div className="mt-4 text-center text-sm">
+              <TextField
+                label="Email"
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                fullWidth
+                margin="normal"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {error && <p className="text-sm text-red-500">{error}</p>}
+              <Button
+                type="submit"
+                fullWidth
+                size="large"
+                variant="contained"
+                disabled={isLoading}
+                sx={{ my: 2 }}
+              >
+                {isLoading ? 'Sending...' : 'Send reset email'}
+              </Button>
+              <Typography color="textSecondary" variant="body1">
                 Already have an account?{' '}
-                <Link href="/auth/login" className="underline underline-offset-4">
+                <Anchor
+                  color="textSecondary"
+                  fontWeight="medium"
+                  href="/auth/login"
+                  component={Link}
+                  underline="hover"
+                >
                   Login
-                </Link>
-              </div>
+                </Anchor>
+              </Typography>
             </form>
           </CardContent>
         </Card>

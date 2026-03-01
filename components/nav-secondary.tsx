@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { JSX } from 'react'
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 import { NavSecondaryLink } from '@/lib/types/types'
 
