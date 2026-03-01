@@ -24,8 +24,6 @@ function ThemeToggle() {
   const { mode, setMode } = useColorScheme()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
-  if (!mode) return null
-
   const currentIcon = modes.find((m) => m.value === mode)?.icon ?? <BrightnessMediumIcon />
 
   return (

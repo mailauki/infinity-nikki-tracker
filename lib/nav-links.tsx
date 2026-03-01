@@ -1,5 +1,6 @@
 import InfoIcon from '@mui/icons-material/InfoOutline'
 import DashboardIcon from '@mui/icons-material/Dashboard'
+import PersonIcon from '@mui/icons-material/Person'
 
 export const navLinksData = {
   home: {
@@ -29,6 +30,11 @@ export const navLinksData = {
       url: '/dashboard',
       icon: <DashboardIcon />,
       adminOnly: true,
+    },
+    {
+      title: 'Profile',
+      url: '/profile',
+      icon: <PersonIcon />,
     },
     {
       title: 'About',

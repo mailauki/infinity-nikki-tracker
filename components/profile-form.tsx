@@ -87,15 +87,15 @@ export default function ProfileForm({ user }: { user: User | null }) {
 
         <div>
           <form action="/auth/signout" method="post">
-            <Button type="submit" variant="outlined">
-              <LogOut />
+            <Button type="submit" variant="outlined"
+						startIcon={<LogOut fontSize="small" />}>
               Log out
             </Button>
           </form>
         </div>
       </div>
       <div className="w-full max-w-sm">
-        <form className="flex flex-col gap-4">
+        <form className="flex flex-col">
           <TextField
             label="Email"
             id="email"
@@ -130,6 +130,7 @@ export default function ProfileForm({ user }: { user: User | null }) {
             size="large"
             onClick={() => updateProfile({ fullname, username, avatar_url })}
             disabled={loading}
+            sx={{ my: 2 }}
           >
             {loading ? 'Loading ...' : 'Update'}
           </Button>
