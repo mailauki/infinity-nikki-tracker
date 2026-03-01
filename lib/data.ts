@@ -165,8 +165,8 @@ export const getAdminData = cache(async () => {
 
   const { data: eurekaSets } = await supabase
     .from('eureka_sets')
-    .select('id, slug, name, quality, style, labels, trial')
-    .order('id')
+    .select('id, slug, name, quality, style, labels, trial, updated_at')
+    .order('updated_at', { ascending: false, nullsFirst: false })
   const { data: categories } = await supabase
     .from('categories')
     .select('name, image_url')

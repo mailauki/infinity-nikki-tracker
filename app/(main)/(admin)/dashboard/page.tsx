@@ -61,7 +61,7 @@ async function AdminDashboard() {
       <Box>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
           <Typography variant="h5" component="h2">
-            Recent Eureka Sets
+            Recently Updated Eureka Sets
           </Typography>
           <Button variant="text" endIcon={<ArrowForwardIcon />} size="small" href="/eureka-set">
             View all
@@ -73,7 +73,7 @@ async function AdminDashboard() {
               <ListItemButton href={`/eureka-set/edit/${set.slug}`}>
                 <ListItemText
                   primary={set.name}
-                  secondary={set.trial ?? '—'}
+                  secondary={set.updated_at ? new Date(set.updated_at).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—'}
                   slotProps={{ primary: { variant: 'body2' }, secondary: { variant: 'caption' } }}
                 />
               </ListItemButton>
@@ -85,24 +85,26 @@ async function AdminDashboard() {
       <Box>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
           <Typography variant="h5" component="h2">
-            Recent Eureka Variants
+            Recently Added Eureka Variants
           </Typography>
           <Button variant="text" endIcon={<ArrowForwardIcon />} size="small" href="/eureka-variant">
             View all
           </Button>
         </Stack>
         <List disablePadding>
-          {eurekaVariants?.slice(0, 5).map((variant) => (
-            <ListItem key={variant.id} disablePadding divider
-      secondaryAction={
-        variant.default && <Chip size='small' label='default' color='secondary' variant='outlined' />
-      }>
+          {[...(eurekaVariants ?? [])].sort((a, b) => b.id - a.id).slice(0, 5).map((variant) => (
+            <ListItem
+              key={variant.id}
+              disablePadding
+              divider
+              secondaryAction={
+                variant.default && <Chip size="small" label="default" color="secondary" variant="outlined" />
+              }
+            >
               <ListItemButton href={`/eureka-variant/edit/${variant.slug}`}>
                 <ListItemText
                   primary={variant.eureka_set}
-										secondary={[variant.category, variant.color]
-                    .filter(Boolean)
-                    .join(' • ')}
+                  secondary={[variant.category, variant.color].filter(Boolean).join(' • ')}
                   slotProps={{ primary: { variant: 'body2' }, secondary: { variant: 'caption' } }}
                 />
               </ListItemButton>
