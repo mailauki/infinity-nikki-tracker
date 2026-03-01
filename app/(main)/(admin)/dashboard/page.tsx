@@ -16,7 +16,7 @@ import {
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import { getAdminData, getEurekaVariants } from '@/lib/data'
+import { getAdminData, getEurekaVariants, getTrialsAdmin } from '@/lib/data'
 
 export default function DashboardPage() {
   return (
@@ -29,7 +29,11 @@ export default function DashboardPage() {
 }
 
 async function AdminDashboard() {
-  const [{ eurekaSets }, eurekaVariants] = await Promise.all([getAdminData(), getEurekaVariants()])
+  const [{ eurekaSets }, eurekaVariants, trials] = await Promise.all([
+    getAdminData(),
+    getEurekaVariants(),
+    getTrialsAdmin(),
+  ])
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -40,7 +44,7 @@ async function AdminDashboard() {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
           gap: 2,
         }}
       >
@@ -55,6 +59,12 @@ async function AdminDashboard() {
           count={eurekaVariants?.length ?? 0}
           addHref="/eureka-variant/new"
           viewHref="/eureka-variant"
+        />
+        <StatCard
+          title="Trials"
+          count={trials?.length ?? 0}
+          addHref="/trial/new"
+          viewHref="/trial"
         />
       </Box>
 
@@ -105,6 +115,30 @@ async function AdminDashboard() {
                 <ListItemText
                   primary={variant.eureka_set}
                   secondary={[variant.category, variant.color].filter(Boolean).join(' • ')}
+                  slotProps={{ primary: { variant: 'body2' }, secondary: { variant: 'caption' } }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+
+      <Box>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
+          <Typography variant="h5" component="h2">
+            Recently Added Trials
+          </Typography>
+          <Button variant="text" endIcon={<ArrowForwardIcon />} size="small" href="/trial">
+            View all
+          </Button>
+        </Stack>
+        <List disablePadding>
+          {[...(trials ?? [])].sort((a, b) => b.id - a.id).slice(0, 5).map((trial) => (
+            <ListItem key={trial.id} disablePadding divider>
+              <ListItemButton href={`/trial/edit/${trial.id}`}>
+                <ListItemText
+                  primary={trial.name}
+                  secondary={trial.created_at ? new Date(trial.created_at).toLocaleDateString(undefined, { dateStyle: 'medium' }) : '—'}
                   slotProps={{ primary: { variant: 'body2' }, secondary: { variant: 'caption' } }}
                 />
               </ListItemButton>

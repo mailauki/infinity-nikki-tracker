@@ -67,6 +67,12 @@ export const navLinksData = {
       ],
     },
     {
+      title: 'Trials',
+      url: '/trial',
+      icon: <ViewListIcon />,
+      adminOnly: true,
+    },
+    {
       title: 'Profile',
       url: '/profile',
       icon: <AccountIcon />,

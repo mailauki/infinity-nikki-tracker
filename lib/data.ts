@@ -177,6 +177,17 @@ export const getAdminData = cache(async () => {
   return { eurekaSets, categories, colors }
 })
 
+export const getTrialsAdmin = cache(async () => {
+  const supabase = await createClient()
+
+  const { data: trials } = await supabase
+    .from('trials')
+    .select('id, name, image_url, created_at')
+    .order('id', { ascending: true })
+
+  return trials
+})
+
 export const getProfile = cache(async (user_id: UUID | string) => {
   const supabase = await createClient()
 
