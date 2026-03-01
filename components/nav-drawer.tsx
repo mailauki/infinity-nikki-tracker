@@ -20,6 +20,7 @@ import ThemeToggle from './theme-toggle'
 import { navLinksData } from '@/lib/nav-links'
 import { NavUser } from './nav-user'
 import { JwtPayload } from '@supabase/supabase-js'
+import { NavExtra } from './nav-extra'
 
 const drawerWidth = 240
 
@@ -187,24 +188,31 @@ export default function NavDrawer({
                   Login
                 </Button>
               ) : (
-                <NavUser user={user} />
+                <NavUser user={user} isAdmin={isAdmin} />
               )}
             </Stack>
           </Toolbar>
         </AppBar>
+
         <Drawer variant="permanent" open={open} className="h-screen overflow-hidden">
           <DrawerHeader>
             <IconButton onClick={handleDrawerClose}>
               {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
             </IconButton>
           </DrawerHeader>
+
           <Divider />
+
           <NavMain items={navLinksData.navMain} open={open} />
+
           <Divider />
+
           <NavSecondary
             items={navLinksData.navSecondary.filter((item) => !item.adminOnly || isAdmin)}
             open={open}
           />
+
+          <NavExtra items={navLinksData.navExtra} open={open} />
         </Drawer>
         <Box component="main" className="h-screen w-full overflow-hidden">
           <DrawerHeader />
@@ -212,6 +220,7 @@ export default function NavDrawer({
           <Toolbar />
         </Box>
       </Stack>
+
       <Footer />
     </Stack>
   )

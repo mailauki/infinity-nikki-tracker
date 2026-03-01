@@ -87,8 +87,7 @@ export default function ProfileForm({ user }: { user: User | null }) {
 
         <div>
           <form action="/auth/signout" method="post">
-            <Button type="submit" variant="outlined"
-						startIcon={<LogOut fontSize="small" />}>
+            <Button type="submit" variant="outlined" startIcon={<LogOut fontSize="small" />}>
               Log out
             </Button>
           </form>

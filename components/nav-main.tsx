@@ -57,7 +57,7 @@ export function NavMain({ items, open = false }: { items: NavMainLink[]; open?: 
                 src={item.image}
                 alt={item.title}
                 sx={{ filter: isDarkMode ? 'none' : 'brightness(40%)' }}
-								className='filter-none dark:brightness-40'
+                className="dark:brightness-40 filter-none"
               >
                 <ImageIcon />
               </Avatar>

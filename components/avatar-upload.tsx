@@ -60,7 +60,7 @@ export default function AvatarUpload({
       <AvatarPreview url={url} size="large" />
       <input
         type="file"
-          id="avatar"
+        id="avatar"
         accept="image/*"
         style={{
           border: 0,
@@ -73,8 +73,8 @@ export default function AvatarUpload({
           whiteSpace: 'nowrap',
           width: '1px',
         }}
-          onChange={uploadAvatar}
-          disabled={uploading}
+        onChange={uploadAvatar}
+        disabled={uploading}
       />
     </ButtonBase>
   )

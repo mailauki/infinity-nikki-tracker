@@ -2,6 +2,8 @@ import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import { Avatar } from '@mui/material'
 
+const largeSize = 140
+
 export default function AvatarPreview({ size, url }: { size?: 'large'; url: string | null }) {
   const supabase = createClient()
   const [avatarUrl, setAvatarUrl] = useState<string | null>(url)
@@ -25,7 +27,7 @@ export default function AvatarPreview({ size, url }: { size?: 'large'; url: stri
   }, [url, supabase])
 
   if (size === 'large') {
-    return <Avatar src={avatarUrl!} alt="Avatar" sx={{ width: 140, height: 140 }} />
+    return <Avatar src={avatarUrl!} alt="Avatar" sx={{ width: largeSize, height: largeSize }} />
   }
 
   return <Avatar src={avatarUrl!} alt="Avatar" />

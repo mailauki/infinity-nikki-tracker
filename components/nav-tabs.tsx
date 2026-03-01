@@ -19,6 +19,7 @@ function NavTabs() {
   const navLinks =
     (navLinksData.navMain.find((item) => item.url === `/${title}`) as NavMainLink) ||
     (navLinksData.navSecondary.find((item) => item.url === `/${title}`) as NavSecondaryLink) ||
+    (navLinksData.navExtra.find((item) => item.url === `/${title}`) as NavSecondaryLink) ||
     (navLinksData.home as NavSecondaryLink)
   const allNavLinks = [navLinks].concat(navLinks.items! || [])
 
@@ -26,7 +27,7 @@ function NavTabs() {
   const activePath = slug && !isNavLink ? false : pathname
 
   return (
-    <Toolbar disableGutters>
+    <Toolbar disableGutters sx={{ alignItems: 'flex-end' }}>
       <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={activePath} aria-label="Next.js MUI Nav Tabs Example" role="navigation">
           {allNavLinks.map((link) => (

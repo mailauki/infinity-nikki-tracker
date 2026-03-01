@@ -28,7 +28,7 @@ async function NavContainer({
   return (
     <NavDrawer isAdmin={role === 'admin'} user={user!}>
       <NavTabs />
-      <div className="h-[calc(100vh-192px)] overflow-y-auto">
+      <div className="h-[calc(100vh-192px)] overflow-y-auto bg-background">
         <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
           {children}
         </Container>
