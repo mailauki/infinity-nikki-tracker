@@ -1,4 +1,4 @@
-import { count, percent } from '@/hooks/count'
+import { countObtained, percent } from '@/hooks/count'
 import { Category, Eureka } from '@/lib/types/types'
 import {
   Avatar,
@@ -28,7 +28,7 @@ export function ProgressItem({
   const filteredEureka = eureka.filter(
     (eureka) => (filter === 'colors' ? eureka.color : eureka.category) === item.name
   )
-  const obtainedCount = count(filter ? filteredEureka : eureka)
+  const obtainedCount = countObtained(filter ? filteredEureka : eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
   const isSelected = value === item.name
 

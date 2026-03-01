@@ -1,6 +1,6 @@
 import Image from 'next/image'
 
-import { count, percent } from '@/hooks/count'
+import { countObtained, percent } from '@/hooks/count'
 import { EurekaSet } from '@/lib/types/types'
 
 import ProgressBadge from './progress-chip'
@@ -26,7 +26,7 @@ export default function EurekaHeader({
   variant?: 'default' | 'large'
   isLoggedIn: boolean
 }) {
-  const obtainedCount = count(eurekaSet.eureka_variants)
+  const obtainedCount = countObtained(eurekaSet.eureka_variants)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
   return (

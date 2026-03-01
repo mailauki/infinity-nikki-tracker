@@ -17,7 +17,7 @@ import {
   List,
 } from '@mui/material'
 import Image from 'next/image'
-import { count, percent } from '@/hooks/count'
+import { countObtained, percent } from '@/hooks/count'
 import EurekaHeader from '@/components/eureka-header'
 
 export default async function TrialsPage() {
@@ -65,7 +65,7 @@ function TrialCard({
   eureka: Eureka[]
   isLoggedIn: boolean
 }) {
-  const obtainedCount = count(eureka)
+  const obtainedCount = countObtained(eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
   return (
