@@ -9,25 +9,27 @@ const theme = createTheme({
   typography: {
     fontFamily: 'var(--font-roboto)',
   },
-  palette: {
-    primary: lime,
-    secondary: pink,
-  },
   colorSchemes: {
-    light: true,
-    dark: {
+    light: {
       palette: {
-        primary: lime,
-        secondary: pink,
+        primary: {
+          main: lime[800],
+        },
+        secondary: {
+          main: pink[200],
+        },
       },
     },
-  },
-  shape: {
-    borderRadius: 8,
-    borderRadiusSm: 4, // new property
-    borderRadiusMd: 8, // new property
-    borderRadiusLg: 16, // new property
-    borderRadiusXl: 24, // new property
+    dark: {
+      palette: {
+        primary: {
+          main: lime[500],
+        },
+        secondary: {
+          main: pink[100],
+        },
+      },
+    },
   },
   components: {
     MuiCard: {
@@ -39,21 +41,5 @@ const theme = createTheme({
     },
   },
 })
-
-declare module '@mui/material/styles' {
-  interface Shape {
-    borderRadiusSm: number
-    borderRadiusMd: number
-    borderRadiusLg: number
-    borderRadiusXl: number
-  }
-
-  interface ShapeOptions {
-    borderRadiusSm?: number
-    borderRadiusMd?: number
-    borderRadiusLg?: number
-    borderRadiusXl?: number
-  }
-}
 
 export default theme
