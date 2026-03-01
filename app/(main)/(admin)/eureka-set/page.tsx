@@ -16,6 +16,7 @@ import {
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import { getEurekaSets } from '@/lib/data'
+import { createClient } from '@/lib/supabase/server'
 import { toEurekaSlug } from '@/lib/utils'
 
 export default function EurekaSetPage() {
@@ -30,6 +31,16 @@ export default function EurekaSetPage() {
 
 async function EurekaSetTable() {
   const eurekaSets = await getEurekaSets()
+
+  const nullSlugSets = eurekaSets?.filter((s) => !s.slug) ?? []
+  if (nullSlugSets.length > 0) {
+    const supabase = await createClient()
+    await Promise.all(
+      nullSlugSets.map((set) =>
+        supabase.from('eureka_sets').update({ slug: toEurekaSlug(set.name) }).eq('id', set.id)
+      )
+    )
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

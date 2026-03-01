@@ -17,6 +17,7 @@ import {
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import { getEurekaVariants } from '@/lib/data'
+import { createClient } from '@/lib/supabase/server'
 import { toEurekaVariantSlug } from '@/lib/utils'
 
 export default function EurekaVariantPage() {
@@ -31,6 +32,21 @@ export default function EurekaVariantPage() {
 
 async function EurekaVariantTable() {
   const eurekaVariants = await getEurekaVariants()
+
+  const nullSlugVariants = eurekaVariants?.filter((v) => !v.slug) ?? []
+  if (nullSlugVariants.length > 0) {
+    const supabase = await createClient()
+    await Promise.all(
+      nullSlugVariants.map((variant) =>
+        supabase
+          .from('eureka_variants')
+          .update({
+            slug: toEurekaVariantSlug(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? ''),
+          })
+          .eq('id', variant.id)
+      )
+    )
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

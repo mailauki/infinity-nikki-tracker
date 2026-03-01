@@ -1,6 +1,5 @@
 'use client'
 
-import React from 'react'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Box from '@mui/material/Box'
@@ -17,7 +16,7 @@ function NavTabs() {
   const title = pathname === '/' ? 'home' : path[1]
   const slug = path.length > 2 ? path[2] : ''
 
-  const allSections = [
+  const allSections: (NavMainLink | NavSecondaryLink)[] = [
     ...navLinksData.navMain,
     ...navLinksData.navSecondary,
     ...navLinksData.navExtra,
