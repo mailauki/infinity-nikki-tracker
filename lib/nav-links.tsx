@@ -1,6 +1,7 @@
 import InfoIcon from '@mui/icons-material/InfoOutline'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import AccountIcon from '@mui/icons-material/AccountCircle'
+import ViewListIcon from '@mui/icons-material/ViewList'
 
 export const navLinksData = {
   home: {
@@ -34,8 +35,8 @@ export const navLinksData = {
     {
       title: 'Eureka Sets',
       url: '/eureka-set',
+      icon: <ViewListIcon />,
       adminOnly: true,
-      drawerHidden: true,
       exclusiveItems: true,
       items: [
         {
@@ -51,8 +52,8 @@ export const navLinksData = {
     {
       title: 'Eureka Variants',
       url: '/eureka-variant',
+      icon: <ViewListIcon />,
       adminOnly: true,
-      drawerHidden: true,
       exclusiveItems: true,
       items: [
         {

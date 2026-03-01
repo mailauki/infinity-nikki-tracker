@@ -8,6 +8,7 @@ import {
   ListItemText,
   Stack,
   Toolbar,
+  Tooltip,
 } from '@mui/material'
 import { NavSecondaryLink } from '@/lib/types/types'
 
@@ -18,6 +19,7 @@ export function NavExtra({ items, open }: { items: NavSecondaryLink[]; open: boo
       <List>
         {items.map((item) => (
           <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
+            <Tooltip title={open ? '' : item.title} placement="right">
             <ListItemButton
               component={Link}
               href={item.url}
@@ -65,6 +67,7 @@ export function NavExtra({ items, open }: { items: NavSecondaryLink[]; open: boo
                 ]}
               />
             </ListItemButton>
+            </Tooltip>
           </ListItem>
         ))}
       </List>

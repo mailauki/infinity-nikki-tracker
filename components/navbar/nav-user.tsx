@@ -10,7 +10,13 @@ import { createClient } from '@/lib/supabase/client'
 import { Box, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material'
 import React from 'react'
 import { navLinksData } from '@/lib/nav-links'
-import { AccountCircle, Dashboard } from '@mui/icons-material'
+import { AccountCircle, Dashboard, ViewList } from '@mui/icons-material'
+
+function navIcon(url: string) {
+  if (url === '/dashboard') return <Dashboard fontSize="small" />
+  if (url === '/profile') return <AccountCircle fontSize="small" />
+  return <ViewList fontSize="small" />
+}
 
 export function NavUser({ user, isAdmin = false }: { user: JwtPayload; isAdmin?: boolean }) {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
@@ -84,14 +90,7 @@ export function NavUser({ user, isAdmin = false }: { user: JwtPayload; isAdmin?:
               component={Link}
               href={link.url}
             >
-              <ListItemIcon>
-                {/* {link.icon} */}
-                {link.url === '/dashboard' ? (
-                  <Dashboard fontSize="small" />
-                ) : (
-                  <AccountCircle fontSize="small" />
-                )}
-              </ListItemIcon>
+              <ListItemIcon>{navIcon(link.url)}</ListItemIcon>
               {link.title}
             </MenuItem>
           ))}

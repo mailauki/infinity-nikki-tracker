@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
+import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip } from '@mui/material'
 import { NavSecondaryLink } from '@/lib/types/types'
 
 export function NavSecondary({ items, open }: { items: NavSecondaryLink[]; open: boolean }) {
@@ -7,6 +7,7 @@ export function NavSecondary({ items, open }: { items: NavSecondaryLink[]; open:
     <List>
       {items.map((item) => (
         <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
+          <Tooltip title={open ? '' : item.title} placement="right">
           <ListItemButton
             component={Link}
             href={item.url}
@@ -54,6 +55,7 @@ export function NavSecondary({ items, open }: { items: NavSecondaryLink[]; open:
               ]}
             />
           </ListItemButton>
+          </Tooltip>
         </ListItem>
       ))}
     </List>
