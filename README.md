@@ -99,7 +99,7 @@ components/
 
 lib/
   data.ts                 # All Supabase data fetching (React cache)
-  utils.ts                # cn(), toSlug(), toVariantSlug() helpers
+  utils.ts                # cn(), toEurekaSlug(), toEurekaVariantSlug() helpers
   theme.ts                # MUI theme configuration
   nav-links.tsx           # Navigation link definitions
   supabase/               # Supabase client factories (server, client, proxy)
@@ -108,7 +108,7 @@ lib/
 hooks/
   user.ts                 # getUserID(), getUserClaims(), getUserRole() — server-side auth
   eureka-set.ts           # createEurekaSet(), updateEurekaSet() — data transforms
-  count.ts                # count(), percent() — progress calculation
+  count.ts                # countObtained(), percent() — progress calculation
 ```
 
 ## Database Schema

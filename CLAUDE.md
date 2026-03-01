@@ -64,7 +64,7 @@ Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass t
 1. `lib/data.ts` — All Supabase queries. Key functions: `getEurekaSets()`, `getEurekaSet(slug)`, `getTrials()`, `getObtained(user_id)`, `getProfile(user_id)`, `getEurekaVariants()`, `getAdminData()`
 2. `hooks/user.ts` — `getUserID()`, `getUserClaims()`, `getUserRole()` read auth claims server-side
 3. `hooks/eureka-set.ts` — Pure functions `createEurekaSet()` and `updateEurekaSet()` for transforming data
-4. `hooks/count.ts` — `count()` and `percent()` utilities for progress calculation
+4. `hooks/count.ts` — `countObtained()` and `percent()` utilities for progress calculation
 5. `app/(main)/eureka/actions.ts` — Client-side `handleObtained(slug)` toggles obtained state in Supabase
 
 ### Realtime Pattern
@@ -97,8 +97,8 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 
 `lib/utils.ts` exports two slug utilities:
 
-- `toSlug(name)` — converts a name to a set slug (`spaces → _`, lowercase)
-- `toVariantSlug(eurekaSet, category, color)` — builds a variant slug `{set}-{category}-{color}`
+- `toEurekaSlug(name)` — converts a name to a set slug (`spaces → _`, lowercase)
+- `toEurekaVariantSlug(eurekaSet, category, color)` — builds a variant slug `{set}-{category}-{color}`
 
 Eureka variant forms auto-generate the slug from the selected eureka set, category, and color via a `useEffect`. The slug field is read-only by default; an edit icon unlocks manual entry.
 
