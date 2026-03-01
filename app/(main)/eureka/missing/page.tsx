@@ -22,7 +22,7 @@ async function Missing() {
   const user_id = await getUserID()
   const isLoggedIn = !!user_id!
   const obtained = await getObtained(user_id!)
-  const eureka = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka)
+  const eureka = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka_variants)
 
   if (!isLoggedIn) return <LoginAlert />
 

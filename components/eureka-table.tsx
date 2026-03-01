@@ -14,7 +14,7 @@ export default function EurekaTable({
 }) {
   return (
     <Grid container spacing={2} sx={{ pb: 8 }}>
-      {eurekaSet.eureka.map((eureka) => (
+      {eurekaSet.eureka_variants.map((eureka) => (
         <Grid key={eureka.id} size={4}>
           <EurekaButton eureka={eureka} isLoggedIn={isLoggedIn} />
         </Grid>

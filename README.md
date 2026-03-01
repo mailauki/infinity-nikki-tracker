@@ -2,9 +2,9 @@
 
 A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/), the cozy open-world fashion game. Track your Eureka outfit progress across sets, categories, colors, and trials — with real-time updates and per-user collection state.
 
-![Grid of Eureka sets showing outfit cards with name, style tags, and quality star ratings](public/screenshot.png)
+![Eureka page showing a grid of outfit set cards with preview image, style label, set name, and quality star rating](public/screenshot.png)
 
-![Eureka set detail page for First Snow showing the item grid with category and color badges for unauthenticated users](public/screenshot-detail.png)
+![First Snow set detail page showing a grid of variant items labeled by category and color, unauthenticated view](public/screenshot-detail.png)
 
 ## Features
 
@@ -14,18 +14,17 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 - **Trials View** — Progress grouped by in-game trial
 - **Realtime Updates** — Collection state updates instantly across tabs via Supabase Realtime
 - **Auth-aware** — Browse as a guest (read-only) or sign in to track your own collection
-- **Dark/Light/System Theme** — Theme switcher in the sidebar
+- **Profile Management** — Update display name, username, and avatar
+- **Admin Dashboard** — Manage backend data from the frontend (admin role required)
+- **Dark/Light/System Theme** — Theme switcher in the footer
 
 ## Tech Stack
 
 - **[Next.js 16](https://nextjs.org)** — App Router, Server Components, Server Actions
-- **[Supabase](https://supabase.com)** — Postgres database, Auth (cookie-based via `@supabase/ssr`), Realtime subscriptions
-- **[shadcn/ui](https://ui.shadcn.com)** — Component library built on Radix UI primitives
-- **[Tailwind CSS](https://tailwindcss.com)** — Styling
-- **[TanStack Table](https://tanstack.com/table)** — Data tables
-- **[Recharts](https://recharts.org)** — Charts
-- **[dnd-kit](https://dndkit.com)** — Drag and drop
-- **[next-themes](https://github.com/pacocoursey/next-themes)** — Theme management
+- **[Supabase](https://supabase.com)** — Postgres database, Auth (cookie-based via `@supabase/ssr`), Realtime subscriptions, Storage (avatars)
+- **[MUI (Material UI)](https://mui.com)** — Component library with CSS variables and built-in dark mode
+- **[Tailwind CSS](https://tailwindcss.com)** — Utility classes for layout
+- **[Lucide React](https://lucide.dev)** — Icons
 
 ## Getting Started
 
@@ -75,28 +74,31 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 
 ```
 app/
-  (main)/          # Main app (sidebar layout)
-    page.tsx          # Home / hero
+  (main)/               # Main app (nav drawer layout)
+    page.tsx              # Home / hero
     eureka/
-      page.tsx        # All Eureka sets + overall progress
-      [slug]/         # Individual set detail with realtime updates
-      missing/        # Filterable missing items (auth required)
-      trials/         # Progress grouped by trial
-    account/          # User account (auth required)
-  auth/               # Auth pages (login, sign-up, etc.)
+      page.tsx            # All Eureka sets + overall progress
+      [slug]/             # Individual set detail with realtime updates
+      missing/            # Filterable missing items (auth required)
+      trials/             # Progress grouped by trial
+    (admin)/
+      dashboard/          # Admin data management (admin role required)
+    profile/              # User profile (auth required)
+    about/                # About page
+  auth/                   # Auth pages (login, sign-up, etc.)
 
-components/           # App-specific components
-  ui/                 # shadcn/ui base components
-
+components/               # App-specific components
 lib/
-  data.ts             # All Supabase data fetching (React cache)
-  supabase/           # Supabase client factories (server, client, proxy)
-  types/              # TypeScript interfaces and generated DB types
+  data.ts                 # All Supabase data fetching (React cache)
+  theme.ts                # MUI theme configuration
+  nav-links.tsx           # Navigation link definitions
+  supabase/               # Supabase client factories (server, client, proxy)
+  types/                  # TypeScript interfaces and generated DB types
 
 hooks/
-  user.ts             # getUserID() — server-side auth helper
-  eureka-set.ts       # createEurekaSet(), updateEurekaSet() — data transforms
-  count.ts            # count(), percent() — progress calculation
+  user.ts                 # getUserID(), getUserClaims(), getUserRole() — server-side auth
+  eureka-set.ts           # createEurekaSet(), updateEurekaSet() — data transforms
+  count.ts                # count(), percent() — progress calculation
 ```
 
 ## Database Schema
@@ -104,12 +106,15 @@ hooks/
 | Table         | Description                                                     |
 | ------------- | --------------------------------------------------------------- |
 | `eureka_sets` | Outfit set metadata (name, slug, quality, style, labels, trial) |
-| `eureka`      | Individual Eureka items (set FK, color, category, image_url)    |
+| `eureka_variants` | Individual Eureka items (set FK, color, category, image_url) |
 | `categories`  | Category lookup with images                                     |
 | `colors`      | Color lookup with images                                        |
 | `obtained`    | Per-user collection records                                     |
 | `trials`      | Trial lookup with images                                        |
+| `profiles`    | User profiles (full_name, username, avatar_url, role)           |
 
 ## Authentication
 
-The app uses Supabase Auth with cookie-based sessions. The middleware in `lib/supabase/proxy.ts` handles session refresh on every request. Public routes (`/`, `/eureka/**`) are accessible without signing in — users just won't see progress tracking until they authenticate.
+The app uses Supabase Auth with cookie-based sessions. The middleware in `lib/supabase/proxy.ts` handles session refresh on every request. Public routes (`/`, `/eureka/**`, `/about`) are accessible without signing in — users just won't see progress tracking until they authenticate.
+
+Roles are stored in the `profiles` table. Admin role is required to access the dashboard.

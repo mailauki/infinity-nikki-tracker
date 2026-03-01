@@ -26,7 +26,7 @@ export default function EurekaHeader({
   variant?: 'default' | 'large'
   isLoggedIn: boolean
 }) {
-  const obtainedCount = count(eurekaSet.eureka)
+  const obtainedCount = count(eurekaSet.eureka_variants)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
   return (

@@ -47,7 +47,7 @@ async function Trials() {
         <Grid key={trial.name} size={{ xs: 12, md: 6 }}>
           <TrialCard
             trial={trial}
-            eureka={trial.eurekaSets!.flatMap((eurekaSet) => eurekaSet.eureka)}
+            eureka={trial.eurekaSets!.flatMap((eurekaSet) => eurekaSet.eureka_variants)}
             isLoggedIn={isLoggedIn}
           />
         </Grid>

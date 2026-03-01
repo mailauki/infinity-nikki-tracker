@@ -22,7 +22,7 @@ export default async function EurekaSetsPage() {
 async function EurekaSets() {
   const eurekaSets = await getEurekaSets()
   const categories = [...new Set(eurekaSets.flatMap((eurekaSet) => eurekaSet.categories))]
-  const eureka = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka)
+  const eureka = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka_variants)
   const user_id = await getUserID()
   const isLoggedIn = !!user_id!
 

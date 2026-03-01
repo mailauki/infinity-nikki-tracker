@@ -11,9 +11,9 @@ export function createEurekaSet({
 }) {
   const eureka = {
     ...eurekaSet,
-    image_url: eurekaSet?.eureka.find((item) => item.default)?.image_url,
+    image_url: eurekaSet?.eureka_variants.find((item) => item.default)?.image_url,
     categories: categories,
-    colors: [...new Set(eurekaSet?.eureka.map((item) => item.color))].flatMap((item) =>
+    colors: [...new Set(eurekaSet?.eureka_variants.map((item) => item.color))].flatMap((item) =>
       colors?.filter((color) => color.name === item)
     ),
   } as EurekaSet
@@ -30,7 +30,7 @@ export function updateEurekaSet({
 }) {
   const eurekaWithObtained = {
     ...eurekaSet,
-    eureka: eurekaSet?.eureka.map((item) => ({
+    eureka_variants: eurekaSet?.eureka_variants.map((item) => ({
       ...item,
       obtained: !!obtained?.find(
         (value) =>

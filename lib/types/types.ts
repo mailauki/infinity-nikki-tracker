@@ -9,7 +9,7 @@ export interface EurekaSet {
   labels: string | null
   trial: string | null
   image_url: string
-  eureka: Eureka[]
+  eureka_variants: Eureka[]
   categories: Category[]
   colors: Category[]
 }
@@ -55,7 +55,7 @@ export interface EurekaSets {
   style: string | null
   labels: string | null
   trial: string | null
-  eureka: {
+  eureka_variants: {
     id: number
     eureka_set: string | null
     color: string | null

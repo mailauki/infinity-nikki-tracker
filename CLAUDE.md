@@ -29,23 +29,24 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 
 ### Route Structure
 
-- `app/layout.tsx` — Root layout with `ThemeProvider` (next-themes, Geist font)
-- `app/(main)/` — Main app group with sidebar layout (`AppSidebar` + `SiteHeader`)
-  - `page.tsx` — Dashboard/home
+- `app/layout.tsx` — Root layout with MUI `ThemeProvider` + `InitColorSchemeScript` (Roboto font, system dark mode)
+- `app/(main)/` — Main app group with nav drawer layout (`NavDrawer`)
+  - `page.tsx` — Home / hero
   - `eureka/page.tsx` — Grid of all Eureka Sets with overall progress
   - `eureka/[slug]/page.tsx` — Individual Eureka Set detail with realtime updates
-  - `eureka/missing/page.tsx` — Missing items view
+  - `eureka/missing/page.tsx` — Missing items view (auth required)
   - `eureka/trials/page.tsx` — Trials view
-  - `account/page.tsx` — User account management
-  - `protected/` — Auth-gated pages
+  - `(admin)/dashboard/page.tsx` — Admin data management (admin role required)
+  - `profile/page.tsx` — User profile management (auth required)
+  - `about/page.tsx` — About page
 - `app/auth/` — Auth pages (login, sign-up, forgot-password, update-password, confirm, error)
 
 ### Data Flow
 
 Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass to Client Components for interactivity:
 
-1. `lib/data.ts` — All Supabase queries. Key functions: `getEurekaSets()`, `getEurekaSet(slug)`, `getTrials()`, `getObtained(user_id)`
-2. `hooks/user.ts` — `getUserID()` reads auth claims server-side
+1. `lib/data.ts` — All Supabase queries. Key functions: `getEurekaSets()`, `getEurekaSet(slug)`, `getTrials()`, `getObtained(user_id)`, `getProfile(user_id)`
+2. `hooks/user.ts` — `getUserID()`, `getUserClaims()`, `getUserRole()` read auth claims server-side
 3. `hooks/eureka-set.ts` — Pure functions `createEurekaSet()` and `updateEurekaSet()` for transforming data
 4. `hooks/count.ts` — `count()` and `percent()` utilities for progress calculation
 5. `app/(main)/eureka/actions.ts` — Client-side `handleObtained(slug)` toggles obtained state in Supabase
@@ -54,7 +55,11 @@ Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass t
 
 `components/realtime-eureka-set.tsx` is the canonical realtime pattern: server fetches initial data → passes as props → client subscribes to `postgres_changes` on the `obtained` table → local state updates trigger `updateEurekaSet()` recalculation.
 
-Auth state is propagated as an explicit `user: boolean` prop from Server Components down through `RealtimeEurekaSet` → `EurekaHeader`, `EurekaTable`, and `EurekaButton`. The slug detail page sets this via `!!(user_id)`.
+Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server Components down through `RealtimeEurekaSet` → `EurekaHeader` and `EurekaButton`. The slug detail page sets this via `!!(user_id)`.
+
+### Role-Based Access
+
+`getUserRole()` fetches `profiles.role` server-side. Admin role is required to access the dashboard. The `isAdmin` boolean prop is passed down to `NavUser` (filters `adminOnly` nav links) and `ProfileForm` (shows admin chip or access request button).
 
 ### Supabase Clients
 
@@ -65,11 +70,12 @@ Auth state is propagated as an explicit `user: boolean` prop from Server Compone
 ### Key Database Tables
 
 - `eureka_sets` — Outfit set metadata (name, slug, quality, style, labels, trial)
-- `eureka` — Individual eureka items (eureka_set FK, color, category, image_url, default)
+- `eureka_variants` — Individual eureka items (eureka_set FK, color, category, image_url, default)
 - `categories` — Category lookup (name, image_url)
 - `colors` — Color lookup (name, image_url)
 - `obtained` — User collection records (user_id, eureka_set, category, color)
 - `trials` — Trial lookup
+- `profiles` — User profiles (full_name, username, avatar_url, role)
 
 ### Obtained Slug Format
 
@@ -77,14 +83,13 @@ Eureka items are identified by a slug: `{eureka_set_with_underscores}-{category}
 
 ### UI Stack
 
-- **shadcn/ui** components in `components/ui/` (managed via `shadcn` CLI, config in `components.json`)
-- **Tailwind CSS** with `tailwindcss-animate`
-- **Radix UI** primitives
-- **TanStack Table** for data tables (`components/data-table.tsx`, `components/eureka-table.tsx`)
-- **Recharts** for charts (`components/chart-area-interactive.tsx`)
-- **dnd-kit** for drag-and-drop
-- **Lucide React** for icons
-- **Sonner** for toasts
+- **MUI (Material UI)** — primary component library with CSS variables (`cssVariables: { colorSchemeSelector: 'class' }`) and built-in dark mode (`colorSchemes: { light, dark }`)
+- **Tailwind CSS** — utility classes for layout (not MUI replacements)
+- **Lucide React** — icons
+
+### Theme
+
+`lib/theme.ts` configures the MUI theme. Mode-specific palette shades: light uses `lime[800]`/`pink[200]`, dark uses `lime[500]`/`pink[100]`. `InitColorSchemeScript attribute="class" defaultMode="system"` in root layout prevents SSR flicker — must match `ThemeProvider defaultMode`.
 
 ### Code Style
 

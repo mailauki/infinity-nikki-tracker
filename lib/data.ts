@@ -22,7 +22,7 @@ export const getEurekaSets = cache(async () => {
 			style,
 			labels,
 			trial,
-			eureka (
+			eureka_variants (
 				id,
 				eureka_set,
 				color,
@@ -33,15 +33,15 @@ export const getEurekaSets = cache(async () => {
 		`
     )
     .order('id', { ascending: true })
-    .order('id', { referencedTable: 'eureka', ascending: true })
+    .order('id', { referencedTable: 'eureka_variants', ascending: true })
   const { data: categories } = await supabase.from('categories').select('name, image_url')
   const { data: colors } = await supabase.from('colors').select('name, image_url')
 
   const eureka = eurekaSets?.map((eurekaSet) => ({
     ...eurekaSet,
-    image_url: eurekaSet.eureka.find((item) => item.default)?.image_url,
+    image_url: eurekaSet.eureka_variants.find((item) => item.default)?.image_url,
     categories: categories,
-    colors: [...new Set(eurekaSet.eureka.map((item) => item.color))].flatMap((item) =>
+    colors: [...new Set(eurekaSet.eureka_variants.map((item) => item.color))].flatMap((item) =>
       colors?.filter((color) => color.name === item)
     ),
   })) as EurekaSet[]
@@ -64,7 +64,7 @@ export const getEurekaSets = cache(async () => {
 
   const eurekaWithObtained = eureka?.map((eurekaSet) => ({
     ...eurekaSet,
-    eureka: eurekaSet.eureka.map((item) => ({
+    eureka_variants: eurekaSet.eureka_variants.map((item) => ({
       ...item,
       obtained: !!obtained?.find(
         (value) =>
@@ -92,7 +92,7 @@ export const getEurekaSet = cache(async (slug: string) => {
 			style,
 			labels,
 			trial,
-			eureka (
+			eureka_variants (
 				id,
 				eureka_set,
 				color,
@@ -103,7 +103,7 @@ export const getEurekaSet = cache(async (slug: string) => {
 		`
     )
     .order('id', { ascending: true })
-    .order('id', { referencedTable: 'eureka', ascending: false })
+    .order('id', { referencedTable: 'eureka_variants', ascending: false })
     .eq('slug', slug)
     .single()
   const { data: categories } = await supabase.from('categories').select('name, image_url')
