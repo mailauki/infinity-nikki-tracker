@@ -105,8 +105,9 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 ### UI Stack
 
 - **MUI (Material UI)** — primary component library with CSS variables (`cssVariables: { colorSchemeSelector: 'class' }`) and built-in dark mode (`colorSchemes: { light, dark }`)
-- **Tailwind CSS** — utility classes for layout (not MUI replacements)
+- **Tailwind CSS** — utility classes for layout only (not MUI replacements; no shadcn/ui)
 - **Lucide React** — icons
+- **Not used:** shadcn/ui, Radix UI, Sonner, next-themes, class-variance-authority
 
 ### Theme
 
