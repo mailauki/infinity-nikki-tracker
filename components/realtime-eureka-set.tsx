@@ -11,6 +11,7 @@ import EurekaTable from './eureka-table'
 import { Box } from '@mui/material'
 import ProgressList from './progress-list'
 import GridContainer from './grid-container'
+import LoginAlert from './login-alert'
 
 const supabase = createClient()
 
@@ -60,6 +61,7 @@ export default function RealtimeEurekaSet({
 
   return (
     <>
+      {!isLoggedIn && <LoginAlert />}
       <Box sx={{ position: 'relative', width: '100%' }}>
         <EurekaHeader eurekaSet={eurekaSet} variant="large" isLoggedIn={isLoggedIn} />
       </Box>
@@ -82,14 +84,6 @@ export default function RealtimeEurekaSet({
           )
         }
       />
-      {!isLoggedIn && (
-        <div className="mb-10 flex flex-col items-center">
-          <p className="max-w-sm text-center text-2xl">
-            Sign in or Sign up <br />
-            to track your missing Eureka
-          </p>
-        </div>
-      )}
     </>
   )
 }

@@ -3,14 +3,12 @@ import Image from 'next/image'
 
 export function Hero() {
   return (
-    <Box>
+    <Box sx={{ position: 'relative', height: 'calc(100vh - 192px)', mx: -3, mt: -3 }}>
       <Image
         src="https://static.wikia.nocookie.net/infinity-nikki/images/7/78/Infinity_Nikki_Key_Art.png/revision/latest?cb=20241206171432"
         alt="Infinity Nikki Hero Image"
-        width={0}
-        height={0}
-        sizes="(max-width: 768px) 100vw"
-        className="w-full object-cover object-[70%_center]"
+        sizes="100vw"
+        className="object-cover object-[70%_center]"
         fill
       />
       <Box className="absolute bottom-0 right-0 z-20 flex w-full flex-col items-center py-40">
