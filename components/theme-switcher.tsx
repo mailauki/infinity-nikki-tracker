@@ -20,7 +20,7 @@ const modes = [
   { value: 'dark', label: 'Dark', icon: <DarkModeIcon fontSize="small" /> },
 ] as const
 
-function ThemeToggle() {
+export default function ThemeSwitcher() {
   const { mode, setMode } = useColorScheme()
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
 
@@ -60,5 +60,3 @@ function ThemeToggle() {
     </>
   )
 }
-
-export default ThemeToggle

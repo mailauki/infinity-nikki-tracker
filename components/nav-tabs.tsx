@@ -8,7 +8,8 @@ import Link from 'next/link'
 import { navLinksData } from '@/lib/nav-links'
 import { usePathname } from 'next/navigation'
 import { NavMainLink, NavSecondaryLink } from '@/lib/types/types'
-import { Toolbar } from '@mui/material'
+import { Button, Stack, Toolbar } from '@mui/material'
+import { Logout } from '@mui/icons-material'
 
 function NavTabs() {
   const pathname = usePathname()
@@ -28,7 +29,7 @@ function NavTabs() {
 
   return (
     <Toolbar disableGutters sx={{ alignItems: 'flex-end' }}>
-      <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
+      <Stack direction='row' alignItems='center' justifyContent='space-between' sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={activePath} aria-label="Next.js MUI Nav Tabs Example" role="navigation">
           {allNavLinks.map((link) => (
             <Tab
@@ -40,7 +41,16 @@ function NavTabs() {
             />
           ))}
         </Tabs>
-      </Box>
+				{pathname === "/profile" && (
+					<Box sx={{ px: 2 }}>
+          <form action="/auth/signout" method="post">
+            <Button size='small' type="submit" variant="outlined" startIcon={<Logout fontSize="small" />}>
+              Log out
+            </Button>
+          </form>
+        </Box>
+				)}
+      </Stack>
     </Toolbar>
   )
 }

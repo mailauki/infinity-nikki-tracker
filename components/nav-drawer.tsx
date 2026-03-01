@@ -16,12 +16,12 @@ import Stack from '@mui/material/Stack'
 import { Link as Anchor, Button } from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
-import ThemeToggle from './theme-toggle'
 import { navLinksData } from '@/lib/nav-links'
 import { NavUser } from './nav-user'
 import { JwtPayload } from '@supabase/supabase-js'
 import { NavExtra } from './nav-extra'
 import Link from 'next/link'
+import ThemeSwitcher from './theme-switcher'
 
 const drawerWidth = 240
 
@@ -113,7 +113,7 @@ function Footer() {
           <Typography variant="caption" color="textDisabled">
             &copy; 2026 mailauki
           </Typography>
-          <ThemeToggle />
+          <ThemeSwitcher />
         </Stack>
       </Toolbar>
     </AppBar>

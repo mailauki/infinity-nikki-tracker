@@ -13,20 +13,20 @@ const theme = createTheme({
     light: {
       palette: {
         primary: {
-          main: lime[800],
+          main: lime['900'],
         },
         secondary: {
-          main: pink[200],
+          main: pink['400'],
         },
       },
     },
     dark: {
       palette: {
         primary: {
-          main: lime[500],
+          main: lime['500'],
         },
         secondary: {
-          main: pink[100],
+          main: pink['100'],
         },
       },
     },
