@@ -83,7 +83,6 @@ export interface NavSecondaryLink {
   url: string
   icon?: ReactNode
   adminOnly?: boolean
-  drawerHidden?: boolean
-  exclusiveItems?: boolean
+exclusiveItems?: boolean
   items?: { title: string; url: string }[]
 }

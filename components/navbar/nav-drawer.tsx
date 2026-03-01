@@ -195,7 +195,7 @@ export default function NavDrawer({
 
           <NavSecondary
             items={navLinksData.navSecondary.filter(
-              (item) => (!item.adminOnly || isAdmin) && !item.drawerHidden
+              (item) => !item.adminOnly || isAdmin
             )}
             open={open}
           />
