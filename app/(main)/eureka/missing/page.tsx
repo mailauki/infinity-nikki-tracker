@@ -3,11 +3,15 @@ import { Suspense } from 'react'
 import { getEurekaSets, getObtained } from '@/lib/data'
 import { getUserID } from '@/hooks/user'
 import RealtimeEurekaFilter from '@/components/realtime-eureka-filter'
+import LoginAlert from '@/components/login-alert'
+import { Container } from '@mui/material'
 
 export default async function MissingPage() {
   return (
     <Suspense>
-      <Missing />
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+        <Missing />
+      </Container>
     </Suspense>
   )
 }
@@ -20,15 +24,8 @@ async function Missing() {
   const obtained = await getObtained(user_id!)
   const eureka = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka)
 
-  if (!isLoggedIn)
-    return (
-      <div className="mt-10 flex flex-col items-center">
-        <p className="max-w-sm text-center text-2xl">
-          Sign in or Sign up <br />
-          to track your missing Eureka
-        </p>
-      </div>
-    )
+  if (!isLoggedIn) return <LoginAlert />
+
   return (
     <RealtimeEurekaFilter
       serverEureka={eureka}

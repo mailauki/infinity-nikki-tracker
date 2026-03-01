@@ -1,5 +1,4 @@
 import { Suspense } from 'react'
-import Container from '@mui/material/Container'
 import NavDrawer from '@/components/nav-drawer'
 import NavSkeleton from '@/components/nav-skeleton'
 import NavTabs from '@/components/nav-tabs'
@@ -28,11 +27,7 @@ async function NavContainer({
   return (
     <NavDrawer isAdmin={role === 'admin'} user={user!}>
       <NavTabs />
-      <div className="h-[calc(100vh-192px)] overflow-y-auto bg-background">
-        <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-          {children}
-        </Container>
-      </div>
+      <div className="h-[calc(100vh-192px)] overflow-y-auto bg-background">{children}</div>
     </NavDrawer>
   )
 }

@@ -49,7 +49,6 @@ export default function EurekaHeader({
                 <span>{eurekaSet.style}</span>
               </Stack>
             }
-            sx={{ pb: 0.5 }}
           />
           <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
             <Chip label={eurekaSet.labels} variant="outlined" size="small" />
@@ -65,7 +64,6 @@ export default function EurekaHeader({
             </Avatar>
           }
           action={<Chip label={eurekaSet.labels} variant="outlined" size="small" />}
-          sx={{ pb: 0.5 }}
         />
       )}
       {isLoggedIn && (

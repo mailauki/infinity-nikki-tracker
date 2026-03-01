@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import RealtimeEurekaSet from '@/components/realtime-eureka-set'
 import { getUserID } from '@/hooks/user'
 import { getEurekaSet, getObtained } from '@/lib/data'
+import { Container } from '@mui/material'
 
 export async function generateStaticParams() {
   return [{ slug: 'hello-world' }]
@@ -13,7 +14,9 @@ export default async function EurekaSetPage({ params }: { params: Promise<{ slug
 
   return (
     <Suspense>
-      <EurekaSet slug={slug} />
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+        <EurekaSet slug={slug} />
+      </Container>
     </Suspense>
   )
 }

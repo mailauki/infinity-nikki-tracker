@@ -21,6 +21,7 @@ import { navLinksData } from '@/lib/nav-links'
 import { NavUser } from './nav-user'
 import { JwtPayload } from '@supabase/supabase-js'
 import { NavExtra } from './nav-extra'
+import Link from 'next/link'
 
 const drawerWidth = 240
 
@@ -180,6 +181,7 @@ export default function NavDrawer({
                 sx={{ color: 'inherit', cursor: 'pointer' }}
                 underline="none"
                 href="/"
+                component={Link}
               >
                 Infinity Nikki Tracker
               </Anchor>

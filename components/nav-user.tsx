@@ -75,19 +75,26 @@ export function NavUser({ user, isAdmin = false }: { user: JwtPayload; isAdmin?:
         open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
-        {navLinksData.navSecondary.filter((link) => !link.adminOnly || isAdmin).map((link) => (
-          <MenuItem key={link.title} onClick={handleCloseUserMenu} component={Link} href={link.url}>
-            <ListItemIcon>
-              {/* {link.icon} */}
-              {link.url === '/dashboard' ? (
-                <Dashboard fontSize="small" />
-              ) : (
-                <AccountCircle fontSize="small" />
-              )}
-            </ListItemIcon>
-            {link.title}
-          </MenuItem>
-        ))}
+        {navLinksData.navSecondary
+          .filter((link) => !link.adminOnly || isAdmin)
+          .map((link) => (
+            <MenuItem
+              key={link.title}
+              onClick={handleCloseUserMenu}
+              component={Link}
+              href={link.url}
+            >
+              <ListItemIcon>
+                {/* {link.icon} */}
+                {link.url === '/dashboard' ? (
+                  <Dashboard fontSize="small" />
+                ) : (
+                  <AccountCircle fontSize="small" />
+                )}
+              </ListItemIcon>
+              {link.title}
+            </MenuItem>
+          ))}
         <Divider />
         <LogoutButton />
       </Menu>

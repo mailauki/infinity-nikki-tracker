@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardMedia,
   Chip,
+  Container,
   Grid,
   LinearProgress,
   List,
@@ -22,7 +23,9 @@ import EurekaHeader from '@/components/eureka-header'
 export default async function TrialsPage() {
   return (
     <Suspense>
-      <Trials />
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+        <Trials />
+      </Container>
     </Suspense>
   )
 }

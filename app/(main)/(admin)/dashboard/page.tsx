@@ -1,11 +1,22 @@
 import { Suspense } from 'react'
-import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
+import {
+  Box,
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material'
 import { getEurekaSets } from '@/lib/data'
 
 export default function DashboardPage() {
   return (
     <Suspense>
-      <AdminDashboard />
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+        <AdminDashboard />
+      </Container>
     </Suspense>
   )
 }
