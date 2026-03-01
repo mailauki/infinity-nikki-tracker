@@ -8,6 +8,7 @@ export interface EurekaSet {
   style: string | null
   labels: string | null
   trial: string | null
+	updated_at: string | null
   image_url: string
   eureka_variants: EurekaVariant[]
   categories: Category[]

@@ -6,7 +6,6 @@ import Box from '@mui/material/Box'
 import MuiDrawer from '@mui/material/Drawer'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
-import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
@@ -21,7 +20,7 @@ import { NavUser } from './nav-user'
 import { JwtPayload } from '@supabase/supabase-js'
 import { NavExtra } from './nav-extra'
 import Link from 'next/link'
-import ThemeSwitcher from './theme-switcher'
+import Footer from './nav-footer'
 
 const drawerWidth = 240
 
@@ -104,21 +103,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     },
   ],
 }))
-
-function Footer() {
-  return (
-    <AppBar component="footer" position="fixed" sx={{ top: 'auto', bottom: 0 }} color="default">
-      <Toolbar>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" flex={1}>
-          <Typography variant="caption" color="textDisabled">
-            &copy; 2026 mailauki
-          </Typography>
-          <ThemeSwitcher />
-        </Stack>
-      </Toolbar>
-    </AppBar>
-  )
-}
 
 export default function NavDrawer({
   children,
