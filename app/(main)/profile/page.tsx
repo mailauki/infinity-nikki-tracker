@@ -1,4 +1,4 @@
-import ProfileForm from '@/components/profile-form'
+import ProfileForm from '@/components/forms/auth/profile-form'
 import { createClient } from '@/lib/supabase/server'
 import { getUserRole } from '@/hooks/user'
 import { Container, Typography } from '@mui/material'

@@ -2,7 +2,10 @@ import { Suspense } from 'react'
 import {
   Box,
   Button,
+  Card,
+  CardContent,
   Container,
+  Divider,
   List,
   ListItem,
   ListItemButton,
@@ -10,8 +13,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import AddIcon from '@mui/icons-material/Add'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import { getEurekaSets } from '@/lib/data'
+import { getAdminData, getEurekaVariants } from '@/lib/data'
 
 export default function DashboardPage() {
   return (
@@ -24,7 +28,7 @@ export default function DashboardPage() {
 }
 
 async function AdminDashboard() {
-  const eurekaSets = await getEurekaSets()
+  const [{ eurekaSets }, eurekaVariants] = await Promise.all([getAdminData(), getEurekaVariants()])
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -32,22 +36,38 @@ async function AdminDashboard() {
         Admin Dashboard
       </Typography>
 
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+          gap: 2,
+        }}
+      >
+        <StatCard
+          title="Eureka Sets"
+          count={eurekaSets?.length ?? 0}
+          addHref="/eureka-set/new"
+          viewHref="/eureka-set"
+        />
+        <StatCard
+          title="Eureka Variants"
+          count={eurekaVariants?.length ?? 0}
+          addHref="/eureka-variant/new"
+          viewHref="/eureka-variant"
+        />
+      </Box>
+
       <Box>
         <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
-          <Typography variant="h4" component="h2">
-            Eureka Sets ({eurekaSets?.length ?? 0})
+          <Typography variant="h5" component="h2">
+            Recent Eureka Sets
           </Typography>
-          <Button
-            variant="outlined"
-            endIcon={<ArrowForwardIcon />}
-            size="small"
-            href="/eureka-set"
-          >
+          <Button variant="text" endIcon={<ArrowForwardIcon />} size="small" href="/eureka-set">
             View all
           </Button>
         </Stack>
         <List disablePadding>
-          {eurekaSets?.map((set) => (
+          {eurekaSets?.slice(0, 5).map((set) => (
             <ListItem key={set.id} disablePadding divider>
               <ListItemButton href={`/eureka-set/edit/${set.slug}`}>
                 <ListItemText
@@ -60,6 +80,66 @@ async function AdminDashboard() {
           ))}
         </List>
       </Box>
+
+      <Box>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
+          <Typography variant="h5" component="h2">
+            Recent Eureka Variants
+          </Typography>
+          <Button variant="text" endIcon={<ArrowForwardIcon />} size="small" href="/eureka-variant">
+            View all
+          </Button>
+        </Stack>
+        <List disablePadding>
+          {eurekaVariants?.slice(0, 5).map((variant) => (
+            <ListItem key={variant.id} disablePadding divider>
+              <ListItemButton href={`/eureka-variant/edit/${variant.slug}`}>
+                <ListItemText
+                  primary={[variant.eureka_set, variant.category, variant.color]
+                    .filter(Boolean)
+                    .join(' — ')}
+                  secondary={`ID ${variant.id}${variant.default ? ' · default' : ''}`}
+                  slotProps={{ primary: { variant: 'body2' }, secondary: { variant: 'caption' } }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
     </Box>
+  )
+}
+
+function StatCard({
+  title,
+  count,
+  addHref,
+  viewHref,
+}: {
+  title: string
+  count: number
+  addHref: string
+  viewHref: string
+}) {
+  return (
+    <Card variant="outlined">
+      <CardContent>
+        <Typography variant="overline" color="text.secondary">
+          {title}
+        </Typography>
+        <Typography variant="h2" component="p" sx={{ my: 1 }}>
+          {count}
+        </Typography>
+        <Divider sx={{ mb: 2 }} />
+        <Stack direction="row" spacing={1}>
+          <Button variant="outlined" size="small" startIcon={<AddIcon />} href={addHref}>
+            Add
+          </Button>
+          <Button variant="text" size="small" endIcon={<ArrowForwardIcon />} href={viewHref}>
+            View all
+          </Button>
+        </Stack>
+      </CardContent>
+    </Card>
   )
 }

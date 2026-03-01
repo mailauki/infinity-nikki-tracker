@@ -3,8 +3,8 @@
 import { JwtPayload } from '@supabase/supabase-js'
 import Link from 'next/link'
 
-import { LogoutButton } from './logout-button'
-import AvatarPreview from './avatar-preview'
+import { LogoutButton } from '../logout-button'
+import AvatarPreview from '../avatar-preview'
 import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Box, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material'

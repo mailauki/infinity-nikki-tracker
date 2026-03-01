@@ -31,10 +31,11 @@ export const navLinksData = {
       icon: <DashboardIcon />,
       adminOnly: true,
     },
-		{
-			title: "Eureka Sets",
-			url: '/eureka-set',
-			adminOnly: true,
+    {
+      title: 'Eureka Sets',
+      url: '/eureka-set',
+      adminOnly: true,
+      drawerHidden: true,
       exclusiveItems: true,
       items: [
         {
@@ -46,7 +47,24 @@ export const navLinksData = {
           url: '/eureka-set/edit',
         },
       ],
-		},
+    },
+    {
+      title: 'Eureka Variants',
+      url: '/eureka-variant',
+      adminOnly: true,
+      drawerHidden: true,
+      exclusiveItems: true,
+      items: [
+        {
+          title: 'Add Eureka Variant',
+          url: '/eureka-variant/new',
+        },
+        {
+          title: 'Edit Eureka Variant',
+          url: '/eureka-variant/edit',
+        },
+      ],
+    },
     {
       title: 'Profile',
       url: '/profile',

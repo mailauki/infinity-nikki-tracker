@@ -6,7 +6,7 @@ import { createEurekaSet, updateEurekaSet } from '@/hooks/eureka-set'
 import { getUserID } from '@/hooks/user'
 
 import { createClient } from './supabase/server'
-import { Eureka, EurekaSet, Obtained } from './types/types'
+import { EurekaSet, EurekaVariant, Obtained } from './types/types'
 
 export const getEurekaSets = cache(async () => {
   const supabase = await createClient()
@@ -72,7 +72,7 @@ export const getEurekaSets = cache(async () => {
           item.category === value.category &&
           item.color === value.color
       ),
-    })) as Eureka[],
+    })) as EurekaVariant[],
   })) as EurekaSet[]
 
   return eurekaWithObtained
@@ -147,6 +147,17 @@ export const getObtained = cache(async (user_id: UUID | string) => {
     .eq('user_id', user_id)
 
   return obtained as Obtained[]
+})
+
+export const getEurekaVariants = cache(async () => {
+  const supabase = await createClient()
+
+  const { data: eurekaVariants } = await supabase
+    .from('eureka_variants')
+    .select('id, eureka_set, color, category, image_url, default, slug')
+    .order('id', { ascending: true })
+
+  return eurekaVariants
 })
 
 export const getAdminData = cache(async () => {

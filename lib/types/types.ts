@@ -9,12 +9,14 @@ export interface EurekaSet {
   labels: string | null
   trial: string | null
   image_url: string
-  eureka_variants: Eureka[]
+  eureka_variants: EurekaVariant[]
   categories: Category[]
   colors: Category[]
 }
 
-export interface Eureka {
+export type Eureka = EurekaVariant
+
+export interface EurekaVariant {
   id: number
   eureka_set: string | null
   color: string | null
@@ -80,6 +82,7 @@ export interface NavSecondaryLink {
   url: string
   icon?: ReactNode
   adminOnly?: boolean
+  drawerHidden?: boolean
   exclusiveItems?: boolean
   items?: { title: string; url: string }[]
 }

@@ -36,16 +36,32 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
   - `eureka/[slug]/page.tsx` — Individual Eureka Set detail with realtime updates
   - `eureka/missing/page.tsx` — Missing items view (auth required)
   - `eureka/trials/page.tsx` — Trials view
-  - `(admin)/dashboard/page.tsx` — Admin data management (admin role required)
+  - `(admin)/dashboard/page.tsx` — Admin dashboard: stat cards + recent lists (admin role required)
+  - `(admin)/eureka-set/page.tsx` — Full eureka sets table with edit buttons
+  - `(admin)/eureka-set/new/page.tsx` — Add new eureka set
+  - `(admin)/eureka-set/edit/[slug]/page.tsx` — Edit eureka set
+  - `(admin)/eureka-variant/page.tsx` — Full eureka variants table with edit buttons
+  - `(admin)/eureka-variant/new/page.tsx` — Add new eureka variant
+  - `(admin)/eureka-variant/edit/[slug]/page.tsx` — Edit eureka variant (slug-based routing)
   - `profile/page.tsx` — User profile management (auth required)
   - `about/page.tsx` — About page
 - `app/auth/` — Auth pages (login, sign-up, forgot-password, update-password, confirm, error)
+
+### Component Organization
+
+Components are grouped into subdirectories:
+
+- `components/navbar/` — nav-drawer, nav-extra, nav-main, nav-secondary, nav-skeleton, nav-tabs, nav-user, theme-switcher
+- `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
+- `components/forms/auth/` — profile-form, forgot-password-form, update-password-form
+- `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
+- `components/forms/eureka-variant/` — add-eureka-variant-form, edit-eureka-variant-form
 
 ### Data Flow
 
 Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass to Client Components for interactivity:
 
-1. `lib/data.ts` — All Supabase queries. Key functions: `getEurekaSets()`, `getEurekaSet(slug)`, `getTrials()`, `getObtained(user_id)`, `getProfile(user_id)`
+1. `lib/data.ts` — All Supabase queries. Key functions: `getEurekaSets()`, `getEurekaSet(slug)`, `getTrials()`, `getObtained(user_id)`, `getProfile(user_id)`, `getEurekaVariants()`, `getAdminData()`
 2. `hooks/user.ts` — `getUserID()`, `getUserClaims()`, `getUserRole()` read auth claims server-side
 3. `hooks/eureka-set.ts` — Pure functions `createEurekaSet()` and `updateEurekaSet()` for transforming data
 4. `hooks/count.ts` — `count()` and `percent()` utilities for progress calculation
@@ -53,7 +69,7 @@ Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass t
 
 ### Realtime Pattern
 
-`components/realtime-eureka-set.tsx` is the canonical realtime pattern: server fetches initial data → passes as props → client subscribes to `postgres_changes` on the `obtained` table → local state updates trigger `updateEurekaSet()` recalculation.
+`components/realtime/realtime-eureka-set.tsx` is the canonical realtime pattern: server fetches initial data → passes as props → client subscribes to `postgres_changes` on the `obtained` table → local state updates trigger `updateEurekaSet()` recalculation.
 
 Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server Components down through `RealtimeEurekaSet` → `EurekaHeader` and `EurekaButton`. The slug detail page sets this via `!!(user_id)`.
 
@@ -70,16 +86,21 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 ### Key Database Tables
 
 - `eureka_sets` — Outfit set metadata (name, slug, quality, style, labels, trial)
-- `eureka_variants` — Individual eureka items (eureka_set FK, color, category, image_url, default)
+- `eureka_variants` — Individual eureka items (eureka_set FK, color, category, image_url, default, slug)
 - `categories` — Category lookup (name, image_url)
 - `colors` — Color lookup (name, image_url)
 - `obtained` — User collection records (user_id, eureka_set, category, color)
 - `trials` — Trial lookup
 - `profiles` — User profiles (full_name, username, avatar_url, role)
 
-### Obtained Slug Format
+### Slug Helpers
 
-Eureka items are identified by a slug: `{eureka_set_with_underscores}-{category}-{color}`. The `handleObtained` action parses and reconstructs this to query the DB.
+`lib/utils.ts` exports two slug utilities:
+
+- `toSlug(name)` — converts a name to a set slug (`spaces → _`, lowercase)
+- `toVariantSlug(eurekaSet, category, color)` — builds a variant slug `{set}-{category}-{color}`
+
+Eureka variant forms auto-generate the slug from the selected eureka set, category, and color via a `useEffect`. The slug field is read-only by default; an edit icon unlocks manual entry.
 
 ### UI Stack
 

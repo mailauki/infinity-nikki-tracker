@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
-import NavDrawer from '@/components/nav-drawer'
-import NavSkeleton from '@/components/nav-skeleton'
-import NavTabs from '@/components/nav-tabs'
+import NavDrawer from '@/components/navbar/nav-drawer'
+import NavSkeleton from '@/components/navbar/nav-skeleton'
+import NavTabs from '@/components/navbar/nav-tabs'
 import { getUserClaims, getUserRole } from '@/hooks/user'
 
 export default async function MainLayout({

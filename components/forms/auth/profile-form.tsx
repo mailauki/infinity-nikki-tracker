@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
-import AvatarUpload from './avatar-upload'
+import AvatarUpload from '../../avatar-upload'
 import { Alert, Button, Chip, Stack, TextField } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 
@@ -91,33 +91,32 @@ export default function ProfileForm({
           }}
         />
 
-				<Stack spacing={1} sx={{ mt: 2, maxWidth: 'sm' }}>
-        {isAdmin ? (
-          <Chip
-            icon={<AdminPanelSettingsIcon />}
-            label="Admin access"
-            color="secondary"
-            variant="outlined"
-            sx={{ alignSelf: 'flex-start' }}
-          />
-        ) : (
-          <Alert
-            severity="info"
-            action={
-              <Button
-                color="inherit"
-                size="small"
-                href="mailto:julie.ux.dev@gmail.com?subject=Admin%20Access%20Request&body=Hi%2C%20I%27d%20like%20to%20request%20admin%20access%20for%20the%20Infinity%20Nikki%20Tracker."
-              >
-                Request access
-              </Button>
-            }
-          >
-            You don&apos;t have admin access.
-          </Alert>
-        )}
-      </Stack>
-
+        <Stack spacing={1} sx={{ mt: 2, maxWidth: 'sm' }}>
+          {isAdmin ? (
+            <Chip
+              icon={<AdminPanelSettingsIcon />}
+              label="Admin access"
+              color="secondary"
+              variant="outlined"
+              sx={{ alignSelf: 'flex-start' }}
+            />
+          ) : (
+            <Alert
+              severity="info"
+              action={
+                <Button
+                  color="inherit"
+                  size="small"
+                  href="mailto:julie.ux.dev@gmail.com?subject=Admin%20Access%20Request&body=Hi%2C%20I%27d%20like%20to%20request%20admin%20access%20for%20the%20Infinity%20Nikki%20Tracker."
+                >
+                  Request access
+                </Button>
+              }
+            >
+              You don&apos;t have admin access.
+            </Alert>
+          )}
+        </Stack>
       </div>
       <div className="w-full max-w-sm">
         <form className="flex flex-col">
@@ -141,7 +140,7 @@ export default function ProfileForm({
           />
 
           <TextField
-            label="Userame"
+            label="Username"
             id="username"
             type="text"
             margin="normal"

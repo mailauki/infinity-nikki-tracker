@@ -103,15 +103,15 @@ hooks/
 
 ## Database Schema
 
-| Table         | Description                                                     |
-| ------------- | --------------------------------------------------------------- |
-| `eureka_sets` | Outfit set metadata (name, slug, quality, style, labels, trial) |
-| `eureka_variants` | Individual Eureka items (set FK, color, category, image_url) |
-| `categories`  | Category lookup with images                                     |
-| `colors`      | Color lookup with images                                        |
-| `obtained`    | Per-user collection records                                     |
-| `trials`      | Trial lookup with images                                        |
-| `profiles`    | User profiles (full_name, username, avatar_url, role)           |
+| Table             | Description                                                     |
+| ----------------- | --------------------------------------------------------------- |
+| `eureka_sets`     | Outfit set metadata (name, slug, quality, style, labels, trial) |
+| `eureka_variants` | Individual Eureka items (set FK, color, category, image_url)    |
+| `categories`      | Category lookup with images                                     |
+| `colors`          | Color lookup with images                                        |
+| `obtained`        | Per-user collection records                                     |
+| `trials`          | Trial lookup with images                                        |
+| `profiles`        | User profiles (full_name, username, avatar_url, role)           |
 
 ## Authentication
 

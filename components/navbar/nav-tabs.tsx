@@ -33,28 +33,31 @@ function NavTabs() {
     (navLinksData.home as NavSecondaryLink)
 
   // For sections with exclusiveItems, show only the item matching the current path
-  const exclusiveSection = (navLinks as NavSecondaryLink).exclusiveItems && pathname !== navLinks.url
+  const exclusiveSection =
+    (navLinks as NavSecondaryLink).exclusiveItems && pathname !== navLinks.url
   const matchedItem = exclusiveSection
-    ? navLinks.items?.find(
-        (item) => item.url === pathname || pathname.startsWith(item.url + '/')
-      )
+    ? navLinks.items?.find((item) => item.url === pathname || pathname.startsWith(item.url + '/'))
     : undefined
 
   const allNavLinks = matchedItem
     ? [navLinks, matchedItem]
-    : [navLinks].concat(navLinks.items! || [])
+    : (navLinks as NavSecondaryLink).exclusiveItems
+      ? [navLinks]
+      : [navLinks].concat(navLinks.items! || [])
 
   const isNavLink = !!allNavLinks.find((link) => link.url === pathname)
   // For prefix-matched dynamic sub-routes, activate the item's base URL
-  const activePath = matchedItem && !isNavLink
-    ? matchedItem.url
-    : slug && !isNavLink
-      ? false
-      : pathname
+  const activePath =
+    matchedItem && !isNavLink ? matchedItem.url : slug && !isNavLink ? false : pathname
 
   return (
     <Toolbar disableGutters sx={{ alignItems: 'flex-end' }}>
-      <Stack direction='row' alignItems='center' justifyContent='space-between' sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{ width: '100%', borderBottom: 1, borderColor: 'divider' }}
+      >
         <Tabs value={activePath} aria-label="Next.js MUI Nav Tabs Example" role="navigation">
           {allNavLinks.map((link) => (
             <Tab
@@ -69,7 +72,12 @@ function NavTabs() {
         {pathname === '/profile' && (
           <Box sx={{ px: 2 }}>
             <form action="/auth/signout" method="post">
-              <Button size='small' type="submit" variant="outlined" startIcon={<Logout fontSize="small" />}>
+              <Button
+                size="small"
+                type="submit"
+                variant="outlined"
+                startIcon={<Logout fontSize="small" />}
+              >
                 Log out
               </Button>
             </form>

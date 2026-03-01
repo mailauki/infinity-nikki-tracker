@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import RealtimeEurekaSet from '@/components/realtime-eureka-set'
+import RealtimeEurekaSet from '@/components/realtime/realtime-eureka-set'
 import { getUserID } from '@/hooks/user'
 import { getEurekaSet, getObtained } from '@/lib/data'
 import { Container } from '@mui/material'

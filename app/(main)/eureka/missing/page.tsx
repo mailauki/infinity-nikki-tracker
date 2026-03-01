@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 
 import { getEurekaSets, getObtained } from '@/lib/data'
 import { getUserID } from '@/hooks/user'
-import RealtimeEurekaFilter from '@/components/realtime-eureka-filter'
+import RealtimeEurekaFilter from '@/components/realtime/realtime-eureka-filter'
 import LoginAlert from '@/components/login-alert'
 import { Container } from '@mui/material'
 

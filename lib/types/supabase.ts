@@ -50,58 +50,6 @@ export type Database = {
         }
         Relationships: []
       }
-      eureka_variants: {
-        Row: {
-          category: string | null
-          color: string | null
-          created_at: string
-          default: boolean
-          eureka_set: string | null
-          id: number
-          image_url: string | null
-        }
-        Insert: {
-          category?: string | null
-          color?: string | null
-          created_at?: string
-          default?: boolean
-          eureka_set?: string | null
-          id?: number
-          image_url?: string | null
-        }
-        Update: {
-          category?: string | null
-          color?: string | null
-          created_at?: string
-          default?: boolean
-          eureka_set?: string | null
-          id?: number
-          image_url?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'eureka_variants_category_fkey'
-            columns: ['category']
-            isOneToOne: false
-            referencedRelation: 'categories'
-            referencedColumns: ['name']
-          },
-          {
-            foreignKeyName: 'eureka_variants_color_fkey'
-            columns: ['color']
-            isOneToOne: false
-            referencedRelation: 'colors'
-            referencedColumns: ['name']
-          },
-          {
-            foreignKeyName: 'eureka_variants_eureka_set_fkey'
-            columns: ['eureka_set']
-            isOneToOne: false
-            referencedRelation: 'eureka_sets'
-            referencedColumns: ['name']
-          },
-        ]
-      }
       eureka_sets: {
         Row: {
           created_at: string
@@ -139,6 +87,61 @@ export type Database = {
             columns: ['trial']
             isOneToOne: false
             referencedRelation: 'trials'
+            referencedColumns: ['name']
+          },
+        ]
+      }
+      eureka_variants: {
+        Row: {
+          category: string | null
+          color: string | null
+          created_at: string
+          default: boolean
+          eureka_set: string | null
+          id: number
+          image_url: string | null
+          slug: string | null
+        }
+        Insert: {
+          category?: string | null
+          color?: string | null
+          created_at?: string
+          default?: boolean
+          eureka_set?: string | null
+          id?: number
+          image_url?: string | null
+          slug?: string | null
+        }
+        Update: {
+          category?: string | null
+          color?: string | null
+          created_at?: string
+          default?: boolean
+          eureka_set?: string | null
+          id?: number
+          image_url?: string | null
+          slug?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'eureka_category_fkey'
+            columns: ['category']
+            isOneToOne: false
+            referencedRelation: 'categories'
+            referencedColumns: ['name']
+          },
+          {
+            foreignKeyName: 'eureka_color_fkey'
+            columns: ['color']
+            isOneToOne: false
+            referencedRelation: 'colors'
+            referencedColumns: ['name']
+          },
+          {
+            foreignKeyName: 'eureka_eureka_set_fkey'
+            columns: ['eureka_set']
+            isOneToOne: false
+            referencedRelation: 'eureka_sets'
             referencedColumns: ['name']
           },
         ]

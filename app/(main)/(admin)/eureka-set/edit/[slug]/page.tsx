@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import { createClient } from '@/lib/supabase/server'
 import { getTrials } from '@/lib/data'
-import EditEurekaSetForm from '@/components/edit-eureka-set-form'
+import EditEurekaSetForm from '@/components/forms/eureka-set/edit-eureka-set-form'
 
 export default async function EditEurekaSetPage({ params }: { params: Promise<{ slug: string }> }) {
   return (

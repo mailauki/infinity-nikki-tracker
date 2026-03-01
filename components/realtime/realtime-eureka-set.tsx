@@ -6,12 +6,12 @@ import { updateEurekaSet } from '@/hooks/eureka-set'
 import { createClient } from '@/lib/supabase/client'
 import { EurekaSet, Obtained } from '@/lib/types/types'
 
-import EurekaHeader from './eureka-header'
-import EurekaTable from './eureka-table'
+import EurekaHeader from '../eureka-header'
+import EurekaTable from '../eureka-table'
 import { Box } from '@mui/material'
-import ProgressList from './progress-list'
-import GridContainer from './grid-container'
-import LoginAlert from './login-alert'
+import ProgressList from '../progress-list'
+import GridContainer from '../grid-container'
+import LoginAlert from '../login-alert'
 
 const supabase = createClient()
 
@@ -79,7 +79,11 @@ export default function RealtimeEurekaSet({
                 eureka={eurekaSet.eureka_variants}
                 filter="categories"
               />
-              <ProgressList items={eurekaSet.colors} eureka={eurekaSet.eureka_variants} filter="colors" />
+              <ProgressList
+                items={eurekaSet.colors}
+                eureka={eurekaSet.eureka_variants}
+                filter="colors"
+              />
             </>
           )
         }

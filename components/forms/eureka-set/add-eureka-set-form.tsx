@@ -13,33 +13,23 @@ import {
   TextField,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
+import { toSlug } from '@/lib/utils'
 
-type EurekaSetRow = {
-  id: number
-  name: string
-  slug: string | null
-  quality: number | null
-  style: string | null
-  labels: string | null
-  trial: string | null
-}
-
-export default function EditEurekaSetForm({
-  eurekaSet,
-  trials,
-}: {
-  eurekaSet: EurekaSetRow
-  trials: { name: string }[]
-}) {
+export default function AddEurekaSetForm({ trials }: { trials: { name: string }[] }) {
   const router = useRouter()
-  const [name, setName] = useState(eurekaSet.name)
-  const [slug, setSlug] = useState(eurekaSet.slug ?? '')
-  const [quality, setQuality] = useState<number | ''>(eurekaSet.quality ?? '')
-  const [style, setStyle] = useState(eurekaSet.style ?? '')
-  const [labels, setLabels] = useState(eurekaSet.labels ?? '')
-  const [trial, setTrial] = useState(eurekaSet.trial ?? '')
+  const [name, setName] = useState('')
+  const [slug, setSlug] = useState('')
+  const [quality, setQuality] = useState<number | ''>('')
+  const [style, setStyle] = useState('')
+  const [labels, setLabels] = useState('')
+  const [trial, setTrial] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  function handleNameChange(value: string) {
+    setName(value)
+    setSlug(toSlug(value))
+  }
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
@@ -47,17 +37,16 @@ export default function EditEurekaSetForm({
     setError(null)
 
     const supabase = createClient()
-    const { error } = await supabase
-      .from('eureka_sets')
-      .update({
+    const { error } = await supabase.from('eureka_sets').insert([
+      {
         name: name.trim(),
         slug: slug.trim(),
         quality: quality === '' ? null : quality,
         style: style.trim() || null,
         labels: labels.trim() || null,
         trial: trial || null,
-      })
-      .eq('id', eurekaSet.id)
+      },
+    ])
 
     setLoading(false)
 
@@ -78,7 +67,7 @@ export default function EditEurekaSetForm({
           label="Name"
           required
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => handleNameChange(e.target.value)}
         />
 
         <TextField
@@ -86,6 +75,7 @@ export default function EditEurekaSetForm({
           required
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
+          helperText="Auto-generated from name — edit if needed"
           slotProps={{ htmlInput: { style: { fontFamily: 'monospace' } } }}
         />
 
@@ -105,11 +95,7 @@ export default function EditEurekaSetForm({
           </Select>
         </FormControl>
 
-        <TextField
-          label="Style"
-          value={style}
-          onChange={(e) => setStyle(e.target.value)}
-        />
+        <TextField label="Style" value={style} onChange={(e) => setStyle(e.target.value)} />
 
         <TextField
           label="Labels"
@@ -135,7 +121,7 @@ export default function EditEurekaSetForm({
             Cancel
           </Button>
           <Button type="submit" variant="contained" disabled={loading}>
-            {loading ? 'Saving...' : 'Save Changes'}
+            {loading ? 'Saving...' : 'Add Eureka Set'}
           </Button>
         </Stack>
       </Stack>
