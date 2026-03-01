@@ -3,10 +3,17 @@ import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarUpload from './avatar-upload'
-import { Button, TextField } from '@mui/material'
+import { Alert, Button, Chip, Stack, TextField } from '@mui/material'
 import { LogOut } from 'lucide-react'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 
-export default function ProfileForm({ user }: { user: User | null }) {
+export default function ProfileForm({
+  user,
+  isAdmin = false,
+}: {
+  user: User | null
+  isAdmin?: boolean
+}) {
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
   const [fullname, setFullname] = useState<string | null>(null)
@@ -135,6 +142,33 @@ export default function ProfileForm({ user }: { user: User | null }) {
           </Button>
         </form>
       </div>
+
+      <Stack spacing={1} sx={{ mt: 2, maxWidth: 'sm' }}>
+        {isAdmin ? (
+          <Chip
+            icon={<AdminPanelSettingsIcon />}
+            label="Admin access"
+            color="primary"
+            variant="outlined"
+            sx={{ alignSelf: 'flex-start' }}
+          />
+        ) : (
+          <Alert
+            severity="info"
+            action={
+              <Button
+                color="inherit"
+                size="small"
+                href="mailto:julie.ux.dev@gmail.com?subject=Admin%20Access%20Request&body=Hi%2C%20I%27d%20like%20to%20request%20admin%20access%20for%20the%20Infinity%20Nikki%20Tracker."
+              >
+                Request access
+              </Button>
+            }
+          >
+            You don&apos;t have admin access.
+          </Alert>
+        )}
+      </Stack>
     </>
   )
 }

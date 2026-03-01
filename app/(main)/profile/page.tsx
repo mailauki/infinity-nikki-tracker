@@ -1,5 +1,6 @@
 import ProfileForm from '@/components/profile-form'
 import { createClient } from '@/lib/supabase/server'
+import { getUserRole } from '@/hooks/user'
 import { Container, Typography } from '@mui/material'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
@@ -25,12 +26,14 @@ async function UserDetails() {
     redirect('/auth/login')
   }
 
+  const role = await getUserRole()
+
   return (
     <>
       <Typography variant="h3" component="h1">
         Profile
       </Typography>
-      <ProfileForm user={user} />
+      <ProfileForm user={user} isAdmin={role === 'admin'} />
     </>
   )
 }
