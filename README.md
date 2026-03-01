@@ -2,9 +2,9 @@
 
 A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/), the cozy open-world fashion game. Track your Eureka outfit progress across sets, categories, colors, and trials — with real-time updates and per-user collection state.
 
-![Eureka page showing a grid of outfit set cards with preview image, style label, set name, and quality star rating](public/screenshot.png)
+![Eureka page showing a grid of outfit set cards with style chip, set name, and quality stars, alongside a category progress sidebar](public/screenshot.png)
 
-![First Snow set detail page showing a grid of variant items labeled by category and color, unauthenticated view](public/screenshot-detail.png)
+![First Snow set detail page showing the set header with trial and style info, and a grid of variant cards labeled by category and color](public/screenshot-detail.png)
 
 ## Features
 
