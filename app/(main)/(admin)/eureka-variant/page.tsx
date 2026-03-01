@@ -17,6 +17,7 @@ import {
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import { getEurekaVariants } from '@/lib/data'
+import { toEurekaVariantSlug } from '@/lib/utils'
 
 export default function EurekaVariantPage() {
   return (
@@ -85,7 +86,7 @@ async function EurekaVariantTable() {
                   <IconButton
                     size="small"
                     color="secondary"
-                    href={`/eureka-variant/edit/${variant.slug}`}
+                    href={`/eureka-variant/edit/${variant.slug ?? toEurekaVariantSlug(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? '')}`}
                   >
                     <EditIcon fontSize="small" />
                   </IconButton>

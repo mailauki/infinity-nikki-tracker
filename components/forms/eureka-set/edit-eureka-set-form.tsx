@@ -15,7 +15,7 @@ import {
   TextField,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
-import { toSlug } from '@/lib/utils'
+import { toEurekaSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 
 type EurekaSetRow = {
@@ -37,7 +37,7 @@ export default function EditEurekaSetForm({
 }) {
   const router = useRouter()
   const [name, setName] = useState(eurekaSet.name)
-  const [slug, setSlug] = useState(eurekaSet.slug ?? '')
+  const [slug, setSlug] = useState(eurekaSet.slug ?? toEurekaSlug(eurekaSet.name))
   const [quality, setQuality] = useState<number | ''>(eurekaSet.quality ?? '')
   const [style, setStyle] = useState(eurekaSet.style ?? '')
   const [labels, setLabels] = useState(eurekaSet.labels ?? '')
@@ -61,6 +61,7 @@ export default function EditEurekaSetForm({
         style: style.trim() || null,
         labels: labels.trim() || null,
         trial: trial || null,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', eurekaSet.id)
 
@@ -69,7 +70,7 @@ export default function EditEurekaSetForm({
     if (error) {
       setError(error.message)
     } else {
-      router.push('/dashboard')
+      router.push('/eureka-set')
       router.refresh()
     }
   }
@@ -83,10 +84,7 @@ export default function EditEurekaSetForm({
           label="Name"
           required
           value={name}
-          onChange={(e) => {
-            setName(e.target.value)
-            setSlug(toSlug(e.target.value))
-          }}
+          onChange={(e) => setName(e.target.value)}
         />
 
         <TextField

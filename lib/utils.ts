@@ -5,11 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function toSlug(name: string) {
+export function toEurekaSlug(name: string) {
   return name.trim().toLowerCase().replace(/\s+/g, '_')
 }
 
-export function toVariantSlug(eurekaSet: string, category: string, color: string) {
+export function toEurekaVariantSlug(eurekaSet: string, category: string, color: string) {
   return [eurekaSet, category, color]
     .map((s) => s.trim().toLowerCase().replace(/\s+/g, '_'))
     .join('-')

@@ -4,6 +4,7 @@ import {
   Button,
   Card,
   CardContent,
+  Chip,
   Container,
   Divider,
   List,
@@ -92,13 +93,16 @@ async function AdminDashboard() {
         </Stack>
         <List disablePadding>
           {eurekaVariants?.slice(0, 5).map((variant) => (
-            <ListItem key={variant.id} disablePadding divider>
+            <ListItem key={variant.id} disablePadding divider
+      secondaryAction={
+        variant.default && <Chip size='small' label='default' color='secondary' variant='outlined' />
+      }>
               <ListItemButton href={`/eureka-variant/edit/${variant.slug}`}>
                 <ListItemText
-                  primary={[variant.eureka_set, variant.category, variant.color]
+                  primary={variant.eureka_set}
+										secondary={[variant.category, variant.color]
                     .filter(Boolean)
-                    .join(' — ')}
-                  secondary={`ID ${variant.id}${variant.default ? ' · default' : ''}`}
+                    .join(' • ')}
                   slotProps={{ primary: { variant: 'body2' }, secondary: { variant: 'caption' } }}
                 />
               </ListItemButton>

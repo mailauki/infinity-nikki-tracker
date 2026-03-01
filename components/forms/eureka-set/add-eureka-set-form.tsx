@@ -15,7 +15,7 @@ import {
   TextField,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
-import { toSlug } from '@/lib/utils'
+import { toEurekaSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 
 export default function AddEurekaSetForm({ trials }: { trials: { name: string }[] }) {
@@ -32,7 +32,7 @@ export default function AddEurekaSetForm({ trials }: { trials: { name: string }[
 
   function handleNameChange(value: string) {
     setName(value)
-    setSlug(toSlug(value))
+    if (!editSlug) setSlug(toEurekaSlug(value))
   }
 
   async function handleSubmit(e: { preventDefault(): void }) {
@@ -57,7 +57,7 @@ export default function AddEurekaSetForm({ trials }: { trials: { name: string }[
     if (error) {
       setError(error.message)
     } else {
-      router.push('/dashboard')
+      router.push('/eureka-set')
       router.refresh()
     }
   }

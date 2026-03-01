@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Alert,
@@ -17,7 +17,7 @@ import {
   TextField,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
-import { toVariantSlug } from '@/lib/utils'
+import { toEurekaVariantSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 
 type EurekaVariantRow = {
@@ -51,14 +51,10 @@ export default function EditEurekaVariantForm({
   const [isDefault, setIsDefault] = useState(variant.default)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [slug, setSlug] = useState(variant.slug ?? '')
+  const [slug, setSlug] = useState(
+    variant.slug ?? toEurekaVariantSlug(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? '')
+  )
   const [editSlug, setEditSlug] = useState<boolean>(false)
-
-  useEffect(() => {
-    if (!editSlug && eurekaSet && category && color) {
-      setSlug(toVariantSlug(eurekaSet, category, color))
-    }
-  }, [eurekaSet, category, color, editSlug])
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()

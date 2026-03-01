@@ -16,6 +16,7 @@ import {
 import AddIcon from '@mui/icons-material/Add'
 import EditIcon from '@mui/icons-material/Edit'
 import { getEurekaSets } from '@/lib/data'
+import { toEurekaSlug } from '@/lib/utils'
 
 export default function EurekaSetPage() {
   return (
@@ -69,7 +70,7 @@ async function EurekaSetTable() {
               <TableCell>{set.trial}</TableCell>
               <TableCell align="right" sx={{ py: 0 }}>
                 <Tooltip title={`Edit ${set.name}`}>
-                  <IconButton size="small" color="secondary" href={`/eureka-set/edit/${set.slug}`}>
+                  <IconButton size="small" color="secondary" href={`/eureka-set/edit/${set.slug ?? toEurekaSlug(set.name)}`}>
                     <EditIcon fontSize="small" />
                   </IconButton>
                 </Tooltip>
