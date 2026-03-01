@@ -5,10 +5,6 @@ import { getUserID } from '@/hooks/user'
 import { getEurekaSet, getObtained } from '@/lib/data'
 import { Container } from '@mui/material'
 
-export async function generateStaticParams() {
-  return [{ slug: 'hello-world' }]
-}
-
 export default async function EurekaSetPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 

@@ -164,3 +164,19 @@ export const getAdminData = cache(async () => {
 
   return { eurekaSets, categories, colors }
 })
+
+export const getProfile = cache(async (user_id: UUID | string) => {
+  const supabase = await createClient()
+
+  const {
+    data: profile,
+    error,
+    status,
+  } = await supabase
+    .from('profiles')
+    .select(`full_name, username, avatar_url`)
+    .eq('id', user_id)
+    .single()
+
+  return { profile, error, status }
+})
