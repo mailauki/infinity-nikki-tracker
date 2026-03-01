@@ -1,14 +1,16 @@
 import { Suspense } from 'react'
 import {
   Box,
+  Button,
   Container,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Stack,
   Typography,
 } from '@mui/material'
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 import { getEurekaSets } from '@/lib/data'
 
 export default function DashboardPage() {
@@ -31,39 +33,32 @@ async function AdminDashboard() {
       </Typography>
 
       <Box>
-        <Typography variant="h4" component="h2" gutterBottom>
-          Eureka Sets ({eurekaSets?.length ?? 0})
-        </Typography>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Slug</TableCell>
-              <TableCell>Quality</TableCell>
-              <TableCell>Style</TableCell>
-              <TableCell>Labels</TableCell>
-              <TableCell>Trial</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {eurekaSets?.map((set) => (
-              <TableRow key={set.id}>
-                <TableCell>{set.id}</TableCell>
-                <TableCell>{set.name}</TableCell>
-                <TableCell>
-                  <Typography variant="caption" fontFamily="monospace">
-                    {set.slug}
-                  </Typography>
-                </TableCell>
-                <TableCell>{set.quality}</TableCell>
-                <TableCell>{set.style}</TableCell>
-                <TableCell>{set.labels}</TableCell>
-                <TableCell>{set.trial}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
+          <Typography variant="h4" component="h2">
+            Eureka Sets ({eurekaSets?.length ?? 0})
+          </Typography>
+          <Button
+            variant="outlined"
+            endIcon={<ArrowForwardIcon />}
+            size="small"
+            href="/eureka-set"
+          >
+            View all
+          </Button>
+        </Stack>
+        <List disablePadding>
+          {eurekaSets?.map((set) => (
+            <ListItem key={set.id} disablePadding divider>
+              <ListItemButton href={`/eureka-set/edit/${set.slug}`}>
+                <ListItemText
+                  primary={set.name}
+                  secondary={set.trial ?? '—'}
+                  slotProps={{ primary: { variant: 'body2' }, secondary: { variant: 'caption' } }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
       </Box>
     </Box>
   )

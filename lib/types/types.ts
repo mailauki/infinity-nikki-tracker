@@ -80,4 +80,6 @@ export interface NavSecondaryLink {
   url: string
   icon?: ReactNode
   adminOnly?: boolean
+  exclusiveItems?: boolean
+  items?: { title: string; url: string }[]
 }

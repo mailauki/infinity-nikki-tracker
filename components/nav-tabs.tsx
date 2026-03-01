@@ -17,15 +17,40 @@ function NavTabs() {
   const title = pathname === '/' ? 'home' : path[1]
   const slug = path.length > 2 ? path[2] : ''
 
+  const allSections = [
+    ...navLinksData.navMain,
+    ...navLinksData.navSecondary,
+    ...navLinksData.navExtra,
+  ]
+
   const navLinks =
     (navLinksData.navMain.find((item) => item.url === `/${title}`) as NavMainLink) ||
     (navLinksData.navSecondary.find((item) => item.url === `/${title}`) as NavSecondaryLink) ||
     (navLinksData.navExtra.find((item) => item.url === `/${title}`) as NavSecondaryLink) ||
+    (allSections.find((item) =>
+      item.items?.some((sub) => sub.url === pathname || pathname.startsWith(sub.url + '/'))
+    ) as NavSecondaryLink) ||
     (navLinksData.home as NavSecondaryLink)
-  const allNavLinks = [navLinks].concat(navLinks.items! || [])
+
+  // For sections with exclusiveItems, show only the item matching the current path
+  const exclusiveSection = (navLinks as NavSecondaryLink).exclusiveItems && pathname !== navLinks.url
+  const matchedItem = exclusiveSection
+    ? navLinks.items?.find(
+        (item) => item.url === pathname || pathname.startsWith(item.url + '/')
+      )
+    : undefined
+
+  const allNavLinks = matchedItem
+    ? [navLinks, matchedItem]
+    : [navLinks].concat(navLinks.items! || [])
 
   const isNavLink = !!allNavLinks.find((link) => link.url === pathname)
-  const activePath = slug && !isNavLink ? false : pathname
+  // For prefix-matched dynamic sub-routes, activate the item's base URL
+  const activePath = matchedItem && !isNavLink
+    ? matchedItem.url
+    : slug && !isNavLink
+      ? false
+      : pathname
 
   return (
     <Toolbar disableGutters sx={{ alignItems: 'flex-end' }}>
@@ -41,15 +66,15 @@ function NavTabs() {
             />
           ))}
         </Tabs>
-				{pathname === "/profile" && (
-					<Box sx={{ px: 2 }}>
-          <form action="/auth/signout" method="post">
-            <Button size='small' type="submit" variant="outlined" startIcon={<Logout fontSize="small" />}>
-              Log out
-            </Button>
-          </form>
-        </Box>
-				)}
+        {pathname === '/profile' && (
+          <Box sx={{ px: 2 }}>
+            <form action="/auth/signout" method="post">
+              <Button size='small' type="submit" variant="outlined" startIcon={<Logout fontSize="small" />}>
+                Log out
+              </Button>
+            </form>
+          </Box>
+        )}
       </Stack>
     </Toolbar>
   )

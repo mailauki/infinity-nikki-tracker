@@ -31,6 +31,22 @@ export const navLinksData = {
       icon: <DashboardIcon />,
       adminOnly: true,
     },
+		{
+			title: "Eureka Sets",
+			url: '/eureka-set',
+			adminOnly: true,
+      exclusiveItems: true,
+      items: [
+        {
+          title: 'Add Eureka Set',
+          url: '/eureka-set/new',
+        },
+        {
+          title: 'Edit Eureka Set',
+          url: '/eureka-set/edit',
+        },
+      ],
+		},
     {
       title: 'Profile',
       url: '/profile',
