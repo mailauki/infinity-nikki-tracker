@@ -94,6 +94,19 @@ export default function AboutPage() {
                 }
               />
             </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Typography color="textSecondary" variant="body1">
+                    Manage your display name and avatar from the{' '}
+                    <Anchor href="/profile" color="textSecondary">
+                      Profile
+                    </Anchor>{' '}
+                    page.
+                  </Typography>
+                }
+              />
+            </ListItem>
           </List>
         </Stack>
 
@@ -172,15 +185,6 @@ export default function AboutPage() {
                 primary={
                   <Typography color="textSecondary" variant="body1">
                     Item search — search across all items globally
-                  </Typography>
-                }
-              />
-            </ListItem>
-            <ListItem sx={{ display: 'list-item' }}>
-              <ListItemText
-                primary={
-                  <Typography color="textSecondary" variant="body1">
-                    Admin dashboard — manage backend data directly from the frontend
                   </Typography>
                 }
               />
