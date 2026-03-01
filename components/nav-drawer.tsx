@@ -184,7 +184,7 @@ export default function NavDrawer({
                 Infinity Nikki Tracker
               </Anchor>
               {!user ? (
-                <Button color="inherit" href="/login">
+                <Button color="inherit" href="/auth/login">
                   Login
                 </Button>
               ) : (
