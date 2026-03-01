@@ -15,7 +15,7 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 - **Realtime Updates** — Collection state updates instantly across tabs via Supabase Realtime
 - **Auth-aware** — Browse as a guest (read-only) or sign in to track your own collection
 - **Profile Management** — Update display name, username, and avatar
-- **Admin Dashboard** — Manage backend data from the frontend (admin role required)
+- **Admin Dashboard** — Manage Eureka sets and variants from the frontend (admin role required)
 - **Dark/Light/System Theme** — Theme switcher in the footer
 
 ## Tech Stack
@@ -81,15 +81,25 @@ app/
       [slug]/             # Individual set detail with realtime updates
       missing/            # Filterable missing items (auth required)
       trials/             # Progress grouped by trial
-    (admin)/
-      dashboard/          # Admin data management (admin role required)
+    (admin)/              # Admin section (admin role required)
+      dashboard/          # Stat cards + recent lists for sets and variants
+      eureka-set/         # Eureka sets table, add, and edit pages
+      eureka-variant/     # Eureka variants table, add, and edit pages
     profile/              # User profile (auth required)
     about/                # About page
   auth/                   # Auth pages (login, sign-up, etc.)
 
-components/               # App-specific components
+components/
+  navbar/                 # Nav drawer, tabs, user menu, theme switcher
+  realtime/               # Realtime-subscribed client components
+  forms/
+    auth/                 # Profile, forgot-password, update-password forms
+    eureka-set/           # Add and edit eureka set forms
+    eureka-variant/       # Add and edit eureka variant forms
+
 lib/
   data.ts                 # All Supabase data fetching (React cache)
+  utils.ts                # cn(), toSlug(), toVariantSlug() helpers
   theme.ts                # MUI theme configuration
   nav-links.tsx           # Navigation link definitions
   supabase/               # Supabase client factories (server, client, proxy)
@@ -106,7 +116,7 @@ hooks/
 | Table             | Description                                                     |
 | ----------------- | --------------------------------------------------------------- |
 | `eureka_sets`     | Outfit set metadata (name, slug, quality, style, labels, trial) |
-| `eureka_variants` | Individual Eureka items (set FK, color, category, image_url)    |
+| `eureka_variants` | Individual Eureka items (set FK, color, category, image_url, slug) |
 | `categories`      | Category lookup with images                                     |
 | `colors`          | Color lookup with images                                        |
 | `obtained`        | Per-user collection records                                     |
