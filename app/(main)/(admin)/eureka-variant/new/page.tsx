@@ -6,7 +6,7 @@ import AddEurekaVariantForm from '@/components/forms/eureka-variant/add-eureka-v
 export default function NewEurekaVariantPage() {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
         <NewEurekaVariant />
       </Container>
     </Suspense>

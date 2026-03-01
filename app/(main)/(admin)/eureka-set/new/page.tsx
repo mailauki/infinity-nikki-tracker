@@ -6,7 +6,7 @@ import AddEurekaSetForm from '@/components/forms/eureka-set/add-eureka-set-form'
 export default function NewEurekaSetPage() {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
         <NewEurekaSet />
       </Container>
     </Suspense>

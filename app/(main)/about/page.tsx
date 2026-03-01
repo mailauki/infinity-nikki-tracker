@@ -8,6 +8,8 @@ import {
   ListItemText,
   Container,
 } from '@mui/material'
+import { getUserRole } from '@/hooks/user'
+import { Suspense } from 'react'
 
 export default function AboutPage() {
   return (
@@ -109,6 +111,10 @@ export default function AboutPage() {
             </ListItem>
           </List>
         </Stack>
+
+        <Suspense>
+          <AdminSection />
+        </Suspense>
 
         <Stack component="section">
           <Typography variant="h4" component="h2">
@@ -249,27 +255,6 @@ export default function AboutPage() {
               />
             </ListItem>
           </List>
-          <Typography variant="body1" color="textSecondary">
-            The backend runs on{' '}
-            <Anchor
-              href="https://supabase.com"
-              target="_blank"
-              rel="noreferrer"
-              color="textSecondary"
-            >
-              Supabase
-            </Anchor>
-            . Data can be manually added from the dashboard, found in the{' '}
-            <Anchor
-              href="https://supabase.com/dashboard/project/ykfuevyqpjvtxidjnhxm"
-              target="_blank"
-              rel="noreferrer"
-              color="textSecondary"
-            >
-              Supabase project&apos;s API settings
-            </Anchor>
-            .
-          </Typography>
         </Stack>
 
         <Stack component="section">
@@ -308,5 +293,60 @@ export default function AboutPage() {
         </Typography>
       </Stack>
     </Container>
+  )
+}
+
+async function AdminSection() {
+  const role = await getUserRole()
+
+  if (role !== 'admin') return null
+
+  return (
+    <Stack component="section">
+      <Typography variant="h4" component="h2">
+        Admin
+      </Typography>
+      <Typography variant="body1" color="textSecondary" sx={{ mb: 1 }}>
+        As an admin, you can manage the data that powers this tracker:
+      </Typography>
+      <List sx={{ listStyle: 'disc', pl: 4 }} dense>
+        <ListItem sx={{ display: 'list-item' }}>
+          <ListItemText
+            primary={
+              <Typography color="textSecondary" variant="body1">
+                <Anchor href="/eureka-set" color="textSecondary">
+                  Eureka Sets
+                </Anchor>{' '}
+                — add, edit, and manage outfit set metadata (name, style, quality, trial)
+              </Typography>
+            }
+          />
+        </ListItem>
+        <ListItem sx={{ display: 'list-item' }}>
+          <ListItemText
+            primary={
+              <Typography color="textSecondary" variant="body1">
+                <Anchor href="/eureka-variant" color="textSecondary">
+                  Eureka Variants
+                </Anchor>{' '}
+                — add, edit, and manage individual Eureka items (color, category, image)
+              </Typography>
+            }
+          />
+        </ListItem>
+        <ListItem sx={{ display: 'list-item' }}>
+          <ListItemText
+            primary={
+              <Typography color="textSecondary" variant="body1">
+                <Anchor href="/dashboard" color="textSecondary">
+                  Dashboard
+                </Anchor>{' '}
+                — view counts and recent entries for sets and variants
+              </Typography>
+            }
+          />
+        </ListItem>
+      </List>
+    </Stack>
   )
 }

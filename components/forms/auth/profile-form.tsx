@@ -5,6 +5,7 @@ import { type User } from '@supabase/supabase-js'
 import AvatarUpload from '../../avatar-upload'
 import { Alert, Button, Chip, Stack, TextField } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
+import DashboardIcon from '@mui/icons-material/Dashboard'
 
 export default function ProfileForm({
   user,
@@ -91,15 +92,29 @@ export default function ProfileForm({
           }}
         />
 
-        <Stack spacing={1} sx={{ mt: 2, maxWidth: 'sm' }}>
+        <Stack
+          spacing={1}
+          alignItems="flex-end"
+          justifyContent="flex-start"
+          sx={{ mt: 2, maxWidth: 'sm' }}
+        >
           {isAdmin ? (
-            <Chip
-              icon={<AdminPanelSettingsIcon />}
-              label="Admin access"
-              color="secondary"
-              variant="outlined"
-              sx={{ alignSelf: 'flex-start' }}
-            />
+            <>
+              <Chip
+                icon={<AdminPanelSettingsIcon />}
+                label="Admin access"
+                color="secondary"
+                variant="outlined"
+              />
+              <Button
+                variant="outlined"
+                size="small"
+                href="/dashboard"
+                startIcon={<DashboardIcon />}
+              >
+                Go to Dashboard
+              </Button>
+            </>
           ) : (
             <Alert
               severity="info"

@@ -27,7 +27,7 @@ async function NavContainer({
   return (
     <NavDrawer isAdmin={role === 'admin'} user={user!}>
       <NavTabs />
-      <div className="h-[calc(100vh-192px)] overflow-y-auto bg-background">{children}</div>
+      <div className="bg-background h-[calc(100vh-192px)] overflow-y-auto">{children}</div>
     </NavDrawer>
   )
 }

@@ -19,7 +19,7 @@ export function Hero() {
           Track your collection from your favorite cozy open-world game Infinity Nikki
         </Typography>
       </Box>
-      <Box className="absolute bottom-0 right-0 z-10 h-[50%] w-full bg-gradient-to-t from-background from-50% to-transparent to-80%" />
+      <Box className="from-background absolute bottom-0 right-0 z-10 h-[50%] w-full bg-gradient-to-t from-50% to-transparent to-80%" />
     </Box>
   )
 }

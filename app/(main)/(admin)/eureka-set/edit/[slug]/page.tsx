@@ -8,7 +8,7 @@ import EditEurekaSetForm from '@/components/forms/eureka-set/edit-eureka-set-for
 export default async function EditEurekaSetPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
         <EditEurekaSet params={params} />
       </Container>
     </Suspense>

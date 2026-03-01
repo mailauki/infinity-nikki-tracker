@@ -12,7 +12,7 @@ export default async function EditEurekaVariantPage({
 }) {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
         <EditEurekaVariant params={params} />
       </Container>
     </Suspense>
