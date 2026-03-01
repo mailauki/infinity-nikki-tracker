@@ -6,6 +6,8 @@ import {
   Alert,
   Button,
   FormControl,
+  IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -14,6 +16,7 @@ import {
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
+import { Edit, EditOff } from '@mui/icons-material'
 
 type EurekaSetRow = {
   id: number
@@ -41,6 +44,7 @@ export default function EditEurekaSetForm({
   const [trial, setTrial] = useState(eurekaSet.trial ?? '')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [editSlug, setEditSlug] = useState<boolean>(false)
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
@@ -89,8 +93,20 @@ export default function EditEurekaSetForm({
           label="Slug"
           required
           value={slug}
+          disabled={!editSlug}
           onChange={(e) => setSlug(e.target.value)}
-          slotProps={{ htmlInput: { style: { fontFamily: 'monospace' } } }}
+          slotProps={{
+            htmlInput: { style: { fontFamily: 'monospace' } },
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setEditSlug(!editSlug)}>
+                    {editSlug ? <EditOff /> : <Edit />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
         />
 
         <FormControl>

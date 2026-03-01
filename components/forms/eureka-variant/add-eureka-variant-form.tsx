@@ -126,7 +126,7 @@ export default function AddEurekaVariantForm({
           value={slug}
           disabled={!editSlug}
           onChange={(e) => setSlug(e.target.value)}
-          helperText="Auto-generated from name — edit if needed"
+          helperText="Auto-generated from name, category, and color — edit if needed"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {

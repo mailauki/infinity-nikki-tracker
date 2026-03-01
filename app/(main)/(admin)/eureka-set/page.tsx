@@ -32,7 +32,7 @@ async function EurekaSetTable() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between">
+      <Stack direction="row" alignItems="flex-end" justifyContent="space-between">
         <Typography variant="h3" component="h1">
           Eureka Sets ({eurekaSets?.length ?? 0})
         </Typography>
@@ -50,7 +50,7 @@ async function EurekaSetTable() {
             <TableCell>Style</TableCell>
             <TableCell>Labels</TableCell>
             <TableCell>Trial</TableCell>
-            <TableCell />
+            <TableCell>Edit</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

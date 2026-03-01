@@ -6,6 +6,8 @@ import {
   Alert,
   Button,
   FormControl,
+  IconButton,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -14,6 +16,7 @@ import {
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
+import { Edit, EditOff } from '@mui/icons-material'
 
 export default function AddEurekaSetForm({ trials }: { trials: { name: string }[] }) {
   const router = useRouter()
@@ -25,6 +28,7 @@ export default function AddEurekaSetForm({ trials }: { trials: { name: string }[
   const [trial, setTrial] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [editSlug, setEditSlug] = useState<boolean>(false)
 
   function handleNameChange(value: string) {
     setName(value)
@@ -74,9 +78,21 @@ export default function AddEurekaSetForm({ trials }: { trials: { name: string }[
           label="Slug"
           required
           value={slug}
+          disabled={!editSlug}
           onChange={(e) => setSlug(e.target.value)}
           helperText="Auto-generated from name — edit if needed"
-          slotProps={{ htmlInput: { style: { fontFamily: 'monospace' } } }}
+          slotProps={{
+            htmlInput: { style: { fontFamily: 'monospace' } },
+            input: {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setEditSlug(!editSlug)}>
+                    {editSlug ? <EditOff /> : <Edit />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            },
+          }}
         />
 
         <FormControl>

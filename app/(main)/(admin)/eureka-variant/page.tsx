@@ -33,7 +33,7 @@ async function EurekaVariantTable() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Stack direction="row" alignItems="center" justifyContent="space-between">
+      <Stack direction="row" alignItems="flex-end" justifyContent="space-between">
         <Typography variant="h3" component="h1">
           Eureka Variants ({eurekaVariants?.length ?? 0})
         </Typography>
@@ -50,7 +50,7 @@ async function EurekaVariantTable() {
             <TableCell>Color</TableCell>
             <TableCell>Image URL</TableCell>
             <TableCell>Default</TableCell>
-            <TableCell />
+            <TableCell>Edit</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
