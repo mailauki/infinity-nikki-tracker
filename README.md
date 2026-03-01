@@ -24,7 +24,7 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 - **[Supabase](https://supabase.com)** — Postgres database, Auth (cookie-based via `@supabase/ssr`), Realtime subscriptions, Storage (avatars)
 - **[MUI (Material UI)](https://mui.com)** — Component library with CSS variables and built-in dark mode
 - **[Tailwind CSS](https://tailwindcss.com)** — Utility classes for layout
-- **[Lucide React](https://lucide.dev)** — Icons
+- **[MUI Icons](https://mui.com/material-ui/material-icons/)** — Icons (`@mui/icons-material`)
 
 ## Getting Started
 
@@ -91,6 +91,7 @@ app/
 
 components/
   navbar/                 # Nav drawer, tabs, user menu, theme switcher
+  admin/                  # Reusable admin table + entity-specific table components
   realtime/               # Realtime-subscribed client components
   forms/
     auth/                 # Profile, forgot-password, update-password forms

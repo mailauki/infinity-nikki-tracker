@@ -52,6 +52,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 Components are grouped into subdirectories:
 
 - `components/navbar/` — nav-drawer, nav-extra, nav-main, nav-secondary, nav-skeleton, nav-tabs, nav-user, theme-switcher
+- `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table
 - `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
 - `components/forms/auth/` — profile-form, forgot-password-form, update-password-form
 - `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
@@ -72,6 +73,19 @@ Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass t
 `components/realtime/realtime-eureka-set.tsx` is the canonical realtime pattern: server fetches initial data → passes as props → client subscribes to `postgres_changes` on the `obtained` table → local state updates trigger `updateEurekaSet()` recalculation.
 
 Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server Components down through `RealtimeEurekaSet` → `EurekaHeader` and `EurekaButton`. The slug detail page sets this via `!!(user_id)`.
+
+### Nav System
+
+`lib/nav-links.tsx` — central nav data: `navMain`, `navSecondary`, `navExtra`. `NavSecondaryLink` in `lib/types/types.ts` supports `adminOnly`, `exclusiveItems`, and `items` fields.
+
+- `adminOnly: true` — link is filtered out for non-admins in both the drawer and the user menu
+- `exclusiveItems: true` — nav tabs show only the matching sub-item when not at the section root
+- All `navSecondary` links are visible in the drawer; drawer links show a `placement="right"` tooltip when the drawer is collapsed
+- `nav-user.tsx` uses a `navIcon(url)` helper to render `fontSize="small"` icons in the user menu (Dashboard → `Dashboard`, Profile → `AccountCircle`, others → `ViewList`)
+
+### Admin Tables
+
+`components/admin/admin-table.tsx` — generic `'use client'` `AdminTable<T>` component with MUI `TablePagination` (default 20 rows, options 10/20/50/100). Accepts a `Column<T>[]` array with `header`, `cell`, `align`, and `cellSx` fields. Entity-specific table components (`eureka-set-table.tsx`, `eureka-variant-table.tsx`) own their column definitions as `'use client'` components and accept plain serializable row data from Server Components — functions in `cell` are never passed across the RSC boundary.
 
 ### Role-Based Access
 
@@ -106,7 +120,7 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 
 - **MUI (Material UI)** — primary component library with CSS variables (`cssVariables: { colorSchemeSelector: 'class' }`) and built-in dark mode (`colorSchemes: { light, dark }`)
 - **Tailwind CSS** — utility classes for layout only (not MUI replacements; no shadcn/ui)
-- **Lucide React** — icons
+- **MUI Icons (`@mui/icons-material`)** — icons throughout nav and admin components
 - **Not used:** shadcn/ui, Radix UI, Sonner, next-themes, class-variance-authority
 
 ### Theme
