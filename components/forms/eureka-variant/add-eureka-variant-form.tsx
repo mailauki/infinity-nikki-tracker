@@ -7,6 +7,7 @@ import {
   Button,
   FormControl,
   FormControlLabel,
+  FormLabel,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -19,6 +20,7 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
+import ImageUpload from '@/components/image-upload'
 
 type EurekaSetOption = { id: number; slug: string | null; name: string }
 
@@ -35,7 +37,7 @@ export default function AddEurekaVariantForm({
   const [eurekaSet, setEurekaSet] = useState('')
   const [category, setCategory] = useState('')
   const [color, setColor] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [isDefault, setIsDefault] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -59,7 +61,7 @@ export default function AddEurekaVariantForm({
         eureka_set: eurekaSet || null,
         category: category || null,
         color: color || null,
-        image_url: imageUrl.trim() || null,
+        image_url: imageUrl || null,
         default: isDefault,
         slug: slug || null,
       },
@@ -141,12 +143,10 @@ export default function AddEurekaVariantForm({
           }}
         />
 
-        <TextField
-          label="Image URL"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          slotProps={{ htmlInput: { style: { fontFamily: 'monospace' } } }}
-        />
+        <Stack spacing={0.5}>
+          <FormLabel>Image</FormLabel>
+          <ImageUpload url={imageUrl} bucket="images" onUpload={(url) => setImageUrl(url)} />
+        </Stack>
 
         <FormControlLabel
           control={<Switch checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} />}

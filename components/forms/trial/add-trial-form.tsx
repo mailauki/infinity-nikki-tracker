@@ -2,16 +2,17 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Alert, Button, IconButton, InputAdornment, Stack, TextField } from '@mui/material'
+import { Alert, Button, FormLabel, IconButton, InputAdornment, Stack, TextField } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
+import ImageUpload from '@/components/image-upload'
 
 export default function AddTrialForm() {
   const router = useRouter()
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
-  const [imageUrl, setImageUrl] = useState('')
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -31,7 +32,7 @@ export default function AddTrialForm() {
       {
         name: name.trim(),
         slug: slug.trim(),
-        image_url: imageUrl.trim() || null,
+        image_url: imageUrl || null,
       },
     ])
 
@@ -78,11 +79,10 @@ export default function AddTrialForm() {
           }}
         />
 
-        <TextField
-          label="Image URL"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-        />
+        <Stack spacing={0.5}>
+          <FormLabel>Image</FormLabel>
+          <ImageUpload url={imageUrl} bucket="images" onUpload={(url) => setImageUrl(url)} />
+        </Stack>
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
           <Button variant="outlined" href="/trial">
