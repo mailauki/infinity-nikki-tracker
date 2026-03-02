@@ -21,9 +21,7 @@ const columns: Column<Row>[] = [
     header: 'Edit',
     cellSx: { py: 0 },
     cell: (v) => (
-      <Tooltip
-        title={`Edit ${[v.eureka_set, v.category, v.color].filter(Boolean).join(' • ')}`}
-      >
+      <Tooltip title={`Edit ${[v.eureka_set, v.category, v.color].filter(Boolean).join(' • ')}`}>
         <IconButton
           size="small"
           color="secondary"
@@ -65,9 +63,7 @@ const columns: Column<Row>[] = [
   {
     header: 'Default',
     cell: (v) =>
-      v.default ? (
-        <Chip label="default" size="small" color="secondary" variant="outlined" />
-      ) : null,
+      v.default ? <Chip label="default" size="small" color="secondary" variant="outlined" /> : null,
   },
   {
     header: 'Updated',

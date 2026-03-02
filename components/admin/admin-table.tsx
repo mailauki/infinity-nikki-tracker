@@ -2,8 +2,9 @@
 
 import { ReactNode, useState } from 'react'
 import {
-  Box,
   Button,
+  CardHeader,
+  Chip,
   Paper,
   Stack,
   Table,
@@ -49,11 +50,17 @@ export function AdminTable<T>({
   const visibleRows = allRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Stack direction="row" alignItems="flex-end" justifyContent="space-between">
-        <Typography variant="h3" component="h1">
-          {title} ({allRows.length})
-        </Typography>
+    <>
+      <CardHeader
+        disableTypography
+        title={
+          <Typography variant="h3" component="h1">
+            {title}
+          </Typography>
+        }
+        action={<Chip variant="outlined" color="secondary" label={`Total: ${allRows.length}`} />}
+      />
+      <Stack direction="row" justifyContent="flex-end" sx={{ mb: 2 }}>
         <Button variant="outlined" startIcon={<AddIcon />} size="small" href={addHref}>
           {addLabel}
         </Button>
@@ -74,7 +81,11 @@ export function AdminTable<T>({
               {visibleRows.map((row) => (
                 <TableRow key={getKey(row)}>
                   {columns.map((col) => (
-                    <TableCell key={col.header} align={col.align} sx={{ whiteSpace: 'nowrap', ...col.cellSx }}>
+                    <TableCell
+                      key={col.header}
+                      align={col.align}
+                      sx={{ whiteSpace: 'nowrap', ...col.cellSx }}
+                    >
                       {col.cell(row)}
                     </TableCell>
                   ))}
@@ -96,6 +107,6 @@ export function AdminTable<T>({
           }}
         />
       </Paper>
-    </Box>
+    </>
   )
 }

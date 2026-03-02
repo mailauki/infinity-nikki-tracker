@@ -45,7 +45,15 @@ const columns: Column<Row>[] = [
       </Typography>
     ),
   },
-  { header: 'Image URL', cell: (trial) => trial.image_url },
+  {
+    header: 'Image URL',
+    cellSx: { maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis' },
+    cell: (trial) => (
+      <Typography variant="caption" fontFamily="monospace" noWrap>
+        {trial.image_url}
+      </Typography>
+    ),
+  },
 ]
 
 export function TrialTable({ rows }: { rows: Row[] }) {
