@@ -88,6 +88,7 @@ export default function EditEurekaSetForm({
           value={slug}
           disabled={!editSlug}
           onChange={(e) => setSlug(e.target.value)}
+          helperText="Used in the URL — edit with caution"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {
