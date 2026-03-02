@@ -2,8 +2,8 @@
 import { Category, Eureka } from '@/lib/types/types'
 import { useEffect, useState } from 'react'
 import EurekaButton from './eureka-button'
-import GridContainer from './grid-container'
-import ProgressList from './progress-list'
+import GridContainer from '../grid-container'
+import ProgressList from '../progress-list'
 import { Grid } from '@mui/material'
 
 type CategoryFilter = '' | 'Head' | 'Hands' | 'Feet'

@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 
 import { Container, Grid } from '@mui/material'
 
-import EurekaSetCard from '@/components/eureka-set-card'
+import EurekaSetCard from '@/components/eureka/eureka-set-card'
 import GridContainer from '@/components/grid-container'
 import ProgressList from '@/components/progress-list'
 import { getEurekaSets } from '@/lib/data'

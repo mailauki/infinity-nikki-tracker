@@ -18,7 +18,7 @@ import {
 } from '@mui/material'
 import Image from 'next/image'
 import { countObtained, percent } from '@/hooks/count'
-import EurekaHeader from '@/components/eureka-header'
+import EurekaHeader from '@/components/eureka/eureka-header'
 
 export default async function TrialsPage() {
   return (

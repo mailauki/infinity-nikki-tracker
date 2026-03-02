@@ -50,7 +50,7 @@ export default function AvatarUpload({
       tabIndex={-1} // prevent label from tab focus
       aria-label="Avatar image"
       sx={{
-        borderRadius: '40px',
+        borderRadius: '100px',
         '&:has(:focus-visible)': {
           outline: '2px solid',
           outlineOffset: '2px',

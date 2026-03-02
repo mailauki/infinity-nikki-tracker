@@ -16,7 +16,7 @@ export default function ProgressChip({
     <Chip
       size={size}
       sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}
-      color={isComplete ? 'success' : 'default'}
+      color={isComplete ? 'primary' : 'default'}
       label={isComplete ? completeLabel : unfinishedLabel}
     />
   )

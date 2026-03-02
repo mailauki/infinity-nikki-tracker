@@ -1,3 +1,5 @@
+'use client'
+
 import { createClient } from '@/lib/supabase/client'
 import { useEffect, useState } from 'react'
 import { Avatar } from '@mui/material'
@@ -9,6 +11,8 @@ export default function AvatarPreview({ size, url }: { size?: 'large'; url: stri
   const [avatarUrl, setAvatarUrl] = useState<string | null>(url)
 
   useEffect(() => {
+    let objectUrl: string | null = null
+
     async function downloadImage(path: string) {
       try {
         const { data, error } = await supabase.storage.from('avatars').download(path)
@@ -16,14 +20,18 @@ export default function AvatarPreview({ size, url }: { size?: 'large'; url: stri
           throw error
         }
 
-        const url = URL.createObjectURL(data)
-        setAvatarUrl(url)
+        objectUrl = URL.createObjectURL(data)
+        setAvatarUrl(objectUrl)
       } catch (error) {
         console.log('Error downloading image: ', error)
       }
     }
 
     if (url) downloadImage(url)
+
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl)
+    }
   }, [url, supabase])
 
   if (size === 'large') {

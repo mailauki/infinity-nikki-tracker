@@ -3,8 +3,8 @@ import Image from 'next/image'
 import { countObtained, percent } from '@/hooks/count'
 import { EurekaSet } from '@/lib/types/types'
 
-import ProgressBadge from './progress-chip'
-import QualityStars from './quality-stars'
+import ProgressBadge from '../progress-chip'
+import QualityStars from '../quality-stars'
 import {
   Avatar,
   Box,
