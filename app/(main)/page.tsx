@@ -3,7 +3,7 @@ import { Container } from '@mui/material'
 
 export default function Home() {
   return (
-    <Container>
+    <Container sx={{ mt: 3 }}>
       <Hero />
     </Container>
   )
