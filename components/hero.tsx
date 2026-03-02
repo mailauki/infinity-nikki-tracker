@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 export function Hero() {
   return (
-    <Box sx={{ position: 'relative', height: 'calc(100vh - 192px)', mx: -3, mt: -3 }}>
+    <Box sx={{ position: 'relative', height: '100%' }}>
       <Image
         src="/hero.jpg"
         alt="Infinity Nikki Hero Image"
@@ -23,7 +23,11 @@ export function Hero() {
             'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
         }}
       >
-        <Stack alignItems="center" justifyContent="flex-end" sx={{ flex: 1, color: 'white', textAlign: 'center' }}>
+        <Stack
+          alignItems="center"
+          justifyContent="flex-end"
+          sx={{ flex: 1, color: 'white', textAlign: 'center' }}
+        >
           <Typography variant="h3" noWrap component="h1">
             Infinity Nikki Tracker
           </Typography>

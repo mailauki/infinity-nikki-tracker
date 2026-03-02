@@ -2,14 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import {
-  Alert,
-  Button,
-  IconButton,
-  InputAdornment,
-  Stack,
-  TextField,
-} from '@mui/material'
+import { Alert, Button, IconButton, InputAdornment, Stack, TextField } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
@@ -60,12 +53,7 @@ export default function EditTrialForm({ trial }: { trial: TrialRow }) {
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
         {error && <Alert severity="error">{error}</Alert>}
 
-        <TextField
-          label="Name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <TextField label="Name" required value={name} onChange={(e) => setName(e.target.value)} />
 
         <TextField
           label="Slug"

@@ -43,6 +43,9 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
   - `(admin)/eureka-variant/page.tsx` — Full eureka variants table with edit buttons
   - `(admin)/eureka-variant/new/page.tsx` — Add new eureka variant
   - `(admin)/eureka-variant/edit/[slug]/page.tsx` — Edit eureka variant (slug-based routing)
+  - `(admin)/trial/page.tsx` — Full trials table with edit buttons
+  - `(admin)/trial/new/page.tsx` — Add new trial
+  - `(admin)/trial/edit/[slug]/page.tsx` — Edit trial (slug-based routing)
   - `profile/page.tsx` — User profile management (auth required)
   - `about/page.tsx` — About page
 - `app/auth/` — Auth pages (login, sign-up, forgot-password, update-password, confirm, error)
@@ -52,11 +55,12 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 Components are grouped into subdirectories:
 
 - `components/navbar/` — nav-drawer, nav-extra, nav-main, nav-secondary, nav-skeleton, nav-tabs, nav-user, theme-switcher
-- `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table
+- `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, dashboard-list, stat-card, view-all-button
 - `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
 - `components/forms/auth/` — profile-form, forgot-password-form, update-password-form
 - `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
 - `components/forms/eureka-variant/` — add-eureka-variant-form, edit-eureka-variant-form
+- `components/forms/trial/` — add-trial-form, edit-trial-form
 
 ### Data Flow
 
@@ -85,7 +89,13 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 
 ### Admin Tables
 
-`components/admin/admin-table.tsx` — generic `'use client'` `AdminTable<T>` component with MUI `TablePagination` (default 20 rows, options 10/20/50/100). Accepts a `Column<T>[]` array with `header`, `cell`, `align`, and `cellSx` fields. Entity-specific table components (`eureka-set-table.tsx`, `eureka-variant-table.tsx`) own their column definitions as `'use client'` components and accept plain serializable row data from Server Components — functions in `cell` are never passed across the RSC boundary.
+`components/admin/admin-table.tsx` — generic `'use client'` `AdminTable<T>` component with MUI `TablePagination` (default 20 rows, options 10/20/50/100). Accepts a `Column<T>[]` array with `header`, `cell`, `align`, and `cellSx` fields. Entity-specific table components (`eureka-set-table.tsx`, `eureka-variant-table.tsx`, `trial-table.tsx`) own their column definitions as `'use client'` components and accept plain serializable row data from Server Components — functions in `cell` are never passed across the RSC boundary.
+
+`components/admin/dashboard-list.tsx` — `DashboardList` component used on the admin dashboard for recent item lists. Accepts `title`, `viewHref`, and `items: DashboardListItem[]` (with optional `secondaryAction`). Uses `CardHeader` with a `ViewAllButton` action.
+
+`components/admin/stat-card.tsx` — `StatCard` component used on the admin dashboard for entity counts with Add and View All links.
+
+`components/admin/view-all-button.tsx` — shared "View all" button with arrow icon, used in both `DashboardList` and `StatCard`.
 
 ### Role-Based Access
 
@@ -111,8 +121,8 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 
 `lib/utils.ts` exports two slug utilities:
 
-- `toEurekaSlug(name)` — converts a name to a set slug (`spaces → _`, lowercase)
-- `toEurekaVariantSlug(eurekaSet, category, color)` — builds a variant slug `{set}-{category}-{color}`
+- `toSlug(name)` — converts a name to a set slug (`spaces → _`, lowercase)
+- `toSlugVariant(eurekaSet, category, color)` — builds a variant slug `{set}-{category}-{color}`
 
 Eureka variant forms auto-generate the slug from the selected eureka set, category, and color via a `useEffect`. The slug field is read-only by default; an edit icon unlocks manual entry.
 

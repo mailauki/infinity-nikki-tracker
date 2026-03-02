@@ -23,7 +23,10 @@ async function TrialLoader() {
     const supabase = await createClient()
     await Promise.all(
       nullSlugTrials.map((trial) =>
-        supabase.from('trials').update({ slug: toSlug(trial.name) }).eq('id', trial.id)
+        supabase
+          .from('trials')
+          .update({ slug: toSlug(trial.name) })
+          .eq('id', trial.id)
       )
     )
   }

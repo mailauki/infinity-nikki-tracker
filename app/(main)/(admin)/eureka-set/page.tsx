@@ -23,7 +23,10 @@ async function EurekaSetLoader() {
     const supabase = await createClient()
     await Promise.all(
       nullSlugSets.map((set) =>
-        supabase.from('eureka_sets').update({ slug: toSlug(set.name) }).eq('id', set.id)
+        supabase
+          .from('eureka_sets')
+          .update({ slug: toSlug(set.name) })
+          .eq('id', set.id)
       )
     )
   }

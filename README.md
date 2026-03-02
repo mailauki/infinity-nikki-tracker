@@ -82,25 +82,27 @@ app/
       missing/            # Filterable missing items (auth required)
       trials/             # Progress grouped by trial
     (admin)/              # Admin section (admin role required)
-      dashboard/          # Stat cards + recent lists for sets and variants
+      dashboard/          # Stat cards + recent lists for sets, variants, and trials
       eureka-set/         # Eureka sets table, add, and edit pages
       eureka-variant/     # Eureka variants table, add, and edit pages
+      trial/              # Trials table, add, and edit pages
     profile/              # User profile (auth required)
     about/                # About page
   auth/                   # Auth pages (login, sign-up, etc.)
 
 components/
   navbar/                 # Nav drawer, tabs, user menu, theme switcher
-  admin/                  # Reusable admin table + entity-specific table components
+  admin/                  # Admin table, entity-specific tables, dashboard components
   realtime/               # Realtime-subscribed client components
   forms/
     auth/                 # Profile, forgot-password, update-password forms
     eureka-set/           # Add and edit eureka set forms
     eureka-variant/       # Add and edit eureka variant forms
+    trial/                # Add and edit trial forms
 
 lib/
   data.ts                 # All Supabase data fetching (React cache)
-  utils.ts                # cn(), toEurekaSlug(), toEurekaVariantSlug() helpers
+  utils.ts                # cn(), toSlug(), toSlugVariant() helpers
   theme.ts                # MUI theme configuration
   nav-links.tsx           # Navigation link definitions
   supabase/               # Supabase client factories (server, client, proxy)

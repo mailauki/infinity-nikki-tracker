@@ -21,6 +21,7 @@ import { JwtPayload } from '@supabase/supabase-js'
 import { NavExtra } from './nav-extra'
 import Link from 'next/link'
 import Footer from './nav-footer'
+import NavTabs from './nav-tabs'
 
 const drawerWidth = 240
 
@@ -44,6 +45,22 @@ const closedMixin = (theme: Theme): CSSObject => ({
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
 })
+
+const MainContainer = styled('div')(({ theme }) => ({
+  // Default height for small screens (portrait)
+  height: `calc(100vh - 168px)`, // 56px * 3
+  // Landscape orientation on small screens
+  [theme.breakpoints.up('xs')]: {
+    '@media (orientation: landscape)': {
+      height: `calc(100vh - 144px)`,
+    }, // 48px * 3
+  },
+  // Large screens (sm breakpoint and up)
+  [theme.breakpoints.up('sm')]: {
+    height: `calc(100vh - 192px)`,
+  }, // 64px * 3
+  overflowY: 'auto',
+}))
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -125,7 +142,7 @@ export default function NavDrawer({
   }
 
   return (
-    <Stack className="h-screen overflow-hidden">
+    <>
       <Stack direction="row">
         <AppBar position="fixed" open={open}>
           <Toolbar>
@@ -194,9 +211,7 @@ export default function NavDrawer({
           <Divider />
 
           <NavSecondary
-            items={navLinksData.navSecondary.filter(
-              (item) => !item.adminOnly || isAdmin
-            )}
+            items={navLinksData.navSecondary.filter((item) => !item.adminOnly || isAdmin)}
             open={open}
           />
 
@@ -204,12 +219,13 @@ export default function NavDrawer({
         </Drawer>
         <Box component="main" className="h-screen w-full overflow-hidden">
           <DrawerHeader />
-          {children}
+          <NavTabs />
+          <MainContainer>{children}</MainContainer>
           <Toolbar />
         </Box>
       </Stack>
 
       <Footer />
-    </Stack>
+    </>
   )
 }

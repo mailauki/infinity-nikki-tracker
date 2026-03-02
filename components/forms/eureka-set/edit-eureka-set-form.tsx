@@ -80,12 +80,7 @@ export default function EditEurekaSetForm({
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
         {error && <Alert severity="error">{error}</Alert>}
 
-        <TextField
-          label="Name"
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <TextField label="Name" required value={name} onChange={(e) => setName(e.target.value)} />
 
         <TextField
           label="Slug"

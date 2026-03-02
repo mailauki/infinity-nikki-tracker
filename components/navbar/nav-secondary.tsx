@@ -8,53 +8,53 @@ export function NavSecondary({ items, open }: { items: NavSecondaryLink[]; open:
       {items.map((item) => (
         <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
           <Tooltip title={open ? '' : item.title} placement="right">
-          <ListItemButton
-            component={Link}
-            href={item.url}
-            sx={[
-              {
-                minHeight: 48,
-                px: 2.5,
-              },
-              open
-                ? {
-                    justifyContent: 'initial',
-                  }
-                : {
-                    justifyContent: 'center',
-                  },
-            ]}
-          >
-            <ListItemIcon
+            <ListItemButton
+              component={Link}
+              href={item.url}
               sx={[
                 {
-                  minWidth: 0,
-                  justifyContent: 'center',
+                  minHeight: 48,
+                  px: 2.5,
                 },
                 open
                   ? {
-                      mr: 3.5,
+                      justifyContent: 'initial',
                     }
                   : {
-                      mr: 'auto',
+                      justifyContent: 'center',
                     },
               ]}
             >
-              {item.icon}
-            </ListItemIcon>
-            <ListItemText
-              primary={item.title}
-              sx={[
-                open
-                  ? {
-                      opacity: 1,
-                    }
-                  : {
-                      opacity: 0,
-                    },
-              ]}
-            />
-          </ListItemButton>
+              <ListItemIcon
+                sx={[
+                  {
+                    minWidth: 0,
+                    justifyContent: 'center',
+                  },
+                  open
+                    ? {
+                        mr: 3.5,
+                      }
+                    : {
+                        mr: 'auto',
+                      },
+                ]}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.title}
+                sx={[
+                  open
+                    ? {
+                        opacity: 1,
+                      }
+                    : {
+                        opacity: 0,
+                      },
+                ]}
+              />
+            </ListItemButton>
           </Tooltip>
         </ListItem>
       ))}

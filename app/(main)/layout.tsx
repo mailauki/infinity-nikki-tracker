@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import NavDrawer from '@/components/navbar/nav-drawer'
 import NavSkeleton from '@/components/navbar/nav-skeleton'
-import NavTabs from '@/components/navbar/nav-tabs'
 import { getUserClaims, getUserRole } from '@/hooks/user'
 
 export default async function MainLayout({
@@ -26,8 +25,7 @@ async function NavContainer({
 
   return (
     <NavDrawer isAdmin={role === 'admin'} user={user!}>
-      <NavTabs />
-      <div className="bg-background h-[calc(100vh-192px)] overflow-y-auto">{children}</div>
+      {children}
     </NavDrawer>
   )
 }
