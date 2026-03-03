@@ -57,7 +57,7 @@ export default function AvatarUpload({
         },
       }}
     >
-      <AvatarPreview url={url} size="large" />
+      <AvatarPreview url={url} size="xl" />
       <input
         type="file"
         id="avatar"

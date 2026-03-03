@@ -2,6 +2,12 @@
 import { lime, pink } from '@mui/material/colors'
 import { createTheme, responsiveFontSizes } from '@mui/material/styles'
 
+declare module '@mui/material/Avatar' {
+  interface AvatarOwnProps {
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+  }
+}
+
 let theme = createTheme({
   cssVariables: {
     colorSchemeSelector: 'class',
@@ -32,10 +38,51 @@ let theme = createTheme({
     },
   },
   components: {
-    MuiCard: {
+    MuiPaper: {
+      defaultProps: {
+        elevation: 3,
+      },
       styleOverrides: {
         root: {
           borderRadius: 12,
+        },
+      },
+    },
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+        },
+      },
+    },
+    MuiAvatar: {
+      defaultProps: {
+        size: 'sm',
+      },
+      styleOverrides: {
+        root: {
+          variants: [
+            {
+              props: { size: 'xs' },
+              style: { width: 24, height: 24 },
+            },
+            {
+              props: { size: 'sm' },
+              style: { width: 40, height: 40 },
+            },
+            {
+              props: { size: 'md' },
+              style: { width: 56, height: 56 },
+            },
+            {
+              props: { size: 'lg' },
+              style: { width: 94, height: 94 },
+            },
+            {
+              props: { size: 'xl' },
+              style: { width: 140, height: 140 },
+            },
+          ],
         },
       },
     },

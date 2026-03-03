@@ -60,7 +60,7 @@ export function NavUser({ user, isAdmin = false }: { user: JwtPayload; isAdmin?:
 
   return (
     <Box sx={{ flexGrow: 0 }}>
-      <Tooltip title="Open settings">
+      <Tooltip title="Open menu">
         <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
           <AvatarPreview url={avatar_url} />
         </IconButton>

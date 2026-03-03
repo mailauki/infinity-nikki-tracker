@@ -78,6 +78,7 @@ app/
     page.tsx              # Home / hero
     eureka/
       page.tsx            # All Eureka sets + overall progress
+      loading.tsx         # Skeleton loading UI
       [slug]/             # Individual set detail with realtime updates
       missing/            # Filterable missing items (auth required)
       trials/             # Progress grouped by trial
@@ -92,10 +93,11 @@ app/
 
 components/
   navbar/                 # Nav drawer, tabs, user menu, theme switcher
+  eureka/                 # Eureka display components (button, filter, header, set-card, table)
   admin/                  # Admin table, entity-specific tables, dashboard components
   realtime/               # Realtime-subscribed client components
   forms/
-    auth/                 # Profile, forgot-password, update-password forms
+    auth/                 # Login, sign-up, profile, forgot-password, update-password forms
     eureka-set/           # Add and edit eureka set forms
     eureka-variant/       # Add and edit eureka variant forms
     trial/                # Add and edit trial forms

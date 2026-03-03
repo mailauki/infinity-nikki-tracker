@@ -33,9 +33,12 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 - `app/(main)/` — Main app group with nav drawer layout (`NavDrawer`)
   - `page.tsx` — Home / hero
   - `eureka/page.tsx` — Grid of all Eureka Sets with overall progress
+  - `eureka/loading.tsx` — Skeleton loading UI for the sets grid
   - `eureka/[slug]/page.tsx` — Individual Eureka Set detail with realtime updates
   - `eureka/missing/page.tsx` — Missing items view (auth required)
+  - `eureka/missing/loading.tsx` — Skeleton loading UI for the missing items view
   - `eureka/trials/page.tsx` — Trials view
+  - `eureka/trials/loading.tsx` — Skeleton loading UI for the trials view
   - `(admin)/dashboard/page.tsx` — Admin dashboard: stat cards + recent lists (admin role required)
   - `(admin)/eureka-set/page.tsx` — Full eureka sets table with edit buttons
   - `(admin)/eureka-set/new/page.tsx` — Add new eureka set
@@ -55,9 +58,10 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 Components are grouped into subdirectories:
 
 - `components/navbar/` — nav-drawer, nav-extra, nav-main, nav-secondary, nav-skeleton, nav-tabs, nav-user, theme-switcher
+- `components/eureka/` — eureka-button, eureka-filter, eureka-header, eureka-set-card, eureka-table
 - `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, dashboard-list, stat-card, view-all-button
 - `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
-- `components/forms/auth/` — profile-form, forgot-password-form, update-password-form
+- `components/forms/auth/` — login-form, sign-up-form, profile-form, forgot-password-form, update-password-form
 - `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
 - `components/forms/eureka-variant/` — add-eureka-variant-form, edit-eureka-variant-form
 - `components/forms/trial/` — add-trial-form, edit-trial-form

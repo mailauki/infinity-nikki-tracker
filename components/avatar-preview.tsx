@@ -1,13 +1,17 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Avatar } from '@mui/material'
 
-const largeSize = 140
-
-export default function AvatarPreview({ size, url }: { size?: 'large'; url: string | null }) {
-  const supabase = createClient()
+export default function AvatarPreview({
+  size = 'sm',
+  url,
+}: {
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+  url: string | null
+}) {
+  const supabase = useMemo(() => createClient(), [])
   const [avatarUrl, setAvatarUrl] = useState<string | null>(url)
 
   useEffect(() => {
@@ -34,9 +38,5 @@ export default function AvatarPreview({ size, url }: { size?: 'large'; url: stri
     }
   }, [url, supabase])
 
-  if (size === 'large') {
-    return <Avatar src={avatarUrl!} alt="Avatar" sx={{ width: largeSize, height: largeSize }} />
-  }
-
-  return <Avatar src={avatarUrl!} alt="Avatar" />
+  return <Avatar src={avatarUrl!} alt="Avatar" size={size} />
 }
