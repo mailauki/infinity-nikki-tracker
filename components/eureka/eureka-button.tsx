@@ -1,9 +1,9 @@
-import Image from 'next/image'
-
 import { handleObtained } from '@/app/(main)/eureka/actions'
 import { Eureka } from '@/lib/types/types'
-import { Box, Card, CardActionArea, CardHeader, CardMedia } from '@mui/material'
+import { Card, CardActionArea, CardContent, Chip, Typography } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
+
+import EurekaSetImage from './eureka-set-image'
 
 export default function EurekaButton({
   eureka,
@@ -31,13 +31,17 @@ export default function EurekaButton({
           },
         }}
       >
-        <CardMedia sx={{ p: 1 }}>
-          <Image src={eureka.image_url!} alt={slug} width={100} height={100} />
-        </CardMedia>
-        <CardHeader title={eureka.eureka_set} subheader={`${eureka.category} • ${eureka.color}`} />
-        <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
-          {eureka.obtained === true && <CheckIcon />}
-        </Box>
+        <EurekaSetImage
+          imageUrl={eureka.image_url!}
+          alt={slug}
+          action={eureka.obtained === true && <Chip size="small" label={<CheckIcon />} />}
+        />
+        <CardContent>
+          <Typography variant="subtitle2">{eureka.eureka_set}</Typography>
+          <Typography variant="caption" color="textSecondary">
+            {`${eureka.category} • ${eureka.color}`}
+          </Typography>
+        </CardContent>
       </CardActionArea>
     </Card>
   )

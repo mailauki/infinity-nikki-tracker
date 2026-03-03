@@ -63,7 +63,7 @@ export default function RealtimeEurekaSet({
     <>
       {!isLoggedIn && <LoginAlert />}
       <Box sx={{ position: 'relative', width: '100%' }}>
-        <EurekaHeader eurekaSet={eurekaSet} variant="large" isLoggedIn={isLoggedIn} />
+        <EurekaHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
       </Box>
       <GridContainer
         mainContent={

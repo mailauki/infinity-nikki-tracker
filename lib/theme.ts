@@ -38,20 +38,13 @@ let theme = createTheme({
     },
   },
   components: {
-    MuiPaper: {
+    MuiCard: {
       defaultProps: {
         elevation: 3,
       },
       styleOverrides: {
         root: {
           borderRadius: 12,
-        },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: {
-          borderRadius: 0,
         },
       },
     },
@@ -64,7 +57,7 @@ let theme = createTheme({
           variants: [
             {
               props: { size: 'xs' },
-              style: { width: 24, height: 24 },
+              style: { width: 24, height: 24, fontSize: '0.75rem' },
             },
             {
               props: { size: 'sm' },
@@ -72,15 +65,15 @@ let theme = createTheme({
             },
             {
               props: { size: 'md' },
-              style: { width: 56, height: 56 },
+              style: { width: 56, height: 56, fontSize: '1.5rem' },
             },
             {
               props: { size: 'lg' },
-              style: { width: 94, height: 94 },
+              style: { width: 94, height: 94, fontSize: '2rem' },
             },
             {
               props: { size: 'xl' },
-              style: { width: 140, height: 140 },
+              style: { width: 140, height: 140, fontSize: '3rem' },
             },
           ],
         },

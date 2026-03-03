@@ -65,7 +65,7 @@ export function AdminTable<T>({
           {addLabel}
         </Button>
       </Stack>
-      <Paper>
+      <Paper elevation={3} sx={{ borderRadius: '12px' }}>
         <TableContainer sx={{ overflowX: 'auto' }}>
           <Table size="small">
             <TableHead>

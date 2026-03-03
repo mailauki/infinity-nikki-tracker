@@ -1,16 +1,18 @@
-import { SparkleIcon } from 'lucide-react'
+import { createSvgIcon, Stack } from '@mui/material'
+
+const SparkleIcon = createSvgIcon(
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+    <path d="M11.296 1.924c.24-.656 1.168-.656 1.408 0l.717 1.958a11.25 11.25 0 0 0 6.697 6.697l1.958.717c.657.24.657 1.168 0 1.408l-1.958.717a11.25 11.25 0 0 0-6.697 6.697l-.717 1.958c-.24.657-1.168.657-1.408 0l-.717-1.958a11.25 11.25 0 0 0-6.697-6.697l-1.958-.717c-.656-.24-.656-1.168 0-1.408l1.958-.717a11.25 11.25 0 0 0 6.697-6.697z" />
+  </svg>,
+  'Sparkle',
+)
 
 export default function QualityStars({ quality }: { quality: number }) {
   return (
-    <div className="flex items-center gap-1">
+    <Stack direction="row" spacing={0.25}>
       {Array.from({ length: quality }, (_, index) => (
-        <SparkleIcon
-          key={index}
-          color="var(--card-foreground)"
-          fill="var(--card-foreground)"
-          size={14}
-        />
+        <SparkleIcon key={index} fontSize="inherit" sx={{ rotate: '15deg' }} color="inherit" />
       ))}
-    </div>
+    </Stack>
   )
 }

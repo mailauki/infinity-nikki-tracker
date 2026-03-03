@@ -6,7 +6,7 @@ import EurekaCardContent from './eureka-card-content'
 import EurekaCardProgress from './eureka-card-progress'
 import EurekaSetImage from './eureka-set-image'
 
-export default function EurekaHeader({
+export default function EurekaCardHeader({
   eurekaSet,
   isLoggedIn,
 }: {
@@ -23,14 +23,8 @@ export default function EurekaHeader({
         alt={eurekaSet.name}
         action={<Chip label={eurekaSet.labels} variant="outlined" size="small" />}
       />
-      <EurekaCardContent
-        name={eurekaSet.name}
-        quality={eurekaSet.quality}
-        variant="large"
-        trial={eurekaSet.trial}
-        style={eurekaSet.style}
-      />
-      {isLoggedIn && <EurekaCardProgress percentage={percentage} variant="large" />}
+      <EurekaCardContent name={eurekaSet.name} quality={eurekaSet.quality} />
+      {isLoggedIn && <EurekaCardProgress percentage={percentage} />}
     </>
   )
 }

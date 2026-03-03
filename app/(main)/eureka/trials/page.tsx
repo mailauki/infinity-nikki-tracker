@@ -18,7 +18,7 @@ import {
 } from '@mui/material'
 import Image from 'next/image'
 import { countObtained, percent } from '@/hooks/count'
-import EurekaHeader from '@/components/eureka/eureka-header'
+import EurekaCardHeader from '@/components/eureka/eureka-card-header'
 
 export default async function TrialsPage() {
   return (
@@ -91,7 +91,7 @@ function TrialCard({
         <List sx={{ width: '100%' }}>
           {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
             <CardActionArea key={eurekaSet.id} href={`/eureka/${eurekaSet.slug}`}>
-              <EurekaHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
+              <EurekaCardHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
             </CardActionArea>
           ))}
         </List>

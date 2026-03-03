@@ -1,6 +1,6 @@
 import { EurekaSet } from '@/lib/types/types'
 
-import EurekaHeader from './eureka-header'
+import EurekaCardHeader from './eureka-card-header'
 import { Card, CardActionArea } from '@mui/material'
 
 export default function EurekaSetCard({
@@ -13,7 +13,7 @@ export default function EurekaSetCard({
   return (
     <Card>
       <CardActionArea href={`/eureka/${eurekaSet.slug}`}>
-        <EurekaHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
+        <EurekaCardHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
       </CardActionArea>
     </Card>
   )

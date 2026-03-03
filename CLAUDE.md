@@ -72,7 +72,6 @@ Components are grouped into subdirectories:
 - `components/navbar/` — nav-drawer, nav-extra, nav-footer, nav-main, nav-secondary, nav-skeleton, nav-tabs, nav-user, theme-switcher
 - `components/eureka/` — eureka-button, eureka-filter, eureka-header, eureka-set-card, eureka-table
 - `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, dashboard-list, stat-card, view-all-button
-- `components/eureka/` — eureka-button, eureka-filter, eureka-header, eureka-set-card, eureka-table
 - `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
 - `components/forms/auth/` — login-form, sign-up-form, profile-form, forgot-password-form, update-password-form
 - `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
