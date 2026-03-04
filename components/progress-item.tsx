@@ -21,7 +21,7 @@ export function ProgressItem({
   const filteredVariants = eurekaVariants.filter(
     (variant) => (categoryType === 'colors' ? variant.color : variant.category) === item.name
   )
-  const obtainedCount = countObtained(categoryType ? filteredVariants : eurekaVariants)
+  const obtainedCount = countObtained(filteredVariants)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
   const isSelected = value === item.name
 
@@ -30,7 +30,7 @@ export function ProgressItem({
       {!!onValueChange ? (
         <CardActionArea
           onClick={() => onValueChange?.(isSelected ? '' : item.name)}
-          data-active={isSelected === true ? '' : undefined}
+          data-active={isSelected ? '' : undefined}
           sx={{
             height: '100%',
             '&[data-active]': {

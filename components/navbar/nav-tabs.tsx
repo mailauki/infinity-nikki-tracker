@@ -44,7 +44,7 @@ function NavTabs() {
   } else if ((navLinks as NavSecondaryLink).exclusiveItems) {
     allNavLinks = [navLinks]
   } else {
-    allNavLinks = [navLinks].concat(navLinks.items! || [])
+    allNavLinks = [navLinks].concat(navLinks.items || [])
   }
 
   const isNavLink = !!allNavLinks.find((link) => link.url === pathname)

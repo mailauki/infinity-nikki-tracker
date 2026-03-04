@@ -26,12 +26,15 @@ import NavTabs from '../../navbar/nav-tabs'
 const drawerWidth = 240
 
 const openedMixin = (theme: Theme): CSSObject => ({
-  width: drawerWidth,
+  width: '100%',
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflowX: 'hidden',
+  [theme.breakpoints.up('sm')]: {
+    width: drawerWidth,
+  },
 })
 
 const closedMixin = (theme: Theme): CSSObject => ({
@@ -40,7 +43,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
+  width: 0,
   [theme.breakpoints.up('sm')]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
@@ -87,22 +90,29 @@ const AppBar = styled(MuiAppBar, {
     {
       props: ({ open }) => open,
       style: {
-        marginLeft: drawerWidth,
-        width: `calc(100% - ${drawerWidth}px)`,
+        display: 'none',
         transition: theme.transitions.create(['width', 'margin'], {
           easing: theme.transitions.easing.sharp,
           duration: theme.transitions.duration.enteringScreen,
         }),
+        [theme.breakpoints.up('sm')]: {
+          display: 'flex',
+          marginLeft: drawerWidth,
+          width: `calc(100% - ${drawerWidth}px)`,
+        },
       },
     },
   ],
 }))
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(({ theme }) => ({
-  width: drawerWidth,
+  width: 0,
   flexShrink: 0,
   whiteSpace: 'nowrap',
   boxSizing: 'border-box',
+  [theme.breakpoints.up('sm')]: {
+    width: drawerWidth,
+  },
   variants: [
     {
       props: ({ open }) => open,
@@ -146,6 +156,12 @@ export default function NavDrawer({
       <Stack direction="row">
         <AppBar position="fixed" open={open}>
           <Toolbar>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ flex: 1 }}
+            >
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -170,12 +186,6 @@ export default function NavDrawer({
                 // className="mx-2 mb-4 brightness-[0.4] drop-shadow-md grayscale dark:filter-none"
               />
             </Link> */}
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              sx={{ flex: 1 }}
-            >
               <Anchor
                 variant="h6"
                 noWrap
