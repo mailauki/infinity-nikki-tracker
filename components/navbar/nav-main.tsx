@@ -8,14 +8,13 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-  useTheme,
+  useColorScheme,
 } from '@mui/material'
-import React from 'react'
 import { NavMainLink } from '@/lib/types/types'
 
 export function NavMain({ items, open = false }: { items: NavMainLink[]; open?: boolean }) {
-  const theme = useTheme()
-  const isDarkMode = theme.palette.mode === 'dark'
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
 
   return (
     <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} component="nav">
@@ -57,7 +56,6 @@ export function NavMain({ items, open = false }: { items: NavMainLink[]; open?: 
                 src={item.image}
                 alt={item.title}
                 sx={{ filter: isDarkMode ? 'none' : 'brightness(40%)' }}
-                className="dark:brightness-40 filter-none"
               >
                 <ImageIcon />
               </Avatar>

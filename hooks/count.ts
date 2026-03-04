@@ -1,6 +1,6 @@
-import { Eureka, ObtainedCount } from '@/lib/types/types'
+import { EurekaVariant, ObtainedCount } from '@/lib/types/types'
 
-export function countObtained(array: Eureka[]) {
+export function countObtained(array: EurekaVariant[]) {
   return {
     obtained: array.reduce((sum, item) => sum + (item.obtained ? 1 : 0), 0),
     total: array.length,

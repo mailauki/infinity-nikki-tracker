@@ -2,28 +2,28 @@
 
 import { useEffect, useState } from 'react'
 
-import { updateEureka } from '@/hooks/eureka-set'
+import { updateEurekaVariants } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, Eureka, Obtained } from '@/lib/types/types'
+import { Category, EurekaVariant, Obtained } from '@/lib/types/types'
 
 import EurekaFilter from '@/components/eureka/eureka-filter'
 
 const supabase = createClient()
 
 export default function RealtimeEurekaFilter({
-  serverEureka,
+  serverEurekaVariants,
   serverCategories,
   serverObtained,
   isLoggedIn,
   userId,
 }: {
-  serverEureka: Eureka[]
+  serverEurekaVariants: EurekaVariant[]
   serverCategories: Category[]
   serverObtained: Obtained[]
   isLoggedIn: boolean
   userId: string | null
 }) {
-  const [eureka, setEureka] = useState(serverEureka)
+  const [eurekaVariants, setEurekaVariants] = useState(serverEurekaVariants)
   const [obtained, setObtained] = useState(serverObtained)
 
   useEffect(() => {
@@ -53,12 +53,12 @@ export default function RealtimeEurekaFilter({
   }, [userId])
 
   useEffect(() => {
-    const updatedEureka = updateEureka({ eureka, obtained })
+    const updatedEurekaVariants = updateEurekaVariants({ eurekaVariants, obtained })
 
-    setEureka(updatedEureka)
+    setEurekaVariants(updatedEurekaVariants)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [obtained])
 
-  return <EurekaFilter eureka={eureka} categories={serverCategories} isLoggedIn={isLoggedIn} />
+  return <EurekaFilter eurekaVariants={eurekaVariants} categories={serverCategories} isLoggedIn={isLoggedIn} />
 }

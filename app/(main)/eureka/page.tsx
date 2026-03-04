@@ -39,7 +39,7 @@ async function EurekaSets() {
             ))}
           </Grid>
         }
-        sideContent={<ProgressList items={categories} eureka={eureka} filter="categories" />}
+        sideContent={<ProgressList items={categories} eurekaVariant={eureka} filter="categories" />}
       />
     </>
   )

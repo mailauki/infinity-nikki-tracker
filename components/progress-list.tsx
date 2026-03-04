@@ -1,16 +1,16 @@
-import { Category, Eureka } from '@/lib/types/types'
+import { Category, EurekaVariant } from '@/lib/types/types'
 import { List, ListSubheader } from '@mui/material'
 import { ProgressItem } from './progress-item'
 
 export default function ProgressList({
   items,
-  eureka,
+  eurekaVariants,
   filter,
   value,
   onValueChange,
 }: {
   items: Category[]
-  eureka: Eureka[]
+  eurekaVariants: EurekaVariant[]
   filter?: 'colors' | 'categories'
   value?: string
   onValueChange?: (value: string) => void
@@ -28,7 +28,7 @@ export default function ProgressList({
         <ProgressItem
           key={item.name}
           item={item}
-          eureka={eureka}
+          eurekaVariants={eurekaVariants}
           filter={filter}
           value={value}
           onValueChange={onValueChange}

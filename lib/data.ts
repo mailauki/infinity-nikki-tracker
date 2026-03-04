@@ -2,7 +2,7 @@ import { UUID } from 'crypto'
 
 import { cache } from 'react'
 
-import { createEurekaSet, updateEurekaSet } from '@/hooks/eureka-set'
+import { createEurekaSet, updateEurekaSet } from '@/hooks/eureka'
 import { getUserID } from '@/hooks/user'
 
 import { createClient } from './supabase/server'

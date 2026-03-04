@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 
 import { getUserID } from '@/hooks/user'
 import { getEurekaSets, getTrials } from '@/lib/data'
-import { Eureka, EurekaSet, Total } from '@/lib/types/types'
+import { EurekaSet, EurekaVariant, Total } from '@/lib/types/types'
 import {
   Card,
   CardActionArea,
@@ -62,7 +62,7 @@ function TrialCard({
   isLoggedIn,
 }: {
   trial: Total
-  eureka: Eureka[]
+  eureka: EurekaVariant[]
   isLoggedIn: boolean
 }) {
   const obtainedCount = countObtained(eureka)

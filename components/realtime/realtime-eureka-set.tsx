@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { updateEurekaSet } from '@/hooks/eureka-set'
+import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
 import { EurekaSet, Obtained } from '@/lib/types/types'
 
@@ -70,22 +70,18 @@ export default function RealtimeEurekaSet({
         <EurekaHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
       </Box>
       <GridContainer
-        mainContent={
-          <>
-            <EurekaTable eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
-          </>
-        }
+        mainContent={<EurekaTable eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />}
         sideContent={
           isLoggedIn && (
             <>
               <ProgressList
                 items={eurekaSet.categories}
-                eureka={eurekaSet.eureka_variants}
+                eurekaVariants={eurekaSet.eureka_variants}
                 filter="categories"
               />
               <ProgressList
                 items={eurekaSet.colors}
-                eureka={eurekaSet.eureka_variants}
+                eurekaVariants={eurekaSet.eureka_variants}
                 filter="colors"
               />
             </>
