@@ -5,7 +5,7 @@ import { Roboto } from 'next/font/google'
 import { ThemeProvider } from '@mui/material/styles'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import theme from '@/lib/theme'
-import { CssBaseline, Paper } from '@mui/material'
+import { CssBaseline } from '@mui/material'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -36,7 +36,7 @@ export default async function RootLayout({
         <AppRouterCacheProvider options={{ key: 'css' }}>
           <ThemeProvider theme={theme} defaultMode="system">
             <CssBaseline />
-						{children}
+            {children}
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

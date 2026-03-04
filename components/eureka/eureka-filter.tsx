@@ -49,7 +49,6 @@ export default function EurekaFilter({
           <ProgressList
             items={categories}
             eurekaVariants={eurekaVariants}
-            filter="categories"
             value={category}
             onValueChange={(value) => setCategory(value as CategoryFilter)}
           />

@@ -77,12 +77,12 @@ export default function RealtimeEurekaSet({
               <ProgressList
                 items={eurekaSet.categories}
                 eurekaVariants={eurekaSet.eureka_variants}
-                filter="categories"
+                categoryType="categories"
               />
               <ProgressList
                 items={eurekaSet.colors}
                 eurekaVariants={eurekaSet.eureka_variants}
-                filter="colors"
+                categoryType="colors"
               />
             </>
           )

@@ -1,108 +1,65 @@
-'use client'
+// 'use client'
 
 import { countObtained, percent } from '@/hooks/count'
-import { Category, EurekaVariant } from '@/lib/types/types'
-import {
-  Avatar,
-  Chip,
-  LinearProgress,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-  useColorScheme,
-} from '@mui/material'
-import { Palette as PaletteIcon, Category as CategoryIcon } from '@mui/icons-material'
-import Image from 'next/image'
+import { Category, CategoryType, EurekaVariant } from '@/lib/types/types'
+import { Card, CardActionArea } from '@mui/material'
+import CardHeader from './card-header'
 
 export function ProgressItem({
   item,
   eurekaVariants,
-  filter,
+  categoryType,
   value,
   onValueChange,
 }: {
   item: Category
   eurekaVariants: EurekaVariant[]
-  filter?: 'colors' | 'categories'
+  categoryType: CategoryType
   value?: string
   onValueChange?: (value: string) => void
 }) {
-  const { mode, systemMode } = useColorScheme()
-  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
-
   const filteredVariants = eurekaVariants.filter(
-    (variant) => (filter === 'colors' ? variant.color : variant.category) === item.name
+    (variant) => (categoryType === 'colors' ? variant.color : variant.category) === item.name
   )
-  const obtainedCount = countObtained(filter ? filteredVariants : eurekaVariants)
+  const obtainedCount = countObtained(categoryType ? filteredVariants : eurekaVariants)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
   const isSelected = value === item.name
 
   return (
-    <>
-      <ListItem
-        disablePadding={!!onValueChange}
-        secondaryAction={
-          <Chip
-            label={`${obtainedCount.obtained} / ${obtainedCount.total}`}
-            variant="outlined"
-            size="small"
+    <Card elevation={0} component="li">
+      {!!onValueChange ? (
+        <CardActionArea
+          onClick={() => onValueChange?.(isSelected ? '' : item.name)}
+          data-active={isSelected === true ? '' : undefined}
+          sx={{
+            height: '100%',
+            '&[data-active]': {
+              backgroundColor: 'action.selected',
+              '&:hover': {
+                backgroundColor: 'action.selectedHover',
+              },
+            },
+          }}
+        >
+          <CardHeader
+            image={item.image_url}
+            title={item.name}
+            subheader={`${percentage}%`}
+            chip={`${obtainedCount.obtained} / ${obtainedCount.total}`}
+            percentage={percentage}
+            categoryType={categoryType}
           />
-        }
-      >
-        {!!onValueChange ? (
-          <ListItemButton
-            selected={isSelected}
-            onClick={() => onValueChange?.(isSelected ? '' : item.name)}
-          >
-            <ListItemAvatar>
-              <Avatar
-                alt={item.name}
-                sx={{
-                  bgcolor: 'transparent',
-                  ...(filter === 'categories' && { filter: isDarkMode ? 'none' : 'brightness(40%)' }),
-                }}
-              >
-                {item.image_url ? (
-                  <Image src={item.image_url} alt={item.name} width={100} height={100} />
-                ) : (
-                  <CategoryIcon />
-                )}
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary={item.name} secondary={`${percentage}%`} />
-          </ListItemButton>
-        ) : (
-          <>
-            <ListItemAvatar>
-              <Avatar
-                alt={item.name}
-                sx={{
-                  bgcolor: 'transparent',
-                  ...(filter === 'categories' && { filter: isDarkMode ? 'none' : 'brightness(40%)' }),
-                }}
-              >
-                {item.image_url ? (
-                  <Image
-                    src={item.image_url}
-                    alt={item.name}
-                    width={filter === 'colors' ? 20 : 100}
-                    height={filter === 'colors' ? 20 : 100}
-                  />
-                ) : (
-                  <PaletteIcon />
-                )}
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText primary={item.name} secondary={`${percentage}%`} />
-          </>
-        )}
-      </ListItem>
-      <ListItem disablePadding>
-        <ListItemText inset>
-          <LinearProgress value={percentage} variant="determinate" color="inherit" sx={{ mx: 2 }} />
-        </ListItemText>
-      </ListItem>
-    </>
+        </CardActionArea>
+      ) : (
+        <CardHeader
+          image={item.image_url}
+          title={item.name}
+          subheader={`${percentage}%`}
+          chip={`${obtainedCount.obtained} / ${obtainedCount.total}`}
+          percentage={percentage}
+          categoryType={categoryType}
+        />
+      )}
+    </Card>
   )
 }

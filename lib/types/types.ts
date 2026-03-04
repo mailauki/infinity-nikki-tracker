@@ -84,3 +84,5 @@ export interface NavSecondaryLink {
   exclusiveItems?: boolean
   items?: { title: string; url: string }[]
 }
+
+export type CategoryType = 'colors' | 'categories'

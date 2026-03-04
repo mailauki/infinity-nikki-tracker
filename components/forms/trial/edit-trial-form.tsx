@@ -2,7 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Alert, Button, FormLabel, IconButton, InputAdornment, Stack, TextField } from '@mui/material'
+import {
+  Alert,
+  Button,
+  FormLabel,
+  IconButton,
+  InputAdornment,
+  Stack,
+  TextField,
+} from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'

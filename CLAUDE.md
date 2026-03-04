@@ -167,6 +167,7 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 ### Next.js Config
 
 `next.config.ts` enables:
+
 - `cacheComponents: true` — component-level caching
 - `turbopack.root` — set to parent directory for monorepo-style Turbopack resolution
 - `images.remotePatterns` — allows images from `static.wikia.nocookie.net/infinity-nikki/**`

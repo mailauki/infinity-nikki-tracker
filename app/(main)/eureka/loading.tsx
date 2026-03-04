@@ -39,7 +39,11 @@ function ProgressListSkeleton() {
   return (
     <List
       sx={{ width: '100%' }}
-      subheader={<ListSubheader disableSticky><Skeleton width={80} /></ListSubheader>}
+      subheader={
+        <ListSubheader disableSticky>
+          <Skeleton width={80} />
+        </ListSubheader>
+      }
     >
       {Array.from({ length: 3 }).map((_, i) => (
         <React.Fragment key={i}>
@@ -47,10 +51,7 @@ function ProgressListSkeleton() {
             <ListItemAvatar>
               <Skeleton variant="circular" width={40} height={40} />
             </ListItemAvatar>
-            <ListItemText
-              primary={<Skeleton width="60%" />}
-              secondary={<Skeleton width="30%" />}
-            />
+            <ListItemText primary={<Skeleton width="60%" />} secondary={<Skeleton width="30%" />} />
           </ListItem>
           <ListItem disablePadding>
             <ListItemText inset>
