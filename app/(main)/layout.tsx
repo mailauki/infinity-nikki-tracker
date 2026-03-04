@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import NavDrawer from '@/components/forms/auth/nav-drawer'
+import NavDrawer from '@/components/navbar/nav-drawer'
 import NavSkeleton from '@/components/navbar/nav-skeleton'
 import { getUserClaims, getUserRole } from '@/hooks/user'
 

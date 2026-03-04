@@ -111,6 +111,7 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 - `exclusiveItems: true` — nav tabs show only the matching sub-item when not at the section root (used by Eureka Sets, Eureka Variants)
 - All `navSecondary` links are visible in the drawer; drawer links show a `placement="right"` tooltip when collapsed
 - `nav-user.tsx` uses a `navIcon(url)` helper to render `fontSize="small"` icons in the user menu (Dashboard → `Dashboard`, Profile → `AccountCircle`, others → `ViewList`)
+- `nav-drawer.tsx` responsive behavior: below `sm`, closed drawer is fully hidden (width: 0); open drawer is full-width with AppBar hidden (`display: 'none'`) so the DrawerHeader close button is visible; at `sm`+ the drawer collapses to icon-only width (`calc(spacing(8) + 1px)`)
 
 ### Admin Tables
 
