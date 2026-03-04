@@ -60,5 +60,11 @@ export default function RealtimeEurekaFilter({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [obtained])
 
-  return <EurekaFilter eurekaVariants={eurekaVariants} categories={serverCategories} isLoggedIn={isLoggedIn} />
+  return (
+    <EurekaFilter
+      eurekaVariants={eurekaVariants}
+      categories={serverCategories}
+      isLoggedIn={isLoggedIn}
+    />
+  )
 }

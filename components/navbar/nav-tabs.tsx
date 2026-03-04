@@ -38,16 +38,25 @@ function NavTabs() {
     ? navLinks.items?.find((item) => item.url === pathname || pathname.startsWith(item.url + '/'))
     : undefined
 
-  const allNavLinks = matchedItem
-    ? [navLinks, matchedItem]
-    : (navLinks as NavSecondaryLink).exclusiveItems
-      ? [navLinks]
-      : [navLinks].concat(navLinks.items! || [])
+  let allNavLinks: (NavMainLink | NavSecondaryLink | { title: string; url: string })[]
+  if (matchedItem) {
+    allNavLinks = [navLinks, matchedItem]
+  } else if ((navLinks as NavSecondaryLink).exclusiveItems) {
+    allNavLinks = [navLinks]
+  } else {
+    allNavLinks = [navLinks].concat(navLinks.items! || [])
+  }
 
   const isNavLink = !!allNavLinks.find((link) => link.url === pathname)
   // For prefix-matched dynamic sub-routes, activate the item's base URL
-  const activePath =
-    matchedItem && !isNavLink ? matchedItem.url : slug && !isNavLink ? false : pathname
+  let activePath: string | false
+  if (matchedItem && !isNavLink) {
+    activePath = matchedItem.url
+  } else if (slug && !isNavLink) {
+    activePath = false
+  } else {
+    activePath = pathname
+  }
 
   return (
     <Toolbar disableGutters sx={{ alignItems: 'flex-end' }}>

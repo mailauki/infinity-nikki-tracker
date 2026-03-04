@@ -5,7 +5,7 @@ import { EurekaSet } from '@/lib/types/types'
 
 import EurekaButton from './eureka-button'
 
-export default function EurekaTable({
+export default function EurekaVariantGrid({
   eurekaSet,
   isLoggedIn,
 }: {

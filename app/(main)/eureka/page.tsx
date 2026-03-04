@@ -21,10 +21,13 @@ export default async function EurekaSetsPage() {
 
 async function EurekaSets() {
   const eurekaSets = await getEurekaSets()
-  const categories = [...new Set(eurekaSets.flatMap((eurekaSet) => eurekaSet.categories))]
-  const eureka = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka_variants)
+  const seen = new Set<string>()
+  const categories = eurekaSets
+    .flatMap((eurekaSet) => eurekaSet.categories)
+    .filter((cat) => !seen.has(cat.name) && seen.add(cat.name))
+  const eurekaVariants = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka_variants)
   const user_id = await getUserID()
-  const isLoggedIn = !!user_id!
+  const isLoggedIn = !!user_id
 
   return (
     <>
@@ -39,7 +42,7 @@ async function EurekaSets() {
             ))}
           </Grid>
         }
-        sideContent={<ProgressList items={categories} eurekaVariant={eureka} filter="categories" />}
+        sideContent={<ProgressList items={categories} eurekaVariants={eurekaVariants} />}
       />
     </>
   )

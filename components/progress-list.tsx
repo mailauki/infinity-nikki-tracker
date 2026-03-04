@@ -1,17 +1,17 @@
-import { Category, EurekaVariant } from '@/lib/types/types'
+import { Category, CategoryType, EurekaVariant } from '@/lib/types/types'
 import { List, ListSubheader } from '@mui/material'
 import { ProgressItem } from './progress-item'
 
 export default function ProgressList({
   items,
   eurekaVariants,
-  filter,
+  categoryType = 'categories',
   value,
   onValueChange,
 }: {
   items: Category[]
   eurekaVariants: EurekaVariant[]
-  filter?: 'colors' | 'categories'
+  categoryType?: CategoryType
   value?: string
   onValueChange?: (value: string) => void
 }) {
@@ -20,7 +20,7 @@ export default function ProgressList({
       sx={{ width: '100%' }}
       subheader={
         <ListSubheader disableSticky sx={{ textTransform: 'capitalize' }}>
-          {filter}
+          {categoryType}
         </ListSubheader>
       }
     >
@@ -29,7 +29,7 @@ export default function ProgressList({
           key={item.name}
           item={item}
           eurekaVariants={eurekaVariants}
-          filter={filter}
+          categoryType={categoryType}
           value={value}
           onValueChange={onValueChange}
         />
