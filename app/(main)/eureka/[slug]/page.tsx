@@ -28,6 +28,7 @@ async function EurekaSet({ slug }: { slug: string }) {
       serverEurekaSet={eurekaSet}
       serverObtained={obtained || []}
       isLoggedIn={isLoggedIn}
+      userId={user_id ?? null}
     />
   )
 }

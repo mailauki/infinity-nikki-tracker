@@ -32,6 +32,7 @@ async function Missing() {
       serverCategories={categories}
       serverObtained={obtained || []}
       isLoggedIn={isLoggedIn}
+      userId={user_id ?? null}
     />
   )
 }

@@ -1,3 +1,4 @@
+'use client'
 import { createSvgIcon, Stack } from '@mui/material'
 
 const SparkleIcon = createSvgIcon(

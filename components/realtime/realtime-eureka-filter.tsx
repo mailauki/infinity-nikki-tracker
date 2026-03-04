@@ -15,30 +15,34 @@ export default function RealtimeEurekaFilter({
   serverCategories,
   serverObtained,
   isLoggedIn,
+  userId,
 }: {
   serverEureka: Eureka[]
   serverCategories: Category[]
   serverObtained: Obtained[]
   isLoggedIn: boolean
+  userId: string | null
 }) {
   const [eureka, setEureka] = useState(serverEureka)
   const [obtained, setObtained] = useState(serverObtained)
 
   useEffect(() => {
+    if (!userId) return
+
     const obtainedChannel = supabase
-      .channel('obtained-insert-channel')
+      .channel('obtained-filter-channel')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'obtained' },
+        { event: 'INSERT', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
         (payload) => {
-          setObtained([...obtained, payload.new as Obtained])
+          setObtained((prev) => [...prev, payload.new as Obtained])
         }
       )
       .on(
         'postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'obtained' },
+        { event: 'DELETE', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
         (payload) => {
-          setObtained(obtained.filter((item) => item.id !== payload.old.id))
+          setObtained((prev) => prev.filter((item) => item.id !== payload.old.id))
         }
       )
       .subscribe()
@@ -46,7 +50,7 @@ export default function RealtimeEurekaFilter({
     return () => {
       supabase.removeChannel(obtainedChannel)
     }
-  }, [obtained])
+  }, [userId])
 
   useEffect(() => {
     const updatedEureka = updateEureka({ eureka, obtained })
