@@ -12,7 +12,15 @@ import {
 } from '@mui/material'
 import { NavMainLink } from '@/lib/types/types'
 
-export function NavMain({ items, open = false }: { items: NavMainLink[]; open?: boolean }) {
+export function NavMain({
+  items,
+  open = false,
+  onClose,
+}: {
+  items: NavMainLink[]
+  open?: boolean
+  onClose?: () => void
+}) {
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
 
@@ -23,6 +31,7 @@ export function NavMain({ items, open = false }: { items: NavMainLink[]; open?: 
           <ListItemButton
             component={Link}
             href={item.url}
+            onClick={onClose}
             sx={[
               {
                 minHeight: 48,
@@ -77,7 +86,7 @@ export function NavMain({ items, open = false }: { items: NavMainLink[]; open?: 
             <List disablePadding>
               {item.items?.map((subItem) => (
                 <ListItem key={subItem.title} disablePadding sx={{ display: 'block' }}>
-                  <ListItemButton component={Link} href={subItem.url}>
+                  <ListItemButton component={Link} href={subItem.url} onClick={onClose}>
                     <ListItemText inset primary={subItem.title} />
                   </ListItemButton>
                 </ListItem>

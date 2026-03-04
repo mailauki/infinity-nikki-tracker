@@ -12,7 +12,15 @@ import {
 } from '@mui/material'
 import { NavSecondaryLink } from '@/lib/types/types'
 
-export function NavExtra({ items, open }: { items: NavSecondaryLink[]; open: boolean }) {
+export function NavExtra({
+  items,
+  open,
+  onClose,
+}: {
+  items: NavSecondaryLink[]
+  open: boolean
+  onClose?: () => void
+}) {
   return (
     <Stack sx={{ flex: 1 }}>
       <Box sx={{ flex: 1 }} />
@@ -23,6 +31,7 @@ export function NavExtra({ items, open }: { items: NavSecondaryLink[]; open: boo
               <ListItemButton
                 component={Link}
                 href={item.url}
+                onClick={onClose}
                 sx={[
                   {
                     minHeight: 48,
