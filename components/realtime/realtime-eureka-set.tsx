@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { updateEurekaSet } from '@/hooks/eureka-set'
+import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
 import { EurekaSet, Obtained } from '@/lib/types/types'
 
@@ -19,29 +19,33 @@ export default function RealtimeEurekaSet({
   serverEurekaSet,
   serverObtained,
   isLoggedIn,
+  userId,
 }: {
   serverEurekaSet: EurekaSet
   serverObtained: Obtained[]
   isLoggedIn: boolean
+  userId: string | null
 }) {
   const [eurekaSet, setEurekaSet] = useState(serverEurekaSet)
   const [obtained, setObtained] = useState(serverObtained)
 
   useEffect(() => {
+    if (!userId) return
+
     const obtainedChannel = supabase
-      .channel('obtained-insert-channel')
+      .channel('obtained-set-channel')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'obtained' },
+        { event: 'INSERT', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
         (payload) => {
-          setObtained([...obtained, payload.new as Obtained])
+          setObtained((prev) => [...prev, payload.new as Obtained])
         }
       )
       .on(
         'postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'obtained' },
+        { event: 'DELETE', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
         (payload) => {
-          setObtained(obtained.filter((item) => item.id !== payload.old.id))
+          setObtained((prev) => prev.filter((item) => item.id !== payload.old.id))
         }
       )
       .subscribe()
@@ -49,7 +53,7 @@ export default function RealtimeEurekaSet({
     return () => {
       supabase.removeChannel(obtainedChannel)
     }
-  }, [obtained])
+  }, [userId])
 
   useEffect(() => {
     const updatedEurekaSet = updateEurekaSet({ eurekaSet, obtained })
@@ -66,22 +70,18 @@ export default function RealtimeEurekaSet({
         <EurekaHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
       </Box>
       <GridContainer
-        mainContent={
-          <>
-            <EurekaTable eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
-          </>
-        }
+        mainContent={<EurekaTable eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />}
         sideContent={
           isLoggedIn && (
             <>
               <ProgressList
                 items={eurekaSet.categories}
-                eureka={eurekaSet.eureka_variants}
+                eurekaVariants={eurekaSet.eureka_variants}
                 filter="categories"
               />
               <ProgressList
                 items={eurekaSet.colors}
-                eureka={eurekaSet.eureka_variants}
+                eurekaVariants={eurekaSet.eureka_variants}
                 filter="colors"
               />
             </>

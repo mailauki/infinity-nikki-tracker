@@ -1,26 +1,26 @@
 import { handleObtained } from '@/app/(main)/eureka/actions'
-import { Eureka } from '@/lib/types/types'
+import { EurekaVariant } from '@/lib/types/types'
 import { Card, CardActionArea, CardContent, Chip, Typography } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 
 import EurekaSetImage from './eureka-set-image'
 
 export default function EurekaButton({
-  eureka,
+  eurekaVariant,
   isLoggedIn,
 }: {
-  eureka: Eureka
+  eurekaVariant: EurekaVariant
   isLoggedIn: boolean
 }) {
-  const slugEurekaSet = eureka.eureka_set!.replace(' ', '_')
-  const slug = `${slugEurekaSet}-${eureka.category}-${eureka.color}`
+  const slugEurekaSet = eurekaVariant.eureka_set!.replace(' ', '_')
+  const slug = `${slugEurekaSet}-${eurekaVariant.category}-${eurekaVariant.color}`
 
   return (
-    <Card key={eureka.id}>
+    <Card key={eurekaVariant.id}>
       <CardActionArea
         onClick={() => handleObtained(slug)}
         disabled={!isLoggedIn}
-        data-active={eureka.obtained === true ? '' : undefined}
+        data-active={eurekaVariant.obtained === true ? '' : undefined}
         sx={{
           height: '100%',
           '&[data-active]': {
@@ -32,14 +32,14 @@ export default function EurekaButton({
         }}
       >
         <EurekaSetImage
-          imageUrl={eureka.image_url!}
+          imageUrl={eurekaVariant.image_url!}
           alt={slug}
-          action={eureka.obtained === true && <Chip size="small" label={<CheckIcon />} />}
+          action={eurekaVariant.obtained === true && <Chip size="small" label={<CheckIcon />} />}
         />
         <CardContent>
-          <Typography variant="subtitle2">{eureka.eureka_set}</Typography>
+          <Typography variant="subtitle2">{eurekaVariant.eureka_set}</Typography>
           <Typography variant="caption" color="textSecondary">
-            {`${eureka.category} • ${eureka.color}`}
+            {`${eurekaVariant.category} • ${eurekaVariant.color}`}
           </Typography>
         </CardContent>
       </CardActionArea>

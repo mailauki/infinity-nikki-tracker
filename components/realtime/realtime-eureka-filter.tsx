@@ -2,43 +2,47 @@
 
 import { useEffect, useState } from 'react'
 
-import { updateEureka } from '@/hooks/eureka-set'
+import { updateEurekaVariants } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, Eureka, Obtained } from '@/lib/types/types'
+import { Category, EurekaVariant, Obtained } from '@/lib/types/types'
 
 import EurekaFilter from '@/components/eureka/eureka-filter'
 
 const supabase = createClient()
 
 export default function RealtimeEurekaFilter({
-  serverEureka,
+  serverEurekaVariants,
   serverCategories,
   serverObtained,
   isLoggedIn,
+  userId,
 }: {
-  serverEureka: Eureka[]
+  serverEurekaVariants: EurekaVariant[]
   serverCategories: Category[]
   serverObtained: Obtained[]
   isLoggedIn: boolean
+  userId: string | null
 }) {
-  const [eureka, setEureka] = useState(serverEureka)
+  const [eurekaVariants, setEurekaVariants] = useState(serverEurekaVariants)
   const [obtained, setObtained] = useState(serverObtained)
 
   useEffect(() => {
+    if (!userId) return
+
     const obtainedChannel = supabase
-      .channel('obtained-insert-channel')
+      .channel('obtained-filter-channel')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'obtained' },
+        { event: 'INSERT', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
         (payload) => {
-          setObtained([...obtained, payload.new as Obtained])
+          setObtained((prev) => [...prev, payload.new as Obtained])
         }
       )
       .on(
         'postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'obtained' },
+        { event: 'DELETE', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
         (payload) => {
-          setObtained(obtained.filter((item) => item.id !== payload.old.id))
+          setObtained((prev) => prev.filter((item) => item.id !== payload.old.id))
         }
       )
       .subscribe()
@@ -46,15 +50,15 @@ export default function RealtimeEurekaFilter({
     return () => {
       supabase.removeChannel(obtainedChannel)
     }
-  }, [obtained])
+  }, [userId])
 
   useEffect(() => {
-    const updatedEureka = updateEureka({ eureka, obtained })
+    const updatedEurekaVariants = updateEurekaVariants({ eurekaVariants, obtained })
 
-    setEureka(updatedEureka)
+    setEurekaVariants(updatedEurekaVariants)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [obtained])
 
-  return <EurekaFilter eureka={eureka} categories={serverCategories} isLoggedIn={isLoggedIn} />
+  return <EurekaFilter eurekaVariants={eurekaVariants} categories={serverCategories} isLoggedIn={isLoggedIn} />
 }

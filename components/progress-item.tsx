@@ -1,5 +1,7 @@
+'use client'
+
 import { countObtained, percent } from '@/hooks/count'
-import { Category, Eureka } from '@/lib/types/types'
+import { Category, EurekaVariant } from '@/lib/types/types'
 import {
   Avatar,
   Chip,
@@ -8,27 +10,31 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
+  useColorScheme,
 } from '@mui/material'
 import { Palette as PaletteIcon, Category as CategoryIcon } from '@mui/icons-material'
 import Image from 'next/image'
 
 export function ProgressItem({
   item,
-  eureka,
+  eurekaVariants,
   filter,
   value,
   onValueChange,
 }: {
   item: Category
-  eureka: Eureka[]
+  eurekaVariants: EurekaVariant[]
   filter?: 'colors' | 'categories'
   value?: string
   onValueChange?: (value: string) => void
 }) {
-  const filteredEureka = eureka.filter(
-    (eureka) => (filter === 'colors' ? eureka.color : eureka.category) === item.name
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+
+  const filteredVariants = eurekaVariants.filter(
+    (variant) => (filter === 'colors' ? variant.color : variant.category) === item.name
   )
-  const obtainedCount = countObtained(filter ? filteredEureka : eureka)
+  const obtainedCount = countObtained(filter ? filteredVariants : eurekaVariants)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
   const isSelected = value === item.name
 
@@ -50,7 +56,13 @@ export function ProgressItem({
             onClick={() => onValueChange?.(isSelected ? '' : item.name)}
           >
             <ListItemAvatar>
-              <Avatar alt={item.name} sx={{ bgcolor: 'transparent' }}>
+              <Avatar
+                alt={item.name}
+                sx={{
+                  bgcolor: 'transparent',
+                  ...(filter === 'categories' && { filter: isDarkMode ? 'none' : 'brightness(40%)' }),
+                }}
+              >
                 {item.image_url ? (
                   <Image src={item.image_url} alt={item.name} width={100} height={100} />
                 ) : (
@@ -63,7 +75,13 @@ export function ProgressItem({
         ) : (
           <>
             <ListItemAvatar>
-              <Avatar alt={item.name} sx={{ bgcolor: 'transparent' }}>
+              <Avatar
+                alt={item.name}
+                sx={{
+                  bgcolor: 'transparent',
+                  ...(filter === 'categories' && { filter: isDarkMode ? 'none' : 'brightness(40%)' }),
+                }}
+              >
                 {item.image_url ? (
                   <Image
                     src={item.image_url}

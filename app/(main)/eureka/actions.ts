@@ -14,38 +14,23 @@ export async function handleObtained(slug: string) {
   const user = data?.claims.user_metadata
   const user_id = <UUID | string>(user ? user.sub : null)
 
-  const { data: obtained } = await supabase
+  const { data: existing } = await supabase
     .from('obtained')
-    .select(
-      `
-			id,
-			eureka_set,
-			category,
-			color
-		`
-    )
+    .select('id')
     .eq('user_id', user_id)
+    .eq('eureka_set', eureka_set)
+    .eq('category', category)
+    .eq('color', color)
+    .maybeSingle()
 
-  const addObtained = { eureka_set, category, color, user_id: user_id }
-
-  const isObtained = obtained?.find(
-    (item) => item.eureka_set === eureka_set && item.color === color && item.category === category
-  )
-
-  if (isObtained) {
-    const { error } = await supabase
-      .from('obtained')
-      .delete()
-      .eq('user_id', user_id)
-      .eq('id', isObtained!.id)
+  if (existing) {
+    const { error } = await supabase.from('obtained').delete().eq('id', existing.id)
     if (error) console.log(error)
   } else {
-    const { data, error } = await supabase.from('obtained').insert([addObtained]).select(`
-				id,
-				eureka_set,
-				category,
-				color
-			`)
+    const { data, error } = await supabase
+      .from('obtained')
+      .insert([{ eureka_set, category, color, user_id }])
+      .select('id, eureka_set, category, color')
     if (error) console.log(error)
     return data
   }

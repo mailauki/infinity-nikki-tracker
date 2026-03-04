@@ -15,8 +15,6 @@ export interface EurekaSet {
   colors: Category[]
 }
 
-export type Eureka = EurekaVariant
-
 export interface EurekaVariant {
   id: number
   eureka_set: string | null
