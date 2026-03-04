@@ -178,10 +178,6 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 - `hooks/user.ts` — `getUserClaims()`, `getUserID()`, `getUserRole()` (all server-side, cached)
 - `hooks/eureka.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEurekaVariants()` (pure data transforms)
 - `hooks/count.ts` — `countObtained(array)` → `{obtained, total}`, `percent(obtained, total)` → percentage string
-- `hooks/use-mobile.ts` — `useIsMobile()` hook (768px breakpoint)
-- `hooks/use-as-ref.ts` — `useAsRef()` for stable prop refs
-- `hooks/use-lazy-ref.ts` — lazy ref initialization utility
-- `hooks/use-isomorphic-layout-effect.ts` — SSR-safe `useLayoutEffect`
 
 ### Code Style
 
