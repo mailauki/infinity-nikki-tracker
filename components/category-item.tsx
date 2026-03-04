@@ -1,5 +1,3 @@
-// 'use client'
-
 import { countObtained, percent } from '@/hooks/count'
 import { AvatarSize, Category, CategoryType, EurekaVariant } from '@/lib/types/types'
 import { Chip } from '@mui/material'
@@ -10,15 +8,11 @@ export function CategoryItem({
   item,
   eurekaVariants,
   categoryType = 'categories',
-  // value,
-  // onValueChange,
   size = 'sm',
 }: {
   item: Category
   eurekaVariants: EurekaVariant[]
   categoryType?: CategoryType
-  // value?: string
-  // onValueChange?: (value: string) => void
   size?: AvatarSize
 }) {
   const filteredVariants = eurekaVariants.filter(
@@ -26,7 +20,6 @@ export function CategoryItem({
   )
   const obtainedCount = countObtained(filteredVariants)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
-  // const isSelected = value === item.name
 
   return (
     <>

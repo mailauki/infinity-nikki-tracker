@@ -13,7 +13,6 @@ export default function EurekaSetCard({
   return (
     <Card>
       <CardActionArea href={`/eureka/${eurekaSet.slug}`}>
-        {/* <EurekaCardHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} size='md' /> */}
         <EurekaCard eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
       </CardActionArea>
     </Card>

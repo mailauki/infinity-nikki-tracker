@@ -1,6 +1,6 @@
 'use client'
 import { Category, EurekaVariant } from '@/lib/types/types'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import EurekaButton from './eureka-button'
 import GridContainer from '../grid-container'
 import { Card, CardActionArea, Grid, List } from '@mui/material'
@@ -19,19 +19,11 @@ export default function EurekaFilter({
   isLoggedIn: boolean
 }) {
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('')
-  const [filteredEureka, setFilteredEureka] = useState<EurekaVariant[]>(eurekaVariants)
 
-  // const iridescent = colors.find(item => item.name === "Iridescent")
-  // const sortedColors = colors.filter(item => item !== iridescent).concat(iridescent!)
-
-  useEffect(() => {
-    const filterCategory = eurekaVariants.filter((item) => item.category === selectedCategory)
-    const filterMissing = eurekaVariants.filter((item) => item.obtained === false)
-    const filterMissingCategory = filterCategory.filter((item) => item.obtained === false)
-
-    if (selectedCategory === '') setFilteredEureka(filterMissing)
-    else setFilteredEureka(filterMissingCategory)
-  }, [selectedCategory, eurekaVariants])
+  const filteredEureka = eurekaVariants.filter(
+    (item) =>
+      (selectedCategory === '' || item.category === selectedCategory) && item.obtained === false
+  )
 
   return (
     <>
@@ -48,16 +40,6 @@ export default function EurekaFilter({
         sideContent={
           <List sx={{ width: '100%' }}>
             {categories.map((category: Category) => (
-              // 	<ListItem key={category.name} disablePadding sx={{ width: '100%' }}>
-              // 	<ListItemButton
-              // 	disableGutters
-              // 	selected={selectedCategory === category.name as CategoryFilter}
-              // 	onClick={() => setSelectedCategory(selectedCategory === category.name as CategoryFilter ? '' : category.name as CategoryFilter)}
-              // data-active={selectedCategory === category.name ? '' : undefined}
-              // 	>
-              // 	<CategoryItem item={category} eurekaVariants={eurekaVariants} />
-              // 	</ListItemButton>
-              // 	</ListItem>
               <Card key={category.name} elevation={0} component="li">
                 <CardActionArea
                   onClick={() =>
