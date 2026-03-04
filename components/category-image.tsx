@@ -26,7 +26,7 @@ export default function CategoryImage({
         <Avatar
           sx={{
 						bgcolor: 'transparent',
-						filter: (isDarkMode && size !== 'xs') ? 'none' : 'brightness(40%)'
+						filter: (isDarkMode || size === 'xs') ? 'none' : 'brightness(40%)'
 					}}
 					size={size}>
           <Image src={imageUrl} alt={alt} width={100} height={100} />
