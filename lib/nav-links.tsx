@@ -2,8 +2,14 @@ import InfoIcon from '@mui/icons-material/InfoOutline'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import AccountIcon from '@mui/icons-material/AccountCircle'
 import ViewListIcon from '@mui/icons-material/ViewList'
+import { NavLink } from '@/lib/types/types'
 
-export const navLinksData = {
+export const navLinksData: {
+  home: NavLink
+  navMain: NavLink[]
+  navSecondary: NavLink[]
+  navExtra: NavLink[]
+} = {
   home: {
     title: 'Home',
     url: '/',

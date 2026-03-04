@@ -10,14 +10,14 @@ import {
   Toolbar,
   Tooltip,
 } from '@mui/material'
-import { NavSecondaryLink } from '@/lib/types/types'
+import { NavLink } from '@/lib/types/types'
 
 export function NavExtra({
   items,
   open,
   onClose,
 }: {
-  items: NavSecondaryLink[]
+  items: NavLink[]
   open: boolean
   onClose?: () => void
 }) {

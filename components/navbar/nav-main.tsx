@@ -10,14 +10,14 @@ import {
   ListItemText,
   useColorScheme,
 } from '@mui/material'
-import { NavMainLink } from '@/lib/types/types'
+import { NavLink } from '@/lib/types/types'
 
 export function NavMain({
   items,
   open = false,
   onClose,
 }: {
-  items: NavMainLink[]
+  items: NavLink[]
   open?: boolean
   onClose?: () => void
 }) {
