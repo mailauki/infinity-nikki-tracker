@@ -3,8 +3,8 @@ import { Category, EurekaVariant } from '@/lib/types/types'
 import { useEffect, useState } from 'react'
 import EurekaButton from './eureka-button'
 import GridContainer from '../grid-container'
-import ProgressList from '../progress-list'
-import { Grid } from '@mui/material'
+import { Card, CardActionArea, Grid, List } from '@mui/material'
+import { CategoryItem } from '../category-item'
 
 type CategoryFilter = '' | 'Head' | 'Hands' | 'Feet'
 type EurekaFilter = 'Sets' | 'Eureka' | 'Missing'
@@ -18,20 +18,20 @@ export default function EurekaFilter({
   categories: Category[]
   isLoggedIn: boolean
 }) {
-  const [category, setCategory] = useState<CategoryFilter>('')
+  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>('')
   const [filteredEureka, setFilteredEureka] = useState<EurekaVariant[]>(eurekaVariants)
 
   // const iridescent = colors.find(item => item.name === "Iridescent")
   // const sortedColors = colors.filter(item => item !== iridescent).concat(iridescent!)
 
   useEffect(() => {
-    const filterCategory = eurekaVariants.filter((item) => item.category === category)
+    const filterCategory = eurekaVariants.filter((item) => item.category === selectedCategory)
     const filterMissing = eurekaVariants.filter((item) => item.obtained === false)
     const filterMissingCategory = filterCategory.filter((item) => item.obtained === false)
 
-    if (category === '') setFilteredEureka(filterMissing)
+    if (selectedCategory === '') setFilteredEureka(filterMissing)
     else setFilteredEureka(filterMissingCategory)
-  }, [category, eurekaVariants])
+  }, [selectedCategory, eurekaVariants])
 
   return (
     <>
@@ -46,12 +46,45 @@ export default function EurekaFilter({
           </Grid>
         }
         sideContent={
-          <ProgressList
-            items={categories}
-            eurekaVariants={eurekaVariants}
-            value={category}
-            onValueChange={(value) => setCategory(value as CategoryFilter)}
-          />
+          <List sx={{ width: '100%' }}>
+            {categories.map((category: Category) => (
+              // 	<ListItem key={category.name} disablePadding sx={{ width: '100%' }}>
+              // 	<ListItemButton
+              // 	disableGutters
+              // 	selected={selectedCategory === category.name as CategoryFilter}
+              // 	onClick={() => setSelectedCategory(selectedCategory === category.name as CategoryFilter ? '' : category.name as CategoryFilter)}
+              // data-active={selectedCategory === category.name ? '' : undefined}
+              // 	>
+              // 	<CategoryItem item={category} eurekaVariants={eurekaVariants} />
+              // 	</ListItemButton>
+              // 	</ListItem>
+              <Card key={category.name} elevation={0} component="li">
+                <CardActionArea
+                  onClick={() =>
+                    setSelectedCategory(
+                      selectedCategory === (category.name as CategoryFilter)
+                        ? ''
+                        : (category.name as CategoryFilter)
+                    )
+                  }
+                  data-active={
+                    selectedCategory === (category.name as CategoryFilter) ? '' : undefined
+                  }
+                  sx={{
+                    height: '100%',
+                    '&[data-active]': {
+                      backgroundColor: 'action.selected',
+                      '&:hover': {
+                        backgroundColor: 'action.selectedHover',
+                      },
+                    },
+                  }}
+                >
+                  <CategoryItem item={category} eurekaVariants={eurekaVariants} />
+                </CardActionArea>
+              </Card>
+            ))}
+          </List>
         }
       />
     </>

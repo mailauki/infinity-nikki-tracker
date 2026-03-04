@@ -1,10 +1,11 @@
 'use client'
 import { lime, pink } from '@mui/material/colors'
 import { createTheme, responsiveFontSizes } from '@mui/material/styles'
+import { AvatarSize } from './types/types'
 
 declare module '@mui/material/Avatar' {
   interface AvatarOwnProps {
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+    size?: AvatarSize
   }
 }
 

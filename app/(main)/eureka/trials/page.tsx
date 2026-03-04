@@ -15,10 +15,11 @@ import {
   Grid,
   LinearProgress,
   List,
+  ListItem,
 } from '@mui/material'
 import Image from 'next/image'
 import { countObtained, percent } from '@/hooks/count'
-import EurekaCardHeader from '@/components/eureka/eureka-card-header'
+import EurekaCard from '@/components/eureka/eureka-card'
 
 export default async function TrialsPage() {
   return (
@@ -90,9 +91,11 @@ function TrialCard({
       <CardActions>
         <List sx={{ width: '100%' }}>
           {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
-            <CardActionArea key={eurekaSet.id} href={`/eureka/${eurekaSet.slug}`}>
-              <EurekaCardHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
-            </CardActionArea>
+            <ListItem key={eurekaSet.id} disablePadding>
+              <CardActionArea href={`/eureka/${eurekaSet.slug}`}>
+                <EurekaCard eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} size="sm" />
+              </CardActionArea>
+            </ListItem>
           ))}
         </List>
       </CardActions>

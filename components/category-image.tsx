@@ -1,8 +1,8 @@
 import Image from 'next/image'
 import { Avatar, CardHeader } from '@mui/material'
-import { CardSize } from '@/lib/types/types'
+import { AvatarSize } from '@/lib/types/types'
 
-export default function EurekaSetImage({
+export default function CategoryImage({
   imageUrl,
   alt,
   action,
@@ -13,14 +13,14 @@ export default function EurekaSetImage({
   imageUrl: string
   alt: string
   action?: React.ReactNode
-  size?: CardSize
+  size?: AvatarSize
   title?: string
   subheader?: string
 }) {
   return (
     <CardHeader
       avatar={
-        <Avatar sx={{ bgcolor: 'transparent' }} size={size === 'sm' ? 'md' : 'lg'}>
+        <Avatar sx={{ bgcolor: 'transparent' }} size={size}>
           <Image src={imageUrl} alt={alt} width={100} height={100} />
         </Avatar>
       }

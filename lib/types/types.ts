@@ -86,3 +86,7 @@ export interface NavSecondaryLink {
 }
 
 export type CategoryType = 'colors' | 'categories'
+
+export type CardSize = 'sm' | 'md' | 'lg'
+
+export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'

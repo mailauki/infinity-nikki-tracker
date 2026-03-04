@@ -1,23 +1,24 @@
 import { CardContent, Stack, Typography } from '@mui/material'
 
 import QualityStars from '../quality-stars'
+import { CardSize } from '@/lib/types/types'
 
 export default function EurekaCardContent({
   name,
   quality,
-  variant = 'default',
+  size = 'sm',
   trial,
   style,
 }: {
   name: string
   quality: number | null
-  variant?: 'default' | 'large'
+  size?: CardSize
   trial?: string | null
   style?: string | null
 }) {
   return (
     <CardContent sx={{ pt: 0 }}>
-      {variant === 'large' ? (
+      {size === 'lg' ? (
         <Stack spacing={0.5}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h5" component="p">

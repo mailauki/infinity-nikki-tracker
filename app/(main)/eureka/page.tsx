@@ -1,13 +1,14 @@
 import { Suspense } from 'react'
 
-import { Container, Grid } from '@mui/material'
+import { Card, Container, Grid, List } from '@mui/material'
 
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
 import GridContainer from '@/components/grid-container'
-import ProgressList from '@/components/progress-list'
 import { getEurekaSets } from '@/lib/data'
 import { getUserID } from '@/hooks/user'
 import LoginAlert from '@/components/login-alert'
+import { Category } from '@/lib/types/types'
+import { CategoryItem } from '@/components/category-item'
 
 export default async function EurekaSetsPage() {
   return (
@@ -42,7 +43,15 @@ async function EurekaSets() {
             ))}
           </Grid>
         }
-        sideContent={<ProgressList items={categories} eurekaVariants={eurekaVariants} />}
+        sideContent={
+          <List sx={{ width: '100%' }}>
+            {categories.map((category: Category) => (
+              <Card key={category.name} elevation={0} component="li">
+                <CategoryItem item={category} eurekaVariants={eurekaVariants} />
+              </Card>
+            ))}
+          </List>
+        }
       />
     </>
   )

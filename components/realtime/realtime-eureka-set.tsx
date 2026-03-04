@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { EurekaSet, Obtained } from '@/lib/types/types'
+import { Category, EurekaSet, Obtained } from '@/lib/types/types'
 
-import EurekaHeader from '@/components/eureka/eureka-header'
 import EurekaVariantGrid from '@/components/eureka/eureka-variant-grid'
-import { Box } from '@mui/material'
-import ProgressList from '../progress-list'
+import { Box, Card, List } from '@mui/material'
 import GridContainer from '../grid-container'
 import LoginAlert from '../login-alert'
+import EurekaCard from '../eureka/eureka-card'
+import { CategoryItem } from '../category-item'
 
 const supabase = createClient()
 
@@ -67,23 +67,32 @@ export default function RealtimeEurekaSet({
     <>
       {!isLoggedIn && <LoginAlert />}
       <Box sx={{ position: 'relative', width: '100%' }}>
-        <EurekaHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
+        <EurekaCard eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} size="lg" />
       </Box>
       <GridContainer
         mainContent={<EurekaVariantGrid eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />}
         sideContent={
           isLoggedIn && (
             <>
-              <ProgressList
-                items={eurekaSet.categories}
-                eurekaVariants={eurekaSet.eureka_variants}
-                categoryType="categories"
-              />
-              <ProgressList
-                items={eurekaSet.colors}
-                eurekaVariants={eurekaSet.eureka_variants}
-                categoryType="colors"
-              />
+              <List sx={{ width: '100%' }}>
+                {eurekaSet.categories.map((category: Category) => (
+                  <Card key={category.name} elevation={0} component="li">
+                    <CategoryItem item={category} eurekaVariants={eurekaSet.eureka_variants} />
+                  </Card>
+                ))}
+              </List>
+              <List sx={{ width: '100%' }}>
+                {eurekaSet.colors.map((color: Category) => (
+                  <Card key={color.name} elevation={0} component="li">
+                    <CategoryItem
+                      item={color}
+                      eurekaVariants={eurekaSet.eureka_variants}
+                      categoryType="colors"
+                      size="xs"
+                    />
+                  </Card>
+                ))}
+              </List>
             </>
           )
         }

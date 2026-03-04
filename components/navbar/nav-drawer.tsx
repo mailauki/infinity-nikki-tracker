@@ -162,22 +162,22 @@ export default function NavDrawer({
               justifyContent="space-between"
               sx={{ flex: 1 }}
             >
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              sx={[
-                {
-                  marginLeft: -1,
-                  marginRight: 5,
-                },
-                open && { display: 'none' },
-              ]}
-            >
-              <MenuIcon />
-            </IconButton>
-            {/* <Link href="/">
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                sx={[
+                  {
+                    marginLeft: -1,
+                    marginRight: 5,
+                  },
+                  open && { display: 'none' },
+                ]}
+              >
+                <MenuIcon />
+              </IconButton>
+              {/* <Link href="/">
               <Image
                 src="https://static.wikia.nocookie.net/infinity-nikki/images/e/e6/Site-logo.png/revision/latest?cb=20250212142911"
                 alt="Infinity Nikki Logo"

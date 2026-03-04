@@ -59,6 +59,7 @@ export default function CardHeader({
         title={title}
         subheader={subheader}
         action={<Chip label={chip} variant="outlined" size="small" />}
+        sx={{ width: '100%' }}
       />
       <CardContent sx={{ pt: 0 }}>
         <LinearProgress value={percentage} variant="determinate" color="inherit" />
