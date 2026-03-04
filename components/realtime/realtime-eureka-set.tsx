@@ -7,7 +7,7 @@ import { createClient } from '@/lib/supabase/client'
 import { EurekaSet, Obtained } from '@/lib/types/types'
 
 import EurekaHeader from '@/components/eureka/eureka-header'
-import EurekaTable from '@/components/eureka/eureka-table'
+import EurekaVariantGrid from '@/components/eureka/eureka-variant-grid'
 import { Box } from '@mui/material'
 import ProgressList from '../progress-list'
 import GridContainer from '../grid-container'
@@ -70,7 +70,7 @@ export default function RealtimeEurekaSet({
         <EurekaHeader eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
       </Box>
       <GridContainer
-        mainContent={<EurekaTable eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />}
+        mainContent={<EurekaVariantGrid eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />}
         sideContent={
           isLoggedIn && (
             <>

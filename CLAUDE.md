@@ -93,7 +93,7 @@ Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass t
    - `getTrialsAdmin()` — All trials with id, slug, created_at for admin
    - `getProfile(user_id)` — User profile (full_name, username, avatar_url)
 2. `hooks/user.ts` — `getUserID()`, `getUserClaims()`, `getUserRole()` read auth claims server-side
-3. `hooks/eureka-set.ts` — Pure functions `createEurekaSet()` and `updateEurekaSet()` / `updateEureka()` for transforming data
+3. `hooks/eureka.ts` — Pure functions `createEurekaSet()`, `updateEurekaSet()`, and `updateEurekaVariants()` for transforming data
 4. `hooks/count.ts` — `countObtained()` and `percent()` utilities for progress calculation
 5. `app/(main)/eureka/actions.ts` — Server Action `handleObtained(slug)` toggles obtained state in Supabase
 
@@ -162,7 +162,7 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 
 ### Theme
 
-`lib/theme.ts` configures the MUI theme with `responsiveFontSizes`. Mode-specific palette: light uses `lime[900]` (primary) / `pink[400]` (secondary), dark uses `lime[500]` (primary) / `pink[100]` (secondary). `InitColorSchemeScript attribute="class" defaultMode="system"` in root layout prevents SSR flicker — must match `ThemeProvider defaultMode`.
+`lib/theme.ts` configures the MUI theme with `responsiveFontSizes`. Mode-specific palette: light uses `lime[900]` (primary) / `pink[400]` (secondary), dark uses `lime[500]` (primary) / `pink[100]` (secondary). `InitColorSchemeScript attribute="class" defaultMode="system"` in root layout prevents SSR flicker — must match `ThemeProvider defaultMode`. Client Components checking dark mode must use `useColorScheme()` (not `useTheme().palette.mode`) — CSS variables mode doesn't trigger re-renders via `useTheme`. Pattern: `const { mode, systemMode } = useColorScheme(); const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'`. Requires `'use client'`.
 
 ### Next.js Config
 
@@ -174,7 +174,7 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 ### Hooks
 
 - `hooks/user.ts` — `getUserClaims()`, `getUserID()`, `getUserRole()` (all server-side, cached)
-- `hooks/eureka-set.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEureka()` (pure data transforms)
+- `hooks/eureka.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEurekaVariants()` (pure data transforms)
 - `hooks/count.ts` — `countObtained(array)` → `{obtained, total}`, `percent(obtained, total)` → percentage string
 - `hooks/use-mobile.ts` — `useIsMobile()` hook (768px breakpoint)
 - `hooks/use-as-ref.ts` — `useAsRef()` for stable prop refs
