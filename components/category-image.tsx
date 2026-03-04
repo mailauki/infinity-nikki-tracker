@@ -1,3 +1,4 @@
+'use client'
 import Image from 'next/image'
 import { Avatar, CardHeader, useColorScheme } from '@mui/material'
 import { AvatarSize } from '@/lib/types/types'

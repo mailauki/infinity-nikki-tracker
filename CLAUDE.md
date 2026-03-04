@@ -70,14 +70,14 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 Components are grouped into subdirectories:
 
 - `components/navbar/` — nav-drawer, nav-extra, nav-footer, nav-main, nav-secondary, nav-skeleton, nav-tabs, nav-user, theme-switcher
-- `components/eureka/` — eureka-button, eureka-filter, eureka-header, eureka-set-card, eureka-table
+- `components/eureka/` — eureka-button, eureka-card, eureka-filter, eureka-set-card, eureka-table
 - `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, dashboard-list, stat-card, view-all-button
 - `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
 - `components/forms/auth/` — login-form, sign-up-form, profile-form, forgot-password-form, update-password-form
 - `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
 - `components/forms/eureka-variant/` — add-eureka-variant-form, edit-eureka-variant-form
 - `components/forms/trial/` — add-trial-form, edit-trial-form
-- `components/` (root) — avatar-upload, avatar-preview, grid-container, hero, login-alert, logout-button, progress-chip, progress-item, progress-list, quality-stars
+- `components/` (root) — avatar-upload, avatar-preview, category-image, category-item, grid-container, hero, login-alert, logout-button, progress-chip, quality-stars
 
 ### Data Flow
 
@@ -101,7 +101,7 @@ Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass t
 
 `components/realtime/realtime-eureka-set.tsx` is the canonical realtime pattern: server fetches initial data → passes as props → client subscribes to `postgres_changes` on the `obtained` table → local state updates trigger `updateEurekaSet()` recalculation.
 
-Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server Components down through `RealtimeEurekaSet` → `EurekaHeader` and `EurekaButton`. The slug detail page sets this via `!!(user_id)`.
+Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server Components down through `RealtimeEurekaSet` → `EurekaCard` and `EurekaButton`. The slug detail page sets this via `!!(user_id)`.
 
 ### Nav System
 
@@ -184,3 +184,7 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 Prettier config: no semicolons, single quotes, 2-space indent, 100 char print width, trailing commas (ES5), `prettier-plugin-tailwindcss` for class sorting.
 
 Path alias `@/` maps to the project root.
+
+Key custom types in `lib/types/types.ts`: `CardSize = 'sm' | 'md' | 'lg'` (eureka cards), `AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'` (MUI Avatar `size` prop via theme augmentation).
+
+Avoid `useState` + `useEffect` for derived data — compute directly during render: `const derived = source.filter(...)`.
