@@ -126,10 +126,34 @@ export const getTrials = cache(async () => {
 
   const { data: trials } = await supabase
     .from('trials')
-    .select('name, image_url')
+    .select('title, image_url')
     .order('id', { ascending: true })
 
   return trials
+})
+
+export const getStyles = cache(async () => {
+  const supabase = await createClient()
+
+  const { data: styles } = await supabase
+    .from('styles')
+    .select('title')
+    .not('title', 'is', null)
+    .order('title', { ascending: true })
+
+  return styles as { title: string }[]
+})
+
+export const getLabels = cache(async () => {
+  const supabase = await createClient()
+
+  const { data: labels } = await supabase
+    .from('labels')
+    .select('title')
+    .not('title', 'is', null)
+    .order('title', { ascending: true })
+
+  return labels as { title: string }[]
 })
 
 export const getObtained = cache(async (user_id: UUID | string) => {

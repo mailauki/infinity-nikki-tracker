@@ -3,18 +3,10 @@
 import { Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlugVariant } from '@/lib/utils'
+import { Tables } from '@/lib/types/supabase'
 import { AdminTable, Column } from './admin-table'
 
-type Row = {
-  id: number
-  slug: string | null
-  eureka_set: string | null
-  category: string | null
-  color: string | null
-  image_url: string | null
-  default: boolean
-  updated_at: string | null
-}
+type Row = Tables<'eureka_variants'>
 
 const columns: Column<Row>[] = [
   {

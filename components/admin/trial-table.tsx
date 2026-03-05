@@ -3,25 +3,21 @@
 import { IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlug } from '@/lib/utils'
+import { Trial } from '@/lib/types/eureka'
 import { AdminTable, Column } from './admin-table'
 
-type Row = {
-  id: number
-  slug: string | null
-  name: string
-  image_url: string | null
-}
+type Row = Trial
 
 const columns: Column<Row>[] = [
   {
     header: 'Edit',
     cellSx: { py: 0 },
     cell: (trial) => (
-      <Tooltip title={`Edit ${trial.name}`}>
+      <Tooltip title={`Edit ${trial.title}`}>
         <IconButton
           size="small"
           color="secondary"
-          href={`/trial/edit/${trial.slug ?? toSlug(trial.name)}`}
+          href={`/trial/edit/${trial.slug ?? toSlug(trial.title)}`}
         >
           <EditIcon fontSize="small" />
         </IconButton>
@@ -30,10 +26,10 @@ const columns: Column<Row>[] = [
   },
   { header: 'ID', cell: (trial) => trial.id },
   {
-    header: 'Name',
+    header: 'Title',
     cell: (trial) => (
       <Typography noWrap variant="body2" fontWeight="medium">
-        {trial.name}
+        {trial.title}
       </Typography>
     ),
   },

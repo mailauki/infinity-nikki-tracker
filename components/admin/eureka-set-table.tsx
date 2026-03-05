@@ -3,29 +3,21 @@
 import { IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlug } from '@/lib/utils'
+import { Tables } from '@/lib/types/supabase'
 import { AdminTable, Column } from './admin-table'
 
-type Row = {
-  id: number
-  slug: string | null
-  name: string
-  quality: number | null
-  style: string | null
-  labels: string | null
-  trial: string | null
-  updated_at: string | null
-}
+type Row = Tables<'eureka_sets'>
 
 const columns: Column<Row>[] = [
   {
     header: 'Edit',
     cellSx: { py: 0 },
     cell: (set) => (
-      <Tooltip title={`Edit ${set.name}`}>
+      <Tooltip title={`Edit ${set.title}`}>
         <IconButton
           size="small"
           color="secondary"
-          href={`/eureka-set/edit/${set.slug ?? toSlug(set.name)}`}
+          href={`/eureka-set/edit/${set.slug ?? toSlug(set.title)}`}
         >
           <EditIcon fontSize="small" />
         </IconButton>
@@ -34,10 +26,10 @@ const columns: Column<Row>[] = [
   },
   { header: 'ID', cell: (set) => set.id },
   {
-    header: 'Name',
+    header: 'Title',
     cell: (set) => (
       <Typography noWrap variant="body2" fontWeight="medium">
-        {set.name}
+        {set.title}
       </Typography>
     ),
   },
@@ -49,9 +41,9 @@ const columns: Column<Row>[] = [
       </Typography>
     ),
   },
-  { header: 'Quality', cell: (set) => set.quality },
+  { header: 'Rarity', cell: (set) => set.rarity },
   { header: 'Style', cell: (set) => set.style },
-  { header: 'Labels', cell: (set) => set.labels },
+  { header: 'Label', cell: (set) => set.label },
   {
     header: 'Trial',
     cell: (set) => (
