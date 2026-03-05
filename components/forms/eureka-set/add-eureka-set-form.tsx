@@ -103,7 +103,7 @@ export default function AddEurekaSetForm({ trials }: { trials: { name: string }[
             onChange={(e) => setQuality(e.target.value as number | '')}
           >
             <MenuItem value="">—</MenuItem>
-            {[1, 2, 3, 4, 5].map((n) => (
+            {[2, 3, 4, 5].map((n) => (
               <MenuItem key={n} value={n}>
                 {n}
               </MenuItem>

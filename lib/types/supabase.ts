@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.1"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       categories: {
@@ -116,6 +91,20 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "eureka_sets_label_fkey"
+            columns: ["label"]
+            isOneToOne: false
+            referencedRelation: "labels"
+            referencedColumns: ["title"]
+          },
+          {
+            foreignKeyName: "eureka_sets_style_fkey"
+            columns: ["style"]
+            isOneToOne: false
+            referencedRelation: "styles"
+            referencedColumns: ["title"]
+          },
           {
             foreignKeyName: "Eureka_trial_fkey"
             columns: ["trial"]
@@ -463,9 +452,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },
