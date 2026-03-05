@@ -71,13 +71,13 @@ Components are grouped into subdirectories:
 
 - `components/navbar/` — nav-drawer, nav-extra, nav-footer, nav-main, nav-secondary, nav-skeleton, nav-tabs, nav-user, theme-switcher
 - `components/eureka/` — eureka-button, eureka-card, eureka-filter, eureka-set-card, eureka-table
-- `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, dashboard-list, stat-card, view-all-button
+- `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, dashboard-list, stat-card
 - `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
 - `components/forms/auth/` — login-form, sign-up-form, profile-form, forgot-password-form, update-password-form
 - `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
 - `components/forms/eureka-variant/` — add-eureka-variant-form, edit-eureka-variant-form
 - `components/forms/trial/` — add-trial-form, edit-trial-form
-- `components/` (root) — avatar-upload, avatar-preview, category-image, category-item, grid-container, hero, login-alert, logout-button, progress-chip, quality-stars
+- `components/` (root) — avatar-upload, avatar-preview, category-image, category-item, grid-container, hero, login-alert, logout-button, progress-chip, quality-stars, view-all-button
 
 ### Data Flow
 
@@ -105,7 +105,7 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 
 ### Nav System
 
-`lib/nav-links.tsx` — exports `navLinksData` object with `home`, `navMain`, `navSecondary`, and `navExtra` properties. `NavSecondaryLink` in `lib/types/types.ts` supports `adminOnly`, `exclusiveItems`, and `items` fields.
+`lib/nav-links.tsx` — exports `navLinksData` object with `home`, `navMain`, `navSecondary`, and `navExtra` properties. `NavSecondaryLink` in `lib/types/props.ts` supports `adminOnly`, `exclusiveItems`, and `items` fields.
 
 - `adminOnly: true` — link is filtered out for non-admins in both the drawer and the user menu
 - `exclusiveItems: true` — nav tabs show only the matching sub-item when not at the section root (used by Eureka Sets, Eureka Variants)
@@ -121,7 +121,7 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 
 `components/admin/stat-card.tsx` — `StatCard` component used on the admin dashboard for entity counts with Add and View All links.
 
-`components/admin/view-all-button.tsx` — shared "View all" button with arrow icon, used in both `DashboardList` and `StatCard`.
+`components/view-all-button.tsx` — shared "View all" button with arrow icon, used in both `DashboardList` and `StatCard`.
 
 ### Role-Based Access
 
@@ -197,6 +197,11 @@ Prettier config: no semicolons, single quotes, 2-space indent, 100 char print wi
 
 Path alias `@/` maps to the project root.
 
-Key custom types in `lib/types/types.ts`: `CardSize = 'sm' | 'md' | 'lg'` (eureka cards), `AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'` (MUI Avatar `size` prop via theme augmentation).
+Types are split across three files in `lib/types/`:
+- `eureka.ts` — domain interfaces: `EurekaSet`, `EurekaVariant`, `Category`, `Obtained`, `EurekaSets`, `Total`, `ObtainedCount`
+- `props.ts` — UI/nav types: `NavLink`, `CardSize` (`'sm' | 'md' | 'lg'`), `AvatarSize` (`'xs' | 'sm' | 'md' | 'lg' | 'xl'`), `CategoryType`
+- `dashboard.ts` — admin table row types: `EurekaSetRow`, `EurekaVariantRow`, `TrialRow`, `DashboardTabsProps`
+
+Note: `lib/data.ts` and `lib/theme.ts` use relative imports (`./types/eureka`, `./types/props`) rather than the `@/` alias — grep both patterns when searching for type usages.
 
 Avoid `useState` + `useEffect` for derived data — compute directly during render: `const derived = source.filter(...)`.
