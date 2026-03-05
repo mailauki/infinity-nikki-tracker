@@ -89,7 +89,12 @@ export default function AddTrialForm() {
 
         <Stack spacing={0.5}>
           <FormLabel>Image</FormLabel>
-          <ImageUpload url={imageUrl}  table='trials' slug={slug} onUpload={(url) => setImageUrl(url)} />
+          <ImageUpload
+            url={imageUrl}
+            table="trials"
+            slug={slug}
+            onUpload={(url) => setImageUrl(url)}
+          />
         </Stack>
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
