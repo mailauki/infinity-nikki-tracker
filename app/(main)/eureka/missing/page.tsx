@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import { getEurekaSets, getObtained } from '@/lib/data'
+import { getEurekaSets, getObtained } from '@/hooks/data'
 import { getUserID } from '@/hooks/user'
 import RealtimeEurekaFilter from '@/components/realtime/realtime-eureka-filter'
 import LoginAlert from '@/components/login-alert'

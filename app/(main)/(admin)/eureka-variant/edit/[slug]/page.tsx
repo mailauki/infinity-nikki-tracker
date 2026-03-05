@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import { createClient } from '@/lib/supabase/server'
-import { getAdminData } from '@/lib/data'
+import { getAdminData } from '@/hooks/data'
 import EditEurekaVariantForm from '@/components/forms/eureka-variant/edit-eureka-variant-form'
 
 export default async function EditEurekaVariantPage({

@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 
 import { getUserID } from '@/hooks/user'
-import { getEurekaSets, getTrials } from '@/lib/data'
+import { getEurekaSets, getTrials } from '@/hooks/data'
 import { EurekaSet, EurekaVariant, Total } from '@/lib/types/eureka'
 import {
   Card,

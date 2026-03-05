@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Box, Container, Typography } from '@mui/material'
-import { getAdminData } from '@/lib/data'
+import { getAdminData } from '@/hooks/data'
 import AddEurekaVariantForm from '@/components/forms/eureka-variant/add-eureka-variant-form'
 
 export default function NewEurekaVariantPage() {

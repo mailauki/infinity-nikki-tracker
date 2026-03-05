@@ -5,8 +5,8 @@ import { cache } from 'react'
 import { createEurekaSet, updateEurekaSet } from '@/hooks/eureka'
 import { getUserID } from '@/hooks/user'
 
-import { createClient } from './supabase/server'
-import { EurekaSet, EurekaVariant, Obtained } from './types/eureka'
+import { createClient } from '../lib/supabase/server'
+import { EurekaSet, EurekaVariant, Obtained } from '../lib/types/eureka'
 
 export const getEurekaSets = cache(async () => {
   const supabase = await createClient()
@@ -35,15 +35,15 @@ export const getEurekaSets = cache(async () => {
     )
     .order('id', { ascending: true })
     .order('id', { referencedTable: 'eureka_variants', ascending: true })
-  const { data: categories } = await supabase.from('categories').select('name, image_url')
-  const { data: colors } = await supabase.from('colors').select('name, image_url')
+  const { data: categories } = await supabase.from('categories').select('title, image_url')
+  const { data: colors } = await supabase.from('colors').select('title, image_url')
 
   const eureka = eurekaSets?.map((eurekaSet) => ({
     ...eurekaSet,
     image_url: eurekaSet.eureka_variants.find((item) => item.default)?.image_url,
     categories: categories,
     colors: [...new Set(eurekaSet.eureka_variants.map((item) => item.color))].flatMap((item) =>
-      colors?.filter((color) => color.name === item)
+      colors?.filter((color) => color.title === item)
     ),
   })) as EurekaSet[]
 
@@ -109,8 +109,8 @@ export const getEurekaSet = cache(async (slug: string) => {
     .order('id', { referencedTable: 'eureka_variants', ascending: false })
     .eq('slug', slug)
     .single()
-  const { data: categories } = await supabase.from('categories').select('name, image_url')
-  const { data: colors } = await supabase.from('colors').select('name, image_url')
+  const { data: categories } = await supabase.from('categories').select('title, image_url')
+  const { data: colors } = await supabase.from('colors').select('title, image_url')
 
   const eureka = createEurekaSet({ eurekaSet, categories, colors })
 
@@ -122,6 +122,8 @@ export const getEurekaSet = cache(async (slug: string) => {
 
   return user_id ? eurekaWithObtained : eureka
 })
+
+
 
 export const getTrials = cache(async () => {
   const supabase = await createClient()
@@ -208,7 +210,7 @@ export const getTrialsAdmin = cache(async () => {
 
   const { data: trials } = await supabase
     .from('trials')
-    .select('id, slug, name, image_url, created_at')
+    .select('id, slug, title, image_url, updated_at')
     .order('id', { ascending: true })
 
   return trials

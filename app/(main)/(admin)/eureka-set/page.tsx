@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Container } from '@mui/material'
-import { getEurekaSets } from '@/lib/data'
+import { getEurekaSets } from '@/hooks/data'
 import { createClient } from '@/lib/supabase/server'
 import { toSlug } from '@/lib/utils'
 import { EurekaSetTable } from '@/components/admin/eureka-set-table'

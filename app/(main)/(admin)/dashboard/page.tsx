@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Box, Container, Typography } from '@mui/material'
-import { getAdminData, getEurekaVariants, getTrialsAdmin } from '@/lib/data'
+import { getAdminData, getEurekaVariants, getTrialsAdmin } from '@/hooks/data'
 import { StatCard } from '@/components/admin/stat-card'
 import { DashboardTabs } from '@/components/admin/dashboard-tabs'
 

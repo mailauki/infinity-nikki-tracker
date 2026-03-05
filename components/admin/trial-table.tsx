@@ -50,6 +50,14 @@ const columns: Column<Row>[] = [
       </Typography>
     ),
   },
+  {
+    header: 'Updated At',
+    cell: (trial) => (
+      <Typography variant="caption" noWrap>
+        {trial.updated_at ? new Date(trial.updated_at).toLocaleDateString() : '—'}
+      </Typography>
+    ),
+  },
 ]
 
 export function TrialTable({ rows }: { rows: Row[] }) {

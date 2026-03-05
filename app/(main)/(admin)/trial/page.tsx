@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Container } from '@mui/material'
-import { getTrialsAdmin } from '@/lib/data'
+import { getTrialsAdmin } from '@/hooks/data'
 import { createClient } from '@/lib/supabase/server'
 import { toSlug } from '@/lib/utils'
 import { TrialTable } from '@/components/admin/trial-table'
