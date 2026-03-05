@@ -17,10 +17,10 @@ export const getEurekaSets = cache(async () => {
       `
 			id,
 			slug,
-			name,
-			quality,
+			title,
+			rarity,
 			style,
-			labels,
+			label,
 			trial,
 			updated_at,
 			eureka_variants (
@@ -88,8 +88,8 @@ export const getEurekaSet = cache(async (slug: string) => {
       `
 			id,
 			slug,
-			name,
-			quality,
+			title,
+			rarity,
 			style,
 			labels,
 			trial,

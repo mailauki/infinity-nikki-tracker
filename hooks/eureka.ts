@@ -1,11 +1,11 @@
-import { Category, EurekaVariant, EurekaSet, EurekaSets, Obtained } from '@/lib/types/eureka'
+import { Category, EurekaVariant, EurekaSet, Obtained } from '@/lib/types/eureka'
 
 export function createEurekaSet({
   eurekaSet,
   categories,
   colors,
 }: {
-  eurekaSet: EurekaSets | null
+  eurekaSet: Omit<EurekaSet, 'image_url' | 'categories' | 'colors'> | null
   categories: Category[] | null
   colors: Category[] | null
 }) {
@@ -14,7 +14,7 @@ export function createEurekaSet({
     image_url: eurekaSet?.eureka_variants.find((item) => item.default)?.image_url,
     categories: categories,
     colors: [...new Set(eurekaSet?.eureka_variants.map((item) => item.color))].flatMap((item) =>
-      colors?.filter((color) => color.name === item)
+      colors?.filter((color) => color.title === item)
     ),
   } as EurekaSet
 
@@ -63,17 +63,3 @@ export function updateEurekaVariants({
 
   return eurekaWithObtained
 }
-
-// export function isObtained({
-// 	slug, obtained,
-// } : {
-// 	slug: string,
-// 	obtained: Obtained[]|null
-// }) {
-// 	const splitSlug = slug.split("-")
-// 	const eureka = splitSlug[0].replace("_", " ")
-// 	const category = splitSlug[1]
-// 	const color = splitSlug[2]
-
-// 	return obtained?.find((item) => item.eureka_set === eureka && item.color === color && item.category === category) ? true : false
-// }
