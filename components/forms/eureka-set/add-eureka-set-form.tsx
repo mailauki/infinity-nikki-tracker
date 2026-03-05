@@ -18,13 +18,21 @@ import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 
-export default function AddEurekaSetForm({ trials }: { trials: { name: string }[] }) {
+export default function AddEurekaSetForm({
+  trials,
+  styles,
+  labels,
+}: {
+  trials: { title: string }[]
+  styles: { title: string }[]
+  labels: { title: string }[]
+}) {
   const router = useRouter()
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [quality, setQuality] = useState<number | ''>('')
   const [style, setStyle] = useState('')
-  const [labels, setLabels] = useState('')
+  const [label, setLabel] = useState('')
   const [trial, setTrial] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -43,11 +51,11 @@ export default function AddEurekaSetForm({ trials }: { trials: { name: string }[
     const supabase = createClient()
     const { error } = await supabase.from('eureka_sets').insert([
       {
-        name: name.trim(),
+        title: name.trim(),
         slug: slug.trim(),
-        quality: quality === '' ? null : quality,
-        style: style.trim() || null,
-        labels: labels.trim() || null,
+        rarity: quality === '' ? null : quality,
+        style: style || null,
+        label: label || null,
         trial: trial || null,
       },
     ])
@@ -111,22 +119,37 @@ export default function AddEurekaSetForm({ trials }: { trials: { name: string }[
           </Select>
         </FormControl>
 
-        <TextField label="Style" value={style} onChange={(e) => setStyle(e.target.value)} />
+        <FormControl>
+          <InputLabel>Style</InputLabel>
+          <Select label="Style" value={style} onChange={(e) => setStyle(e.target.value)}>
+            <MenuItem value="">—</MenuItem>
+            {styles.map((s) => (
+              <MenuItem key={s.title} value={s.title}>
+                {s.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-        <TextField
-          label="Labels"
-          value={labels}
-          onChange={(e) => setLabels(e.target.value)}
-          helperText="Comma-separated tags"
-        />
+        <FormControl>
+          <InputLabel>Label</InputLabel>
+          <Select label="Label" value={label} onChange={(e) => setLabel(e.target.value)}>
+            <MenuItem value="">—</MenuItem>
+            {labels.map((l) => (
+              <MenuItem key={l.title} value={l.title}>
+                {l.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         <FormControl>
           <InputLabel>Trial</InputLabel>
           <Select label="Trial" value={trial} onChange={(e) => setTrial(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {trials.map((t) => (
-              <MenuItem key={t.name} value={t.name}>
-                {t.name}
+              <MenuItem key={t.title} value={t.title}>
+                {t.title}
               </MenuItem>
             ))}
           </Select>
