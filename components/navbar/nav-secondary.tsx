@@ -1,8 +1,16 @@
 import Link from 'next/link'
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip } from '@mui/material'
-import { NavSecondaryLink } from '@/lib/types/types'
+import { NavLink } from '@/lib/types/types'
 
-export function NavSecondary({ items, open }: { items: NavSecondaryLink[]; open: boolean }) {
+export function NavSecondary({
+  items,
+  open,
+  onClose,
+}: {
+  items: NavLink[]
+  open: boolean
+  onClose?: () => void
+}) {
   return (
     <List>
       {items.map((item) => (
@@ -11,6 +19,7 @@ export function NavSecondary({ items, open }: { items: NavSecondaryLink[]; open:
             <ListItemButton
               component={Link}
               href={item.url}
+              onClick={onClose}
               sx={[
                 {
                   minHeight: 48,

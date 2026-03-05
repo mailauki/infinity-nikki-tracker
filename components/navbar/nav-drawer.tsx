@@ -216,16 +216,17 @@ export default function NavDrawer({
 
           <Divider />
 
-          <NavMain items={navLinksData.navMain} open={open} />
+          <NavMain items={navLinksData.navMain} open={open} onClose={handleDrawerClose} />
 
           <Divider />
 
           <NavSecondary
             items={navLinksData.navSecondary.filter((item) => !item.adminOnly || isAdmin)}
             open={open}
+            onClose={handleDrawerClose}
           />
 
-          <NavExtra items={navLinksData.navExtra} open={open} />
+          <NavExtra items={navLinksData.navExtra} open={open} onClose={handleDrawerClose} />
         </Drawer>
         <Box component="main" className="h-screen w-full overflow-hidden">
           <DrawerHeader />

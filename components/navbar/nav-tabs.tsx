@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 import Link from 'next/link'
 import { navLinksData } from '@/lib/nav-links'
 import { usePathname } from 'next/navigation'
-import { NavMainLink, NavSecondaryLink } from '@/lib/types/types'
+import { NavLink } from '@/lib/types/types'
 import { Button, Stack, Toolbar } from '@mui/material'
 import { Logout } from '@mui/icons-material'
 
@@ -16,32 +16,31 @@ function NavTabs() {
   const title = pathname === '/' ? 'home' : path[1]
   const slug = path.length > 2 ? path[2] : ''
 
-  const allSections: (NavMainLink | NavSecondaryLink)[] = [
+  const allSections: NavLink[] = [
     ...navLinksData.navMain,
     ...navLinksData.navSecondary,
     ...navLinksData.navExtra,
   ]
 
-  const navLinks =
-    (navLinksData.navMain.find((item) => item.url === `/${title}`) as NavMainLink) ||
-    (navLinksData.navSecondary.find((item) => item.url === `/${title}`) as NavSecondaryLink) ||
-    (navLinksData.navExtra.find((item) => item.url === `/${title}`) as NavSecondaryLink) ||
-    (allSections.find((item) =>
+  const navLinks: NavLink =
+    navLinksData.navMain.find((item) => item.url === `/${title}`) ||
+    navLinksData.navSecondary.find((item) => item.url === `/${title}`) ||
+    navLinksData.navExtra.find((item) => item.url === `/${title}`) ||
+    allSections.find((item) =>
       item.items?.some((sub) => sub.url === pathname || pathname.startsWith(sub.url + '/'))
-    ) as NavSecondaryLink) ||
-    (navLinksData.home as NavSecondaryLink)
+    ) ||
+    navLinksData.home
 
   // For sections with exclusiveItems, show only the item matching the current path
-  const exclusiveSection =
-    (navLinks as NavSecondaryLink).exclusiveItems && pathname !== navLinks.url
+  const exclusiveSection = navLinks.exclusiveItems && pathname !== navLinks.url
   const matchedItem = exclusiveSection
     ? navLinks.items?.find((item) => item.url === pathname || pathname.startsWith(item.url + '/'))
     : undefined
 
-  let allNavLinks: (NavMainLink | NavSecondaryLink | { title: string; url: string })[]
+  let allNavLinks: NavLink[]
   if (matchedItem) {
     allNavLinks = [navLinks, matchedItem]
-  } else if ((navLinks as NavSecondaryLink).exclusiveItems) {
+  } else if (navLinks.exclusiveItems) {
     allNavLinks = [navLinks]
   } else {
     allNavLinks = [navLinks].concat(navLinks.items || [])

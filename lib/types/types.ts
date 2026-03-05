@@ -66,19 +66,11 @@ export interface EurekaSets {
   }[]
 }
 
-export interface NavMainLink {
+export interface NavLink {
   title: string
   url: string
   image?: string
   isActive?: boolean
-  items?: {
-    title: string
-    url: string
-  }[]
-}
-export interface NavSecondaryLink {
-  title: string
-  url: string
   icon?: ReactNode
   adminOnly?: boolean
   exclusiveItems?: boolean
