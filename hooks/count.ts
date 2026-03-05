@@ -1,4 +1,4 @@
-import { EurekaVariant, ObtainedCount } from '@/lib/types/types'
+import { EurekaVariant, ObtainedCount } from '@/lib/types/eureka'
 
 export function countObtained(array: EurekaVariant[]) {
   return {

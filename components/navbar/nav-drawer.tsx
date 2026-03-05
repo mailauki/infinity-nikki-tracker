@@ -157,6 +157,7 @@ export default function NavDrawer({
       <Stack direction="row">
         <AppBar position="fixed" open={open}>
           <Toolbar>
+						<Stack direction='row' alignItems='center' justifyContent='flex-start' sx={{ width: '64px' }}>
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -172,17 +173,8 @@ export default function NavDrawer({
             >
               <MenuIcon />
             </IconButton>
+						</Stack>
             <Stack direction="row" alignItems="center" justifyContent="center" sx={{ flex: 1 }}>
-              {/* <Anchor
-                variant="h6"
-                noWrap
-                sx={{ color: 'inherit', cursor: 'pointer' }}
-                underline="none"
-                href="/"
-                component={Link}
-              >
-                Infinity Nikki Tracker
-              </Anchor> */}
               <Link href="/" style={{ cursor: 'pointer' }}>
                 <Image
                   src="/infinity-nikki-logo.png"
@@ -192,6 +184,7 @@ export default function NavDrawer({
                 />
               </Link>
             </Stack>
+						<Stack direction='row' alignItems='center' justifyContent='flex-end' sx={{ width: '64px' }}>
             {!user ? (
               <Button color="inherit" href="/auth/login">
                 Login
@@ -199,6 +192,7 @@ export default function NavDrawer({
             ) : (
               <NavUser user={user} isAdmin={isAdmin} />
             )}
+						</Stack>
           </Toolbar>
         </AppBar>
 

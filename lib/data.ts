@@ -6,7 +6,7 @@ import { createEurekaSet, updateEurekaSet } from '@/hooks/eureka'
 import { getUserID } from '@/hooks/user'
 
 import { createClient } from './supabase/server'
-import { EurekaSet, EurekaVariant, Obtained } from './types/types'
+import { EurekaSet, EurekaVariant, Obtained } from './types/eureka'
 
 export const getEurekaSets = cache(async () => {
   const supabase = await createClient()

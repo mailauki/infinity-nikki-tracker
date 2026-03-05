@@ -1,4 +1,4 @@
-import { EurekaSet } from '@/lib/types/types'
+import { EurekaSet } from '@/lib/types/eureka'
 
 import { Card, CardActionArea } from '@mui/material'
 import EurekaCard from './eureka-card'

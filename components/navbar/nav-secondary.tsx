@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { List, ListItem, ListItemButton, ListItemIcon, ListItemText, Tooltip } from '@mui/material'
-import { NavLink } from '@/lib/types/types'
+import { NavLink } from '@/lib/types/props'
 
 export function NavSecondary({
   items,

@@ -1,4 +1,4 @@
-import { CardSize } from '@/lib/types/types'
+import { CardSize } from '@/lib/types/props'
 import { Check, MoreHoriz } from '@mui/icons-material'
 import { Chip } from '@mui/material'
 

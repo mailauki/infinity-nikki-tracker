@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/infinity-nikki/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'ykfuevyqpjvtxidjnhxm.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/images/**',
+      },
     ],
   },
 }

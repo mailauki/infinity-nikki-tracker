@@ -21,7 +21,7 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 ## Tech Stack
 
 - **[Next.js 16](https://nextjs.org)** — App Router, Server Components, Server Actions
-- **[Supabase](https://supabase.com)** — Postgres database, Auth (cookie-based via `@supabase/ssr`), Realtime subscriptions, Storage (avatars)
+- **[Supabase](https://supabase.com)** — Postgres database, Auth (cookie-based via `@supabase/ssr`), Realtime subscriptions, Storage (avatars and game images)
 - **[MUI (Material UI)](https://mui.com)** — Component library with CSS variables and built-in dark mode
 - **[Tailwind CSS](https://tailwindcss.com)** — Utility classes for layout
 - **[MUI Icons](https://mui.com/material-ui/material-icons/)** — Icons (`@mui/icons-material`)
@@ -108,11 +108,14 @@ lib/
   theme.ts                # MUI theme configuration
   nav-links.tsx           # Navigation link definitions
   supabase/               # Supabase client factories (server, client, proxy)
-  types/                  # TypeScript interfaces and generated DB types
+  types/
+    eureka.ts             # Domain interfaces (EurekaSet, EurekaVariant, Category, etc.)
+    props.ts              # UI/nav types (NavLink, CardSize, AvatarSize, CategoryType)
+    dashboard.ts          # Admin table row types (EurekaSetRow, EurekaVariantRow, etc.)
 
 hooks/
   user.ts                 # getUserID(), getUserClaims(), getUserRole() — server-side auth
-  eureka-set.ts           # createEurekaSet(), updateEurekaSet() — data transforms
+  eureka.ts               # createEurekaSet(), updateEurekaSet(), updateEurekaVariants() — data transforms
   count.ts                # countObtained(), percent() — progress calculation
 ```
 

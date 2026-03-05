@@ -7,7 +7,7 @@ import GridContainer from '@/components/grid-container'
 import { getEurekaSets } from '@/lib/data'
 import { getUserID } from '@/hooks/user'
 import LoginAlert from '@/components/login-alert'
-import { Category } from '@/lib/types/types'
+import { Category } from '@/lib/types/eureka'
 import { CategoryItem } from '@/components/category-item'
 
 export default async function EurekaSetsPage() {

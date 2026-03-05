@@ -1,7 +1,7 @@
 'use client'
 
 import { Grid } from '@mui/material'
-import { EurekaSet } from '@/lib/types/types'
+import { EurekaSet } from '@/lib/types/eureka'
 
 import EurekaButton from './eureka-button'
 
