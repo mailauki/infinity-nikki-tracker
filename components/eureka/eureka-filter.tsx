@@ -1,5 +1,5 @@
 'use client'
-import { Category, EurekaVariant } from '@/lib/types/types'
+import { Category, EurekaVariant } from '@/lib/types/eureka'
 import { useState } from 'react'
 import EurekaButton from './eureka-button'
 import GridContainer from '../grid-container'

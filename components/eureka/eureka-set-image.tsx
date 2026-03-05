@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { Avatar, CardHeader } from '@mui/material'
-import { CardSize } from '@/lib/types/types'
+import { CardSize } from '@/lib/types/props'
 
 export default function EurekaSetImage({
   imageUrl,

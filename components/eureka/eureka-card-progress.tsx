@@ -1,6 +1,6 @@
 import { CardContent, LinearProgress, Stack, Typography } from '@mui/material'
 
-import { CardSize } from '@/lib/types/types'
+import { CardSize } from '@/lib/types/props'
 import ProgressChip from '../progress-chip'
 
 export default function EurekaCardProgress({

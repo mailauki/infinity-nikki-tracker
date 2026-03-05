@@ -6,7 +6,7 @@ import Box from '@mui/material/Box'
 import Link from 'next/link'
 import { navLinksData } from '@/lib/nav-links'
 import { usePathname } from 'next/navigation'
-import { NavLink } from '@/lib/types/types'
+import { NavLink } from '@/lib/types/props'
 import { Button, Stack, Toolbar } from '@mui/material'
 import { Logout } from '@mui/icons-material'
 

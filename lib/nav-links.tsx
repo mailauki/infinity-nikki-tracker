@@ -2,7 +2,7 @@ import InfoIcon from '@mui/icons-material/InfoOutline'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import AccountIcon from '@mui/icons-material/AccountCircle'
 import ViewListIcon from '@mui/icons-material/ViewList'
-import { NavLink } from '@/lib/types/types'
+import { NavLink } from '@/lib/types/props'
 
 export const navLinksData: {
   home: NavLink

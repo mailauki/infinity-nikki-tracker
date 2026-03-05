@@ -1,5 +1,6 @@
 import { countObtained, percent } from '@/hooks/count'
-import { CardSize, EurekaSet } from '@/lib/types/types'
+import { CardSize } from '@/lib/types/props'
+import { EurekaSet } from '@/lib/types/eureka'
 import { Chip } from '@mui/material'
 
 import EurekaCardContent from './eureka-card-content'

@@ -10,7 +10,7 @@ import {
   ListItemText,
   useColorScheme,
 } from '@mui/material'
-import { NavLink } from '@/lib/types/types'
+import { NavLink } from '@/lib/types/props'
 
 export function NavMain({
   items,

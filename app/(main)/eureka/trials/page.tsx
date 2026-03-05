@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 
 import { getUserID } from '@/hooks/user'
 import { getEurekaSets, getTrials } from '@/lib/data'
-import { EurekaSet, EurekaVariant, Total } from '@/lib/types/types'
+import { EurekaSet, EurekaVariant, Total } from '@/lib/types/eureka'
 import {
   Card,
   CardActionArea,
@@ -17,9 +17,9 @@ import {
   List,
   ListItem,
 } from '@mui/material'
-import Image from 'next/image'
 import { countObtained, percent } from '@/hooks/count'
 import EurekaCard from '@/components/eureka/eureka-card'
+// import { ViewAllButton } from '@/components/view-all-button'
 
 export default async function TrialsPage() {
   return (
@@ -90,10 +90,7 @@ function TrialCard({
         image={trial.image_url!}
         title={trial.name}
       />
-      {/* <CardMedia sx={{ p: 1 }}>
-        <Image src={trial.image_url!} alt={trial.name!} width={500} height={500} />
-      </CardMedia> */}
-      <CardActions>
+			<CardContent sx={{ p: 0 }}>
         <List sx={{ width: '100%' }}>
           {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
             <ListItem key={eurekaSet.id} disablePadding>
@@ -103,7 +100,11 @@ function TrialCard({
             </ListItem>
           ))}
         </List>
-      </CardActions>
+			</CardContent>
+			<CardActions>
+				{/* TODO: add trial slug page */}
+				{/* <ViewAllButton href={`/${trial.slug}`} /> */}
+			</CardActions>
     </Card>
   )
 }

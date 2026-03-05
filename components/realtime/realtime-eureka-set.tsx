@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, EurekaSet, Obtained } from '@/lib/types/types'
+import { Category, EurekaSet, Obtained } from '@/lib/types/eureka'
 
 import EurekaVariantGrid from '@/components/eureka/eureka-variant-grid'
 import { Box, Card, List } from '@mui/material'

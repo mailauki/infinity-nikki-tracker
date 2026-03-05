@@ -1,6 +1,6 @@
 import { Button, Card, CardContent, Divider, Stack, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import { ViewAllButton } from '@/components/admin/view-all-button'
+import { ViewAllButton } from '@/components/view-all-button'
 
 export function StatCard({
   title,

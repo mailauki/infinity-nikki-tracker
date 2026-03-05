@@ -1,5 +1,6 @@
 import { countObtained, percent } from '@/hooks/count'
-import { AvatarSize, Category, CategoryType, EurekaVariant } from '@/lib/types/types'
+import { AvatarSize, CategoryType } from '@/lib/types/props'
+import { Category, EurekaVariant } from '@/lib/types/eureka'
 import { Chip } from '@mui/material'
 import EurekaCardProgress from './eureka/eureka-card-progress'
 import CategoryImage from './category-image'

@@ -7,7 +7,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
-import { ViewAllButton } from '@/components/admin/view-all-button'
+import { ViewAllButton } from '@/components/view-all-button'
 
 export type DashboardListItem = {
   key: string | number

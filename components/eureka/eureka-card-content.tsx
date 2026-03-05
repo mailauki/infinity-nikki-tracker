@@ -1,7 +1,7 @@
 import { CardContent, Stack, Typography } from '@mui/material'
 
 import QualityStars from '../quality-stars'
-import { CardSize } from '@/lib/types/types'
+import { CardSize } from '@/lib/types/props'
 
 export default function EurekaCardContent({
   name,

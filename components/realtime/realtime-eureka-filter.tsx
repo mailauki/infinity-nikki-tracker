@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { updateEurekaVariants } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, EurekaVariant, Obtained } from '@/lib/types/types'
+import { Category, EurekaVariant, Obtained } from '@/lib/types/eureka'
 
 import EurekaFilter from '@/components/eureka/eureka-filter'
 

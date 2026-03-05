@@ -1,5 +1,5 @@
 import { handleObtained } from '@/app/(main)/eureka/actions'
-import { EurekaVariant } from '@/lib/types/types'
+import { EurekaVariant } from '@/lib/types/eureka'
 import { Card, CardActionArea, CardContent, Chip, Typography } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 
