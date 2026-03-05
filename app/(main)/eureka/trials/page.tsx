@@ -82,12 +82,17 @@ function TrialCard({
           />
         }
       />
-      <CardMedia sx={{ p: 1 }}>
-        <Image src={trial.image_url!} alt={trial.name!} width={500} height={500} />
-      </CardMedia>
-      <CardContent>
+      <CardContent sx={{ pt: 0 }}>
         <LinearProgress value={percentage} variant="determinate" color="inherit" />
       </CardContent>
+			<CardMedia
+        sx={{ height: 160 }}
+        image={trial.image_url!}
+        title={trial.name}
+      />
+      {/* <CardMedia sx={{ p: 1 }}>
+        <Image src={trial.image_url!} alt={trial.name!} width={500} height={500} />
+      </CardMedia> */}
       <CardActions>
         <List sx={{ width: '100%' }}>
           {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
