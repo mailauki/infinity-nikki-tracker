@@ -186,6 +186,7 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 **Claude branches:** Auto-generated branches use pattern `claude/<feature>-<id>` — check for unmerged remote branches and create PRs as needed.
 
 **Vercel CLI:**
+
 - `vercel ls --yes` — list deployments (`--yes` skips interactive confirmation)
 - `vercel inspect <url>` — check deployment status and build output
 - `vercel logs <url>` — stream runtime logs (fails for errored deployments; use Vercel dashboard instead)

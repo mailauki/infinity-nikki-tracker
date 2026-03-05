@@ -20,16 +20,17 @@ export default function CategoryImage({
 }) {
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
-	
+
   return (
     <CardHeader
       avatar={
         <Avatar
           sx={{
-						bgcolor: 'transparent',
-						filter: (isDarkMode || size === 'xs') ? 'none' : 'brightness(40%)'
-					}}
-					size={size}>
+            bgcolor: 'transparent',
+            filter: isDarkMode || size === 'xs' ? 'none' : 'brightness(40%)',
+          }}
+          size={size}
+        >
           <Image src={imageUrl} alt={alt} width={100} height={100} />
         </Avatar>
       }

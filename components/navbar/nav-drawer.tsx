@@ -12,7 +12,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import Stack from '@mui/material/Stack'
-import { Link as Anchor, Button } from '@mui/material'
+import { Button } from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import { navLinksData } from '@/lib/nav-links'
@@ -22,6 +22,7 @@ import { NavExtra } from './nav-extra'
 import Link from 'next/link'
 import Footer from './nav-footer'
 import NavTabs from './nav-tabs'
+import Image from 'next/image'
 
 const drawerWidth = 240
 
@@ -156,37 +157,23 @@ export default function NavDrawer({
       <Stack direction="row">
         <AppBar position="fixed" open={open}>
           <Toolbar>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="space-between"
-              sx={{ flex: 1 }}
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={[
+                {
+                  marginLeft: -1,
+                  marginRight: 5,
+                },
+                open && { display: 'none' },
+              ]}
             >
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-                sx={[
-                  {
-                    marginLeft: -1,
-                    marginRight: 5,
-                  },
-                  open && { display: 'none' },
-                ]}
-              >
-                <MenuIcon />
-              </IconButton>
-              {/* <Link href="/">
-              <Image
-                src="https://static.wikia.nocookie.net/infinity-nikki/images/e/e6/Site-logo.png/revision/latest?cb=20250212142911"
-                alt="Infinity Nikki Logo"
-                width={90}
-                height={40}
-                // className="mx-2 mb-4 brightness-[0.4] drop-shadow-md grayscale dark:filter-none"
-              />
-            </Link> */}
-              <Anchor
+              <MenuIcon />
+            </IconButton>
+            <Stack direction="row" alignItems="center" justifyContent="center" sx={{ flex: 1 }}>
+              {/* <Anchor
                 variant="h6"
                 noWrap
                 sx={{ color: 'inherit', cursor: 'pointer' }}
@@ -195,15 +182,23 @@ export default function NavDrawer({
                 component={Link}
               >
                 Infinity Nikki Tracker
-              </Anchor>
-              {!user ? (
-                <Button color="inherit" href="/auth/login">
-                  Login
-                </Button>
-              ) : (
-                <NavUser user={user} isAdmin={isAdmin} />
-              )}
+              </Anchor> */}
+              <Link href="/" style={{ cursor: 'pointer' }}>
+                <Image
+                  src="/infinity-nikki-logo.png"
+                  alt="Infinity Nikki Logo"
+                  width={90}
+                  height={40}
+                />
+              </Link>
             </Stack>
+            {!user ? (
+              <Button color="inherit" href="/auth/login">
+                Login
+              </Button>
+            ) : (
+              <NavUser user={user} isAdmin={isAdmin} />
+            )}
           </Toolbar>
         </AppBar>
 
