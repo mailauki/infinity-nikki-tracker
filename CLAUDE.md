@@ -86,7 +86,9 @@ Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass t
 1. `lib/data.ts` — All Supabase queries. Key functions:
    - `getEurekaSets()` — All sets with variants, categories, colors, and obtained status for authenticated user
    - `getEurekaSet(slug)` — Single set detail with obtained merging
-   - `getTrials()` — All trials (name, image_url) for display
+   - `getTrials()` — All trials (title, image_url) ordered by id
+   - `getStyles()` — All styles (title) ordered alphabetically
+   - `getLabels()` — All labels (title) ordered alphabetically
    - `getObtained(user_id)` — User's obtained items (id, eureka_set, category, color)
    - `getEurekaVariants()` — All variants for admin (includes slug, updated_at)
    - `getAdminData()` — Sets (ordered by updated_at desc), categories, colors for admin dashboard
@@ -135,12 +137,14 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 
 ### Key Database Tables
 
-- `eureka_sets` — Outfit set metadata (name, slug, quality, style, labels, trial, updated_at)
+- `eureka_sets` — Outfit set metadata (title, slug, rarity, style, label, trial, updated_at); FK: label → labels.title, style → styles.title, trial → trials.title; CHECK: rarity BETWEEN 2 AND 5
 - `eureka_variants` — Individual eureka items (eureka_set FK, color, category, image_url, default, slug, updated_at)
-- `categories` — Category lookup (name, image_url)
-- `colors` — Color lookup (name, image_url)
+- `categories` — Category lookup (title, image_url)
+- `colors` — Color lookup (title, image_url)
+- `styles` — Style lookup (title); UNIQUE on title
+- `labels` — Label lookup (title); UNIQUE on title
 - `obtained` — User collection records (user_id, eureka_set, category, color)
-- `trials` — Trial lookup (name, image_url, slug, created_at)
+- `trials` — Trial lookup (title, image_url, slug, created_at)
 - `profiles` — User profiles (full_name, username, avatar_url, role: 'user' | 'admin')
 
 ### Slug Helpers
@@ -191,6 +195,14 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 - `vercel inspect <url>` — check deployment status and build output
 - `vercel logs <url>` — stream runtime logs (fails for errored deployments; use Vercel dashboard instead)
 
+**Supabase CLI:**
+
+- `supabase db push --include-all` — use when local migrations predate the latest remote migration
+- `supabase gen types typescript --project-id $(cat supabase/.temp/project-ref) > lib/types/supabase.ts` — regenerate types after schema changes
+- `supabase db dump` requires Docker Desktop to be running; `supabase db execute --sql` does not exist
+- FK on a non-PK column requires a UNIQUE constraint on the referenced column first
+- Use `ON UPDATE CASCADE` on string FKs so renaming a referenced title cascades automatically
+
 ### Code Style
 
 Prettier config: no semicolons, single quotes, 2-space indent, 100 char print width, trailing commas (ES5), `prettier-plugin-tailwindcss` for class sorting.
@@ -198,9 +210,9 @@ Prettier config: no semicolons, single quotes, 2-space indent, 100 char print wi
 Path alias `@/` maps to the project root.
 
 Types are split across three files in `lib/types/`:
-- `eureka.ts` — domain interfaces: `EurekaSet`, `EurekaVariant`, `Category`, `Obtained`, `EurekaSets`, `Total`, `ObtainedCount`
+- `eureka.ts` — domain types (all derived from `Tables<>`): `EurekaSet`, `EurekaVariant`, `Category`, `Color`, `Style`, `Label`, `Trial`, `Obtained`, `Total`, `ObtainedCount`
 - `props.ts` — UI/nav types: `NavLink`, `CardSize` (`'sm' | 'md' | 'lg'`), `AvatarSize` (`'xs' | 'sm' | 'md' | 'lg' | 'xl'`), `CategoryType`
-- `dashboard.ts` — admin table row types: `EurekaSetRow`, `EurekaVariantRow`, `TrialRow`, `DashboardTabsProps`
+- `dashboard.ts` — `DashboardTabsProps` only (uses `Tables<'eureka_sets'>`, `Tables<'eureka_variants'>`, `Trial`)
 
 Note: `lib/data.ts` and `lib/theme.ts` use relative imports (`./types/eureka`, `./types/props`) rather than the `@/` alias — grep both patterns when searching for type usages.
 
