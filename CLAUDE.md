@@ -179,6 +179,17 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 - `hooks/eureka.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEurekaVariants()` (pure data transforms)
 - `hooks/count.ts` — `countObtained(array)` → `{obtained, total}`, `percent(obtained, total)` → percentage string
 
+## Git & Deployment
+
+**Branch protection:** `main` requires a PR with 1 approving review + Vercel status check. Force push and deletion are blocked.
+
+**Claude branches:** Auto-generated branches use pattern `claude/<feature>-<id>` — check for unmerged remote branches and create PRs as needed.
+
+**Vercel CLI:**
+- `vercel ls --yes` — list deployments (`--yes` skips interactive confirmation)
+- `vercel inspect <url>` — check deployment status and build output
+- `vercel logs <url>` — stream runtime logs (fails for errored deployments; use Vercel dashboard instead)
+
 ### Code Style
 
 Prettier config: no semicolons, single quotes, 2-space indent, 100 char print width, trailing commas (ES5), `prettier-plugin-tailwindcss` for class sorting.

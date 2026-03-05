@@ -288,7 +288,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      toggle_obtained: {
+        Args: {
+          p_eureka_set: string
+          p_category: string
+          p_color: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

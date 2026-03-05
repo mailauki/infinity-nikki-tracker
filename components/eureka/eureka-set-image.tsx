@@ -17,11 +17,25 @@ export default function EurekaSetImage({
   title?: string
   subheader?: string
 }) {
+  if (size !== 'sm') {
+    return (
+      <CardHeader
+        avatar={
+          <Avatar sx={{ bgcolor: 'transparent' }} size='lg'>
+            <Image src={imageUrl!} alt={alt} width={100} height={100} />
+          </Avatar>
+        }
+        action={action}
+        sx={{ width: '100%' }}
+      />
+    )
+  }
+
   return (
     <CardHeader
       avatar={
-        <Avatar sx={{ bgcolor: 'transparent' }} size={size === 'sm' ? 'md' : 'lg'}>
-          <Image src={imageUrl} alt={alt} width={100} height={100} />
+        <Avatar sx={{ bgcolor: 'transparent' }} size='md'>
+          <Image src={imageUrl!} alt={alt} width={100} height={100} />
         </Avatar>
       }
       title={title}
