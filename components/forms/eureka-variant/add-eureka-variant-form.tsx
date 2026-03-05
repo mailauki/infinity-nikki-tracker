@@ -145,7 +145,7 @@ export default function AddEurekaVariantForm({
 
         <Stack spacing={0.5}>
           <FormLabel>Image</FormLabel>
-          <ImageUpload url={imageUrl} bucket="images" onUpload={(url) => setImageUrl(url)} />
+          <ImageUpload url={imageUrl} table='eureka_variants' slug={slug} onUpload={(url) => setImageUrl(url)} />
         </Stack>
 
         <FormControlLabel

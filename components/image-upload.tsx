@@ -8,11 +8,13 @@ const SIZE = 140
 
 export default function ImageUpload({
   url,
-  bucket,
+  table,
+  slug,
   onUpload,
 }: {
   url: string | null
-  bucket: string
+  table?: 'eureka_variants' | 'trials'
+  slug?: string
   onUpload: (url: string) => void
 }) {
   const supabase = createClient()
@@ -28,15 +30,27 @@ export default function ImageUpload({
 
       const file = event.target.files[0]
       const fileExt = file.name.split('.').pop()
-      const filePath = `${crypto.randomUUID()}.${fileExt}`
+      if (!table || !slug) throw new Error('Table and slug are required to upload an image.')
+      const filePath = `${table}/${slug}/${crypto.randomUUID()}.${fileExt}`
 
-      const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file)
+      const { error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(filePath, file, { upsert: true })
 
       if (uploadError) {
         throw uploadError
       }
 
-      const { data } = supabase.storage.from(bucket).getPublicUrl(filePath)
+      const { data } = supabase.storage.from('images').getPublicUrl(filePath)
+
+      if (table && slug) {
+        const { error: dbError } = await supabase
+          .from(table)
+          .update({ image_url: data.publicUrl })
+          .eq('slug', slug)
+        if (dbError) throw dbError
+      }
+
       onUpload(data.publicUrl)
     } catch (error) {
       alert('Error uploading image!')
