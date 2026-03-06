@@ -1,7 +1,9 @@
 import { Suspense } from 'react'
 import { Box, Container, Typography } from '@mui/material'
-import { getLabels, getStyles, getTrials } from '@/hooks/data'
 import AddEurekaSetForm from '@/components/forms/eureka-set/add-eureka-set-form'
+import { getTrials } from '@/hooks/data/trials'
+import { getStyles } from '@/hooks/data/styles'
+import { getLabels } from '@/hooks/data/labels'
 
 export default function NewEurekaSetPage() {
   return (

@@ -1,4 +1,4 @@
-import { countObtained, percent } from '@/hooks/count'
+import { countObtained, percent } from '@/hooks/count-obtained'
 import { CardSize } from '@/lib/types/props'
 import { EurekaSet } from '@/lib/types/eureka'
 import { Chip } from '@mui/material'

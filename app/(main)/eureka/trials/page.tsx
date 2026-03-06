@@ -17,7 +17,7 @@ import {
   List,
   ListItem,
 } from '@mui/material'
-import { countObtained, percent } from '@/hooks/count'
+import { countObtained, percent } from '@/hooks/count-obtained'
 import EurekaCard from '@/components/eureka/eureka-card'
 // import { ViewAllButton } from '@/components/view-all-button'
 

@@ -8,7 +8,7 @@ import { getEurekaSets } from '@/hooks/data'
 import { getUserID } from '@/hooks/user'
 import LoginAlert from '@/components/login-alert'
 import { Category } from '@/lib/types/eureka'
-import { CategoryItem } from '@/components/category-item'
+import { CategoryItem } from '@/components/eureka/category-item'
 
 export default async function EurekaSetsPage() {
   return (

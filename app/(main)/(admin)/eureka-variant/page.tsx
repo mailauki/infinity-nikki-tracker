@@ -1,9 +1,9 @@
 import { Suspense } from 'react'
 import { Container } from '@mui/material'
-import { getEurekaVariantsRaw } from '@/hooks/data'
 import { createClient } from '@/lib/supabase/server'
 import { toSlugVariant } from '@/lib/utils'
 import { EurekaVariantTable } from '@/components/admin/eureka-variant-table'
+import { getEurekaVariantsRaw } from '@/hooks/data/admin/eureka-variants'
 
 export default function EurekaVariantPage() {
   return (

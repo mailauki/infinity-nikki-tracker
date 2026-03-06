@@ -1,8 +1,8 @@
 import { Suspense } from 'react'
 import { Box, Container, Typography } from '@mui/material'
-import { getAdminData } from '@/hooks/data'
 import { StatCard } from '@/components/admin/stat-card'
 import { DashboardTabs } from '@/components/admin/dashboard-tabs'
+import { getAdminData } from '@/hooks/data/user'
 
 export default function DashboardPage() {
   return (

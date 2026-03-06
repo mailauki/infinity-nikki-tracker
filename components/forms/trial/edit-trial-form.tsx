@@ -14,7 +14,7 @@ import {
 import { Edit, EditOff } from '@mui/icons-material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
-import ImageUpload from '@/components/image-upload'
+import ImageUpload from '@/components/forms/image-upload'
 import { Trial } from '@/lib/types/eureka'
 
 export default function EditTrialForm({ trial }: { trial: Trial }) {
@@ -56,7 +56,12 @@ export default function EditTrialForm({ trial }: { trial: Trial }) {
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
         {error && <Alert severity="error">{error}</Alert>}
 
-        <TextField label="Title" required value={title} onChange={(e) => setTitle(e.target.value)} />
+        <TextField
+          label="Title"
+          required
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
 
         <TextField
           label="Slug"

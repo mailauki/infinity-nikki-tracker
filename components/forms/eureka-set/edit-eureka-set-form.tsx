@@ -17,7 +17,7 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import { EurekaSet, EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
+import { EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
 
 export default function EditEurekaSetForm({
   eurekaSet,
@@ -75,7 +75,12 @@ export default function EditEurekaSetForm({
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
         {error && <Alert severity="error">{error}</Alert>}
 
-        <TextField label="Title" required value={title} onChange={(e) => setTitle(e.target.value)} />
+        <TextField
+          label="Title"
+          required
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
 
         <TextField
           label="Slug"

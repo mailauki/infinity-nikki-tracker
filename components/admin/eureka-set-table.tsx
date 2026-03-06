@@ -3,7 +3,6 @@
 import { IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlug } from '@/lib/utils'
-import { Tables } from '@/lib/types/supabase'
 import { AdminTable, Column } from './admin-table'
 import { EurekaSetRaw } from '@/lib/types/eureka'
 

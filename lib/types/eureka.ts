@@ -14,8 +14,10 @@ export type EurekaSet = Tables<'eureka_sets'> & {
 //   colors: Category[]
 // }
 
-
-export type EurekaSetRaw = Pick<Tables<'eureka_sets'>, 'id' | 'slug' | 'title' | 'rarity' | 'trial' | 'style' | 'label' | 'updated_at'>
+export type EurekaSetRaw = Pick<
+  Tables<'eureka_sets'>,
+  'id' | 'slug' | 'title' | 'rarity' | 'trial' | 'style' | 'label' | 'updated_at'
+>
 
 export type EurekaVariantRaw = Pick<
   Tables<'eureka_variants'>,

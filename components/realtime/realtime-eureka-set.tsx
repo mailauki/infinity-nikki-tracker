@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { updateEurekaSet } from '@/hooks/eureka'
+import { updateEurekaSet } from '@/hooks/eureka-helpers'
 import { createClient } from '@/lib/supabase/client'
 import { Category, EurekaSet, Obtained } from '@/lib/types/eureka'
 
@@ -11,7 +11,7 @@ import { Box, Card, List } from '@mui/material'
 import GridContainer from '../grid-container'
 import LoginAlert from '../login-alert'
 import EurekaCard from '../eureka/eureka-card'
-import { CategoryItem } from '../category-item'
+import { CategoryItem } from '../eureka/category-item'
 
 const supabase = createClient()
 

@@ -1,4 +1,3 @@
-import { Tables } from './supabase'
 import { EurekaSetRaw, EurekaVariantRaw, Trial } from './eureka'
 
 export interface DashboardTabsProps {

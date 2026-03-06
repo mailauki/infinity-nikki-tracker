@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import { createClient } from '@/lib/supabase/server'
-import { getAdminData } from '@/hooks/data'
 import EditEurekaVariantForm from '@/components/forms/eureka-variant/edit-eureka-variant-form'
+import { getAdminData } from '@/hooks/data/user'
 
 export default async function EditEurekaVariantPage({
   params,
@@ -25,7 +25,7 @@ async function EditEurekaVariant({ params }: { params: Promise<{ slug: string }>
 
   const { data: variant } = await supabase
     .from('eureka_variants')
-    .select('id, eureka_set, category, color, image_url, default, slug')
+    .select('id, eureka_set, category, color, image_url, default, slug, updated_at')
     .eq('slug', slug)
     .single()
 

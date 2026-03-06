@@ -3,7 +3,7 @@ import { Container } from '@mui/material'
 import { createClient } from '@/lib/supabase/server'
 import { toSlug } from '@/lib/utils'
 import { TrialTable } from '@/components/admin/trial-table'
-import { getAdminData } from '@/hooks/data'
+import { getAdminData } from '@/hooks/data/user'
 
 export default function TrialPage() {
   return (

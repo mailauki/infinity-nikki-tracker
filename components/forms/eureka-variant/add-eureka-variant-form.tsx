@@ -20,7 +20,7 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import ImageUpload from '@/components/image-upload'
+import ImageUpload from '@/components/forms/image-upload'
 import { Category, Color, EurekaSetRaw } from '@/lib/types/eureka'
 
 export default function AddEurekaVariantForm({

@@ -2,8 +2,10 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { Box, Container, Typography } from '@mui/material'
 import { createClient } from '@/lib/supabase/server'
-import { getLabels, getStyles, getTrials } from '@/hooks/data'
 import EditEurekaSetForm from '@/components/forms/eureka-set/edit-eureka-set-form'
+import { getTrials } from '@/hooks/data/trials'
+import { getStyles } from '@/hooks/data/styles'
+import { getLabels } from '@/hooks/data/labels'
 
 export default async function EditEurekaSetPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
@@ -21,7 +23,7 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
 
   const { data: eurekaSet } = await supabase
     .from('eureka_sets')
-    .select('id, slug, title, rarity, style, label, trial')
+    .select('id, slug, title, rarity, style, label, trial, updated_at')
     .eq('slug', slug)
     .single()
 

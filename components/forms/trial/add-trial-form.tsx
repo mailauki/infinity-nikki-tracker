@@ -14,7 +14,7 @@ import {
 import { Edit, EditOff } from '@mui/icons-material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
-import ImageUpload from '@/components/image-upload'
+import ImageUpload from '@/components/forms/image-upload'
 
 export default function AddTrialForm() {
   const router = useRouter()

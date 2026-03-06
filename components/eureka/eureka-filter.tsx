@@ -4,7 +4,7 @@ import { useState } from 'react'
 import EurekaButton from './eureka-button'
 import GridContainer from '../grid-container'
 import { Card, CardActionArea, Grid, List } from '@mui/material'
-import { CategoryItem } from '../category-item'
+import { CategoryItem } from './category-item'
 import { CategoryFilter } from '@/lib/types/props'
 
 export default function EurekaFilter({
