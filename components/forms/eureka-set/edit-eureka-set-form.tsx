@@ -17,16 +17,7 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-
-type EurekaSetRow = {
-  id: number
-  title: string
-  slug: string | null
-  rarity: number | null
-  style: string | null
-  label: string | null
-  trial: string | null
-}
+import { EurekaSet, EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
 
 export default function EditEurekaSetForm({
   eurekaSet,
@@ -34,15 +25,15 @@ export default function EditEurekaSetForm({
   styles,
   labels,
 }: {
-  eurekaSet: EurekaSetRow
-  trials: { title: string }[]
-  styles: { title: string }[]
-  labels: { title: string }[]
+  eurekaSet: EurekaSetRaw
+  trials: Trial[]
+  styles: Style[]
+  labels: Label[]
 }) {
   const router = useRouter()
-  const [name, setName] = useState(eurekaSet.title)
+  const [title, setTitle] = useState(eurekaSet.title)
   const [slug, setSlug] = useState(eurekaSet.slug ?? toSlug(eurekaSet.title))
-  const [quality, setQuality] = useState<number | ''>(eurekaSet.rarity ?? '')
+  const [rarity, setRarity] = useState<number | ''>(eurekaSet.rarity ?? '')
   const [style, setStyle] = useState(eurekaSet.style ?? '')
   const [label, setLabel] = useState(eurekaSet.label ?? '')
   const [trial, setTrial] = useState(eurekaSet.trial ?? '')
@@ -59,11 +50,11 @@ export default function EditEurekaSetForm({
     const { error } = await supabase
       .from('eureka_sets')
       .update({
-        title: name.trim(),
+        title: title.trim(),
         slug: slug.trim(),
-        rarity: quality === '' ? null : quality,
+        rarity: rarity === '' ? null : rarity,
         style: style || null,
-        label: label.trim() || null,
+        label: label|| null,
         trial: trial || null,
         updated_at: new Date().toISOString(),
       })
@@ -84,7 +75,7 @@ export default function EditEurekaSetForm({
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
         {error && <Alert severity="error">{error}</Alert>}
 
-        <TextField label="Name" required value={name} onChange={(e) => setName(e.target.value)} />
+        <TextField label="Title" required value={title} onChange={(e) => setTitle(e.target.value)} />
 
         <TextField
           label="Slug"
@@ -108,11 +99,11 @@ export default function EditEurekaSetForm({
         />
 
         <FormControl>
-          <InputLabel>Quality</InputLabel>
+          <InputLabel>Rarity</InputLabel>
           <Select
-            label="Quality"
-            value={quality}
-            onChange={(e) => setQuality(e.target.value as number | '')}
+            label="Rarity"
+            value={rarity}
+            onChange={(e) => setRarity(e.target.value as number | '')}
           >
             <MenuItem value="">—</MenuItem>
             {[2, 3, 4, 5].map((n) => (

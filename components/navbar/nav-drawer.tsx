@@ -24,7 +24,7 @@ import Footer from './nav-footer'
 import NavTabs from './nav-tabs'
 import Image from 'next/image'
 
-const drawerWidth = 240
+const DRAWER_WIDTH = 240
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: '100%',
@@ -34,7 +34,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
   }),
   overflowX: 'hidden',
   [theme.breakpoints.up('sm')]: {
-    width: drawerWidth,
+    width: DRAWER_WIDTH,
   },
 })
 
@@ -98,8 +98,8 @@ const AppBar = styled(MuiAppBar, {
         }),
         [theme.breakpoints.up('sm')]: {
           display: 'flex',
-          marginLeft: drawerWidth,
-          width: `calc(100% - ${drawerWidth}px)`,
+          marginLeft: DRAWER_WIDTH,
+          width: `calc(100% - ${DRAWER_WIDTH}px)`,
         },
       },
     },
@@ -112,7 +112,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   whiteSpace: 'nowrap',
   boxSizing: 'border-box',
   [theme.breakpoints.up('sm')]: {
-    width: drawerWidth,
+    width: DRAWER_WIDTH,
   },
   variants: [
     {
@@ -157,23 +157,28 @@ export default function NavDrawer({
       <Stack direction="row">
         <AppBar position="fixed" open={open}>
           <Toolbar>
-						<Stack direction='row' alignItems='center' justifyContent='flex-start' sx={{ width: '64px' }}>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              edge="start"
-              sx={[
-                {
-                  marginLeft: -1,
-                  marginRight: 5,
-                },
-                open && { display: 'none' },
-              ]}
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="flex-start"
+              sx={{ width: '64px' }}
             >
-              <MenuIcon />
-            </IconButton>
-						</Stack>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                onClick={handleDrawerOpen}
+                edge="start"
+                sx={[
+                  {
+                    marginLeft: -1,
+                    marginRight: 5,
+                  },
+                  open && { display: 'none' },
+                ]}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Stack>
             <Stack direction="row" alignItems="center" justifyContent="center" sx={{ flex: 1 }}>
               <Link href="/" style={{ cursor: 'pointer' }}>
                 <Image
@@ -184,15 +189,20 @@ export default function NavDrawer({
                 />
               </Link>
             </Stack>
-						<Stack direction='row' alignItems='center' justifyContent='flex-end' sx={{ width: '64px' }}>
-            {!user ? (
-              <Button color="inherit" href="/auth/login">
-                Login
-              </Button>
-            ) : (
-              <NavUser user={user} isAdmin={isAdmin} />
-            )}
-						</Stack>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="flex-end"
+              sx={{ width: '64px' }}
+            >
+              {!user ? (
+                <Button color="inherit" href="/auth/login">
+                  Login
+                </Button>
+              ) : (
+                <NavUser user={user} isAdmin={isAdmin} />
+              )}
+            </Stack>
           </Toolbar>
         </AppBar>
 

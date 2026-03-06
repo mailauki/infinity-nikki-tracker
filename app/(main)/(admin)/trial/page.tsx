@@ -1,9 +1,9 @@
 import { Suspense } from 'react'
 import { Container } from '@mui/material'
-import { getTrialsAdmin } from '@/hooks/data'
 import { createClient } from '@/lib/supabase/server'
 import { toSlug } from '@/lib/utils'
 import { TrialTable } from '@/components/admin/trial-table'
+import { getAdminData } from '@/hooks/data'
 
 export default function TrialPage() {
   return (
@@ -16,7 +16,7 @@ export default function TrialPage() {
 }
 
 async function TrialLoader() {
-  const trials = await getTrialsAdmin()
+  const { trials } = await getAdminData()
 
   const nullSlugTrials = trials?.filter((t) => !t.slug) ?? []
   if (nullSlugTrials.length > 0) {
@@ -25,7 +25,7 @@ async function TrialLoader() {
       nullSlugTrials.map((trial) =>
         supabase
           .from('trials')
-          .update({ slug: toSlug(trial.name) })
+          .update({ slug: toSlug(trial.title) })
           .eq('id', trial.id)
       )
     )

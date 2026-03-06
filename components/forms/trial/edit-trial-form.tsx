@@ -15,18 +15,12 @@ import { Edit, EditOff } from '@mui/icons-material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
 import ImageUpload from '@/components/image-upload'
+import { Trial } from '@/lib/types/eureka'
 
-type TrialRow = {
-  id: number
-  slug: string | null
-  name: string
-  image_url: string | null
-}
-
-export default function EditTrialForm({ trial }: { trial: TrialRow }) {
+export default function EditTrialForm({ trial }: { trial: Trial }) {
   const router = useRouter()
-  const [name, setName] = useState(trial.name)
-  const [slug, setSlug] = useState(trial.slug ?? toSlug(trial.name))
+  const [title, setTitle] = useState(trial.title)
+  const [slug, setSlug] = useState(trial.slug ?? toSlug(trial.title))
   const [imageUrl, setImageUrl] = useState<string | null>(trial.image_url)
   const [editSlug, setEditSlug] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -41,7 +35,7 @@ export default function EditTrialForm({ trial }: { trial: TrialRow }) {
     const { error } = await supabase
       .from('trials')
       .update({
-        name: name.trim(),
+        title: title.trim(),
         slug: slug.trim(),
         image_url: imageUrl || null,
       })
@@ -62,7 +56,7 @@ export default function EditTrialForm({ trial }: { trial: TrialRow }) {
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
         {error && <Alert severity="error">{error}</Alert>}
 
-        <TextField label="Name" required value={name} onChange={(e) => setName(e.target.value)} />
+        <TextField label="Title" required value={title} onChange={(e) => setTitle(e.target.value)} />
 
         <TextField
           label="Slug"

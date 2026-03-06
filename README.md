@@ -121,17 +121,17 @@ hooks/
 
 ## Database Schema
 
-| Table             | Description                                                                          |
-| ----------------- | ------------------------------------------------------------------------------------ |
-| `eureka_sets`     | Outfit set metadata (title, slug, rarity, style, label, trial) with FK constraints  |
-| `eureka_variants` | Individual Eureka items (set FK, color, category, image_url, slug)                   |
-| `categories`      | Category lookup with images                                                          |
-| `colors`          | Color lookup with images                                                             |
-| `styles`          | Style lookup (unique titles, FK target for `eureka_sets.style`)                      |
-| `labels`          | Label lookup (unique titles, FK target for `eureka_sets.label`)                      |
-| `obtained`        | Per-user collection records                                                          |
-| `trials`          | Trial lookup with images (FK target for `eureka_sets.trial`)                         |
-| `profiles`        | User profiles (full_name, username, avatar_url, role)                                |
+| Table             | Description                                                                        |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| `eureka_sets`     | Outfit set metadata (title, slug, rarity, style, label, trial) with FK constraints |
+| `eureka_variants` | Individual Eureka items (set FK, color, category, image_url, slug)                 |
+| `categories`      | Category lookup with images                                                        |
+| `colors`          | Color lookup with images                                                           |
+| `styles`          | Style lookup (unique titles, FK target for `eureka_sets.style`)                    |
+| `labels`          | Label lookup (unique titles, FK target for `eureka_sets.label`)                    |
+| `obtained`        | Per-user collection records                                                        |
+| `trials`          | Trial lookup with images (FK target for `eureka_sets.trial`)                       |
+| `profiles`        | User profiles (full_name, username, avatar_url, role)                              |
 
 ## Authentication
 

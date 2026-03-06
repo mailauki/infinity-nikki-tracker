@@ -5,8 +5,9 @@ import EditIcon from '@mui/icons-material/Edit'
 import { toSlugVariant } from '@/lib/utils'
 import { Tables } from '@/lib/types/supabase'
 import { AdminTable, Column } from './admin-table'
+import { EurekaVariantRaw } from '@/lib/types/eureka'
 
-type Row = Tables<'eureka_variants'>
+type Row = EurekaVariantRaw
 
 const columns: Column<Row>[] = [
   {

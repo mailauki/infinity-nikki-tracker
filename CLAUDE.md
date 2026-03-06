@@ -210,6 +210,7 @@ Prettier config: no semicolons, single quotes, 2-space indent, 100 char print wi
 Path alias `@/` maps to the project root.
 
 Types are split across three files in `lib/types/`:
+
 - `eureka.ts` — domain types (all derived from `Tables<>`): `EurekaSet`, `EurekaVariant`, `Category`, `Color`, `Style`, `Label`, `Trial`, `Obtained`, `Total`, `ObtainedCount`
 - `props.ts` — UI/nav types: `NavLink`, `CardSize` (`'sm' | 'md' | 'lg'`), `AvatarSize` (`'xs' | 'sm' | 'md' | 'lg' | 'xl'`), `CategoryType`
 - `dashboard.ts` — `DashboardTabsProps` only (uses `Tables<'eureka_sets'>`, `Tables<'eureka_variants'>`, `Trial`)

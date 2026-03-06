@@ -25,7 +25,7 @@ async function EurekaSets() {
   const seen = new Set<string>()
   const categories = eurekaSets
     .flatMap((eurekaSet) => eurekaSet.categories)
-    .filter((cat) => !seen.has(cat.name) && seen.add(cat.name))
+    .filter((cat) => !seen.has(cat.title) && seen.add(cat.title))
   const eurekaVariants = eurekaSets.flatMap((eurekaSet) => eurekaSet.eureka_variants)
   const user_id = await getUserID()
   const isLoggedIn = !!user_id
@@ -37,7 +37,7 @@ async function EurekaSets() {
         mainContent={
           <Grid container spacing={2}>
             {eurekaSets.map((eurekaSet) => (
-              <Grid key={eurekaSet.name} size={{ xs: 12, md: 6 }}>
+              <Grid key={eurekaSet.title} size={{ xs: 12, md: 6 }}>
                 <EurekaSetCard eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
               </Grid>
             ))}
@@ -46,7 +46,7 @@ async function EurekaSets() {
         sideContent={
           <List sx={{ width: '100%' }}>
             {categories.map((category: Category) => (
-              <Card key={category.name} elevation={0} component="li">
+              <Card key={category.title} elevation={0} component="li">
                 <CategoryItem item={category} eurekaVariants={eurekaVariants} />
               </Card>
             ))}

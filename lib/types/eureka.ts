@@ -7,9 +7,24 @@ export type EurekaSet = Tables<'eureka_sets'> & {
   colors: Category[]
 }
 
+// export type Eureka = Tables<'eureka_sets'> & {
+//   image_url: string
+//   eureka_variants: EurekaVariant & { obtained?: boolean }[]
+//   categories: Category[]
+//   colors: Category[]
+// }
+
+
+export type EurekaSetRaw = Pick<Tables<'eureka_sets'>, 'id' | 'slug' | 'title' | 'rarity' | 'trial' | 'style' | 'label' | 'updated_at'>
+
+export type EurekaVariantRaw = Pick<
+  Tables<'eureka_variants'>,
+  'id' | 'slug' | 'eureka_set' | 'color' | 'category' | 'image_url' | 'default' | 'updated_at'
+>
+
 export type EurekaVariant = Pick<
   Tables<'eureka_variants'>,
-  'id' | 'eureka_set' | 'color' | 'category' | 'image_url' | 'default'
+  'id' | 'slug' | 'eureka_set' | 'color' | 'category' | 'image_url' | 'default'
 > & { obtained?: boolean }
 
 export type Obtained = Pick<Tables<'obtained'>, 'id' | 'eureka_set' | 'category' | 'color'>

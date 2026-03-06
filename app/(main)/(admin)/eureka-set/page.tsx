@@ -25,7 +25,7 @@ async function EurekaSetLoader() {
       nullSlugSets.map((set) =>
         supabase
           .from('eureka_sets')
-          .update({ slug: toSlug(set.name) })
+          .update({ slug: toSlug(set.title) })
           .eq('id', set.id)
       )
     )

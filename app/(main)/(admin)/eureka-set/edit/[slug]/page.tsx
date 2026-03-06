@@ -34,7 +34,12 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
       <Typography variant="h3" component="h1">
         Edit Eureka Set
       </Typography>
-      <EditEurekaSetForm eurekaSet={eurekaSet} trials={trials ?? []} styles={styles ?? []} labels={labels ?? []} />
+      <EditEurekaSetForm
+        eurekaSet={eurekaSet}
+        trials={trials ?? []}
+        styles={styles ?? []}
+        labels={labels ?? []}
+      />
     </Box>
   )
 }

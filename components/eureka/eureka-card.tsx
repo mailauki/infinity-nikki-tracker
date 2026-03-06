@@ -23,16 +23,16 @@ export default function EurekaCard({
     <>
       <EurekaSetImage
         imageUrl={eurekaSet.image_url!}
-        alt={eurekaSet.name}
-        action={<Chip label={eurekaSet.labels} variant="outlined" size="small" />}
-        title={eurekaSet.name}
+        alt={eurekaSet.title}
+        action={<Chip label={eurekaSet.label} variant="outlined" size="small" />}
+        title={eurekaSet.title}
         subheader={`${percentage}%`}
         size={size}
       />
       {size !== 'sm' && (
         <EurekaCardContent
-          name={eurekaSet.name}
-          quality={eurekaSet.quality}
+          title={eurekaSet.title}
+          rarity={eurekaSet.rarity}
           size={size}
           trial={eurekaSet.trial}
           style={eurekaSet.style}

@@ -1,17 +1,17 @@
 import { CardContent, Stack, Typography } from '@mui/material'
 
-import QualityStars from '../quality-stars'
+import RarityStars from '../rarity-stars'
 import { CardSize } from '@/lib/types/props'
 
 export default function EurekaCardContent({
-  name,
-  quality,
+  title,
+  rarity,
   size = 'sm',
   trial,
   style,
 }: {
-  name: string
-  quality: number | null
+  title: string
+  rarity: number | null
   size?: CardSize
   trial?: string | null
   style?: string | null
@@ -22,10 +22,10 @@ export default function EurekaCardContent({
         <Stack spacing={0.5}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h5" component="p">
-              {name}
+              {title}
             </Typography>
             <Typography variant="caption" color="textSecondary">
-              <QualityStars quality={quality!} />
+              <RarityStars rarity={rarity!} />
             </Typography>
           </Stack>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -35,9 +35,9 @@ export default function EurekaCardContent({
         </Stack>
       ) : (
         <Stack spacing={0.5}>
-          <Typography variant="subtitle2">{name}</Typography>
+          <Typography variant="subtitle2">{title}</Typography>
           <Typography variant="caption" color="textSecondary">
-            <QualityStars quality={quality!} />
+            <RarityStars rarity={rarity!} />
           </Typography>
         </Stack>
       )}

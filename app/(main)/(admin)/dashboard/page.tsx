@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Box, Container, Typography } from '@mui/material'
-import { getAdminData, getEurekaVariants, getTrialsAdmin } from '@/hooks/data'
+import { getAdminData } from '@/hooks/data'
 import { StatCard } from '@/components/admin/stat-card'
 import { DashboardTabs } from '@/components/admin/dashboard-tabs'
 
@@ -15,11 +15,7 @@ export default function DashboardPage() {
 }
 
 async function AdminDashboard() {
-  const [{ eurekaSets }, eurekaVariants, trials] = await Promise.all([
-    getAdminData(),
-    getEurekaVariants(),
-    getTrialsAdmin(),
-  ])
+  const [{ eurekaSets, eurekaVariants, trials }] = await Promise.all([getAdminData()])
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
