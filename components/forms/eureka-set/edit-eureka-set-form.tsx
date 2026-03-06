@@ -16,9 +16,9 @@ import {
   TextField,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
-import { toSlug } from '@/lib/utils'
+import { toSlug, toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import { Color, EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
+import { Category, Color, EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from './color-select'
 
 export default function EditEurekaSetForm({
@@ -26,13 +26,17 @@ export default function EditEurekaSetForm({
   trials,
   styles,
   labels,
-	colors,
+  colors,
+  categories,
+  initialColors,
 }: {
   eurekaSet: EurekaSetRaw
   trials: Trial[]
   styles: Style[]
   labels: Label[]
-	colors: Color[]
+  colors: Color[]
+  categories: Category[]
+  initialColors: string[]
 }) {
   const router = useRouter()
   const [title, setTitle] = useState(eurekaSet.title)
@@ -44,7 +48,7 @@ export default function EditEurekaSetForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
-  const [colorSelect, setColorSelect] = useState<string[]>([]);
+  const [colorSelect, setColorSelect] = useState<string[]>(initialColors);
 
   const handleColorChange = (event: SelectChangeEvent<typeof colorSelect>) => {
     const {
@@ -75,14 +79,48 @@ export default function EditEurekaSetForm({
       })
       .eq('id', eurekaSet.id)
 
-    setLoading(false)
-
     if (error) {
+      setLoading(false)
       setError(error.message)
-    } else {
-      router.push('/eureka-set')
-      router.refresh()
+      return
     }
+
+    const addedColors = colorSelect.filter((c) => !initialColors.includes(c))
+    const removedColors = initialColors.filter((c) => !colorSelect.includes(c))
+
+    if (addedColors.length > 0) {
+      const newVariants = addedColors.flatMap((color) =>
+        categories.map((cat) => ({
+          eureka_set: title.trim(),
+          category: cat.title,
+          color,
+          slug: toSlugVariant(title.trim(), cat.title ?? '', color),
+        }))
+      )
+      const { error: insertError } = await supabase.from('eureka_variants').insert(newVariants)
+      if (insertError) {
+        setLoading(false)
+        setError(insertError.message)
+        return
+      }
+    }
+
+    if (removedColors.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('eureka_variants')
+        .delete()
+        .eq('eureka_set', title.trim())
+        .in('color', removedColors)
+      if (deleteError) {
+        setLoading(false)
+        setError(deleteError.message)
+        return
+      }
+    }
+
+    setLoading(false)
+    router.push('/eureka-set')
+    router.refresh()
   }
 
   return (

@@ -16,21 +16,23 @@ import {
   TextField,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
-import { toSlug } from '@/lib/utils'
+import { toSlug, toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import { Color, Label, Style, Trial } from '@/lib/types/eureka'
+import { Category, Color, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from './color-select'
 
 export default function AddEurekaSetForm({
   trials,
   styles,
   labels,
-	colors,
+  colors,
+  categories,
 }: {
   trials: Trial[]
   styles: Style[]
   labels: Label[]
-	colors: Color[]
+  colors: Color[]
+  categories: Category[]
 }) {
   const router = useRouter()
   const [title, setTitle] = useState('')
@@ -76,14 +78,32 @@ export default function AddEurekaSetForm({
       },
     ])
 
-    setLoading(false)
-
     if (error) {
+      setLoading(false)
       setError(error.message)
-    } else {
-      router.push('/eureka-set')
-      router.refresh()
+      return
     }
+
+    if (colorSelect.length > 0) {
+      const variants = colorSelect.flatMap((color) =>
+        categories.map((cat) => ({
+          eureka_set: title.trim(),
+          category: cat.title,
+          color,
+          slug: toSlugVariant(title.trim(), cat.title ?? '', color),
+        }))
+      )
+      const { error: variantError } = await supabase.from('eureka_variants').insert(variants)
+      if (variantError) {
+        setLoading(false)
+        setError(variantError.message)
+        return
+      }
+    }
+
+    setLoading(false)
+    router.push('/eureka-set')
+    router.refresh()
   }
 
   return (
