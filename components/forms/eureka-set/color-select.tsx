@@ -23,9 +23,9 @@ const MenuProps = {
   },
 }
 
-function getStyles(name: string, personName: readonly string[], theme: Theme) {
+function getStyles(color: string, colorSelect: readonly string[], theme: Theme) {
   return {
-    fontWeight: personName.includes(name)
+    fontWeight: colorSelect.includes(color)
       ? theme.typography.fontWeightMedium
       : theme.typography.fontWeightRegular,
   }
@@ -33,12 +33,12 @@ function getStyles(name: string, personName: readonly string[], theme: Theme) {
 
 export default function ColorSelect({
   colors,
-  colorTitle,
+  colorSelect,
   handleChange,
 }: {
   colors: Color[]
-  colorTitle: string[]
-  handleChange: (event: SelectChangeEvent<typeof colorTitle>) => void
+  colorSelect: string[]
+  handleChange: (event: SelectChangeEvent<typeof colorSelect>) => void
 }) {
   const theme = useTheme()
   const colorsSet = colors.map((color) => color.title)
@@ -51,7 +51,7 @@ export default function ColorSelect({
         labelId="color-multiple-chip-label"
         id="color-multiple-chip"
         multiple
-        value={colorTitle}
+        value={colorSelect}
         onChange={handleChange}
         input={<OutlinedInput id="select-multiple-chip" label="Colors" />}
         renderValue={(selected) => (
@@ -64,7 +64,7 @@ export default function ColorSelect({
         MenuProps={MenuProps}
       >
         {colorsSet.map((color) => (
-          <MenuItem key={color} value={color} style={getStyles(color, colorTitle, theme)}>
+          <MenuItem key={color} value={color} style={getStyles(color, colorSelect, theme)}>
             {color}
           </MenuItem>
         ))}
