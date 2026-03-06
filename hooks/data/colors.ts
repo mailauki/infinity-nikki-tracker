@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server"
-import { Color } from "@/lib/types/eureka"
-import { cache } from "react"
+import { createClient } from '@/lib/supabase/server'
+import { Color } from '@/lib/types/eureka'
+import { cache } from 'react'
 
 export const getColors = cache(async () => {
   const supabase = await createClient()

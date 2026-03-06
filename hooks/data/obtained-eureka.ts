@@ -1,7 +1,7 @@
-import { createClient } from "@/lib/supabase/server"
-import { Obtained } from "@/lib/types/eureka"
-import { UUID } from "crypto"
-import { cache } from "react"
+import { createClient } from '@/lib/supabase/server'
+import { Obtained } from '@/lib/types/eureka'
+import { UUID } from 'crypto'
+import { cache } from 'react'
 
 export const getObtained = cache(async (user_id: UUID | string) => {
   const supabase = await createClient()

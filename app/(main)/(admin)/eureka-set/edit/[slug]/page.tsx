@@ -21,7 +21,7 @@ export default async function EditEurekaSetPage({ params }: { params: Promise<{ 
 async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const supabase = await createClient()
-	const colors = await getColors()
+  const colors = await getColors()
 
   const { data: eurekaSet } = await supabase
     .from('eureka_sets')
@@ -43,7 +43,7 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
         trials={trials ?? []}
         styles={styles ?? []}
         labels={labels ?? []}
-				colors={colors ?? []}
+        colors={colors ?? []}
       />
     </Box>
   )

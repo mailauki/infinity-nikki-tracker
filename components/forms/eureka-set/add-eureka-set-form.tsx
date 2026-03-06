@@ -25,12 +25,12 @@ export default function AddEurekaSetForm({
   trials,
   styles,
   labels,
-	colors,
+  colors,
 }: {
   trials: Trial[]
   styles: Style[]
   labels: Label[]
-	colors: Color[]
+  colors: Color[]
 }) {
   const router = useRouter()
   const [title, setTitle] = useState('')
@@ -42,17 +42,17 @@ export default function AddEurekaSetForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
-  const [colorTitle, setColorTitle] = useState<string[]>([]);
+  const [colorTitle, setColorTitle] = useState<string[]>([])
 
-	const handleColorChange = (event: SelectChangeEvent<typeof colorTitle>) => {
+  const handleColorChange = (event: SelectChangeEvent<typeof colorTitle>) => {
     const {
       target: { value },
-    } = event;
+    } = event
     setColorTitle(
       // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
-    );
-  };
+      typeof value === 'string' ? value.split(',') : value
+    )
+  }
 
   function handleTitleChange(value: string) {
     setTitle(value)
@@ -171,7 +171,7 @@ export default function AddEurekaSetForm({
           </Select>
         </FormControl>
 
-				<ColorSelect colors={colors} colorTitle={colorTitle} handleChange={handleColorChange} />
+        <ColorSelect colors={colors} colorTitle={colorTitle} handleChange={handleColorChange} />
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
           <Button variant="outlined" href="/dashboard">

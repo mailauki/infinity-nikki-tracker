@@ -1,11 +1,11 @@
-import { createClient } from "@/lib/supabase/server"
-import { EurekaSet, EurekaVariant } from "@/lib/types/eureka"
-import { cache } from "react"
-import { getUserID } from "../user"
-import { getColors } from "./colors"
-import { getCategories } from "./categories"
-import { createEurekaSet, updateEurekaSet } from "../eureka"
-import { getObtained } from "./obtained-eureka"
+import { createClient } from '@/lib/supabase/server'
+import { EurekaSet, EurekaVariant } from '@/lib/types/eureka'
+import { cache } from 'react'
+import { getUserID } from '../user'
+import { getColors } from './colors'
+import { getCategories } from './categories'
+import { createEurekaSet, updateEurekaSet } from '../eureka'
+import { getObtained } from './obtained-eureka'
 
 export const getEurekaSets = cache(async () => {
   const supabase = await createClient()

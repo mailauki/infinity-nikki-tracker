@@ -4,21 +4,16 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Alert,
-  Box,
   Button,
-  Chip,
   FormControl,
   IconButton,
   InputAdornment,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
   SelectChangeEvent,
   Stack,
   TextField,
-	Theme,
-	useTheme,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
@@ -31,13 +26,13 @@ export default function EditEurekaSetForm({
   trials,
   styles,
   labels,
-	colors,
+  colors,
 }: {
   eurekaSet: EurekaSetRaw
   trials: Trial[]
   styles: Style[]
   labels: Label[]
-	colors: Color[]
+  colors: Color[]
 }) {
   const router = useRouter()
   const [title, setTitle] = useState(eurekaSet.title)
@@ -49,17 +44,17 @@ export default function EditEurekaSetForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
-  const [colorTitle, setColorTitle] = useState<string[]>([]);
+  const [colorTitle, setColorTitle] = useState<string[]>([])
 
   const handleColorChange = (event: SelectChangeEvent<typeof colorTitle>) => {
     const {
       target: { value },
-    } = event;
+    } = event
     setColorTitle(
       // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
-    );
-  };
+      typeof value === 'string' ? value.split(',') : value
+    )
+  }
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
@@ -79,7 +74,7 @@ export default function EditEurekaSetForm({
         updated_at: new Date().toISOString(),
       })
       .eq('id', eurekaSet.id)
-		
+
     setLoading(false)
 
     if (error) {
@@ -175,8 +170,7 @@ export default function EditEurekaSetForm({
           </Select>
         </FormControl>
 
-
-				<ColorSelect colors={colors} colorTitle={colorTitle} handleChange={handleColorChange} />
+        <ColorSelect colors={colors} colorTitle={colorTitle} handleChange={handleColorChange} />
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
           <Button variant="outlined" href="/dashboard">

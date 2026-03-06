@@ -16,8 +16,8 @@ export default async function EditTrialPage({ params }: { params: Promise<{ slug
 
 async function EditTrial({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-	
-	const trial = await getTrialRaw(slug)
+
+  const trial = await getTrialRaw(slug)
 
   if (!trial) notFound()
 

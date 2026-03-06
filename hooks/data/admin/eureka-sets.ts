@@ -1,6 +1,6 @@
-import { createClient } from "@/lib/supabase/server"
-import { EurekaSetRaw } from "@/lib/types/eureka"
-import { cache } from "react"
+import { createClient } from '@/lib/supabase/server'
+import { EurekaSetRaw } from '@/lib/types/eureka'
+import { cache } from 'react'
 
 export const getEurekaSetsRaw = cache(async () => {
   const supabase = await createClient()
@@ -25,12 +25,12 @@ export const getEurekaSetsRaw = cache(async () => {
 })
 
 export const getEurekaSetRaw = cache(async (slug: string) => {
-	const supabase = await createClient()
+  const supabase = await createClient()
 
-	const { data: eurekaSet } = await supabase
-		.from('eureka_sets')
-		.select(
-			`
+  const { data: eurekaSet } = await supabase
+    .from('eureka_sets')
+    .select(
+      `
 			id,
 			slug,
 			title,
@@ -40,9 +40,9 @@ export const getEurekaSetRaw = cache(async (slug: string) => {
 			trial,
 			updated_at
 			`
-		)
-		.eq('slug', slug)
-		.maybeSingle()
+    )
+    .eq('slug', slug)
+    .maybeSingle()
 
-		return eurekaSet as EurekaSetRaw
+  return eurekaSet as EurekaSetRaw
 })
