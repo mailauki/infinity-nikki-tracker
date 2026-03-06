@@ -71,28 +71,28 @@ Components are grouped into subdirectories:
 
 - `components/navbar/` — nav-drawer, nav-extra, nav-footer, nav-main, nav-secondary, nav-skeleton, nav-tabs, nav-user, theme-switcher
 - `components/eureka/` — eureka-button, eureka-card, eureka-filter, eureka-set-card, eureka-table
-- `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, dashboard-list, stat-card
+- `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, stat-card
 - `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
 - `components/forms/auth/` — login-form, sign-up-form, profile-form, forgot-password-form, update-password-form
 - `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
 - `components/forms/eureka-variant/` — add-eureka-variant-form, edit-eureka-variant-form
 - `components/forms/trial/` — add-trial-form, edit-trial-form
-- `components/` (root) — avatar-upload, avatar-preview, category-image, category-item, grid-container, hero, login-alert, logout-button, progress-chip, quality-stars, view-all-button
+- `components/` (root) — avatar-upload, avatar-preview, category-image, category-item, grid-container, hero, login-alert, logout-button, progress-chip, rarity-stars, view-all-button
 
 ### Data Flow
 
-Server Components fetch via `lib/data.ts` (React `cache()` wrapped), then pass to Client Components for interactivity:
+Server Components fetch via `hooks/data.ts` (React `cache()` wrapped), then pass to Client Components for interactivity:
 
-1. `lib/data.ts` — All Supabase queries. Key functions:
+1. `hooks/data.ts` — All Supabase queries. Key functions:
    - `getEurekaSets()` — All sets with variants, categories, colors, and obtained status for authenticated user
    - `getEurekaSet(slug)` — Single set detail with obtained merging
-   - `getTrials()` — All trials (title, image_url) ordered by id
+   - `getTrials()` — All trials (id, slug, title, image_url, updated_at) ordered by id
    - `getStyles()` — All styles (title) ordered alphabetically
    - `getLabels()` — All labels (title) ordered alphabetically
    - `getObtained(user_id)` — User's obtained items (id, eureka_set, category, color)
-   - `getEurekaVariants()` — All variants for admin (includes slug, updated_at)
-   - `getAdminData()` — Sets (ordered by updated_at desc), categories, colors for admin dashboard
-   - `getTrialsAdmin()` — All trials with id, slug, created_at for admin
+   - `getEurekaSetsRaw()` — All sets for admin (no variants/categories), ordered by updated_at desc
+   - `getEurekaVariantsRaw()` — All variants for admin (includes slug, updated_at)
+   - `getAdminData()` — Aggregates EurekaSets, EurekaVariants, categories, colors, trials for admin
    - `getProfile(user_id)` — User profile (full_name, username, avatar_url)
 2. `hooks/user.ts` — `getUserID()`, `getUserClaims()`, `getUserRole()` read auth claims server-side
 3. `hooks/eureka.ts` — Pure functions `createEurekaSet()`, `updateEurekaSet()`, and `updateEurekaVariants()` for transforming data
@@ -119,8 +119,6 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 
 `components/admin/admin-table.tsx` — generic `'use client'` `AdminTable<T>` component with MUI `TablePagination` (default 20 rows, options 10/20/50/100). Accepts a `Column<T>[]` array with `header`, `cell`, `align`, and `cellSx` fields. Entity-specific table components (`eureka-set-table.tsx`, `eureka-variant-table.tsx`, `trial-table.tsx`) own their column definitions as `'use client'` components and accept plain serializable row data from Server Components — functions in `cell` are never passed across the RSC boundary.
 
-`components/admin/dashboard-list.tsx` — `DashboardList` component used on the admin dashboard for recent item lists. Accepts `title`, `viewHref`, and `items: DashboardListItem[]` (with optional `secondaryAction`). Uses `CardHeader` with a `ViewAllButton` action.
-
 `components/admin/stat-card.tsx` — `StatCard` component used on the admin dashboard for entity counts with Add and View All links.
 
 `components/view-all-button.tsx` — shared "View all" button with arrow icon, used in both `DashboardList` and `StatCard`.
@@ -144,7 +142,7 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 - `styles` — Style lookup (title); UNIQUE on title
 - `labels` — Label lookup (title); UNIQUE on title
 - `obtained` — User collection records (user_id, eureka_set, category, color)
-- `trials` — Trial lookup (title, image_url, slug, created_at)
+- `trials` — Trial lookup (title, image_url, slug, created_at, updated_at)
 - `profiles` — User profiles (full_name, username, avatar_url, role: 'user' | 'admin')
 
 ### Slug Helpers
@@ -179,6 +177,7 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 
 ### Hooks
 
+- `hooks/data.ts` — All Supabase queries (React `cache()` wrapped): `getEurekaSets`, `getEurekaSet`, `getEurekaSetsRaw`, `getEurekaVariantsRaw`, `getTrials`, `getStyles`, `getLabels`, `getObtained`, `getAdminData`, `getProfile`
 - `hooks/user.ts` — `getUserClaims()`, `getUserID()`, `getUserRole()` (all server-side, cached)
 - `hooks/eureka.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEurekaVariants()` (pure data transforms)
 - `hooks/count.ts` — `countObtained(array)` → `{obtained, total}`, `percent(obtained, total)` → percentage string
@@ -211,10 +210,10 @@ Path alias `@/` maps to the project root.
 
 Types are split across three files in `lib/types/`:
 
-- `eureka.ts` — domain types (all derived from `Tables<>`): `EurekaSet`, `EurekaVariant`, `Category`, `Color`, `Style`, `Label`, `Trial`, `Obtained`, `Total`, `ObtainedCount`
+- `eureka.ts` — domain types (all derived from `Tables<>`): `EurekaSet`, `EurekaSetRaw`, `EurekaVariant`, `EurekaVariantRaw`, `Category`, `Color`, `Style`, `Label`, `Trial`, `Obtained`, `Total`, `ObtainedCount`
 - `props.ts` — UI/nav types: `NavLink`, `CardSize` (`'sm' | 'md' | 'lg'`), `AvatarSize` (`'xs' | 'sm' | 'md' | 'lg' | 'xl'`), `CategoryType`
 - `dashboard.ts` — `DashboardTabsProps` only (uses `Tables<'eureka_sets'>`, `Tables<'eureka_variants'>`, `Trial`)
 
-Note: `lib/data.ts` and `lib/theme.ts` use relative imports (`./types/eureka`, `./types/props`) rather than the `@/` alias — grep both patterns when searching for type usages.
+Note: `hooks/data.ts` and `lib/theme.ts` use relative imports rather than the `@/` alias — grep both patterns when searching for type usages.
 
 Avoid `useState` + `useEffect` for derived data — compute directly during render: `const derived = source.filter(...)`.
