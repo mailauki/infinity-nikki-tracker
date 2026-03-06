@@ -4,31 +4,40 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Alert,
+  Box,
   Button,
+  Chip,
   FormControl,
   IconButton,
   InputAdornment,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
+  SelectChangeEvent,
   Stack,
   TextField,
+	Theme,
+	useTheme,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import { EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
+import { Color, EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
+import ColorSelect from './color-select'
 
 export default function EditEurekaSetForm({
   eurekaSet,
   trials,
   styles,
   labels,
+	colors,
 }: {
   eurekaSet: EurekaSetRaw
   trials: Trial[]
   styles: Style[]
   labels: Label[]
+	colors: Color[]
 }) {
   const router = useRouter()
   const [title, setTitle] = useState(eurekaSet.title)
@@ -40,6 +49,17 @@ export default function EditEurekaSetForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
+  const [colorTitle, setColorTitle] = useState<string[]>([]);
+
+  const handleColorChange = (event: SelectChangeEvent<typeof colorTitle>) => {
+    const {
+      target: { value },
+    } = event;
+    setColorTitle(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
@@ -59,7 +79,7 @@ export default function EditEurekaSetForm({
         updated_at: new Date().toISOString(),
       })
       .eq('id', eurekaSet.id)
-
+		
     setLoading(false)
 
     if (error) {
@@ -124,7 +144,7 @@ export default function EditEurekaSetForm({
           <Select label="Style" value={style} onChange={(e) => setStyle(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {styles.map((s) => (
-              <MenuItem key={s.title} value={s.title}>
+              <MenuItem key={s.title} value={s.title!}>
                 {s.title}
               </MenuItem>
             ))}
@@ -136,7 +156,7 @@ export default function EditEurekaSetForm({
           <Select label="Label" value={label} onChange={(e) => setLabel(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {labels.map((l) => (
-              <MenuItem key={l.title} value={l.title}>
+              <MenuItem key={l.title} value={l.title!}>
                 {l.title}
               </MenuItem>
             ))}
@@ -154,6 +174,9 @@ export default function EditEurekaSetForm({
             ))}
           </Select>
         </FormControl>
+
+
+				<ColorSelect colors={colors} colorTitle={colorTitle} handleChange={handleColorChange} />
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
           <Button variant="outlined" href="/dashboard">

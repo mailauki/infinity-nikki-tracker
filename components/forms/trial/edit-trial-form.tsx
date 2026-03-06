@@ -38,6 +38,7 @@ export default function EditTrialForm({ trial }: { trial: Trial }) {
         title: title.trim(),
         slug: slug.trim(),
         image_url: imageUrl || null,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', trial.id)
 

@@ -70,33 +70,33 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 Components are grouped into subdirectories:
 
 - `components/navbar/` — nav-drawer, nav-extra, nav-footer, nav-main, nav-secondary, nav-skeleton, nav-tabs, nav-user, theme-switcher
-- `components/eureka/` — eureka-button, eureka-card, eureka-filter, eureka-set-card, eureka-table
+- `components/eureka/` — eureka-button, eureka-card, eureka-filter, eureka-set-card, eureka-table, category-image, category-item
 - `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, stat-card
 - `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
-- `components/forms/auth/` — login-form, sign-up-form, profile-form, forgot-password-form, update-password-form
+- `components/forms/auth/` — login-form, sign-up-form, profile-form, forgot-password-form, update-password-form, avatar-preview, avatar-upload
+- `components/forms/` (root) — image-upload
 - `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
 - `components/forms/eureka-variant/` — add-eureka-variant-form, edit-eureka-variant-form
 - `components/forms/trial/` — add-trial-form, edit-trial-form
-- `components/` (root) — avatar-upload, avatar-preview, category-image, category-item, grid-container, hero, login-alert, logout-button, progress-chip, rarity-stars, view-all-button
+- `components/` (root) — grid-container, hero, login-alert, logout-button, progress-chip, rarity-stars, view-all-button
 
 ### Data Flow
 
-Server Components fetch via `hooks/data.ts` (React `cache()` wrapped), then pass to Client Components for interactivity:
+Server Components fetch via `hooks/data/` (React `cache()` wrapped), then pass to Client Components for interactivity:
 
-1. `hooks/data.ts` — All Supabase queries. Key functions:
-   - `getEurekaSets()` — All sets with variants, categories, colors, and obtained status for authenticated user
-   - `getEurekaSet(slug)` — Single set detail with obtained merging
-   - `getTrials()` — All trials (id, slug, title, image_url, updated_at) ordered by id
-   - `getStyles()` — All styles (title) ordered alphabetically
-   - `getLabels()` — All labels (title) ordered alphabetically
-   - `getObtained(user_id)` — User's obtained items (id, eureka_set, category, color)
-   - `getEurekaSetsRaw()` — All sets for admin (no variants/categories), ordered by updated_at desc
-   - `getEurekaVariantsRaw()` — All variants for admin (includes slug, updated_at)
-   - `getAdminData()` — Aggregates EurekaSets, EurekaVariants, categories, colors, trials for admin
-   - `getProfile(user_id)` — User profile (full_name, username, avatar_url)
+1. `hooks/data/` — Supabase queries split by domain:
+   - `eureka-sets.ts` — `getEurekaSets()`, `getEurekaSet(slug)`
+   - `trials.ts` — `getTrials()`
+   - `styles.ts` — `getStyles()`, `labels.ts` — `getLabels()`
+   - `categories.ts` — `getCategories()`, `colors.ts` — `getColors()`
+   - `obtained-eureka.ts` — `getObtained(user_id)`
+   - `user.ts` — `getAdminData()`, `getProfile(user_id)`
+   - `admin/eureka-sets.ts` — `getEurekaSetsRaw()`, `getEurekaSetRaw(slug)`, `addEurekaSet()`
+   - `admin/eureka-variants.ts` — `getEurekaVariantsRaw()`, `getEurekaVariantRaw(slug)`
+   - `admin/trials.ts` — `getTrialRaw(slug)`
 2. `hooks/user.ts` — `getUserID()`, `getUserClaims()`, `getUserRole()` read auth claims server-side
-3. `hooks/eureka.ts` — Pure functions `createEurekaSet()`, `updateEurekaSet()`, and `updateEurekaVariants()` for transforming data
-4. `hooks/count.ts` — `countObtained()` and `percent()` utilities for progress calculation
+3. `hooks/eureka-helpers.ts` — Pure functions `createEurekaSet()`, `updateEurekaSet()`, and `updateEurekaVariants()` for transforming data
+4. `hooks/count-obtained.ts` — `countObtained()` and `percent()` utilities for progress calculation
 5. `app/(main)/eureka/actions.ts` — Server Action `handleObtained(slug)` toggles obtained state in Supabase
 
 ### Realtime Pattern
@@ -177,10 +177,10 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 
 ### Hooks
 
-- `hooks/data.ts` — All Supabase queries (React `cache()` wrapped): `getEurekaSets`, `getEurekaSet`, `getEurekaSetsRaw`, `getEurekaVariantsRaw`, `getTrials`, `getStyles`, `getLabels`, `getObtained`, `getAdminData`, `getProfile`
+- `hooks/data/` — Supabase queries split by domain (see Data Flow above)
 - `hooks/user.ts` — `getUserClaims()`, `getUserID()`, `getUserRole()` (all server-side, cached)
-- `hooks/eureka.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEurekaVariants()` (pure data transforms)
-- `hooks/count.ts` — `countObtained(array)` → `{obtained, total}`, `percent(obtained, total)` → percentage string
+- `hooks/eureka-helpers.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEurekaVariants()` (pure data transforms)
+- `hooks/count-obtained.ts` — `countObtained(array)` → `{obtained, total}`, `percent(obtained, total)` → percentage string
 
 ## Git & Deployment
 
@@ -214,6 +214,8 @@ Types are split across three files in `lib/types/`:
 - `props.ts` — UI/nav types: `NavLink`, `CardSize` (`'sm' | 'md' | 'lg'`), `AvatarSize` (`'xs' | 'sm' | 'md' | 'lg' | 'xl'`), `CategoryType`
 - `dashboard.ts` — `DashboardTabsProps` only (uses `Tables<'eureka_sets'>`, `Tables<'eureka_variants'>`, `Trial`)
 
-Note: `hooks/data.ts` and `lib/theme.ts` use relative imports rather than the `@/` alias — grep both patterns when searching for type usages.
+Note: `hooks/data/` files and `lib/theme.ts` use relative imports rather than the `@/` alias — grep both patterns when searching for type usages.
+
+React `cache()` is for reads only — wrapping a mutation in `cache()` causes it to silently no-op on repeated calls with the same args. Mutations in `hooks/data/admin/` must NOT use `cache()`.
 
 Avoid `useState` + `useEffect` for derived data — compute directly during render: `const derived = source.filter(...)`.

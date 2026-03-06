@@ -2,8 +2,9 @@ import { Suspense } from 'react'
 
 import RealtimeEurekaSet from '@/components/realtime/realtime-eureka-set'
 import { getUserID } from '@/hooks/user'
-import { getEurekaSet, getObtained } from '@/hooks/data'
 import { Container } from '@mui/material'
+import { getEurekaSet } from '@/hooks/data/eureka-sets'
+import { getObtained } from '@/hooks/data/obtained-eureka'
 
 export default async function EurekaSetPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params

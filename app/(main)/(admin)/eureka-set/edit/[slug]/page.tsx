@@ -6,6 +6,7 @@ import EditEurekaSetForm from '@/components/forms/eureka-set/edit-eureka-set-for
 import { getTrials } from '@/hooks/data/trials'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
+import { getColors } from '@/hooks/data/colors'
 
 export default async function EditEurekaSetPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
@@ -20,6 +21,7 @@ export default async function EditEurekaSetPage({ params }: { params: Promise<{ 
 async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const supabase = await createClient()
+	const colors = await getColors()
 
   const { data: eurekaSet } = await supabase
     .from('eureka_sets')
@@ -41,6 +43,7 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
         trials={trials ?? []}
         styles={styles ?? []}
         labels={labels ?? []}
+				colors={colors ?? []}
       />
     </Box>
   )

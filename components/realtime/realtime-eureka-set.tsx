@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { updateEurekaSet } from '@/hooks/eureka-helpers'
+import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
 import { Category, EurekaSet, Obtained } from '@/lib/types/eureka'
 

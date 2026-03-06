@@ -4,7 +4,7 @@ import { cache } from "react"
 import { getUserID } from "../user"
 import { getColors } from "./colors"
 import { getCategories } from "./categories"
-import { createEurekaSet, updateEurekaSet } from "../eureka-helpers"
+import { createEurekaSet, updateEurekaSet } from "../eureka"
 import { getObtained } from "./obtained-eureka"
 
 export const getEurekaSets = cache(async () => {

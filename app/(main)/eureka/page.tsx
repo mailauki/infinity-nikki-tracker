@@ -4,11 +4,11 @@ import { Card, Container, Grid, List } from '@mui/material'
 
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
 import GridContainer from '@/components/grid-container'
-import { getEurekaSets } from '@/hooks/data'
 import { getUserID } from '@/hooks/user'
 import LoginAlert from '@/components/login-alert'
 import { Category } from '@/lib/types/eureka'
 import { CategoryItem } from '@/components/eureka/category-item'
+import { getEurekaSets } from '@/hooks/data/eureka-sets'
 
 export default async function EurekaSetsPage() {
   return (

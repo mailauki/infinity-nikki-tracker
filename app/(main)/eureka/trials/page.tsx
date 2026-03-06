@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 
 import { getUserID } from '@/hooks/user'
-import { getEurekaSets, getTrials } from '@/hooks/data'
 import { EurekaSet, EurekaVariant, Total } from '@/lib/types/eureka'
 import {
   Card,
@@ -19,6 +18,8 @@ import {
 } from '@mui/material'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import EurekaCard from '@/components/eureka/eureka-card'
+import { getEurekaSets } from '@/hooks/data/eureka-sets'
+import { getTrials } from '@/hooks/data/trials'
 // import { ViewAllButton } from '@/components/view-all-button'
 
 export default async function TrialsPage() {

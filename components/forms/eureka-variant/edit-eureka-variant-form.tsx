@@ -63,6 +63,7 @@ export default function EditEurekaVariantForm({
         image_url: imageUrl || null,
         default: isDefault,
         slug: slug || null,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', variant.id)
 
