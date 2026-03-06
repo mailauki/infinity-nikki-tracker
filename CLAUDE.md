@@ -91,11 +91,11 @@ Server Components fetch via `hooks/data/` (React `cache()` wrapped), then pass t
    - `categories.ts` — `getCategories()`, `colors.ts` — `getColors()`
    - `obtained-eureka.ts` — `getObtained(user_id)`
    - `user.ts` — `getAdminData()`, `getProfile(user_id)`
-   - `admin/eureka-sets.ts` — `getEurekaSetsRaw()`, `getEurekaSetRaw(slug)`, `addEurekaSet()`
+   - `admin/eureka-sets.ts` — `getEurekaSetsRaw()`, `getEurekaSetRaw(slug)` (no `addEurekaSet` — mutations must not use `cache()`)
    - `admin/eureka-variants.ts` — `getEurekaVariantsRaw()`, `getEurekaVariantRaw(slug)`
    - `admin/trials.ts` — `getTrialRaw(slug)`
 2. `hooks/user.ts` — `getUserID()`, `getUserClaims()`, `getUserRole()` read auth claims server-side
-3. `hooks/eureka-helpers.ts` — Pure functions `createEurekaSet()`, `updateEurekaSet()`, and `updateEurekaVariants()` for transforming data
+3. `hooks/eureka.ts` — Pure functions `createEurekaSet()`, `updateEurekaSet()`, and `updateEurekaVariants()` for transforming data
 4. `hooks/count-obtained.ts` — `countObtained()` and `percent()` utilities for progress calculation
 5. `app/(main)/eureka/actions.ts` — Server Action `handleObtained(slug)` toggles obtained state in Supabase
 
@@ -179,7 +179,7 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 
 - `hooks/data/` — Supabase queries split by domain (see Data Flow above)
 - `hooks/user.ts` — `getUserClaims()`, `getUserID()`, `getUserRole()` (all server-side, cached)
-- `hooks/eureka-helpers.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEurekaVariants()` (pure data transforms)
+- `hooks/eureka.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEurekaVariants()` (pure data transforms)
 - `hooks/count-obtained.ts` — `countObtained(array)` → `{obtained, total}`, `percent(obtained, total)` → percentage string
 
 ## Git & Deployment
@@ -201,6 +201,7 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 - `supabase db dump` requires Docker Desktop to be running; `supabase db execute --sql` does not exist
 - FK on a non-PK column requires a UNIQUE constraint on the referenced column first
 - Use `ON UPDATE CASCADE` on string FKs so renaming a referenced title cascades automatically
+- RLS `WITH CHECK` sub-selects on the same table risk infinite recursion — use `current_setting('request.jwt.claims', true)::jsonb` for role comparisons instead of a sub-select
 
 ### Code Style
 
@@ -217,5 +218,9 @@ Types are split across three files in `lib/types/`:
 Note: `hooks/data/` files and `lib/theme.ts` use relative imports rather than the `@/` alias — grep both patterns when searching for type usages.
 
 React `cache()` is for reads only — wrapping a mutation in `cache()` causes it to silently no-op on repeated calls with the same args. Mutations in `hooks/data/admin/` must NOT use `cache()`.
+
+`getUserID()` returns `null` for unauthenticated users — always guard before passing to `getObtained()` or any user-scoped query: `if (!user_id) return data`.
+
+`git add` with paths containing `[slug]` brackets fails in zsh due to glob expansion — always quote the path: `git add 'app/(main)/(admin)/eureka-set/edit/[slug]/page.tsx'`.
 
 Avoid `useState` + `useEffect` for derived data — compute directly during render: `const derived = source.filter(...)`.
