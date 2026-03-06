@@ -20,18 +20,17 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import ImageUpload from '@/components/image-upload'
-
-type EurekaSetOption = { id: number; slug: string | null; name: string }
+import ImageUpload from '@/components/forms/image-upload'
+import { Category, Color, EurekaSetRaw } from '@/lib/types/eureka'
 
 export default function AddEurekaVariantForm({
   eurekaSets,
   categories,
   colors,
 }: {
-  eurekaSets: EurekaSetOption[]
-  categories: { name: string }[]
-  colors: { name: string }[]
+  eurekaSets: EurekaSetRaw[]
+  categories: Category[]
+  colors: Color[]
 }) {
   const router = useRouter()
   const [eurekaSet, setEurekaSet] = useState('')
@@ -91,8 +90,8 @@ export default function AddEurekaVariantForm({
           >
             <MenuItem value="">—</MenuItem>
             {eurekaSets.map((set) => (
-              <MenuItem key={set.id} value={set.name ?? ''}>
-                {set.name}
+              <MenuItem key={set.id} value={set.title ?? ''}>
+                {set.title}
               </MenuItem>
             ))}
           </Select>
@@ -103,8 +102,8 @@ export default function AddEurekaVariantForm({
           <Select label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {categories.map((c) => (
-              <MenuItem key={c.name} value={c.name}>
-                {c.name}
+              <MenuItem key={c.title} value={c.title}>
+                {c.title}
               </MenuItem>
             ))}
           </Select>
@@ -115,8 +114,8 @@ export default function AddEurekaVariantForm({
           <Select label="Color" value={color} onChange={(e) => setColor(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {colors.map((c) => (
-              <MenuItem key={c.name} value={c.name}>
-                {c.name}
+              <MenuItem key={c.title} value={c.title}>
+                {c.title}
               </MenuItem>
             ))}
           </Select>

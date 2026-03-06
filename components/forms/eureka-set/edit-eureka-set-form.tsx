@@ -17,35 +17,29 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-
-type EurekaSetRow = {
-  id: number
-  name: string
-  slug: string | null
-  quality: number | null
-  style: string | null
-  labels: string | null
-  trial: string | null
-}
+import { EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
 
 export default function EditEurekaSetForm({
   eurekaSet,
   trials,
+  styles,
+  labels,
 }: {
-  eurekaSet: EurekaSetRow
-  trials: { name: string }[]
+  eurekaSet: EurekaSetRaw
+  trials: Trial[]
+  styles: Style[]
+  labels: Label[]
 }) {
   const router = useRouter()
-  const [name, setName] = useState(eurekaSet.name)
-  const [slug, setSlug] = useState(eurekaSet.slug ?? toSlug(eurekaSet.name))
-  const [quality, setQuality] = useState<number | ''>(eurekaSet.quality ?? '')
+  const [title, setTitle] = useState(eurekaSet.title)
+  const [slug, setSlug] = useState(eurekaSet.slug ?? toSlug(eurekaSet.title))
+  const [rarity, setRarity] = useState<number | ''>(eurekaSet.rarity ?? '')
   const [style, setStyle] = useState(eurekaSet.style ?? '')
-  const [labels, setLabels] = useState(eurekaSet.labels ?? '')
+  const [label, setLabel] = useState(eurekaSet.label ?? '')
   const [trial, setTrial] = useState(eurekaSet.trial ?? '')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
-
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
     setLoading(true)
@@ -55,11 +49,11 @@ export default function EditEurekaSetForm({
     const { error } = await supabase
       .from('eureka_sets')
       .update({
-        name: name.trim(),
+        title: title.trim(),
         slug: slug.trim(),
-        quality: quality === '' ? null : quality,
-        style: style.trim() || null,
-        labels: labels.trim() || null,
+        rarity: rarity === '' ? null : rarity,
+        style: style || null,
+        label: label || null,
         trial: trial || null,
         updated_at: new Date().toISOString(),
       })
@@ -80,7 +74,12 @@ export default function EditEurekaSetForm({
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
         {error && <Alert severity="error">{error}</Alert>}
 
-        <TextField label="Name" required value={name} onChange={(e) => setName(e.target.value)} />
+        <TextField
+          label="Title"
+          required
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
 
         <TextField
           label="Slug"
@@ -104,14 +103,14 @@ export default function EditEurekaSetForm({
         />
 
         <FormControl>
-          <InputLabel>Quality</InputLabel>
+          <InputLabel>Rarity</InputLabel>
           <Select
-            label="Quality"
-            value={quality}
-            onChange={(e) => setQuality(e.target.value as number | '')}
+            label="Rarity"
+            value={rarity}
+            onChange={(e) => setRarity(e.target.value as number | '')}
           >
             <MenuItem value="">—</MenuItem>
-            {[1, 2, 3, 4, 5].map((n) => (
+            {[2, 3, 4, 5].map((n) => (
               <MenuItem key={n} value={n}>
                 {n}
               </MenuItem>
@@ -119,22 +118,37 @@ export default function EditEurekaSetForm({
           </Select>
         </FormControl>
 
-        <TextField label="Style" value={style} onChange={(e) => setStyle(e.target.value)} />
+        <FormControl>
+          <InputLabel>Style</InputLabel>
+          <Select label="Style" value={style} onChange={(e) => setStyle(e.target.value)}>
+            <MenuItem value="">—</MenuItem>
+            {styles.map((s) => (
+              <MenuItem key={s.title} value={s.title!}>
+                {s.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-        <TextField
-          label="Labels"
-          value={labels}
-          onChange={(e) => setLabels(e.target.value)}
-          helperText="Comma-separated tags"
-        />
+        <FormControl>
+          <InputLabel>Label</InputLabel>
+          <Select label="Label" value={label} onChange={(e) => setLabel(e.target.value)}>
+            <MenuItem value="">—</MenuItem>
+            {labels.map((l) => (
+              <MenuItem key={l.title} value={l.title!}>
+                {l.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         <FormControl>
           <InputLabel>Trial</InputLabel>
           <Select label="Trial" value={trial} onChange={(e) => setTrial(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {trials.map((t) => (
-              <MenuItem key={t.name} value={t.name}>
-                {t.name}
+              <MenuItem key={t.title} value={t.title}>
+                {t.title}
               </MenuItem>
             ))}
           </Select>

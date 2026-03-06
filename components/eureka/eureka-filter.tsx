@@ -4,10 +4,8 @@ import { useState } from 'react'
 import EurekaButton from './eureka-button'
 import GridContainer from '../grid-container'
 import { Card, CardActionArea, Grid, List } from '@mui/material'
-import { CategoryItem } from '../category-item'
-
-type CategoryFilter = '' | 'Head' | 'Hands' | 'Feet'
-type EurekaFilter = 'Sets' | 'Eureka' | 'Missing'
+import { CategoryItem } from './category-item'
+import { CategoryFilter } from '@/lib/types/props'
 
 export default function EurekaFilter({
   eurekaVariants,
@@ -40,17 +38,17 @@ export default function EurekaFilter({
         sideContent={
           <List sx={{ width: '100%' }}>
             {categories.map((category: Category) => (
-              <Card key={category.name} elevation={0} component="li">
+              <Card key={category.title} elevation={0} component="li">
                 <CardActionArea
                   onClick={() =>
                     setSelectedCategory(
-                      selectedCategory === (category.name as CategoryFilter)
+                      selectedCategory === (category.title as CategoryFilter)
                         ? ''
-                        : (category.name as CategoryFilter)
+                        : (category.title as CategoryFilter)
                     )
                   }
                   data-active={
-                    selectedCategory === (category.name as CategoryFilter) ? '' : undefined
+                    selectedCategory === (category.title as CategoryFilter) ? '' : undefined
                   }
                   sx={{
                     height: '100%',

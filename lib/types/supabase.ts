@@ -6,31 +6,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: '14.1'
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       categories: {
@@ -38,19 +13,19 @@ export type Database = {
           created_at: string
           id: number
           image_url: string | null
-          name: string
+          title: string
         }
         Insert: {
           created_at?: string
           id?: number
           image_url?: string | null
-          name: string
+          title: string
         }
         Update: {
           created_at?: string
           id?: number
           image_url?: string | null
-          name?: string
+          title?: string
         }
         Relationships: []
       }
@@ -59,19 +34,19 @@ export type Database = {
           created_at: string
           id: number
           image_url: string | null
-          name: string
+          title: string
         }
         Insert: {
           created_at?: string
           id?: number
           image_url?: string | null
-          name?: string
+          title?: string
         }
         Update: {
           created_at?: string
           id?: number
           image_url?: string | null
-          name?: string
+          title?: string
         }
         Relationships: []
       }
@@ -79,43 +54,57 @@ export type Database = {
         Row: {
           created_at: string
           id: number
-          labels: string | null
-          name: string
-          quality: number | null
+          label: string | null
+          rarity: number | null
           slug: string | null
           style: string | null
+          title: string
           trial: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string
           id?: number
-          labels?: string | null
-          name?: string
-          quality?: number | null
+          label?: string | null
+          rarity?: number | null
           slug?: string | null
           style?: string | null
+          title?: string
           trial?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string
           id?: number
-          labels?: string | null
-          name?: string
-          quality?: number | null
+          label?: string | null
+          rarity?: number | null
           slug?: string | null
           style?: string | null
+          title?: string
           trial?: string | null
           updated_at?: string | null
         }
         Relationships: [
           {
+            foreignKeyName: 'eureka_sets_label_fkey'
+            columns: ['label']
+            isOneToOne: false
+            referencedRelation: 'labels'
+            referencedColumns: ['title']
+          },
+          {
+            foreignKeyName: 'eureka_sets_style_fkey'
+            columns: ['style']
+            isOneToOne: false
+            referencedRelation: 'styles'
+            referencedColumns: ['title']
+          },
+          {
             foreignKeyName: 'Eureka_trial_fkey'
             columns: ['trial']
             isOneToOne: false
             referencedRelation: 'trials'
-            referencedColumns: ['name']
+            referencedColumns: ['title']
           },
         ]
       }
@@ -159,23 +148,41 @@ export type Database = {
             columns: ['category']
             isOneToOne: false
             referencedRelation: 'categories'
-            referencedColumns: ['name']
+            referencedColumns: ['title']
           },
           {
             foreignKeyName: 'eureka_color_fkey'
             columns: ['color']
             isOneToOne: false
             referencedRelation: 'colors'
-            referencedColumns: ['name']
+            referencedColumns: ['title']
           },
           {
             foreignKeyName: 'eureka_eureka_set_fkey'
             columns: ['eureka_set']
             isOneToOne: false
             referencedRelation: 'eureka_sets'
-            referencedColumns: ['name']
+            referencedColumns: ['title']
           },
         ]
+      }
+      labels: {
+        Row: {
+          created_at: string
+          id: number
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          title?: string | null
+        }
+        Relationships: []
       }
       obtained: {
         Row: {
@@ -208,21 +215,21 @@ export type Database = {
             columns: ['category']
             isOneToOne: false
             referencedRelation: 'categories'
-            referencedColumns: ['name']
+            referencedColumns: ['title']
           },
           {
             foreignKeyName: 'obtained_color_fkey'
             columns: ['color']
             isOneToOne: false
             referencedRelation: 'colors'
-            referencedColumns: ['name']
+            referencedColumns: ['title']
           },
           {
             foreignKeyName: 'obtained_eureka_set_fkey'
             columns: ['eureka_set']
             isOneToOne: false
             referencedRelation: 'eureka_sets'
-            referencedColumns: ['name']
+            referencedColumns: ['title']
           },
         ]
       }
@@ -256,29 +263,47 @@ export type Database = {
         }
         Relationships: []
       }
+      styles: {
+        Row: {
+          created_at: string
+          id: number
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          title?: string | null
+        }
+        Relationships: []
+      }
       trials: {
         Row: {
           created_at: string
           id: number
           image_url: string | null
-          name: string
           slug: string | null
+          title: string
           updated_at: string | null
         }
         Insert: {
           created_at?: string
           id?: number
           image_url?: string | null
-          name: string
           slug?: string | null
+          title: string
           updated_at?: string | null
         }
         Update: {
           created_at?: string
           id?: number
           image_url?: string | null
-          name?: string
           slug?: string | null
+          title?: string
           updated_at?: string | null
         }
         Relationships: []
@@ -288,12 +313,9 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_admin: { Args: never; Returns: boolean }
       toggle_obtained: {
-        Args: {
-          p_eureka_set: string
-          p_category: string
-          p_color: string
-        }
+        Args: { p_category: string; p_color: string; p_eureka_set: string }
         Returns: undefined
       }
     }
@@ -422,9 +444,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },

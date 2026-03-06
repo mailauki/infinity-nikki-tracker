@@ -1,8 +1,8 @@
-import { countObtained, percent } from '@/hooks/count'
+import { countObtained, percent } from '@/hooks/count-obtained'
 import { AvatarSize, CategoryType } from '@/lib/types/props'
 import { Category, EurekaVariant } from '@/lib/types/eureka'
 import { Chip } from '@mui/material'
-import EurekaCardProgress from './eureka/eureka-card-progress'
+import EurekaCardProgress from './eureka-card-progress'
 import CategoryImage from './category-image'
 
 export function CategoryItem({
@@ -17,7 +17,7 @@ export function CategoryItem({
   size?: AvatarSize
 }) {
   const filteredVariants = eurekaVariants.filter(
-    (variant) => (categoryType === 'colors' ? variant.color : variant.category) === item.name
+    (variant) => (categoryType === 'colors' ? variant.color : variant.category) === item.title
   )
   const obtainedCount = countObtained(filteredVariants)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
@@ -26,7 +26,7 @@ export function CategoryItem({
     <>
       <CategoryImage
         imageUrl={item.image_url!}
-        alt={item.name}
+        alt={item.title}
         action={
           <Chip
             label={`${obtainedCount.obtained} / ${obtainedCount.total}`}
@@ -34,7 +34,7 @@ export function CategoryItem({
             size="small"
           />
         }
-        title={item.name}
+        title={item.title}
         subheader={`${percentage}%`}
         size={size}
       />

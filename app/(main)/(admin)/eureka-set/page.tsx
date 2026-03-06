@@ -1,9 +1,9 @@
 import { Suspense } from 'react'
 import { Container } from '@mui/material'
-import { getEurekaSets } from '@/lib/data'
 import { createClient } from '@/lib/supabase/server'
 import { toSlug } from '@/lib/utils'
 import { EurekaSetTable } from '@/components/admin/eureka-set-table'
+import { getEurekaSets } from '@/hooks/data/eureka-sets'
 
 export default function EurekaSetPage() {
   return (
@@ -25,7 +25,7 @@ async function EurekaSetLoader() {
       nullSlugSets.map((set) =>
         supabase
           .from('eureka_sets')
-          .update({ slug: toSlug(set.name) })
+          .update({ slug: toSlug(set.title) })
           .eq('id', set.id)
       )
     )

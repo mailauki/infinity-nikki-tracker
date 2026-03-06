@@ -1,8 +1,8 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { Box, Container, Typography } from '@mui/material'
-import { createClient } from '@/lib/supabase/server'
 import EditTrialForm from '@/components/forms/trial/edit-trial-form'
+import { getTrialRaw } from '@/hooks/data/admin/trials'
 
 export default async function EditTrialPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
@@ -16,13 +16,8 @@ export default async function EditTrialPage({ params }: { params: Promise<{ slug
 
 async function EditTrial({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const supabase = await createClient()
 
-  const { data: trial } = await supabase
-    .from('trials')
-    .select('id, slug, name, image_url')
-    .eq('slug', slug)
-    .maybeSingle()
+  const trial = await getTrialRaw(slug)
 
   if (!trial) notFound()
 

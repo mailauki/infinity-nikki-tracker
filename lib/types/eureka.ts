@@ -1,65 +1,53 @@
-export interface EurekaSet {
-  id: number
-  slug: string
-  name: string
-  quality: number | null
-  style: string | null
-  labels: string | null
-  trial: string | null
-  updated_at: string | null
+import { Tables } from './supabase'
+
+export type EurekaSet = Tables<'eureka_sets'> & {
   image_url: string
   eureka_variants: EurekaVariant[]
   categories: Category[]
   colors: Category[]
 }
 
-export interface EurekaVariant {
-  id: number
-  eureka_set: string | null
-  color: string | null
-  category: string | null
-  image_url: string | null
-  default: boolean
-  obtained?: boolean
-}
+// export type Eureka = Tables<'eureka_sets'> & {
+//   image_url: string
+//   eureka_variants: EurekaVariant & { obtained?: boolean }[]
+//   categories: Category[]
+//   colors: Category[]
+// }
+
+export type EurekaSetRaw = Pick<
+  Tables<'eureka_sets'>,
+  'id' | 'slug' | 'title' | 'rarity' | 'trial' | 'style' | 'label' | 'updated_at'
+>
+
+export type EurekaVariantRaw = Pick<
+  Tables<'eureka_variants'>,
+  'id' | 'slug' | 'eureka_set' | 'color' | 'category' | 'image_url' | 'default' | 'updated_at'
+>
+
+export type EurekaVariant = Pick<
+  Tables<'eureka_variants'>,
+  'id' | 'slug' | 'eureka_set' | 'color' | 'category' | 'image_url' | 'default'
+> & { obtained?: boolean }
+
+export type Obtained = Pick<Tables<'obtained'>, 'id' | 'eureka_set' | 'category' | 'color'>
 
 export interface ObtainedCount {
   obtained: number
   total: number
 }
 
-export interface Category {
-  name: string
-  image_url: string | null
-}
-
 export interface Total {
-  name: string
+  title: string
   image_url: string | null
   eurekaSets?: EurekaSet[]
 }
 
-export interface Obtained {
-  id: number
-  eureka_set: string | null
-  category: string | null
-  color: string | null
-}
+export type Category = Pick<Tables<'categories'>, 'title' | 'image_url'>
 
-export interface EurekaSets {
-  id: number
-  slug: string | null
-  name: string
-  quality: number | null
-  style: string | null
-  labels: string | null
-  trial: string | null
-  eureka_variants: {
-    id: number
-    eureka_set: string | null
-    color: string | null
-    category: string | null
-    image_url: string | null
-    default: boolean
-  }[]
-}
+export type Color = Pick<Tables<'colors'>, 'title' | 'image_url'>
+
+export type Style = Pick<Tables<'styles'>, 'title'>
+
+export type Label = Pick<Tables<'labels'>, 'title'>
+
+export type Trial = Pick<Tables<'trials'>, 'id' | 'slug' | 'title' | 'image_url' | 'updated_at'>

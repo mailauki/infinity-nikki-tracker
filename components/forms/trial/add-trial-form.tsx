@@ -14,11 +14,11 @@ import {
 import { Edit, EditOff } from '@mui/icons-material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
-import ImageUpload from '@/components/image-upload'
+import ImageUpload from '@/components/forms/image-upload'
 
 export default function AddTrialForm() {
   const router = useRouter()
-  const [name, setName] = useState('')
+  const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState(false)
@@ -26,7 +26,7 @@ export default function AddTrialForm() {
   const [error, setError] = useState<string | null>(null)
 
   function handleNameChange(value: string) {
-    setName(value)
+    setTitle(value)
     if (!editSlug) setSlug(toSlug(value))
   }
 
@@ -38,7 +38,7 @@ export default function AddTrialForm() {
     const supabase = createClient()
     const { error } = await supabase.from('trials').insert([
       {
-        name: name.trim(),
+        title: title.trim(),
         slug: slug.trim(),
         image_url: imageUrl || null,
       },
@@ -60,9 +60,9 @@ export default function AddTrialForm() {
         {error && <Alert severity="error">{error}</Alert>}
 
         <TextField
-          label="Name"
+          label="Title"
           required
-          value={name}
+          value={title}
           onChange={(e) => handleNameChange(e.target.value)}
         />
 

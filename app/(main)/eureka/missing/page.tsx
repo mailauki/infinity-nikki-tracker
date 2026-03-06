@@ -1,10 +1,11 @@
 import { Suspense } from 'react'
 
-import { getEurekaSets, getObtained } from '@/lib/data'
 import { getUserID } from '@/hooks/user'
 import RealtimeEurekaFilter from '@/components/realtime/realtime-eureka-filter'
 import LoginAlert from '@/components/login-alert'
 import { Container } from '@mui/material'
+import { getEurekaSets } from '@/hooks/data/eureka-sets'
+import { getObtained } from '@/hooks/data/obtained-eureka'
 
 export default async function MissingPage() {
   return (

@@ -20,19 +20,8 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import ImageUpload from '@/components/image-upload'
-
-type EurekaVariantRow = {
-  id: number
-  eureka_set: string | null
-  category: string | null
-  color: string | null
-  image_url: string | null
-  default: boolean
-  slug: string | null
-}
-
-type EurekaSetOption = { id: number; slug: string | null; name: string }
+import ImageUpload from '@/components/forms/image-upload'
+import { Category, Color, EurekaSetRaw, EurekaVariantRaw } from '@/lib/types/eureka'
 
 export default function EditEurekaVariantForm({
   variant,
@@ -40,10 +29,10 @@ export default function EditEurekaVariantForm({
   categories,
   colors,
 }: {
-  variant: EurekaVariantRow
-  eurekaSets: EurekaSetOption[]
-  categories: { name: string }[]
-  colors: { name: string }[]
+  variant: EurekaVariantRaw
+  eurekaSets: EurekaSetRaw[]
+  categories: Category[]
+  colors: Color[]
 }) {
   const router = useRouter()
   const [eurekaSet, setEurekaSet] = useState(variant.eureka_set ?? '')
@@ -74,6 +63,7 @@ export default function EditEurekaVariantForm({
         image_url: imageUrl || null,
         default: isDefault,
         slug: slug || null,
+        updated_at: new Date().toISOString(),
       })
       .eq('id', variant.id)
 
@@ -101,8 +91,8 @@ export default function EditEurekaVariantForm({
           >
             <MenuItem value="">—</MenuItem>
             {eurekaSets.map((set) => (
-              <MenuItem key={set.id} value={set.name ?? ''}>
-                {set.name}
+              <MenuItem key={set.id} value={set.title ?? ''}>
+                {set.title}
               </MenuItem>
             ))}
           </Select>
@@ -113,8 +103,8 @@ export default function EditEurekaVariantForm({
           <Select label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {categories.map((c) => (
-              <MenuItem key={c.name} value={c.name}>
-                {c.name}
+              <MenuItem key={c.title} value={c.title}>
+                {c.title}
               </MenuItem>
             ))}
           </Select>
@@ -125,8 +115,8 @@ export default function EditEurekaVariantForm({
           <Select label="Color" value={color} onChange={(e) => setColor(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {colors.map((c) => (
-              <MenuItem key={c.name} value={c.name}>
-                {c.name}
+              <MenuItem key={c.title} value={c.title}>
+                {c.title}
               </MenuItem>
             ))}
           </Select>

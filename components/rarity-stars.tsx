@@ -14,10 +14,10 @@ const SparkleIcon = createSvgIcon(
   'Sparkle'
 )
 
-export default function QualityStars({ quality }: { quality: number }) {
+export default function RarityStars({ rarity }: { rarity: number }) {
   return (
     <Stack direction="row" spacing={0.25}>
-      {Array.from({ length: quality }, (_, index) => (
+      {Array.from({ length: rarity }, (_, index) => (
         <SparkleIcon key={index} fontSize="inherit" sx={{ rotate: '15deg' }} color="inherit" />
       ))}
     </Stack>

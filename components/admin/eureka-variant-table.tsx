@@ -4,17 +4,9 @@ import { Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlugVariant } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
+import { EurekaVariantRaw } from '@/lib/types/eureka'
 
-type Row = {
-  id: number
-  slug: string | null
-  eureka_set: string | null
-  category: string | null
-  color: string | null
-  image_url: string | null
-  default: boolean
-  updated_at: string | null
-}
+type Row = EurekaVariantRaw
 
 const columns: Column<Row>[] = [
   {

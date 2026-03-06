@@ -109,9 +109,9 @@ lib/
   nav-links.tsx           # Navigation link definitions
   supabase/               # Supabase client factories (server, client, proxy)
   types/
-    eureka.ts             # Domain interfaces (EurekaSet, EurekaVariant, Category, etc.)
+    eureka.ts             # Domain types derived from Supabase Tables<> (EurekaSet, EurekaVariant, Category, Color, Style, Label, Trial, etc.)
     props.ts              # UI/nav types (NavLink, CardSize, AvatarSize, CategoryType)
-    dashboard.ts          # Admin table row types (EurekaSetRow, EurekaVariantRow, etc.)
+    dashboard.ts          # DashboardTabsProps (uses Tables<'eureka_sets'>, Tables<'eureka_variants'>, Trial)
 
 hooks/
   user.ts                 # getUserID(), getUserClaims(), getUserRole() — server-side auth
@@ -121,15 +121,17 @@ hooks/
 
 ## Database Schema
 
-| Table             | Description                                                        |
-| ----------------- | ------------------------------------------------------------------ |
-| `eureka_sets`     | Outfit set metadata (name, slug, quality, style, labels, trial)    |
-| `eureka_variants` | Individual Eureka items (set FK, color, category, image_url, slug) |
-| `categories`      | Category lookup with images                                        |
-| `colors`          | Color lookup with images                                           |
-| `obtained`        | Per-user collection records                                        |
-| `trials`          | Trial lookup with images                                           |
-| `profiles`        | User profiles (full_name, username, avatar_url, role)              |
+| Table             | Description                                                                        |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| `eureka_sets`     | Outfit set metadata (title, slug, rarity, style, label, trial) with FK constraints |
+| `eureka_variants` | Individual Eureka items (set FK, color, category, image_url, slug)                 |
+| `categories`      | Category lookup with images                                                        |
+| `colors`          | Color lookup with images                                                           |
+| `styles`          | Style lookup (unique titles, FK target for `eureka_sets.style`)                    |
+| `labels`          | Label lookup (unique titles, FK target for `eureka_sets.label`)                    |
+| `obtained`        | Per-user collection records                                                        |
+| `trials`          | Trial lookup with images (FK target for `eureka_sets.trial`)                       |
+| `profiles`        | User profiles (full_name, username, avatar_url, role)                              |
 
 ## Authentication
 
