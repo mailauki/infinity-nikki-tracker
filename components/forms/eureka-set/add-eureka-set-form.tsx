@@ -11,26 +11,22 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  SelectChangeEvent,
   Stack,
   TextField,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import { Color, Label, Style, Trial } from '@/lib/types/eureka'
-import ColorSelect from './color-select'
+import { Label, Style, Trial } from '@/lib/types/eureka'
 
 export default function AddEurekaSetForm({
   trials,
   styles,
   labels,
-  colors,
 }: {
   trials: Trial[]
   styles: Style[]
   labels: Label[]
-  colors: Color[]
 }) {
   const router = useRouter()
   const [title, setTitle] = useState('')
@@ -42,18 +38,6 @@ export default function AddEurekaSetForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
-  const [colorTitle, setColorTitle] = useState<string[]>([])
-
-  const handleColorChange = (event: SelectChangeEvent<typeof colorTitle>) => {
-    const {
-      target: { value },
-    } = event
-    setColorTitle(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    )
-  }
-
   function handleTitleChange(value: string) {
     setTitle(value)
     if (!editSlug) setSlug(toSlug(value))
@@ -170,8 +154,6 @@ export default function AddEurekaSetForm({
             ))}
           </Select>
         </FormControl>
-
-        <ColorSelect colors={colors} colorTitle={colorTitle} handleChange={handleColorChange} />
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
           <Button variant="outlined" href="/dashboard">

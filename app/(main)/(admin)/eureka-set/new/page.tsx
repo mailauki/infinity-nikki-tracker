@@ -4,7 +4,6 @@ import AddEurekaSetForm from '@/components/forms/eureka-set/add-eureka-set-form'
 import { getTrials } from '@/hooks/data/trials'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
-import { getColors } from '@/hooks/data/colors'
 
 export default function NewEurekaSetPage() {
   return (
@@ -18,7 +17,6 @@ export default function NewEurekaSetPage() {
 
 async function NewEurekaSet() {
   const [trials, styles, labels] = await Promise.all([getTrials(), getStyles(), getLabels()])
-  const colors = await getColors()
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -29,7 +27,6 @@ async function NewEurekaSet() {
         trials={trials ?? []}
         styles={styles ?? []}
         labels={labels ?? []}
-        colors={colors ?? []}
       />
     </Box>
   )

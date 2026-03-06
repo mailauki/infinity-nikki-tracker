@@ -115,9 +115,11 @@ export const getEurekaSet = cache(async (slug: string) => {
 
   const user_id = await getUserID()
 
-  const obtained = await getObtained(user_id!)
+  if (!user_id) return eureka
+
+  const obtained = await getObtained(user_id)
 
   const eurekaWithObtained = updateEurekaSet({ eurekaSet: eureka, obtained })
 
-  return user_id ? eurekaWithObtained : eureka
+  return eurekaWithObtained
 })
