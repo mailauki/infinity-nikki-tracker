@@ -54,7 +54,7 @@ export default function EditEurekaSetForm({
         slug: slug.trim(),
         rarity: rarity === '' ? null : rarity,
         style: style || null,
-        label: label|| null,
+        label: label || null,
         trial: trial || null,
         updated_at: new Date().toISOString(),
       })

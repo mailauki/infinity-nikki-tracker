@@ -21,9 +21,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 import ImageUpload from '@/components/image-upload'
-import { Color, EurekaSet, EurekaSetRaw, EurekaVariant, EurekaVariantRaw } from '@/lib/types/eureka'
-
-type EurekaSetOption = { id: number; slug: string | null; name: string }
+import { Category, Color, EurekaSetRaw, EurekaVariantRaw } from '@/lib/types/eureka'
 
 export default function EditEurekaVariantForm({
   variant,
@@ -33,7 +31,7 @@ export default function EditEurekaVariantForm({
 }: {
   variant: EurekaVariantRaw
   eurekaSets: EurekaSetRaw[]
-  categories: Color[]
+  categories: Category[]
   colors: Color[]
 }) {
   const router = useRouter()

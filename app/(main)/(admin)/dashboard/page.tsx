@@ -15,7 +15,7 @@ export default function DashboardPage() {
 }
 
 async function AdminDashboard() {
-  const [{ eurekaSets, eurekaVariants, trials }] = await Promise.all([getAdminData()])
+  const { eurekaSets, eurekaVariants, trials } = await getAdminData()
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
