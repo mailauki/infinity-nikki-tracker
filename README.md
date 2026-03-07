@@ -20,7 +20,7 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 
 ## Tech Stack
 
-- **[Next.js 16](https://nextjs.org)** — App Router, Server Components, Server Actions
+- **[Next.js 16](https://nextjs.org)** — App Router, Server Components, Server Actions, Partial Prerendering (`cacheComponents`)
 - **[Supabase](https://supabase.com)** — Postgres database, Auth (cookie-based via `@supabase/ssr`), Realtime subscriptions, Storage (avatars and game images)
 - **[MUI (Material UI)](https://mui.com)** — Component library with CSS variables and built-in dark mode
 - **[Tailwind CSS](https://tailwindcss.com)** — Utility classes for layout
@@ -103,11 +103,14 @@ components/
     trial/                # Add and edit trial forms
 
 lib/
-  data.ts                 # All Supabase data fetching (React cache)
   utils.ts                # cn(), toSlug(), toSlugVariant() helpers
   theme.ts                # MUI theme configuration
   nav-links.tsx           # Navigation link definitions
-  supabase/               # Supabase client factories (server, client, proxy)
+  supabase/
+    server.ts             # Cookie-based client for Server Components/Actions
+    client.ts             # Browser client for Client Components
+    public.ts             # Cookie-free client for use inside `use cache` functions
+    proxy.ts              # updateSession() middleware
   types/
     eureka.ts             # Domain types derived from Supabase Tables<> (EurekaSet, EurekaVariant, Category, Color, Style, Label, Trial, etc.)
     props.ts              # UI/nav types (NavLink, CardSize, AvatarSize, CategoryType)
@@ -116,7 +119,16 @@ lib/
 hooks/
   user.ts                 # getUserID(), getUserClaims(), getUserRole() — server-side auth
   eureka.ts               # createEurekaSet(), updateEurekaSet(), updateEurekaVariants() — data transforms
-  count.ts                # countObtained(), percent() — progress calculation
+  count-obtained.ts       # countObtained(), percent() — progress calculation
+  data/
+    categories.ts         # getCategories() — use cache, cacheLife('days')
+    colors.ts             # getColors() — use cache, cacheLife('days')
+    styles.ts             # getStyles() — use cache, cacheLife('days')
+    labels.ts             # getLabels() — use cache, cacheLife('days')
+    trials.ts             # getTrials() — use cache, cacheLife('hours')
+    eureka-sets.ts        # getEurekaSets(), getEurekaSet() — React cache (auth-dependent)
+    obtained-eureka.ts    # getObtained() — React cache (user-scoped)
+    admin/                # Admin-only queries (no cache() — mutations must not be cached)
 ```
 
 ## Database Schema
@@ -127,8 +139,8 @@ hooks/
 | `eureka_variants` | Individual Eureka items (set FK, color, category, image_url, slug)                 |
 | `categories`      | Category lookup with images                                                        |
 | `colors`          | Color lookup with images                                                           |
-| `styles`          | Style lookup (unique titles, FK target for `eureka_sets.style`)                    |
-| `labels`          | Label lookup (unique titles, FK target for `eureka_sets.label`)                    |
+| `styles`          | Style lookup (unique titles, FK target for `eureka_sets.style`); RLS enabled       |
+| `labels`          | Label lookup (unique titles, FK target for `eureka_sets.label`); RLS enabled       |
 | `obtained`        | Per-user collection records                                                        |
 | `trials`          | Trial lookup with images (FK target for `eureka_sets.trial`)                       |
 | `profiles`        | User profiles (full_name, username, avatar_url, role)                              |

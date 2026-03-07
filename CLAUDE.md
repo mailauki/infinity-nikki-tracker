@@ -132,6 +132,7 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 - `lib/supabase/server.ts` — `createClient()` for Server Components/Actions (cookie-based)
 - `lib/supabase/client.ts` — `createClient()` for Client Components (browser)
 - `lib/supabase/proxy.ts` — `updateSession()` middleware for session refresh
+- `lib/supabase/public.ts` — `createPublicClient()` cookie-free client; use inside `use cache` functions for public data (no `cookies()` allowed there)
 
 ### Key Database Tables
 
@@ -139,8 +140,8 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 - `eureka_variants` — Individual eureka items (eureka_set FK, color, category, image_url, default, slug, updated_at)
 - `categories` — Category lookup (title, image_url)
 - `colors` — Color lookup (title, image_url)
-- `styles` — Style lookup (title); UNIQUE on title
-- `labels` — Label lookup (title); UNIQUE on title
+- `styles` — Style lookup (title); UNIQUE on title; RLS: public read, admin write
+- `labels` — Label lookup (title); UNIQUE on title; RLS: public read, admin write
 - `obtained` — User collection records (user_id, eureka_set, category, color)
 - `trials` — Trial lookup (title, image_url, slug, created_at, updated_at)
 - `profiles` — User profiles (full_name, username, avatar_url, role: 'user' | 'admin')
@@ -219,8 +220,14 @@ Note: `hooks/data/` files and `lib/theme.ts` use relative imports rather than th
 
 React `cache()` is for reads only — wrapping a mutation in `cache()` causes it to silently no-op on repeated calls with the same args. Mutations in `hooks/data/admin/` must NOT use `cache()`.
 
+`use cache` vs React `cache()`: public lookup hooks (`getCategories`, `getColors`, `getStyles`, `getLabels`, `getTrials`) use `use cache` + `cacheLife` for cross-request caching via `createPublicClient()`. Auth-dependent hooks (`getEurekaSets`, `getObtained`, `getUserID`, etc.) must use React `cache()` — they call `cookies()` which is blocked inside `use cache`.
+
 `getUserID()` returns `null` for unauthenticated users — always guard before passing to `getObtained()` or any user-scoped query: `if (!user_id) return data`.
 
 `git add` with paths containing `[slug]` brackets fails in zsh due to glob expansion — always quote the path: `git add 'app/(main)/(admin)/eureka-set/edit/[slug]/page.tsx'`.
 
 Avoid `useState` + `useEffect` for derived data — compute directly during render: `const derived = source.filter(...)`.
+
+Prefer CSS grid `Box` over MUI `Grid` for responsive layouts: `<Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2 }}>`. Avoids the `Grid size` API.
+
+`GridContainer`'s `sideContent` prop accepts falsy values — pass `isLoggedIn && <Component />` to conditionally hide the sidebar.

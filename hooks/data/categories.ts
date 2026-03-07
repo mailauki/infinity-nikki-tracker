@@ -1,9 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
-import { Category } from '@/lib/types/eureka'
-import { cache } from 'react'
+import { cacheLife } from 'next/cache'
 
-export const getCategories = cache(async () => {
-  const supabase = await createClient()
+import { createPublicClient } from '../../lib/supabase/public'
+import { Category } from '../../lib/types/eureka'
+
+export async function getCategories() {
+  'use cache'
+  cacheLife('days')
+
+  const supabase = createPublicClient()
 
   const { data: categories } = await supabase
     .from('categories')
@@ -11,4 +15,4 @@ export const getCategories = cache(async () => {
     .order('id', { ascending: true })
 
   return categories as Category[]
-})
+}

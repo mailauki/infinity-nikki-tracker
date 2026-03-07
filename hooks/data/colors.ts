@@ -1,9 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
-import { Color } from '@/lib/types/eureka'
-import { cache } from 'react'
+import { cacheLife } from 'next/cache'
 
-export const getColors = cache(async () => {
-  const supabase = await createClient()
+import { createPublicClient } from '../../lib/supabase/public'
+import { Color } from '../../lib/types/eureka'
+
+export async function getColors() {
+  'use cache'
+  cacheLife('days')
+
+  const supabase = createPublicClient()
 
   const { data: colors } = await supabase
     .from('colors')
@@ -11,4 +15,4 @@ export const getColors = cache(async () => {
     .order('id', { ascending: true })
 
   return colors as Color[]
-})
+}
