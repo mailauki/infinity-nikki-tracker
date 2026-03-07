@@ -1,10 +1,11 @@
 'use client'
 
-import { Box, Chip, IconButton, Tooltip, Typography } from '@mui/material'
+import { Avatar, Box, Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlug } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 import { EurekaSet } from '@/lib/types/eureka'
+import { Category } from '@mui/icons-material'
 
 type Row = EurekaSet
 
@@ -22,6 +23,14 @@ const columns: Column<Row>[] = [
           <EditIcon fontSize="small" />
         </IconButton>
       </Tooltip>
+    ),
+  },
+  {
+    header: 'Image',
+    cell: (set) => (
+      <Avatar size="xs" src={set.image_url!} alt={set.title || 'Image'}>
+        <Category fontSize="inherit" />
+      </Avatar>
     ),
   },
   { header: 'ID', cell: (set) => set.id },

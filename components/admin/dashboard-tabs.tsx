@@ -5,9 +5,15 @@ import { Box, Paper, Tab, Tabs } from '@mui/material'
 import { EurekaSetTable } from './eureka-set-table'
 import { EurekaVariantTable } from './eureka-variant-table'
 import { TrialTable } from './trial-table'
-import { DashboardTabsProps } from '@/lib/types/dashboard'
+import { EurekaSet, EurekaVariantRaw, Trial } from '@/lib/types/eureka'
 
-export function DashboardTabs({ eurekaSets, eurekaVariants, trials }: DashboardTabsProps) {
+export function DashboardTabs({
+	eurekaSets, eurekaVariants, trials,
+}: {
+	eurekaSets: EurekaSet[]
+	eurekaVariants: EurekaVariantRaw[]
+	trials: Trial[]
+}) {
   const [tab, setTab] = useState(0)
 
   return (
