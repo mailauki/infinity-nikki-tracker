@@ -73,7 +73,7 @@ export default function EditEurekaVariantForm({
     if (error) {
       setError(error.message)
     } else {
-      router.push('/eureka-variant')
+      router.push('/dashboard')
       router.refresh()
     }
   }

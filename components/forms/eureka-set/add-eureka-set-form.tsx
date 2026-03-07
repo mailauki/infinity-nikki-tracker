@@ -102,7 +102,7 @@ export default function AddEurekaSetForm({
     }
 
     setLoading(false)
-    router.push('/eureka-set')
+    router.push('/dashboard')
     router.refresh()
   }
 

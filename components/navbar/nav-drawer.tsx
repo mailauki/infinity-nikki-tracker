@@ -21,7 +21,6 @@ import { JwtPayload } from '@supabase/supabase-js'
 import { NavExtra } from './nav-extra'
 import Link from 'next/link'
 import Footer from './nav-footer'
-import NavTabs from './nav-tabs'
 import Image from 'next/image'
 
 const DRAWER_WIDTH = 240
@@ -230,7 +229,6 @@ export default function NavDrawer({
         </Drawer>
         <Box component="main" className="h-screen w-full overflow-hidden">
           <DrawerHeader />
-          {/* <NavTabs /> */}
           <MainContainer elevation={0}>{children}</MainContainer>
           <Toolbar />
         </Box>
