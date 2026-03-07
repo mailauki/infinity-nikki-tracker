@@ -30,7 +30,7 @@ export default async function EurekaSetPage({ params }: { params: Promise<{ slug
 
   return (
     <Suspense>
-			<PageContainer title='Eureka Set'>
+			<PageContainer>
 				<EurekaSet slug={slug} />
 			</PageContainer>
     </Suspense>
