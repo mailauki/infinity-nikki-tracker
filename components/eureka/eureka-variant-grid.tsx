@@ -25,7 +25,7 @@ export default function EurekaVariantGrid({
           key={eurekaVariant.id}
           eurekaVariant={eurekaVariant}
           isLoggedIn={isLoggedIn}
-          size={isLoggedIn ? "md" : 'sm'}
+          size={isLoggedIn ? 'md' : 'sm'}
         />
       ))}
     </Box>

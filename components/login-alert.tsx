@@ -10,7 +10,7 @@ export default function LoginAlert() {
       <Anchor href="/auth/sign-up" color="inherit">
         Sign up
       </Anchor>{' '}
-      to track your missing Eureka
+      to track your collected Eureka
     </Alert>
   )
 }
