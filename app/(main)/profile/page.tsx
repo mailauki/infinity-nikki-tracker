@@ -1,16 +1,21 @@
 import ProfileForm from '@/components/forms/auth/profile-form'
 import { createClient } from '@/lib/supabase/server'
 import { getUserRole } from '@/hooks/user'
-import { Container, Typography } from '@mui/material'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
+import { Metadata } from 'next'
+import PageContainer from '@/components/page-container'
+
+export const metadata: Metadata = {
+  title: 'Profile',
+}
 
 export default function ProfilePage() {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-        <UserDetails />
-      </Container>
+      <PageContainer title='Profile'>
+				<UserDetails />
+			</PageContainer>
     </Suspense>
   )
 }
@@ -29,11 +34,6 @@ async function UserDetails() {
   const role = await getUserRole()
 
   return (
-    <>
-      <Typography variant="h3" component="h1">
-        Profile
-      </Typography>
-      <ProfileForm user={user} isAdmin={role === 'admin'} />
-    </>
+    <ProfileForm user={user} isAdmin={role === 'admin'} />
   )
 }

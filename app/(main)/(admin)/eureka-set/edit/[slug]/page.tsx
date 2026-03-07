@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { Box, Container, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { createClient } from '@/lib/supabase/server'
 import EditEurekaSetForm from '@/components/forms/eureka-set/edit-eureka-set-form'
 import { getTrials } from '@/hooks/data/trials'
@@ -8,13 +8,19 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getColors } from '@/hooks/data/colors'
 import { getCategories } from '@/hooks/data/categories'
+import { Metadata } from 'next'
+import PageContainer from '@/components/page-container'
+
+export const metadata: Metadata = {
+  title: 'Edit Eureka Set',
+}
 
 export default async function EditEurekaSetPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <Suspense>
-      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
-        <EditEurekaSet params={params} />
-      </Container>
+      <PageContainer title='Edit Eureka Set' size='sm'>
+				<EditEurekaSet params={params} />
+			</PageContainer>
     </Suspense>
   )
 }

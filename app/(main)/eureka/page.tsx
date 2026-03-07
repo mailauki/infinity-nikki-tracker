@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import { Box, Card, Container, List } from '@mui/material'
+import { Box, Card, List } from '@mui/material'
 
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
 import GridContainer from '@/components/grid-container'
@@ -9,13 +9,19 @@ import LoginAlert from '@/components/login-alert'
 import { Category } from '@/lib/types/eureka'
 import { CategoryItem } from '@/components/eureka/category-item'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
+import { Metadata } from 'next'
+import PageContainer from '@/components/page-container'
+
+export const metadata: Metadata = {
+  title: 'Eureka Sets',
+}
 
 export default async function EurekaSetsPage() {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-        <EurekaSets />
-      </Container>
+			<PageContainer title='Eureka Sets'>
+				<EurekaSets />
+			</PageContainer>
     </Suspense>
   )
 }
@@ -38,7 +44,7 @@ async function EurekaSets() {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: isLoggedIn ? '1fr 1fr' : '1fr 1fr 1fr' },
               gap: 2,
             }}
           >

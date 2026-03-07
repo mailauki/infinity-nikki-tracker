@@ -1,7 +1,6 @@
 import InfoIcon from '@mui/icons-material/InfoOutline'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import AccountIcon from '@mui/icons-material/AccountCircle'
-import ViewListIcon from '@mui/icons-material/ViewList'
 import { NavLink } from '@/lib/types/props'
 
 export const navLinksData: {
@@ -37,13 +36,6 @@ export const navLinksData: {
       url: '/dashboard',
       icon: <DashboardIcon />,
       adminOnly: true,
-    },
-    {
-      title: 'Eureka Sets',
-      url: '/eureka-set',
-      icon: <ViewListIcon />,
-      adminOnly: true,
-      exclusiveItems: true,
       items: [
         {
           title: 'Add Eureka Set',
@@ -53,16 +45,7 @@ export const navLinksData: {
           title: 'Edit Eureka Set',
           url: '/eureka-set/edit',
         },
-      ],
-    },
-    {
-      title: 'Eureka Variants',
-      url: '/eureka-variant',
-      icon: <ViewListIcon />,
-      adminOnly: true,
-      exclusiveItems: true,
-      items: [
-        {
+				{
           title: 'Add Eureka Variant',
           url: '/eureka-variant/new',
         },
@@ -70,13 +53,15 @@ export const navLinksData: {
           title: 'Edit Eureka Variant',
           url: '/eureka-variant/edit',
         },
+				{
+          title: 'Add Trial',
+          url: '/trial/new',
+        },
+        {
+          title: 'Edit Trial',
+          url: '/trial/edit',
+        },
       ],
-    },
-    {
-      title: 'Trials',
-      url: '/trial',
-      icon: <ViewListIcon />,
-      adminOnly: true,
     },
     {
       title: 'Profile',

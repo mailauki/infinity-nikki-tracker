@@ -12,7 +12,7 @@ import MenuIcon from '@mui/icons-material/Menu'
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
 import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import Stack from '@mui/material/Stack'
-import { Button } from '@mui/material'
+import { Button, Paper } from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import { navLinksData } from '@/lib/nav-links'
@@ -50,20 +50,21 @@ const closedMixin = (theme: Theme): CSSObject => ({
   },
 })
 
-const MainContainer = styled('div')(({ theme }) => ({
+const MainContainer = styled(Paper)(({ theme }) => ({
   // Default height for small screens (portrait)
-  height: `calc(100vh - 168px)`, // 56px * 3
+  height: `calc(100vh - 112px)`, // 56px * 3 = 168
   // Landscape orientation on small screens
   [theme.breakpoints.up('xs')]: {
     '@media (orientation: landscape)': {
-      height: `calc(100vh - 144px)`,
-    }, // 48px * 3
+      height: `calc(100vh - 96px)`,
+    }, // 48px * 3 = 144
   },
   // Large screens (sm breakpoint and up)
   [theme.breakpoints.up('sm')]: {
-    height: `calc(100vh - 192px)`,
-  }, // 64px * 3
+    height: `calc(100vh - 128px)`,
+  }, // 64px * 3 = 192 based on number of toolbars
   overflowY: 'auto',
+	borderRadius: 0,
 }))
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -229,8 +230,8 @@ export default function NavDrawer({
         </Drawer>
         <Box component="main" className="h-screen w-full overflow-hidden">
           <DrawerHeader />
-          <NavTabs />
-          <MainContainer>{children}</MainContainer>
+          {/* <NavTabs /> */}
+          <MainContainer elevation={0}>{children}</MainContainer>
           <Toolbar />
         </Box>
       </Stack>

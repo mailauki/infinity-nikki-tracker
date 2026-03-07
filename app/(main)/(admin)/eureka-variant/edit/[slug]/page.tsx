@@ -1,9 +1,15 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { Box, Container, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import { createClient } from '@/lib/supabase/server'
 import EditEurekaVariantForm from '@/components/forms/eureka-variant/edit-eureka-variant-form'
 import { getAdminData } from '@/hooks/data/user'
+import { Metadata } from 'next'
+import PageContainer from '@/components/page-container'
+
+export const metadata: Metadata = {
+  title: 'Edit Eureka Variant',
+}
 
 export default async function EditEurekaVariantPage({
   params,
@@ -12,9 +18,9 @@ export default async function EditEurekaVariantPage({
 }) {
   return (
     <Suspense>
-      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
+			<PageContainer title='Edit Eureka Variant' size='sm'>
         <EditEurekaVariant params={params} />
-      </Container>
+			</PageContainer>
     </Suspense>
   )
 }

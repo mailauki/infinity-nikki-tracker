@@ -10,7 +10,6 @@ import {
   CardHeader,
   CardMedia,
   Chip,
-  Container,
   Grid,
   LinearProgress,
   List,
@@ -20,14 +19,19 @@ import { countObtained, percent } from '@/hooks/count-obtained'
 import EurekaCard from '@/components/eureka/eureka-card'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrials } from '@/hooks/data/trials'
-// import { ViewAllButton } from '@/components/view-all-button'
+import { Metadata } from 'next'
+import PageContainer from '@/components/page-container'
+
+export const metadata: Metadata = {
+  title: 'Trials',
+}
 
 export default async function TrialsPage() {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-        <Trials />
-      </Container>
+			<PageContainer title='Trials'>
+				<Trials />
+			</PageContainer>
     </Suspense>
   )
 }
