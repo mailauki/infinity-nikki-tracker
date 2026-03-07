@@ -5,7 +5,10 @@ import { cache } from 'react'
 export const getColors = cache(async () => {
   const supabase = await createClient()
 
-  const { data: colors } = await supabase.from('colors').select('title, image_url').order('id', { ascending: true })
+  const { data: colors } = await supabase
+    .from('colors')
+    .select('title, image_url')
+    .order('id', { ascending: true })
 
   return colors as Color[]
 })

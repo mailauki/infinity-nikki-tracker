@@ -21,7 +21,7 @@ export default async function EurekaSetPage({ params }: { params: Promise<{ slug
 async function EurekaSet({ slug }: { slug: string }) {
   const eurekaSet = await getEurekaSet(slug)
   const user_id = await getUserID()
-  const obtained = await getObtained(user_id!)
+  const obtained = user_id ? await getObtained(user_id) : []
   const isLoggedIn = !!user_id!
 
   return (

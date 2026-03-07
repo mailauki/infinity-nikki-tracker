@@ -154,13 +154,17 @@ export default function EditEurekaVariantForm({
           />
         </Stack>
 
-				<FormControl>
-					<FormControlLabel
-						control={<Switch checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} />}
-						label="Default variant"
-					/>
-					<FormHelperText>Used to determine the Eureka set thumbnail image - limit one per set</FormHelperText>
-				</FormControl>
+        <FormControl>
+          <FormControlLabel
+            control={
+              <Switch checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} />
+            }
+            label="Default variant"
+          />
+          <FormHelperText>
+            Used to determine the Eureka set thumbnail image — limit one per set
+          </FormHelperText>
+        </FormControl>
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
           <Button variant="outlined" href="/eureka-variant">

@@ -72,8 +72,8 @@ export default function ImageUpload({
           outline: '2px solid',
           outlineOffset: '2px',
         },
-				width: table === 'trials' ? '100%' : SIZE,
-				height: SIZE 
+        width: table === 'trials' ? '100%' : SIZE,
+        height: SIZE,
       }}
     >
       <Box sx={{ position: 'relative', width: table === 'trials' ? '100%' : SIZE, height: SIZE }}>

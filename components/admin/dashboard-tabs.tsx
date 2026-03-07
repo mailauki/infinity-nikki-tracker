@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Tab, Tabs } from '@mui/material'
+import { Box, Paper, Tab, Tabs } from '@mui/material'
 import { EurekaSetTable } from './eureka-set-table'
 import { EurekaVariantTable } from './eureka-variant-table'
 import { TrialTable } from './trial-table'
@@ -12,11 +12,13 @@ export function DashboardTabs({ eurekaSets, eurekaVariants, trials }: DashboardT
 
   return (
     <Box>
-      <Tabs value={tab} onChange={(_, value) => setTab(value)} sx={{ mb: 2 }}>
-        <Tab label="Eureka Sets" />
-        <Tab label="Eureka Variants" />
-        <Tab label="Trials" />
-      </Tabs>
+      <Paper variant="outlined" sx={{ mb: 2, overflow: 'clip' }}>
+        <Tabs value={tab} onChange={(_, value) => setTab(value)}>
+          <Tab label="Eureka Sets" />
+          <Tab label="Eureka Variants" />
+          <Tab label="Trials" />
+        </Tabs>
+      </Paper>
       {tab === 0 && <EurekaSetTable rows={eurekaSets} />}
       {tab === 1 && <EurekaVariantTable rows={eurekaVariants} />}
       {tab === 2 && <TrialTable rows={trials} />}

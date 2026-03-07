@@ -2,6 +2,7 @@
 
 import { ReactNode, useState } from 'react'
 import {
+  Alert,
   Button,
   CardHeader,
   Chip,
@@ -60,13 +61,28 @@ export function AdminTable<T>({
         }
         action={<Chip variant="outlined" color="secondary" label={`Total: ${allRows.length}`} />}
       />
-      <Stack direction="row" justifyContent="flex-end" sx={{ mb: 2 }}>
-        <Button variant="outlined" startIcon={<AddIcon />} size="small" href={addHref}>
-          {addLabel}
-        </Button>
+
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="flex-end"
+        flexWrap="wrap"
+        useFlexGap
+        spacing={1}
+        sx={{ mb: 2 }}
+      >
+        <Alert severity="info">Some items are automatically generated — edit with caution</Alert>
+
+        <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
+          <Button variant="outlined" startIcon={<AddIcon />} size="small" href={addHref}>
+            {addLabel}
+          </Button>
+        </Stack>
       </Stack>
+
       <Paper elevation={3} sx={{ borderRadius: '12px' }}>
-        <TableContainer sx={{ overflowX: 'auto' }}>
+        <TableContainer sx={{ overflowX: 'auto', flex: 1, height: '100%', minHeight: '731px' }}>
+          {/* minHeight: 731 for sets 791 for variants (with images) */}
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -79,7 +95,7 @@ export function AdminTable<T>({
             </TableHead>
             <TableBody>
               {visibleRows.map((row) => (
-                <TableRow key={getKey(row)}>
+                <TableRow key={getKey(row)} sx={{}}>
                   {columns.map((col) => (
                     <TableCell
                       key={col.header}

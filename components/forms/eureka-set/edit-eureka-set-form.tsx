@@ -48,17 +48,17 @@ export default function EditEurekaSetForm({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
-  const [colorSelect, setColorSelect] = useState<string[]>(initialColors);
+  const [colorSelect, setColorSelect] = useState<string[]>(initialColors)
 
   const handleColorChange = (event: SelectChangeEvent<typeof colorSelect>) => {
     const {
       target: { value },
-    } = event;
+    } = event
     setColorSelect(
       // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
-    );
-  };
+      typeof value === 'string' ? value.split(',') : value
+    )
+  }
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
@@ -208,7 +208,7 @@ export default function EditEurekaSetForm({
           </Select>
         </FormControl>
 
-				<ColorSelect colors={colors} colorSelect={colorSelect} handleChange={handleColorChange} />
+        <ColorSelect colors={colors} colorSelect={colorSelect} handleChange={handleColorChange} />
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
           <Button variant="outlined" href="/dashboard">

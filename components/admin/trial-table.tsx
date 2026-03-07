@@ -25,11 +25,20 @@ const columns: Column<Row>[] = [
       </Tooltip>
     ),
   },
-	{ header: 'Image', cell: (v) => (
-		<Avatar size='xs' src={v.image_url!} alt={v.title||'Image'}>
-			<Category fontSize='inherit' />
-		</Avatar>
-	)},
+  {
+    header: 'Image',
+    cell: (v) => (
+      <Avatar
+        size="xs"
+        src={v.image_url!}
+        alt={v.title || 'Image'}
+        variant="rounded"
+        sx={{ width: 40 }}
+      >
+        <Category fontSize="inherit" />
+      </Avatar>
+    ),
+  },
   { header: 'ID', cell: (trial) => trial.id },
   {
     header: 'Title',

@@ -25,11 +25,14 @@ const columns: Column<Row>[] = [
       </Tooltip>
     ),
   },
-	{ header: 'Image', cell: (v) => (
-		<Avatar size='xs' src={v.image_url!} alt={v.eureka_set||'Image'}>
-			<Category fontSize='inherit' />
-		</Avatar>
-	)},
+  {
+    header: 'Image',
+    cell: (v) => (
+      <Avatar size="xs" src={v.image_url!} alt={v.eureka_set || 'Image'}>
+        <Category fontSize="inherit" />
+      </Avatar>
+    ),
+  },
   { header: 'ID', cell: (v) => v.id },
   {
     header: 'Eureka Set',

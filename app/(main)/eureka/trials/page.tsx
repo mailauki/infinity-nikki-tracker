@@ -70,6 +70,29 @@ function TrialCard({
   const obtainedCount = countObtained(eureka)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
+  if (!isLoggedIn) {
+    return (
+      <Card>
+        <CardHeader title={trial.title} />
+        <CardMedia sx={{ height: 160 }} image={trial.image_url!} title={trial.title} />
+        <CardContent sx={{ p: 0 }}>
+          <List sx={{ width: '100%' }}>
+            {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
+              <ListItem key={eurekaSet.id} disablePadding>
+                <CardActionArea href={`/eureka/${eurekaSet.slug}`}>
+                  <EurekaCard eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} size="sm" />
+                </CardActionArea>
+              </ListItem>
+            ))}
+          </List>
+        </CardContent>
+        <CardActions>
+          {/* TODO: add trial slug page */}
+          {/* <ViewAllButton href={`/${trial.slug}`} /> */}
+        </CardActions>
+      </Card>
+    )
+  }
   return (
     <Card>
       <CardHeader

@@ -56,12 +56,10 @@ export default function RealtimeEurekaSet({
   }, [userId])
 
   useEffect(() => {
-    const updatedEurekaSet = updateEurekaSet({ eurekaSet, obtained })
+    const updatedEurekaSet = updateEurekaSet({ eurekaSet: serverEurekaSet, obtained })
 
     setEurekaSet(updatedEurekaSet)
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [obtained])
+  }, [obtained, serverEurekaSet])
 
   return (
     <>

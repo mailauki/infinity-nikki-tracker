@@ -25,7 +25,7 @@ export function NavMain({
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
 
   return (
-    <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }} component="nav">
+    <List component="nav">
       {items.map((item) => (
         <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
           <ListItemButton

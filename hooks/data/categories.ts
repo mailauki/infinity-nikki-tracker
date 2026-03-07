@@ -5,7 +5,10 @@ import { cache } from 'react'
 export const getCategories = cache(async () => {
   const supabase = await createClient()
 
-  const { data: categories } = await supabase.from('categories').select('title, image_url').order('id', { ascending: true })
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('title, image_url')
+    .order('id', { ascending: true })
 
   return categories as Category[]
 })
