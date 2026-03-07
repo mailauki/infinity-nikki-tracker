@@ -12,7 +12,7 @@ export function DashboardTabs({ eurekaSets, eurekaVariants, trials }: DashboardT
 
   return (
     <Box>
-      <Paper variant="outlined" sx={{ mb: 2, overflow: 'clip' }}>
+      <Paper variant="outlined" sx={{ mb: 2, overflow: 'hidden' }}>
         <Tabs value={tab} onChange={(_, value) => setTab(value)}>
           <Tab label="Eureka Sets" />
           <Tab label="Eureka Variants" />

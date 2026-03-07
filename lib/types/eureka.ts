@@ -4,15 +4,8 @@ export type EurekaSet = Tables<'eureka_sets'> & {
   image_url: string
   eureka_variants: EurekaVariant[]
   categories: Category[]
-  colors: Category[]
+  colors: Color[]
 }
-
-// export type Eureka = Tables<'eureka_sets'> & {
-//   image_url: string
-//   eureka_variants: EurekaVariant & { obtained?: boolean }[]
-//   categories: Category[]
-//   colors: Category[]
-// }
 
 export type EurekaSetRaw = Pick<
   Tables<'eureka_sets'>,

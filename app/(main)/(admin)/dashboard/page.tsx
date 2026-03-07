@@ -3,6 +3,7 @@ import { Box, Container, Typography } from '@mui/material'
 import { StatCard } from '@/components/admin/stat-card'
 import { DashboardTabs } from '@/components/admin/dashboard-tabs'
 import { getAdminData } from '@/hooks/data/user'
+import { getEurekaSets } from '@/hooks/data/eureka-sets'
 
 export default function DashboardPage() {
   return (
@@ -15,7 +16,8 @@ export default function DashboardPage() {
 }
 
 async function AdminDashboard() {
-  const { eurekaSets, eurekaVariants, trials } = await getAdminData()
+	const eurekaSets = await getEurekaSets()
+  const { eurekaVariants, trials } = await getAdminData()
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>

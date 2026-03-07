@@ -1,12 +1,12 @@
 'use client'
 
-import { IconButton, Tooltip, Typography } from '@mui/material'
+import { Box, Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlug } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
-import { EurekaSetRaw } from '@/lib/types/eureka'
+import { EurekaSet } from '@/lib/types/eureka'
 
-type Row = EurekaSetRaw
+type Row = EurekaSet
 
 const columns: Column<Row>[] = [
   {
@@ -44,6 +44,16 @@ const columns: Column<Row>[] = [
   { header: 'Rarity', cell: (set) => set.rarity },
   { header: 'Style', cell: (set) => set.style },
   { header: 'Label', cell: (set) => set.label },
+  {
+    header: 'Colors',
+		cell: (set) => (
+      <Box sx={{ display: 'flex', gap: 0.5 }}>
+        {set.colors ? set.colors.map((color) => (
+          <Chip key={color.title} label={color.title} size="small" />
+        )) : '—' }
+      </Box>
+    ),
+  },
   {
     header: 'Trial',
     cell: (set) => (

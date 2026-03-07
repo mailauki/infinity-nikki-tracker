@@ -81,7 +81,7 @@ export function AdminTable<T>({
       </Stack>
 
       <Paper elevation={3} sx={{ borderRadius: '12px' }}>
-        <TableContainer sx={{ overflowX: 'auto', flex: 1, height: '100%', minHeight: '731px' }}>
+        <TableContainer sx={{ overflowX: 'auto', flex: 1, height: '100%', minHeight: '791px' }}>
           {/* minHeight: 731 for sets 791 for variants (with images) */}
           <Table size="small">
             <TableHead>
