@@ -17,6 +17,7 @@ import {
 } from '@mui/material'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import EurekaCard from '@/components/eureka/eureka-card'
+import { ViewAllButton } from '@/components/view-all-button'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrials } from '@/hooks/data/trials'
 import { Metadata } from 'next'
@@ -91,8 +92,7 @@ function TrialCard({
           </List>
         </CardContent>
         <CardActions>
-          {/* TODO: add trial slug page */}
-          {/* <ViewAllButton href={`/${trial.slug}`} /> */}
+          <ViewAllButton href={`/eureka/trials/${trial.slug}`} />
         </CardActions>
       </Card>
     )
@@ -126,8 +126,7 @@ function TrialCard({
         </List>
       </CardContent>
       <CardActions>
-        {/* TODO: add trial slug page */}
-        {/* <ViewAllButton href={`/${trial.slug}`} /> */}
+        <ViewAllButton href={`/eureka/trials/${trial.slug}`} />
       </CardActions>
     </Card>
   )

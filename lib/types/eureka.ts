@@ -31,6 +31,7 @@ export interface ObtainedCount {
 
 export interface Total {
   title: string
+  slug: string
   image_url: string | null
   eurekaSets?: EurekaSet[]
 }

@@ -16,3 +16,18 @@ export async function getTrials() {
 
   return trials as Trial[]
 }
+
+export async function getTrial(slug: string) {
+  'use cache'
+  cacheLife('hours')
+
+  const supabase = createPublicClient()
+
+  const { data: trial } = await supabase
+    .from('trials')
+    .select('id, slug, title, image_url, updated_at')
+    .eq('slug', slug)
+    .maybeSingle()
+
+  return trial as Trial
+}
