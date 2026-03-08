@@ -69,11 +69,10 @@ const columns: Column<Row>[] = [
 export function TrialTable({ rows }: { rows: Row[] }) {
   return (
     <AdminTable
-      title="Trials"
+      title="Trial"
       rows={rows}
       columns={columns}
-      addHref="/trial/new"
-      addLabel="Add Trial"
+      slug="trial"
       getKey={(trial) => trial.id}
     />
   )

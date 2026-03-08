@@ -70,11 +70,10 @@ const columns: Column<Row>[] = [
 export function EurekaVariantTable({ rows }: { rows: Row[] }) {
   return (
     <AdminTable
-      title="Eureka Variants"
+      title="Eureka Variant"
       rows={rows}
       columns={columns}
-      addHref="/eureka-variant/new"
-      addLabel="Add Eureka Variant"
+      slug="eureka-variant"
       getKey={(v) => v.id}
     />
   )

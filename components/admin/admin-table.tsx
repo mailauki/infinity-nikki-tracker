@@ -1,24 +1,9 @@
 'use client'
 
-import { ReactNode, useState } from 'react'
-import {
-  Alert,
-  Button,
-  CardHeader,
-  Chip,
-  Paper,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  Typography,
-} from '@mui/material'
+import { ReactNode } from 'react'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material'
 import { SxProps, Theme } from '@mui/material/styles'
-import AddIcon from '@mui/icons-material/Add'
+import PaginationContainer from './pagination-container'
 
 export interface Column<T> {
   header: string
@@ -31,56 +16,14 @@ interface AdminTableProps<T> {
   title: string
   rows: T[] | null | undefined
   columns: Column<T>[]
-  addHref: string
-  addLabel: string
+  slug: string
   getKey: (row: T) => string | number
 }
 
-export function AdminTable<T>({
-  title,
-  rows,
-  columns,
-  addHref,
-  addLabel,
-  getKey,
-}: AdminTableProps<T>) {
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(15)
-
-  const allRows = rows ?? []
-  const visibleRows = allRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-
+export function AdminTable<T>({ title, rows, columns, slug, getKey }: AdminTableProps<T>) {
   return (
-    <>
-      <CardHeader
-        disableTypography
-        title={
-          <Typography variant="h3" component="h1">
-            {title}
-          </Typography>
-        }
-        action={<Chip variant="outlined" color="secondary" label={`Total: ${allRows.length}`} />}
-      />
-
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="flex-end"
-        flexWrap="wrap"
-        useFlexGap
-        spacing={1}
-        sx={{ mb: 2 }}
-      >
-        <Alert severity="info">Some items are automatically generated — edit with caution</Alert>
-
-        <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
-          <Button variant="outlined" startIcon={<AddIcon />} size="small" href={addHref} sx={{ '&.MuiButton-root': { textWrap: 'nowrap' } }}>
-            {addLabel}
-          </Button>
-        </Stack>
-      </Stack>
-
-      <Paper elevation={3} sx={{ borderRadius: '12px' }}>
+    <PaginationContainer title={title} slug={slug} rows={rows}>
+      {(visibleRows) => (
         <TableContainer sx={{ overflowX: 'auto', flex: 1, height: '100%', minHeight: '592px' }}>
           <Table size="small">
             <TableHead>
@@ -94,7 +37,7 @@ export function AdminTable<T>({
             </TableHead>
             <TableBody>
               {visibleRows.map((row) => (
-                <TableRow key={getKey(row)} sx={{}}>
+                <TableRow key={getKey(row)}>
                   {columns.map((col) => (
                     <TableCell
                       key={col.header}
@@ -109,19 +52,7 @@ export function AdminTable<T>({
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
-          component="div"
-          count={allRows.length}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[15, 20, 30, 50, 100]}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10))
-            setPage(0)
-          }}
-        />
-      </Paper>
-    </>
+      )}
+    </PaginationContainer>
   )
 }
