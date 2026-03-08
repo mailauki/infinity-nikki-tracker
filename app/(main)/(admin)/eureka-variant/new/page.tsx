@@ -1,5 +1,4 @@
 import { Suspense } from 'react'
-import { Box, Typography } from '@mui/material'
 import AddEurekaVariantForm from '@/components/forms/eureka-variant/add-eureka-variant-form'
 import { getAdminData } from '@/hooks/data/user'
 import { Metadata } from 'next'
@@ -23,10 +22,10 @@ async function NewEurekaVariant() {
   const { eurekaSets, categories, colors } = await getAdminData()
 
   return (
-      <AddEurekaVariantForm
-        eurekaSets={eurekaSets ?? []}
-        categories={categories ?? []}
-        colors={colors ?? []}
-      />
+    <AddEurekaVariantForm
+      eurekaSets={eurekaSets ?? []}
+      categories={categories ?? []}
+      colors={colors ?? []}
+    />
   )
 }

@@ -84,11 +84,10 @@ const columns: Column<Row>[] = [
 export function EurekaSetTable({ rows }: { rows: Row[] }) {
   return (
     <AdminTable
-      title="Eureka Sets"
+      title="Eureka Set"
       rows={rows}
       columns={columns}
-      addHref="/eureka-set/new"
-      addLabel="Add Eureka Set"
+      slug="eureka-set"
       getKey={(set) => set.id}
     />
   )

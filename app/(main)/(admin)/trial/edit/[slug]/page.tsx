@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { Box, Typography } from '@mui/material'
 import EditTrialForm from '@/components/forms/trial/edit-trial-form'
 import { getTrialRaw } from '@/hooks/data/admin/trials'
 import { Metadata } from 'next'
@@ -27,7 +26,5 @@ async function EditTrial({ params }: { params: Promise<{ slug: string }> }) {
 
   if (!trial) notFound()
 
-  return (
-    <EditTrialForm trial={trial} />
-  )
+  return <EditTrialForm trial={trial} />
 }

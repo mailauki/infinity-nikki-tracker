@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { Box, Typography } from '@mui/material'
 import { createClient } from '@/lib/supabase/server'
 import EditEurekaVariantForm from '@/components/forms/eureka-variant/edit-eureka-variant-form'
 import { getAdminData } from '@/hooks/data/user'
@@ -40,11 +39,11 @@ async function EditEurekaVariant({ params }: { params: Promise<{ slug: string }>
   const { eurekaSets, categories, colors } = await getAdminData()
 
   return (
-      <EditEurekaVariantForm
-        variant={variant}
-        eurekaSets={eurekaSets ?? []}
-        categories={categories ?? []}
-        colors={colors ?? []}
-      />
+    <EditEurekaVariantForm
+      variant={variant}
+      eurekaSets={eurekaSets ?? []}
+      categories={categories ?? []}
+      colors={colors ?? []}
+    />
   )
 }
