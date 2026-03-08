@@ -1,13 +1,10 @@
-import { cacheLife } from 'next/cache'
-
-import { publicClient } from '@/lib/supabase/public'
 import { Category } from '@/lib/types/eureka'
+import { createClient } from '@/lib/supabase/server'
 
 export async function getCategories() {
-  'use cache'
-  cacheLife('days')
+	const supabase = await createClient()
 
-  const { data: categories } = await publicClient
+  const { data: categories } = await supabase
     .from('categories')
     .select('title, image_url')
     .order('id', { ascending: true })

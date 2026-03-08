@@ -1,13 +1,10 @@
-import { cacheLife } from 'next/cache'
-
-import { publicClient } from '@/lib/supabase/public'
+import { createClient } from '@/lib/supabase/server'
 import { Trial } from '@/lib/types/eureka'
 
 export async function getTrials() {
-  'use cache'
-  cacheLife('hours')
+	const supabase = await createClient()
 
-  const { data: trials } = await publicClient
+  const { data: trials } = await supabase
     .from('trials')
     .select('id, slug, title, image_url, updated_at')
     .order('id', { ascending: true })
@@ -16,10 +13,9 @@ export async function getTrials() {
 }
 
 export async function getTrial(slug: string) {
-  'use cache'
-  cacheLife('hours')
+	const supabase = await createClient()
 
-  const { data: trial } = await publicClient
+  const { data: trial } = await supabase
     .from('trials')
     .select('id, slug, title, image_url, updated_at')
     .eq('slug', slug)

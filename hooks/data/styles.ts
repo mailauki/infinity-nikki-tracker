@@ -1,13 +1,10 @@
-import { cacheLife } from 'next/cache'
-
-import { publicClient } from '@/lib/supabase/public'
 import { Style } from '@/lib/types/eureka'
+import { createClient } from '@/lib/supabase/server'
 
 export async function getStyles() {
-  'use cache'
-  cacheLife('days')
+	const supabase = await createClient()
 
-  const { data: styles } = await publicClient
+  const { data: styles } = await supabase
     .from('styles')
     .select('title')
     .not('title', 'is', null)

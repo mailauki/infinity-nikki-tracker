@@ -1,13 +1,10 @@
-import { cacheLife } from 'next/cache'
-
-import { publicClient } from '@/lib/supabase/public'
+import { createClient } from '@/lib/supabase/server'
 import { Label } from '@/lib/types/eureka'
 
 export async function getLabels() {
-  'use cache'
-  cacheLife('days')
+	const supabase = await createClient()
 
-  const { data: labels } = await publicClient
+  const { data: labels } = await supabase
     .from('labels')
     .select('title')
     .not('title', 'is', null)
