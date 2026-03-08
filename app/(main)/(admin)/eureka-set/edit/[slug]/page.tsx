@@ -6,6 +6,8 @@ import EditEurekaSetForm from '@/components/forms/eureka-set/edit-eureka-set-for
 import { getTrials } from '@/hooks/data/trials'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
+import { getColors } from '@/hooks/data/colors'
+import { getCategories } from '@/hooks/data/categories'
 
 export default async function EditEurekaSetPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
@@ -29,7 +31,20 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
 
   if (!eurekaSet) notFound()
 
-  const [trials, styles, labels] = await Promise.all([getTrials(), getStyles(), getLabels()])
+  const [trials, styles, labels, colors, categories] = await Promise.all([
+    getTrials(),
+    getStyles(),
+    getLabels(),
+    getColors(),
+    getCategories(),
+  ])
+
+  const { data: variantRows } = await supabase
+    .from('eureka_variants')
+    .select('color')
+    .eq('eureka_set', eurekaSet.title)
+    .not('color', 'is', null)
+  const initialColors = [...new Set(variantRows?.map((v) => v.color as string) ?? [])]
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -41,6 +56,9 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
         trials={trials ?? []}
         styles={styles ?? []}
         labels={labels ?? []}
+        colors={colors ?? []}
+        categories={categories ?? []}
+        initialColors={initialColors}
       />
     </Box>
   )
