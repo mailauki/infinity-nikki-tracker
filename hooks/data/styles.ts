@@ -2,7 +2,7 @@ import { Style } from '@/lib/types/eureka'
 import { createClient } from '@/lib/supabase/server'
 
 export async function getStyles() {
-	const supabase = await createClient()
+  const supabase = await createClient()
 
   const { data: styles } = await supabase
     .from('styles')

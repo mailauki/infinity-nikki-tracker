@@ -63,7 +63,7 @@ const MainContainer = styled(Paper)(({ theme }) => ({
     height: `calc(100vh - 128px)`,
   }, // 64px * 3 = 192 based on number of toolbars
   overflowY: 'auto',
-	borderRadius: 0,
+  borderRadius: 0,
 }))
 
 const DrawerHeader = styled('div')(({ theme }) => ({

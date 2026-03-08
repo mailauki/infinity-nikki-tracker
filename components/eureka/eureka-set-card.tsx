@@ -7,11 +7,11 @@ import { CardSize } from '@/lib/types/props'
 export default function EurekaSetCard({
   eurekaSet,
   isLoggedIn,
-	size = 'md',
+  size = 'md',
 }: {
   eurekaSet: EurekaSet
   isLoggedIn: boolean
-	size?: CardSize
+  size?: CardSize
 }) {
   return (
     <Card>

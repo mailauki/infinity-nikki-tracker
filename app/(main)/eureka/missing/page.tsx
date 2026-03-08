@@ -15,9 +15,9 @@ export const metadata: Metadata = {
 export default async function MissingPage() {
   return (
     <Suspense>
-			<PageContainer title='Missing'>
-				<Missing />
-			</PageContainer>
+      <PageContainer title="Missing">
+        <Missing />
+      </PageContainer>
     </Suspense>
   )
 }

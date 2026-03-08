@@ -30,9 +30,9 @@ export const metadata: Metadata = {
 export default async function TrialsPage() {
   return (
     <Suspense>
-			<PageContainer title='Trials'>
-				<Trials />
-			</PageContainer>
+      <PageContainer title="Trials">
+        <Trials />
+      </PageContainer>
     </Suspense>
   )
 }

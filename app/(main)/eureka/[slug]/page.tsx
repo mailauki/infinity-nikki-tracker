@@ -8,15 +8,13 @@ import type { Metadata } from 'next'
 import PageContainer from '@/components/page-container'
 
 type Props = {
-	params: Promise<{ slug: string }>
+  params: Promise<{ slug: string }>
 }
 
-export async function generateMetadata(
-  { params }: Props,
-): Promise<Metadata> {
-	const { slug } = await params
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
 
-	const eureka = await getEurekaSet(slug)
+  const eureka = await getEurekaSet(slug)
 
   return { title: eureka.title }
 }
@@ -26,7 +24,7 @@ export default async function EurekaSetPage({ params }: { params: Promise<{ slug
 
   return (
     <Suspense>
-			<EurekaSet slug={slug} />
+      <EurekaSet slug={slug} />
     </Suspense>
   )
 }
@@ -38,13 +36,13 @@ async function EurekaSet({ slug }: { slug: string }) {
   const isLoggedIn = !!user_id!
 
   return (
-		<PageContainer title={eurekaSet.title}>
-			<RealtimeEurekaSet
-				serverEurekaSet={eurekaSet}
-				serverObtained={obtained || []}
-				isLoggedIn={isLoggedIn}
-				userId={user_id ?? null}
-			/>
-		</PageContainer>
+    <PageContainer title={eurekaSet.title}>
+      <RealtimeEurekaSet
+        serverEurekaSet={eurekaSet}
+        serverObtained={obtained || []}
+        isLoggedIn={isLoggedIn}
+        userId={user_id ?? null}
+      />
+    </PageContainer>
   )
 }

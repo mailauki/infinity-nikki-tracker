@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 export default function ProfilePage() {
   return (
     <Suspense>
-      <PageContainer title='Profile'>
-				<UserDetails />
-			</PageContainer>
+      <PageContainer title="Profile">
+        <UserDetails />
+      </PageContainer>
     </Suspense>
   )
 }
@@ -33,7 +33,5 @@ async function UserDetails() {
 
   const role = await getUserRole()
 
-  return (
-    <ProfileForm user={user} isAdmin={role === 'admin'} />
-  )
+  return <ProfileForm user={user} isAdmin={role === 'admin'} />
 }

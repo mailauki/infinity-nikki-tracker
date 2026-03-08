@@ -2,7 +2,7 @@ import { Color } from '@/lib/types/eureka'
 import { createClient } from '@/lib/supabase/server'
 
 export async function getColors() {
-	const supabase = await createClient()
+  const supabase = await createClient()
 
   const { data: colors } = await supabase
     .from('colors')

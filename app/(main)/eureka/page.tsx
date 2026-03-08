@@ -19,9 +19,9 @@ export const metadata: Metadata = {
 export default async function EurekaSetsPage() {
   return (
     <Suspense>
-			<PageContainer title='Eureka Sets'>
-				<EurekaSets />
-			</PageContainer>
+      <PageContainer title="Eureka Sets">
+        <EurekaSets />
+      </PageContainer>
     </Suspense>
   )
 }
@@ -44,7 +44,11 @@ async function EurekaSets() {
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: isLoggedIn ? '1fr 1fr' : '1fr 1fr 1fr' },
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: '1fr 1fr',
+                md: isLoggedIn ? '1fr 1fr' : '1fr 1fr 1fr',
+              },
               gap: 2,
             }}
           >

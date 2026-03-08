@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 export default function NewEurekaSetPage() {
   return (
     <Suspense>
-      <PageContainer title='Add Eureka Set' size='sm'>
-				<NewEurekaSet />
-			</PageContainer>
+      <PageContainer title="Add Eureka Set" size="sm">
+        <NewEurekaSet />
+      </PageContainer>
     </Suspense>
   )
 }

@@ -55,11 +55,11 @@ const columns: Column<Row>[] = [
   { header: 'Label', cell: (set) => set.label },
   {
     header: 'Colors',
-		cell: (set) => (
+    cell: (set) => (
       <Box sx={{ display: 'flex', gap: 0.5 }}>
-        {set.colors ? set.colors.map((color) => (
-          <Chip key={color.title} label={color.title} size="small" />
-        )) : '—' }
+        {set.colors
+          ? set.colors.map((color) => <Chip key={color.title} label={color.title} size="small" />)
+          : '—'}
       </Box>
     ),
   },

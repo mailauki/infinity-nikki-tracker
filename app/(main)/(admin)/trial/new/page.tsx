@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function NewTrialPage() {
   return (
-    <PageContainer title='Add Trial' size='sm'>
+    <PageContainer title="Add Trial" size="sm">
       <AddTrialForm />
-		</PageContainer>
+    </PageContainer>
   )
 }

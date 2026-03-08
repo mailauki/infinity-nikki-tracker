@@ -13,9 +13,9 @@ export const metadata: Metadata = {
 export default async function EditTrialPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <Suspense>
-			<PageContainer title='Edit Trial' size='sm'>
-				<EditTrial params={params} />
-			</PageContainer>
+      <PageContainer title="Edit Trial" size="sm">
+        <EditTrial params={params} />
+      </PageContainer>
     </Suspense>
   )
 }

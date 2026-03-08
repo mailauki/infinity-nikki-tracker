@@ -45,7 +45,7 @@ export const navLinksData: {
           title: 'Edit Eureka Set',
           url: '/eureka-set/edit',
         },
-				{
+        {
           title: 'Add Eureka Variant',
           url: '/eureka-variant/new',
         },
@@ -53,7 +53,7 @@ export const navLinksData: {
           title: 'Edit Eureka Variant',
           url: '/eureka-variant/edit',
         },
-				{
+        {
           title: 'Add Trial',
           url: '/trial/new',
         },

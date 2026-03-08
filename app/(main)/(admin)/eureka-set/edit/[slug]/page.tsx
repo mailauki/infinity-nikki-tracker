@@ -18,9 +18,9 @@ export const metadata: Metadata = {
 export default async function EditEurekaSetPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <Suspense>
-      <PageContainer title='Edit Eureka Set' size='sm'>
-				<EditEurekaSet params={params} />
-			</PageContainer>
+      <PageContainer title="Edit Eureka Set" size="sm">
+        <EditEurekaSet params={params} />
+      </PageContainer>
     </Suspense>
   )
 }

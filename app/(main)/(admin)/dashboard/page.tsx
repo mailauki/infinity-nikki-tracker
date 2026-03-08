@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <Suspense>
-      <PageContainer title='Admin Dashboard'>
+      <PageContainer title="Admin Dashboard">
         <AdminDashboard />
       </PageContainer>
     </Suspense>
@@ -22,11 +22,11 @@ export default function DashboardPage() {
 }
 
 async function AdminDashboard() {
-	const eurekaSets = await getEurekaSets()
+  const eurekaSets = await getEurekaSets()
   const { eurekaVariants, trials } = await getAdminData()
 
   return (
-		<>
+    <>
       <Box
         sx={{
           display: 'grid',
@@ -34,21 +34,13 @@ async function AdminDashboard() {
           gap: 2,
         }}
       >
-        <StatCard
-          title="Eureka Sets"
-          count={eurekaSets?.length ?? 0}
-          addHref="/eureka-set/new"
-        />
+        <StatCard title="Eureka Sets" count={eurekaSets?.length ?? 0} addHref="/eureka-set/new" />
         <StatCard
           title="Eureka Variants"
           count={eurekaVariants?.length ?? 0}
           addHref="/eureka-variant/new"
         />
-        <StatCard
-          title="Trials"
-          count={trials?.length ?? 0}
-          addHref="/trial/new"
-        />
+        <StatCard title="Trials" count={trials?.length ?? 0} addHref="/trial/new" />
       </Box>
 
       <DashboardTabs

@@ -18,9 +18,9 @@ export default async function EditEurekaVariantPage({
 }) {
   return (
     <Suspense>
-			<PageContainer title='Edit Eureka Variant' size='sm'>
+      <PageContainer title="Edit Eureka Variant" size="sm">
         <EditEurekaVariant params={params} />
-			</PageContainer>
+      </PageContainer>
     </Suspense>
   )
 }

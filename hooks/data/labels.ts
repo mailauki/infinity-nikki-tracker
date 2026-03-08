@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Label } from '@/lib/types/eureka'
 
 export async function getLabels() {
-	const supabase = await createClient()
+  const supabase = await createClient()
 
   const { data: labels } = await supabase
     .from('labels')

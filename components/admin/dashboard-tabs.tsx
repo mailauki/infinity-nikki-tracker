@@ -8,11 +8,13 @@ import { TrialTable } from './trial-table'
 import { EurekaSet, EurekaVariantRaw, Trial } from '@/lib/types/eureka'
 
 export function DashboardTabs({
-	eurekaSets, eurekaVariants, trials,
+  eurekaSets,
+  eurekaVariants,
+  trials,
 }: {
-	eurekaSets: EurekaSet[]
-	eurekaVariants: EurekaVariantRaw[]
-	trials: Trial[]
+  eurekaSets: EurekaSet[]
+  eurekaVariants: EurekaVariantRaw[]
+  trials: Trial[]
 }) {
   const [tab, setTab] = useState(0)
 
