@@ -45,7 +45,7 @@ export function AdminTable<T>({
   getKey,
 }: AdminTableProps<T>) {
   const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(20)
+  const [rowsPerPage, setRowsPerPage] = useState(15)
 
   const allRows = rows ?? []
   const visibleRows = allRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -74,15 +74,14 @@ export function AdminTable<T>({
         <Alert severity="info">Some items are automatically generated — edit with caution</Alert>
 
         <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
-          <Button variant="outlined" startIcon={<AddIcon />} size="small" href={addHref}>
+          <Button variant="outlined" startIcon={<AddIcon />} size="small" href={addHref} sx={{ '&.MuiButton-root': { textWrap: 'nowrap' } }}>
             {addLabel}
           </Button>
         </Stack>
       </Stack>
 
       <Paper elevation={3} sx={{ borderRadius: '12px' }}>
-        <TableContainer sx={{ overflowX: 'auto', flex: 1, height: '100%', minHeight: '791px' }}>
-          {/* minHeight: 731 for sets 791 for variants (with images) */}
+        <TableContainer sx={{ overflowX: 'auto', flex: 1, height: '100%', minHeight: '592px' }}>
           <Table size="small">
             <TableHead>
               <TableRow>
@@ -115,7 +114,7 @@ export function AdminTable<T>({
           count={allRows.length}
           page={page}
           rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[10, 20, 50, 100]}
+          rowsPerPageOptions={[15, 20, 30, 50, 100]}
           onPageChange={(_, newPage) => setPage(newPage)}
           onRowsPerPageChange={(e) => {
             setRowsPerPage(parseInt(e.target.value, 10))
