@@ -1,7 +1,7 @@
 import { cacheLife } from 'next/cache'
 
-import { createPublicClient } from '../../lib/supabase/public'
-import { Trial } from '../../lib/types/eureka'
+import { createPublicClient } from '@/lib/supabase/public'
+import { Trial } from '@/lib/types/eureka'
 
 export async function getTrials() {
   'use cache'

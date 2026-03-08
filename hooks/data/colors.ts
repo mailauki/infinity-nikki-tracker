@@ -1,7 +1,7 @@
 import { cacheLife } from 'next/cache'
 
-import { createPublicClient } from '../../lib/supabase/public'
-import { Color } from '../../lib/types/eureka'
+import { createPublicClient } from '@/lib/supabase/public'
+import { Color } from '@/lib/types/eureka'
 
 export async function getColors() {
   'use cache'
