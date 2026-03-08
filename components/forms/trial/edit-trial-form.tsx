@@ -17,8 +17,9 @@ import { toSlug } from '@/lib/utils'
 import ImageUpload from '@/components/forms/image-upload'
 import { Trial } from '@/lib/types/eureka'
 
-export default function EditTrialForm({ trial }: { trial: Trial }) {
+export default function EditTrialForm({ trial, back }: { trial: Trial; back?: string }) {
   const router = useRouter()
+  const backUrl = back ?? '/dashboard'
   const [title, setTitle] = useState(trial.title)
   const [slug, setSlug] = useState(trial.slug ?? toSlug(trial.title))
   const [imageUrl, setImageUrl] = useState<string | null>(trial.image_url)
@@ -47,7 +48,7 @@ export default function EditTrialForm({ trial }: { trial: Trial }) {
     if (error) {
       setError(error.message)
     } else {
-      router.push('/dashboard')
+      router.push(backUrl)
       router.refresh()
     }
   }
@@ -96,7 +97,7 @@ export default function EditTrialForm({ trial }: { trial: Trial }) {
         </Stack>
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Button variant="outlined" href="/trial">
+          <Button variant="outlined" href={backUrl}>
             Cancel
           </Button>
           <Button type="submit" variant="contained" disabled={loading}>

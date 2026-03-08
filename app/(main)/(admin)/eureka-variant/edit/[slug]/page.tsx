@@ -12,20 +12,29 @@ export const metadata: Metadata = {
 
 export default async function EditEurekaVariantPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>
+  searchParams: Promise<{ back?: string }>
 }) {
   return (
     <Suspense>
       <PageContainer title="Edit Eureka Variant" size="sm">
-        <EditEurekaVariant params={params} />
+        <EditEurekaVariant params={params} searchParams={searchParams} />
       </PageContainer>
     </Suspense>
   )
 }
 
-async function EditEurekaVariant({ params }: { params: Promise<{ slug: string }> }) {
+async function EditEurekaVariant({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<{ back?: string }>
+}) {
   const { slug } = await params
+  const { back } = await searchParams
   const supabase = await createClient()
 
   const { data: variant } = await supabase
@@ -44,6 +53,7 @@ async function EditEurekaVariant({ params }: { params: Promise<{ slug: string }>
       eurekaSets={eurekaSets ?? []}
       categories={categories ?? []}
       colors={colors ?? []}
+      back={back}
     />
   )
 }

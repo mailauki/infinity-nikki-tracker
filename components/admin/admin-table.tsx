@@ -18,11 +18,33 @@ interface AdminTableProps<T> {
   columns: Column<T>[]
   slug: string
   getKey: (row: T) => string | number
+  page?: number
+  rowsPerPage?: number
+  onPageChange?: (page: number) => void
+  onRowsPerPageChange?: (rowsPerPage: number) => void
 }
 
-export function AdminTable<T>({ title, rows, columns, slug, getKey }: AdminTableProps<T>) {
+export function AdminTable<T>({
+  title,
+  rows,
+  columns,
+  slug,
+  getKey,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+}: AdminTableProps<T>) {
   return (
-    <PaginationContainer title={title} slug={slug} rows={rows}>
+    <PaginationContainer
+      title={title}
+      slug={slug}
+      rows={rows}
+      page={page}
+      rowsPerPage={rowsPerPage}
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
+    >
       {(visibleRows) => (
         <TableContainer sx={{ overflowX: 'auto', flex: 1, height: '100%', minHeight: '592px' }}>
           <Table size="small">

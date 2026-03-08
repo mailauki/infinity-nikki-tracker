@@ -10,11 +10,33 @@ interface AdminListProps<T> {
   slug: string
   getKey: (row: T) => string | number
   renderRow: (row: T) => ReactNode
+  page?: number
+  rowsPerPage?: number
+  onPageChange?: (page: number) => void
+  onRowsPerPageChange?: (rowsPerPage: number) => void
 }
 
-export function AdminList<T>({ title, rows, slug, getKey, renderRow }: AdminListProps<T>) {
+export function AdminList<T>({
+  title,
+  rows,
+  slug,
+  getKey,
+  renderRow,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+}: AdminListProps<T>) {
   return (
-    <PaginationContainer title={title} slug={slug} rows={rows}>
+    <PaginationContainer
+      title={title}
+      slug={slug}
+      rows={rows}
+      page={page}
+      rowsPerPage={rowsPerPage}
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
+    >
       {(visibleRows) => (
         <List>
           {visibleRows.map((row) => (

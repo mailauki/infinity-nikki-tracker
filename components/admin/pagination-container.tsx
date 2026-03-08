@@ -19,6 +19,10 @@ interface PaginationContainerProps<T> {
   slug: string
   rows: T[] | null | undefined
   children: (visibleRows: T[]) => ReactNode
+  page?: number
+  rowsPerPage?: number
+  onPageChange?: (page: number) => void
+  onRowsPerPageChange?: (rowsPerPage: number) => void
 }
 
 export default function PaginationContainer<T>({
@@ -26,9 +30,32 @@ export default function PaginationContainer<T>({
   slug,
   rows,
   children,
+  page: controlledPage,
+  rowsPerPage: controlledRowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
 }: PaginationContainerProps<T>) {
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(15)
+  const isControlled = controlledPage !== undefined
+  const [localPage, setLocalPage] = useState(0)
+  const [localRowsPerPage, setLocalRowsPerPage] = useState(15)
+
+  const page = isControlled ? controlledPage : localPage
+  const rowsPerPage = isControlled ? controlledRowsPerPage! : localRowsPerPage
+
+  const handlePageChange = (_: unknown, newPage: number) => {
+    if (isControlled) onPageChange?.(newPage)
+    else setLocalPage(newPage)
+  }
+
+  const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newRowsPerPage = parseInt(e.target.value, 10)
+    if (isControlled) {
+      onRowsPerPageChange?.(newRowsPerPage)
+    } else {
+      setLocalRowsPerPage(newRowsPerPage)
+      setLocalPage(0)
+    }
+  }
 
   const allRows = rows ?? []
   const visibleRows = allRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
@@ -77,11 +104,8 @@ export default function PaginationContainer<T>({
           page={page}
           rowsPerPage={rowsPerPage}
           rowsPerPageOptions={[8, 15, 20, 30, 50, 100]}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10))
-            setPage(0)
-          }}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
         />
       </Paper>
     </>
