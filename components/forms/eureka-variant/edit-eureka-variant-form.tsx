@@ -29,13 +29,16 @@ export default function EditEurekaVariantForm({
   eurekaSets,
   categories,
   colors,
+  back,
 }: {
   variant: EurekaVariantRaw
   eurekaSets: EurekaSetRaw[]
   categories: Category[]
   colors: Color[]
+  back?: string
 }) {
   const router = useRouter()
+  const backUrl = back ?? '/dashboard'
   const [eurekaSet, setEurekaSet] = useState(variant.eureka_set ?? '')
   const [category, setCategory] = useState(variant.category ?? '')
   const [color, setColor] = useState(variant.color ?? '')
@@ -73,7 +76,7 @@ export default function EditEurekaVariantForm({
     if (error) {
       setError(error.message)
     } else {
-      router.push('/dashboard')
+      router.push(backUrl)
       router.refresh()
     }
   }
@@ -167,7 +170,7 @@ export default function EditEurekaVariantForm({
         </FormControl>
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Button variant="outlined" href="/eureka-variant">
+          <Button variant="outlined" href={backUrl}>
             Cancel
           </Button>
           <Button type="submit" variant="contained" disabled={loading}>

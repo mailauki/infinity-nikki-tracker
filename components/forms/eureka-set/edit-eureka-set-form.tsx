@@ -29,6 +29,7 @@ export default function EditEurekaSetForm({
   colors,
   categories,
   initialColors,
+  back,
 }: {
   eurekaSet: EurekaSetRaw
   trials: Trial[]
@@ -37,8 +38,10 @@ export default function EditEurekaSetForm({
   colors: Color[]
   categories: Category[]
   initialColors: string[]
+  back?: string
 }) {
   const router = useRouter()
+  const backUrl = back ?? '/dashboard'
   const [title, setTitle] = useState(eurekaSet.title)
   const [slug, setSlug] = useState(eurekaSet.slug ?? toSlug(eurekaSet.title))
   const [rarity, setRarity] = useState<number | ''>(eurekaSet.rarity ?? '')
@@ -119,7 +122,7 @@ export default function EditEurekaSetForm({
     }
 
     setLoading(false)
-    router.push('/dashboard')
+    router.push(backUrl)
     router.refresh()
   }
 
@@ -211,7 +214,7 @@ export default function EditEurekaSetForm({
         <ColorSelect colors={colors} colorSelect={colorSelect} handleChange={handleColorChange} />
 
         <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Button variant="outlined" href="/dashboard">
+          <Button variant="outlined" href={backUrl}>
             Cancel
           </Button>
           <Button type="submit" variant="contained" disabled={loading}>
