@@ -1,5 +1,4 @@
 import { Suspense } from 'react'
-import { Box, Typography } from '@mui/material'
 import AddEurekaSetForm from '@/components/forms/eureka-set/add-eureka-set-form'
 import { getTrials } from '@/hooks/data/trials'
 import { getStyles } from '@/hooks/data/styles'
@@ -33,12 +32,12 @@ async function NewEurekaSet() {
   ])
 
   return (
-      <AddEurekaSetForm
-        trials={trials ?? []}
-        styles={styles ?? []}
-        labels={labels ?? []}
-        colors={colors ?? []}
-        categories={categories ?? []}
-      />
+    <AddEurekaSetForm
+      trials={trials ?? []}
+      styles={styles ?? []}
+      labels={labels ?? []}
+      colors={colors ?? []}
+      categories={categories ?? []}
+    />
   )
 }

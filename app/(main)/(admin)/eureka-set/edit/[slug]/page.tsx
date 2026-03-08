@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { Box, Typography } from '@mui/material'
 import { createClient } from '@/lib/supabase/server'
 import EditEurekaSetForm from '@/components/forms/eureka-set/edit-eureka-set-form'
 import { getTrials } from '@/hooks/data/trials'
@@ -53,14 +52,14 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
   const initialColors = [...new Set(variantRows?.map((v) => v.color as string) ?? [])]
 
   return (
-      <EditEurekaSetForm
-        eurekaSet={eurekaSet}
-        trials={trials ?? []}
-        styles={styles ?? []}
-        labels={labels ?? []}
-        colors={colors ?? []}
-        categories={categories ?? []}
-        initialColors={initialColors}
-      />
+    <EditEurekaSetForm
+      eurekaSet={eurekaSet}
+      trials={trials ?? []}
+      styles={styles ?? []}
+      labels={labels ?? []}
+      colors={colors ?? []}
+      categories={categories ?? []}
+      initialColors={initialColors}
+    />
   )
 }

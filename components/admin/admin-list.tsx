@@ -1,7 +1,7 @@
 'use client'
 
 import { Fragment, ReactNode } from 'react'
-import { List } from '@mui/material'
+import { Divider, List } from '@mui/material'
 import PaginationContainer from './pagination-container'
 
 interface AdminListProps<T> {
@@ -18,7 +18,10 @@ export function AdminList<T>({ title, rows, slug, getKey, renderRow }: AdminList
       {(visibleRows) => (
         <List>
           {visibleRows.map((row) => (
-            <Fragment key={getKey(row)}>{renderRow(row)}</Fragment>
+            <Fragment key={getKey(row)}>
+              {renderRow(row)}
+              <Divider variant="inset" component="li" sx={{ mr: 2 }} />
+            </Fragment>
           ))}
         </List>
       )}

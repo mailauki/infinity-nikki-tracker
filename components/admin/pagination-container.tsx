@@ -76,7 +76,7 @@ export default function PaginationContainer<T>({
           count={allRows.length}
           page={page}
           rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[15, 20, 30, 50, 100]}
+          rowsPerPageOptions={[8, 15, 20, 30, 50, 100]}
           onPageChange={(_, newPage) => setPage(newPage)}
           onRowsPerPageChange={(e) => {
             setRowsPerPage(parseInt(e.target.value, 10))

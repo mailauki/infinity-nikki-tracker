@@ -21,37 +21,32 @@ export function DashboardTabs({
   trials: Trial[]
 }) {
   const [tab, setTab] = useState(0)
-	const [view, setView] = useState<'list'|'table'>('table')
+  const [view, setView] = useState<'list' | 'table'>('table')
 
-	const handleChange = (event: React.MouseEvent<HTMLElement>, nextView: 'list'|'table') => {
-    setView(nextView);
+  const handleChange = (event: React.MouseEvent<HTMLElement>, nextView: 'list' | 'table') => {
+    setView(nextView)
   }
 
   return (
     <Box>
       <Paper variant="outlined" sx={{ mb: 1, overflow: 'hidden' }}>
-				<Stack direction='row' alignItems='center' justifyContent='space-between'>
-					<Tabs value={tab} onChange={(_, value) => setTab(value)}>
-						<Tab label="Eureka Sets" />
-						<Tab label="Eureka Variants" />
-						<Tab label="Trials" />
-					</Tabs>
-					<Stack direction='row' justifyContent='flex-end' sx={{ flex: 1, mx: 1 }}>
-					<ToggleButtonGroup
-						size='small'
-						value={view}
-						onChange={handleChange}
-						exclusive
-					>
-						<ToggleButton value='list' aria-label="list">
-							<ViewList />
-						</ToggleButton>
-						<ToggleButton value='table' aria-label="table">
-							<ViewHeadline />
-						</ToggleButton>
-					</ToggleButtonGroup>
-				</Stack>
-				</Stack>
+        <Stack direction="row" alignItems="center" justifyContent="space-between">
+          <Tabs value={tab} onChange={(_, value) => setTab(value)}>
+            <Tab label="Eureka Sets" />
+            <Tab label="Eureka Variants" />
+            <Tab label="Trials" />
+          </Tabs>
+          <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1, mx: 1 }}>
+            <ToggleButtonGroup size="small" value={view} onChange={handleChange} exclusive>
+              <ToggleButton value="list" aria-label="list">
+                <ViewList />
+              </ToggleButton>
+              <ToggleButton value="table" aria-label="table">
+                <ViewHeadline />
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Stack>
+        </Stack>
       </Paper>
 
       {tab === 0 && view === 'table' && <EurekaSetTable rows={eurekaSets} />}
