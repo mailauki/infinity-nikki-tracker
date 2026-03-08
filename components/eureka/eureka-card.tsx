@@ -10,7 +10,7 @@ import EurekaSetImage from './eureka-set-image'
 export default function EurekaCard({
   eurekaSet,
   isLoggedIn,
-  size = 'md',
+  size,
 }: {
   eurekaSet: EurekaSet
   isLoggedIn: boolean
