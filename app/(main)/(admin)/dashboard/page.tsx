@@ -29,7 +29,7 @@ async function AdminDashboard() {
     <>
       <Box
         sx={{
-          display: 'grid',
+          display: { xs: 'none', md: 'grid' },
           gridTemplateColumns: '1fr 1fr 1fr',
           gap: 2,
         }}

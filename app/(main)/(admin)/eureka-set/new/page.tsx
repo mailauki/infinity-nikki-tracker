@@ -33,10 +33,6 @@ async function NewEurekaSet() {
   ])
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Typography variant="h3" component="h1">
-        Add Eureka Set
-      </Typography>
       <AddEurekaSetForm
         trials={trials ?? []}
         styles={styles ?? []}
@@ -44,6 +40,5 @@ async function NewEurekaSet() {
         colors={colors ?? []}
         categories={categories ?? []}
       />
-    </Box>
   )
 }

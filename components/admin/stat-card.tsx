@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, Divider, Stack, Typography } from '@mui/material'
+import { Button, Card, CardContent, CardHeader, Divider, Stack, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 
 export function StatCard({
@@ -12,20 +12,25 @@ export function StatCard({
 }) {
   return (
     <Card variant="outlined">
-      <CardContent>
-        <Typography variant="overline" color="text.secondary">
+			<CardHeader
+			disableTypography
+			title={
+			<Typography variant="overline" color="text.secondary">
           {title}
         </Typography>
-        <Typography variant="h2" component="p" sx={{ my: 1 }}>
+				}
+			subheader={
+				<Typography variant="h2" component="p" sx={{ my: 1 }}>
           {count}
         </Typography>
-        <Divider sx={{ mb: 2 }} />
-        <Stack direction="row" spacing={1}>
-          <Button variant="outlined" size="small" startIcon={<AddIcon />} href={addHref}>
-            Add
-          </Button>
-        </Stack>
-      </CardContent>
+			}
+			/>
+			<CardContent component={Stack} sx={{ flex: 1 }} justifyContent='flex-end' spacing={1}>
+				<Divider />
+				<Button variant="outlined" size="small" startIcon={<AddIcon />} href={addHref} sx={{ width: 'fit-content' }}>
+          Add
+        </Button>
+			</CardContent>
     </Card>
   )
 }

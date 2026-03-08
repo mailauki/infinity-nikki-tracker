@@ -53,10 +53,6 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
   const initialColors = [...new Set(variantRows?.map((v) => v.color as string) ?? [])]
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Typography variant="h3" component="h1">
-        Edit Eureka Set
-      </Typography>
       <EditEurekaSetForm
         eurekaSet={eurekaSet}
         trials={trials ?? []}
@@ -66,6 +62,5 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
         categories={categories ?? []}
         initialColors={initialColors}
       />
-    </Box>
   )
 }

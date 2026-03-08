@@ -3,7 +3,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
 
 export function ViewAllButton({ href }: { href: string }) {
   return (
-    <Button variant="text" color="primary" endIcon={<ArrowForwardIcon />} size="small" href={href}>
+    <Button variant="text" color="primary" endIcon={<ArrowForwardIcon />} href={href}>
       View all
     </Button>
   )

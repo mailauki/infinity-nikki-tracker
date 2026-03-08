@@ -28,11 +28,6 @@ async function EditTrial({ params }: { params: Promise<{ slug: string }> }) {
   if (!trial) notFound()
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Typography variant="h3" component="h1">
-        Edit Trial
-      </Typography>
-      <EditTrialForm trial={trial} />
-    </Box>
+    <EditTrialForm trial={trial} />
   )
 }

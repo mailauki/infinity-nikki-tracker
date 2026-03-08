@@ -40,16 +40,11 @@ async function EditEurekaVariant({ params }: { params: Promise<{ slug: string }>
   const { eurekaSets, categories, colors } = await getAdminData()
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Typography variant="h3" component="h1">
-        Edit Eureka Variant
-      </Typography>
       <EditEurekaVariantForm
         variant={variant}
         eurekaSets={eurekaSets ?? []}
         categories={categories ?? []}
         colors={colors ?? []}
       />
-    </Box>
   )
 }
