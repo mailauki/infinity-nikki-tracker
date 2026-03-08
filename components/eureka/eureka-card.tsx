@@ -10,7 +10,7 @@ import EurekaSetImage from './eureka-set-image'
 export default function EurekaCard({
   eurekaSet,
   isLoggedIn,
-  size = 'md',
+  size,
 }: {
   eurekaSet: EurekaSet
   isLoggedIn: boolean
@@ -26,7 +26,7 @@ export default function EurekaCard({
         alt={eurekaSet.title}
         action={<Chip label={eurekaSet.label} variant="outlined" size="small" />}
         title={eurekaSet.title}
-        subheader={`${percentage}%`}
+        subheader={isLoggedIn ? `${percentage}%` : undefined}
         size={size}
       />
       {size !== 'sm' && (

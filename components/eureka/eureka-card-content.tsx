@@ -5,13 +5,15 @@ import { CardSize } from '@/lib/types/props'
 
 export default function EurekaCardContent({
   title,
+  subheader,
   rarity,
   size = 'sm',
   trial,
   style,
 }: {
   title: string
-  rarity: number | null
+  subheader?: string | null
+  rarity?: number | null
   size?: CardSize
   trial?: string | null
   style?: string | null
@@ -29,15 +31,15 @@ export default function EurekaCardContent({
             </Typography>
           </Stack>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="subtitle2">{trial}</Typography>
-            <Typography variant="caption">{style}</Typography>
+            <Typography variant="overline">{trial}</Typography>
+            <Typography variant="body2">{style}</Typography>
           </Stack>
         </Stack>
       ) : (
         <Stack spacing={0.5}>
-          <Typography variant="subtitle2">{title}</Typography>
+          <Typography variant="subtitle1">{title}</Typography>
           <Typography variant="caption" color="textSecondary">
-            <RarityStars rarity={rarity!} />
+            {rarity ? <RarityStars rarity={rarity} /> : subheader}
           </Typography>
         </Stack>
       )}

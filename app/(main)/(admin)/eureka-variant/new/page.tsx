@@ -1,14 +1,20 @@
 import { Suspense } from 'react'
-import { Box, Container, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import AddEurekaVariantForm from '@/components/forms/eureka-variant/add-eureka-variant-form'
 import { getAdminData } from '@/hooks/data/user'
+import { Metadata } from 'next'
+import PageContainer from '@/components/page-container'
+
+export const metadata: Metadata = {
+  title: 'Add Eureka Variant',
+}
 
 export default function NewEurekaVariantPage() {
   return (
     <Suspense>
-      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
+      <PageContainer title="Add Eureka Variant" size="sm">
         <NewEurekaVariant />
-      </Container>
+      </PageContainer>
     </Suspense>
   )
 }

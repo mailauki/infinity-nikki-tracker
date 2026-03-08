@@ -20,8 +20,20 @@ const defaultUrl = process.env.VERCEL_URL
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: 'Infinity Nikki Tracker',
+  title: {
+    template: '%s | Infinity Nikki Tracker',
+    default: 'Infinity Nikki Tracker',
+  },
   description: 'Track your collection from your favorite cozy open-world game Infinity Nikki',
+  icons: {
+    icon: [
+      { url: '/icon.png' },
+      new URL('/icon.png', defaultUrl),
+      { url: '/icon-dark.png', media: '(prefers-color-scheme: dark)' },
+    ],
+    shortcut: ['/shortcut-icon.png'],
+    apple: ['/apple-icon.png'],
+  },
 }
 
 export default async function RootLayout({

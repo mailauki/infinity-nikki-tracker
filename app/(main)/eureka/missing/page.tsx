@@ -3,16 +3,21 @@ import { Suspense } from 'react'
 import { getUserID } from '@/hooks/user'
 import RealtimeEurekaFilter from '@/components/realtime/realtime-eureka-filter'
 import LoginAlert from '@/components/login-alert'
-import { Container } from '@mui/material'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getObtained } from '@/hooks/data/obtained-eureka'
+import { Metadata } from 'next'
+import PageContainer from '@/components/page-container'
+
+export const metadata: Metadata = {
+  title: 'Missing Eureka',
+}
 
 export default async function MissingPage() {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <PageContainer title="Missing">
         <Missing />
-      </Container>
+      </PageContainer>
     </Suspense>
   )
 }

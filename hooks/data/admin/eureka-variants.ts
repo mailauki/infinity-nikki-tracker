@@ -19,7 +19,7 @@ export const getEurekaVariantsRaw = cache(async () => {
 			updated_at
 			`
     )
-    .order('id', { ascending: true })
+    .order('id', { ascending: false })
 
   return eurekaVariants as EurekaVariantRaw[]
 })

@@ -1,16 +1,20 @@
 import { handleObtained } from '@/app/(main)/eureka/actions'
 import { EurekaVariant } from '@/lib/types/eureka'
-import { Card, CardActionArea, CardContent, Chip, Typography } from '@mui/material'
+import { Card, CardActionArea, Chip } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 
 import EurekaSetImage from './eureka-set-image'
+import EurekaCardContent from './eureka-card-content'
+import { CardSize } from '@/lib/types/props'
 
 export default function EurekaButton({
   eurekaVariant,
   isLoggedIn,
+  size = 'md',
 }: {
   eurekaVariant: EurekaVariant
   isLoggedIn: boolean
+  size?: CardSize
 }) {
   const slugEurekaSet = eurekaVariant.eureka_set!.replace(' ', '_')
   const slug = `${slugEurekaSet}-${eurekaVariant.category}-${eurekaVariant.color}`
@@ -35,13 +39,17 @@ export default function EurekaButton({
           imageUrl={eurekaVariant.image_url!}
           alt={slug}
           action={eurekaVariant.obtained === true && <Chip size="small" label={<CheckIcon />} />}
+          title={eurekaVariant.eureka_set!}
+          subheader={`${eurekaVariant.category} • ${eurekaVariant.color}`}
+          size={size}
         />
-        <CardContent>
-          <Typography variant="subtitle2">{eurekaVariant.eureka_set}</Typography>
-          <Typography variant="caption" color="textSecondary">
-            {`${eurekaVariant.category} • ${eurekaVariant.color}`}
-          </Typography>
-        </CardContent>
+        {size !== 'sm' && (
+          <EurekaCardContent
+            title={eurekaVariant.eureka_set!}
+            subheader={`${eurekaVariant.category} • ${eurekaVariant.color}`}
+            size={size}
+          />
+        )}
       </CardActionArea>
     </Card>
   )

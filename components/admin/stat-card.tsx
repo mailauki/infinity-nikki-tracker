@@ -1,17 +1,14 @@
 import { Button, Card, CardContent, Divider, Stack, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import { ViewAllButton } from '@/components/view-all-button'
 
 export function StatCard({
   title,
   count,
   addHref,
-  viewHref,
 }: {
   title: string
   count: number
   addHref: string
-  viewHref: string
 }) {
   return (
     <Card variant="outlined">
@@ -27,7 +24,6 @@ export function StatCard({
           <Button variant="outlined" size="small" startIcon={<AddIcon />} href={addHref}>
             Add
           </Button>
-          <ViewAllButton href={viewHref} />
         </Stack>
       </CardContent>
     </Card>

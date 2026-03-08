@@ -3,6 +3,7 @@ import {
   Box,
   Chip,
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   OutlinedInput,
@@ -44,7 +45,6 @@ export default function ColorSelect({
   const colorsSet = colors.map((color) => color.title)
 
   return (
-    // TODO: add function to automatically add to the db upon submit, a variant of each category for each selected color
     <FormControl sx={{ m: 1, minWidth: 300 }}>
       <InputLabel id="color-multiple-chip-label">Colors</InputLabel>
       <Select
@@ -64,11 +64,17 @@ export default function ColorSelect({
         MenuProps={MenuProps}
       >
         {colorsSet.map((color) => (
-          <MenuItem key={color} value={color} style={getStyles(color, colorSelect, theme)}>
+          <MenuItem
+            key={color}
+            value={color}
+            disabled={colorSelect.length >= 5 && !colorSelect.includes(color)}
+            style={getStyles(color, colorSelect, theme)}
+          >
             {color}
           </MenuItem>
         ))}
       </Select>
+      <FormHelperText>{colorSelect.length}/5 colors selected</FormHelperText>
     </FormControl>
   )
 }

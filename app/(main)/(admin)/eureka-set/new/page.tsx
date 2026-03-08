@@ -1,18 +1,24 @@
 import { Suspense } from 'react'
-import { Box, Container, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import AddEurekaSetForm from '@/components/forms/eureka-set/add-eureka-set-form'
 import { getTrials } from '@/hooks/data/trials'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getColors } from '@/hooks/data/colors'
 import { getCategories } from '@/hooks/data/categories'
+import { Metadata } from 'next'
+import PageContainer from '@/components/page-container'
+
+export const metadata: Metadata = {
+  title: 'Add Eureka Set',
+}
 
 export default function NewEurekaSetPage() {
   return (
     <Suspense>
-      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
+      <PageContainer title="Add Eureka Set" size="sm">
         <NewEurekaSet />
-      </Container>
+      </PageContainer>
     </Suspense>
   )
 }

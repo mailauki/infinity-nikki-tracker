@@ -1,6 +1,6 @@
 'use client'
 
-import { Grid } from '@mui/material'
+import { Box } from '@mui/material'
 import { EurekaSet } from '@/lib/types/eureka'
 
 import EurekaButton from './eureka-button'
@@ -13,12 +13,21 @@ export default function EurekaVariantGrid({
   isLoggedIn: boolean
 }) {
   return (
-    <Grid container spacing={2} sx={{ pb: 8 }}>
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+        gap: 2,
+      }}
+    >
       {eurekaSet.eureka_variants.map((eurekaVariant) => (
-        <Grid key={eurekaVariant.id} size={4}>
-          <EurekaButton eurekaVariant={eurekaVariant} isLoggedIn={isLoggedIn} />
-        </Grid>
+        <EurekaButton
+          key={eurekaVariant.id}
+          eurekaVariant={eurekaVariant}
+          isLoggedIn={isLoggedIn}
+          size={isLoggedIn ? 'md' : 'sm'}
+        />
       ))}
-    </Grid>
+    </Box>
   )
 }

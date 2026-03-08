@@ -1,28 +1,32 @@
 import { Suspense } from 'react'
-import { Box, Container, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 import { StatCard } from '@/components/admin/stat-card'
 import { DashboardTabs } from '@/components/admin/dashboard-tabs'
 import { getAdminData } from '@/hooks/data/user'
+import { getEurekaSets } from '@/hooks/data/eureka-sets'
+import { Metadata } from 'next'
+import PageContainer from '@/components/page-container'
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+}
 
 export default function DashboardPage() {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <PageContainer title="Admin Dashboard">
         <AdminDashboard />
-      </Container>
+      </PageContainer>
     </Suspense>
   )
 }
 
 async function AdminDashboard() {
-  const { eurekaSets, eurekaVariants, trials } = await getAdminData()
+  const eurekaSets = await getEurekaSets()
+  const { eurekaVariants, trials } = await getAdminData()
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <Typography variant="h3" component="h1">
-        Admin Dashboard
-      </Typography>
-
+    <>
       <Box
         sx={{
           display: 'grid',
@@ -30,24 +34,13 @@ async function AdminDashboard() {
           gap: 2,
         }}
       >
-        <StatCard
-          title="Eureka Sets"
-          count={eurekaSets?.length ?? 0}
-          addHref="/eureka-set/new"
-          viewHref="/eureka-set"
-        />
+        <StatCard title="Eureka Sets" count={eurekaSets?.length ?? 0} addHref="/eureka-set/new" />
         <StatCard
           title="Eureka Variants"
           count={eurekaVariants?.length ?? 0}
           addHref="/eureka-variant/new"
-          viewHref="/eureka-variant"
         />
-        <StatCard
-          title="Trials"
-          count={trials?.length ?? 0}
-          addHref="/trial/new"
-          viewHref="/trial"
-        />
+        <StatCard title="Trials" count={trials?.length ?? 0} addHref="/trial/new" />
       </Box>
 
       <DashboardTabs
@@ -55,6 +48,6 @@ async function AdminDashboard() {
         eurekaVariants={eurekaVariants ?? []}
         trials={trials ?? []}
       />
-    </Box>
+    </>
   )
 }

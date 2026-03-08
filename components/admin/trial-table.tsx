@@ -1,10 +1,11 @@
 'use client'
 
-import { IconButton, Tooltip, Typography } from '@mui/material'
+import { Avatar, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlug } from '@/lib/utils'
 import { Trial } from '@/lib/types/eureka'
 import { AdminTable, Column } from './admin-table'
+import { Category } from '@mui/icons-material'
 
 type Row = Trial
 
@@ -24,6 +25,20 @@ const columns: Column<Row>[] = [
       </Tooltip>
     ),
   },
+  {
+    header: 'Image',
+    cell: (v) => (
+      <Avatar
+        size="xs"
+        src={v.image_url!}
+        alt={v.title || 'Image'}
+        variant="rounded"
+        sx={{ width: 40 }}
+      >
+        <Category fontSize="inherit" />
+      </Avatar>
+    ),
+  },
   { header: 'ID', cell: (trial) => trial.id },
   {
     header: 'Title',
@@ -38,15 +53,6 @@ const columns: Column<Row>[] = [
     cell: (trial) => (
       <Typography variant="caption" fontFamily="monospace" noWrap>
         {trial.slug}
-      </Typography>
-    ),
-  },
-  {
-    header: 'Image URL',
-    cellSx: { maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis' },
-    cell: (trial) => (
-      <Typography variant="caption" fontFamily="monospace" noWrap>
-        {trial.image_url}
       </Typography>
     ),
   },

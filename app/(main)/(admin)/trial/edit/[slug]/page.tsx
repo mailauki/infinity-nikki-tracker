@@ -1,15 +1,21 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { Box, Container, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material'
 import EditTrialForm from '@/components/forms/trial/edit-trial-form'
 import { getTrialRaw } from '@/hooks/data/admin/trials'
+import { Metadata } from 'next'
+import PageContainer from '@/components/page-container'
+
+export const metadata: Metadata = {
+  title: 'Edit Trial',
+}
 
 export default async function EditTrialPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <Suspense>
-      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
+      <PageContainer title="Edit Trial" size="sm">
         <EditTrial params={params} />
-      </Container>
+      </PageContainer>
     </Suspense>
   )
 }

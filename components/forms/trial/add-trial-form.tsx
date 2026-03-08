@@ -49,7 +49,7 @@ export default function AddTrialForm() {
     if (error) {
       setError(error.message)
     } else {
-      router.push('/trial')
+      router.push('/dashboard')
       router.refresh()
     }
   }

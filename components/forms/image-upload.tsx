@@ -72,14 +72,16 @@ export default function ImageUpload({
           outline: '2px solid',
           outlineOffset: '2px',
         },
+        width: table === 'trials' ? '100%' : SIZE,
+        height: SIZE,
       }}
     >
-      <Box sx={{ position: 'relative', width: SIZE, height: SIZE }}>
+      <Box sx={{ position: 'relative', width: table === 'trials' ? '100%' : SIZE, height: SIZE }}>
         <Avatar
           src={url ?? undefined}
           alt="Image preview"
           variant="rounded"
-          sx={{ width: SIZE, height: SIZE }}
+          sx={{ width: table === 'trials' ? '100%' : SIZE, height: SIZE }}
         >
           <ImageIcon fontSize="large" />
         </Avatar>

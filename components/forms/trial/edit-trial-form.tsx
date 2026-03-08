@@ -47,7 +47,7 @@ export default function EditTrialForm({ trial }: { trial: Trial }) {
     if (error) {
       setError(error.message)
     } else {
-      router.push('/trial')
+      router.push('/dashboard')
       router.refresh()
     }
   }

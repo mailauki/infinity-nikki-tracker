@@ -50,17 +50,7 @@ export const getEurekaSets = cache(async () => {
 
   if (!user_id) return eureka
 
-  const { data: obtained } = await supabase
-    .from('obtained')
-    .select(
-      `
-			id,
-			eureka_set,
-			category,
-			color
-		`
-    )
-    .eq('user_id', user_id)
+  const obtained = await getObtained(user_id)
 
   const eurekaWithObtained = eureka?.map((eurekaSet) => ({
     ...eurekaSet,

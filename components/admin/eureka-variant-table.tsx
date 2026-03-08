@@ -1,10 +1,11 @@
 'use client'
 
-import { Chip, IconButton, Tooltip, Typography } from '@mui/material'
+import { Avatar, Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlugVariant } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 import { EurekaVariantRaw } from '@/lib/types/eureka'
+import { Category } from '@mui/icons-material'
 
 type Row = EurekaVariantRaw
 
@@ -22,6 +23,14 @@ const columns: Column<Row>[] = [
           <EditIcon fontSize="small" />
         </IconButton>
       </Tooltip>
+    ),
+  },
+  {
+    header: 'Image',
+    cell: (v) => (
+      <Avatar size="xs" src={v.image_url!} alt={v.eureka_set || 'Image'}>
+        <Category fontSize="inherit" />
+      </Avatar>
     ),
   },
   { header: 'ID', cell: (v) => v.id },
@@ -43,15 +52,6 @@ const columns: Column<Row>[] = [
   },
   { header: 'Category', cell: (v) => v.category },
   { header: 'Color', cell: (v) => v.color },
-  {
-    header: 'Image URL',
-    cellSx: { maxWidth: '250px', overflow: 'hidden', textOverflow: 'ellipsis' },
-    cell: (v) => (
-      <Typography variant="caption" fontFamily="monospace" noWrap>
-        {v.image_url}
-      </Typography>
-    ),
-  },
   {
     header: 'Default',
     cell: (v) =>

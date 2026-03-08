@@ -1,6 +1,6 @@
-import Image from 'next/image'
-import { Avatar, CardHeader } from '@mui/material'
+import { Avatar, CardHeader, Typography } from '@mui/material'
 import { CardSize } from '@/lib/types/props'
+import { Category } from '@mui/icons-material'
 
 export default function EurekaSetImage({
   imageUrl,
@@ -21,8 +21,8 @@ export default function EurekaSetImage({
     return (
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: 'transparent' }} size="lg">
-            <Image src={imageUrl!} alt={alt} width={100} height={100} />
+          <Avatar src={imageUrl} alt={alt} sx={{ bgcolor: imageUrl && 'transparent' }} size="lg">
+            <Category fontSize="inherit" />
           </Avatar>
         }
         action={action}
@@ -34,12 +34,13 @@ export default function EurekaSetImage({
   return (
     <CardHeader
       avatar={
-        <Avatar sx={{ bgcolor: 'transparent' }} size="md">
-          <Image src={imageUrl!} alt={alt} width={100} height={100} />
+        <Avatar src={imageUrl} alt={alt} sx={{ bgcolor: imageUrl && 'transparent' }} size="md">
+          <Category fontSize="inherit" />
         </Avatar>
       }
-      title={title}
-      subheader={subheader}
+      disableTypography
+      title={<Typography variant={subheader ? 'overline' : 'subtitle1'}>{title}</Typography>}
+      subheader={<Typography variant="body2">{subheader}</Typography>}
       action={action}
       sx={{ width: '100%' }}
     />
