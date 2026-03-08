@@ -1,7 +1,9 @@
+import { cache } from 'react'
+
 import { Style } from '@/lib/types/eureka'
 import { createClient } from '@/lib/supabase/server'
 
-export async function getStyles() {
+export const getStyles = cache(async () => {
   const supabase = await createClient()
 
   const { data: styles } = await supabase
@@ -10,5 +12,5 @@ export async function getStyles() {
     .not('title', 'is', null)
     .order('title', { ascending: true })
 
-  return styles as Style[]
-}
+  return (styles ?? []) as Style[]
+})

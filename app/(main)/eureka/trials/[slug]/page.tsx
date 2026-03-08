@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
 import { Box, CardMedia } from '@mui/material'
@@ -19,6 +20,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const trial = await getTrial(slug)
+  if (!trial) return {}
   return { title: trial.title }
 }
 
@@ -34,6 +36,8 @@ export default async function TrialPage({ params }: { params: Promise<{ slug: st
 
 async function Trial({ slug }: { slug: string }) {
   const trial = await getTrial(slug)
+  if (!trial) notFound()
+
   const eurekaSets = await getEurekaSets()
   const user_id = await getUserID()
   const isLoggedIn = !!user_id

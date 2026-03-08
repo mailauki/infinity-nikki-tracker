@@ -1,7 +1,9 @@
+import { cache } from 'react'
+
 import { createClient } from '@/lib/supabase/server'
 import { Label } from '@/lib/types/eureka'
 
-export async function getLabels() {
+export const getLabels = cache(async () => {
   const supabase = await createClient()
 
   const { data: labels } = await supabase
@@ -10,5 +12,5 @@ export async function getLabels() {
     .not('title', 'is', null)
     .order('title', { ascending: true })
 
-  return labels as Label[]
-}
+  return (labels ?? []) as Label[]
+})

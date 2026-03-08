@@ -1,7 +1,9 @@
+import { cache } from 'react'
+
 import { createClient } from '@/lib/supabase/server'
 import { Trial } from '@/lib/types/eureka'
 
-export async function getTrials() {
+export const getTrials = cache(async () => {
   const supabase = await createClient()
 
   const { data: trials } = await supabase
@@ -9,10 +11,10 @@ export async function getTrials() {
     .select('id, slug, title, image_url, updated_at')
     .order('id', { ascending: true })
 
-  return trials as Trial[]
-}
+  return (trials ?? []) as Trial[]
+})
 
-export async function getTrial(slug: string) {
+export const getTrial = cache(async (slug: string) => {
   const supabase = await createClient()
 
   const { data: trial } = await supabase
@@ -21,5 +23,5 @@ export async function getTrial(slug: string) {
     .eq('slug', slug)
     .maybeSingle()
 
-  return trial as Trial
-}
+  return trial as Trial | null
+})

@@ -1,7 +1,9 @@
+import { cache } from 'react'
+
 import { Category } from '@/lib/types/eureka'
 import { createClient } from '@/lib/supabase/server'
 
-export async function getCategories() {
+export const getCategories = cache(async () => {
   const supabase = await createClient()
 
   const { data: categories } = await supabase
@@ -9,5 +11,5 @@ export async function getCategories() {
     .select('title, image_url')
     .order('id', { ascending: true })
 
-  return categories as Category[]
-}
+  return (categories ?? []) as Category[]
+})
