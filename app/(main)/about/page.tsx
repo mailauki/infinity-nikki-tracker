@@ -6,12 +6,12 @@ import {
   ListItem,
   List,
   ListItemText,
+	Alert,
 } from '@mui/material'
 import { getUserRole } from '@/hooks/user'
 import { Suspense } from 'react'
 import { Metadata } from 'next'
 import PageContainer from '@/components/page-container'
-import { Coffee } from '@mui/icons-material'
 
 export const metadata: Metadata = {
   title: 'About',
@@ -114,9 +114,24 @@ export default function AboutPage() {
         </List>
       </Stack>
 
-      <Suspense>
-        <AdminSection />
+			<Stack component="section">
+      <Typography variant="h4" component="h2">
+        Admin access
+      </Typography>
+      <Typography variant="body1" color="textSecondary" sx={{ mb: 1 }}>
+        As an admin, you can manage the data that powers this tracker:
+      </Typography>
+      <Typography variant="body1" color="textSecondary">
+        Use the{' '}
+        <Anchor href="/dashboard" color="textSecondary">
+          Dashboard
+        </Anchor>{' '}
+        to manage Eureka sets, variants, and trials — add, edit, and track counts and recent activity.
+      </Typography>
+			<Suspense>
+        <AdminButton />
       </Suspense>
+    </Stack>
 
       <Stack component="section">
         <Typography variant="h4" component="h2">
@@ -127,7 +142,7 @@ export default function AboutPage() {
             <ListItemText
               primary={
                 <Anchor
-                  href="https://infinity-nikki.fandom.com/"
+                  href="https://infinitynikki.fandom.com/"
                   target="_blank"
                   rel="noreferrer"
                   color="textSecondary"
@@ -259,30 +274,6 @@ export default function AboutPage() {
         </List>
       </Stack>
 
-      <Stack component="section">
-        <Typography variant="h4" component="h2">
-          Feedback &amp; Support
-        </Typography>
-        <Typography variant="subtitle1" color="textSecondary">
-          Found a bug or have a suggestion? Reach out via email —{' '}
-          <Anchor href="mailto:julie.ux.dev@gmail.com" color="textSecondary">
-            julie.ux.dev@gmail.com
-          </Anchor>
-          .
-        </Typography>
-        <Stack direction="row" spacing={1} sx={{ my: 2 }}>
-          <Button
-            href="https://buymeacoffee.com/mailauki"
-            target="_blank"
-            rel="noreferrer"
-            variant="outlined"
-						startIcon={<Coffee />}
-          >
-            Buy Me a Coffee
-          </Button>
-        </Stack>
-      </Stack>
-
       <Typography variant="caption" color="textDisabled">
         &copy; 2026 mailauki. Not affiliated with Infold Games or Infinity Nikki.
       </Typography>
@@ -290,57 +281,25 @@ export default function AboutPage() {
   )
 }
 
-async function AdminSection() {
+async function AdminButton() {
   const role = await getUserRole()
 
-  if (role !== 'admin') return null
+  if (role === 'admin') return null
 
   return (
-    <Stack component="section">
-      <Typography variant="h4" component="h2">
-        Admin
-      </Typography>
-      <Typography variant="body1" color="textSecondary" sx={{ mb: 1 }}>
-        As an admin, you can manage the data that powers this tracker:
-      </Typography>
-      <List sx={{ listStyle: 'disc', pl: 4 }} dense>
-        <ListItem sx={{ display: 'list-item' }}>
-          <ListItemText
-            primary={
-              <Typography color="textSecondary" variant="body1">
-                <Anchor href="/eureka-set" color="textSecondary">
-                  Eureka Sets
-                </Anchor>{' '}
-                — add, edit, and manage outfit set metadata (name, style, quality, trial)
-              </Typography>
-            }
-          />
-        </ListItem>
-        <ListItem sx={{ display: 'list-item' }}>
-          <ListItemText
-            primary={
-              <Typography color="textSecondary" variant="body1">
-                <Anchor href="/eureka-variant" color="textSecondary">
-                  Eureka Variants
-                </Anchor>{' '}
-                — add, edit, and manage individual Eureka items (color, category, image)
-              </Typography>
-            }
-          />
-        </ListItem>
-        <ListItem sx={{ display: 'list-item' }}>
-          <ListItemText
-            primary={
-              <Typography color="textSecondary" variant="body1">
-                <Anchor href="/dashboard" color="textSecondary">
-                  Dashboard
-                </Anchor>{' '}
-                — view counts and recent entries for sets and variants
-              </Typography>
-            }
-          />
-        </ListItem>
-      </List>
-    </Stack>
+			<Alert
+				severity="info"
+				action={
+					<Button
+						color="inherit"
+						size="small"
+						href="mailto:julie.ux.dev@gmail.com?subject=Admin%20Access%20Request&body=Hi%2C%20I%27d%20like%20to%20request%20admin%20access%20for%20the%20Infinity%20Nikki%20Tracker."
+					>
+						Request access
+					</Button>
+				}
+			>
+				You don&apos;t have admin access.
+			</Alert>
   )
 }
