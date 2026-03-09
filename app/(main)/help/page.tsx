@@ -3,7 +3,7 @@
 import BugReportForm from '@/components/forms/bug-report-form'
 import FeatureRequestForm from '@/components/forms/feature-request-form'
 import PageContainer from '@/components/page-container'
-import { AddComment, BugReport, Coffee } from '@mui/icons-material'
+import { AddComment, BugReport, Coffee, GitHub } from '@mui/icons-material'
 import {
   Dialog,
   DialogContent,
@@ -21,7 +21,7 @@ export default function HelpPage() {
   const [bugOpen, setBugOpen] = useState(false)
 
   return (
-    <PageContainer title="Help" size="sm">
+    <PageContainer title="Help">
       <List>
         <ListItem>
           <ListItemButton onClick={() => setFeatureOpen(true)}>
@@ -53,6 +53,20 @@ export default function HelpPage() {
             <ListItemText
               primary="Report an issue"
               secondary="Found a bug or something missing?"
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem>
+          <ListItemButton
+            href="https://github.com/mailauki/infinity-nikki-tracker/issues"
+            target="_blank"
+          >
+            <ListItemIcon>
+              <GitHub />
+            </ListItemIcon>
+            <ListItemText
+              primary="GitHub issues"
+              secondary="View or track open issues on GitHub"
             />
           </ListItemButton>
         </ListItem>
