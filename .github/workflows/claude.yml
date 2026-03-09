@@ -30,7 +30,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      # Generate a token from your custom app
       - name: Generate GitHub App token
         id: app-token
         uses: actions/create-github-app-token@v1
