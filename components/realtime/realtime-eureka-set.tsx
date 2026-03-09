@@ -74,14 +74,24 @@ export default function RealtimeEurekaSet({
             <>
               <List sx={{ width: '100%' }}>
                 {eurekaSet.categories.map((category: Category) => (
-                  <Card key={category.title} elevation={0} component="li" sx={{ backgroundColor: 'transparent' }}>
+                  <Card
+                    key={category.title}
+                    elevation={0}
+                    component="li"
+                    sx={{ backgroundColor: 'transparent' }}
+                  >
                     <CategoryItem item={category} eurekaVariants={eurekaSet.eureka_variants} />
                   </Card>
                 ))}
               </List>
               <List sx={{ width: '100%' }}>
                 {eurekaSet.colors.map((color: Category) => (
-                  <Card key={color.title} elevation={0} component="li" sx={{ backgroundColor: 'transparent' }}>
+                  <Card
+                    key={color.title}
+                    elevation={0}
+                    component="li"
+                    sx={{ backgroundColor: 'transparent' }}
+                  >
                     <CategoryItem
                       item={color}
                       eurekaVariants={eurekaSet.eureka_variants}

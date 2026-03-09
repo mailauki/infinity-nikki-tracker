@@ -5,7 +5,7 @@ import FeatureRequestForm from '@/components/forms/feature-request-form'
 import PageContainer from '@/components/page-container'
 import { AddComment, BugReport, Coffee, GitHub } from '@mui/icons-material'
 import {
-	Container,
+  Container,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -23,51 +23,57 @@ export default function HelpPage() {
 
   return (
     <PageContainer title="Help">
-			<Container maxWidth='xs' disableGutters>
-      <List>
-        <ListItem>
-          <ListItemButton onClick={() => setFeatureOpen(true)}>
-            <ListItemIcon>
-              <AddComment />
-            </ListItemIcon>
-            <ListItemText
-              primary="Feature request"
-              secondary="Have a suggestion or feature you would like to see?"
-            />
-          </ListItemButton>
-        </ListItem>
-        <ListItem>
-          <ListItemButton href="https://buymeacoffee.com/mailauki" target="_blank">
-            <ListItemIcon>
-              <Coffee />
-            </ListItemIcon>
-            <ListItemText
-              primary="Buy me a coffee"
-              secondary="Support me to keep improving this app!"
-            />
-          </ListItemButton>
-        </ListItem>
-        <ListItem>
-          <ListItemButton onClick={() => setBugOpen(true)}>
-            <ListItemIcon>
-              <BugReport />
-            </ListItemIcon>
-            <ListItemText primary="Report an issue" secondary="Found a bug or something missing?" />
-          </ListItemButton>
-        </ListItem>
-        <ListItem>
-          <ListItemButton
-            href="https://github.com/mailauki/infinity-nikki-tracker/issues"
-            target="_blank"
-          >
-            <ListItemIcon>
-              <GitHub />
-            </ListItemIcon>
-            <ListItemText primary="GitHub issues" secondary="View or track open issues on GitHub" />
-          </ListItemButton>
-        </ListItem>
-      </List>
-			</Container>
+      <Container maxWidth="xs" disableGutters>
+        <List>
+          <ListItem>
+            <ListItemButton onClick={() => setFeatureOpen(true)}>
+              <ListItemIcon>
+                <AddComment />
+              </ListItemIcon>
+              <ListItemText
+                primary="Feature request"
+                secondary="Have a suggestion or feature you would like to see?"
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton href="https://buymeacoffee.com/mailauki" target="_blank">
+              <ListItemIcon>
+                <Coffee />
+              </ListItemIcon>
+              <ListItemText
+                primary="Buy me a coffee"
+                secondary="Support me to keep improving this app!"
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton onClick={() => setBugOpen(true)}>
+              <ListItemIcon>
+                <BugReport />
+              </ListItemIcon>
+              <ListItemText
+                primary="Report an issue"
+                secondary="Found a bug or something missing?"
+              />
+            </ListItemButton>
+          </ListItem>
+          <ListItem>
+            <ListItemButton
+              href="https://github.com/mailauki/infinity-nikki-tracker/issues"
+              target="_blank"
+            >
+              <ListItemIcon>
+                <GitHub />
+              </ListItemIcon>
+              <ListItemText
+                primary="GitHub issues"
+                secondary="View or track open issues on GitHub"
+              />
+            </ListItemButton>
+          </ListItem>
+        </List>
+      </Container>
 
       <Dialog open={featureOpen} onClose={() => setFeatureOpen(false)} fullWidth maxWidth="sm">
         <DialogTitle>Feature Request</DialogTitle>
