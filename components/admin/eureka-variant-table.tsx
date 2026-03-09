@@ -36,9 +36,7 @@ export function EurekaVariantTable({
       header: 'Edit',
       cellSx: { py: 0 },
       cell: (v) => (
-        <Tooltip
-          title={`Edit ${[v.eureka_set, v.category, v.color].filter(Boolean).join(' • ')}`}
-        >
+        <Tooltip title={`Edit ${[v.eureka_set, v.category, v.color].filter(Boolean).join(' • ')}`}>
           <IconButton
             size="small"
             color="secondary"

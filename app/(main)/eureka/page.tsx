@@ -61,7 +61,7 @@ async function EurekaSets() {
           isLoggedIn && (
             <List sx={{ width: '100%' }}>
               {categories.map((category: Category) => (
-                <Card key={category.title} elevation={0} component="li">
+                <Card key={category.title} elevation={0} component="li" sx={{ backgroundColor: 'transparent' }}>
                   <CategoryItem item={category} eurekaVariants={eurekaVariants} />
                 </Card>
               ))}

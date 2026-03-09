@@ -5,6 +5,7 @@ import FeatureRequestForm from '@/components/forms/feature-request-form'
 import PageContainer from '@/components/page-container'
 import { AddComment, BugReport, Coffee, GitHub } from '@mui/icons-material'
 import {
+	Container,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -22,6 +23,7 @@ export default function HelpPage() {
 
   return (
     <PageContainer title="Help">
+			<Container maxWidth='xs' disableGutters>
       <List>
         <ListItem>
           <ListItemButton onClick={() => setFeatureOpen(true)}>
@@ -50,10 +52,7 @@ export default function HelpPage() {
             <ListItemIcon>
               <BugReport />
             </ListItemIcon>
-            <ListItemText
-              primary="Report an issue"
-              secondary="Found a bug or something missing?"
-            />
+            <ListItemText primary="Report an issue" secondary="Found a bug or something missing?" />
           </ListItemButton>
         </ListItem>
         <ListItem>
@@ -64,13 +63,11 @@ export default function HelpPage() {
             <ListItemIcon>
               <GitHub />
             </ListItemIcon>
-            <ListItemText
-              primary="GitHub issues"
-              secondary="View or track open issues on GitHub"
-            />
+            <ListItemText primary="GitHub issues" secondary="View or track open issues on GitHub" />
           </ListItemButton>
         </ListItem>
       </List>
+			</Container>
 
       <Dialog open={featureOpen} onClose={() => setFeatureOpen(false)} fullWidth maxWidth="sm">
         <DialogTitle>Feature Request</DialogTitle>
