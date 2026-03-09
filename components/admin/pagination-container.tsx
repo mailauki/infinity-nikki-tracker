@@ -103,7 +103,7 @@ export default function PaginationContainer<T>({
           count={allRows.length}
           page={page}
           rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[8, 15, 20, 30, 50, 100]}
+          rowsPerPageOptions={[6, 8, 15, 20, 30, 50, 100]}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
         />

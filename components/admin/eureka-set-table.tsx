@@ -55,7 +55,6 @@ export function EurekaSetTable({
         </Avatar>
       ),
     },
-    { header: 'ID', cell: (set) => set.id },
     {
       header: 'Title',
       cell: (set) => (
