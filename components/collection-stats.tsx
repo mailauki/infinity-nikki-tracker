@@ -38,12 +38,12 @@ export default function CollectionStats({ sets }: { sets: EurekaSet[] }) {
 
   const allCategories = [...new Set(allVariants.map((v) => v.category).filter(Boolean))]
   const categoriesObtained = allCategories.filter((cat) =>
-    allVariants.some((v) => v.category === cat && v.obtained)
+    allVariants.filter((v) => v.category === cat).every((v) => v.obtained)
   ).length
 
   const allColors = [...new Set(allVariants.map((v) => v.color).filter(Boolean))]
   const colorsObtained = allColors.filter((color) =>
-    allVariants.some((v) => v.color === color && v.obtained)
+    allVariants.filter((v) => v.color === color).every((v) => v.obtained)
   ).length
 
   return (
