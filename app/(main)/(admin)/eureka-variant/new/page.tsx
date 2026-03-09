@@ -19,13 +19,14 @@ export default function NewEurekaVariantPage() {
 }
 
 async function NewEurekaVariant() {
-  const { eurekaSets, categories, colors } = await getAdminData()
+  const { eurekaSets, categories, colors, eurekaVariants } = await getAdminData()
 
   return (
     <AddEurekaVariantForm
       eurekaSets={eurekaSets ?? []}
       categories={categories ?? []}
       colors={colors ?? []}
+      variants={eurekaVariants ?? []}
     />
   )
 }

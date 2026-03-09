@@ -29,12 +29,14 @@ export default function EditEurekaVariantForm({
   eurekaSets,
   categories,
   colors,
+  variants,
   back,
 }: {
   variant: EurekaVariantRaw
   eurekaSets: EurekaSetRaw[]
   categories: Category[]
   colors: Color[]
+  variants: EurekaVariantRaw[]
   back?: string
 }) {
   const router = useRouter()
@@ -51,6 +53,8 @@ export default function EditEurekaVariantForm({
       toSlugVariant(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? '')
   )
   const [editSlug, setEditSlug] = useState<boolean>(false)
+
+  const hasDefault = variants.some((v) => v.id !== variant.id && v.eureka_set === eurekaSet && v.default)
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
@@ -160,12 +164,18 @@ export default function EditEurekaVariantForm({
         <FormControl>
           <FormControlLabel
             control={
-              <Switch checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} />
+              <Switch
+                checked={isDefault}
+                onChange={(e) => setIsDefault(e.target.checked)}
+                disabled={hasDefault}
+              />
             }
             label="Default variant"
           />
           <FormHelperText>
-            Used to determine the Eureka set thumbnail image — limit one per set
+            {hasDefault
+              ? 'This set already has a default variant'
+              : 'Used to determine the Eureka set thumbnail image — limit one per set'}
           </FormHelperText>
         </FormControl>
 

@@ -73,10 +73,10 @@ export const navLinksData: {
       url: '/about',
       icon: <Info />,
     },
-		{
-			title: 'Help',
-			url: '/help',
-			icon: <Help />
-		},
+    {
+      title: 'Help',
+      url: '/help',
+      icon: <Help />,
+    },
   ],
 }

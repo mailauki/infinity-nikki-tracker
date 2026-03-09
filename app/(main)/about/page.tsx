@@ -6,7 +6,7 @@ import {
   ListItem,
   List,
   ListItemText,
-	Alert,
+  Alert,
 } from '@mui/material'
 import { getUserRole } from '@/hooks/user'
 import { Suspense } from 'react'
@@ -114,24 +114,25 @@ export default function AboutPage() {
         </List>
       </Stack>
 
-			<Stack component="section">
-      <Typography variant="h4" component="h2">
-        Admin access
-      </Typography>
-      <Typography variant="body1" color="textSecondary" sx={{ mb: 1 }}>
-        As an admin, you can manage the data that powers this tracker:
-      </Typography>
-      <Typography variant="body1" color="textSecondary">
-        Use the{' '}
-        <Anchor href="/dashboard" color="textSecondary">
-          Dashboard
-        </Anchor>{' '}
-        to manage Eureka sets, variants, and trials — add, edit, and track counts and recent activity.
-      </Typography>
-			<Suspense>
-        <AdminButton />
-      </Suspense>
-    </Stack>
+      <Stack component="section">
+        <Typography variant="h4" component="h2">
+          Admin access
+        </Typography>
+        <Typography variant="body1" color="textSecondary" sx={{ mb: 1 }}>
+          As an admin, you can manage the data that powers this tracker:
+        </Typography>
+        <Typography variant="body1" color="textSecondary">
+          Use the{' '}
+          <Anchor href="/dashboard" color="textSecondary">
+            Dashboard
+          </Anchor>{' '}
+          to manage Eureka sets, variants, and trials — add, edit, and track counts and recent
+          activity.
+        </Typography>
+        <Suspense>
+          <AdminButton />
+        </Suspense>
+      </Stack>
 
       <Stack component="section">
         <Typography variant="h4" component="h2">
@@ -287,19 +288,19 @@ async function AdminButton() {
   if (role === 'admin') return null
 
   return (
-			<Alert
-				severity="info"
-				action={
-					<Button
-						color="inherit"
-						size="small"
-						href="mailto:julie.ux.dev@gmail.com?subject=Admin%20Access%20Request&body=Hi%2C%20I%27d%20like%20to%20request%20admin%20access%20for%20the%20Infinity%20Nikki%20Tracker."
-					>
-						Request access
-					</Button>
-				}
-			>
-				You don&apos;t have admin access.
-			</Alert>
+    <Alert
+      severity="info"
+      action={
+        <Button
+          color="inherit"
+          size="small"
+          href="mailto:julie.ux.dev@gmail.com?subject=Admin%20Access%20Request&body=Hi%2C%20I%27d%20like%20to%20request%20admin%20access%20for%20the%20Infinity%20Nikki%20Tracker."
+        >
+          Request access
+        </Button>
+      }
+    >
+      You don&apos;t have admin access.
+    </Alert>
   )
 }

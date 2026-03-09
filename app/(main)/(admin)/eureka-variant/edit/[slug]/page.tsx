@@ -45,7 +45,7 @@ async function EditEurekaVariant({
 
   if (!variant) notFound()
 
-  const { eurekaSets, categories, colors } = await getAdminData()
+  const { eurekaSets, categories, colors, eurekaVariants } = await getAdminData()
 
   return (
     <EditEurekaVariantForm
@@ -53,6 +53,7 @@ async function EditEurekaVariant({
       eurekaSets={eurekaSets ?? []}
       categories={categories ?? []}
       colors={colors ?? []}
+      variants={eurekaVariants ?? []}
       back={back}
     />
   )

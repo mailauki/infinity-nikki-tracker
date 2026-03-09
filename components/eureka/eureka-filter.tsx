@@ -38,7 +38,7 @@ export default function EurekaFilter({
         sideContent={
           <List sx={{ width: '100%' }}>
             {categories.map((category: Category) => (
-              <Card key={category.title} elevation={0} component="li">
+              <Card key={category.title} elevation={0} component="li" sx={{ backgroundColor: 'transparent' }}>
                 <CardActionArea
                   onClick={() =>
                     setSelectedCategory(

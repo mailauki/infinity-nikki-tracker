@@ -22,16 +22,18 @@ import { createClient } from '@/lib/supabase/client'
 import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 import ImageUpload from '@/components/forms/image-upload'
-import { Category, Color, EurekaSetRaw } from '@/lib/types/eureka'
+import { Category, Color, EurekaSetRaw, EurekaVariantRaw } from '@/lib/types/eureka'
 
 export default function AddEurekaVariantForm({
   eurekaSets,
   categories,
   colors,
+  variants,
 }: {
   eurekaSets: EurekaSetRaw[]
   categories: Category[]
   colors: Color[]
+  variants: EurekaVariantRaw[]
 }) {
   const router = useRouter()
   const [eurekaSet, setEurekaSet] = useState('')
@@ -43,6 +45,8 @@ export default function AddEurekaVariantForm({
   const [error, setError] = useState<string | null>(null)
   const [slug, setSlug] = useState('')
   const [editSlug, setEditSlug] = useState<boolean>(false)
+
+  const hasDefault = variants.some((v) => v.eureka_set === eurekaSet && v.default)
 
   useEffect(() => {
     if (!editSlug && eurekaSet && category && color) {
@@ -156,12 +160,18 @@ export default function AddEurekaVariantForm({
         <FormControl>
           <FormControlLabel
             control={
-              <Switch checked={isDefault} onChange={(e) => setIsDefault(e.target.checked)} />
+              <Switch
+                checked={isDefault}
+                onChange={(e) => setIsDefault(e.target.checked)}
+                disabled={hasDefault}
+              />
             }
             label="Default variant"
           />
           <FormHelperText>
-            Used to determine the Eureka set thumbnail image — limit one per set
+            {hasDefault
+              ? 'This set already has a default variant'
+              : 'Used to determine the Eureka set thumbnail image — limit one per set'}
           </FormHelperText>
         </FormControl>
 

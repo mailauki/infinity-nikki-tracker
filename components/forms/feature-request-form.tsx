@@ -39,11 +39,7 @@ export default function FeatureRequestForm({ onClose }: FeatureRequestFormProps)
       <Stack spacing={2} sx={{ pt: 1 }}>
         <FormControl fullWidth required>
           <InputLabel>Category</InputLabel>
-          <Select
-            value={category}
-            label="Category"
-            onChange={(e) => setCategory(e.target.value)}
-          >
+          <Select value={category} label="Category" onChange={(e) => setCategory(e.target.value)}>
             {CATEGORIES.map((c) => (
               <MenuItem key={c} value={c}>
                 {c}
