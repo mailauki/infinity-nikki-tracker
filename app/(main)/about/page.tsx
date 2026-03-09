@@ -11,6 +11,7 @@ import { getUserRole } from '@/hooks/user'
 import { Suspense } from 'react'
 import { Metadata } from 'next'
 import PageContainer from '@/components/page-container'
+import { Coffee } from '@mui/icons-material'
 
 export const metadata: Metadata = {
   title: 'About',
@@ -271,18 +272,11 @@ export default function AboutPage() {
         </Typography>
         <Stack direction="row" spacing={1} sx={{ my: 2 }}>
           <Button
-            href="https://patreon.com/mailauki"
-            target="_blank"
-            rel="noreferrer"
-            variant="contained"
-          >
-            Support on Patreon
-          </Button>
-          <Button
             href="https://buymeacoffee.com/mailauki"
             target="_blank"
             rel="noreferrer"
             variant="outlined"
+						startIcon={<Coffee />}
           >
             Buy Me a Coffee
           </Button>

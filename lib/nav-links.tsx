@@ -1,7 +1,5 @@
-import InfoIcon from '@mui/icons-material/InfoOutline'
-import DashboardIcon from '@mui/icons-material/Dashboard'
-import AccountIcon from '@mui/icons-material/AccountCircle'
 import { NavLink } from '@/lib/types/props'
+import { Help, Info, Dashboard, AccountCircle } from '@mui/icons-material'
 
 export const navLinksData: {
   home: NavLink
@@ -34,7 +32,7 @@ export const navLinksData: {
     {
       title: 'Dashboard',
       url: '/dashboard',
-      icon: <DashboardIcon />,
+      icon: <Dashboard />,
       adminOnly: true,
       items: [
         {
@@ -66,14 +64,19 @@ export const navLinksData: {
     {
       title: 'Profile',
       url: '/profile',
-      icon: <AccountIcon />,
+      icon: <AccountCircle />,
     },
   ],
   navExtra: [
     {
       title: 'About',
       url: '/about',
-      icon: <InfoIcon />,
+      icon: <Info />,
     },
+		{
+			title: 'Help',
+			url: '/help',
+			icon: <Help />
+		},
   ],
 }
