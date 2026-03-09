@@ -4,6 +4,8 @@ export type CategoryType = 'colors' | 'categories'
 
 export type CardSize = 'xs' | 'sm' | 'md' | 'lg'
 
+export type ResponsiveCardSize = CardSize | { xs?: CardSize; sm?: CardSize; md?: CardSize; lg?: CardSize }
+
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 export type CategoryFilter = '' | 'Head' | 'Hands' | 'Feet'

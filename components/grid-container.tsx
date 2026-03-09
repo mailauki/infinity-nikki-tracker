@@ -1,4 +1,4 @@
-import { Grid, Stack } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 
 export default function GridContainer({
   mainContent,
@@ -8,15 +8,15 @@ export default function GridContainer({
   sideContent?: React.ReactNode
 }) {
   return (
-    <Grid container spacing={2} columns={{ xs: 2, sm: 8, md: 12 }} sx={{ mb: 2 }}>
-      <Grid size={sideContent ? 8 : 12}>{mainContent}</Grid>
+    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 2 }}>
       {sideContent && (
-        <Grid size={{ xs: 2, sm: 8, md: 4 }}>
+        <Box sx={{ order: { md: 2 }, width: { md: '33%' }, minWidth: '240px' }}>
           <Stack spacing={2} direction={{ xs: 'column', sm: 'row', md: 'column' }}>
             {sideContent}
           </Stack>
-        </Grid>
+        </Box>
       )}
-    </Grid>
+      <Box sx={{ flexGrow: 1, order: { md: 1 }, minWidth: 0 }}>{mainContent}</Box>
+    </Box>
   )
 }

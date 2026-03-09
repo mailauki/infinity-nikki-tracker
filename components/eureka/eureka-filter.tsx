@@ -36,13 +36,12 @@ export default function EurekaFilter({
           </Grid>
         }
         sideContent={
-          <List sx={{ width: '100%' }}>
+					<>
             {categories.map((category: Category) => (
               <Card
                 key={category.title}
                 elevation={0}
-                component="li"
-                sx={{ backgroundColor: 'transparent' }}
+                sx={{ backgroundColor: 'transparent', flex: 1 }}
               >
                 <CardActionArea
                   onClick={() =>
@@ -69,7 +68,7 @@ export default function EurekaFilter({
                 </CardActionArea>
               </Card>
             ))}
-          </List>
+						</>
         }
       />
     </>
