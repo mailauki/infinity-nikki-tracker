@@ -55,7 +55,6 @@ export function EurekaVariantTable({
         </Avatar>
       ),
     },
-    { header: 'ID', cell: (v) => v.id },
     {
       header: 'Eureka Set',
       cell: (v) => (

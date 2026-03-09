@@ -61,7 +61,6 @@ export function TrialTable({
         </Avatar>
       ),
     },
-    { header: 'ID', cell: (trial) => trial.id },
     {
       header: 'Title',
       cell: (trial) => (
