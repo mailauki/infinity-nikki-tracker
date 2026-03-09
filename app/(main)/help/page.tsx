@@ -1,5 +1,6 @@
 'use client'
 
+import BugReportForm from '@/components/forms/bug-report-form'
 import FeatureRequestForm from '@/components/forms/feature-request-form'
 import PageContainer from '@/components/page-container'
 import { AddComment, BugReport, Coffee } from '@mui/icons-material'
@@ -16,13 +17,14 @@ import {
 import { useState } from 'react'
 
 export default function HelpPage() {
-  const [open, setOpen] = useState(false)
+  const [featureOpen, setFeatureOpen] = useState(false)
+  const [bugOpen, setBugOpen] = useState(false)
 
   return (
     <PageContainer title="Help" size="sm">
       <List>
         <ListItem>
-          <ListItemButton onClick={() => setOpen(true)}>
+          <ListItemButton onClick={() => setFeatureOpen(true)}>
             <ListItemIcon>
               <AddComment />
             </ListItemIcon>
@@ -44,7 +46,7 @@ export default function HelpPage() {
           </ListItemButton>
         </ListItem>
         <ListItem>
-          <ListItemButton>
+          <ListItemButton onClick={() => setBugOpen(true)}>
             <ListItemIcon>
               <BugReport />
             </ListItemIcon>
@@ -56,10 +58,17 @@ export default function HelpPage() {
         </ListItem>
       </List>
 
-      <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
+      <Dialog open={featureOpen} onClose={() => setFeatureOpen(false)} fullWidth maxWidth="sm">
         <DialogTitle>Feature Request</DialogTitle>
         <DialogContent>
-          <FeatureRequestForm onClose={() => setOpen(false)} />
+          <FeatureRequestForm onClose={() => setFeatureOpen(false)} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={bugOpen} onClose={() => setBugOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Report an Issue</DialogTitle>
+        <DialogContent>
+          <BugReportForm onClose={() => setBugOpen(false)} />
         </DialogContent>
       </Dialog>
     </PageContainer>
