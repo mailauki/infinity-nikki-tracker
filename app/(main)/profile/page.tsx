@@ -1,10 +1,12 @@
 import ProfileForm from '@/components/forms/auth/profile-form'
+import CollectionStats from '@/components/collection-stats'
 import { createClient } from '@/lib/supabase/server'
-import { getUserRole } from '@/hooks/user'
+import { getUserID, getUserRole } from '@/hooks/user'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 import { Metadata } from 'next'
 import PageContainer from '@/components/page-container'
+import { getEurekaSets } from '@/hooks/data/eureka-sets'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -32,6 +34,13 @@ async function UserDetails() {
   }
 
   const role = await getUserRole()
+  const user_id = await getUserID()
+  const sets = user_id ? await getEurekaSets() : null
 
-  return <ProfileForm user={user} isAdmin={role === 'admin'} />
+  return (
+    <>
+      {sets && <CollectionStats sets={sets} />}
+      <ProfileForm user={user} isAdmin={role === 'admin'} />
+    </>
+  )
 }

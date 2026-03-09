@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 
 export type CategoryType = 'colors' | 'categories'
 
-export type CardSize = 'sm' | 'md' | 'lg'
+export type CardSize = 'xs' | 'sm' | 'md' | 'lg'
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 

@@ -54,7 +54,9 @@ export default function EditEurekaVariantForm({
   )
   const [editSlug, setEditSlug] = useState<boolean>(false)
 
-  const hasDefault = variants.some((v) => v.id !== variant.id && v.eureka_set === eurekaSet && v.default)
+  const hasDefault = variants.some(
+    (v) => v.id !== variant.id && v.eureka_set === eurekaSet && v.default
+  )
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
