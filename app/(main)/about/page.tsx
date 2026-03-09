@@ -257,21 +257,6 @@ export default function AboutPage() {
               }
             />
           </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Anchor
-                  href="https://github.com/mailauki/infinity-nikki-tracker/pulls"
-                  target="_blank"
-                  rel="noreferrer"
-                  color="textSecondary"
-                  variant="body1"
-                >
-                  Submit a pull request
-                </Anchor>
-              }
-            />
-          </ListItem>
         </List>
       </Stack>
 
