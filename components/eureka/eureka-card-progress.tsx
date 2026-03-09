@@ -28,6 +28,7 @@ export default function EurekaCardProgress({
             variant="determinate"
             color={percentage === 100 ? 'primary' : 'inherit'}
             size={64}
+						sx={{ backgroundColor: 'divider', borderRadius: '100px' }}
           />
           <Box
             sx={{
@@ -39,9 +40,10 @@ export default function EurekaCardProgress({
               p: 0.5,
             }}
           >
-            <Avatar size="md" sx={{ backgroundColor: 'transparent' }}>
+            <Avatar size="md" sx={{ backgroundColor: 'background.paper' }}>
               <Typography
                 variant="subtitle1"
+								fontWeight='medium'
                 component="p"
                 color={percentage === 100 ? 'primary' : 'textPrimary'}
               >
