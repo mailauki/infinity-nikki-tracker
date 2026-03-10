@@ -2,6 +2,7 @@
 
 import {
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -15,7 +16,7 @@ import CategoryToggle from './category-toggle'
 import { Category, EurekaSet } from '@/lib/types/eureka'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
 import FilterToggle from './filter-toggle'
-import { FilterList } from '@mui/icons-material'
+import { Clear, ClearAll, FilterList, FilterListOff } from '@mui/icons-material'
 
 export default function FilterToolbar({
   eurekaSets,
@@ -28,6 +29,7 @@ export default function FilterToolbar({
   onCategoryChange,
   onFilterChange,
   onGroupBySetChange,
+  onClearFilters,
 }: {
   eurekaSets: EurekaSet[]
   categories: Category[]
@@ -42,6 +44,7 @@ export default function FilterToolbar({
   ) => void
   onFilterChange: (event: React.MouseEvent<HTMLElement>, newFilter: ToggleFilter | null) => void
   onGroupBySetChange: () => void
+  onClearFilters: () => void
 }) {
   return (
     <Toolbar disableGutters>
@@ -88,9 +91,18 @@ export default function FilterToolbar({
 
         <CategoryToggle
           categories={categories}
-          selectedCategory={selectedCategory}
+          selectedCategory={selectedFilter === 'Color' ? null : selectedCategory}
           onCategoryChange={onCategoryChange}
+          disabled={selectedFilter === 'Color'}
         />
+
+        {(selectedEurekaSet || selectedCategory || selectedFilter) && (
+          <Tooltip title="Clear filters">
+            <IconButton onClick={onClearFilters} aria-label="Clear filters">
+              <Clear />
+            </IconButton>
+          </Tooltip>
+        )}
       </Stack>
     </Toolbar>
   )

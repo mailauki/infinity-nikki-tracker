@@ -42,6 +42,12 @@ export default function FilterEureka({
     setGroupBySet((prev) => !prev)
   }
 
+  const handleClearFilters = () => {
+    setSelectedEurekaSet(null)
+    setSelectedCategory(null)
+    setSelectedFilter(null)
+  }
+
   const filteredSets = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
     .map((set) => {
@@ -75,6 +81,7 @@ export default function FilterEureka({
         onCategoryChange={handleCategoryChange}
         onFilterChange={handleFilterChange}
         onGroupBySetChange={handleGroupBySetChange}
+        onClearFilters={handleClearFilters}
       />
       {filteredSets.length === 0 ? (
         <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>

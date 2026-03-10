@@ -9,6 +9,7 @@ export default function CategoryToggle({
   categories,
   selectedCategory,
   onCategoryChange,
+  disabled,
 }: {
   categories: Category[]
   selectedCategory: CategoryFilter | null
@@ -16,6 +17,7 @@ export default function CategoryToggle({
     event: React.MouseEvent<HTMLElement>,
     newCategory: CategoryFilter | null
   ) => void
+  disabled?: boolean
 }) {
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
@@ -25,6 +27,7 @@ export default function CategoryToggle({
       value={selectedCategory}
       onChange={onCategoryChange}
       exclusive
+      disabled={disabled}
       aria-label="Categories"
     >
       {categories.map((category) => (
