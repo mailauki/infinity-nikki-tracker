@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
-import { Category, EurekaSet } from '@/lib/types/eureka'
-import FilterToolbar from './filter-toolbar'
+import { Category, Color, EurekaSet } from '@/lib/types/eureka'
+import FilterToolbar from './filter/filter-toolbar'
 import { Box, Container, Divider, Stack, Typography } from '@mui/material'
 import EurekaColorSetCard from './eureka/eureka-color-set-card'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
@@ -15,10 +15,12 @@ import LoginAlert from './login-alert'
 export default function FilterEureka({
   eurekaSets,
   categories,
+  colors,
   isLoggedIn,
 }: {
   eurekaSets: EurekaSet[]
   categories: Category[]
+  colors: Color[]
   isLoggedIn: boolean
 }) {
   const [selectedEurekaSet, setSelectedEurekaSet] = useState<string | null>(null)
@@ -26,6 +28,7 @@ export default function FilterEureka({
   const [selectedFilter, setSelectedFilter] = useState<ToggleFilter | null>(null)
   const [groupBySet, setGroupBySet] = useState(true)
   const [showByColor, setShowByColor] = useState(false)
+  const [selectedColor, setSelectedColor] = useState<string | null>(null)
 
   const handleEurekaSetChange = (event: SelectChangeEvent) => {
     setSelectedEurekaSet(event.target.value || null)
@@ -57,6 +60,10 @@ export default function FilterEureka({
       }
       return !prev
     })
+  }
+
+  const handleColorChange = (event: SelectChangeEvent) => {
+    setSelectedColor(event.target.value || null)
   }
 
   const handleClearFilters = () => {
@@ -94,6 +101,7 @@ export default function FilterEureka({
       <FilterToolbar
         eurekaSets={eurekaSets}
         categories={categories}
+        colors={colors}
         selectedEurekaSet={selectedEurekaSet}
         selectedCategory={selectedCategory}
         selectedFilter={selectedFilter}
@@ -104,6 +112,8 @@ export default function FilterEureka({
         showByColor={showByColor}
         onGroupBySetChange={handleGroupBySetChange}
         onShowByColorChange={handleShowByColorChange}
+        selectedColor={selectedColor}
+        onColorChange={handleColorChange}
         onClearFilters={handleClearFilters}
         resultsCount={resultsCount}
         isLoggedIn={isLoggedIn}

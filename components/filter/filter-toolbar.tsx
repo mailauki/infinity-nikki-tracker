@@ -3,6 +3,8 @@
 import {
   Avatar,
   Box,
+  Button,
+  ButtonGroup,
   Container,
   FormControl,
   IconButton,
@@ -11,7 +13,6 @@ import {
   ListItemAvatar,
   ListItemText,
   MenuItem,
-  OutlinedInput,
   Select,
   SelectChangeEvent,
   Stack,
@@ -21,35 +22,45 @@ import {
   Typography,
 } from '@mui/material'
 import CategoryToggle from './category-toggle'
-import { Category, EurekaSet } from '@/lib/types/eureka'
+import { Category, Color, EurekaSet } from '@/lib/types/eureka'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
-import { Clear, ColorLens, FilterList, Category as CategoryIcon } from '@mui/icons-material'
+import {
+  Clear,
+  FilterList,
+  Category as CategoryIcon,
+} from '@mui/icons-material'
 import ObtainedToggle from './obtained-toggle'
+import ColorToggle from './color-toggle'
 
 export default function FilterToolbar({
   eurekaSets,
   categories,
+  colors,
   selectedEurekaSet,
   selectedCategory,
   selectedFilter,
   groupBySet,
   showByColor,
+  selectedColor,
   onEurekaSetChange,
   onCategoryChange,
   onFilterChange,
   onGroupBySetChange,
   onShowByColorChange,
+  onColorChange,
   onClearFilters,
   resultsCount,
   isLoggedIn,
 }: {
   eurekaSets: EurekaSet[]
   categories: Category[]
+  colors: Color[]
   selectedEurekaSet: string | null
   selectedCategory: CategoryFilter | null
   selectedFilter: ToggleFilter | null
   groupBySet: boolean
   showByColor: boolean
+  selectedColor: string | null
   onEurekaSetChange: (event: SelectChangeEvent) => void
   onCategoryChange: (
     event: React.MouseEvent<HTMLElement>,
@@ -58,6 +69,7 @@ export default function FilterToolbar({
   onFilterChange: (event: React.MouseEvent<HTMLElement>, newFilter: ToggleFilter | null) => void
   onGroupBySetChange: () => void
   onShowByColorChange: () => void
+  onColorChange: (event: SelectChangeEvent) => void
   onClearFilters: () => void
   resultsCount: number
   isLoggedIn: boolean
@@ -128,16 +140,28 @@ export default function FilterToolbar({
               </Select>
             </FormControl>
 
-            <Tooltip title="Show by Color">
-              <ToggleButton
-                value="showByColor"
-                selected={showByColor}
-                onChange={onShowByColorChange}
-                sx={{ py: 1.75, whiteSpace: 'nowrap' }}
-              >
-                <ColorLens />
-              </ToggleButton>
-            </Tooltip>
+            {/* <ButtonGroup aria-label="Button group with a nested menu">
+              <Tooltip title="Show by Color">
+                <ToggleButton
+                  value="showByColor"
+                  selected={showByColor}
+                  onChange={onShowByColorChange}
+                  sx={{ py: 1.75, whiteSpace: 'nowrap' }}
+                >
+                  <ColorLens />
+                </ToggleButton>
+              </Tooltip>
+              <Button size="small" aria-label="select merge strategy" aria-haspopup="menu">
+                <ArrowDropDown />
+              </Button>
+            </ButtonGroup> */}
+            <ColorToggle
+              colors={colors}
+              showByColor={showByColor}
+              onShowByColorChange={onShowByColorChange}
+              selectedColor={selectedColor}
+              onColorChange={onColorChange}
+            />
 
             {isLoggedIn && (
               <ObtainedToggle
