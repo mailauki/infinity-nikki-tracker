@@ -1,6 +1,12 @@
 import { Suspense } from 'react'
 
-import { Box, Card, Divider, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Card,
+  Divider,
+  Stack,
+  Typography,
+} from '@mui/material'
 
 import { getUserID } from '@/hooks/user'
 import LoginAlert from '@/components/login-alert'
@@ -8,6 +14,7 @@ import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { Metadata } from 'next'
 import PageContainer from '@/components/page-container'
 import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
+import FilterToolbar from '@/components/filter-toolbar'
 
 export const metadata: Metadata = {
   title: 'Eureka Sets',
@@ -71,6 +78,7 @@ async function EurekaSets() {
           )
         }
       /> */}
+      <FilterToolbar eurekaSets={eurekaSets} categories={categories} />
       <Stack spacing={1}>
         {eurekaSets.map((set) => (
           <Box
