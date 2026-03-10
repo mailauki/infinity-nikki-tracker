@@ -144,7 +144,7 @@ export default function FilterEureka({
                 sm: '1fr 1fr 1fr 1fr',
                 md: '1fr 1fr 1fr 1fr 1fr',
               },
-              gap: 1,
+              gap: { xs: 1, sm: 1.5, md: 2 },
               py: groupBySet ? 0 : 2,
               mb: 4,
             }}
