@@ -3,9 +3,10 @@ import { Category, EurekaSet } from '@/lib/types/eureka'
 import FilterToolbar from './filter-toolbar'
 import { Box, Card, Divider, Stack, Typography } from '@mui/material'
 import EurekaColorSetCard from './eureka/eureka-color-set-card'
-import { CategoryFilter } from '@/lib/types/props'
+import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
 import { useState } from 'react'
 import { SelectChangeEvent } from '@mui/material'
+import EurekaVariantCard from './eureka/eureka-variant-card'
 
 export default function FilterEureka({
   eurekaSets,
@@ -16,6 +17,7 @@ export default function FilterEureka({
 }) {
   const [selectedEurekaSet, setSelectedEurekaSet] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter | null>(null)
+  const [selectedFilter, setSelectedFilter] = useState<ToggleFilter | null>(null)
 
   const handleEurekaSetChange = (event: SelectChangeEvent) => {
     setSelectedEurekaSet(event.target.value || null)
@@ -26,6 +28,13 @@ export default function FilterEureka({
     newCategory: CategoryFilter | null
   ) => {
     setSelectedCategory(newCategory)
+  }
+
+  const handleFilterChange = (
+    _event: React.MouseEvent<HTMLElement>,
+    newFilter: ToggleFilter | null
+  ) => {
+    setSelectedFilter(newFilter)
   }
 
   const filteredSets = eurekaSets
@@ -49,8 +58,10 @@ export default function FilterEureka({
         categories={categories}
         selectedEurekaSet={selectedEurekaSet}
         selectedCategory={selectedCategory}
+        selectedFilter={selectedFilter}
         onEurekaSetChange={handleEurekaSetChange}
         onCategoryChange={handleCategoryChange}
+        onFilterChange={handleFilterChange}
       />
       <Stack spacing={1}>
         {filteredSets.map((set) => (
@@ -70,11 +81,17 @@ export default function FilterEureka({
               <Typography variant="overline">{set.title}</Typography>
               <Divider />
             </Box>
-            {set.colors.map((color) => (
-              <Card key={`${set.slug}-${color.title}`} sx={{ minWidth: 'fit-content' }}>
-                <EurekaColorSetCard eurekaSet={set} color={color} />
-              </Card>
-            ))}
+            {selectedFilter === 'Color'
+              ? set.colors.map((color) => (
+                  <Card key={`${set.slug}-${color.title}`} sx={{ minWidth: 'fit-content' }}>
+                    <EurekaColorSetCard eurekaSet={set} color={color} />
+                  </Card>
+                ))
+              : set.eureka_variants.map((variant) => (
+                  <Card key={variant.id} sx={{ minWidth: 'fit-content' }}>
+                    <EurekaVariantCard eurekaVariant={variant} />
+                  </Card>
+                ))}
           </Box>
         ))}
       </Stack>
