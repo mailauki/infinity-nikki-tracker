@@ -1,13 +1,35 @@
-import { FormControl, InputLabel, MenuItem, Select, Stack, Toolbar } from '@mui/material'
+'use client'
+
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Stack,
+  Toolbar,
+} from '@mui/material'
 import CategoryToggle from './category-toggle'
 import { Category, EurekaSet } from '@/lib/types/eureka'
+import { CategoryFilter } from '@/lib/types/props'
 
 export default function FilterToolbar({
   eurekaSets,
   categories,
+  selectedEurekaSet,
+  selectedCategory,
+  onEurekaSetChange,
+  onCategoryChange,
 }: {
   eurekaSets: EurekaSet[]
   categories: Category[]
+  selectedEurekaSet: string | null
+  selectedCategory: CategoryFilter | null
+  onEurekaSetChange: (event: SelectChangeEvent) => void
+  onCategoryChange: (
+    event: React.MouseEvent<HTMLElement>,
+    newCategory: CategoryFilter | null
+  ) => void
 }) {
   return (
     <Toolbar disableGutters>
@@ -23,10 +45,12 @@ export default function FilterToolbar({
           <Select
             labelId="eureka-set-select-label"
             id="eureka-set-select"
-            value="first_snow"
+            value={selectedEurekaSet ?? ''}
             aria-label="Eureka Set"
             label="Eureka Set"
+            onChange={onEurekaSetChange}
           >
+            <MenuItem value="">—</MenuItem>
             {eurekaSets.map((set) => (
               <MenuItem key={set.slug} value={set.slug!}>
                 {set.title}
@@ -34,7 +58,11 @@ export default function FilterToolbar({
             ))}
           </Select>
         </FormControl>
-        <CategoryToggle categories={categories} />
+        <CategoryToggle
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={onCategoryChange}
+        />
       </Stack>
     </Toolbar>
   )

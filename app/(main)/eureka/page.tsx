@@ -1,20 +1,11 @@
 import { Suspense } from 'react'
 
-import {
-  Box,
-  Card,
-  Divider,
-  Stack,
-  Typography,
-} from '@mui/material'
-
 import { getUserID } from '@/hooks/user'
 import LoginAlert from '@/components/login-alert'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { Metadata } from 'next'
 import PageContainer from '@/components/page-container'
-import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
-import FilterToolbar from '@/components/filter-toolbar'
+import FilterEureka from '@/components/filter-eureka'
 
 export const metadata: Metadata = {
   title: 'Eureka Sets',
@@ -78,33 +69,7 @@ async function EurekaSets() {
           )
         }
       /> */}
-      <FilterToolbar eurekaSets={eurekaSets} categories={categories} />
-      <Stack spacing={1}>
-        {eurekaSets.map((set) => (
-          <Box
-            key={set.slug}
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr 1fr',
-                sm: '1fr 1fr 1fr',
-                md: '1fr 1fr 1fr 1fr 1fr',
-              },
-              gap: 1,
-            }}
-          >
-            <Box sx={{ gridColumn: { xs: '1/3', sm: '1/4', md: '1/6' } }}>
-              <Typography variant="overline">{set.title}</Typography>
-              <Divider />
-            </Box>
-            {set.colors.map((color) => (
-              <Card key={`${set.slug}-${color.title}`} sx={{ minWidth: 'fit-content' }}>
-                <EurekaColorSetCard eurekaSet={set} color={color} />
-              </Card>
-            ))}
-          </Box>
-        ))}
-      </Stack>
+      <FilterEureka eurekaSets={eurekaSets} categories={categories} />
       {/* {eurekaSets.map((set) => (
 				<Card key={set.id}>
 					<CardContent>

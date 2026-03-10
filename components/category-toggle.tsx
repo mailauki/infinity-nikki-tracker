@@ -4,24 +4,26 @@ import { Category } from '@/lib/types/eureka'
 import { CategoryFilter } from '@/lib/types/props'
 import CategoryIcon from '@mui/icons-material/Category'
 import { Avatar, ToggleButton, ToggleButtonGroup, useColorScheme } from '@mui/material'
-import { useState } from 'react'
 
-export default function CategoryToggle({ categories }: { categories: Category[] }) {
-  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter | null>('Head')
-
-  const handleChange = (
+export default function CategoryToggle({
+  categories,
+  selectedCategory,
+  onCategoryChange,
+}: {
+  categories: Category[]
+  selectedCategory: CategoryFilter | null
+  onCategoryChange: (
     event: React.MouseEvent<HTMLElement>,
     newCategory: CategoryFilter | null
-  ) => {
-    setSelectedCategory(newCategory)
-  }
+  ) => void
+}) {
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
 
   return (
     <ToggleButtonGroup
       value={selectedCategory}
-      onChange={handleChange}
+      onChange={onCategoryChange}
       exclusive
       aria-label="Categories"
     >
@@ -29,9 +31,9 @@ export default function CategoryToggle({ categories }: { categories: Category[] 
         <ToggleButton key={category.title} value={category.title} sx={{ p: 0.75 }}>
           <Avatar
             sx={{
-							backgroundColor: 'transparent',
-							filter: isDarkMode ? 'none' : 'brightness(40%)'
-						}}
+              backgroundColor: 'transparent',
+              filter: isDarkMode ? 'none' : 'brightness(40%)',
+            }}
             src={category.image_url!}
             alt={category.title}
           >
