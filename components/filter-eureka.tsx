@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import { Category, EurekaSet } from '@/lib/types/eureka'
 import FilterToolbar from './filter-toolbar'
 import { Box, Card, Divider, Stack, Typography } from '@mui/material'
@@ -7,6 +8,8 @@ import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
 import { useState } from 'react'
 import { SelectChangeEvent } from '@mui/material'
 import EurekaVariantCard from './eureka/eureka-variant-card'
+import ProgressChip from './progress-chip'
+import { countObtained, percent } from '@/hooks/count-obtained'
 
 export default function FilterEureka({
   eurekaSets,
@@ -106,7 +109,7 @@ export default function FilterEureka({
           }}
         >
           {filteredSets.map((set) => (
-            <>
+            <React.Fragment key={set.slug}>
               {groupBySet && (
                 <Box
                   key={`${set.slug}-header`}
@@ -115,7 +118,10 @@ export default function FilterEureka({
                     mt: 2,
                   }}
                 >
-                  <Typography variant="overline">{set.title}</Typography>
+                  <Stack direction='row' alignItems='flex-end' justifyContent='space-between' sx={{ mb: 0.5 }}>
+										<Typography variant="overline">{set.title}</Typography>
+										<ProgressChip percentage={percent(countObtained(set.eureka_variants).obtained, countObtained(set.eureka_variants).total)} size='lg' />
+									</Stack>
                   <Divider />
                 </Box>
               )}
@@ -130,7 +136,7 @@ export default function FilterEureka({
                       <EurekaVariantCard eurekaVariant={variant} />
                     </Card>
                   ))}
-            </>
+            </React.Fragment>
           ))}
         </Box>
       )}

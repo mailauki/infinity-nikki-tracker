@@ -11,7 +11,7 @@ export default function ProgressChip({ percentage, size }: { percentage: number;
 
   return (
     <Chip
-      size={size === 'md' ? 'small' : 'medium'}
+			size='small'
       sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}
       color={isComplete ? 'primary' : 'default'}
       label={isComplete ? completeLabel : unfinishedLabel}
