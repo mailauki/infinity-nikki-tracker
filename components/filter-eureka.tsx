@@ -93,39 +93,46 @@ export default function FilterEureka({
           </Typography>
         </Stack>
       ) : (
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: '1fr 1fr',
-            sm: '1fr 1fr 1fr',
-            md: '1fr 1fr 1fr 1fr 1fr',
-          },
-          gap: 1,
-        }}
-      >
-        {filteredSets.map((set) => (
-          <>
-            {groupBySet && (
-              <Box key={`${set.slug}-header`} sx={{ gridColumn: { xs: '1/3', sm: '1/4', md: '1/6' } }}>
-                <Typography variant="overline">{set.title}</Typography>
-                <Divider />
-              </Box>
-            )}
-            {selectedFilter === 'Color'
-              ? set.colors.map((color) => (
-                  <Card key={`${set.slug}-${color.title}`} sx={{ minWidth: 'fit-content' }}>
-                    <EurekaColorSetCard eurekaSet={set} color={color} />
-                  </Card>
-                ))
-              : set.eureka_variants.map((variant) => (
-                  <Card key={variant.id} sx={{ minWidth: 'fit-content' }}>
-                    <EurekaVariantCard eurekaVariant={variant} />
-                  </Card>
-                ))}
-          </>
-        ))}
-      </Box>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr 1fr',
+              sm: '1fr 1fr 1fr',
+              md: '1fr 1fr 1fr 1fr 1fr',
+            },
+            gap: { xs: 2, sm: 1.5, md: 1 },
+            py: groupBySet ? 0 : 2,
+          }}
+        >
+          {filteredSets.map((set) => (
+            <>
+              {groupBySet && (
+                <Box
+                  key={`${set.slug}-header`}
+                  sx={{
+                    gridColumn: { xs: '1/3', sm: '1/4', md: '1/6' },
+                    mt: 2,
+                  }}
+                >
+                  <Typography variant="overline">{set.title}</Typography>
+                  <Divider />
+                </Box>
+              )}
+              {selectedFilter === 'Color'
+                ? set.colors.map((color) => (
+                    <Card key={`${set.slug}-${color.title}`} sx={{ minWidth: 'fit-content' }}>
+                      <EurekaColorSetCard eurekaSet={set} color={color} />
+                    </Card>
+                  ))
+                : set.eureka_variants.map((variant) => (
+                    <Card key={variant.id} sx={{ minWidth: 'fit-content' }}>
+                      <EurekaVariantCard eurekaVariant={variant} />
+                    </Card>
+                  ))}
+            </>
+          ))}
+        </Box>
       )}
     </>
   )

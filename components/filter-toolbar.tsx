@@ -1,6 +1,7 @@
 'use client'
 
 import {
+  Box,
   FormControl,
   IconButton,
   InputLabel,
@@ -10,13 +11,13 @@ import {
   Stack,
   ToggleButton,
   Toolbar,
-	Tooltip,
+  Tooltip,
 } from '@mui/material'
 import CategoryToggle from './category-toggle'
 import { Category, EurekaSet } from '@/lib/types/eureka'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
 import FilterToggle from './filter-toggle'
-import { Clear, ClearAll, FilterList, FilterListOff } from '@mui/icons-material'
+import { Clear, FilterList } from '@mui/icons-material'
 
 export default function FilterToolbar({
   eurekaSets,
@@ -53,22 +54,22 @@ export default function FilterToolbar({
         spacing={1}
         alignItems="center"
         justifyContent="space-between"
-				flexWrap='wrap'
-				useFlexGap
+        flexWrap="wrap"
+        useFlexGap
         sx={{ flex: 1 }}
       >
-				<Tooltip title='Sort by Eureka Set'>
-					<ToggleButton
-						value="groupBySet"
-						selected={groupBySet}
-						onChange={onGroupBySetChange}
-						sx={{ py: 1.75, whiteSpace: 'nowrap' }}
-					>
-						<FilterList />
-					</ToggleButton>
-				</Tooltip>
+        <Tooltip title="Sort by Eureka Set">
+          <ToggleButton
+            value="groupBySet"
+            selected={groupBySet}
+            onChange={onGroupBySetChange}
+            sx={{ py: 1.75, whiteSpace: 'nowrap' }}
+          >
+            <FilterList />
+          </ToggleButton>
+        </Tooltip>
 
-        <FormControl sx={{ flex: 1, minWidth: '234px' }}>
+        <FormControl sx={{ flex: 1, minWidth: { xs: '234px', sm: '300px' } }}>
           <InputLabel id="eureka-set-select-label">Eureka Set</InputLabel>
           <Select
             labelId="eureka-set-select-label"
@@ -97,11 +98,15 @@ export default function FilterToolbar({
         />
 
         {(selectedEurekaSet || selectedCategory || selectedFilter) && (
-          <Tooltip title="Clear filters">
-            <IconButton onClick={onClearFilters} aria-label="Clear filters">
-              <Clear />
-            </IconButton>
-          </Tooltip>
+          <Stack sx={{ flex: 1 }}>
+            <Box alignSelf="flex-end">
+              <Tooltip title="Clear filters">
+                <IconButton onClick={onClearFilters} aria-label="Clear filters">
+                  <Clear />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Stack>
         )}
       </Stack>
     </Toolbar>
