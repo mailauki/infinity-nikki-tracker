@@ -16,13 +16,12 @@ export default function EurekaButton({
   isLoggedIn: boolean
   size?: CardSize
 }) {
-  const slugEurekaSet = eurekaVariant.eureka_set!.replace(' ', '_')
-  const slug = `${slugEurekaSet}-${eurekaVariant.category}-${eurekaVariant.color}`
-
   return (
-    <Card key={eurekaVariant.id}>
+    <Card>
       <CardActionArea
-        onClick={() => handleObtained(slug)}
+        onClick={() =>
+          handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
+        }
         disabled={!isLoggedIn}
         data-active={eurekaVariant.obtained === true ? '' : undefined}
         sx={{
@@ -37,7 +36,7 @@ export default function EurekaButton({
       >
         <EurekaSetImage
           imageUrl={eurekaVariant.image_url!}
-          alt={slug}
+          alt={eurekaVariant.slug ?? ''}
           action={eurekaVariant.obtained === true && <Chip size="small" label={<CheckIcon />} />}
           title={eurekaVariant.eureka_set!}
           subheader={`${eurekaVariant.category} • ${eurekaVariant.color}`}

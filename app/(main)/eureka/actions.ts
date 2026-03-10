@@ -1,11 +1,6 @@
 import { createClient } from '@/lib/supabase/client'
 
-export async function handleObtained(slug: string) {
-  const splitSlug = slug.split('-')
-  const eureka_set = splitSlug[0].split('_').join(' ')
-  const category = splitSlug[1]
-  const color = splitSlug[2]
-
+export async function handleObtained(eureka_set: string, category: string, color: string) {
   const supabase = createClient()
 
   const { error } = await supabase.rpc('toggle_obtained', {

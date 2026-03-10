@@ -6,9 +6,11 @@ import { Category } from '@mui/icons-material'
 export default function EurekaColorSetCard({
   eurekaSet,
   color,
+  isLoggedIn,
 }: {
   eurekaSet: EurekaSet
   color: Color
+  isLoggedIn: boolean
 }) {
   const slug = `${eurekaSet.slug}-${color.title.toLowerCase()}`
   const variants = eurekaSet.eureka_variants.filter((variant) => variant.color === color.title)
@@ -27,21 +29,16 @@ export default function EurekaColorSetCard({
         direction="row"
         alignItems="center"
         justifyContent="space-between"
-        sx={{ px: 1.25, mt: -2 }}
+        sx={{ px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: -2 }}
       >
         <Typography variant="overline">{color.title}</Typography>
-        <Typography variant="caption" color="textSecondary">
-          {`${percentage}%`}
-        </Typography>
+        {isLoggedIn && (
+          <Typography variant="caption" color="textSecondary">
+            {`${percentage}%`}
+          </Typography>
+        )}
       </Stack>
-      <LinearProgress
-        variant="determinate"
-        value={percentage}
-        color={percentage === 100 ? 'primary' : 'inherit'}
-      />
-      {/* <Box sx={{ position: 'absolute', top: 6, right: 6 }}>
-				<Chip size="small" label={`${percentage}%`} />
-			</Box> */}
+      {isLoggedIn && <LinearProgress variant="determinate" value={percentage} color="inherit" />}
     </Box>
   )
 }

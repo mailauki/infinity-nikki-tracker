@@ -24,6 +24,7 @@ export const getEurekaSets = cache(async () => {
 			updated_at,
 			eureka_variants (
 				id,
+				slug,
 				eureka_set,
 				color,
 				category,
