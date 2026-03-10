@@ -1,6 +1,6 @@
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { Color, EurekaSet } from '@/lib/types/eureka'
-import { Avatar, Box, LinearProgress, Stack, Typography } from '@mui/material'
+import { Avatar, Box, Card, LinearProgress, Stack, Typography } from '@mui/material'
 import { Category } from '@mui/icons-material'
 
 export default function EurekaColorSetCard({
@@ -19,6 +19,17 @@ export default function EurekaColorSetCard({
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
   return (
+		<Card
+      data-active={percentage === 100 ? '' : undefined}
+			sx={{
+				minWidth: 'fit-content',
+				'&[data-active]': {
+						backgroundColor: 'action.selected',
+						'&:hover': {
+							backgroundColor: 'action.selectedHover',
+						},
+					},
+			}}>
     <Box sx={{ position: 'relative' }}>
       <Stack alignItems="center" sx={{ pt: 1 }}>
         <Avatar size="lg" src={variants[0].image_url!} alt={slug}>
@@ -40,5 +51,6 @@ export default function EurekaColorSetCard({
       </Stack>
       {isLoggedIn && <LinearProgress variant="determinate" value={percentage} color="inherit" />}
     </Box>
+		</Card>
   )
 }

@@ -2,7 +2,7 @@
 import React from 'react'
 import { Category, EurekaSet } from '@/lib/types/eureka'
 import FilterToolbar from './filter-toolbar'
-import { Box, Card, Container, Divider, Stack, Typography } from '@mui/material'
+import { Box, Container, Divider, Stack, Typography } from '@mui/material'
 import EurekaColorSetCard from './eureka/eureka-color-set-card'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
 import { useState } from 'react'
@@ -126,11 +126,11 @@ export default function FilterEureka({
             sx={{
               display: 'grid',
               gridTemplateColumns: {
-                xs: '1fr 1fr',
-                sm: '1fr 1fr 1fr',
+                xs: '1fr 1fr 1fr',
+                sm: '1fr 1fr 1fr 1fr',
                 md: '1fr 1fr 1fr 1fr 1fr',
               },
-              gap: { xs: 2, sm: 1.5, md: 1 },
+              gap: 1,
               py: groupBySet ? 0 : 2,
               mb: 4,
             }}
@@ -141,7 +141,7 @@ export default function FilterEureka({
                   <Box
                     key={`${set.slug}-header`}
                     sx={{
-                      gridColumn: { xs: '1/3', sm: '1/4', md: '1/6' },
+                      gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' },
                       mt: 2,
                     }}
                   >
@@ -167,9 +167,7 @@ export default function FilterEureka({
                 )}
                 {showByColor
                   ? set.colors.map((color) => (
-                      <Card key={`${set.slug}-${color.title}`} sx={{ minWidth: 'fit-content' }}>
-                        <EurekaColorSetCard eurekaSet={set} color={color} isLoggedIn={isLoggedIn} />
-                      </Card>
+                        <EurekaColorSetCard key={`${set.slug}-${color.title}`} eurekaSet={set} color={color} isLoggedIn={isLoggedIn} />
                     ))
                   : set.eureka_variants.map((variant) => (
                       <EurekaVariantCard
