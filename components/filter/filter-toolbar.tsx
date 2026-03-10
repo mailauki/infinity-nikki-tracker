@@ -28,6 +28,7 @@ import {
   Clear,
   FilterList,
   Category as CategoryIcon,
+	ColorLens,
 } from '@mui/icons-material'
 import ObtainedToggle from './obtained-toggle'
 import ColorToggle from './color-toggle'
@@ -140,27 +141,22 @@ export default function FilterToolbar({
               </Select>
             </FormControl>
 
-            {/* <ButtonGroup aria-label="Button group with a nested menu">
-              <Tooltip title="Show by Color">
-                <ToggleButton
-                  value="showByColor"
-                  selected={showByColor}
-                  onChange={onShowByColorChange}
-                  sx={{ py: 1.75, whiteSpace: 'nowrap' }}
-                >
-                  <ColorLens />
-                </ToggleButton>
-              </Tooltip>
-              <Button size="small" aria-label="select merge strategy" aria-haspopup="menu">
-                <ArrowDropDown />
-              </Button>
-            </ButtonGroup> */}
+						<Tooltip title="Show by Color">
+							<ToggleButton
+								value="showByColor"
+								selected={showByColor}
+								onChange={onShowByColorChange}
+								sx={{ py: 1.75, whiteSpace: 'nowrap' }}
+							>
+								<ColorLens />
+							</ToggleButton>
+						</Tooltip>
+
             <ColorToggle
               colors={colors}
-              showByColor={showByColor}
-              onShowByColorChange={onShowByColorChange}
               selectedColor={selectedColor}
               onColorChange={onColorChange}
+							disabled={showByColor}
             />
 
             {isLoggedIn && (
@@ -178,7 +174,7 @@ export default function FilterToolbar({
               disabled={showByColor}
             />
             <Stack sx={{ flex: 1 }}>
-              {(selectedEurekaSet || selectedCategory || selectedFilter || showByColor) && (
+              {(selectedEurekaSet || selectedCategory || selectedFilter || selectedColor || showByColor) && (
                 <Box alignSelf="flex-end">
                   <Tooltip title="Clear filters">
                     <IconButton onClick={onClearFilters} aria-label="Clear filters">

@@ -70,17 +70,21 @@ export default function FilterEureka({
     setSelectedEurekaSet(null)
     setSelectedCategory(null)
     setSelectedFilter(null)
+    setSelectedColor(null)
     setShowByColor(false)
   }
 
   const filteredSets = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
     .map((set) => {
+      const filteredColors = set.colors.filter((c) => !selectedColor || c.title === selectedColor)
+
       if (showByColor) {
-        return { ...set, eureka_variants: set.eureka_variants, colors: set.colors }
+        return { ...set, eureka_variants: set.eureka_variants, colors: filteredColors }
       }
 
       const filteredVariants = set.eureka_variants
+        .filter((v) => !selectedColor || v.color === selectedColor)
         .filter((v) => !selectedCategory || v.category === selectedCategory)
         .filter((v) => {
           if (selectedFilter === 'Obtained') return v.obtained === true
@@ -88,7 +92,7 @@ export default function FilterEureka({
           return true
         })
 
-      return { ...set, eureka_variants: filteredVariants, colors: set.colors }
+      return { ...set, eureka_variants: filteredVariants, colors: filteredColors }
     })
     .filter((set) => (showByColor ? set.colors.length > 0 : set.eureka_variants.length > 0))
 

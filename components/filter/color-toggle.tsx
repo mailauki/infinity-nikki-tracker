@@ -10,36 +10,20 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  ToggleButton,
-  Tooltip,
 } from '@mui/material'
 
 export default function ColorToggle({
   colors,
-  showByColor,
-  onShowByColorChange,
   selectedColor,
   onColorChange,
+	disabled,
 }: {
   colors: Color[]
-  showByColor: boolean
-  onShowByColorChange: () => void
   selectedColor: string | null
   onColorChange: (event: SelectChangeEvent) => void
+	disabled: boolean
 }) {
   return (
-    <>
-      <Tooltip title="Show by Color">
-        <ToggleButton
-          value="showByColor"
-          selected={showByColor}
-          onChange={onShowByColorChange}
-          sx={{ py: 1.75, whiteSpace: 'nowrap' }}
-        >
-          <ColorLens />
-        </ToggleButton>
-      </Tooltip>
-
       <FormControl
         sx={{
           flex: 1,
@@ -56,6 +40,7 @@ export default function ColorToggle({
           label="Color"
           onChange={onColorChange}
           sx={{ '& .MuiOutlinedInput-input': { py: selectedColor && 1.5 } }}
+					disabled={disabled}
         >
           <MenuItem value="">—</MenuItem>
           {colors.map((color) => (
@@ -72,6 +57,5 @@ export default function ColorToggle({
           ))}
         </Select>
       </FormControl>
-    </>
   )
 }
