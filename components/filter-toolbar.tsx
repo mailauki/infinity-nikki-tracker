@@ -9,11 +9,13 @@ import {
   Stack,
   ToggleButton,
   Toolbar,
+	Tooltip,
 } from '@mui/material'
 import CategoryToggle from './category-toggle'
 import { Category, EurekaSet } from '@/lib/types/eureka'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
 import FilterToggle from './filter-toggle'
+import { FilterList } from '@mui/icons-material'
 
 export default function FilterToolbar({
   eurekaSets,
@@ -45,22 +47,25 @@ export default function FilterToolbar({
     <Toolbar disableGutters>
       <Stack
         direction="row"
-        spacing={4}
+        spacing={1}
         alignItems="center"
         justifyContent="space-between"
+				flexWrap='wrap'
+				useFlexGap
         sx={{ flex: 1 }}
       >
-        <FilterToggle selectedFilter={selectedFilter} onFilterChange={onFilterChange} />
-        <ToggleButton
-          value="groupBySet"
-          selected={groupBySet}
-          onChange={onGroupBySetChange}
-          sx={{ py: 1.75, whiteSpace: 'nowrap' }}
-        >
-          Sort by Eureka Set
-        </ToggleButton>
+				<Tooltip title='Sort by Eureka Set'>
+					<ToggleButton
+						value="groupBySet"
+						selected={groupBySet}
+						onChange={onGroupBySetChange}
+						sx={{ py: 1.75, whiteSpace: 'nowrap' }}
+					>
+						<FilterList />
+					</ToggleButton>
+				</Tooltip>
 
-        <FormControl fullWidth>
+        <FormControl sx={{ flex: 1, minWidth: '234px' }}>
           <InputLabel id="eureka-set-select-label">Eureka Set</InputLabel>
           <Select
             labelId="eureka-set-select-label"
@@ -78,6 +83,9 @@ export default function FilterToolbar({
             ))}
           </Select>
         </FormControl>
+
+        <FilterToggle selectedFilter={selectedFilter} onFilterChange={onFilterChange} />
+
         <CategoryToggle
           categories={categories}
           selectedCategory={selectedCategory}
