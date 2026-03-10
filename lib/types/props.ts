@@ -10,7 +10,7 @@ export type ResponsiveCardSize =
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
-export type CategoryFilter = 'Head' | 'Hands' | 'Feet'
+export type CategoryFilter = 'Head' | 'Hands' | 'Feet' | ''
 
 export type ToggleFilter = 'Color' | 'Missing' | 'Obtained'
 
