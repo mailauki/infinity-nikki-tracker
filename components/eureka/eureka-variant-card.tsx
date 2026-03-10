@@ -1,13 +1,5 @@
 import { EurekaVariant } from '@/lib/types/eureka'
-import {
-  Avatar,
-  Box,
-  Card,
-  IconButton,
-  LinearProgress,
-  Stack,
-  Typography,
-} from '@mui/material'
+import { Avatar, Box, Card, IconButton, LinearProgress, Stack, Typography } from '@mui/material'
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { handleObtained } from '@/app/(main)/eureka/actions'
 
@@ -49,7 +41,16 @@ export default function EurekaVariantCard({
         )}
         <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
           {isLoggedIn && (
-            <IconButton onClick={() => handleObtained(eurekaVariant.slug)} disabled={!isLoggedIn}>
+            <IconButton
+              onClick={() =>
+                handleObtained(
+                  eurekaVariant.eureka_set!,
+                  eurekaVariant.category!,
+                  eurekaVariant.color!
+                )
+              }
+              disabled={!isLoggedIn}
+            >
               {eurekaVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
             </IconButton>
           )}
