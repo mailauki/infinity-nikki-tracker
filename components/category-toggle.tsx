@@ -3,7 +3,7 @@
 import { Category } from '@/lib/types/eureka'
 import { CategoryFilter } from '@/lib/types/props'
 import CategoryIcon from '@mui/icons-material/Category'
-import { Avatar, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { Avatar, ToggleButton, ToggleButtonGroup, useColorScheme } from '@mui/material'
 import { useState } from 'react'
 
 export default function CategoryToggle({ categories }: { categories: Category[] }) {
@@ -15,6 +15,9 @@ export default function CategoryToggle({ categories }: { categories: Category[] 
   ) => {
     setSelectedCategory(newCategory)
   }
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+
   return (
     <ToggleButtonGroup
       value={selectedCategory}
@@ -25,7 +28,10 @@ export default function CategoryToggle({ categories }: { categories: Category[] 
       {categories.map((category) => (
         <ToggleButton key={category.title} value={category.title} sx={{ p: 0.75 }}>
           <Avatar
-            sx={{ backgroundColor: 'transparent' }}
+            sx={{
+							backgroundColor: 'transparent',
+							filter: isDarkMode ? 'none' : 'brightness(40%)'
+						}}
             src={category.image_url!}
             alt={category.title}
           >
