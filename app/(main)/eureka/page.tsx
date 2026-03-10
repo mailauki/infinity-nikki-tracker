@@ -3,7 +3,9 @@ import { Suspense } from 'react'
 import { getUserID } from '@/hooks/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { Metadata } from 'next'
-import FilterEureka from '@/components/filter-eureka'
+import RealtimeEureka from '@/components/realtime/realtime-eureka'
+import { getObtained } from '@/hooks/data/obtained-eureka'
+import { getCategories } from '@/hooks/data/categories'
 
 export const metadata: Metadata = {
   title: 'Eureka Sets',
@@ -19,12 +21,18 @@ export default async function EurekaSetsPage() {
 
 async function EurekaSets() {
   const eurekaSets = await getEurekaSets()
-  const seen = new Set<string>()
-  const categories = eurekaSets
-    .flatMap((eurekaSet) => eurekaSet.categories)
-    .filter((cat) => !seen.has(cat.title) && seen.add(cat.title))
+  const categories = await getCategories()
   const user_id = await getUserID()
   const isLoggedIn = !!user_id
+  const obtained = await getObtained(user_id!)
 
-  return <FilterEureka eurekaSets={eurekaSets} categories={categories} isLoggedIn={isLoggedIn} />
+  return (
+    <RealtimeEureka
+      serverEurekaSets={eurekaSets}
+      serverCategories={categories}
+      isLoggedIn={isLoggedIn}
+      serverObtained={obtained}
+      userId={user_id}
+    />
+  )
 }
