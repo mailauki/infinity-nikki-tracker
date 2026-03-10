@@ -3,7 +3,7 @@ import { Category, EurekaVariant } from '@/lib/types/eureka'
 import { useState } from 'react'
 import EurekaButton from './eureka-button'
 import GridContainer from '../grid-container'
-import { Card, CardActionArea, Grid, List } from '@mui/material'
+import { Card, CardActionArea, Grid } from '@mui/material'
 import { CategoryItem } from './category-item'
 import { CategoryFilter } from '@/lib/types/props'
 
@@ -36,7 +36,7 @@ export default function EurekaFilter({
           </Grid>
         }
         sideContent={
-					<>
+          <>
             {categories.map((category: Category) => (
               <Card
                 key={category.title}
@@ -68,7 +68,7 @@ export default function EurekaFilter({
                 </CardActionArea>
               </Card>
             ))}
-						</>
+          </>
         }
       />
     </>

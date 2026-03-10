@@ -1,16 +1,13 @@
 import { Suspense } from 'react'
 
-import { Box, Card, List } from '@mui/material'
+import { Box, Card, Divider, Stack, Typography } from '@mui/material'
 
-import EurekaSetCard from '@/components/eureka/eureka-set-card'
-import GridContainer from '@/components/grid-container'
 import { getUserID } from '@/hooks/user'
 import LoginAlert from '@/components/login-alert'
-import { Category } from '@/lib/types/eureka'
-import { CategoryItem } from '@/components/eureka/category-item'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { Metadata } from 'next'
 import PageContainer from '@/components/page-container'
+import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
 
 export const metadata: Metadata = {
   title: 'Eureka Sets',
@@ -39,7 +36,7 @@ async function EurekaSets() {
   return (
     <>
       {!isLoggedIn && <LoginAlert />}
-      <GridContainer
+      {/* <GridContainer
         mainContent={
           <Box
             sx={{
@@ -73,7 +70,66 @@ async function EurekaSets() {
             </List>
           )
         }
-      />
+      /> */}
+      <Stack spacing={1}>
+        {eurekaSets.map((set) => (
+          <Box
+            key={set.slug}
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr 1fr',
+                sm: '1fr 1fr 1fr',
+                md: '1fr 1fr 1fr 1fr 1fr',
+              },
+              gap: 1,
+            }}
+          >
+            <Box sx={{ gridColumn: { xs: '1/3', sm: '1/4', md: '1/6' } }}>
+              <Typography variant="overline">{set.title}</Typography>
+              <Divider />
+            </Box>
+            {set.colors.map((color) => (
+              <Card key={`${set.slug}-${color.title}`} sx={{ minWidth: 'fit-content' }}>
+                <EurekaColorSetCard eurekaSet={set} color={color} />
+              </Card>
+            ))}
+          </Box>
+        ))}
+      </Stack>
+      {/* {eurekaSets.map((set) => (
+				<Card key={set.id}>
+					<CardContent>
+						<Avatar src={set.image_url} size='lg'>
+							<CategoryIcon />
+						</Avatar>
+						<Typography variant="subtitle1">
+							{set.title}
+						</Typography>
+						<Typography variant="caption" color="textSecondary">
+							{set.rarity ? <RarityStars rarity={set.rarity} /> : set.trial}
+						</Typography>
+						<Typography variant="subtitle1">
+							{set.colors.map((color) => color.title).join(', ')}
+						</Typography>
+					</CardContent>
+				</Card>
+			))} */}
+      {/* {eurekaVariants.map((variant) => (
+				<Card key={variant.id}>
+					<CardContent>
+						<Avatar src={variant.image_url} size='lg'>
+							<CategoryIcon />
+						</Avatar>
+						<Typography variant="subtitle1">
+							{variant.eureka_set}
+						</Typography>
+						<Typography variant="caption" color="textSecondary">
+							{variant.category} • {variant.color}
+						</Typography>
+					</CardContent>
+				</Card>
+			))} */}
     </>
   )
 }
