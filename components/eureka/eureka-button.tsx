@@ -20,7 +20,7 @@ export default function EurekaButton({
   const slug = `${slugEurekaSet}-${eurekaVariant.category}-${eurekaVariant.color}`
 
   return (
-    <Card key={eurekaVariant.id}>
+    <Card>
       <CardActionArea
         onClick={() => handleObtained(slug)}
         disabled={!isLoggedIn}

@@ -172,9 +172,11 @@ export default function FilterEureka({
                       </Card>
                     ))
                   : set.eureka_variants.map((variant) => (
-                      <Card key={variant.id} sx={{ minWidth: 'fit-content' }}>
-                        <EurekaVariantCard eurekaVariant={variant} isLoggedIn={isLoggedIn} />
-                      </Card>
+                      <EurekaVariantCard
+                        key={variant.id}
+                        eurekaVariant={variant}
+                        isLoggedIn={isLoggedIn}
+                      />
                     ))}
               </React.Fragment>
             ))}

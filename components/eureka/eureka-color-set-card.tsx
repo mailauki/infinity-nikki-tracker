@@ -38,13 +38,7 @@ export default function EurekaColorSetCard({
           </Typography>
         )}
       </Stack>
-      {isLoggedIn && (
-        <LinearProgress
-          variant="determinate"
-          value={percentage}
-          color={percentage === 100 ? 'primary' : 'inherit'}
-        />
-      )}
+      {isLoggedIn && <LinearProgress variant="determinate" value={percentage} color="inherit" />}
     </Box>
   )
 }
