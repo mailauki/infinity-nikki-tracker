@@ -4,9 +4,15 @@ export type CategoryType = 'colors' | 'categories'
 
 export type CardSize = 'xs' | 'sm' | 'md' | 'lg'
 
+export type ResponsiveCardSize =
+  | CardSize
+  | { xs?: CardSize; sm?: CardSize; md?: CardSize; lg?: CardSize }
+
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
-export type CategoryFilter = '' | 'Head' | 'Hands' | 'Feet'
+export type CategoryFilter = 'Head' | 'Hands' | 'Feet' | ''
+
+export type ToggleFilter = 'Color' | 'Missing' | 'Obtained'
 
 export type EurekaFilter = 'Sets' | 'Eureka' | 'Missing'
 export interface NavLink {
