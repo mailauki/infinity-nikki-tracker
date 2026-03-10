@@ -22,6 +22,7 @@ export default function FilterEureka({
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter | null>(null)
   const [selectedFilter, setSelectedFilter] = useState<ToggleFilter | null>(null)
   const [groupBySet, setGroupBySet] = useState(true)
+  const [showByColor, setShowByColor] = useState(false)
 
   const handleEurekaSetChange = (event: SelectChangeEvent) => {
     setSelectedEurekaSet(event.target.value || null)
@@ -45,15 +46,30 @@ export default function FilterEureka({
     setGroupBySet((prev) => !prev)
   }
 
+  const handleShowByColorChange = () => {
+    setShowByColor((prev) => {
+      if (!prev) {
+        setSelectedCategory(null)
+        setSelectedFilter(null)
+      }
+      return !prev
+    })
+  }
+
   const handleClearFilters = () => {
     setSelectedEurekaSet(null)
     setSelectedCategory(null)
     setSelectedFilter(null)
+    setShowByColor(false)
   }
 
   const filteredSets = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
     .map((set) => {
+      if (showByColor) {
+        return { ...set, eureka_variants: set.eureka_variants, colors: set.colors }
+      }
+
       const filteredVariants = set.eureka_variants
         .filter((v) => !selectedCategory || v.category === selectedCategory)
         .filter((v) => {
@@ -62,14 +78,11 @@ export default function FilterEureka({
           return true
         })
 
-      const filteredColors =
-        selectedFilter === 'Color'
-          ? set.colors.filter((color) => filteredVariants.some((v) => v.color === color.title))
-          : set.colors
-
-      return { ...set, eureka_variants: filteredVariants, colors: filteredColors }
+      return { ...set, eureka_variants: filteredVariants, colors: set.colors }
     })
-    .filter((set) => set.eureka_variants.length > 0)
+    .filter((set) => showByColor ? set.colors.length > 0 : set.eureka_variants.length > 0)
+
+		const resultsCount = showByColor ? filteredSets.length : filteredSets.flatMap(set => set.eureka_variants).length || 0
 
   return (
     <>
@@ -83,9 +96,13 @@ export default function FilterEureka({
         onEurekaSetChange={handleEurekaSetChange}
         onCategoryChange={handleCategoryChange}
         onFilterChange={handleFilterChange}
+        showByColor={showByColor}
         onGroupBySetChange={handleGroupBySetChange}
+        onShowByColorChange={handleShowByColorChange}
         onClearFilters={handleClearFilters}
       />
+			<Typography variant='caption'>Showing: {resultsCount} results</Typography>
+
       {filteredSets.length === 0 ? (
         <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>
           <Typography variant="h6" color="textSecondary">
@@ -125,7 +142,7 @@ export default function FilterEureka({
                   <Divider />
                 </Box>
               )}
-              {selectedFilter === 'Color'
+              {showByColor
                 ? set.colors.map((color) => (
                     <Card key={`${set.slug}-${color.title}`} sx={{ minWidth: 'fit-content' }}>
                       <EurekaColorSetCard eurekaSet={set} color={color} />

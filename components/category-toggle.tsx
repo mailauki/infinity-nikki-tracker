@@ -36,6 +36,7 @@ export default function CategoryToggle({
             sx={{
               backgroundColor: 'transparent',
               filter: isDarkMode ? 'none' : 'brightness(40%)',
+							opacity: disabled ? 0.3 : 1,
             }}
             src={category.image_url!}
             alt={category.title}

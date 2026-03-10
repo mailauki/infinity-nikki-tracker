@@ -16,8 +16,8 @@ import {
 import CategoryToggle from './category-toggle'
 import { Category, EurekaSet } from '@/lib/types/eureka'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
-import FilterToggle from './filter-toggle'
-import { Clear, FilterList } from '@mui/icons-material'
+import { Clear, ColorLens, FilterList } from '@mui/icons-material'
+import ObtainedToggle from './obtained-toggle'
 
 export default function FilterToolbar({
   eurekaSets,
@@ -26,10 +26,12 @@ export default function FilterToolbar({
   selectedCategory,
   selectedFilter,
   groupBySet,
+  showByColor,
   onEurekaSetChange,
   onCategoryChange,
   onFilterChange,
   onGroupBySetChange,
+  onShowByColorChange,
   onClearFilters,
 }: {
   eurekaSets: EurekaSet[]
@@ -38,6 +40,7 @@ export default function FilterToolbar({
   selectedCategory: CategoryFilter | null
   selectedFilter: ToggleFilter | null
   groupBySet: boolean
+  showByColor: boolean
   onEurekaSetChange: (event: SelectChangeEvent) => void
   onCategoryChange: (
     event: React.MouseEvent<HTMLElement>,
@@ -45,6 +48,7 @@ export default function FilterToolbar({
   ) => void
   onFilterChange: (event: React.MouseEvent<HTMLElement>, newFilter: ToggleFilter | null) => void
   onGroupBySetChange: () => void
+  onShowByColorChange: () => void
   onClearFilters: () => void
 }) {
   return (
@@ -69,7 +73,12 @@ export default function FilterToolbar({
           </ToggleButton>
         </Tooltip>
 
-        <FormControl sx={{ flex: 1, minWidth: { xs: '234px', sm: '300px' } }}>
+        <FormControl
+					sx={{
+						flex: 1, 
+						minWidth: { xs: '240px', sm: '260px', md: '300px' },
+					}}
+				>
           <InputLabel id="eureka-set-select-label">Eureka Set</InputLabel>
           <Select
             labelId="eureka-set-select-label"
@@ -88,17 +97,27 @@ export default function FilterToolbar({
           </Select>
         </FormControl>
 
-        <FilterToggle selectedFilter={selectedFilter} onFilterChange={onFilterChange} />
+        <Tooltip title="Show by Color">
+          <ToggleButton
+            value="showByColor"
+            selected={showByColor}
+            onChange={onShowByColorChange}
+            sx={{ py: 1.75, whiteSpace: 'nowrap' }}
+          >
+            <ColorLens />
+          </ToggleButton>
+        </Tooltip>
+
+        <ObtainedToggle selectedFilter={selectedFilter} onFilterChange={onFilterChange} disabled={showByColor} />
 
         <CategoryToggle
           categories={categories}
-          selectedCategory={selectedFilter === 'Color' ? null : selectedCategory}
+          selectedCategory={showByColor ? null : selectedCategory}
           onCategoryChange={onCategoryChange}
-          disabled={selectedFilter === 'Color'}
+          disabled={showByColor}
         />
-
-        {(selectedEurekaSet || selectedCategory || selectedFilter) && (
-          <Stack sx={{ flex: 1 }}>
+				<Stack sx={{ flex: 1 }}>
+        {(selectedEurekaSet || selectedCategory || selectedFilter || showByColor) && (
             <Box alignSelf="flex-end">
               <Tooltip title="Clear filters">
                 <IconButton onClick={onClearFilters} aria-label="Clear filters">
@@ -106,8 +125,8 @@ export default function FilterToolbar({
                 </IconButton>
               </Tooltip>
             </Box>
-          </Stack>
         )}
+				</Stack>
       </Stack>
     </Toolbar>
   )
