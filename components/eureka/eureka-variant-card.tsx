@@ -11,18 +11,18 @@ export default function EurekaVariantCard({
   isLoggedIn: boolean
 }) {
   return (
-		<Card
+    <Card
       data-active={eurekaVariant.obtained ? '' : undefined}
-			sx={{
-				minWidth: 'fit-content',
-				'&[data-active]': {
-						backgroundColor: 'action.selected',
-						'&:hover': {
-							backgroundColor: 'action.selectedHover',
-						},
-					},
-			}}
-		>
+      sx={{
+        minWidth: 'fit-content',
+        '&[data-active]': {
+          backgroundColor: 'action.selected',
+          '&:hover': {
+            backgroundColor: 'action.selectedHover',
+          },
+        },
+      }}
+    >
       <Box sx={{ position: 'relative', height: '100%' }}>
         <Stack alignItems="center" sx={{ pt: 1 }}>
           <Avatar
@@ -44,13 +44,13 @@ export default function EurekaVariantCard({
           </Typography>
         </Stack>
         {isLoggedIn && (
-					<Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-						<LinearProgress
-							variant="determinate"
-							value={eurekaVariant.obtained ? 100 : 0}
-							color="inherit"
-						/>
-					</Box>
+          <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+            <LinearProgress
+              variant="determinate"
+              value={eurekaVariant.obtained ? 100 : 0}
+              color="inherit"
+            />
+          </Box>
         )}
         <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
           {isLoggedIn && (

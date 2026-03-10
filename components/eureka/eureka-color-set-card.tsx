@@ -19,38 +19,39 @@ export default function EurekaColorSetCard({
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
   return (
-		<Card
+    <Card
       data-active={percentage === 100 ? '' : undefined}
-			sx={{
-				minWidth: 'fit-content',
-				'&[data-active]': {
-						backgroundColor: 'action.selected',
-						'&:hover': {
-							backgroundColor: 'action.selectedHover',
-						},
-					},
-			}}>
-    <Box sx={{ position: 'relative' }}>
-      <Stack alignItems="center" sx={{ pt: 1 }}>
-        <Avatar size="lg" src={variants[0].image_url!} alt={slug}>
-          <Category />
-        </Avatar>
-      </Stack>
-      <Stack
-        direction="row"
-        alignItems="center"
-        justifyContent="space-between"
-        sx={{ px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: -2 }}
-      >
-        <Typography variant="overline">{color.title}</Typography>
-        {isLoggedIn && (
-          <Typography variant="caption" color="textSecondary">
-            {`${percentage}%`}
-          </Typography>
-        )}
-      </Stack>
-      {isLoggedIn && <LinearProgress variant="determinate" value={percentage} color="inherit" />}
-    </Box>
-		</Card>
+      sx={{
+        minWidth: 'fit-content',
+        '&[data-active]': {
+          backgroundColor: 'action.selected',
+          '&:hover': {
+            backgroundColor: 'action.selectedHover',
+          },
+        },
+      }}
+    >
+      <Box sx={{ position: 'relative' }}>
+        <Stack alignItems="center" sx={{ pt: 1 }}>
+          <Avatar size="lg" src={variants[0].image_url!} alt={slug}>
+            <Category />
+          </Avatar>
+        </Stack>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: -2 }}
+        >
+          <Typography variant="overline">{color.title}</Typography>
+          {isLoggedIn && (
+            <Typography variant="caption" color="textSecondary">
+              {`${percentage}%`}
+            </Typography>
+          )}
+        </Stack>
+        {isLoggedIn && <LinearProgress variant="determinate" value={percentage} color="inherit" />}
+      </Box>
+    </Card>
   )
 }

@@ -21,10 +21,6 @@ export const navLinksData: {
           title: 'Trials',
           url: '/eureka/trials',
         },
-        {
-          title: 'Missing',
-          url: '/eureka/missing',
-        },
       ],
     },
   ],

@@ -1,12 +1,17 @@
 'use client'
 
 import {
+  Avatar,
   Box,
   Container,
   FormControl,
   IconButton,
   InputLabel,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   MenuItem,
+  OutlinedInput,
   Select,
   SelectChangeEvent,
   Stack,
@@ -18,7 +23,7 @@ import {
 import CategoryToggle from './category-toggle'
 import { Category, EurekaSet } from '@/lib/types/eureka'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
-import { Clear, ColorLens, FilterList } from '@mui/icons-material'
+import { Clear, ColorLens, FilterList, Category as CategoryIcon } from '@mui/icons-material'
 import ObtainedToggle from './obtained-toggle'
 
 export default function FilterToolbar({
@@ -94,6 +99,7 @@ export default function FilterToolbar({
               sx={{
                 flex: 1,
                 minWidth: { xs: '240px', sm: '260px', md: '300px' },
+                whiteSpace: 'nowrap',
               }}
             >
               <InputLabel id="eureka-set-select-label">Eureka Set</InputLabel>
@@ -104,11 +110,19 @@ export default function FilterToolbar({
                 aria-label="Eureka Set"
                 label="Eureka Set"
                 onChange={onEurekaSetChange}
+                sx={{ '& .MuiOutlinedInput-input': { py: selectedEurekaSet && 1 } }}
               >
                 <MenuItem value="">—</MenuItem>
                 {eurekaSets.map((set) => (
                   <MenuItem key={set.slug} value={set.slug!}>
-                    {set.title}
+                    <ListItem disablePadding component="div">
+                      <ListItemAvatar>
+                        <Avatar size="sm" src={set.image_url} alt={set.title}>
+                          <CategoryIcon fontSize="inherit" />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText>{set.title}</ListItemText>
+                    </ListItem>
                   </MenuItem>
                 ))}
               </Select>

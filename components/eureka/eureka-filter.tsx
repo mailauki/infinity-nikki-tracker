@@ -30,10 +30,7 @@ export default function EurekaFilter({
           <Grid container spacing={2}>
             {filteredEureka.map((eurekaVariant) => (
               <Grid key={eurekaVariant.id} size={{ xs: 6, md: 4 }}>
-                <EurekaButton
-									eurekaVariant={eurekaVariant} 
-									isLoggedIn={isLoggedIn} 
-								/>
+                <EurekaButton eurekaVariant={eurekaVariant} isLoggedIn={isLoggedIn} />
               </Grid>
             ))}
           </Grid>

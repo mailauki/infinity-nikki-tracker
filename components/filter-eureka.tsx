@@ -167,7 +167,12 @@ export default function FilterEureka({
                 )}
                 {showByColor
                   ? set.colors.map((color) => (
-                        <EurekaColorSetCard key={`${set.slug}-${color.title}`} eurekaSet={set} color={color} isLoggedIn={isLoggedIn} />
+                      <EurekaColorSetCard
+                        key={`${set.slug}-${color.title}`}
+                        eurekaSet={set}
+                        color={color}
+                        isLoggedIn={isLoggedIn}
+                      />
                     ))
                   : set.eureka_variants.map((variant) => (
                       <EurekaVariantCard
