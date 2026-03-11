@@ -16,46 +16,46 @@ export default function ColorToggle({
   colors,
   selectedColor,
   onColorChange,
-	disabled,
+  disabled,
 }: {
   colors: Color[]
   selectedColor: string | null
   onColorChange: (event: SelectChangeEvent) => void
-	disabled: boolean
+  disabled: boolean
 }) {
   return (
-      <FormControl
-        sx={{
-          flex: 1,
-          minWidth: '180px',
-          whiteSpace: 'nowrap',
-        }}
+    <FormControl
+      sx={{
+        flex: 1,
+        minWidth: '180px',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      <InputLabel id="colors-select-label">Color</InputLabel>
+      <Select
+        labelId="colors-select-label"
+        id="colors-select"
+        value={selectedColor ?? ''}
+        aria-label="Color"
+        label="Color"
+        onChange={onColorChange}
+        sx={{ '& .MuiOutlinedInput-input': { py: selectedColor && 1.5 } }}
+        disabled={disabled}
       >
-        <InputLabel id="colors-select-label">Color</InputLabel>
-        <Select
-          labelId="colors-select-label"
-          id="colors-select"
-          value={selectedColor ?? ''}
-          aria-label="Color"
-          label="Color"
-          onChange={onColorChange}
-          sx={{ '& .MuiOutlinedInput-input': { py: selectedColor && 1.5 } }}
-					disabled={disabled}
-        >
-          <MenuItem value="">—</MenuItem>
-          {colors.map((color) => (
-            <MenuItem key={color.title} value={color.title}>
-              <ListItem disablePadding component="div">
-                <ListItemAvatar>
-                  <Avatar size="xs" src={color.image_url!} alt={color.title}>
-                    <ColorLens fontSize="inherit" />
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText>{color.title}</ListItemText>
-              </ListItem>
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+        <MenuItem value="">—</MenuItem>
+        {colors.map((color) => (
+          <MenuItem key={color.title} value={color.title}>
+            <ListItem disablePadding component="div">
+              <ListItemAvatar>
+                <Avatar size="xs" src={color.image_url!} alt={color.title}>
+                  <ColorLens fontSize="inherit" />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText>{color.title}</ListItemText>
+            </ListItem>
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
   )
 }

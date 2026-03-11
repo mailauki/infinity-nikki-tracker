@@ -5,7 +5,6 @@ import { DashboardTabs } from '@/components/admin/dashboard-tabs'
 import { getAdminData } from '@/hooks/data/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { Metadata } from 'next'
-import PageContainer from '@/components/page-container'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -14,9 +13,7 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <Suspense>
-      {/* <PageContainer title="Admin Dashboard"> */}
-        <AdminDashboard />
-      {/* </PageContainer> */}
+      <AdminDashboard />
     </Suspense>
   )
 }
@@ -27,24 +24,24 @@ async function AdminDashboard() {
 
   return (
     <>
-			<Container maxWidth="md">
-				<Box
-					sx={{
-						display: { xs: 'none', md: 'grid' },
-						gridTemplateColumns: '1fr 1fr 1fr',
-						gap: 2,
-						pt: 4
-					}}
-				>
-					<StatCard title="Eureka Sets" count={eurekaSets?.length ?? 0} addHref="/eureka-set/new" />
-					<StatCard
-						title="Eureka Variants"
-						count={eurekaVariants?.length ?? 0}
-						addHref="/eureka-variant/new"
-					/>
-					<StatCard title="Trials" count={trials?.length ?? 0} addHref="/trial/new" />
-				</Box>
-			</Container>
+      <Container maxWidth="md">
+        <Box
+          sx={{
+            display: { xs: 'none', md: 'grid' },
+            gridTemplateColumns: '1fr 1fr 1fr',
+            gap: 2,
+            pt: 4,
+          }}
+        >
+          <StatCard title="Eureka Sets" count={eurekaSets?.length ?? 0} addHref="/eureka-set/new" />
+          <StatCard
+            title="Eureka Variants"
+            count={eurekaVariants?.length ?? 0}
+            addHref="/eureka-variant/new"
+          />
+          <StatCard title="Trials" count={trials?.length ?? 0} addHref="/trial/new" />
+        </Box>
+      </Container>
 
       <DashboardTabs
         eurekaSets={eurekaSets ?? []}

@@ -3,8 +3,6 @@
 import {
   Avatar,
   Box,
-  Button,
-  ButtonGroup,
   Container,
   FormControl,
   IconButton,
@@ -24,12 +22,7 @@ import {
 import CategoryToggle from './category-toggle'
 import { Category, Color, EurekaSet } from '@/lib/types/eureka'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
-import {
-  Clear,
-  FilterList,
-  Category as CategoryIcon,
-	ColorLens,
-} from '@mui/icons-material'
+import { Clear, FilterList, Category as CategoryIcon, ColorLens } from '@mui/icons-material'
 import ObtainedToggle from './obtained-toggle'
 import ColorToggle from './color-toggle'
 
@@ -141,22 +134,22 @@ export default function FilterToolbar({
               </Select>
             </FormControl>
 
-						<Tooltip title="Show by Color">
-							<ToggleButton
-								value="showByColor"
-								selected={showByColor}
-								onChange={onShowByColorChange}
-								sx={{ py: 1.75, whiteSpace: 'nowrap' }}
-							>
-								<ColorLens />
-							</ToggleButton>
-						</Tooltip>
+            <Tooltip title="Show by Color">
+              <ToggleButton
+                value="showByColor"
+                selected={showByColor}
+                onChange={onShowByColorChange}
+                sx={{ py: 1.75, whiteSpace: 'nowrap' }}
+              >
+                <ColorLens />
+              </ToggleButton>
+            </Tooltip>
 
             <ColorToggle
               colors={colors}
               selectedColor={selectedColor}
               onColorChange={onColorChange}
-							disabled={showByColor}
+              disabled={showByColor}
             />
 
             {isLoggedIn && (
@@ -174,7 +167,11 @@ export default function FilterToolbar({
               disabled={showByColor}
             />
             <Stack sx={{ flex: 1 }}>
-              {(selectedEurekaSet || selectedCategory || selectedFilter || selectedColor || showByColor) && (
+              {(selectedEurekaSet ||
+                selectedCategory ||
+                selectedFilter ||
+                selectedColor ||
+                showByColor) && (
                 <Box alignSelf="flex-end">
                   <Tooltip title="Clear filters">
                     <IconButton onClick={onClearFilters} aria-label="Clear filters">
