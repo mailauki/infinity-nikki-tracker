@@ -57,6 +57,7 @@ export default function FilterEureka({
       if (!prev) {
         setSelectedCategory(null)
         setSelectedFilter(null)
+        setSelectedColor(null)
       }
       return !prev
     })
@@ -80,7 +81,7 @@ export default function FilterEureka({
       const filteredColors = set.colors.filter((c) => !selectedColor || c.title === selectedColor)
 
       if (showByColor) {
-        return { ...set, eureka_variants: set.eureka_variants, colors: filteredColors }
+        return { ...set, eureka_variants: set.eureka_variants }
       }
 
       const filteredVariants = set.eureka_variants
