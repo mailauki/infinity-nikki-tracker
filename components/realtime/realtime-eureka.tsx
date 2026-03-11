@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, EurekaSet, Obtained } from '@/lib/types/eureka'
+import { Category, Color, EurekaSet, Obtained } from '@/lib/types/eureka'
 
 import FilterEureka from '@/components/filter-eureka'
 
@@ -13,12 +13,14 @@ const supabase = createClient()
 export default function RealtimeEureka({
   serverEurekaSets,
   serverCategories,
+  serverColors,
   serverObtained,
   isLoggedIn,
   userId,
 }: {
   serverEurekaSets: EurekaSet[]
   serverCategories: Category[]
+  serverColors: Color[]
   serverObtained: Obtained[]
   isLoggedIn: boolean
   userId: string | null
@@ -64,6 +66,11 @@ export default function RealtimeEureka({
   }, [obtained])
 
   return (
-    <FilterEureka eurekaSets={eurekaSets} categories={serverCategories} isLoggedIn={isLoggedIn} />
+    <FilterEureka
+      eurekaSets={eurekaSets}
+      categories={serverCategories}
+      colors={serverColors}
+      isLoggedIn={isLoggedIn}
+    />
   )
 }

@@ -96,7 +96,7 @@ export default function PaginationContainer<T>({
         </Stack>
       </Stack>
 
-      <Paper elevation={3} sx={{ borderRadius: '12px' }}>
+      <Paper elevation={3} sx={{ borderRadius: '12px', mb: 4 }}>
         <Box sx={{ flex: 1, height: '100%', minHeight: '592px' }}>{children(visibleRows)}</Box>
         <TablePagination
           component="div"

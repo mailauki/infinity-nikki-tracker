@@ -1,8 +1,8 @@
 'use client'
 import React from 'react'
-import { Category, EurekaSet } from '@/lib/types/eureka'
-import FilterToolbar from './filter-toolbar'
-import { Box, Card, Container, Divider, Stack, Typography } from '@mui/material'
+import { Category, Color, EurekaSet } from '@/lib/types/eureka'
+import FilterToolbar from './filter/filter-toolbar'
+import { Box, Container, Divider, Stack, Typography } from '@mui/material'
 import EurekaColorSetCard from './eureka/eureka-color-set-card'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
 import { useState } from 'react'
@@ -15,10 +15,12 @@ import LoginAlert from './login-alert'
 export default function FilterEureka({
   eurekaSets,
   categories,
+  colors,
   isLoggedIn,
 }: {
   eurekaSets: EurekaSet[]
   categories: Category[]
+  colors: Color[]
   isLoggedIn: boolean
 }) {
   const [selectedEurekaSet, setSelectedEurekaSet] = useState<string | null>(null)
@@ -26,6 +28,7 @@ export default function FilterEureka({
   const [selectedFilter, setSelectedFilter] = useState<ToggleFilter | null>(null)
   const [groupBySet, setGroupBySet] = useState(true)
   const [showByColor, setShowByColor] = useState(false)
+  const [selectedColor, setSelectedColor] = useState<string | null>(null)
 
   const handleEurekaSetChange = (event: SelectChangeEvent) => {
     setSelectedEurekaSet(event.target.value || null)
@@ -54,26 +57,35 @@ export default function FilterEureka({
       if (!prev) {
         setSelectedCategory(null)
         setSelectedFilter(null)
+        setSelectedColor(null)
       }
       return !prev
     })
+  }
+
+  const handleColorChange = (event: SelectChangeEvent) => {
+    setSelectedColor(event.target.value || null)
   }
 
   const handleClearFilters = () => {
     setSelectedEurekaSet(null)
     setSelectedCategory(null)
     setSelectedFilter(null)
+    setSelectedColor(null)
     setShowByColor(false)
   }
 
   const filteredSets = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
     .map((set) => {
+      const filteredColors = set.colors.filter((c) => !selectedColor || c.title === selectedColor)
+
       if (showByColor) {
-        return { ...set, eureka_variants: set.eureka_variants, colors: set.colors }
+        return { ...set, eureka_variants: set.eureka_variants, colors: filteredColors }
       }
 
       const filteredVariants = set.eureka_variants
+        .filter((v) => !selectedColor || v.color === selectedColor)
         .filter((v) => !selectedCategory || v.category === selectedCategory)
         .filter((v) => {
           if (selectedFilter === 'Obtained') return v.obtained === true
@@ -81,7 +93,7 @@ export default function FilterEureka({
           return true
         })
 
-      return { ...set, eureka_variants: filteredVariants, colors: set.colors }
+      return { ...set, eureka_variants: filteredVariants, colors: filteredColors }
     })
     .filter((set) => (showByColor ? set.colors.length > 0 : set.eureka_variants.length > 0))
 
@@ -94,6 +106,7 @@ export default function FilterEureka({
       <FilterToolbar
         eurekaSets={eurekaSets}
         categories={categories}
+        colors={colors}
         selectedEurekaSet={selectedEurekaSet}
         selectedCategory={selectedCategory}
         selectedFilter={selectedFilter}
@@ -104,6 +117,8 @@ export default function FilterEureka({
         showByColor={showByColor}
         onGroupBySetChange={handleGroupBySetChange}
         onShowByColorChange={handleShowByColorChange}
+        selectedColor={selectedColor}
+        onColorChange={handleColorChange}
         onClearFilters={handleClearFilters}
         resultsCount={resultsCount}
         isLoggedIn={isLoggedIn}
@@ -126,11 +141,11 @@ export default function FilterEureka({
             sx={{
               display: 'grid',
               gridTemplateColumns: {
-                xs: '1fr 1fr',
-                sm: '1fr 1fr 1fr',
+                xs: '1fr 1fr 1fr',
+                sm: '1fr 1fr 1fr 1fr',
                 md: '1fr 1fr 1fr 1fr 1fr',
               },
-              gap: { xs: 2, sm: 1.5, md: 1 },
+              gap: { xs: 1, sm: 1.5, md: 2 },
               py: groupBySet ? 0 : 2,
               mb: 4,
             }}
@@ -141,7 +156,7 @@ export default function FilterEureka({
                   <Box
                     key={`${set.slug}-header`}
                     sx={{
-                      gridColumn: { xs: '1/3', sm: '1/4', md: '1/6' },
+                      gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' },
                       mt: 2,
                     }}
                   >
@@ -167,9 +182,12 @@ export default function FilterEureka({
                 )}
                 {showByColor
                   ? set.colors.map((color) => (
-                      <Card key={`${set.slug}-${color.title}`} sx={{ minWidth: 'fit-content' }}>
-                        <EurekaColorSetCard eurekaSet={set} color={color} isLoggedIn={isLoggedIn} />
-                      </Card>
+                      <EurekaColorSetCard
+                        key={`${set.slug}-${color.title}`}
+                        eurekaSet={set}
+                        color={color}
+                        isLoggedIn={isLoggedIn}
+                      />
                     ))
                   : set.eureka_variants.map((variant) => (
                       <EurekaVariantCard

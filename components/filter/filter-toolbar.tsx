@@ -1,11 +1,15 @@
 'use client'
 
 import {
+  Avatar,
   Box,
   Container,
   FormControl,
   IconButton,
   InputLabel,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -16,35 +20,41 @@ import {
   Typography,
 } from '@mui/material'
 import CategoryToggle from './category-toggle'
-import { Category, EurekaSet } from '@/lib/types/eureka'
+import { Category, Color, EurekaSet } from '@/lib/types/eureka'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
-import { Clear, ColorLens, FilterList } from '@mui/icons-material'
+import { Clear, FilterList, Category as CategoryIcon, ColorLens } from '@mui/icons-material'
 import ObtainedToggle from './obtained-toggle'
+import ColorToggle from './color-toggle'
 
 export default function FilterToolbar({
   eurekaSets,
   categories,
+  colors,
   selectedEurekaSet,
   selectedCategory,
   selectedFilter,
   groupBySet,
   showByColor,
+  selectedColor,
   onEurekaSetChange,
   onCategoryChange,
   onFilterChange,
   onGroupBySetChange,
   onShowByColorChange,
+  onColorChange,
   onClearFilters,
   resultsCount,
   isLoggedIn,
 }: {
   eurekaSets: EurekaSet[]
   categories: Category[]
+  colors: Color[]
   selectedEurekaSet: string | null
   selectedCategory: CategoryFilter | null
   selectedFilter: ToggleFilter | null
   groupBySet: boolean
   showByColor: boolean
+  selectedColor: string | null
   onEurekaSetChange: (event: SelectChangeEvent) => void
   onCategoryChange: (
     event: React.MouseEvent<HTMLElement>,
@@ -53,6 +63,7 @@ export default function FilterToolbar({
   onFilterChange: (event: React.MouseEvent<HTMLElement>, newFilter: ToggleFilter | null) => void
   onGroupBySetChange: () => void
   onShowByColorChange: () => void
+  onColorChange: (event: SelectChangeEvent) => void
   onClearFilters: () => void
   resultsCount: number
   isLoggedIn: boolean
@@ -94,6 +105,7 @@ export default function FilterToolbar({
               sx={{
                 flex: 1,
                 minWidth: { xs: '240px', sm: '260px', md: '300px' },
+                whiteSpace: 'nowrap',
               }}
             >
               <InputLabel id="eureka-set-select-label">Eureka Set</InputLabel>
@@ -104,11 +116,19 @@ export default function FilterToolbar({
                 aria-label="Eureka Set"
                 label="Eureka Set"
                 onChange={onEurekaSetChange}
+                sx={{ '& .MuiOutlinedInput-input': { py: selectedEurekaSet && 1 } }}
               >
                 <MenuItem value="">—</MenuItem>
                 {eurekaSets.map((set) => (
                   <MenuItem key={set.slug} value={set.slug!}>
-                    {set.title}
+                    <ListItem disablePadding component="div">
+                      <ListItemAvatar>
+                        <Avatar size="sm" src={set.image_url} alt={set.title}>
+                          <CategoryIcon fontSize="inherit" />
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText>{set.title}</ListItemText>
+                    </ListItem>
                   </MenuItem>
                 ))}
               </Select>
@@ -125,6 +145,13 @@ export default function FilterToolbar({
               </ToggleButton>
             </Tooltip>
 
+            <ColorToggle
+              colors={colors}
+              selectedColor={selectedColor}
+              onColorChange={onColorChange}
+              disabled={showByColor}
+            />
+
             {isLoggedIn && (
               <ObtainedToggle
                 selectedFilter={selectedFilter}
@@ -140,7 +167,11 @@ export default function FilterToolbar({
               disabled={showByColor}
             />
             <Stack sx={{ flex: 1 }}>
-              {(selectedEurekaSet || selectedCategory || selectedFilter || showByColor) && (
+              {(selectedEurekaSet ||
+                selectedCategory ||
+                selectedFilter ||
+                selectedColor ||
+                showByColor) && (
                 <Box alignSelf="flex-end">
                   <Tooltip title="Clear filters">
                     <IconButton onClick={onClearFilters} aria-label="Clear filters">

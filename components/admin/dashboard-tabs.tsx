@@ -1,15 +1,15 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Box, Paper, Stack, Tab, Tabs, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { Container } from '@mui/material'
 import { EurekaSetTable } from './eureka-set-table'
 import { EurekaVariantTable } from './eureka-variant-table'
 import { TrialTable } from './trial-table'
 import { EurekaSet, EurekaVariantRaw, Trial } from '@/lib/types/eureka'
-import { ViewHeadline, ViewList } from '@mui/icons-material'
 import EurekaSetList from './eureka-set-list'
 import EurekaVariantList from './eureka-variant-list'
 import TrialList from './trial-list'
+import DashboardToolbar from './dashboard-toolbar'
 
 export function DashboardTabs({
   eurekaSets,
@@ -24,7 +24,12 @@ export function DashboardTabs({
   const router = useRouter()
   const pathname = usePathname()
 
-  const tab = Math.min(2, Math.max(0, Number(searchParams.get('tab') ?? '0')))
+  const TAB_VALUES = ['eureka-sets', 'eureka-variants', 'trials'] as const
+  type TabValue = (typeof TAB_VALUES)[number]
+  const rawTab = searchParams.get('tab') ?? 'eureka-sets'
+  const tab: TabValue = TAB_VALUES.includes(rawTab as TabValue)
+    ? (rawTab as TabValue)
+    : 'eureka-sets'
   const view = searchParams.get('view') === 'list' ? 'list' : 'table'
   const page = Math.max(0, Number(searchParams.get('page') ?? '0'))
   const perPage = Number(searchParams.get('perPage') ?? '15')
@@ -35,8 +40,8 @@ export function DashboardTabs({
     router.replace(`${pathname}?${params.toString()}`)
   }
 
-  const handleTabChange = (_: React.SyntheticEvent, value: number) => {
-    updateParams({ tab: String(value), page: '0' })
+  const handleTabChange = (_: React.MouseEvent<HTMLElement>, value: string) => {
+    if (value) updateParams({ tab: value, page: '0' })
   }
 
   const handleViewChange = (_: React.MouseEvent<HTMLElement>, nextView: 'list' | 'table') => {
@@ -57,38 +62,31 @@ export function DashboardTabs({
   }
 
   return (
-    <Box>
-      <Paper variant="outlined" sx={{ mb: 1, overflow: 'hidden' }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Tabs value={tab} onChange={handleTabChange}>
-            <Tab label="Eureka Sets" />
-            <Tab label="Eureka Variants" />
-            <Tab label="Trials" />
-          </Tabs>
-          <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1, mx: 1 }}>
-            <ToggleButtonGroup size="small" value={view} onChange={handleViewChange} exclusive>
-              <ToggleButton value="list" aria-label="list">
-                <ViewList />
-              </ToggleButton>
-              <ToggleButton value="table" aria-label="table">
-                <ViewHeadline />
-              </ToggleButton>
-            </ToggleButtonGroup>
-          </Stack>
-        </Stack>
-      </Paper>
+    <>
+      <DashboardToolbar
+        tab={tab}
+        handleTabChange={handleTabChange}
+        view={view}
+        handleViewChange={handleViewChange}
+      />
 
-      {tab === 0 && view === 'table' && <EurekaSetTable rows={eurekaSets} {...paginationProps} />}
-      {tab === 1 && view === 'table' && (
-        <EurekaVariantTable rows={eurekaVariants} {...paginationProps} />
-      )}
-      {tab === 2 && view === 'table' && <TrialTable rows={trials} {...paginationProps} />}
+      <Container maxWidth="md">
+        {tab === 'eureka-sets' && view === 'table' && (
+          <EurekaSetTable rows={eurekaSets} {...paginationProps} />
+        )}
+        {tab === 'eureka-variants' && view === 'table' && (
+          <EurekaVariantTable rows={eurekaVariants} {...paginationProps} />
+        )}
+        {tab === 'trials' && view === 'table' && <TrialTable rows={trials} {...paginationProps} />}
 
-      {tab === 0 && view === 'list' && <EurekaSetList rows={eurekaSets} {...paginationProps} />}
-      {tab === 1 && view === 'list' && (
-        <EurekaVariantList rows={eurekaVariants} {...paginationProps} />
-      )}
-      {tab === 2 && view === 'list' && <TrialList rows={trials} {...paginationProps} />}
-    </Box>
+        {tab === 'eureka-sets' && view === 'list' && (
+          <EurekaSetList rows={eurekaSets} {...paginationProps} />
+        )}
+        {tab === 'eureka-variants' && view === 'list' && (
+          <EurekaVariantList rows={eurekaVariants} {...paginationProps} />
+        )}
+        {tab === 'trials' && view === 'list' && <TrialList rows={trials} {...paginationProps} />}
+      </Container>
+    </>
   )
 }
