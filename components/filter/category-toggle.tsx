@@ -3,7 +3,7 @@
 import { Category } from '@/lib/types/eureka'
 import { CategoryFilter } from '@/lib/types/props'
 import CategoryIcon from '@mui/icons-material/Category'
-import { Avatar, ToggleButton, ToggleButtonGroup, useColorScheme } from '@mui/material'
+import { Avatar, ToggleButton, ToggleButtonGroup, Tooltip, useColorScheme } from '@mui/material'
 
 export default function CategoryToggle({
   categories,
@@ -31,19 +31,21 @@ export default function CategoryToggle({
       aria-label="Categories"
     >
       {categories.map((category) => (
-        <ToggleButton key={category.title} value={category.title} sx={{ p: 0.75 }}>
-          <Avatar
-            sx={{
-              backgroundColor: 'transparent',
-              filter: isDarkMode ? 'none' : 'brightness(40%)',
-              opacity: disabled ? 0.3 : 1,
-            }}
-            src={category.image_url!}
-            alt={category.title}
-          >
-            <CategoryIcon sx={{ color: 'divider' }} />
-          </Avatar>
-        </ToggleButton>
+				<Tooltip key={category.title} title={category.title}>
+					<ToggleButton value={category.title} sx={{ p: 0.75 }}>
+						<Avatar
+							sx={{
+								backgroundColor: 'transparent',
+								filter: isDarkMode ? 'none' : 'brightness(40%)',
+								opacity: disabled ? 0.3 : 1,
+							}}
+							src={category.image_url!}
+							alt={category.title}
+						>
+							<CategoryIcon sx={{ color: 'divider' }} />
+						</Avatar>
+					</ToggleButton>
+				</Tooltip>
       ))}
     </ToggleButtonGroup>
   )
