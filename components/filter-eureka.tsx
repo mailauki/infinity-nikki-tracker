@@ -81,7 +81,7 @@ export default function FilterEureka({
       const filteredColors = set.colors.filter((c) => !selectedColor || c.title === selectedColor)
 
       if (showByColor) {
-        return { ...set, eureka_variants: set.eureka_variants }
+        return { ...set, eureka_variants: set.eureka_variants, colors: filteredColors }
       }
 
       const filteredVariants = set.eureka_variants
