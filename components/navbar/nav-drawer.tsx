@@ -21,7 +21,7 @@ import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Filter, FilterList, MenuOpen } from '@mui/icons-material'
+import { Edit, Filter, FilterList, MenuOpen } from '@mui/icons-material'
 
 const DRAWER_WIDTH = 240
 const xsHeight = 48 * 3 // based on number of toolbars and toolbar minHeight
@@ -288,9 +288,16 @@ export default function NavDrawer({
               </AppBarTitle>
 
 							<Stack sx={{ position: 'absolute', bottom: 0, right: 0 }}>
-								<IconButton>
-									<FilterList />
-								</IconButton>
+								{pathname === '/eureka' && (
+									<IconButton>
+										<FilterList />
+									</IconButton>
+								)}
+								{pathname === '/profile' && (
+									<IconButton>
+										<Edit />
+									</IconButton>
+								)}
 							</Stack>
             </Container>
           </Toolbar>
