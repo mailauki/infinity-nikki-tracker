@@ -37,11 +37,11 @@ export function AdminTable<T>({
 }: AdminTableProps<T>) {
   return (
     <PaginationContainer
-      title={title}
-      slug={slug}
-      rows={rows}
       page={page}
+      rows={rows}
       rowsPerPage={rowsPerPage}
+      slug={slug}
+      title={title}
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}
     >

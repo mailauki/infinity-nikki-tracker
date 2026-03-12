@@ -23,21 +23,21 @@ export default function CategoryImage({
 
   return (
     <CardHeader
+      action={action}
       avatar={
         <Avatar
+          size={size}
           sx={{
             bgcolor: 'transparent',
             filter: isDarkMode || size === 'xs' ? 'none' : 'brightness(40%)',
           }}
-          size={size}
         >
-          <Image src={imageUrl} alt={alt} width={100} height={100} />
+          <Image alt={alt} height={100} src={imageUrl} width={100} />
         </Avatar>
       }
-      title={title}
       subheader={subheader}
-      action={action}
       sx={{ width: '100%' }}
+      title={title}
     />
   )
 }

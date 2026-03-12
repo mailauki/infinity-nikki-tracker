@@ -38,9 +38,9 @@ export function EurekaVariantTable({
       cell: (v) => (
         <Tooltip title={`Edit ${[v.eureka_set, v.category, v.color].filter(Boolean).join(' • ')}`}>
           <IconButton
-            size="small"
             color="secondary"
             href={`/eureka-variant/edit/${v.slug ?? toSlugVariant(v.eureka_set ?? '', v.category ?? '', v.color ?? '')}${backParam}`}
+            size="small"
           >
             <EditIcon fontSize="small" />
           </IconButton>
@@ -50,7 +50,7 @@ export function EurekaVariantTable({
     {
       header: 'Image',
       cell: (v) => (
-        <Avatar size="xs" src={v.image_url!} alt={v.eureka_set || 'Image'}>
+        <Avatar alt={v.eureka_set || 'Image'} size="xs" src={v.image_url!}>
           <Category fontSize="inherit" />
         </Avatar>
       ),
@@ -58,7 +58,7 @@ export function EurekaVariantTable({
     {
       header: 'Eureka Set',
       cell: (v) => (
-        <Typography noWrap variant="body2" fontWeight="medium">
+        <Typography noWrap fontWeight="medium" variant="body2">
           {v.eureka_set}
         </Typography>
       ),
@@ -66,7 +66,7 @@ export function EurekaVariantTable({
     {
       header: 'Slug',
       cell: (v) => (
-        <Typography noWrap variant="caption" fontFamily="monospace">
+        <Typography noWrap fontFamily="monospace" variant="caption">
           {v.slug}
         </Typography>
       ),
@@ -77,13 +77,13 @@ export function EurekaVariantTable({
       header: 'Default',
       cell: (v) =>
         v.default ? (
-          <Chip label="default" size="small" color="secondary" variant="outlined" />
+          <Chip color="secondary" label="default" size="small" variant="outlined" />
         ) : null,
     },
     {
       header: 'Updated',
       cell: (v) => (
-        <Typography variant="caption" noWrap>
+        <Typography noWrap variant="caption">
           {v.updated_at ? new Date(v.updated_at).toLocaleDateString() : '—'}
         </Typography>
       ),
@@ -92,13 +92,13 @@ export function EurekaVariantTable({
 
   return (
     <AdminTable
-      title="Eureka Variant"
-      rows={rows}
       columns={columns}
-      slug="eureka-variant"
       getKey={(v) => v.id}
       page={page}
+      rows={rows}
       rowsPerPage={rowsPerPage}
+      slug="eureka-variant"
+      title="Eureka Variant"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}
     />

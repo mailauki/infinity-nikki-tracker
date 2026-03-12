@@ -64,10 +64,10 @@ export function DashboardTabs({
   return (
     <>
       <DashboardToolbar
-        tab={tab}
         handleTabChange={handleTabChange}
-        view={view}
         handleViewChange={handleViewChange}
+        tab={tab}
+        view={view}
       />
 
       <Container maxWidth="md">

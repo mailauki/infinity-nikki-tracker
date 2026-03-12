@@ -24,23 +24,23 @@ export default function CategoryToggle({
 
   return (
     <ToggleButtonGroup
+      exclusive
+      aria-label="Categories"
+      disabled={disabled}
       value={selectedCategory}
       onChange={onCategoryChange}
-      exclusive
-      disabled={disabled}
-      aria-label="Categories"
     >
       {categories.map((category) => (
         <Tooltip key={category.title} title={category.title}>
-          <ToggleButton value={category.title} sx={{ p: 0.75 }}>
+          <ToggleButton sx={{ p: 0.75 }} value={category.title}>
             <Avatar
+              alt={category.title}
+              src={category.image_url!}
               sx={{
                 backgroundColor: 'transparent',
                 filter: isDarkMode ? 'none' : 'brightness(40%)',
                 opacity: disabled ? 0.3 : 1,
               }}
-              src={category.image_url!}
-              alt={category.title}
             >
               <CategoryIcon sx={{ color: 'divider' }} />
             </Avatar>

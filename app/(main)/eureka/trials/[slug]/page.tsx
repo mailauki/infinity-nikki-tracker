@@ -49,7 +49,7 @@ async function Trial({ slug }: { slug: string }) {
 
   return (
     <PageContainer title={trial.title}>
-      <CardMedia sx={{ height: 240 }} image={trial.image_url!} title={trial.title} />
+      <CardMedia image={trial.image_url!} sx={{ height: 240 }} title={trial.title} />
       {isLoggedIn && <EurekaCardProgress percentage={percentage} size="lg" />}
       <Box
         sx={{

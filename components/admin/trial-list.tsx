@@ -27,24 +27,24 @@ export default function TrialList({
 
   return (
     <AdminList
-      title="Trial"
-      slug="trial"
-      rows={rows}
       getKey={(trial) => trial.id}
       page={page}
-      rowsPerPage={rowsPerPage}
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
       renderRow={(trial) => (
         <ListRow
-          list="trial"
-          title={trial.title}
-          slug={trial.slug ?? undefined}
-          image_url={trial.image_url ?? undefined}
-          updated_at={trial.updated_at}
           back={backUrl || undefined}
+          image_url={trial.image_url ?? undefined}
+          list="trial"
+          slug={trial.slug ?? undefined}
+          title={trial.title}
+          updated_at={trial.updated_at}
         />
       )}
+      rows={rows}
+      rowsPerPage={rowsPerPage}
+      slug="trial"
+      title="Trial"
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
     />
   )
 }

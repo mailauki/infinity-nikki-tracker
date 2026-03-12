@@ -44,13 +44,6 @@ export default function EurekaFilter({
                 sx={{ backgroundColor: 'transparent', flex: 1 }}
               >
                 <CardActionArea
-                  onClick={() =>
-                    setSelectedCategory(
-                      selectedCategory === (category.title as CategoryFilter)
-                        ? ''
-                        : (category.title as CategoryFilter)
-                    )
-                  }
                   data-active={
                     selectedCategory === (category.title as CategoryFilter) ? '' : undefined
                   }
@@ -63,8 +56,15 @@ export default function EurekaFilter({
                       },
                     },
                   }}
+                  onClick={() =>
+                    setSelectedCategory(
+                      selectedCategory === (category.title as CategoryFilter)
+                        ? ''
+                        : (category.title as CategoryFilter)
+                    )
+                  }
                 >
-                  <CategoryItem item={category} eurekaVariants={eurekaVariants} />
+                  <CategoryItem eurekaVariants={eurekaVariants} item={category} />
                 </CardActionArea>
               </Card>
             ))}

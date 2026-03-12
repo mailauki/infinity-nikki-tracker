@@ -38,9 +38,9 @@ async function EurekaSet({ slug }: { slug: string }) {
   return (
     <PageContainer title={eurekaSet.title}>
       <RealtimeEurekaSet
+        isLoggedIn={isLoggedIn}
         serverEurekaSet={eurekaSet}
         serverObtained={obtained || []}
-        isLoggedIn={isLoggedIn}
         userId={user_id ?? null}
       />
     </PageContainer>

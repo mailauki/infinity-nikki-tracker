@@ -47,49 +47,49 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
-        <CardHeader title="Login" subheader="Enter your email below to login to your account" />
+        <CardHeader subheader="Enter your email below to login to your account" title="Login" />
         <CardContent>
           <form onSubmit={handleLogin}>
             <TextField
-              label="Email"
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              required
               fullWidth
+              required
+              id="email"
+              label="Email"
               margin="normal"
+              placeholder="m@example.com"
+              type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
             />
 
             <TextField
-              label="Password"
-              id="password"
-              type="password"
-              required
               fullWidth
+              required
+              id="password"
+              label="Password"
               margin="normal"
+              type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
             />
             <Anchor
               color="textSecondary"
-              fontWeight="medium"
-              variant="body1"
-              href="/auth/forgot-password"
               component={Link}
+              fontWeight="medium"
+              href="/auth/forgot-password"
               underline="hover"
+              variant="body1"
             >
               Forgot your password?
             </Anchor>
             {error && <p className="text-sm text-red-500">{error}</p>}
             <Button
-              type="submit"
               fullWidth
-              size="large"
-              variant="contained"
               disabled={isLoading}
+              size="large"
               sx={{ my: 2 }}
+              type="submit"
+              variant="contained"
             >
               {isLoading ? 'Logging in...' : 'Login'}
             </Button>
@@ -98,9 +98,9 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               Don&apos;t have an account?{' '}
               <Anchor
                 color="textSecondary"
+                component={Link}
                 fontWeight="medium"
                 href="/auth/sign-up"
-                component={Link}
                 underline="hover"
               >
                 Sign up

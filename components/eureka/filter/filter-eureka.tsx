@@ -104,24 +104,24 @@ export default function FilterEureka({
   return (
     <>
       <FilterToolbar
-        eurekaSets={eurekaSets}
         categories={categories}
         colors={colors}
-        selectedEurekaSet={selectedEurekaSet}
-        selectedCategory={selectedCategory}
-        selectedFilter={selectedFilter}
+        eurekaSets={eurekaSets}
         groupBySet={groupBySet}
-        onEurekaSetChange={handleEurekaSetChange}
-        onCategoryChange={handleCategoryChange}
-        onFilterChange={handleFilterChange}
+        isLoggedIn={isLoggedIn}
+        resultsCount={resultsCount}
+        selectedCategory={selectedCategory}
+        selectedColor={selectedColor}
+        selectedEurekaSet={selectedEurekaSet}
+        selectedFilter={selectedFilter}
         showByColor={showByColor}
+        onCategoryChange={handleCategoryChange}
+        onClearFilters={handleClearFilters}
+        onColorChange={handleColorChange}
+        onEurekaSetChange={handleEurekaSetChange}
+        onFilterChange={handleFilterChange}
         onGroupBySetChange={handleGroupBySetChange}
         onShowByColorChange={handleShowByColorChange}
-        selectedColor={selectedColor}
-        onColorChange={handleColorChange}
-        onClearFilters={handleClearFilters}
-        resultsCount={resultsCount}
-        isLoggedIn={isLoggedIn}
       />
 
       <Container maxWidth="md">
@@ -129,10 +129,10 @@ export default function FilterEureka({
 
         {filteredSets.length === 0 ? (
           <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>
-            <Typography variant="h6" color="textSecondary">
+            <Typography color="textSecondary" variant="h6">
               No results
             </Typography>
-            <Typography variant="body2" color="textDisabled">
+            <Typography color="textDisabled" variant="body2">
               Try adjusting your filters
             </Typography>
           </Stack>
@@ -161,8 +161,8 @@ export default function FilterEureka({
                     }}
                   >
                     <Stack
-                      direction="row"
                       alignItems="flex-end"
+                      direction="row"
                       justifyContent="space-between"
                       sx={{ mb: 0.5 }}
                     >
@@ -184,8 +184,8 @@ export default function FilterEureka({
                   ? set.colors.map((color) => (
                       <EurekaColorSetCard
                         key={`${set.slug}-${color.title}`}
-                        eurekaSet={set}
                         color={color}
+                        eurekaSet={set}
                         isLoggedIn={isLoggedIn}
                       />
                     ))

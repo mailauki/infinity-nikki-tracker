@@ -5,11 +5,11 @@ export function Hero() {
   return (
     <Box sx={{ position: 'relative', height: '100%' }}>
       <Image
-        src="/hero.jpg"
-        alt="Infinity Nikki Hero Image"
-        sizes="100vw"
-        className="object-cover object-[70%_center]"
         fill
+        alt="Infinity Nikki Hero Image"
+        className="object-cover object-[70%_center]"
+        sizes="100vw"
+        src="/hero.jpg"
       />
       <Box
         sx={{
@@ -28,11 +28,11 @@ export function Hero() {
           justifyContent="flex-end"
           sx={{ flex: 1, color: 'white', textAlign: 'center' }}
         >
-          <Typography variant="h3" noWrap component="h1">
+          <Typography noWrap component="h1" variant="h3">
             Infinity Nikki Tracker
           </Typography>
           <Container fixed maxWidth="xs">
-            <Typography variant="subtitle1" fontSize={20}>
+            <Typography fontSize={20} variant="subtitle1">
               Track your collection from your favorite cozy open-world game Infinity Nikki
             </Typography>
           </Container>

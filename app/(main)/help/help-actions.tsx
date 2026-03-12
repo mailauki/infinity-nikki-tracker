@@ -22,7 +22,7 @@ export default function HelpActions() {
 
   return (
     <>
-      <Container maxWidth="xs" disableGutters>
+      <Container disableGutters maxWidth="xs">
         <List disablePadding>
           <ListItem disableGutters>
             <ListItemButton onClick={() => setFeatureOpen(true)}>
@@ -74,14 +74,14 @@ export default function HelpActions() {
         </List>
       </Container>
 
-      <Dialog open={featureOpen} onClose={() => setFeatureOpen(false)} fullWidth maxWidth="sm">
+      <Dialog fullWidth maxWidth="sm" open={featureOpen} onClose={() => setFeatureOpen(false)}>
         <DialogTitle>Feature Request</DialogTitle>
         <DialogContent>
           <FeatureRequestForm onClose={() => setFeatureOpen(false)} />
         </DialogContent>
       </Dialog>
 
-      <Dialog open={bugOpen} onClose={() => setBugOpen(false)} fullWidth maxWidth="sm">
+      <Dialog fullWidth maxWidth="sm" open={bugOpen} onClose={() => setBugOpen(false)}>
         <DialogTitle>Report an Issue</DialogTitle>
         <DialogContent>
           <BugReportForm onClose={() => setBugOpen(false)} />

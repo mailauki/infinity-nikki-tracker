@@ -38,5 +38,5 @@ export default function AvatarPreview({
     }
   }, [url, supabase])
 
-  return <Avatar src={avatarUrl!} alt="Avatar" size={size} />
+  return <Avatar alt="Avatar" size={size} src={avatarUrl!} />
 }

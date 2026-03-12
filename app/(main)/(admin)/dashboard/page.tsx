@@ -33,13 +33,13 @@ async function AdminDashboard() {
             pt: 4,
           }}
         >
-          <StatCard title="Eureka Sets" count={eurekaSets?.length ?? 0} addHref="/eureka-set/new" />
+          <StatCard addHref="/eureka-set/new" count={eurekaSets?.length ?? 0} title="Eureka Sets" />
           <StatCard
-            title="Eureka Variants"
-            count={eurekaVariants?.length ?? 0}
             addHref="/eureka-variant/new"
+            count={eurekaVariants?.length ?? 0}
+            title="Eureka Variants"
           />
-          <StatCard title="Trials" count={trials?.length ?? 0} addHref="/trial/new" />
+          <StatCard addHref="/trial/new" count={trials?.length ?? 0} title="Trials" />
         </Box>
       </Container>
 

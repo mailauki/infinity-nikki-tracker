@@ -10,13 +10,13 @@ export default function AboutPage() {
   return (
     <PageContainer title="About">
       <Stack component="section">
-        <Typography variant="subtitle1" color="textSecondary">
+        <Typography color="textSecondary" variant="subtitle1">
           Infinity Nikki Tracker is a collection tracker for{' '}
           <Anchor
-            href="https://infinitynikki.infoldgames.com/"
-            target="_blank"
-            rel="noreferrer"
             color="textSecondary"
+            href="https://infinitynikki.infoldgames.com/"
+            rel="noreferrer"
+            target="_blank"
           >
             Infinity Nikki
           </Anchor>
@@ -26,18 +26,18 @@ export default function AboutPage() {
       </Stack>
 
       <Stack component="section">
-        <Typography variant="h4" component="h2">
+        <Typography component="h2" variant="h4">
           Links &amp; Resources
         </Typography>
-        <List sx={{ listStyle: 'disc', pl: 4 }} dense>
+        <List dense sx={{ listStyle: 'disc', pl: 4 }}>
           <ListItem sx={{ display: 'list-item' }}>
             <ListItemText
               primary={
                 <Anchor
-                  href="https://infinitynikki.fandom.com/"
-                  target="_blank"
-                  rel="noreferrer"
                   color="textSecondary"
+                  href="https://infinitynikki.fandom.com/"
+                  rel="noreferrer"
+                  target="_blank"
                   variant="body1"
                 >
                   Infinity Nikki Wiki
@@ -49,10 +49,10 @@ export default function AboutPage() {
             <ListItemText
               primary={
                 <Anchor
-                  href="https://infinitynikki.infoldgames.com/"
-                  target="_blank"
-                  rel="noreferrer"
                   color="textSecondary"
+                  href="https://infinitynikki.infoldgames.com/"
+                  rel="noreferrer"
+                  target="_blank"
                   variant="body1"
                 >
                   Infinity Nikki Official Website
@@ -64,10 +64,10 @@ export default function AboutPage() {
             <ListItemText
               primary={
                 <Anchor
-                  href="https://github.com/mailauki/infinity-nikki-tracker"
-                  target="_blank"
-                  rel="noreferrer"
                   color="textSecondary"
+                  href="https://github.com/mailauki/infinity-nikki-tracker"
+                  rel="noreferrer"
+                  target="_blank"
                   variant="body1"
                 >
                   GitHub Repository
@@ -79,13 +79,13 @@ export default function AboutPage() {
       </Stack>
 
       <Stack component="section">
-        <Typography variant="h4" component="h2">
+        <Typography component="h2" variant="h4">
           Roadmap
         </Typography>
-        <Typography variant="subtitle1" color="textSecondary">
+        <Typography color="textSecondary" variant="subtitle1">
           Planned features and improvements:
         </Typography>
-        <List sx={{ listStyle: 'disc', pl: 4 }} dense>
+        <List dense sx={{ listStyle: 'disc', pl: 4 }}>
           <ListItem sx={{ display: 'list-item' }}>
             <ListItemText
               primary={
@@ -108,22 +108,22 @@ export default function AboutPage() {
       </Stack>
 
       <Stack component="section">
-        <Typography variant="h4" component="h2">
+        <Typography component="h2" variant="h4">
           Collaborate
         </Typography>
-        <Typography variant="body1" color="textSecondary">
+        <Typography color="textSecondary" variant="body1">
           This project is open source. Contributions are welcome — whether it&apos;s fixing a bug,
           improving the UI, or adding new data.
         </Typography>
-        <List sx={{ listStyle: 'disc', pl: 4 }} dense>
+        <List dense sx={{ listStyle: 'disc', pl: 4 }}>
           <ListItem sx={{ display: 'list-item' }}>
             <ListItemText
               primary={
                 <Anchor
-                  href="https://github.com/mailauki/infinity-nikki-tracker"
-                  target="_blank"
-                  rel="noreferrer"
                   color="textSecondary"
+                  href="https://github.com/mailauki/infinity-nikki-tracker"
+                  rel="noreferrer"
+                  target="_blank"
                   variant="body1"
                 >
                   View the source on GitHub
@@ -136,10 +136,10 @@ export default function AboutPage() {
               primary={
                 <Typography color="textSecondary" variant="body1">
                   <Anchor
-                    href="https://github.com/mailauki/infinity-nikki-tracker/issues"
-                    target="_blank"
-                    rel="noreferrer"
                     color="textSecondary"
+                    href="https://github.com/mailauki/infinity-nikki-tracker/issues"
+                    rel="noreferrer"
+                    target="_blank"
                   >
                     Open an issue
                   </Anchor>{' '}
@@ -151,7 +151,7 @@ export default function AboutPage() {
         </List>
       </Stack>
 
-      <Typography variant="caption" color="textDisabled">
+      <Typography color="textDisabled" variant="caption">
         &copy; 2026 mailauki. Not affiliated with Infold Games or Infinity Nikki.
       </Typography>
     </PageContainer>

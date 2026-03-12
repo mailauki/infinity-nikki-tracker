@@ -15,11 +15,10 @@ export function NavSecondary({
     <List>
       {items.map((item) => (
         <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
-          <Tooltip title={open ? '' : item.title} placement="right">
+          <Tooltip placement="right" title={open ? '' : item.title}>
             <ListItemButton
               component={Link}
               href={item.url}
-              onClick={onClose}
               sx={[
                 {
                   minHeight: 48,
@@ -33,6 +32,7 @@ export function NavSecondary({
                       justifyContent: 'center',
                     },
               ]}
+              onClick={onClose}
             >
               <ListItemIcon
                 sx={[

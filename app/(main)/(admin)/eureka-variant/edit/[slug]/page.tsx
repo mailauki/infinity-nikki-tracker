@@ -19,7 +19,7 @@ export default async function EditEurekaVariantPage({
 }) {
   return (
     <Suspense>
-      <PageContainer title="Edit Eureka Variant" size="sm">
+      <PageContainer size="sm" title="Edit Eureka Variant">
         <EditEurekaVariant params={params} searchParams={searchParams} />
       </PageContainer>
     </Suspense>
@@ -49,12 +49,12 @@ async function EditEurekaVariant({
 
   return (
     <EditEurekaVariantForm
-      variant={variant}
-      eurekaSets={eurekaSets ?? []}
+      back={back}
       categories={categories ?? []}
       colors={colors ?? []}
+      eurekaSets={eurekaSets ?? []}
+      variant={variant}
       variants={eurekaVariants ?? []}
-      back={back}
     />
   )
 }

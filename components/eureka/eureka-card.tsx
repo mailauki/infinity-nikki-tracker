@@ -22,20 +22,20 @@ export default function EurekaCard({
   return (
     <>
       <EurekaSetImage
-        imageUrl={eurekaSet.image_url!}
+        action={<Chip label={eurekaSet.label} size="small" variant="outlined" />}
         alt={eurekaSet.title}
-        action={<Chip label={eurekaSet.label} variant="outlined" size="small" />}
-        title={eurekaSet.title}
-        subheader={isLoggedIn ? `${percentage}%` : undefined}
+        imageUrl={eurekaSet.image_url!}
         size={size}
+        subheader={isLoggedIn ? `${percentage}%` : undefined}
+        title={eurekaSet.title}
       />
       {size !== 'sm' && (
         <EurekaCardContent
-          title={eurekaSet.title}
           rarity={eurekaSet.rarity}
           size={size}
-          trial={eurekaSet.trial}
           style={eurekaSet.style}
+          title={eurekaSet.title}
+          trial={eurekaSet.trial}
         />
       )}
       {isLoggedIn && <EurekaCardProgress percentage={percentage} size={size} />}

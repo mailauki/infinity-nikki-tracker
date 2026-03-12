@@ -53,9 +53,9 @@ async function Trials() {
       {totalTrials?.map((trial) => (
         <Grid key={trial.title} size={{ xs: 12, md: 6 }}>
           <TrialCard
-            trial={trial}
             eureka={trial.eurekaSets!.flatMap((eurekaSet) => eurekaSet.eureka_variants)}
             isLoggedIn={isLoggedIn}
+            trial={trial}
           />
         </Grid>
       ))}
@@ -79,7 +79,7 @@ function TrialCard({
     return (
       <Card>
         <CardHeader title={trial.title} />
-        <CardMedia sx={{ height: 160 }} image={trial.image_url!} title={trial.title} />
+        <CardMedia image={trial.image_url!} sx={{ height: 160 }} title={trial.title} />
         <CardContent sx={{ p: 0 }}>
           <List sx={{ width: '100%' }}>
             {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
@@ -100,20 +100,20 @@ function TrialCard({
   return (
     <Card>
       <CardHeader
-        title={trial.title}
-        subheader={`${percentage}%`}
         action={
           <Chip
             label={`${obtainedCount.obtained} / ${obtainedCount.total}`}
-            variant="outlined"
             size="small"
+            variant="outlined"
           />
         }
+        subheader={`${percentage}%`}
+        title={trial.title}
       />
       <CardContent sx={{ pt: 0 }}>
-        <LinearProgress value={percentage} variant="determinate" color="inherit" />
+        <LinearProgress color="inherit" value={percentage} variant="determinate" />
       </CardContent>
-      <CardMedia sx={{ height: 160 }} image={trial.image_url!} title={trial.title} />
+      <CardMedia image={trial.image_url!} sx={{ height: 160 }} title={trial.title} />
       <CardContent sx={{ p: 0 }}>
         <List sx={{ width: '100%' }}>
           {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (

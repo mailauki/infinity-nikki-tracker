@@ -34,26 +34,26 @@ export default function DashboardToolbar({
       <Container maxWidth="md">
         <Toolbar disableGutters>
           <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
-            <ToggleButtonGroup value={tab} onChange={handleTabChange} exclusive>
-              <ToggleButton value="eureka-sets" aria-label="Eureka Sets">
+            <ToggleButtonGroup exclusive value={tab} onChange={handleTabChange}>
+              <ToggleButton aria-label="Eureka Sets" value="eureka-sets">
                 Eureka Sets
               </ToggleButton>
-              <ToggleButton value="eureka-variants" aria-label="Eureka Variants">
+              <ToggleButton aria-label="Eureka Variants" value="eureka-variants">
                 Eureka Variants
               </ToggleButton>
-              <ToggleButton value="trials" aria-label="Trials">
+              <ToggleButton aria-label="Trials" value="trials">
                 Trials
               </ToggleButton>
             </ToggleButtonGroup>
 
-            <ToggleButtonGroup value={view} onChange={handleViewChange} exclusive>
+            <ToggleButtonGroup exclusive value={view} onChange={handleViewChange}>
               <Tooltip title="List view">
-                <ToggleButton value="list" aria-label="list">
+                <ToggleButton aria-label="list" value="list">
                   <ViewList />
                 </ToggleButton>
               </Tooltip>
               <Tooltip title="Table view">
-                <ToggleButton value="table" aria-label="table">
+                <ToggleButton aria-label="table" value="table">
                   <ViewHeadline />
                 </ToggleButton>
               </Tooltip>

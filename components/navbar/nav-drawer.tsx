@@ -57,18 +57,18 @@ const closedMixin = (theme: Theme): CSSObject => ({
 const MainContainer = styled(Paper)(({ theme }) => ({
   // Default height for small screens (portrait)
   // height: `calc(100vh - 112px)`, // 56px * 3 = 168
-		height: `calc(100vh - ${mdHeight}px)`,
+  height: `calc(100vh - ${mdHeight}px)`,
   // Landscape orientation on small screens
   [theme.breakpoints.up('xs')]: {
     '@media (orientation: landscape)': {
       // height: `calc(100vh - 96px)`,
-		height: `calc(100vh - ${xsHeight}px)`,
+      height: `calc(100vh - ${xsHeight}px)`,
     }, // 48px * 3 = 144
   },
   // Large screens (sm breakpoint and up)
   [theme.breakpoints.up('sm')]: {
     // height: `calc(100vh - 128px)`,
-		height: `calc(100vh - ${smHeight}px)`,
+    height: `calc(100vh - ${smHeight}px)`,
   }, // 64px * 3 = 192 based on number of toolbars
   overflowY: 'auto',
   borderRadius: 0,
@@ -81,7 +81,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   // ...theme.mixins.toolbar,
-	'@media all': {
+  '@media all': {
     minHeight: 128,
   },
 }))
@@ -125,7 +125,7 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   '@media all': {
     minHeight: 128,
   },
-}));
+}))
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(({ theme }) => ({
   width: 0,
@@ -162,7 +162,7 @@ export default function NavDrawer({
   isAdmin?: boolean
   user: JwtPayload
 }>) {
-	const pathname = usePathname()
+  const pathname = usePathname()
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
 
@@ -184,74 +184,77 @@ export default function NavDrawer({
     ...navLinksData.navExtra,
   ]
 
-  const pageTitle = allLinks
-    .filter((link) => pathname === link.url || pathname.startsWith(link.url + '/'))
-    .sort((a, b) => b.url.length - a.url.length)[0]?.title ?? ''
-
+  const pageTitle =
+    allLinks
+      .filter((link) => pathname === link.url || pathname.startsWith(link.url + '/'))
+      .sort((a, b) => b.url.length - a.url.length)[0]?.title ?? ''
 
   return (
     <>
       <Stack direction="row">
-        <AppBar
-					position="fixed"
-					open={open}
-					variant='outlined'
-				>
+        <AppBar open={open} position="fixed" variant="outlined">
           <StyledToolbar>
             <Stack
-              direction="row"
               alignItems="center"
+              direction="row"
               justifyContent="flex-start"
               sx={{ width: '64px' }}
             >
               <IconButton
-                color="inherit"
                 aria-label="open drawer"
-                onClick={handleDrawerOpen}
+                color="inherit"
                 edge="start"
                 sx={[
                   {
                     marginLeft: -1,
                     marginRight: 5,
-										zIndex: theme.zIndex.drawer + 1,
+                    zIndex: theme.zIndex.drawer + 1,
                   },
                   open && { display: 'none' },
                 ]}
+                onClick={handleDrawerOpen}
               >
                 <MenuIcon />
               </IconButton>
             </Stack>
-							<Stack
-							direction="row"
-							alignItems="center"
-							justifyContent="center"
-							sx={{
-								flex: 1,
-								width: '100%',
-								position: 'absolute',
-								top: 0,
-								left: 0,
-								right: 0,
-								py: 1.25,
-								zIndex: theme.zIndex.drawer,
-							}}
-						>
+            <Stack
+              alignItems="center"
+              direction="row"
+              justifyContent="center"
+              sx={{
+                flex: 1,
+                width: '100%',
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                py: 1.25,
+                zIndex: theme.zIndex.drawer,
+              }}
+            >
               <Link href="/" style={{ cursor: 'pointer' }}>
                 <Image
-                  src="/infinity-nikki-logo.png"
                   alt="Infinity Nikki Logo"
-                  width={90}
                   height={39}
+                  src="/infinity-nikki-logo.png"
+                  width={90}
                 />
               </Link>
             </Stack>
-						<Container disableGutters maxWidth="md" sx={{ flexGrow: 1, alignSelf: 'flex-end' }}>
-							<Stack direction='row' justifyContent={{ xs: 'center', sm: 'inherit' }} sx={{ flex: 1, alignSelf: 'flex-end', mr: '1rem' }}>
-							<Typography variant="h3" component="h1">{pageTitle}</Typography></Stack>
-						</Container>
+            <Container disableGutters maxWidth="md" sx={{ flexGrow: 1, alignSelf: 'flex-end' }}>
+              <Stack
+                direction="row"
+                justifyContent={{ xs: 'center', sm: 'inherit' }}
+                sx={{ flex: 1, alignSelf: 'flex-end', mr: '1rem' }}
+              >
+                <Typography component="h1" variant="h4">
+                  {pageTitle}
+                </Typography>
+              </Stack>
+            </Container>
             <Stack
-              direction="row"
               alignItems="center"
+              direction="row"
               justifyContent="flex-end"
               sx={{ width: '64px', zIndex: theme.zIndex.drawer + 1 }}
             >
@@ -260,16 +263,16 @@ export default function NavDrawer({
                   Login
                 </Button>
               ) : (
-                <NavUser user={user} isAdmin={isAdmin} />
+                <NavUser isAdmin={isAdmin} user={user} />
               )}
             </Stack>
           </StyledToolbar>
         </AppBar>
 
-        <Drawer variant="permanent" open={open} className="h-screen overflow-hidden">
+        <Drawer className="h-screen overflow-hidden" open={open} variant="permanent">
           <StyledToolbar>
             <IconButton onClick={handleDrawerClose}>
-							<MenuOpen />
+              <MenuOpen />
             </IconButton>
           </StyledToolbar>
 
@@ -287,7 +290,7 @@ export default function NavDrawer({
 
           <NavExtra items={navLinksData.navExtra} open={open} onClose={handleDrawerClose} />
         </Drawer>
-        <Box component="main" className="h-screen w-full overflow-hidden">
+        <Box className="h-screen w-full overflow-hidden" component="main">
           <DrawerHeader />
           <MainContainer elevation={0}>{children}</MainContainer>
           <Toolbar />

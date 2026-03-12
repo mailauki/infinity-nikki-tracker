@@ -40,7 +40,7 @@ async function UserDetails() {
   return (
     <>
       {sets && <CollectionStats sets={sets} />}
-      <ProfileForm user={user} isAdmin={role === 'admin'} />
+      <ProfileForm isAdmin={role === 'admin'} user={user} />
     </>
   )
 }

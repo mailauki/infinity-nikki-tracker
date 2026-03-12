@@ -25,18 +25,18 @@ export function CategoryItem({
   return (
     <>
       <CategoryImage
-        imageUrl={item.image_url!}
-        alt={item.title}
         action={
           <Chip
             label={`${obtainedCount.obtained} / ${obtainedCount.total}`}
-            variant="outlined"
             size="small"
+            variant="outlined"
           />
         }
-        title={item.title}
-        subheader={`${percentage}%`}
+        alt={item.title}
+        imageUrl={item.image_url!}
         size={size}
+        subheader={`${percentage}%`}
+        title={item.title}
       />
       <EurekaCardProgress percentage={percentage} size="sm" />
     </>

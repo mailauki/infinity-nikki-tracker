@@ -23,7 +23,7 @@ export default async function EditEurekaSetPage({
 }) {
   return (
     <Suspense>
-      <PageContainer title="Edit Eureka Set" size="sm">
+      <PageContainer size="sm" title="Edit Eureka Set">
         <EditEurekaSet params={params} searchParams={searchParams} />
       </PageContainer>
     </Suspense>
@@ -66,14 +66,14 @@ async function EditEurekaSet({
 
   return (
     <EditEurekaSetForm
-      eurekaSet={eurekaSet}
-      trials={trials ?? []}
-      styles={styles ?? []}
-      labels={labels ?? []}
-      colors={colors ?? []}
-      categories={categories ?? []}
-      initialColors={initialColors}
       back={back}
+      categories={categories ?? []}
+      colors={colors ?? []}
+      eurekaSet={eurekaSet}
+      initialColors={initialColors}
+      labels={labels ?? []}
+      styles={styles ?? []}
+      trials={trials ?? []}
     />
   )
 }

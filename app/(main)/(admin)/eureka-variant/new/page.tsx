@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function NewEurekaVariantPage() {
   return (
     <Suspense>
-      <PageContainer title="Add Eureka Variant" size="sm">
+      <PageContainer size="sm" title="Add Eureka Variant">
         <NewEurekaVariant />
       </PageContainer>
     </Suspense>
@@ -23,9 +23,9 @@ async function NewEurekaVariant() {
 
   return (
     <AddEurekaVariantForm
-      eurekaSets={eurekaSets ?? []}
       categories={categories ?? []}
       colors={colors ?? []}
+      eurekaSets={eurekaSets ?? []}
       variants={eurekaVariants ?? []}
     />
   )

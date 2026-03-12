@@ -13,7 +13,7 @@ export default function PageContainer({
     <Container maxWidth={size} sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
         {title && (
-          <Typography variant="h3" component="h1">
+          <Typography component="h1" variant="h3">
             {title}
           </Typography>
         )}

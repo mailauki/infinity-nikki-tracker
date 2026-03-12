@@ -41,7 +41,7 @@ export default function ListRow({
       }
     >
       <ListItemAvatar>
-        <Avatar src={image_url} alt={slug}>
+        <Avatar alt={slug} src={image_url}>
           <Category />
         </Avatar>
       </ListItemAvatar>

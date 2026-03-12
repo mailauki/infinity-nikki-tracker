@@ -14,14 +14,14 @@ export default function ObtainedToggle({
 }) {
   return (
     <ToggleButtonGroup
-      value={selectedFilter}
-      onChange={onFilterChange}
       exclusive
       aria-label="Filter"
       disabled={disabled}
+      value={selectedFilter}
+      onChange={onFilterChange}
     >
       {['Missing', 'Obtained'].map((filter) => (
-        <ToggleButton key={filter} value={filter} sx={{ py: 1.75 }}>
+        <ToggleButton key={filter} sx={{ py: 1.75 }} value={filter}>
           {filter}
         </ToggleButton>
       ))}

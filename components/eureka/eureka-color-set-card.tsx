@@ -33,24 +33,24 @@ export default function EurekaColorSetCard({
     >
       <Box sx={{ position: 'relative' }}>
         <Stack alignItems="center" sx={{ pt: 1 }}>
-          <Avatar size="lg" src={variants[0].image_url!} alt={slug}>
+          <Avatar alt={slug} size="lg" src={variants[0].image_url!}>
             <Category />
           </Avatar>
         </Stack>
         <Stack
-          direction="row"
           alignItems="center"
+          direction="row"
           justifyContent="space-between"
           sx={{ px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: -2 }}
         >
           <Typography variant="overline">{color.title}</Typography>
           {isLoggedIn && (
-            <Typography variant="caption" color="textSecondary">
+            <Typography color="textSecondary" variant="caption">
               {`${percentage}%`}
             </Typography>
           )}
         </Stack>
-        {isLoggedIn && <LinearProgress variant="determinate" value={percentage} color="inherit" />}
+        {isLoggedIn && <LinearProgress color="inherit" value={percentage} variant="determinate" />}
       </Box>
     </Card>
   )

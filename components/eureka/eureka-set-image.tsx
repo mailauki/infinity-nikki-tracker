@@ -20,12 +20,12 @@ export default function EurekaSetImage({
   if (size !== 'sm') {
     return (
       <CardHeader
+        action={action}
         avatar={
-          <Avatar src={imageUrl} alt={alt} sx={{ bgcolor: imageUrl && 'transparent' }} size="lg">
+          <Avatar alt={alt} size="lg" src={imageUrl} sx={{ bgcolor: imageUrl && 'transparent' }}>
             <Category fontSize="inherit" />
           </Avatar>
         }
-        action={action}
         sx={{ width: '100%' }}
       />
     )
@@ -33,16 +33,16 @@ export default function EurekaSetImage({
 
   return (
     <CardHeader
+      disableTypography
+      action={action}
       avatar={
-        <Avatar src={imageUrl} alt={alt} sx={{ bgcolor: imageUrl && 'transparent' }} size="md">
+        <Avatar alt={alt} size="md" src={imageUrl} sx={{ bgcolor: imageUrl && 'transparent' }}>
           <Category fontSize="inherit" />
         </Avatar>
       }
-      disableTypography
-      title={<Typography variant={subheader ? 'overline' : 'subtitle1'}>{title}</Typography>}
       subheader={<Typography variant="body2">{subheader}</Typography>}
-      action={action}
       sx={{ width: '100%' }}
+      title={<Typography variant={subheader ? 'overline' : 'subtitle1'}>{title}</Typography>}
     />
   )
 }

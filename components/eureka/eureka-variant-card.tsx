@@ -26,35 +26,36 @@ export default function EurekaVariantCard({
       <Box sx={{ position: 'relative', height: '100%' }}>
         <Stack alignItems="center" sx={{ pt: 1 }}>
           <Avatar
+            alt={eurekaVariant.slug || 'Eureka Variant'}
             size="lg"
             src={eurekaVariant.image_url!}
-            alt={eurekaVariant.slug || 'Eureka Variant'}
           >
             <Category />
           </Avatar>
         </Stack>
         <Stack
-          direction="row"
           alignItems="center"
+          direction="row"
           justifyContent="space-between"
           sx={{ py: 0.75, px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: -2 }}
         >
-          <Typography variant="caption" color="textSecondary">
+          <Typography color="textSecondary" variant="caption">
             {eurekaVariant.category} • {eurekaVariant.color}
           </Typography>
         </Stack>
         {isLoggedIn && (
           <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
             <LinearProgress
-              variant="determinate"
-              value={eurekaVariant.obtained ? 100 : 0}
               color="inherit"
+              value={eurekaVariant.obtained ? 100 : 0}
+              variant="determinate"
             />
           </Box>
         )}
         <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
           {isLoggedIn && (
             <IconButton
+              disabled={!isLoggedIn}
               onClick={() =>
                 handleObtained(
                   eurekaVariant.eureka_set!,
@@ -62,7 +63,6 @@ export default function EurekaVariantCard({
                   eurekaVariant.color!
                 )
               }
-              disabled={!isLoggedIn}
             >
               {eurekaVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
             </IconButton>

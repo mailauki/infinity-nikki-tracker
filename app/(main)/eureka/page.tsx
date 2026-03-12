@@ -30,10 +30,10 @@ async function EurekaSets() {
 
   return (
     <RealtimeEureka
-      serverEurekaSets={eurekaSets}
+      isLoggedIn={isLoggedIn}
       serverCategories={categories}
       serverColors={colors}
-      isLoggedIn={isLoggedIn}
+      serverEurekaSets={eurekaSets}
       serverObtained={obtained}
       userId={user_id}
     />

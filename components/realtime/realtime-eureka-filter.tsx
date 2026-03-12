@@ -62,8 +62,8 @@ export default function RealtimeEurekaFilter({
 
   return (
     <EurekaFilter
-      eurekaVariants={eurekaVariants}
       categories={serverCategories}
+      eurekaVariants={eurekaVariants}
       isLoggedIn={isLoggedIn}
     />
   )

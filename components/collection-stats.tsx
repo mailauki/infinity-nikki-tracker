@@ -18,12 +18,12 @@ function CollectionStatCard({
     <Card variant="outlined">
       <CardHeader
         disableTypography
+        action={<Chip label={`${obtained} / ${total}`} size="small" variant="outlined" />}
         title={
-          <Typography variant="overline" color="text.secondary">
+          <Typography color="text.secondary" variant="overline">
             {title}
           </Typography>
         }
-        action={<Chip label={`${obtained} / ${total}`} size="small" variant="outlined" />}
       />
       <EurekaCardProgress percentage={percentage} size="xs" />
     </Card>
@@ -55,14 +55,14 @@ export default function CollectionStats({ sets }: { sets: EurekaSet[] }) {
         mb: 3,
       }}
     >
-      <CollectionStatCard title="Sets" obtained={setsObtained} total={sets.length} />
-      <CollectionStatCard title="Items" obtained={itemsObtained} total={itemsTotal} />
+      <CollectionStatCard obtained={setsObtained} title="Sets" total={sets.length} />
+      <CollectionStatCard obtained={itemsObtained} title="Items" total={itemsTotal} />
       <CollectionStatCard
-        title="Categories"
         obtained={categoriesObtained}
+        title="Categories"
         total={allCategories.length}
       />
-      <CollectionStatCard title="Colors" obtained={colorsObtained} total={allColors.length} />
+      <CollectionStatCard obtained={colorsObtained} title="Colors" total={allColors.length} />
     </Box>
   )
 }

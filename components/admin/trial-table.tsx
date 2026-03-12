@@ -38,9 +38,9 @@ export function TrialTable({
       cell: (trial) => (
         <Tooltip title={`Edit ${trial.title}`}>
           <IconButton
-            size="small"
             color="secondary"
             href={`/trial/edit/${trial.slug ?? toSlug(trial.title)}${backParam}`}
+            size="small"
           >
             <EditIcon fontSize="small" />
           </IconButton>
@@ -51,11 +51,11 @@ export function TrialTable({
       header: 'Image',
       cell: (v) => (
         <Avatar
+          alt={v.title || 'Image'}
           size="xs"
           src={v.image_url!}
-          alt={v.title || 'Image'}
-          variant="rounded"
           sx={{ width: 40 }}
+          variant="rounded"
         >
           <Category fontSize="inherit" />
         </Avatar>
@@ -64,7 +64,7 @@ export function TrialTable({
     {
       header: 'Title',
       cell: (trial) => (
-        <Typography noWrap variant="body2" fontWeight="medium">
+        <Typography noWrap fontWeight="medium" variant="body2">
           {trial.title}
         </Typography>
       ),
@@ -72,7 +72,7 @@ export function TrialTable({
     {
       header: 'Slug',
       cell: (trial) => (
-        <Typography variant="caption" fontFamily="monospace" noWrap>
+        <Typography noWrap fontFamily="monospace" variant="caption">
           {trial.slug}
         </Typography>
       ),
@@ -80,7 +80,7 @@ export function TrialTable({
     {
       header: 'Updated At',
       cell: (trial) => (
-        <Typography variant="caption" noWrap>
+        <Typography noWrap variant="caption">
           {trial.updated_at ? new Date(trial.updated_at).toLocaleDateString() : '—'}
         </Typography>
       ),
@@ -89,13 +89,13 @@ export function TrialTable({
 
   return (
     <AdminTable
-      title="Trial"
-      rows={rows}
       columns={columns}
-      slug="trial"
       getKey={(trial) => trial.id}
       page={page}
+      rows={rows}
       rowsPerPage={rowsPerPage}
+      slug="trial"
+      title="Trial"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}
     />

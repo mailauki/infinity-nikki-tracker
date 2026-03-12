@@ -19,17 +19,17 @@ function SetCardSkeleton() {
   return (
     <Card>
       <CardHeader
-        avatar={<Skeleton variant="circular" width={40} height={40} />}
-        title={<Skeleton width="60%" />}
+        action={<Skeleton height={24} variant="rounded" width={60} />}
+        avatar={<Skeleton height={40} variant="circular" width={40} />}
         subheader={<Skeleton width="40%" />}
-        action={<Skeleton variant="rounded" width={60} height={24} />}
+        title={<Skeleton width="60%" />}
       />
       <CardContent component={Stack} spacing={1} sx={{ pt: 0 }}>
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Stack alignItems="center" direction="row" justifyContent="space-between">
           <Skeleton width={40} />
-          <Skeleton variant="rounded" width={80} height={24} />
+          <Skeleton height={24} variant="rounded" width={80} />
         </Stack>
-        <Skeleton variant="rectangular" height={4} />
+        <Skeleton height={4} variant="rectangular" />
       </CardContent>
     </Card>
   )
@@ -38,24 +38,24 @@ function SetCardSkeleton() {
 function ProgressListSkeleton() {
   return (
     <List
-      sx={{ width: '100%' }}
       subheader={
         <ListSubheader disableSticky>
           <Skeleton width={80} />
         </ListSubheader>
       }
+      sx={{ width: '100%' }}
     >
       {Array.from({ length: 3 }).map((_, i) => (
         <React.Fragment key={i}>
-          <ListItem secondaryAction={<Skeleton variant="rounded" width={50} height={24} />}>
+          <ListItem secondaryAction={<Skeleton height={24} variant="rounded" width={50} />}>
             <ListItemAvatar>
-              <Skeleton variant="circular" width={40} height={40} />
+              <Skeleton height={40} variant="circular" width={40} />
             </ListItemAvatar>
             <ListItemText primary={<Skeleton width="60%" />} secondary={<Skeleton width="30%" />} />
           </ListItem>
           <ListItem disablePadding>
             <ListItemText inset>
-              <Skeleton variant="rectangular" height={4} sx={{ mx: 2 }} />
+              <Skeleton height={4} sx={{ mx: 2 }} variant="rectangular" />
             </ListItemText>
           </ListItem>
         </React.Fragment>

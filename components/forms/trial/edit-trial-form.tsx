@@ -59,19 +59,17 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
         {error && <Alert severity="error">{error}</Alert>}
 
         <TextField
-          label="Title"
           required
+          label="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
         <TextField
-          label="Slug"
           required
-          value={slug}
           disabled={!editSlug}
-          onChange={(e) => setSlug(e.target.value)}
           helperText="Used in the URL — edit with caution"
+          label="Slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {
@@ -84,23 +82,25 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
               ),
             },
           }}
+          value={slug}
+          onChange={(e) => setSlug(e.target.value)}
         />
 
         <Stack spacing={0.5}>
           <FormLabel>Image</FormLabel>
           <ImageUpload
-            url={imageUrl}
-            table="trials"
             slug={trial.slug ?? undefined}
+            table="trials"
+            url={imageUrl}
             onUpload={(url) => setImageUrl(url)}
           />
         </Stack>
 
-        <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Button variant="outlined" href={backUrl}>
+        <Stack direction="row" justifyContent="flex-end" spacing={1}>
+          <Button href={backUrl} variant="outlined">
             Cancel
           </Button>
-          <Button type="submit" variant="contained" disabled={loading}>
+          <Button disabled={loading} type="submit" variant="contained">
             {loading ? 'Saving...' : 'Save Changes'}
           </Button>
         </Stack>

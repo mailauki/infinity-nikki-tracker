@@ -18,7 +18,7 @@ export default async function EditTrialPage({
 }) {
   return (
     <Suspense>
-      <PageContainer title="Edit Trial" size="sm">
+      <PageContainer size="sm" title="Edit Trial">
         <EditTrial params={params} searchParams={searchParams} />
       </PageContainer>
     </Suspense>
@@ -39,5 +39,5 @@ async function EditTrial({
 
   if (!trial) notFound()
 
-  return <EditTrialForm trial={trial} back={back} />
+  return <EditTrialForm back={back} trial={trial} />
 }
