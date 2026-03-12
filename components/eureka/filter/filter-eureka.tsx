@@ -1,16 +1,16 @@
 'use client'
 import React from 'react'
 import { Category, Color, EurekaSet } from '@/lib/types/eureka'
-import FilterToolbar from './filter/filter-toolbar'
+import FilterToolbar from './filter-toolbar'
 import { Box, Container, Divider, Stack, Typography } from '@mui/material'
-import EurekaColorSetCard from './eureka/eureka-color-set-card'
+import EurekaColorSetCard from '../eureka-color-set-card'
 import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
 import { useState } from 'react'
 import { SelectChangeEvent } from '@mui/material'
-import EurekaVariantCard from './eureka/eureka-variant-card'
-import ProgressChip from './progress-chip'
+import EurekaVariantCard from '../eureka-variant-card'
+import ProgressChip from '../../progress-chip'
 import { countObtained, percent } from '@/hooks/count-obtained'
-import LoginAlert from './login-alert'
+import LoginAlert from '../../login-alert'
 
 export default function FilterEureka({
   eurekaSets,

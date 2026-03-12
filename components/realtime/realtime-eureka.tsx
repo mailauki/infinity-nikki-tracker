@@ -6,7 +6,7 @@ import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
 import { Category, Color, EurekaSet, Obtained } from '@/lib/types/eureka'
 
-import FilterEureka from '@/components/filter-eureka'
+import FilterEureka from '@/components/eureka/filter/filter-eureka'
 
 const supabase = createClient()
 
