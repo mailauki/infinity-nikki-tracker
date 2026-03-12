@@ -21,7 +21,8 @@ import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Edit, Filter, FilterList, MenuOpen } from '@mui/icons-material'
+import { Edit, MenuOpen } from '@mui/icons-material'
+import FilterMenu from './filter-menu'
 
 const DRAWER_WIDTH = 240
 const xsHeight = 48 * 3 // based on number of toolbars and toolbar minHeight
@@ -130,8 +131,8 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   paddingTop: theme.spacing(1),
   paddingBottom: theme.spacing(2),
   // Override media queries injected by theme.mixins.toolbar
-	minHeight: 114,
-	[theme.breakpoints.up('sm')]: {
+  minHeight: 114,
+  [theme.breakpoints.up('sm')]: {
     minHeight: 128,
   },
 }))
@@ -287,18 +288,14 @@ export default function NavDrawer({
                 </Typography>
               </AppBarTitle>
 
-							<Stack sx={{ position: 'absolute', bottom: 0, right: 0 }}>
-								{pathname === '/eureka' && (
-									<IconButton>
-										<FilterList />
-									</IconButton>
-								)}
-								{pathname === '/profile' && (
-									<IconButton>
-										<Edit />
-									</IconButton>
-								)}
-							</Stack>
+              <Stack sx={{ position: 'absolute', bottom: 0, right: 0 }}>
+                {pathname === '/eureka' && <FilterMenu />}
+                {pathname === '/profile' && (
+                  <IconButton>
+                    <Edit />
+                  </IconButton>
+                )}
+              </Stack>
             </Container>
           </Toolbar>
         </AppBar>

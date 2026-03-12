@@ -14,7 +14,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material'
 
-export default function ColorToggle({
+export default function ColorSelect({
   colors,
   selectedColor,
   onColorChange,
