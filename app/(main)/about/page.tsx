@@ -17,7 +17,7 @@ export default function AboutPage() {
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
-        <Stack component="section">
+        <Container maxWidth="sm" component="section">
           <Typography color="textSecondary" variant="subtitle1">
             Infinity Nikki Tracker is a collection tracker for{' '}
             <Anchor
@@ -31,10 +31,10 @@ export default function AboutPage() {
             , the cozy open-world fashion game. Track your Eureka outfit progress across sets,
             categories, colors, and trials — with real-time updates and per-user collection state.
           </Typography>
-        </Stack>
+        </Container>
 
-        <Stack component="section">
-          <Typography component="h2" variant="h4">
+        <Container maxWidth="sm" component="section">
+          <Typography component="h2" variant="h5">
             Links &amp; Resources
           </Typography>
           <List dense sx={{ listStyle: 'disc', pl: 4 }}>
@@ -84,10 +84,10 @@ export default function AboutPage() {
               />
             </ListItem>
           </List>
-        </Stack>
+        </Container>
 
-        <Stack component="section">
-          <Typography component="h2" variant="h4">
+        <Container maxWidth="sm" component="section">
+          <Typography component="h2" variant="h5">
             Roadmap
           </Typography>
           <Typography color="textSecondary" variant="subtitle1">
@@ -113,10 +113,10 @@ export default function AboutPage() {
               />
             </ListItem>
           </List>
-        </Stack>
+        </Container>
 
-        <Stack component="section">
-          <Typography component="h2" variant="h4">
+        <Container maxWidth="sm" component="section">
+          <Typography component="h2" variant="h5">
             Collaborate
           </Typography>
           <Typography color="textSecondary" variant="body1">
@@ -157,7 +157,7 @@ export default function AboutPage() {
               />
             </ListItem>
           </List>
-        </Stack>
+        </Container>
 
         <Typography color="textDisabled" variant="caption">
           &copy; 2026 mailauki. Not affiliated with Infold Games or Infinity Nikki.

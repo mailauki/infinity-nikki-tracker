@@ -22,8 +22,8 @@ export default function HelpPage() {
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
-        <Stack component="section" sx={{ mb: 2 }}>
-          <Typography component="h2" variant="h4">
+        <Container maxWidth="sm" component="section">
+          <Typography component="h2" variant="h5">
             How to use
           </Typography>
           <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
@@ -98,10 +98,10 @@ export default function HelpPage() {
               />
             </ListItem>
           </List>
-        </Stack>
+        </Container>
 
-        <Stack component="section" sx={{ mb: 2 }}>
-          <Typography component="h2" variant="h4">
+        <Container maxWidth="sm" component="section">
+          <Typography component="h2" variant="h5">
             Admin access
           </Typography>
           <Typography color="textSecondary" sx={{ mb: 1 }} variant="body1">
@@ -118,7 +118,7 @@ export default function HelpPage() {
           <Suspense>
             <AdminButton />
           </Suspense>
-        </Stack>
+        </Container>
 
         <HelpActions />
       </Stack>

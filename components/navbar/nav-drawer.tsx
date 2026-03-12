@@ -68,15 +68,26 @@ const MainContainer = styled(Paper)(({ theme }) => ({
   borderRadius: 0,
 }))
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  // ...theme.mixins.toolbar,
-  '@media all': {
-    minHeight: 128,
+interface AppBarTitleProps {
+  open?: boolean
+  isHome?: boolean
+}
+
+const AppBarTitle = styled(Stack, {
+  shouldForwardProp: (prop) => prop !== 'open' && prop !== 'isHome',
+})<AppBarTitleProps>(({ theme, open, isHome }) => ({
+  flex: 1,
+  alignSelf: 'flex-end',
+  color: isHome ? 'transparent' : 'inherit',
+  marginLeft: 0,
+  transition: theme.transitions.create('margin-left', {
+    easing: theme.transitions.easing.sharp,
+    duration: open
+      ? theme.transitions.duration.enteringScreen
+      : theme.transitions.duration.leavingScreen,
+  }),
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: open ? 0 : '64px',
   },
 }))
 
@@ -262,20 +273,11 @@ export default function NavDrawer({
           </Toolbar>
           <Toolbar>
             <Container disableGutters maxWidth="md" sx={{ flex: 1 }}>
-              <Stack
-                direction="row"
-                justifyContent={{ xs: 'center', sm: 'inherit' }}
-                sx={{
-                  flex: 1,
-                  alignSelf: 'flex-end',
-                  color: pathname === '/' ? 'transparent' : 'inherit',
-                  marginLeft: { xs: 0, sm: !open ? '64px' : 0 },
-                }}
-              >
+              <AppBarTitle direction="row" isHome={pathname === '/'} justifyContent={{ xs: 'center', sm: 'inherit' }} open={open}>
                 <Typography component="h1" variant="h4">
                   {pageTitle}
                 </Typography>
-              </Stack>
+              </AppBarTitle>
             </Container>
           </Toolbar>
         </AppBar>
@@ -302,7 +304,7 @@ export default function NavDrawer({
           <NavExtra items={navLinksData.navExtra} open={open} onClose={handleDrawerClose} />
         </Drawer>
         <Box className="h-screen w-full overflow-hidden" component="main">
-          <DrawerHeader />
+          <StyledToolbar />
           <MainContainer elevation={0}>{children}</MainContainer>
           <Toolbar />
         </Box>

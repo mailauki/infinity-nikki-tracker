@@ -49,6 +49,13 @@ let theme = createTheme({
         },
       },
     },
+    MuiDialog: {
+      styleOverrides: {
+				paper: {
+					borderRadius: 12,
+				}
+      },
+    },
     MuiAvatar: {
       defaultProps: {
         size: 'sm',
