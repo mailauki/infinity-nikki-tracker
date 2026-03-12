@@ -4,6 +4,7 @@ import { Category } from '@/lib/types/eureka'
 import { CategoryFilter } from '@/lib/types/props'
 import CategoryIcon from '@mui/icons-material/Category'
 import { Avatar, ToggleButton, ToggleButtonGroup, Tooltip, useColorScheme } from '@mui/material'
+import Image from 'next/image'
 
 export default function CategoryToggle({
   categories,

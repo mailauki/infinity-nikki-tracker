@@ -2,15 +2,16 @@
 import React from 'react'
 import { Category, Color, EurekaSet } from '@/lib/types/eureka'
 import FilterToolbar from './filter-toolbar'
-import { Box, Container, Divider, Stack, Typography } from '@mui/material'
+import { Box, Button, Container, Divider, Stack, Typography } from '@mui/material'
 import EurekaColorSetCard from '../eureka-color-set-card'
-import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
+import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
 import { useState } from 'react'
 import { SelectChangeEvent } from '@mui/material'
 import EurekaVariantCard from '../eureka-variant-card'
 import ProgressChip from '../../progress-chip'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import LoginAlert from '../../login-alert'
+import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 
 export default function FilterEureka({
   eurekaSets,
@@ -25,7 +26,7 @@ export default function FilterEureka({
 }) {
   const [selectedEurekaSet, setSelectedEurekaSet] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter | null>(null)
-  const [selectedFilter, setSelectedFilter] = useState<ToggleFilter | null>(null)
+  const [selectedObtainedFilter, setSelectedObtainedFilter] = useState<ObtainedFilter | null>(null)
   const [groupBySet, setGroupBySet] = useState(true)
   const [showByColor, setShowByColor] = useState(false)
   const [selectedColor, setSelectedColor] = useState<string | null>(null)
@@ -41,11 +42,11 @@ export default function FilterEureka({
     setSelectedCategory(newCategory)
   }
 
-  const handleFilterChange = (
+  const handleObtainedFilterChange = (
     _event: React.MouseEvent<HTMLElement>,
-    newFilter: ToggleFilter | null
+    newFilter: ObtainedFilter | null
   ) => {
-    setSelectedFilter(newFilter)
+    setSelectedObtainedFilter(newFilter)
   }
 
   const handleGroupBySetChange = () => {
@@ -56,7 +57,7 @@ export default function FilterEureka({
     setShowByColor((prev) => {
       if (!prev) {
         setSelectedCategory(null)
-        setSelectedFilter(null)
+        setSelectedObtainedFilter(null)
         setSelectedColor(null)
         setGroupBySet(groupBySet)
       }
@@ -71,7 +72,7 @@ export default function FilterEureka({
   const handleClearFilters = () => {
     setSelectedEurekaSet(null)
     setSelectedCategory(null)
-    setSelectedFilter(null)
+    setSelectedObtainedFilter(null)
     setSelectedColor(null)
     setShowByColor(false)
     setGroupBySet(groupBySet)
@@ -90,8 +91,8 @@ export default function FilterEureka({
         .filter((v) => !selectedColor || v.color === selectedColor)
         .filter((v) => !selectedCategory || v.category === selectedCategory)
         .filter((v) => {
-          if (selectedFilter === 'Obtained') return v.obtained === true
-          if (selectedFilter === 'Missing') return v.obtained !== true
+          if (selectedObtainedFilter === 'Obtained') return v.obtained === true
+          if (selectedObtainedFilter === 'Missing') return v.obtained !== true
           return true
         })
 
@@ -115,14 +116,14 @@ export default function FilterEureka({
         selectedCategory={selectedCategory}
         selectedColor={selectedColor}
         selectedEurekaSet={selectedEurekaSet}
-        selectedFilter={selectedFilter}
+        selectedObtainedFilter={selectedObtainedFilter}
         showByColor={showByColor}
         onCategoryChange={handleCategoryChange}
         onClearFilters={handleClearFilters}
         onColorChange={handleColorChange}
         onEurekaSetChange={handleEurekaSetChange}
-        onFilterChange={handleFilterChange}
         onGroupBySetChange={handleGroupBySetChange}
+        onObtainedFilterChange={handleObtainedFilterChange}
         onShowByColorChange={handleShowByColorChange}
       />
 
@@ -170,7 +171,15 @@ export default function FilterEureka({
                         justifyContent="space-between"
                         sx={{ mb: 0.5 }}
                       >
-                        <Typography variant="overline">{set.title}</Typography>
+                        <Button
+                          color="inherit"
+                          endIcon={<ChevronRight />}
+                          href={`/eureka/${set.slug}`}
+                          size="small"
+                        >
+                          {set.title}
+                        </Button>
+
                         {isLoggedIn && (
                           <ProgressChip percentage={percent(obtained, total)} size="lg" />
                         )}
