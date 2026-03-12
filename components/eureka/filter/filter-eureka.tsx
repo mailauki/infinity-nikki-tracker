@@ -11,7 +11,7 @@ import EurekaVariantCard from '../eureka-variant-card'
 import ProgressChip from '../../progress-chip'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import LoginAlert from '../../login-alert'
-import { ChevronLeft, ChevronRight } from '@mui/icons-material'
+import { ChevronRight } from '@mui/icons-material'
 
 export default function FilterEureka({
   eurekaSets,

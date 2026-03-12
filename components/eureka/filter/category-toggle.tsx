@@ -4,7 +4,6 @@ import { Category } from '@/lib/types/eureka'
 import { CategoryFilter } from '@/lib/types/props'
 import CategoryIcon from '@mui/icons-material/Category'
 import { Avatar, ToggleButton, ToggleButtonGroup, Tooltip, useColorScheme } from '@mui/material'
-import Image from 'next/image'
 
 export default function CategoryToggle({
   categories,
@@ -39,10 +38,12 @@ export default function CategoryToggle({
               src={category.image_url!}
               sx={{
                 backgroundColor: 'transparent',
-                filter: isDarkMode || selectedCategory === category.title ? 'none' : 'brightness(40%)',
+                filter:
+                  isDarkMode || selectedCategory === category.title ? 'none' : 'brightness(40%)',
                 opacity: disabled ? 0.3 : 1,
-								'&:hover': { filter: isDarkMode ? 'none' : 'brightness(40%)' }
+                '&:hover': { filter: isDarkMode ? 'none' : 'brightness(40%)' },
               }}
+              variant="rounded"
             >
               <CategoryIcon sx={{ color: 'divider' }} />
             </Avatar>

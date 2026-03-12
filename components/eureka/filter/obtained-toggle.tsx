@@ -9,19 +9,22 @@ export default function ObtainedToggle({
   disabled,
 }: {
   selectedObtainedFilter: ObtainedFilter | null
-  onObtainedFilterChange: (event: React.MouseEvent<HTMLElement>, newFilter: ObtainedFilter | null) => void
+  onObtainedFilterChange: (
+    event: React.MouseEvent<HTMLElement>,
+    newFilter: ObtainedFilter | null
+  ) => void
   disabled?: boolean
 }) {
   return (
     <ToggleButtonGroup
       exclusive
-      aria-label="Filter"
+      aria-label="Obtained filter"
       disabled={disabled}
       value={selectedObtainedFilter}
       onChange={onObtainedFilterChange}
     >
       {['Missing', 'Obtained'].map((filter) => (
-        <ToggleButton key={filter} sx={{ py: 1.75 }} value={filter}>
+        <ToggleButton key={filter} sx={{ py: 0.75 }} value={filter}>
           {filter}
         </ToggleButton>
       ))}
