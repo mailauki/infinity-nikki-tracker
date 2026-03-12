@@ -26,6 +26,10 @@ const eslintConfig = defineConfig([
       'no-unneeded-ternary': 'error',
       'no-nested-ternary': 'warn',
       'react/react-in-jsx-scope': 'off',
+      'react/jsx-sort-props': [
+        'warn',
+        { callbacksLast: true, shorthandFirst: true, reservedFirst: true },
+      ],
     },
   },
 

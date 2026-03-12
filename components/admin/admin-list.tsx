@@ -29,11 +29,11 @@ export function AdminList<T>({
 }: AdminListProps<T>) {
   return (
     <PaginationContainer
-      title={title}
-      slug={slug}
-      rows={rows}
       page={page}
+      rows={rows}
       rowsPerPage={rowsPerPage}
+      slug={slug}
+      title={title}
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}
     >
@@ -42,7 +42,7 @@ export function AdminList<T>({
           {visibleRows.map((row) => (
             <Fragment key={getKey(row)}>
               {renderRow(row)}
-              <Divider variant="inset" component="li" sx={{ mr: 2 }} />
+              <Divider component="li" sx={{ mr: 2 }} variant="inset" />
             </Fragment>
           ))}
         </List>

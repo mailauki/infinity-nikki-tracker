@@ -13,11 +13,11 @@ export default function ProgressImage({
   return (
     <Box sx={{ position: 'relative' }}>
       <CircularProgress
-        value={percentage}
-        variant="determinate"
         color={percentage === 100 ? 'primary' : 'inherit'}
         size={102}
         sx={{ backgroundColor: 'divider', borderRadius: '100px' }}
+        value={percentage}
+        variant="determinate"
       />
       <Box
         sx={{
@@ -29,12 +29,12 @@ export default function ProgressImage({
           p: 0.5,
         }}
       >
-        <Avatar size="lg" sx={{ backgroundColor: 'background.paper' }} src={image_url} alt={slug}>
+        <Avatar alt={slug} size="lg" src={image_url} sx={{ backgroundColor: 'background.paper' }}>
           <Typography
-            variant="subtitle1"
-            fontWeight="medium"
-            component="p"
             color={percentage === 100 ? 'primary' : 'textPrimary'}
+            component="p"
+            fontWeight="medium"
+            variant="subtitle1"
           >
             <Category fontSize="large" />
           </Typography>

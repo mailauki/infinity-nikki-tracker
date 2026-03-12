@@ -62,10 +62,9 @@ export default function ImageUpload({
 
   return (
     <ButtonBase
+      aria-label="Upload image"
       component="label"
       role={undefined}
-      tabIndex={-1}
-      aria-label="Upload image"
       sx={{
         borderRadius: 1,
         '&:has(:focus-visible)': {
@@ -75,13 +74,14 @@ export default function ImageUpload({
         width: table === 'trials' ? '100%' : SIZE,
         height: SIZE,
       }}
+      tabIndex={-1}
     >
       <Box sx={{ position: 'relative', width: table === 'trials' ? '100%' : SIZE, height: SIZE }}>
         <Avatar
-          src={url ?? undefined}
           alt="Image preview"
-          variant="rounded"
+          src={url ?? undefined}
           sx={{ width: table === 'trials' ? '100%' : SIZE, height: SIZE }}
+          variant="rounded"
         >
           <ImageIcon fontSize="large" />
         </Avatar>
@@ -102,8 +102,8 @@ export default function ImageUpload({
         )}
       </Box>
       <input
-        type="file"
         accept="image/*"
+        disabled={uploading}
         style={{
           border: 0,
           clip: 'rect(0 0 0 0)',
@@ -115,8 +115,8 @@ export default function ImageUpload({
           whiteSpace: 'nowrap',
           width: '1px',
         }}
+        type="file"
         onChange={uploadImage}
-        disabled={uploading}
       />
     </ButtonBase>
   )

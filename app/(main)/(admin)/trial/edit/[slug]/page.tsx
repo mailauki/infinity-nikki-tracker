@@ -2,8 +2,8 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import EditTrialForm from '@/components/forms/trial/edit-trial-form'
 import { getTrialRaw } from '@/hooks/data/admin/trials'
+import { Container, Stack } from '@mui/material'
 import { Metadata } from 'next'
-import PageContainer from '@/components/page-container'
 
 export const metadata: Metadata = {
   title: 'Edit Trial',
@@ -18,9 +18,11 @@ export default async function EditTrialPage({
 }) {
   return (
     <Suspense>
-      <PageContainer title="Edit Trial" size="sm">
-        <EditTrial params={params} searchParams={searchParams} />
-      </PageContainer>
+      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
+        <Stack spacing={3}>
+          <EditTrial params={params} searchParams={searchParams} />
+        </Stack>
+      </Container>
     </Suspense>
   )
 }
@@ -39,5 +41,5 @@ async function EditTrial({
 
   if (!trial) notFound()
 
-  return <EditTrialForm trial={trial} back={back} />
+  return <EditTrialForm back={back} trial={trial} />
 }

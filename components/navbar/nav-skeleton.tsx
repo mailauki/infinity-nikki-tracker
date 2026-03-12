@@ -19,14 +19,13 @@ export default function NavSkeleton() {
         {/* AppBar */}
         <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
           <Toolbar>
-            <Skeleton variant="circular" width={24} height={24} sx={{ mr: 6, flexShrink: 0 }} />
-            <Skeleton variant="text" width={180} height={28} />
+            <Skeleton height={24} sx={{ mr: 6, flexShrink: 0 }} variant="circular" width={24} />
+            <Skeleton height={28} variant="text" width={180} />
           </Toolbar>
         </AppBar>
 
         {/* Drawer (closed state) */}
         <Drawer
-          variant="permanent"
           sx={{
             width: DRAWER_WIDTH,
             flexShrink: 0,
@@ -37,6 +36,7 @@ export default function NavSkeleton() {
               overflowX: 'hidden',
             },
           }}
+          variant="permanent"
         >
           <Toolbar />
           <Divider />
@@ -44,7 +44,7 @@ export default function NavSkeleton() {
             {[0].map((i) => (
               <ListItem key={i} disablePadding sx={{ display: 'block' }}>
                 <ListItemButton sx={{ justifyContent: 'center', px: 2.5, py: 1.5 }}>
-                  <Skeleton variant="circular" width={24} height={24} />
+                  <Skeleton height={24} variant="circular" width={24} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -54,7 +54,7 @@ export default function NavSkeleton() {
             {[0, 1].map((i) => (
               <ListItem key={i} disablePadding sx={{ display: 'block' }}>
                 <ListItemButton sx={{ justifyContent: 'center', px: 2.5, py: 1.5 }}>
-                  <Skeleton variant="circular" width={24} height={24} />
+                  <Skeleton height={24} variant="circular" width={24} />
                 </ListItemButton>
               </ListItem>
             ))}
@@ -62,14 +62,14 @@ export default function NavSkeleton() {
         </Drawer>
 
         {/* Main content area */}
-        <Box component="main" className="h-screen w-full overflow-hidden">
+        <Box className="h-screen w-full overflow-hidden" component="main">
           <Toolbar />
           {/* NavTabs skeleton */}
           <Toolbar disableGutters>
             <Box sx={{ width: '100%', borderBottom: 1, borderColor: 'divider', px: 1 }}>
               <Stack direction="row" gap={2} sx={{ py: 1 }}>
                 {[120, 80, 100].map((w, i) => (
-                  <Skeleton key={i} variant="text" width={w} height={32} />
+                  <Skeleton key={i} height={32} variant="text" width={w} />
                 ))}
               </Stack>
             </Box>

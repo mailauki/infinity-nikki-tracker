@@ -112,19 +112,17 @@ export default function AddEurekaSetForm({
         {error && <Alert severity="error">{error}</Alert>}
 
         <TextField
-          label="Title"
           required
+          label="Title"
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
         />
 
         <TextField
-          label="Slug"
           required
-          value={slug}
           disabled={!editSlug}
-          onChange={(e) => setSlug(e.target.value)}
           helperText="Auto-generated from name — edit if needed"
+          label="Slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {
@@ -137,6 +135,8 @@ export default function AddEurekaSetForm({
               ),
             },
           }}
+          value={slug}
+          onChange={(e) => setSlug(e.target.value)}
         />
 
         <FormControl>
@@ -191,13 +191,13 @@ export default function AddEurekaSetForm({
           </Select>
         </FormControl>
 
-        <ColorSelect colors={colors} colorSelect={colorSelect} handleChange={handleColorChange} />
+        <ColorSelect colorSelect={colorSelect} colors={colors} handleChange={handleColorChange} />
 
-        <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Button variant="outlined" href="/dashboard">
+        <Stack direction="row" justifyContent="flex-end" spacing={1}>
+          <Button href="/dashboard" variant="outlined">
             Cancel
           </Button>
-          <Button type="submit" variant="contained" disabled={loading}>
+          <Button disabled={loading} type="submit" variant="contained">
             {loading ? 'Saving...' : 'Add Eureka Set'}
           </Button>
         </Stack>

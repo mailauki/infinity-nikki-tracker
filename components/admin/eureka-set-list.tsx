@@ -27,25 +27,25 @@ export default function EurekaSetList({
 
   return (
     <AdminList
-      title="Eureka Set"
-      slug="eureka-set"
-      rows={rows}
       getKey={(set) => set.id}
       page={page}
-      rowsPerPage={rowsPerPage}
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
       renderRow={(row) => (
         <ListRow
-          list="eureka-set"
-          title={row.title}
-          subheader={row.trial ?? undefined}
-          slug={row.slug ?? undefined}
-          image_url={row.image_url}
-          updated_at={row.updated_at}
           back={backUrl || undefined}
+          image_url={row.image_url}
+          list="eureka-set"
+          slug={row.slug ?? undefined}
+          subheader={row.trial ?? undefined}
+          title={row.title}
+          updated_at={row.updated_at}
         />
       )}
+      rows={rows}
+      rowsPerPage={rowsPerPage}
+      slug="eureka-set"
+      title="Eureka Set"
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
     />
   )
 }

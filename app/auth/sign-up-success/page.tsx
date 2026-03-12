@@ -5,7 +5,7 @@ export default function SignupSuccessPage() {
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
         <Card>
-          <CardHeader title="Thank you for signing up!" subheader="Check your email to confirm" />
+          <CardHeader subheader="Check your email to confirm" title="Thank you for signing up!" />
           <CardContent>
             <Typography color="textSecondary" variant="body2">
               You&apos;ve successfully signed up. Please check your email to confirm your account

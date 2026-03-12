@@ -45,10 +45,9 @@ export default function AvatarUpload({
 
   return (
     <ButtonBase
+      aria-label="Avatar image"
       component="label"
       role={undefined}
-      tabIndex={-1} // prevent label from tab focus
-      aria-label="Avatar image"
       sx={{
         borderRadius: '100px',
         '&:has(:focus-visible)': {
@@ -56,12 +55,13 @@ export default function AvatarUpload({
           outlineOffset: '2px',
         },
       }}
+      tabIndex={-1} // prevent label from tab focus
     >
-      <AvatarPreview url={url} size="xl" />
+      <AvatarPreview size="xl" url={url} />
       <input
-        type="file"
-        id="avatar"
         accept="image/*"
+        disabled={uploading}
+        id="avatar"
         style={{
           border: 0,
           clip: 'rect(0 0 0 0)',
@@ -73,8 +73,8 @@ export default function AvatarUpload({
           whiteSpace: 'nowrap',
           width: '1px',
         }}
+        type="file"
         onChange={uploadAvatar}
-        disabled={uploading}
       />
     </ButtonBase>
   )

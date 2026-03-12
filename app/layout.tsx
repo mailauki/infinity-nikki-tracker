@@ -42,11 +42,11 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={roboto.variable} suppressHydrationWarning>
+    <html suppressHydrationWarning className={roboto.variable} lang="en">
       <body className="overflow-hidden">
         <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppRouterCacheProvider options={{ key: 'css' }}>
-          <ThemeProvider theme={theme} defaultMode="system">
+          <ThemeProvider defaultMode="system" theme={theme}>
             <CssBaseline />
             {children}
           </ThemeProvider>

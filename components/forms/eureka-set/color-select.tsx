@@ -48,12 +48,11 @@ export default function ColorSelect({
     <FormControl sx={{ m: 1, minWidth: 300 }}>
       <InputLabel id="color-multiple-chip-label">Colors</InputLabel>
       <Select
-        labelId="color-multiple-chip-label"
-        id="color-multiple-chip"
         multiple
-        value={colorSelect}
-        onChange={handleChange}
+        MenuProps={MenuProps}
+        id="color-multiple-chip"
         input={<OutlinedInput id="select-multiple-chip" label="Colors" />}
+        labelId="color-multiple-chip-label"
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {selected.map((value) => (
@@ -61,14 +60,15 @@ export default function ColorSelect({
             ))}
           </Box>
         )}
-        MenuProps={MenuProps}
+        value={colorSelect}
+        onChange={handleChange}
       >
         {colorsSet.map((color) => (
           <MenuItem
             key={color}
-            value={color}
             disabled={colorSelect.length >= 5 && !colorSelect.includes(color)}
             style={getStyles(color, colorSelect, theme)}
+            value={color}
           >
             {color}
           </MenuItem>

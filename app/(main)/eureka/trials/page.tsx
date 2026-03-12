@@ -10,10 +10,12 @@ import {
   CardHeader,
   CardMedia,
   Chip,
+  Container,
   Grid,
   LinearProgress,
   List,
   ListItem,
+  Stack,
 } from '@mui/material'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import EurekaCard from '@/components/eureka/eureka-card'
@@ -21,7 +23,6 @@ import { ViewAllButton } from '@/components/view-all-button'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrials } from '@/hooks/data/trials'
 import { Metadata } from 'next'
-import PageContainer from '@/components/page-container'
 
 export const metadata: Metadata = {
   title: 'Trials',
@@ -30,9 +31,11 @@ export const metadata: Metadata = {
 export default async function TrialsPage() {
   return (
     <Suspense>
-      <PageContainer title="Trials">
-        <Trials />
-      </PageContainer>
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+        <Stack spacing={3}>
+          <Trials />
+        </Stack>
+      </Container>
     </Suspense>
   )
 }
@@ -53,9 +56,9 @@ async function Trials() {
       {totalTrials?.map((trial) => (
         <Grid key={trial.title} size={{ xs: 12, md: 6 }}>
           <TrialCard
-            trial={trial}
             eureka={trial.eurekaSets!.flatMap((eurekaSet) => eurekaSet.eureka_variants)}
             isLoggedIn={isLoggedIn}
+            trial={trial}
           />
         </Grid>
       ))}
@@ -79,7 +82,7 @@ function TrialCard({
     return (
       <Card>
         <CardHeader title={trial.title} />
-        <CardMedia sx={{ height: 160 }} image={trial.image_url!} title={trial.title} />
+        <CardMedia image={trial.image_url!} sx={{ height: 160 }} title={trial.title} />
         <CardContent sx={{ p: 0 }}>
           <List sx={{ width: '100%' }}>
             {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
@@ -100,20 +103,20 @@ function TrialCard({
   return (
     <Card>
       <CardHeader
-        title={trial.title}
-        subheader={`${percentage}%`}
         action={
           <Chip
             label={`${obtainedCount.obtained} / ${obtainedCount.total}`}
-            variant="outlined"
             size="small"
+            variant="outlined"
           />
         }
+        subheader={`${percentage}%`}
+        title={trial.title}
       />
       <CardContent sx={{ pt: 0 }}>
-        <LinearProgress value={percentage} variant="determinate" color="inherit" />
+        <LinearProgress color="inherit" value={percentage} variant="determinate" />
       </CardContent>
-      <CardMedia sx={{ height: 160 }} image={trial.image_url!} title={trial.title} />
+      <CardMedia image={trial.image_url!} sx={{ height: 160 }} title={trial.title} />
       <CardContent sx={{ p: 0 }}>
         <List sx={{ width: '100%' }}>
           {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (

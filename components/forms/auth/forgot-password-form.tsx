@@ -44,7 +44,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       {success ? (
         <Card>
-          <CardHeader title="Check Your Email" subheader="Password reset instructions sent" />
+          <CardHeader subheader="Password reset instructions sent" title="Check Your Email" />
           <CardContent>
             <Typography color="textSecondary" variant="body2">
               If you registered using your email and password, you will receive a password reset
@@ -55,30 +55,30 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
       ) : (
         <Card>
           <CardHeader
-            title="Reset Your Password"
             subheader="Type in your email and we'll send you a link to reset your password"
+            title="Reset Your Password"
           />
           <CardContent>
             <form onSubmit={handleForgotPassword}>
               <TextField
-                label="Email"
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
                 fullWidth
+                required
+                id="email"
+                label="Email"
                 margin="normal"
+                placeholder="m@example.com"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
               {error && <p className="text-sm text-red-500">{error}</p>}
               <Button
-                type="submit"
                 fullWidth
-                size="large"
-                variant="contained"
                 disabled={isLoading}
+                size="large"
                 sx={{ my: 2 }}
+                type="submit"
+                variant="contained"
               >
                 {isLoading ? 'Sending...' : 'Send reset email'}
               </Button>
@@ -86,9 +86,9 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                 Already have an account?{' '}
                 <Anchor
                   color="textSecondary"
+                  component={Link}
                   fontWeight="medium"
                   href="/auth/login"
-                  component={Link}
                   underline="hover"
                 >
                   Login

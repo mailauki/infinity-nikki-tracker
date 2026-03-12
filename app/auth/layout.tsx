@@ -9,15 +9,15 @@ export default function AuthLayout({
 }>) {
   return (
     <>
-      <AppBar position="absolute" elevation={0}>
+      <AppBar elevation={0} position="absolute">
         <Toolbar>
-          <Stack direction="row" alignItems="center" justifyContent="center" sx={{ flex: 1 }}>
+          <Stack alignItems="center" direction="row" justifyContent="center" sx={{ flex: 1 }}>
             <Link href="/" style={{ cursor: 'pointer' }}>
               <Image
-                src="/infinity-nikki-logo.png"
                 alt="Infinity Nikki Logo"
-                width={90}
                 height={40}
+                src="/infinity-nikki-logo.png"
+                width={90}
               />
             </Link>
           </Stack>

@@ -64,20 +64,20 @@ export default function PaginationContainer<T>({
     <>
       <CardHeader
         disableTypography
+        action={<Chip color="secondary" label={`Total: ${allRows.length}`} variant="outlined" />}
         title={
-          <Typography variant="h4" component="h2">
+          <Typography component="h2" variant="h4">
             {title}s
           </Typography>
         }
-        action={<Chip variant="outlined" color="secondary" label={`Total: ${allRows.length}`} />}
       />
 
       <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="flex-end"
-        flexWrap="wrap"
         useFlexGap
+        alignItems="flex-end"
+        direction="row"
+        flexWrap="wrap"
+        justifyContent="space-between"
         spacing={1}
         sx={{ mb: 2 }}
       >
@@ -85,11 +85,11 @@ export default function PaginationContainer<T>({
 
         <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
           <Button
-            variant="outlined"
-            startIcon={<Add />}
-            size="small"
             href={`/${slug}/new`}
+            size="small"
+            startIcon={<Add />}
             sx={{ '&.MuiButton-root': { textWrap: 'nowrap' } }}
+            variant="outlined"
           >
             Add {title}
           </Button>

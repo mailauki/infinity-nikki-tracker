@@ -11,7 +11,7 @@ export default function GridContainer({
     <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 2 }}>
       {sideContent && (
         <Box sx={{ order: { md: 2 }, width: { md: '33%' }, minWidth: '240px' }}>
-          <Stack spacing={2} direction={{ xs: 'column', sm: 'row', md: 'column' }}>
+          <Stack direction={{ xs: 'column', sm: 'row', md: 'column' }} spacing={2}>
             {sideContent}
           </Stack>
         </Box>

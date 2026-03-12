@@ -6,7 +6,7 @@ import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
 import { Category, Color, EurekaSet, Obtained } from '@/lib/types/eureka'
 
-import FilterEureka from '@/components/filter-eureka'
+import FilterEureka from '@/components/eureka/filter/filter-eureka'
 
 const supabase = createClient()
 
@@ -25,7 +25,6 @@ export default function RealtimeEureka({
   isLoggedIn: boolean
   userId: string | null
 }) {
-  const [eurekaSets, setEurekaSets] = useState(serverEurekaSets)
   const [obtained, setObtained] = useState(serverObtained)
 
   useEffect(() => {
@@ -55,21 +54,15 @@ export default function RealtimeEureka({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
-  useEffect(() => {
-    const updatedEurekaSets = eurekaSets.map((set) =>
-      updateEurekaSet({ eurekaSet: set, obtained: obtained })
-    )
-
-    setEurekaSets(updatedEurekaSets)
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [obtained])
+  const eurekaSets = serverEurekaSets.map((set) =>
+    updateEurekaSet({ eurekaSet: set, obtained })
+  )
 
   return (
     <FilterEureka
-      eurekaSets={eurekaSets}
       categories={serverCategories}
       colors={serverColors}
+      eurekaSets={eurekaSets}
       isLoggedIn={isLoggedIn}
     />
   )

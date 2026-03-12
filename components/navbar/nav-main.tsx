@@ -31,7 +31,6 @@ export function NavMain({
           <ListItemButton
             component={Link}
             href={item.url}
-            onClick={onClose}
             sx={[
               {
                 minHeight: 48,
@@ -45,6 +44,7 @@ export function NavMain({
                     justifyContent: 'center',
                   },
             ]}
+            onClick={onClose}
           >
             <ListItemAvatar
               sx={[
@@ -62,8 +62,8 @@ export function NavMain({
               ]}
             >
               <Avatar
-                src={item.image}
                 alt={item.title}
+                src={item.image}
                 sx={{ filter: isDarkMode ? 'none' : 'brightness(40%)' }}
               >
                 <ImageIcon />

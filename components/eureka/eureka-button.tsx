@@ -19,11 +19,8 @@ export default function EurekaButton({
   return (
     <Card>
       <CardActionArea
-        onClick={() =>
-          handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
-        }
-        disabled={!isLoggedIn}
         data-active={eurekaVariant.obtained === true ? '' : undefined}
+        disabled={!isLoggedIn}
         sx={{
           height: '100%',
           '&[data-active]': {
@@ -33,20 +30,23 @@ export default function EurekaButton({
             },
           },
         }}
+        onClick={() =>
+          handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
+        }
       >
         <EurekaSetImage
-          imageUrl={eurekaVariant.image_url!}
+          action={eurekaVariant.obtained === true && <Chip label={<CheckIcon />} size="small" />}
           alt={eurekaVariant.slug ?? ''}
-          action={eurekaVariant.obtained === true && <Chip size="small" label={<CheckIcon />} />}
-          title={eurekaVariant.eureka_set!}
-          subheader={`${eurekaVariant.category} • ${eurekaVariant.color}`}
+          imageUrl={eurekaVariant.image_url!}
           size={size}
+          subheader={`${eurekaVariant.category} • ${eurekaVariant.color}`}
+          title={eurekaVariant.eureka_set!}
         />
         {size !== 'sm' && (
           <EurekaCardContent
-            title={eurekaVariant.eureka_set!}
-            subheader={`${eurekaVariant.category} • ${eurekaVariant.color}`}
             size={size}
+            subheader={`${eurekaVariant.category} • ${eurekaVariant.color}`}
+            title={eurekaVariant.eureka_set!}
           />
         )}
       </CardActionArea>

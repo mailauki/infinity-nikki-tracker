@@ -132,19 +132,17 @@ export default function EditEurekaSetForm({
         {error && <Alert severity="error">{error}</Alert>}
 
         <TextField
-          label="Title"
           required
+          label="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
 
         <TextField
-          label="Slug"
           required
-          value={slug}
           disabled={!editSlug}
-          onChange={(e) => setSlug(e.target.value)}
           helperText="Used in the URL — edit with caution"
+          label="Slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {
@@ -157,6 +155,8 @@ export default function EditEurekaSetForm({
               ),
             },
           }}
+          value={slug}
+          onChange={(e) => setSlug(e.target.value)}
         />
 
         <FormControl>
@@ -211,13 +211,13 @@ export default function EditEurekaSetForm({
           </Select>
         </FormControl>
 
-        <ColorSelect colors={colors} colorSelect={colorSelect} handleChange={handleColorChange} />
+        <ColorSelect colorSelect={colorSelect} colors={colors} handleChange={handleColorChange} />
 
-        <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Button variant="outlined" href={backUrl}>
+        <Stack direction="row" justifyContent="flex-end" spacing={1}>
+          <Button href={backUrl} variant="outlined">
             Cancel
           </Button>
-          <Button type="submit" variant="contained" disabled={loading}>
+          <Button disabled={loading} type="submit" variant="contained">
             {loading ? 'Saving...' : 'Save Changes'}
           </Button>
         </Stack>

@@ -29,18 +29,18 @@ export default function ThemeSwitcher() {
   return (
     <>
       <IconButton
-        onClick={(e) => setAnchorEl(e.currentTarget)}
         aria-label="Change theme"
         size="small"
+        onClick={(e) => setAnchorEl(e.currentTarget)}
       >
         {currentIcon}
       </IconButton>
       <Menu
         anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={() => setAnchorEl(null)}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        open={Boolean(anchorEl)}
         transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        onClose={() => setAnchorEl(null)}
       >
         {modes.map(({ value, label, icon }) => (
           <MenuItem

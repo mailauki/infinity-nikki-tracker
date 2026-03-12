@@ -39,7 +39,7 @@ export default function FeatureRequestForm({ onClose }: FeatureRequestFormProps)
       <Stack spacing={2} sx={{ pt: 1 }}>
         <FormControl fullWidth required>
           <InputLabel>Category</InputLabel>
-          <Select value={category} label="Category" onChange={(e) => setCategory(e.target.value)}>
+          <Select label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
             {CATEGORIES.map((c) => (
               <MenuItem key={c} value={c}>
                 {c}
@@ -48,32 +48,32 @@ export default function FeatureRequestForm({ onClose }: FeatureRequestFormProps)
           </Select>
         </FormControl>
         <TextField
+          fullWidth
+          required
           label="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          required
-          fullWidth
         />
         <TextField
-          label="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
           fullWidth
           multiline
+          required
+          label="Description"
           rows={4}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
         <TextField
+          fullWidth
           label="Your email (optional)"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          fullWidth
         />
       </Stack>
       <DialogActions sx={{ px: 0, pb: 0, pt: 2 }}>
         <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit" variant="contained" disabled={!title || !description}>
+        <Button disabled={!title || !description} type="submit" variant="contained">
           Send
         </Button>
       </DialogActions>

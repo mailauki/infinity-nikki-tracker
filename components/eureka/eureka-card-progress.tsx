@@ -21,14 +21,14 @@ export default function EurekaCardProgress({
 }) {
   if (size === 'xs')
     return (
-      <CardContent component={Stack} spacing={1} alignItems="center" sx={{ pt: 0 }}>
+      <CardContent alignItems="center" component={Stack} spacing={1} sx={{ pt: 0 }}>
         <Box sx={{ position: 'relative' }}>
           <CircularProgress
-            value={percentage}
-            variant="determinate"
             color={percentage === 100 ? 'primary' : 'inherit'}
             size={64}
             sx={{ backgroundColor: 'divider', borderRadius: '100px' }}
+            value={percentage}
+            variant="determinate"
           />
           <Box
             sx={{
@@ -42,10 +42,10 @@ export default function EurekaCardProgress({
           >
             <Avatar size="md" sx={{ backgroundColor: 'background.paper' }}>
               <Typography
-                variant="subtitle1"
-                fontWeight="medium"
-                component="p"
                 color={percentage === 100 ? 'primary' : 'textPrimary'}
+                component="p"
+                fontWeight="medium"
+                variant="subtitle1"
               >
                 {percentage === 100 ? <Check fontSize="large" /> : `${percentage}%`}
               </Typography>
@@ -58,14 +58,14 @@ export default function EurekaCardProgress({
   return (
     <CardContent component={Stack} spacing={1} sx={{ pt: 0 }}>
       {size !== 'sm' && (
-        <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <Typography variant="h6" component="p">
+        <Stack alignItems="center" direction="row" justifyContent="space-between">
+          <Typography component="p" variant="h6">
             {percentage}%
           </Typography>
           <ProgressChip percentage={percentage} size={size} />
         </Stack>
       )}
-      <LinearProgress value={percentage} variant="determinate" color="inherit" />
+      <LinearProgress color="inherit" value={percentage} variant="determinate" />
     </CardContent>
   )
 }

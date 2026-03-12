@@ -27,25 +27,25 @@ export default function EurekaVariantList({
 
   return (
     <AdminList
-      title="Eureka Variant"
-      slug="eureka-variant"
-      rows={rows}
       getKey={(v) => v.id}
       page={page}
-      rowsPerPage={rowsPerPage}
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
       renderRow={(row) => (
         <ListRow
-          list="eureka-variant"
-          title={row.eureka_set ?? '—'}
-          subheader={[row.category, row.color].filter(Boolean).join(' • ') || undefined}
-          slug={row.slug ?? undefined}
-          image_url={row.image_url ?? undefined}
-          updated_at={row.updated_at}
           back={backUrl || undefined}
+          image_url={row.image_url ?? undefined}
+          list="eureka-variant"
+          slug={row.slug ?? undefined}
+          subheader={[row.category, row.color].filter(Boolean).join(' • ') || undefined}
+          title={row.eureka_set ?? '—'}
+          updated_at={row.updated_at}
         />
       )}
+      rows={rows}
+      rowsPerPage={rowsPerPage}
+      slug="eureka-variant"
+      title="Eureka Variant"
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
     />
   )
 }

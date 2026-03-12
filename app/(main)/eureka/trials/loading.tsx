@@ -15,10 +15,10 @@ function NestedSetSkeleton() {
   return (
     <ListItem disablePadding>
       <CardHeader
-        sx={{ width: '100%' }}
-        avatar={<Skeleton variant="circular" width={40} height={40} />}
-        title={<Skeleton width="60%" />}
+        avatar={<Skeleton height={40} variant="circular" width={40} />}
         subheader={<Skeleton width="40%" />}
+        sx={{ width: '100%' }}
+        title={<Skeleton width="60%" />}
       />
     </ListItem>
   )
@@ -28,15 +28,15 @@ function TrialCardSkeleton() {
   return (
     <Card>
       <CardHeader
-        title={<Skeleton width="50%" />}
+        action={<Skeleton height={24} variant="rounded" width={60} />}
         subheader={<Skeleton width="20%" />}
-        action={<Skeleton variant="rounded" width={60} height={24} />}
+        title={<Skeleton width="50%" />}
       />
       <CardMedia sx={{ p: 1 }}>
-        <Skeleton variant="rectangular" height={200} />
+        <Skeleton height={200} variant="rectangular" />
       </CardMedia>
       <CardContent>
-        <Skeleton variant="rectangular" height={4} />
+        <Skeleton height={4} variant="rectangular" />
       </CardContent>
       <CardActions>
         <List sx={{ width: '100%' }}>

@@ -60,19 +60,17 @@ export default function AddTrialForm() {
         {error && <Alert severity="error">{error}</Alert>}
 
         <TextField
-          label="Title"
           required
+          label="Title"
           value={title}
           onChange={(e) => handleNameChange(e.target.value)}
         />
 
         <TextField
-          label="Slug"
           required
-          value={slug}
           disabled={!editSlug}
-          onChange={(e) => setSlug(e.target.value)}
           helperText="Auto-generated from name — edit if needed"
+          label="Slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {
@@ -85,23 +83,25 @@ export default function AddTrialForm() {
               ),
             },
           }}
+          value={slug}
+          onChange={(e) => setSlug(e.target.value)}
         />
 
         <Stack spacing={0.5}>
           <FormLabel>Image</FormLabel>
           <ImageUpload
-            url={imageUrl}
-            table="trials"
             slug={slug}
+            table="trials"
+            url={imageUrl}
             onUpload={(url) => setImageUrl(url)}
           />
         </Stack>
 
-        <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Button variant="outlined" href="/trial">
+        <Stack direction="row" justifyContent="flex-end" spacing={1}>
+          <Button href="/trial" variant="outlined">
             Cancel
           </Button>
-          <Button type="submit" variant="contained" disabled={loading}>
+          <Button disabled={loading} type="submit" variant="contained">
             {loading ? 'Saving...' : 'Add Trial'}
           </Button>
         </Stack>

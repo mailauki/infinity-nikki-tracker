@@ -82,20 +82,20 @@ export default function FilterToolbar({
       <Container maxWidth="md">
         <Toolbar disableGutters>
           <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            justifyContent="space-between"
-            flexWrap="wrap"
             useFlexGap
+            alignItems="center"
+            direction="row"
+            flexWrap="wrap"
+            justifyContent="space-between"
+            spacing={1}
             sx={{ flex: 1 }}
           >
             <Tooltip title="Sort by Eureka Set">
               <ToggleButton
-                value="groupBySet"
                 selected={groupBySet}
-                onChange={onGroupBySetChange}
                 sx={{ py: 1.75, whiteSpace: 'nowrap' }}
+                value="groupBySet"
+                onChange={onGroupBySetChange}
               >
                 <FilterList />
               </ToggleButton>
@@ -110,20 +110,20 @@ export default function FilterToolbar({
             >
               <InputLabel id="eureka-set-select-label">Eureka Set</InputLabel>
               <Select
-                labelId="eureka-set-select-label"
-                id="eureka-set-select"
-                value={selectedEurekaSet ?? ''}
                 aria-label="Eureka Set"
+                id="eureka-set-select"
                 label="Eureka Set"
-                onChange={onEurekaSetChange}
+                labelId="eureka-set-select-label"
                 sx={{ '& .MuiOutlinedInput-input': { py: selectedEurekaSet && 1 } }}
+                value={selectedEurekaSet ?? ''}
+                onChange={onEurekaSetChange}
               >
                 <MenuItem value="">—</MenuItem>
                 {eurekaSets.map((set) => (
                   <MenuItem key={set.slug} value={set.slug!}>
                     <ListItem disablePadding component="div">
                       <ListItemAvatar>
-                        <Avatar size="sm" src={set.image_url} alt={set.title}>
+                        <Avatar alt={set.title} size="sm" src={set.image_url}>
                           <CategoryIcon fontSize="inherit" />
                         </Avatar>
                       </ListItemAvatar>
@@ -136,10 +136,10 @@ export default function FilterToolbar({
 
             <Tooltip title="Show by Color">
               <ToggleButton
-                value="showByColor"
                 selected={showByColor}
-                onChange={onShowByColorChange}
                 sx={{ py: 1.75, whiteSpace: 'nowrap' }}
+                value="showByColor"
+                onChange={onShowByColorChange}
               >
                 <ColorLens />
               </ToggleButton>
@@ -147,24 +147,24 @@ export default function FilterToolbar({
 
             <ColorToggle
               colors={colors}
+              disabled={showByColor}
               selectedColor={selectedColor}
               onColorChange={onColorChange}
-              disabled={showByColor}
             />
 
             {isLoggedIn && (
               <ObtainedToggle
+                disabled={showByColor}
                 selectedFilter={selectedFilter}
                 onFilterChange={onFilterChange}
-                disabled={showByColor}
               />
             )}
 
             <CategoryToggle
               categories={categories}
+              disabled={showByColor}
               selectedCategory={showByColor ? null : selectedCategory}
               onCategoryChange={onCategoryChange}
-              disabled={showByColor}
             />
             <Stack sx={{ flex: 1 }}>
               {(selectedEurekaSet ||
@@ -174,7 +174,7 @@ export default function FilterToolbar({
                 showByColor) && (
                 <Box alignSelf="flex-end">
                   <Tooltip title="Clear filters">
-                    <IconButton onClick={onClearFilters} aria-label="Clear filters">
+                    <IconButton aria-label="Clear filters" onClick={onClearFilters}>
                       <Clear />
                     </IconButton>
                   </Tooltip>
@@ -185,7 +185,7 @@ export default function FilterToolbar({
         </Toolbar>
 
         <Toolbar disableGutters>
-          <Typography variant="caption" sx={{ px: 0.5, pb: 2 }}>
+          <Typography sx={{ px: 0.5, pb: 2 }} variant="caption">
             Showing: {resultsCount} results
           </Typography>
         </Toolbar>

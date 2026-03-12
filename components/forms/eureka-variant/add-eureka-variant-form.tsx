@@ -127,12 +127,10 @@ export default function AddEurekaVariantForm({
         </FormControl>
 
         <TextField
-          label="Slug"
           required
-          value={slug}
           disabled={!editSlug}
-          onChange={(e) => setSlug(e.target.value)}
           helperText="Auto-generated from name, category, and color — edit if needed"
+          label="Slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {
@@ -145,14 +143,16 @@ export default function AddEurekaVariantForm({
               ),
             },
           }}
+          value={slug}
+          onChange={(e) => setSlug(e.target.value)}
         />
 
         <Stack spacing={0.5}>
           <FormLabel>Image</FormLabel>
           <ImageUpload
-            url={imageUrl}
-            table="eureka_variants"
             slug={slug}
+            table="eureka_variants"
+            url={imageUrl}
             onUpload={(url) => setImageUrl(url)}
           />
         </Stack>
@@ -162,8 +162,8 @@ export default function AddEurekaVariantForm({
             control={
               <Switch
                 checked={isDefault}
-                onChange={(e) => setIsDefault(e.target.checked)}
                 disabled={hasDefault}
+                onChange={(e) => setIsDefault(e.target.checked)}
               />
             }
             label="Default variant"
@@ -175,11 +175,11 @@ export default function AddEurekaVariantForm({
           </FormHelperText>
         </FormControl>
 
-        <Stack direction="row" spacing={1} justifyContent="flex-end">
-          <Button variant="outlined" href="/eureka-variant">
+        <Stack direction="row" justifyContent="flex-end" spacing={1}>
+          <Button href="/eureka-variant" variant="outlined">
             Cancel
           </Button>
-          <Button type="submit" variant="contained" disabled={loading}>
+          <Button disabled={loading} type="submit" variant="contained">
             {loading ? 'Saving...' : 'Add Eureka Variant'}
           </Button>
         </Stack>

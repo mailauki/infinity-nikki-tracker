@@ -93,40 +93,40 @@ export default function ProfileForm({
         />
 
         <Stack
-          spacing={1}
           alignItems="flex-end"
           justifyContent="flex-start"
+          spacing={1}
           sx={{ mt: 2, maxWidth: 'sm' }}
         >
           {isAdmin ? (
             <>
               <Chip
+                color="secondary"
                 icon={<AdminPanelSettingsIcon />}
                 label="Admin access"
-                color="secondary"
                 variant="outlined"
               />
               <Button
-                variant="outlined"
-                size="small"
                 href="/dashboard"
+                size="small"
                 startIcon={<DashboardIcon />}
+                variant="outlined"
               >
                 Go to Dashboard
               </Button>
             </>
           ) : (
             <Alert
-              severity="info"
               action={
                 <Button
                   color="inherit"
-                  size="small"
                   href="mailto:julie.ux.dev@gmail.com?subject=Admin%20Access%20Request&body=Hi%2C%20I%27d%20like%20to%20request%20admin%20access%20for%20the%20Infinity%20Nikki%20Tracker."
+                  size="small"
                 >
                   Request access
                 </Button>
               }
+              severity="info"
             >
               You don&apos;t have admin access.
             </Alert>
@@ -136,40 +136,40 @@ export default function ProfileForm({
       <div className="w-full max-w-sm">
         <form className="flex flex-col">
           <TextField
-            label="Email"
+            disabled
             id="email"
-            type="email"
+            label="Email"
             margin="normal"
             placeholder="Email"
+            type="email"
             value={user?.email}
-            disabled
           />
 
           <TextField
-            label="Full Name"
             id="fullName"
-            type="text"
+            label="Full Name"
             margin="normal"
+            type="text"
             value={fullname || ''}
             onChange={(event) => setFullname(event.target.value)}
           />
 
           <TextField
-            label="Username"
             id="username"
-            type="text"
+            label="Username"
             margin="normal"
+            type="text"
             value={username || ''}
             onChange={(event) => setUsername(event.target.value)}
           />
 
           <Button
             fullWidth
-            variant="contained"
-            size="large"
-            onClick={() => updateProfile({ fullname, username, avatar_url })}
             disabled={loading}
+            size="large"
             sx={{ my: 2 }}
+            variant="contained"
+            onClick={() => updateProfile({ fullname, username, avatar_url })}
           >
             {loading ? 'Loading ...' : 'Update'}
           </Button>

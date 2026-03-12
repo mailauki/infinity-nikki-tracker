@@ -5,8 +5,8 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getColors } from '@/hooks/data/colors'
 import { getCategories } from '@/hooks/data/categories'
+import { Container, Stack } from '@mui/material'
 import { Metadata } from 'next'
-import PageContainer from '@/components/page-container'
 
 export const metadata: Metadata = {
   title: 'Add Eureka Set',
@@ -15,9 +15,11 @@ export const metadata: Metadata = {
 export default function NewEurekaSetPage() {
   return (
     <Suspense>
-      <PageContainer title="Add Eureka Set" size="sm">
-        <NewEurekaSet />
-      </PageContainer>
+      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
+        <Stack spacing={3}>
+          <NewEurekaSet />
+        </Stack>
+      </Container>
     </Suspense>
   )
 }
@@ -33,11 +35,11 @@ async function NewEurekaSet() {
 
   return (
     <AddEurekaSetForm
-      trials={trials ?? []}
-      styles={styles ?? []}
-      labels={labels ?? []}
-      colors={colors ?? []}
       categories={categories ?? []}
+      colors={colors ?? []}
+      labels={labels ?? []}
+      styles={styles ?? []}
+      trials={trials ?? []}
     />
   )
 }

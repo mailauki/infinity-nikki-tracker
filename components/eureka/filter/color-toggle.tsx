@@ -1,3 +1,5 @@
+'use client'
+
 import { Color } from '@/lib/types/eureka'
 import { ColorLens } from '@mui/icons-material'
 import {
@@ -33,21 +35,21 @@ export default function ColorToggle({
     >
       <InputLabel id="colors-select-label">Color</InputLabel>
       <Select
-        labelId="colors-select-label"
-        id="colors-select"
-        value={selectedColor ?? ''}
         aria-label="Color"
-        label="Color"
-        onChange={onColorChange}
-        sx={{ '& .MuiOutlinedInput-input': { py: selectedColor && 1.5 } }}
         disabled={disabled}
+        id="colors-select"
+        label="Color"
+        labelId="colors-select-label"
+        sx={{ '& .MuiOutlinedInput-input': { py: selectedColor && 1.5 } }}
+        value={selectedColor ?? ''}
+        onChange={onColorChange}
       >
         <MenuItem value="">—</MenuItem>
         {colors.map((color) => (
           <MenuItem key={color.title} value={color.title}>
             <ListItem disablePadding component="div">
               <ListItemAvatar>
-                <Avatar size="xs" src={color.image_url!} alt={color.title}>
+                <Avatar alt={color.title} size="xs" src={color.image_url!}>
                   <ColorLens fontSize="inherit" />
                 </Avatar>
               </ListItemAvatar>

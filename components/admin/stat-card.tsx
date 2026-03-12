@@ -14,25 +14,25 @@ export function StatCard({
     <Card variant="outlined">
       <CardHeader
         disableTypography
-        title={
-          <Typography variant="overline" color="text.secondary">
-            {title}
-          </Typography>
-        }
         subheader={
-          <Typography variant="h2" component="p" sx={{ my: 1 }}>
+          <Typography component="p" sx={{ my: 1 }} variant="h2">
             {count}
           </Typography>
         }
+        title={
+          <Typography color="text.secondary" variant="overline">
+            {title}
+          </Typography>
+        }
       />
-      <CardContent component={Stack} sx={{ flex: 1 }} justifyContent="flex-end" spacing={1}>
+      <CardContent component={Stack} justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
         <Divider />
         <Button
-          variant="outlined"
+          href={addHref}
           size="small"
           startIcon={<AddIcon />}
-          href={addHref}
           sx={{ width: 'fit-content' }}
+          variant="outlined"
         >
           Add
         </Button>

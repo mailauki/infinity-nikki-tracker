@@ -7,8 +7,8 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getColors } from '@/hooks/data/colors'
 import { getCategories } from '@/hooks/data/categories'
+import { Container, Stack } from '@mui/material'
 import { Metadata } from 'next'
-import PageContainer from '@/components/page-container'
 
 export const metadata: Metadata = {
   title: 'Edit Eureka Set',
@@ -23,9 +23,11 @@ export default async function EditEurekaSetPage({
 }) {
   return (
     <Suspense>
-      <PageContainer title="Edit Eureka Set" size="sm">
-        <EditEurekaSet params={params} searchParams={searchParams} />
-      </PageContainer>
+      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
+        <Stack spacing={3}>
+          <EditEurekaSet params={params} searchParams={searchParams} />
+        </Stack>
+      </Container>
     </Suspense>
   )
 }
@@ -66,14 +68,14 @@ async function EditEurekaSet({
 
   return (
     <EditEurekaSetForm
-      eurekaSet={eurekaSet}
-      trials={trials ?? []}
-      styles={styles ?? []}
-      labels={labels ?? []}
-      colors={colors ?? []}
-      categories={categories ?? []}
-      initialColors={initialColors}
       back={back}
+      categories={categories ?? []}
+      colors={colors ?? []}
+      eurekaSet={eurekaSet}
+      initialColors={initialColors}
+      labels={labels ?? []}
+      styles={styles ?? []}
+      trials={trials ?? []}
     />
   )
 }

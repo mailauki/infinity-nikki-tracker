@@ -61,24 +61,24 @@ export function NavUser({ user, isAdmin = false }: { user: JwtPayload; isAdmin?:
   return (
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip title="Open menu">
-        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+        <IconButton sx={{ p: 0 }} onClick={handleOpenUserMenu}>
           <AvatarPreview url={avatar_url} />
         </IconButton>
       </Tooltip>
       <Menu
-        sx={{ mt: '45px' }}
-        id="menu-appbar"
+        keepMounted
         anchorEl={anchorElUser}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right',
         }}
-        keepMounted
+        id="menu-appbar"
+        open={Boolean(anchorElUser)}
+        sx={{ mt: '45px' }}
         transformOrigin={{
           vertical: 'top',
           horizontal: 'right',
         }}
-        open={Boolean(anchorElUser)}
         onClose={handleCloseUserMenu}
       >
         {navLinksData.navSecondary
@@ -86,9 +86,9 @@ export function NavUser({ user, isAdmin = false }: { user: JwtPayload; isAdmin?:
           .map((link) => (
             <MenuItem
               key={link.title}
-              onClick={handleCloseUserMenu}
               component={Link}
               href={link.url}
+              onClick={handleCloseUserMenu}
             >
               <ListItemIcon>{navIcon(link.url)}</ListItemIcon>
               {link.title}

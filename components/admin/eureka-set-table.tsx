@@ -38,9 +38,9 @@ export function EurekaSetTable({
       cell: (set) => (
         <Tooltip title={`Edit ${set.title}`}>
           <IconButton
-            size="small"
             color="secondary"
             href={`/eureka-set/edit/${set.slug ?? toSlug(set.title)}${backParam}`}
+            size="small"
           >
             <EditIcon fontSize="small" />
           </IconButton>
@@ -50,7 +50,7 @@ export function EurekaSetTable({
     {
       header: 'Image',
       cell: (set) => (
-        <Avatar size="xs" src={set.image_url!} alt={set.title || 'Image'}>
+        <Avatar alt={set.title || 'Image'} size="xs" src={set.image_url!}>
           <Category fontSize="inherit" />
         </Avatar>
       ),
@@ -58,7 +58,7 @@ export function EurekaSetTable({
     {
       header: 'Title',
       cell: (set) => (
-        <Typography noWrap variant="body2" fontWeight="medium">
+        <Typography noWrap fontWeight="medium" variant="body2">
           {set.title}
         </Typography>
       ),
@@ -66,7 +66,7 @@ export function EurekaSetTable({
     {
       header: 'Slug',
       cell: (set) => (
-        <Typography variant="caption" fontFamily="monospace" noWrap>
+        <Typography noWrap fontFamily="monospace" variant="caption">
           {set.slug}
         </Typography>
       ),
@@ -87,7 +87,7 @@ export function EurekaSetTable({
     {
       header: 'Trial',
       cell: (set) => (
-        <Typography variant="body2" noWrap>
+        <Typography noWrap variant="body2">
           {set.trial}
         </Typography>
       ),
@@ -95,7 +95,7 @@ export function EurekaSetTable({
     {
       header: 'Updated',
       cell: (set) => (
-        <Typography variant="caption" noWrap>
+        <Typography noWrap variant="caption">
           {set.updated_at ? new Date(set.updated_at).toLocaleDateString() : '—'}
         </Typography>
       ),
@@ -104,13 +104,13 @@ export function EurekaSetTable({
 
   return (
     <AdminTable
-      title="Eureka Set"
-      rows={rows}
       columns={columns}
-      slug="eureka-set"
       getKey={(set) => set.id}
       page={page}
+      rows={rows}
       rowsPerPage={rowsPerPage}
+      slug="eureka-set"
+      title="Eureka Set"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}
     />

@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles'
+import { styled, useTheme, Theme, CSSObject, useColorScheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import MuiDrawer from '@mui/material/Drawer'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
@@ -9,10 +9,8 @@ import Toolbar from '@mui/material/Toolbar'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import Stack from '@mui/material/Stack'
-import { Button, Paper } from '@mui/material'
+import { Button, Container, Paper, Typography } from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import { navLinksData } from '@/lib/nav-links'
@@ -22,8 +20,13 @@ import { NavExtra } from './nav-extra'
 import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+import { MenuOpen } from '@mui/icons-material'
 
 const DRAWER_WIDTH = 240
+const xsHeight = 48 * 3 // based on number of toolbars and toolbar minHeight
+const smHeight = 64 * 3
+const mdHeight = 56 * 3
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: '100%',
@@ -51,28 +54,41 @@ const closedMixin = (theme: Theme): CSSObject => ({
 
 const MainContainer = styled(Paper)(({ theme }) => ({
   // Default height for small screens (portrait)
-  height: `calc(100vh - 112px)`, // 56px * 3 = 168
-  // Landscape orientation on small screens
+  height: `calc(100vh - ${mdHeight}px)`,
   [theme.breakpoints.up('xs')]: {
     '@media (orientation: landscape)': {
-      height: `calc(100vh - 96px)`,
-    }, // 48px * 3 = 144
+      height: `calc(100vh - ${xsHeight}px)`,
+    },
   },
   // Large screens (sm breakpoint and up)
   [theme.breakpoints.up('sm')]: {
-    height: `calc(100vh - 128px)`,
-  }, // 64px * 3 = 192 based on number of toolbars
+    height: `calc(100vh - ${smHeight}px)`,
+  },
   overflowY: 'auto',
   borderRadius: 0,
 }))
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
+interface AppBarTitleProps {
+  open?: boolean
+  isHome?: boolean
+}
+
+const AppBarTitle = styled(Stack, {
+  shouldForwardProp: (prop) => prop !== 'open' && prop !== 'isHome',
+})<AppBarTitleProps>(({ theme, open, isHome }) => ({
+  flex: 1,
+  alignSelf: 'flex-end',
+  color: isHome ? 'transparent' : 'inherit',
+  marginLeft: 0,
+  transition: theme.transitions.create('margin-left', {
+    easing: theme.transitions.easing.sharp,
+    duration: open
+      ? theme.transitions.duration.enteringScreen
+      : theme.transitions.duration.leavingScreen,
+  }),
+  [theme.breakpoints.up('sm')]: {
+    marginLeft: open ? 0 : '64px',
+  },
 }))
 
 interface AppBarProps extends MuiAppBarProps {
@@ -83,6 +99,9 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
+  borderTop: 0,
+  borderLeft: 0,
+  borderRight: 0,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -104,6 +123,16 @@ const AppBar = styled(MuiAppBar, {
       },
     },
   ],
+}))
+
+const StyledToolbar = styled(Toolbar)(({ theme }) => ({
+  alignItems: 'flex-start',
+  paddingTop: theme.spacing(1),
+  paddingBottom: theme.spacing(2),
+  // Override media queries injected by theme.mixins.toolbar
+  '@media all': {
+    minHeight: 128,
+  },
 }))
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(({ theme }) => ({
@@ -141,7 +170,11 @@ export default function NavDrawer({
   isAdmin?: boolean
   user: JwtPayload
 }>) {
+  const pathname = usePathname()
   const theme = useTheme()
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+
   const [open, setOpen] = React.useState(false)
 
   const handleDrawerOpen = () => {
@@ -152,66 +185,109 @@ export default function NavDrawer({
     setOpen(false)
   }
 
+  const allLinks = [
+    navLinksData.home,
+    ...navLinksData.navMain.flatMap((item) => [item, ...(item.items ?? [])]),
+    ...navLinksData.navSecondary.flatMap((item) => [
+      item,
+      ...(item.items ?? []).map((sub) => ({ ...sub, url: item.url + sub.url })),
+    ]),
+    ...navLinksData.navExtra,
+  ]
+
+  const pageTitle =
+    allLinks
+      .filter((link) => pathname === link.url || pathname.startsWith(link.url + '/'))
+      .sort((a, b) => b.url.length - a.url.length)[0]?.title ?? ''
+
   return (
     <>
       <Stack direction="row">
-        <AppBar position="fixed" open={open}>
+        <AppBar color="default" open={open} position="fixed" variant="outlined">
           <Toolbar>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="flex-start"
-              sx={{ width: '64px' }}
-            >
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={handleDrawerOpen}
-                edge="start"
-                sx={[
-                  {
-                    marginLeft: -1,
-                    marginRight: 5,
-                  },
-                  open && { display: 'none' },
-                ]}
+            <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
+              <Stack
+                alignItems="center"
+                direction="row"
+                justifyContent="flex-start"
+                sx={{ width: '64px' }}
               >
-                <MenuIcon />
-              </IconButton>
+                <IconButton
+                  aria-label="open drawer"
+                  color="inherit"
+                  edge="start"
+                  sx={[
+                    {
+                      marginLeft: -1,
+                      marginRight: 5,
+                      zIndex: theme.zIndex.drawer + 1,
+                    },
+                    open && { display: 'none' },
+                  ]}
+                  onClick={handleDrawerOpen}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Stack>
+              <Stack
+                alignItems="center"
+                direction="row"
+                justifyContent="flex-end"
+                sx={{ width: '64px', zIndex: theme.zIndex.drawer + 1 }}
+              >
+                {!user ? (
+                  <Button color="inherit" href="/auth/login">
+                    Login
+                  </Button>
+                ) : (
+                  <NavUser isAdmin={isAdmin} user={user} />
+                )}
+              </Stack>
             </Stack>
-            <Stack direction="row" alignItems="center" justifyContent="center" sx={{ flex: 1 }}>
-              <Link href="/" style={{ cursor: 'pointer' }}>
-                <Image
-                  src="/infinity-nikki-logo.png"
-                  alt="Infinity Nikki Logo"
-                  width={90}
-                  height={40}
-                />
-              </Link>
-            </Stack>
-            <Stack
-              direction="row"
-              alignItems="center"
-              justifyContent="flex-end"
-              sx={{ width: '64px' }}
-            >
-              {!user ? (
-                <Button color="inherit" href="/auth/login">
-                  Login
-                </Button>
-              ) : (
-                <NavUser user={user} isAdmin={isAdmin} />
-              )}
-            </Stack>
+          </Toolbar>
+          <Toolbar
+            alignItems="center"
+            component={Stack}
+            direction="row"
+            justifyContent="center"
+            sx={{
+              flex: 1,
+              width: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              py: 1.5,
+              zIndex: theme.zIndex.drawer,
+              filter: isDarkMode ? 'none' : 'brightness(40%)',
+            }}
+          >
+            <Link href="/" style={{ cursor: 'pointer' }}>
+              <Image
+                alt="Infinity Nikki Logo"
+                height={39}
+                src="/infinity-nikki-logo.png"
+                width={90}
+              />
+            </Link>
+          </Toolbar>
+          <Toolbar>
+            <Container disableGutters maxWidth="md" sx={{ flex: 1 }}>
+              <AppBarTitle direction="row" isHome={pathname === '/'} justifyContent={{ xs: 'center', sm: 'inherit' }} open={open}>
+                <Typography component="h1" variant="h4">
+                  {pageTitle}
+                </Typography>
+              </AppBarTitle>
+            </Container>
           </Toolbar>
         </AppBar>
 
-        <Drawer variant="permanent" open={open} className="h-screen overflow-hidden">
-          <DrawerHeader>
+        <Drawer className="h-screen overflow-hidden" open={open} variant="permanent">
+          <StyledToolbar>
             <IconButton onClick={handleDrawerClose}>
-              {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+              <MenuOpen />
             </IconButton>
-          </DrawerHeader>
+          </StyledToolbar>
 
           <Divider />
 
@@ -227,8 +303,8 @@ export default function NavDrawer({
 
           <NavExtra items={navLinksData.navExtra} open={open} onClose={handleDrawerClose} />
         </Drawer>
-        <Box component="main" className="h-screen w-full overflow-hidden">
-          <DrawerHeader />
+        <Box className="h-screen w-full" component="main">
+          <StyledToolbar />
           <MainContainer elevation={0}>{children}</MainContainer>
           <Toolbar />
         </Box>
