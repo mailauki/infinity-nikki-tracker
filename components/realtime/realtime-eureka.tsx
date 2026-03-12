@@ -54,9 +54,7 @@ export default function RealtimeEureka({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
-  const eurekaSets = serverEurekaSets.map((set) =>
-    updateEurekaSet({ eurekaSet: set, obtained })
-  )
+  const eurekaSets = serverEurekaSets.map((set) => updateEurekaSet({ eurekaSet: set, obtained }))
 
   return (
     <FilterEureka

@@ -21,7 +21,7 @@ import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { MenuOpen } from '@mui/icons-material'
+import { Filter, FilterList, MenuOpen } from '@mui/icons-material'
 
 const DRAWER_WIDTH = 240
 const xsHeight = 48 * 3 // based on number of toolbars and toolbar minHeight
@@ -130,7 +130,8 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   paddingTop: theme.spacing(1),
   paddingBottom: theme.spacing(2),
   // Override media queries injected by theme.mixins.toolbar
-  '@media all': {
+	minHeight: 114,
+	[theme.breakpoints.up('sm')]: {
     minHeight: 128,
   },
 }))
@@ -245,6 +246,7 @@ export default function NavDrawer({
               </Stack>
             </Stack>
           </Toolbar>
+
           <Toolbar
             alignItems="center"
             component={Stack}
@@ -271,13 +273,25 @@ export default function NavDrawer({
               />
             </Link>
           </Toolbar>
+
           <Toolbar>
-            <Container disableGutters maxWidth="md" sx={{ flex: 1 }}>
-              <AppBarTitle direction="row" isHome={pathname === '/'} justifyContent={{ xs: 'center', sm: 'inherit' }} open={open}>
+            <Container disableGutters maxWidth="md" sx={{ position: 'relative' }}>
+              <AppBarTitle
+                direction="row"
+                isHome={pathname === '/'}
+                justifyContent={{ xs: 'center', sm: 'inherit' }}
+                open={open}
+              >
                 <Typography component="h1" variant="h4">
                   {pageTitle}
                 </Typography>
               </AppBarTitle>
+
+							<Stack sx={{ position: 'absolute', bottom: 0, right: 0 }}>
+								<IconButton>
+									<FilterList />
+								</IconButton>
+							</Stack>
             </Container>
           </Toolbar>
         </AppBar>
@@ -303,6 +317,7 @@ export default function NavDrawer({
 
           <NavExtra items={navLinksData.navExtra} open={open} onClose={handleDrawerClose} />
         </Drawer>
+
         <Box className="h-screen w-full" component="main">
           <StyledToolbar />
           <MainContainer elevation={0}>{children}</MainContainer>

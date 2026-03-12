@@ -51,9 +51,9 @@ let theme = createTheme({
     },
     MuiDialog: {
       styleOverrides: {
-				paper: {
-					borderRadius: 12,
-				}
+        paper: {
+          borderRadius: 12,
+        },
       },
     },
     MuiAvatar: {

@@ -58,7 +58,7 @@ export default function FilterEureka({
         setSelectedCategory(null)
         setSelectedFilter(null)
         setSelectedColor(null)
-        setGroupBySet(false)
+        setGroupBySet(groupBySet)
       }
       return !prev
     })
@@ -74,6 +74,7 @@ export default function FilterEureka({
     setSelectedFilter(null)
     setSelectedColor(null)
     setShowByColor(false)
+    setGroupBySet(groupBySet)
   }
 
   const filteredSets = eurekaSets

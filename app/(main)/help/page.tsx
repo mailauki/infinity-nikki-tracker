@@ -22,7 +22,7 @@ export default function HelpPage() {
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
-        <Container maxWidth="sm" component="section">
+        <Container component="section" maxWidth="sm">
           <Typography component="h2" variant="h5">
             How to use
           </Typography>
@@ -100,7 +100,7 @@ export default function HelpPage() {
           </List>
         </Container>
 
-        <Container maxWidth="sm" component="section">
+        <Container component="section" maxWidth="sm">
           <Typography component="h2" variant="h5">
             Admin access
           </Typography>
