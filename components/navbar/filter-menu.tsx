@@ -104,8 +104,8 @@ export default function FilterMenu() {
 
         <ListItem>
           <ObtainedToggle
-            selectedFilter={null}
-            onFilterChange={function (
+            selectedObtainedFilter={null}
+            onObtainedFilterChange={function (
               event: React.MouseEvent<HTMLElement>,
               newFilter: ObtainedFilter | null
             ): void {

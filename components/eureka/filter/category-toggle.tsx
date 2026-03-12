@@ -39,8 +39,9 @@ export default function CategoryToggle({
               src={category.image_url!}
               sx={{
                 backgroundColor: 'transparent',
-                filter: isDarkMode ? 'none' : 'brightness(40%)',
+                filter: isDarkMode || selectedCategory === category.title ? 'none' : 'brightness(40%)',
                 opacity: disabled ? 0.3 : 1,
+								'&:hover': { filter: isDarkMode ? 'none' : 'brightness(40%)' }
               }}
             >
               <CategoryIcon sx={{ color: 'divider' }} />

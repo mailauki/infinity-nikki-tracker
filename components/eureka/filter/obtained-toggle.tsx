@@ -1,15 +1,15 @@
 'use client'
 
-import { ToggleFilter } from '@/lib/types/props'
+import { ObtainedFilter } from '@/lib/types/props'
 import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 
 export default function ObtainedToggle({
-  selectedFilter,
-  onFilterChange,
+  selectedObtainedFilter,
+  onObtainedFilterChange,
   disabled,
 }: {
-  selectedFilter: ToggleFilter | null
-  onFilterChange: (event: React.MouseEvent<HTMLElement>, newFilter: ToggleFilter | null) => void
+  selectedObtainedFilter: ObtainedFilter | null
+  onObtainedFilterChange: (event: React.MouseEvent<HTMLElement>, newFilter: ObtainedFilter | null) => void
   disabled?: boolean
 }) {
   return (
@@ -17,8 +17,8 @@ export default function ObtainedToggle({
       exclusive
       aria-label="Filter"
       disabled={disabled}
-      value={selectedFilter}
-      onChange={onFilterChange}
+      value={selectedObtainedFilter}
+      onChange={onObtainedFilterChange}
     >
       {['Missing', 'Obtained'].map((filter) => (
         <ToggleButton key={filter} sx={{ py: 1.75 }} value={filter}>

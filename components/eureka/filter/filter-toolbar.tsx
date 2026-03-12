@@ -98,8 +98,8 @@ export default function FilterToolbar({
             {isLoggedIn && (
               <ObtainedToggle
                 disabled={showByColor}
-                selectedFilter={selectedObtainedFilter}
-                onFilterChange={onObtainedFilterChange}
+                selectedObtainedFilter={selectedObtainedFilter}
+                onObtainedFilterChange={onObtainedFilterChange}
               />
             )}
 

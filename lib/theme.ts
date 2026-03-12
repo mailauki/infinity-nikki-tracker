@@ -1,6 +1,6 @@
 'use client'
 import { lime, pink } from '@mui/material/colors'
-import { createTheme, responsiveFontSizes } from '@mui/material/styles'
+import { alpha, createTheme, responsiveFontSizes } from '@mui/material/styles'
 import { AvatarSize } from './types/props'
 
 declare module '@mui/material/Avatar' {
@@ -87,6 +87,74 @@ let theme = createTheme({
         },
       },
     },
+		MuiToggleButtonGroup: {
+			styleOverrides: {
+				root: {
+					gap: '0.25rem',
+				},
+				firstButton: ({ theme }) => ({
+					backgroundColor: alpha(theme.palette.secondary.main, 0.15),
+
+					border: '1px solid',
+					borderColor: 'transparent',
+					borderRadius: '6px',
+					borderTopLeftRadius: '40px',
+					borderBottomLeftRadius: '40px',
+					'&:hover': {
+						borderRadius: '12px',
+						backgroundColor: alpha(theme.palette.secondary.main, 0.35),
+					},
+					'&.Mui-selected': {
+						borderRadius: '40px',
+						backgroundColor: theme.palette.secondary.main,
+					},
+					'&.Mui-selected:hover': {
+						borderRadius: '12px',
+						backgroundColor: alpha(theme.palette.secondary.main, 0.35),
+					},
+				}),
+				middleButton: ({ theme }) => ({
+					backgroundColor: alpha(theme.palette.secondary.main, 0.15),
+
+					border: '1px solid',
+					borderColor: 'transparent',
+					borderRadius: '6px',
+					'&:hover': {
+						borderRadius: '12px',
+						backgroundColor: alpha(theme.palette.secondary.main, 0.35),
+					},
+					'&.Mui-selected': {
+						borderRadius: '40px',
+						backgroundColor: theme.palette.secondary.main,
+					},
+					'&.Mui-selected:hover': {
+						borderRadius: '12px',
+						backgroundColor: alpha(theme.palette.secondary.main, 0.35),
+					},
+				}),
+				lastButton: ({ theme }) => ({
+					backgroundColor: alpha(theme.palette.secondary.main, 0.15),
+
+					border: '1px solid',
+					borderColor: 'transparent',
+					borderRadius: '6px',
+					borderTopRightRadius: '40px',
+					borderBottomRightRadius: '40px',
+					'&:hover': {
+						borderRadius: '12px',
+						backgroundColor: alpha(theme.palette.secondary.main, 0.35),
+					},
+					'&.Mui-selected': {
+						borderRadius: '40px',
+						backgroundColor: theme.palette.secondary.main,
+					},
+					'&.Mui-selected:hover': {
+						borderRadius: '12px',
+						backgroundColor: alpha(theme.palette.secondary.main, 0.35),
+					},
+				})
+			}
+		}
   },
 })
 
