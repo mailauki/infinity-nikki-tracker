@@ -58,6 +58,7 @@ export default function FilterEureka({
         setSelectedCategory(null)
         setSelectedFilter(null)
         setSelectedColor(null)
+        setGroupBySet(false)
       }
       return !prev
     })
@@ -98,7 +99,7 @@ export default function FilterEureka({
     .filter((set) => (showByColor ? set.colors.length > 0 : set.eureka_variants.length > 0))
 
   const resultsCount = showByColor
-    ? filteredSets.length
+    ? filteredSets.flatMap((set) => set.colors).length
     : filteredSets.flatMap((set) => set.eureka_variants).length || 0
 
   return (
@@ -150,54 +151,51 @@ export default function FilterEureka({
               mb: 4,
             }}
           >
-            {filteredSets.map((set) => (
-              <React.Fragment key={set.slug}>
-                {groupBySet && (
-                  <Box
-                    key={`${set.slug}-header`}
-                    sx={{
-                      gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' },
-                      mt: 2,
-                    }}
-                  >
-                    <Stack
-                      alignItems="flex-end"
-                      direction="row"
-                      justifyContent="space-between"
-                      sx={{ mb: 0.5 }}
+            {filteredSets.map((set) => {
+              const { obtained, total } = countObtained(set.eureka_variants)
+              return (
+                <React.Fragment key={set.slug}>
+                  {groupBySet && (
+                    <Box
+                      key={`${set.slug}-header`}
+                      sx={{
+                        gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' },
+                        mt: 2,
+                      }}
                     >
-                      <Typography variant="overline">{set.title}</Typography>
-                      {isLoggedIn && (
-                        <ProgressChip
-                          percentage={percent(
-                            countObtained(set.eureka_variants).obtained,
-                            countObtained(set.eureka_variants).total
-                          )}
-                          size="lg"
+                      <Stack
+                        alignItems="flex-end"
+                        direction="row"
+                        justifyContent="space-between"
+                        sx={{ mb: 0.5 }}
+                      >
+                        <Typography variant="overline">{set.title}</Typography>
+                        {isLoggedIn && (
+                          <ProgressChip percentage={percent(obtained, total)} size="lg" />
+                        )}
+                      </Stack>
+                      <Divider />
+                    </Box>
+                  )}
+                  {showByColor
+                    ? set.colors.map((color) => (
+                        <EurekaColorSetCard
+                          key={`${set.slug}-${color.title}`}
+                          color={color}
+                          eurekaSet={set}
+                          isLoggedIn={isLoggedIn}
                         />
-                      )}
-                    </Stack>
-                    <Divider />
-                  </Box>
-                )}
-                {showByColor
-                  ? set.colors.map((color) => (
-                      <EurekaColorSetCard
-                        key={`${set.slug}-${color.title}`}
-                        color={color}
-                        eurekaSet={set}
-                        isLoggedIn={isLoggedIn}
-                      />
-                    ))
-                  : set.eureka_variants.map((variant) => (
-                      <EurekaVariantCard
-                        key={variant.id}
-                        eurekaVariant={variant}
-                        isLoggedIn={isLoggedIn}
-                      />
-                    ))}
-              </React.Fragment>
-            ))}
+                      ))
+                    : set.eureka_variants.map((variant) => (
+                        <EurekaVariantCard
+                          key={variant.id}
+                          eurekaVariant={variant}
+                          isLoggedIn={isLoggedIn}
+                        />
+                      ))}
+                </React.Fragment>
+              )
+            })}
           </Box>
         )}
       </Container>

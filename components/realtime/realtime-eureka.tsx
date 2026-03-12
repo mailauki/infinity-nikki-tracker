@@ -25,7 +25,6 @@ export default function RealtimeEureka({
   isLoggedIn: boolean
   userId: string | null
 }) {
-  const [eurekaSets, setEurekaSets] = useState(serverEurekaSets)
   const [obtained, setObtained] = useState(serverObtained)
 
   useEffect(() => {
@@ -55,15 +54,9 @@ export default function RealtimeEureka({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
-  useEffect(() => {
-    const updatedEurekaSets = eurekaSets.map((set) =>
-      updateEurekaSet({ eurekaSet: set, obtained: obtained })
-    )
-
-    setEurekaSets(updatedEurekaSets)
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [obtained])
+  const eurekaSets = serverEurekaSets.map((set) =>
+    updateEurekaSet({ eurekaSet: set, obtained })
+  )
 
   return (
     <FilterEureka

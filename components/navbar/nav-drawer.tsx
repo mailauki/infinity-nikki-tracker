@@ -303,7 +303,7 @@ export default function NavDrawer({
 
           <NavExtra items={navLinksData.navExtra} open={open} onClose={handleDrawerClose} />
         </Drawer>
-        <Box className="h-screen w-full overflow-hidden" component="main">
+        <Box className="h-screen w-full" component="main">
           <StyledToolbar />
           <MainContainer elevation={0}>{children}</MainContainer>
           <Toolbar />

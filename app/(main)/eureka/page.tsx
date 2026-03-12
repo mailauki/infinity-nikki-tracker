@@ -26,7 +26,7 @@ async function EurekaSets() {
   const colors = await getColors()
   const user_id = await getUserID()
   const isLoggedIn = !!user_id
-  const obtained = await getObtained(user_id!)
+  const obtained = user_id ? await getObtained(user_id) : []
 
   return (
     <RealtimeEureka

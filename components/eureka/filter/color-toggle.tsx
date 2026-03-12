@@ -1,3 +1,5 @@
+'use client'
+
 import { Color } from '@/lib/types/eureka'
 import { ColorLens } from '@mui/icons-material'
 import {
