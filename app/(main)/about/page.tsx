@@ -1,6 +1,5 @@
-import { Typography, Link as Anchor, Stack, ListItem, List, ListItemText } from '@mui/material'
+import { Container, Typography, Link as Anchor, Stack, ListItem, List, ListItemText } from '@mui/material'
 import { Metadata } from 'next'
-import PageContainer from '@/components/page-container'
 
 export const metadata: Metadata = {
   title: 'About',
@@ -8,7 +7,8 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <PageContainer title="About">
+    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Stack spacing={3}>
       <Stack component="section">
         <Typography color="textSecondary" variant="subtitle1">
           Infinity Nikki Tracker is a collection tracker for{' '}
@@ -154,6 +154,7 @@ export default function AboutPage() {
       <Typography color="textDisabled" variant="caption">
         &copy; 2026 mailauki. Not affiliated with Infold Games or Infinity Nikki.
       </Typography>
-    </PageContainer>
+      </Stack>
+    </Container>
   )
 }

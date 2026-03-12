@@ -4,8 +4,8 @@ import RealtimeEurekaSet from '@/components/realtime/realtime-eureka-set'
 import { getUserID } from '@/hooks/user'
 import { getEurekaSet } from '@/hooks/data/eureka-sets'
 import { getObtained } from '@/hooks/data/obtained-eureka'
+import { Container, Stack } from '@mui/material'
 import type { Metadata } from 'next'
-import PageContainer from '@/components/page-container'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -36,13 +36,15 @@ async function EurekaSet({ slug }: { slug: string }) {
   const isLoggedIn = !!user_id!
 
   return (
-    <PageContainer title={eurekaSet.title}>
-      <RealtimeEurekaSet
-        isLoggedIn={isLoggedIn}
-        serverEurekaSet={eurekaSet}
-        serverObtained={obtained || []}
-        userId={user_id ?? null}
-      />
-    </PageContainer>
+    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Stack spacing={3}>
+        <RealtimeEurekaSet
+          isLoggedIn={isLoggedIn}
+          serverEurekaSet={eurekaSet}
+          serverObtained={obtained || []}
+          userId={user_id ?? null}
+        />
+      </Stack>
+    </Container>
   )
 }

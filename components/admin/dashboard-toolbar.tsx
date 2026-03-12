@@ -31,10 +31,22 @@ export default function DashboardToolbar({
         mask: 'linear-gradient(to bottom, black 60%, transparent 100%)',
       }}
     >
-      <Container maxWidth="md">
+      <Container maxWidth="md" sx={{ pb: 2 }}>
         <Toolbar disableGutters>
-          <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
-            <ToggleButtonGroup exclusive value={tab} onChange={handleTabChange}>
+          <Stack
+            useFlexGap
+            direction="row"
+            flexWrap="wrap"
+            justifyContent="space-between"
+            spacing={1}
+            sx={{ flex: 1 }}
+          >
+            <ToggleButtonGroup
+              exclusive
+              sx={{ whiteSpace: 'nowrap' }}
+              value={tab}
+              onChange={handleTabChange}
+            >
               <ToggleButton aria-label="Eureka Sets" value="eureka-sets">
                 Eureka Sets
               </ToggleButton>
@@ -46,18 +58,20 @@ export default function DashboardToolbar({
               </ToggleButton>
             </ToggleButtonGroup>
 
-            <ToggleButtonGroup exclusive value={view} onChange={handleViewChange}>
-              <Tooltip title="List view">
-                <ToggleButton aria-label="list" value="list">
-                  <ViewList />
-                </ToggleButton>
-              </Tooltip>
-              <Tooltip title="Table view">
-                <ToggleButton aria-label="table" value="table">
-                  <ViewHeadline />
-                </ToggleButton>
-              </Tooltip>
-            </ToggleButtonGroup>
+            <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
+              <ToggleButtonGroup exclusive value={view} onChange={handleViewChange}>
+                <Tooltip title="List view">
+                  <ToggleButton aria-label="list" value="list">
+                    <ViewList />
+                  </ToggleButton>
+                </Tooltip>
+                <Tooltip title="Table view">
+                  <ToggleButton aria-label="table" value="table">
+                    <ViewHeadline />
+                  </ToggleButton>
+                </Tooltip>
+              </ToggleButtonGroup>
+            </Stack>
           </Stack>
         </Toolbar>
       </Container>

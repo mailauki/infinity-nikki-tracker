@@ -1,9 +1,9 @@
 import HelpActions from './help-actions'
-import PageContainer from '@/components/page-container'
 import { getUserRole } from '@/hooks/user'
 import {
   Alert,
   Button,
+  Container,
   Link as Anchor,
   List,
   ListItem,
@@ -20,7 +20,8 @@ export const metadata: Metadata = {
 
 export default function HelpPage() {
   return (
-    <PageContainer title="Help">
+    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Stack spacing={3}>
       <Stack component="section" sx={{ mb: 2 }}>
         <Typography component="h2" variant="h4">
           How to use
@@ -120,7 +121,8 @@ export default function HelpPage() {
       </Stack>
 
       <HelpActions />
-    </PageContainer>
+      </Stack>
+    </Container>
   )
 }
 

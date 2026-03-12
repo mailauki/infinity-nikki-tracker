@@ -3,8 +3,8 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import EditEurekaVariantForm from '@/components/forms/eureka-variant/edit-eureka-variant-form'
 import { getAdminData } from '@/hooks/data/user'
+import { Container, Stack } from '@mui/material'
 import { Metadata } from 'next'
-import PageContainer from '@/components/page-container'
 
 export const metadata: Metadata = {
   title: 'Edit Eureka Variant',
@@ -19,9 +19,11 @@ export default async function EditEurekaVariantPage({
 }) {
   return (
     <Suspense>
-      <PageContainer size="sm" title="Edit Eureka Variant">
-        <EditEurekaVariant params={params} searchParams={searchParams} />
-      </PageContainer>
+      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
+        <Stack spacing={3}>
+          <EditEurekaVariant params={params} searchParams={searchParams} />
+        </Stack>
+      </Container>
     </Suspense>
   )
 }

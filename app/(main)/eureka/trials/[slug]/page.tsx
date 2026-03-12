@@ -1,10 +1,8 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
-import { Box, CardMedia } from '@mui/material'
+import { Box, CardMedia, Container, Stack } from '@mui/material'
 import type { Metadata } from 'next'
-
-import PageContainer from '@/components/page-container'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrial } from '@/hooks/data/trials'
@@ -48,24 +46,26 @@ async function Trial({ slug }: { slug: string }) {
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
 
   return (
-    <PageContainer title={trial.title}>
-      <CardMedia image={trial.image_url!} sx={{ height: 240 }} title={trial.title} />
-      {isLoggedIn && <EurekaCardProgress percentage={percentage} size="lg" />}
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: '1fr',
-            sm: '1fr 1fr',
-            md: isLoggedIn ? '1fr 1fr' : '1fr 1fr 1fr',
-          },
-          gap: 2,
-        }}
-      >
-        {trialSets.map((eurekaSet) => (
-          <EurekaSetCard key={eurekaSet.title} eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
-        ))}
-      </Box>
-    </PageContainer>
+    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Stack spacing={3}>
+        <CardMedia image={trial.image_url!} sx={{ height: 240 }} title={trial.title} />
+        {isLoggedIn && <EurekaCardProgress percentage={percentage} size="lg" />}
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: '1fr 1fr',
+              md: isLoggedIn ? '1fr 1fr' : '1fr 1fr 1fr',
+            },
+            gap: 2,
+          }}
+        >
+          {trialSets.map((eurekaSet) => (
+            <EurekaSetCard key={eurekaSet.title} eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
+          ))}
+        </Box>
+      </Stack>
+    </Container>
   )
 }

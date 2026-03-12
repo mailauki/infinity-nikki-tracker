@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { styled, useTheme, Theme, CSSObject } from '@mui/material/styles'
+import { styled, useTheme, Theme, CSSObject, useColorScheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import MuiDrawer from '@mui/material/Drawer'
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
@@ -9,8 +9,6 @@ import Toolbar from '@mui/material/Toolbar'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import Stack from '@mui/material/Stack'
 import { Button, Container, Paper, Typography } from '@mui/material'
 import { NavMain } from './nav-main'
@@ -56,34 +54,18 @@ const closedMixin = (theme: Theme): CSSObject => ({
 
 const MainContainer = styled(Paper)(({ theme }) => ({
   // Default height for small screens (portrait)
-  // height: `calc(100vh - 112px)`, // 56px * 3 = 168
   height: `calc(100vh - ${mdHeight}px)`,
-  // Landscape orientation on small screens
   [theme.breakpoints.up('xs')]: {
     '@media (orientation: landscape)': {
-      // height: `calc(100vh - 96px)`,
       height: `calc(100vh - ${xsHeight}px)`,
-    }, // 48px * 3 = 144
+    },
   },
   // Large screens (sm breakpoint and up)
   [theme.breakpoints.up('sm')]: {
-    // height: `calc(100vh - 128px)`,
     height: `calc(100vh - ${smHeight}px)`,
-  }, // 64px * 3 = 192 based on number of toolbars
+  },
   overflowY: 'auto',
   borderRadius: 0,
-}))
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'flex-start',
-  justifyContent: 'flex-end',
-  padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
-  // ...theme.mixins.toolbar,
-  '@media all': {
-    minHeight: 128,
-  },
 }))
 
 interface AppBarProps extends MuiAppBarProps {
@@ -94,6 +76,9 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme }) => ({
   zIndex: theme.zIndex.drawer + 1,
+  borderTop: 0,
+  borderLeft: 0,
+  borderRight: 0,
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -164,6 +149,9 @@ export default function NavDrawer({
 }>) {
   const pathname = usePathname()
   const theme = useTheme()
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+
   const [open, setOpen] = React.useState(false)
 
   const handleDrawerOpen = () => {
@@ -192,7 +180,7 @@ export default function NavDrawer({
   return (
     <>
       <Stack direction="row">
-        <AppBar open={open} position="fixed" variant="outlined">
+        <AppBar color="default" open={open} position="fixed" variant="outlined">
           <StyledToolbar>
             <Stack
               alignItems="center"
@@ -228,8 +216,9 @@ export default function NavDrawer({
                 top: 0,
                 left: 0,
                 right: 0,
-                py: 1.25,
+                py: 1.5,
                 zIndex: theme.zIndex.drawer,
+                filter: isDarkMode ? 'none' : 'brightness(40%)',
               }}
             >
               <Link href="/" style={{ cursor: 'pointer' }}>
@@ -245,7 +234,7 @@ export default function NavDrawer({
               <Stack
                 direction="row"
                 justifyContent={{ xs: 'center', sm: 'inherit' }}
-                sx={{ flex: 1, alignSelf: 'flex-end', mr: '1rem' }}
+                sx={{ flex: 1, alignSelf: 'flex-end', mr: '1rem', color: pathname === '/' ? 'transparent' : 'inherit'  }}
               >
                 <Typography component="h1" variant="h4">
                   {pageTitle}
@@ -291,7 +280,7 @@ export default function NavDrawer({
           <NavExtra items={navLinksData.navExtra} open={open} onClose={handleDrawerClose} />
         </Drawer>
         <Box className="h-screen w-full overflow-hidden" component="main">
-          <DrawerHeader />
+          <StyledToolbar />
           <MainContainer elevation={0}>{children}</MainContainer>
           <Toolbar />
         </Box>
