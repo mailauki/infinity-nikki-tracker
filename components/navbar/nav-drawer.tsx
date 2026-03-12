@@ -68,6 +68,18 @@ const MainContainer = styled(Paper)(({ theme }) => ({
   borderRadius: 0,
 }))
 
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  // ...theme.mixins.toolbar,
+  '@media all': {
+    minHeight: 128,
+  },
+}))
+
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean
 }
@@ -181,81 +193,91 @@ export default function NavDrawer({
     <>
       <Stack direction="row">
         <AppBar color="default" open={open} position="fixed" variant="outlined">
-          <StyledToolbar>
-            <Stack
-              alignItems="center"
-              direction="row"
-              justifyContent="flex-start"
-              sx={{ width: '64px' }}
-            >
-              <IconButton
-                aria-label="open drawer"
-                color="inherit"
-                edge="start"
-                sx={[
-                  {
-                    marginLeft: -1,
-                    marginRight: 5,
-                    zIndex: theme.zIndex.drawer + 1,
-                  },
-                  open && { display: 'none' },
-                ]}
-                onClick={handleDrawerOpen}
+          <Toolbar>
+            <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
+              <Stack
+                alignItems="center"
+                direction="row"
+                justifyContent="flex-start"
+                sx={{ width: '64px' }}
               >
-                <MenuIcon />
-              </IconButton>
+                <IconButton
+                  aria-label="open drawer"
+                  color="inherit"
+                  edge="start"
+                  sx={[
+                    {
+                      marginLeft: -1,
+                      marginRight: 5,
+                      zIndex: theme.zIndex.drawer + 1,
+                    },
+                    open && { display: 'none' },
+                  ]}
+                  onClick={handleDrawerOpen}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Stack>
+              <Stack
+                alignItems="center"
+                direction="row"
+                justifyContent="flex-end"
+                sx={{ width: '64px', zIndex: theme.zIndex.drawer + 1 }}
+              >
+                {!user ? (
+                  <Button color="inherit" href="/auth/login">
+                    Login
+                  </Button>
+                ) : (
+                  <NavUser isAdmin={isAdmin} user={user} />
+                )}
+              </Stack>
             </Stack>
-            <Stack
-              alignItems="center"
-              direction="row"
-              justifyContent="center"
-              sx={{
-                flex: 1,
-                width: '100%',
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                py: 1.5,
-                zIndex: theme.zIndex.drawer,
-                filter: isDarkMode ? 'none' : 'brightness(40%)',
-              }}
-            >
-              <Link href="/" style={{ cursor: 'pointer' }}>
-                <Image
-                  alt="Infinity Nikki Logo"
-                  height={39}
-                  src="/infinity-nikki-logo.png"
-                  width={90}
-                />
-              </Link>
-            </Stack>
-            <Container disableGutters maxWidth="md" sx={{ flexGrow: 1, alignSelf: 'flex-end' }}>
+          </Toolbar>
+          <Toolbar
+            alignItems="center"
+            component={Stack}
+            direction="row"
+            justifyContent="center"
+            sx={{
+              flex: 1,
+              width: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              py: 1.5,
+              zIndex: theme.zIndex.drawer,
+              filter: isDarkMode ? 'none' : 'brightness(40%)',
+            }}
+          >
+            <Link href="/" style={{ cursor: 'pointer' }}>
+              <Image
+                alt="Infinity Nikki Logo"
+                height={39}
+                src="/infinity-nikki-logo.png"
+                width={90}
+              />
+            </Link>
+          </Toolbar>
+          <Toolbar>
+            <Container disableGutters maxWidth="md" sx={{ flex: 1 }}>
               <Stack
                 direction="row"
                 justifyContent={{ xs: 'center', sm: 'inherit' }}
-                sx={{ flex: 1, alignSelf: 'flex-end', mr: '1rem', color: pathname === '/' ? 'transparent' : 'inherit'  }}
+                sx={{
+                  flex: 1,
+                  alignSelf: 'flex-end',
+                  color: pathname === '/' ? 'transparent' : 'inherit',
+                  marginLeft: { xs: 0, sm: !open ? '64px' : 0 },
+                }}
               >
                 <Typography component="h1" variant="h4">
                   {pageTitle}
                 </Typography>
               </Stack>
             </Container>
-            <Stack
-              alignItems="center"
-              direction="row"
-              justifyContent="flex-end"
-              sx={{ width: '64px', zIndex: theme.zIndex.drawer + 1 }}
-            >
-              {!user ? (
-                <Button color="inherit" href="/auth/login">
-                  Login
-                </Button>
-              ) : (
-                <NavUser isAdmin={isAdmin} user={user} />
-              )}
-            </Stack>
-          </StyledToolbar>
+          </Toolbar>
         </AppBar>
 
         <Drawer className="h-screen overflow-hidden" open={open} variant="permanent">
@@ -280,7 +302,7 @@ export default function NavDrawer({
           <NavExtra items={navLinksData.navExtra} open={open} onClose={handleDrawerClose} />
         </Drawer>
         <Box className="h-screen w-full overflow-hidden" component="main">
-          <StyledToolbar />
+          <DrawerHeader />
           <MainContainer elevation={0}>{children}</MainContainer>
           <Toolbar />
         </Box>
