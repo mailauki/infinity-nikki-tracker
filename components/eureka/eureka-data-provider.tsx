@@ -39,6 +39,10 @@ export default function EurekaDataProvider({
   useEffect(() => {
     if (!isLoggedIn) return
 
+    fetch('/api/obtained-eureka')
+      .then((r) => r.json())
+      .then((data: ObtainedEureka[]) => setObtainedEureka(data))
+
     const obtainedChannel = supabase
       .channel('obtained-filter-channel')
       .on(
