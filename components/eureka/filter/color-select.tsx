@@ -46,7 +46,7 @@ export default function ColorSelect({
       >
         <MenuItem value="">—</MenuItem>
         {colors.map((color) => (
-          <MenuItem key={color.title} value={color.title}>
+          <MenuItem key={color.slug} value={color.slug}>
             <ListItem disablePadding component="div">
               <ListItemAvatar>
                 <Avatar alt={color.title} size="xs" src={color.image_url!}>

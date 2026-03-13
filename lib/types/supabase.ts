@@ -13,18 +13,21 @@ export type Database = {
           created_at: string
           id: number
           image_url: string | null
+          slug: string
           title: string
         }
         Insert: {
           created_at?: string
           id?: number
           image_url?: string | null
+          slug: string
           title: string
         }
         Update: {
           created_at?: string
           id?: number
           image_url?: string | null
+          slug?: string
           title?: string
         }
         Relationships: []
@@ -34,18 +37,21 @@ export type Database = {
           created_at: string
           id: number
           image_url: string | null
+          slug: string
           title: string
         }
         Insert: {
           created_at?: string
           id?: number
           image_url?: string | null
+          slug: string
           title?: string
         }
         Update: {
           created_at?: string
           id?: number
           image_url?: string | null
+          slug?: string
           title?: string
         }
         Relationships: []
@@ -90,21 +96,21 @@ export type Database = {
             columns: ['label']
             isOneToOne: false
             referencedRelation: 'labels'
-            referencedColumns: ['title']
+            referencedColumns: ['slug']
           },
           {
             foreignKeyName: 'eureka_sets_style_fkey'
             columns: ['style']
             isOneToOne: false
             referencedRelation: 'styles'
-            referencedColumns: ['title']
+            referencedColumns: ['slug']
           },
           {
-            foreignKeyName: 'Eureka_trial_fkey'
+            foreignKeyName: 'eureka_sets_trial_fkey'
             columns: ['trial']
             isOneToOne: false
             referencedRelation: 'trials'
-            referencedColumns: ['title']
+            referencedColumns: ['slug']
           },
         ]
       }
@@ -144,25 +150,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'eureka_category_fkey'
+            foreignKeyName: 'eureka_variants_category_fkey'
             columns: ['category']
             isOneToOne: false
             referencedRelation: 'categories'
-            referencedColumns: ['title']
+            referencedColumns: ['slug']
           },
           {
-            foreignKeyName: 'eureka_color_fkey'
+            foreignKeyName: 'eureka_variants_color_fkey'
             columns: ['color']
             isOneToOne: false
             referencedRelation: 'colors'
-            referencedColumns: ['title']
+            referencedColumns: ['slug']
           },
           {
-            foreignKeyName: 'eureka_eureka_set_fkey'
+            foreignKeyName: 'eureka_variants_eureka_set_fkey'
             columns: ['eureka_set']
             isOneToOne: false
             referencedRelation: 'eureka_sets'
-            referencedColumns: ['title']
+            referencedColumns: ['slug']
           },
         ]
       }
@@ -170,21 +176,24 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          slug: string
           title: string | null
         }
         Insert: {
           created_at?: string
           id?: number
+          slug: string
           title?: string | null
         }
         Update: {
           created_at?: string
           id?: number
+          slug?: string
           title?: string | null
         }
         Relationships: []
       }
-      obtained: {
+      obtained_eureka: {
         Row: {
           category: string | null
           color: string | null
@@ -211,25 +220,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'obtained_category_fkey'
+            foreignKeyName: 'obtained_eureka_category_fkey'
             columns: ['category']
             isOneToOne: false
             referencedRelation: 'categories'
-            referencedColumns: ['title']
+            referencedColumns: ['slug']
           },
           {
-            foreignKeyName: 'obtained_color_fkey'
+            foreignKeyName: 'obtained_eureka_color_fkey'
             columns: ['color']
             isOneToOne: false
             referencedRelation: 'colors'
-            referencedColumns: ['title']
+            referencedColumns: ['slug']
           },
           {
-            foreignKeyName: 'obtained_eureka_set_fkey'
+            foreignKeyName: 'obtained_eureka_eureka_set_fkey'
             columns: ['eureka_set']
             isOneToOne: false
             referencedRelation: 'eureka_sets'
-            referencedColumns: ['title']
+            referencedColumns: ['slug']
           },
         ]
       }
@@ -267,16 +276,19 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          slug: string
           title: string | null
         }
         Insert: {
           created_at?: string
           id?: number
+          slug: string
           title?: string | null
         }
         Update: {
           created_at?: string
           id?: number
+          slug?: string
           title?: string | null
         }
         Relationships: []

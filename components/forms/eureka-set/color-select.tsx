@@ -42,7 +42,7 @@ export default function ColorSelect({
   handleChange: (event: SelectChangeEvent<typeof colorSelect>) => void
 }) {
   const theme = useTheme()
-  const colorsSet = colors.map((color) => color.title)
+  const colorBySlug = Object.fromEntries(colors.map((c) => [c.slug, c.title]))
 
   return (
     <FormControl sx={{ m: 1, minWidth: 300 }}>
@@ -55,22 +55,22 @@ export default function ColorSelect({
         labelId="color-multiple-chip-label"
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {selected.map((value) => (
-              <Chip key={value} label={value} />
+            {selected.map((slug) => (
+              <Chip key={slug} label={colorBySlug[slug] ?? slug} />
             ))}
           </Box>
         )}
         value={colorSelect}
         onChange={handleChange}
       >
-        {colorsSet.map((color) => (
+        {colors.map((color) => (
           <MenuItem
-            key={color}
-            disabled={colorSelect.length >= 5 && !colorSelect.includes(color)}
-            style={getStyles(color, colorSelect, theme)}
-            value={color}
+            key={color.slug}
+            disabled={colorSelect.length >= 5 && !colorSelect.includes(color.slug)}
+            style={getStyles(color.slug, colorSelect, theme)}
+            value={color.slug}
           >
-            {color}
+            {color.title}
           </MenuItem>
         ))}
       </Select>

@@ -22,7 +22,7 @@ export type EurekaVariant = Pick<
   'id' | 'slug' | 'eureka_set' | 'color' | 'category' | 'image_url' | 'default'
 > & { obtained?: boolean }
 
-export type Obtained = Pick<Tables<'obtained'>, 'id' | 'eureka_set' | 'category' | 'color'>
+export type Obtained = Pick<Tables<'obtained_eureka'>, 'id' | 'eureka_set' | 'category' | 'color'>
 
 export interface ObtainedCount {
   obtained: number
@@ -36,12 +36,12 @@ export interface Total {
   eurekaSets?: EurekaSet[]
 }
 
-export type Category = Pick<Tables<'categories'>, 'title' | 'image_url'>
+export type Category = Pick<Tables<'categories'>, 'slug' | 'title' | 'image_url'>
 
-export type Color = Pick<Tables<'colors'>, 'title' | 'image_url'>
+export type Color = Pick<Tables<'colors'>, 'slug' | 'title' | 'image_url'>
 
-export type Style = Pick<Tables<'styles'>, 'title'>
+export type Style = Pick<Tables<'styles'>, 'slug' | 'title'>
 
-export type Label = Pick<Tables<'labels'>, 'title'>
+export type Label = Pick<Tables<'labels'>, 'slug' | 'title'>
 
 export type Trial = Pick<Tables<'trials'>, 'id' | 'slug' | 'title' | 'image_url' | 'updated_at'>

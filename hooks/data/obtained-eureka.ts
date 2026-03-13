@@ -7,7 +7,7 @@ export const getObtained = cache(async (user_id: UUID | string) => {
   const supabase = await createClient()
 
   const { data: obtained } = await supabase
-    .from('obtained')
+    .from('obtained_eureka')
     .select(
       `
 			id,

@@ -36,14 +36,14 @@ export default function RealtimeEurekaSet({
       .channel('obtained-set-channel')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
+        { event: 'INSERT', schema: 'public', table: 'obtained_eureka', filter: `user_id=eq.${userId}` },
         (payload) => {
           setObtained((prev) => [...prev, payload.new as Obtained])
         }
       )
       .on(
         'postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
+        { event: 'DELETE', schema: 'public', table: 'obtained_eureka', filter: `user_id=eq.${userId}` },
         (payload) => {
           setObtained((prev) => prev.filter((item) => item.id !== payload.old.id))
         }
@@ -75,7 +75,7 @@ export default function RealtimeEurekaSet({
               <List sx={{ width: '100%' }}>
                 {eurekaSet.categories.map((category: Category) => (
                   <Card
-                    key={category.title}
+                    key={category.slug}
                     component="li"
                     elevation={0}
                     sx={{ backgroundColor: 'transparent' }}
@@ -87,7 +87,7 @@ export default function RealtimeEurekaSet({
               <List sx={{ width: '100%' }}>
                 {eurekaSet.colors.map((color: Category) => (
                   <Card
-                    key={color.title}
+                    key={color.slug}
                     component="li"
                     elevation={0}
                     sx={{ backgroundColor: 'transparent' }}

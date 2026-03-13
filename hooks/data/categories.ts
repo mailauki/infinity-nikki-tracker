@@ -8,7 +8,7 @@ export const getCategories = cache(async () => {
 
   const { data: categories } = await supabase
     .from('categories')
-    .select('title, image_url')
+    .select('slug, title, image_url')
     .order('id', { ascending: true })
 
   return (categories ?? []) as Category[]

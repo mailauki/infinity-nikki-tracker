@@ -81,7 +81,7 @@ export default function FilterEureka({
   const filteredSets = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
     .map((set) => {
-      const filteredColors = set.colors.filter((c) => !selectedColor || c.title === selectedColor)
+      const filteredColors = set.colors.filter((c) => !selectedColor || c.slug === selectedColor)
 
       if (showByColor) {
         return { ...set, eureka_variants: set.eureka_variants, colors: filteredColors }
@@ -190,7 +190,7 @@ export default function FilterEureka({
                   {showByColor
                     ? set.colors.map((color) => (
                         <EurekaColorSetCard
-                          key={`${set.slug}-${color.title}`}
+                          key={`${set.slug}-${color.slug}`}
                           color={color}
                           eurekaSet={set}
                           isLoggedIn={isLoggedIn}

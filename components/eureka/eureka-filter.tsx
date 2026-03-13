@@ -39,13 +39,13 @@ export default function EurekaFilter({
           <>
             {categories.map((category: Category) => (
               <Card
-                key={category.title}
+                key={category.slug}
                 elevation={0}
                 sx={{ backgroundColor: 'transparent', flex: 1 }}
               >
                 <CardActionArea
                   data-active={
-                    selectedCategory === (category.title as CategoryFilter) ? '' : undefined
+                    selectedCategory === (category.slug as CategoryFilter) ? '' : undefined
                   }
                   sx={{
                     height: '100%',
@@ -58,9 +58,9 @@ export default function EurekaFilter({
                   }}
                   onClick={() =>
                     setSelectedCategory(
-                      selectedCategory === (category.title as CategoryFilter)
+                      selectedCategory === (category.slug as CategoryFilter)
                         ? ''
-                        : (category.title as CategoryFilter)
+                        : (category.slug as CategoryFilter)
                     )
                   }
                 >

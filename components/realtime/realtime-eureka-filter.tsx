@@ -33,14 +33,14 @@ export default function RealtimeEurekaFilter({
       .channel('obtained-filter-channel')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
+        { event: 'INSERT', schema: 'public', table: 'obtained_eureka', filter: `user_id=eq.${userId}` },
         (payload) => {
           setObtained((prev) => [...prev, payload.new as Obtained])
         }
       )
       .on(
         'postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
+        { event: 'DELETE', schema: 'public', table: 'obtained_eureka', filter: `user_id=eq.${userId}` },
         (payload) => {
           setObtained((prev) => prev.filter((item) => item.id !== payload.old.id))
         }

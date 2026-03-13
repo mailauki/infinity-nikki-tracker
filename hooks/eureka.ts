@@ -14,7 +14,7 @@ export function createEurekaSet({
     image_url: eurekaSet?.eureka_variants.find((item) => item.default)?.image_url,
     categories: categories,
     colors: [...new Set(eurekaSet?.eureka_variants.map((item) => item.color))].flatMap((item) =>
-      colors?.filter((color) => color.title === item)
+      colors?.filter((color) => color.slug === item)
     ),
   } as EurekaSet
 
