@@ -32,7 +32,7 @@ export default function CategoryToggle({
     >
       {categories.map((category) => (
         <Tooltip key={category.title} title={category.title}>
-          <ToggleButton sx={{ p: 0.75 }} value={category.title}>
+          <ToggleButton sx={{ py: 0.75 }} value={category.title}>
             <Avatar
               alt={category.title}
               src={category.image_url!}
