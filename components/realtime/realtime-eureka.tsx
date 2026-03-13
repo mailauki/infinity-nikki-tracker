@@ -34,14 +34,14 @@ export default function RealtimeEureka({
       .channel('obtained-filter-channel')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
+        { event: 'INSERT', schema: 'public', table: 'obtained_eureka', filter: `user_id=eq.${userId}` },
         (payload) => {
           setObtainedEureka((prev) => [...prev, payload.new as ObtainedEureka])
         }
       )
       .on(
         'postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
+        { event: 'DELETE', schema: 'public', table: 'obtained_eureka', filter: `user_id=eq.${userId}` },
         (payload) => {
           setObtainedEureka((prev) => prev.filter((item) => item.id !== payload.old.id))
         }
