@@ -24,7 +24,7 @@ async function AdminDashboard() {
 
   return (
     <>
-      <Container maxWidth="md">
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
         <Box
           sx={{
             display: { xs: 'none', md: 'grid' },

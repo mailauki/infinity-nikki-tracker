@@ -4,12 +4,12 @@ import { useSearchParams } from 'next/navigation'
 import { Box, Button, Container, Divider, Stack, Typography } from '@mui/material'
 import { ChevronRight } from '@mui/icons-material'
 
-import { useEurekaData } from '../eureka-context'
+import { useEurekaData } from '@/components/eureka/eureka-context'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
-import EurekaColorSetCard from '../eureka-color-set-card'
-import EurekaVariantCard from '../eureka-variant-card'
-import ProgressChip from '../../progress-chip'
-import LoginAlert from '../../login-alert'
+import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
+import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
+import ProgressChip from '@/components/progress-chip'
+import LoginAlert from '@/components/login-alert'
 import { countObtained, percent } from '@/hooks/count-obtained'
 
 export default function FilterEureka() {
@@ -51,7 +51,7 @@ export default function FilterEureka() {
     : filteredSets.flatMap((set) => set.eureka_variants).length || 0
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       {!isLoggedIn && <LoginAlert />}
 
       <Typography color="textSecondary" sx={{ pt: 2, pb: 0.5, px: 0.5 }} variant="caption">
