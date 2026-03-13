@@ -45,7 +45,7 @@ export default function RealtimeEurekaSet({
         'postgres_changes',
         { event: 'DELETE', schema: 'public', table: 'obtained_eureka', filter: `user_id=eq.${userId}` },
         (payload) => {
-          setObtainedEureka((prev) => prev.filter((item) => item.id !== payload.old.id))
+          setObtainedEureka((prev) => prev.filter((obtained) => obtained.id !== payload.old.id))
         }
       )
       .subscribe()

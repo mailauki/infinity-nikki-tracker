@@ -47,10 +47,10 @@ export async function GET() {
 
   const eureka = eurekaSets?.map((eurekaSet) => ({
     ...eurekaSet,
-    image_url: eurekaSet.eureka_variants.find((item) => item.default)?.image_url,
+    image_url: eurekaSet.eureka_variants.find((variant) => variant.default)?.image_url,
     categories: typedCategories,
-    colors: [...new Set(eurekaSet.eureka_variants.map((item) => item.color))].flatMap((item) =>
-      typedColors.filter((color) => color.slug === item)
+    colors: [...new Set(eurekaSet.eureka_variants.map((variant) => variant.color))].flatMap(
+      (colorSlug) => typedColors.filter((color) => color.slug === colorSlug)
     ),
   })) as EurekaSet[]
 
@@ -71,13 +71,13 @@ export async function GET() {
 
   const eurekaWithObtained = eureka?.map((eurekaSet) => ({
     ...eurekaSet,
-    eureka_variants: eurekaSet.eureka_variants.map((item) => ({
-      ...item,
+    eureka_variants: eurekaSet.eureka_variants.map((variant) => ({
+      ...variant,
       obtained: !!obtainedEureka.find(
-        (value) =>
-          item.eureka_set === value.eureka_set &&
-          item.category === value.category &&
-          item.color === value.color
+        (record) =>
+          variant.eureka_set === record.eureka_set &&
+          variant.category === record.category &&
+          variant.color === record.color
       ),
     })) as EurekaVariant[],
   })) as EurekaSet[]

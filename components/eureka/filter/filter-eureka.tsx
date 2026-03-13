@@ -1,11 +1,10 @@
 'use client'
 import React from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Box, Button, Container, Divider, Stack, Typography } from '@mui/material'
 import { ChevronRight } from '@mui/icons-material'
 
 import { useEurekaData } from '../eureka-context'
-import { applyFilterParams } from '@/lib/filter-params'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
 import EurekaColorSetCard from '../eureka-color-set-card'
 import EurekaVariantCard from '../eureka-variant-card'
@@ -17,8 +16,6 @@ export default function FilterEureka() {
   const { eurekaSets, isLoggedIn } = useEurekaData()
 
   const searchParams = useSearchParams()
-  const router = useRouter()
-  const pathname = usePathname()
 
   const selectedEurekaSet = searchParams.get('set')
   const selectedCategory = searchParams.get('category') as CategoryFilter | null
@@ -27,25 +24,21 @@ export default function FilterEureka() {
   const showByColor = searchParams.get('showByColor') === 'true'
   const selectedColor = searchParams.get('color')
 
-  function push(updates: Record<string, string | null>) {
-    router.push(applyFilterParams(pathname, searchParams, updates), { scroll: false })
-  }
-
   const filteredSets = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
     .map((set) => {
-      const filteredColors = set.colors.filter((c) => !selectedColor || c.slug === selectedColor)
+      const filteredColors = set.colors.filter((color) => !selectedColor || color.slug === selectedColor)
 
       if (showByColor) {
         return { ...set, eureka_variants: set.eureka_variants, colors: filteredColors }
       }
 
       const filteredVariants = set.eureka_variants
-        .filter((v) => !selectedColor || v.color === selectedColor)
-        .filter((v) => !selectedCategory || v.category === selectedCategory)
-        .filter((v) => {
-          if (selectedObtainedFilter === 'Obtained') return v.obtained === true
-          if (selectedObtainedFilter === 'Missing') return v.obtained !== true
+        .filter((variant) => !selectedColor || variant.color === selectedColor)
+        .filter((variant) => !selectedCategory || variant.category === selectedCategory)
+        .filter((variant) => {
+          if (selectedObtainedFilter === 'Obtained') return variant.obtained === true
+          if (selectedObtainedFilter === 'Missing') return variant.obtained !== true
           return true
         })
 
@@ -56,8 +49,6 @@ export default function FilterEureka() {
   const resultsCount = showByColor
     ? filteredSets.flatMap((set) => set.colors).length
     : filteredSets.flatMap((set) => set.eureka_variants).length || 0
-
-  void push
 
   return (
     <Container maxWidth="md">

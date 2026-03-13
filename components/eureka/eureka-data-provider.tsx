@@ -1,12 +1,11 @@
 'use client'
 
-import { Suspense, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
 import { Category, Color, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
 
-import FilterEureka from './filter/filter-eureka'
 import { EurekaDataContext } from './eureka-context'
 
 const supabase = createClient()
@@ -14,9 +13,11 @@ const supabase = createClient()
 export default function EurekaDataProvider({
   isLoggedIn,
   userId,
+  children,
 }: {
   isLoggedIn: boolean
   userId: string | null
+  children: React.ReactNode
 }) {
   const [eurekaSets, setEurekaSets] = useState<EurekaSet[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -51,7 +52,7 @@ export default function EurekaDataProvider({
         'postgres_changes',
         { event: 'DELETE', schema: 'public', table: 'obtained_eureka', filter: `user_id=eq.${userId}` },
         (payload) => {
-          setObtainedEureka((prev) => prev.filter((item) => item.id !== payload.old.id))
+          setObtainedEureka((prev) => prev.filter((obtainedEureka) => obtainedEureka.id !== payload.old.id))
         }
       )
       .subscribe()
@@ -70,9 +71,7 @@ export default function EurekaDataProvider({
     <EurekaDataContext.Provider
       value={{ eurekaSets: eurekaSetsWithObtained, categories, colors, isLoggedIn, userId }}
     >
-      <Suspense>
-        <FilterEureka />
-      </Suspense>
+      {children}
     </EurekaDataContext.Provider>
   )
 }
