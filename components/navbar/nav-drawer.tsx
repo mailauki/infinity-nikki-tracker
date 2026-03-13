@@ -21,7 +21,7 @@ import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Edit, MenuOpen } from '@mui/icons-material'
+import { Edit, FilterList, MenuOpen } from '@mui/icons-material'
 import FilterMenu from './filter-menu'
 
 const DRAWER_WIDTH = 240
@@ -289,7 +289,11 @@ export default function NavDrawer({
               </AppBarTitle>
 
               <Stack sx={{ position: 'absolute', bottom: 0, right: 0 }}>
-                {pathname === '/eureka' && <FilterMenu />}
+                {pathname === '/eureka' && (
+                  <React.Suspense fallback={<IconButton disabled><FilterList /></IconButton>}>
+                    <FilterMenu />
+                  </React.Suspense>
+                )}
                 {pathname === '/profile' && (
                   <IconButton>
                     <Edit />

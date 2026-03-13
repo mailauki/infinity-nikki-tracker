@@ -1,31 +1,39 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
 import { Category, Color, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
 
-import FilterEureka from '@/components/eureka/filter/filter-eureka'
+import FilterEureka from './filter/filter-eureka'
+import { EurekaDataContext } from './eureka-context'
 
 const supabase = createClient()
 
-export default function RealtimeEureka({
-  serverEurekaSets,
-  serverCategories,
-  serverColors,
-  serverObtainedEureka,
+export default function EurekaDataProvider({
   isLoggedIn,
   userId,
 }: {
-  serverEurekaSets: EurekaSet[]
-  serverCategories: Category[]
-  serverColors: Color[]
-  serverObtainedEureka: ObtainedEureka[]
   isLoggedIn: boolean
   userId: string | null
 }) {
-  const [obtainedEureka, setObtainedEureka] = useState(serverObtainedEureka)
+  const [eurekaSets, setEurekaSets] = useState<EurekaSet[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [colors, setColors] = useState<Color[]>([])
+  const [obtainedEureka, setObtainedEureka] = useState<ObtainedEureka[]>([])
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/eureka').then((r) => r.json()),
+      fetch('/api/categories').then((r) => r.json()),
+      fetch('/api/colors').then((r) => r.json()),
+    ]).then(([sets, cats, cols]) => {
+      setEurekaSets(sets)
+      setCategories(cats)
+      setColors(cols)
+    })
+  }, [])
 
   useEffect(() => {
     if (!isLoggedIn) return
@@ -54,14 +62,17 @@ export default function RealtimeEureka({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
-  const eurekaSets = serverEurekaSets.map((set) => updateEurekaSet({ eurekaSet: set, obtainedEureka }))
+  const eurekaSetsWithObtained = eurekaSets.map((set) =>
+    updateEurekaSet({ eurekaSet: set, obtainedEureka })
+  )
 
   return (
-    <FilterEureka
-      categories={serverCategories}
-      colors={serverColors}
-      eurekaSets={eurekaSets}
-      isLoggedIn={isLoggedIn}
-    />
+    <EurekaDataContext.Provider
+      value={{ eurekaSets: eurekaSetsWithObtained, categories, colors, isLoggedIn, userId }}
+    >
+      <Suspense>
+        <FilterEureka />
+      </Suspense>
+    </EurekaDataContext.Provider>
   )
 }
