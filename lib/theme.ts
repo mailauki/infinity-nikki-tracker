@@ -100,104 +100,100 @@ let theme = createTheme({
     MuiToggleButtonGroup: {
       defaultProps: {
         variant: 'filled',
-				color: 'secondary'
+        color: 'secondary',
       },
       styleOverrides: {
         root: {
-					variants: [
-							{
-								props: { variant: 'filled', color: 'primary' },
-								style: {
-								}
-							},
-							{
-								props: { variant: 'filled', color: 'secondary' },style: {
-								},
-							}
-						],
-						gap: '0.25rem',
+          gap: '0.25rem',
         },
         firstButton: {
-          border: '1px solid',
-          borderColor: alpha('#777', 0.25),
+					borderColor: 'transparent',
           borderRadius: '6px',
           borderTopLeftRadius: '40px',
           borderBottomLeftRadius: '40px',
+					'&.Mui-disabled': {
+						borderColor: 'transparent',
+					}
         },
         middleButton: {
-          border: '1px solid',
-          borderColor: alpha('#777', 0.25),
+					borderColor: 'transparent',
           borderRadius: '6px',
+					'&.Mui-disabled': {
+						borderColor: 'transparent',
+					}
         },
         lastButton: {
-          border: '1px solid',
-          borderColor: alpha('#777', 0.25),
+					borderColor: 'transparent',
           borderRadius: '6px',
           borderTopRightRadius: '40px',
           borderBottomRightRadius: '40px',
+					'&.Mui-disabled': {
+						borderColor: 'transparent',
+					}
         },
       },
     },
-		MuiToggleButton: {
+    MuiToggleButton: {
       defaultProps: {
         variant: 'filled',
-				color: 'secondary'
+        color: 'secondary',
       },
-			styleOverrides: {
-				root: {
-					variants: [
-						{
-							props: { variant: 'filled', color: 'primary' },
-							style: ({theme}) => ({
-								backgroundColor: alpha(theme.palette.primary.main, 0.08),
-								borderRadius: '6px',
-								'&:hover': {
-									borderRadius: '12px',
-									backgroundColor: alpha(theme.palette.primary.main, 0.16),
-								},
-								'&.Mui-selected': {
-									borderRadius: '40px',
-									backgroundColor: theme.palette.primary.main,
-									color: theme.palette.primary.contrastText
-								},
-								'&.Mui-selected:hover': {
-									borderRadius: '12px',
-									backgroundColor: alpha(theme.palette.primary.main, 0.56),
-									color: theme.palette.text.primary,
-								},
-								'&.Mui-disabled': {
-									backgroundColor: alpha(theme.palette.primary.main, 0.12),
-								},
-							}),
-						},
-						{
-							props: { variant: 'filled', color: 'secondary' },
-							style: ({theme}) => ({
-								backgroundColor: alpha(theme.palette.secondary.main, 0.08),
-								borderRadius: '6px',
-								'&:hover': {
-									borderRadius: '12px',
-									backgroundColor: alpha(theme.palette.secondary.main, 0.16),
-								},
-								'&.Mui-selected': {
-									borderRadius: '40px',
-									backgroundColor: theme.palette.secondary.main,
-									color: theme.palette.secondary.contrastText
-								},
-								'&.Mui-selected:hover': {
-									borderRadius: '12px',
-									backgroundColor: alpha(theme.palette.secondary.main, 0.56),
-									color: theme.palette.text.primary,
-								},
-								'&.Mui-disabled': {
-									backgroundColor: alpha(theme.palette.secondary.main, 0.12),
-								},
-							}),
-						},
-					],
-				},
-			},
-		},
+      styleOverrides: {
+        root: {
+          variants: [
+            {
+              props: { variant: 'filled', color: 'primary' },
+              style: ({ theme }) => ({
+                backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                borderRadius: '6px',
+                '&:hover': {
+                  borderRadius: '12px',
+                  backgroundColor: alpha(theme.palette.primary.main, 0.16),
+                },
+                '&.Mui-selected': {
+                  borderRadius: '40px',
+                  backgroundColor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                },
+                '&.Mui-selected:hover': {
+                  borderRadius: '12px',
+                  backgroundColor: alpha(theme.palette.primary.main, 0.84),
+                  color: theme.palette.primary.contrastText,
+                },
+                '&.Mui-disabled': {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.12),
+                },
+              }),
+            },
+            {
+              props: { variant: 'filled', color: 'secondary' },
+              style: ({ theme }) => ({
+                backgroundColor: alpha(theme.palette.secondary.main, 0.12),
+                borderRadius: '6px',
+								borderColor: 'transparent',
+                '&:hover': {
+                  borderRadius: '12px',
+                  backgroundColor: alpha(theme.palette.secondary.main, 0.24),
+                },
+                '&.Mui-selected': {
+                  borderRadius: '40px',
+                  backgroundColor: theme.palette.secondary.main,
+                  color: theme.palette.secondary.contrastText,
+                },
+                '&.Mui-selected:hover': {
+                  borderRadius: '12px',
+                  backgroundColor: alpha(theme.palette.secondary.main, 0.84),
+                  color: theme.palette.primary.contrastText,
+                },
+                '&.Mui-disabled': {
+                  backgroundColor: alpha(theme.palette.secondary.main, 0.12),
+                },
+              }),
+            },
+          ],
+        },
+      },
+    },
   },
 })
 
