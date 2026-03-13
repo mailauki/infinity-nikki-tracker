@@ -29,11 +29,13 @@ export default function EurekaDataProvider({
       fetch('/api/eureka').then((r) => r.json()),
       fetch('/api/categories').then((r) => r.json()),
       fetch('/api/colors').then((r) => r.json()),
-    ]).then(([sets, cats, cols]) => {
-      setEurekaSets(sets)
-      setCategories(cats)
-      setColors(cols)
-    })
+    ])
+      .then(([sets, cats, cols]) => {
+        setEurekaSets(sets)
+        setCategories(cats)
+        setColors(cols)
+      })
+      .catch(console.error)
   }, [])
 
   useEffect(() => {
@@ -42,6 +44,7 @@ export default function EurekaDataProvider({
     fetch('/api/obtained-eureka')
       .then((r) => r.json())
       .then((data: ObtainedEureka[]) => setObtainedEureka(data))
+      .catch(console.error)
 
     const obtainedChannel = supabase
       .channel('obtained-filter-channel')
