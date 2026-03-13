@@ -295,7 +295,13 @@ export default function NavDrawer({
 
               <Stack sx={{ position: 'absolute', bottom: 0, right: 0 }}>
                 {pathname === '/eureka' && (
-                  <React.Suspense fallback={<IconButton disabled><FilterList /></IconButton>}>
+                  <React.Suspense
+                    fallback={
+                      <IconButton disabled>
+                        <FilterList />
+                      </IconButton>
+                    }
+                  >
                     <FilterMenu />
                   </React.Suspense>
                 )}

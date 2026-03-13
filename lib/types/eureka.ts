@@ -22,7 +22,10 @@ export type EurekaVariant = Pick<
   'id' | 'slug' | 'eureka_set' | 'color' | 'category' | 'image_url' | 'default'
 > & { obtained?: boolean }
 
-export type ObtainedEureka = Pick<Tables<'obtained_eureka'>, 'id' | 'eureka_set' | 'category' | 'color'>
+export type ObtainedEureka = Pick<
+  Tables<'obtained_eureka'>,
+  'id' | 'eureka_set' | 'category' | 'color'
+>
 
 export interface ObtainedCount {
   obtained: number

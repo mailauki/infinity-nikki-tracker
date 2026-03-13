@@ -24,6 +24,7 @@ export default function EurekaDataProvider({
   const [colors, setColors] = useState<Color[]>([])
   const [trials, setTrials] = useState<Trial[]>([])
   const [obtainedEureka, setObtainedEureka] = useState<ObtainedEureka[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
@@ -37,6 +38,7 @@ export default function EurekaDataProvider({
         setCategories(cats)
         setColors(cols)
         setTrials(trls)
+        setIsLoading(false)
       })
       .catch(console.error)
   }, [])
@@ -53,16 +55,28 @@ export default function EurekaDataProvider({
       .channel('obtained-filter-channel')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'obtained_eureka', filter: `user_id=eq.${userId}` },
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'obtained_eureka',
+          filter: `user_id=eq.${userId}`,
+        },
         (payload) => {
           setObtainedEureka((prev) => [...prev, payload.new as ObtainedEureka])
         }
       )
       .on(
         'postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'obtained_eureka', filter: `user_id=eq.${userId}` },
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'obtained_eureka',
+          filter: `user_id=eq.${userId}`,
+        },
         (payload) => {
-          setObtainedEureka((prev) => prev.filter((obtainedEureka) => obtainedEureka.id !== payload.old.id))
+          setObtainedEureka((prev) =>
+            prev.filter((obtainedEureka) => obtainedEureka.id !== payload.old.id)
+          )
         }
       )
       .subscribe()
@@ -79,7 +93,15 @@ export default function EurekaDataProvider({
 
   return (
     <EurekaDataContext.Provider
-      value={{ eurekaSets: eurekaSetsWithObtained, categories, colors, trials, isLoggedIn, userId }}
+      value={{
+        eurekaSets: eurekaSetsWithObtained,
+        categories,
+        colors,
+        trials,
+        isLoggedIn,
+        isLoading,
+        userId,
+      }}
     >
       {children}
     </EurekaDataContext.Provider>

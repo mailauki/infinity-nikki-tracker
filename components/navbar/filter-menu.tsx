@@ -138,7 +138,10 @@ export default function FilterMenu() {
         </ListItem>
 
         <ListItem sx={{ gap: 1 }}>
-          <SortColorToggle showByColor={showByColor} onShowByColorChange={handleShowByColorChange} />
+          <SortColorToggle
+            showByColor={showByColor}
+            onShowByColorChange={handleShowByColorChange}
+          />
 
           <ColorSelect
             colors={colors}

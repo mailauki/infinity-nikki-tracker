@@ -3,7 +3,6 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  CardMedia,
   Container,
   Grid,
   List,
@@ -32,17 +31,15 @@ function TrialCardSkeleton() {
         subheader={<Skeleton width="20%" />}
         title={<Skeleton width="50%" />}
       />
-      <CardMedia sx={{ p: 1 }}>
-        <Skeleton height={200} variant="rectangular" />
-      </CardMedia>
-      <CardContent>
-        <Skeleton height={4} variant="rectangular" />
-      </CardContent>
-      <CardActions>
+      <Skeleton height={160} variant="rectangular" />
+      <CardContent sx={{ p: 0 }}>
         <List sx={{ width: '100%' }}>
           <NestedSetSkeleton />
           <NestedSetSkeleton />
         </List>
+      </CardContent>
+      <CardActions>
+        <Skeleton height={36} variant="rounded" width={80} />
       </CardActions>
     </Card>
   )
