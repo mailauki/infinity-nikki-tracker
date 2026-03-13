@@ -7,6 +7,7 @@ export default function ClearFiltersButton({
   selectedCategory,
   selectedObtainedFilter,
   selectedColor,
+  selectedRarities,
   showByColor,
   onClearFilters,
 }: {
@@ -16,6 +17,7 @@ export default function ClearFiltersButton({
   groupBySet: boolean
   showByColor: boolean
   selectedColor: string | null
+  selectedRarities: number[]
   onClearFilters: () => void
 }) {
   return (
@@ -24,6 +26,7 @@ export default function ClearFiltersButton({
         selectedCategory ||
         selectedObtainedFilter ||
         selectedColor ||
+        selectedRarities.length > 0 ||
         showByColor) && (
         <Box alignSelf="flex-end">
           <Tooltip title="Clear filters">

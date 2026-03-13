@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, Color, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
+import { Category, Color, EurekaSet, ObtainedEureka, Trial } from '@/lib/types/eureka'
 
 import { EurekaDataContext } from './eureka-context'
 
@@ -22,6 +22,7 @@ export default function EurekaDataProvider({
   const [eurekaSets, setEurekaSets] = useState<EurekaSet[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [colors, setColors] = useState<Color[]>([])
+  const [trials, setTrials] = useState<Trial[]>([])
   const [obtainedEureka, setObtainedEureka] = useState<ObtainedEureka[]>([])
 
   useEffect(() => {
@@ -29,11 +30,13 @@ export default function EurekaDataProvider({
       fetch('/api/eureka').then((r) => r.json()),
       fetch('/api/categories').then((r) => r.json()),
       fetch('/api/colors').then((r) => r.json()),
+      fetch('/api/trials').then((r) => r.json()),
     ])
-      .then(([sets, cats, cols]) => {
+      .then(([sets, cats, cols, trls]) => {
         setEurekaSets(sets)
         setCategories(cats)
         setColors(cols)
+        setTrials(trls)
       })
       .catch(console.error)
   }, [])
@@ -76,7 +79,7 @@ export default function EurekaDataProvider({
 
   return (
     <EurekaDataContext.Provider
-      value={{ eurekaSets: eurekaSetsWithObtained, categories, colors, isLoggedIn, userId }}
+      value={{ eurekaSets: eurekaSetsWithObtained, categories, colors, trials, isLoggedIn, userId }}
     >
       {children}
     </EurekaDataContext.Provider>

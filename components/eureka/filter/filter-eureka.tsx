@@ -23,9 +23,11 @@ export default function FilterEureka() {
   const groupBySet = searchParams.get('groupBySet') !== 'false'
   const showByColor = searchParams.get('showByColor') === 'true'
   const selectedColor = searchParams.get('color')
+  const selectedRarities = searchParams.get('rarity')?.split(',').map(Number).filter(Boolean) ?? []
 
   const filteredSets = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
+    .filter((set) => selectedRarities.length === 0 || selectedRarities.includes(set.rarity ?? 0))
     .map((set) => {
       const filteredColors = set.colors.filter((color) => !selectedColor || color.slug === selectedColor)
 

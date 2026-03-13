@@ -203,7 +203,7 @@ export default function NavDrawer({
       .filter((link) => pathname === link.url || pathname.startsWith(link.url + '/'))
       .sort((a, b) => b.url.length - a.url.length)[0]?.title ?? ''
 
-  const isEurekaPage = pathname === '/eureka'
+  const isEurekaPage = pathname === '/eureka' || pathname.startsWith('/eureka/trials')
   const userId = user?.sub ?? null
   const isLoggedIn = !!userId
 

@@ -10,11 +10,12 @@ export type ResponsiveCardSize =
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
-export type CategoryFilter = 'Head' | 'Hands' | 'Feet' | ''
+export type CategoryFilter = 'Head' | 'Hands' | 'Feet'
 
 export type ObtainedFilter = 'Missing' | 'Obtained'
 
-export type EurekaFilter = 'Sets' | 'Eureka' | 'Missing'
+export type RarityFilter = 2 | 3 | 4 | 5
+
 export interface NavLink {
   title: string
   url: string

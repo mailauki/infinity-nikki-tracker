@@ -2,12 +2,13 @@
 
 import { createContext, useContext } from 'react'
 
-import { Category, Color, EurekaSet } from '@/lib/types/eureka'
+import { Category, Color, EurekaSet, Trial } from '@/lib/types/eureka'
 
 interface EurekaDataContextValue {
   eurekaSets: EurekaSet[]
   categories: Category[]
   colors: Color[]
+  trials: Trial[]
   isLoggedIn: boolean
   userId: string | null
 }
@@ -16,6 +17,7 @@ export const EurekaDataContext = createContext<EurekaDataContextValue>({
   eurekaSets: [],
   categories: [],
   colors: [],
+  trials: [],
   isLoggedIn: false,
   userId: null,
 })

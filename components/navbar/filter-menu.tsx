@@ -16,6 +16,7 @@ import SortColorToggle from '../eureka/filter/sort-color-toggle'
 import SortEurekaToggle from '../eureka/filter/sort-eureka-toggle'
 import EurekaSelect from '../eureka/filter/eureka-select'
 import ClearFiltersButton from '../eureka/filter/clear-filters-button'
+import RarityToggle from '../eureka/filter/rarity-toggle'
 
 export default function FilterMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
@@ -33,6 +34,7 @@ export default function FilterMenu() {
   const groupBySet = searchParams.get('groupBySet') !== 'false'
   const showByColor = searchParams.get('showByColor') === 'true'
   const selectedColor = searchParams.get('color')
+  const selectedRarities = searchParams.get('rarity')?.split(',').map(Number).filter(Boolean) ?? []
 
   function push(updates: Record<string, string | null>) {
     router.push(applyFilterParams(pathname, searchParams, updates), { scroll: false })
@@ -70,6 +72,10 @@ export default function FilterMenu() {
 
   const handleColorChange = (event: SelectChangeEvent) => {
     push({ color: event.target.value || null })
+  }
+
+  const handleRarityChange = (_event: React.MouseEvent<HTMLElement>, value: number[]) => {
+    push({ rarity: value.length ? value.join(',') : null })
   }
 
   const handleClearFilters = () => {
@@ -115,6 +121,7 @@ export default function FilterMenu() {
             selectedColor={selectedColor}
             selectedEurekaSet={selectedEurekaSet}
             selectedObtainedFilter={selectedObtainedFilter}
+            selectedRarities={selectedRarities}
             showByColor={showByColor}
             onClearFilters={handleClearFilters}
           />
@@ -158,6 +165,10 @@ export default function FilterMenu() {
             selectedCategory={showByColor ? null : selectedCategory}
             onCategoryChange={handleCategoryChange}
           />
+        </ListItem>
+
+        <ListItem>
+          <RarityToggle selectedRarities={selectedRarities} onRarityChange={handleRarityChange} />
         </ListItem>
       </Menu>
     </div>
