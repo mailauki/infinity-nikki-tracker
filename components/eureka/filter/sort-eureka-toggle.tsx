@@ -12,7 +12,7 @@ export default function SortEurekaToggle({
     <Tooltip title="Sort by Eureka Set">
       <ToggleButton
         selected={groupBySet}
-        sx={{ py: 1.5, whiteSpace: 'nowrap' }}
+        sx={{ py: 1.25, whiteSpace: 'nowrap' }}
         value="groupBySet"
         onChange={onGroupBySetChange}
       >

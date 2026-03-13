@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, Color, EurekaSet, Obtained } from '@/lib/types/eureka'
+import { Category, Color, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
 
 import FilterEureka from '@/components/eureka/filter/filter-eureka'
 
@@ -14,18 +14,18 @@ export default function RealtimeEureka({
   serverEurekaSets,
   serverCategories,
   serverColors,
-  serverObtained,
+  serverObtainedEureka,
   isLoggedIn,
   userId,
 }: {
   serverEurekaSets: EurekaSet[]
   serverCategories: Category[]
   serverColors: Color[]
-  serverObtained: Obtained[]
+  serverObtainedEureka: ObtainedEureka[]
   isLoggedIn: boolean
   userId: string | null
 }) {
-  const [obtained, setObtained] = useState(serverObtained)
+  const [obtainedEureka, setObtainedEureka] = useState(serverObtainedEureka)
 
   useEffect(() => {
     if (!isLoggedIn) return
@@ -36,14 +36,14 @@ export default function RealtimeEureka({
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
         (payload) => {
-          setObtained((prev) => [...prev, payload.new as Obtained])
+          setObtainedEureka((prev) => [...prev, payload.new as ObtainedEureka])
         }
       )
       .on(
         'postgres_changes',
         { event: 'DELETE', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
         (payload) => {
-          setObtained((prev) => prev.filter((item) => item.id !== payload.old.id))
+          setObtainedEureka((prev) => prev.filter((item) => item.id !== payload.old.id))
         }
       )
       .subscribe()
@@ -54,7 +54,7 @@ export default function RealtimeEureka({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
-  const eurekaSets = serverEurekaSets.map((set) => updateEurekaSet({ eurekaSet: set, obtained }))
+  const eurekaSets = serverEurekaSets.map((set) => updateEurekaSet({ eurekaSet: set, obtainedEureka }))
 
   return (
     <FilterEureka

@@ -4,7 +4,7 @@ import { getUserID } from '@/hooks/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { Metadata } from 'next'
 import RealtimeEureka from '@/components/realtime/realtime-eureka'
-import { getObtained } from '@/hooks/data/obtained-eureka'
+import { getObtainedEureka } from '@/hooks/data/obtained-eureka'
 import { getCategories } from '@/hooks/data/categories'
 import { getColors } from '@/hooks/data/colors'
 
@@ -26,7 +26,7 @@ async function EurekaSets() {
   const colors = await getColors()
   const user_id = await getUserID()
   const isLoggedIn = !!user_id
-  const obtained = user_id ? await getObtained(user_id) : []
+  const obtainedEureka = user_id ? await getObtainedEureka(user_id) : []
 
   return (
     <RealtimeEureka
@@ -34,7 +34,7 @@ async function EurekaSets() {
       serverCategories={categories}
       serverColors={colors}
       serverEurekaSets={eurekaSets}
-      serverObtained={obtained}
+      serverObtainedEureka={obtainedEureka}
       userId={user_id}
     />
   )

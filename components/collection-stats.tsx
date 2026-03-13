@@ -34,7 +34,7 @@ export default function CollectionStats({ sets }: { sets: EurekaSet[] }) {
   const allVariants = sets.flatMap((s) => s.eureka_variants)
 
   const setsObtained = sets.filter((s) => s.eureka_variants.every((v) => v.obtained)).length
-  const { obtained: itemsObtained, total: itemsTotal } = countObtained(allVariants)
+  const { obtained: variantsObtained, total: variantsTotal } = countObtained(allVariants)
 
   const allCategories = [...new Set(allVariants.map((v) => v.category).filter(Boolean))]
   const categoriesObtained = allCategories.filter((cat) =>
@@ -56,7 +56,7 @@ export default function CollectionStats({ sets }: { sets: EurekaSet[] }) {
       }}
     >
       <CollectionStatCard obtained={setsObtained} title="Sets" total={sets.length} />
-      <CollectionStatCard obtained={itemsObtained} title="Items" total={itemsTotal} />
+      <CollectionStatCard obtained={variantsObtained} title="Variants" total={variantsTotal} />
       <CollectionStatCard
         obtained={categoriesObtained}
         title="Categories"

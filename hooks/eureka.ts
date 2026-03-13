@@ -1,4 +1,4 @@
-import { Category, EurekaVariant, EurekaSet, Obtained } from '@/lib/types/eureka'
+import { Category, EurekaVariant, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
 
 export function createEurekaSet({
   eurekaSet,
@@ -23,16 +23,16 @@ export function createEurekaSet({
 
 export function updateEurekaSet({
   eurekaSet,
-  obtained,
+  obtainedEureka,
 }: {
   eurekaSet: EurekaSet
-  obtained: Obtained[] | null
+  obtainedEureka: ObtainedEureka[] | null
 }) {
   const eurekaWithObtained = {
     ...eurekaSet,
     eureka_variants: eurekaSet?.eureka_variants.map((item) => ({
       ...item,
-      obtained: !!obtained?.find(
+      obtained: !!obtainedEureka?.find(
         (value) =>
           item.eureka_set === value.eureka_set &&
           item.category === value.category &&
@@ -46,14 +46,14 @@ export function updateEurekaSet({
 
 export function updateEurekaVariants({
   eurekaVariants,
-  obtained,
+  obtainedEureka,
 }: {
   eurekaVariants: EurekaVariant[]
-  obtained: Obtained[] | null
+  obtainedEureka: ObtainedEureka[] | null
 }) {
   const eurekaWithObtained = eurekaVariants.map((item) => ({
     ...item,
-    obtained: !!obtained?.find(
+    obtained: !!obtainedEureka?.find(
       (value) =>
         item.eureka_set === value.eureka_set &&
         item.category === value.category &&

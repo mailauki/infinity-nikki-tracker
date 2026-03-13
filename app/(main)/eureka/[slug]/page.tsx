@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import RealtimeEurekaSet from '@/components/realtime/realtime-eureka-set'
 import { getUserID } from '@/hooks/user'
 import { getEurekaSet } from '@/hooks/data/eureka-sets'
-import { getObtained } from '@/hooks/data/obtained-eureka'
+import { getObtainedEureka } from '@/hooks/data/obtained-eureka'
 import { Container, Stack } from '@mui/material'
 import type { Metadata } from 'next'
 
@@ -32,7 +32,7 @@ export default async function EurekaSetPage({ params }: { params: Promise<{ slug
 async function EurekaSet({ slug }: { slug: string }) {
   const eurekaSet = await getEurekaSet(slug)
   const user_id = await getUserID()
-  const obtained = user_id ? await getObtained(user_id) : []
+  const obtainedEureka = user_id ? await getObtainedEureka(user_id) : []
   const isLoggedIn = !!user_id!
 
   return (
@@ -41,7 +41,7 @@ async function EurekaSet({ slug }: { slug: string }) {
         <RealtimeEurekaSet
           isLoggedIn={isLoggedIn}
           serverEurekaSet={eurekaSet}
-          serverObtained={obtained || []}
+          serverObtainedEureka={obtainedEureka || []}
           userId={user_id ?? null}
         />
       </Stack>

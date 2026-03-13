@@ -5,7 +5,7 @@ import { getUserID } from '../user'
 import { getColors } from './colors'
 import { getCategories } from './categories'
 import { createEurekaSet, updateEurekaSet } from '../eureka'
-import { getObtained } from './obtained-eureka'
+import { getObtainedEureka } from './obtained-eureka'
 
 export const getEurekaSets = cache(async () => {
   const supabase = await createClient()
@@ -51,13 +51,13 @@ export const getEurekaSets = cache(async () => {
 
   if (!user_id) return eureka
 
-  const obtained = await getObtained(user_id)
+  const obtainedEureka = await getObtainedEureka(user_id)
 
   const eurekaWithObtained = eureka?.map((eurekaSet) => ({
     ...eurekaSet,
     eureka_variants: eurekaSet.eureka_variants.map((item) => ({
       ...item,
-      obtained: !!obtained?.find(
+      obtained: !!obtainedEureka?.find(
         (value) =>
           item.eureka_set === value.eureka_set &&
           item.category === value.category &&
@@ -108,9 +108,9 @@ export const getEurekaSet = cache(async (slug: string) => {
 
   if (!user_id) return eureka
 
-  const obtained = await getObtained(user_id)
+  const obtainedEureka = await getObtainedEureka(user_id)
 
-  const eurekaWithObtained = updateEurekaSet({ eurekaSet: eureka, obtained })
+  const eurekaWithObtained = updateEurekaSet({ eurekaSet: eureka, obtainedEureka })
 
   return eurekaWithObtained
 })
