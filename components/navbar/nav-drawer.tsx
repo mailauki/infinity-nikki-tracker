@@ -15,6 +15,7 @@ import {
   Container,
   Fab,
   Paper,
+	Slide,
   Tooltip,
   Typography,
 } from '@mui/material'
@@ -407,8 +408,9 @@ export default function NavDrawer({
           <StyledToolbar />
           <MainContainer ref={scrollRef} elevation={0} open={open}>
             {children}
-            {isVisible && (
-              <Tooltip placement="top-end" title="Back to Top">
+						
+						<Slide direction="up" in={isVisible}>
+							<Tooltip placement="top-end" title="Back to Top">
                 <Fab
                   aria-label="scroll back to top"
                   size="small"
@@ -422,7 +424,7 @@ export default function NavDrawer({
                   <KeyboardArrowUp />
                 </Fab>
               </Tooltip>
-            )}
+							</Slide>
           </MainContainer>
           <Toolbar />
         </Box>
