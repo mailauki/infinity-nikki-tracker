@@ -12,10 +12,11 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 - **Progress Visualization** — Per-category, per-color, and per-trial progress bars with percentages
 - **Missing Items View** — Filterable list of Eureka pieces you haven't collected yet
 - **Trials View** — Progress grouped by in-game trial
+- **Filter & Sort** — Filter by category, color, rarity, obtained status, and eureka set; group by set or color
 - **Realtime Updates** — Collection state updates instantly across tabs via Supabase Realtime
 - **Auth-aware** — Browse as a guest (read-only) or sign in to track your own collection
 - **Profile Management** — Update display name, username, and avatar
-- **Admin Dashboard** — Manage Eureka sets and variants from the frontend (admin role required)
+- **Admin Dashboard** — Manage Eureka sets, variants, and trials from the frontend (admin role required)
 - **Dark/Light/System Theme** — Theme switcher in the footer
 
 ## Tech Stack
@@ -92,9 +93,10 @@ app/
   auth/                   # Auth pages (login, sign-up, etc.)
 
 components/
-  navbar/                 # Nav drawer, tabs, user menu, theme switcher
-  eureka/                 # Eureka display components (button, filter, header, set-card, table)
-  admin/                  # Admin table, entity-specific tables, dashboard components
+  navbar/                 # Nav drawer, tabs, user menu, theme switcher, filter menu
+  eureka/                 # Eureka display components (button, set-card, table)
+    filter/               # Decomposed filter controls (category, color, rarity, obtained, sort toggles)
+  admin/                  # Generic paginated table/list, entity-specific tables, dashboard components
   realtime/               # Realtime-subscribed client components
   forms/
     auth/                 # Login, sign-up, profile, forgot-password, update-password forms
@@ -133,17 +135,17 @@ hooks/
 
 ## Database Schema
 
-| Table             | Description                                                                        |
-| ----------------- | ---------------------------------------------------------------------------------- |
-| `eureka_sets`     | Outfit set metadata (title, slug, rarity, style, label, trial) with FK constraints |
-| `eureka_variants` | Individual Eureka items (set FK, color, category, image_url, slug)                 |
-| `categories`      | Category lookup with images                                                        |
-| `colors`          | Color lookup with images                                                           |
-| `styles`          | Style lookup (unique titles, FK target for `eureka_sets.style`); RLS enabled       |
-| `labels`          | Label lookup (unique titles, FK target for `eureka_sets.label`); RLS enabled       |
-| `obtained`        | Per-user collection records                                                        |
-| `trials`          | Trial lookup with images (FK target for `eureka_sets.trial`)                       |
-| `profiles`        | User profiles (full_name, username, avatar_url, role)                              |
+| Table             | Description                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------- |
+| `eureka_sets`     | Outfit set metadata (title, slug, rarity, style, label, trial) — FKs use slug columns         |
+| `eureka_variants` | Individual Eureka items (eureka_set slug FK, color slug FK, category slug FK, image_url, slug) |
+| `categories`      | Category lookup with images (slug-keyed)                                                       |
+| `colors`          | Color lookup with images (slug-keyed)                                                          |
+| `styles`          | Style lookup (unique titles + slugs, FK target for `eureka_sets.style`); RLS enabled          |
+| `labels`          | Label lookup (unique titles + slugs, FK target for `eureka_sets.label`); RLS enabled          |
+| `obtained_eureka` | Per-user collection records (user_id, eureka_set slug, category slug, color slug)              |
+| `trials`          | Trial lookup with images and slug (FK target for `eureka_sets.trial`)                          |
+| `profiles`        | User profiles (full_name, username, avatar_url, role: 'user' \| 'admin')                      |
 
 ## Authentication
 
