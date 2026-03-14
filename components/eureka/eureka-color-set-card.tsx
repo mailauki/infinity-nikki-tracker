@@ -37,7 +37,7 @@ export default function EurekaColorSetCard({
             alt={slug}
             size="lg"
             src={variants[0].image_url!}
-            sx={{ bgcolor: 'transparent', color: 'inherit' }}
+            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
             <Category fontSize="inherit" />
           </Avatar>

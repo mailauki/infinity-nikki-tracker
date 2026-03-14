@@ -56,7 +56,7 @@ export function EurekaVariantTable({
           alt={variant.eureka_set || 'Image'}
           size="xs"
           src={variant.image_url!}
-          sx={{ bgcolor: 'transparent', color: 'inherit' }}
+          sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
         >
           <Category fontSize="inherit" />
         </Avatar>
