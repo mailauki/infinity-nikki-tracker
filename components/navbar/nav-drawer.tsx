@@ -74,7 +74,7 @@ const MainContainer = styled(Paper, {
 
   overflowY: 'auto',
   overflowX: 'hidden',
-  overscrollBehavior: 'contain',
+  overscrollBehavior: 'auto',
   borderRadius: '12px',
 }))
 
