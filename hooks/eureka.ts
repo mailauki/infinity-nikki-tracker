@@ -1,4 +1,4 @@
-import { Category, EurekaVariant, EurekaSet, Obtained } from '@/lib/types/eureka'
+import { Category, EurekaVariant, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
 
 export function createEurekaSet({
   eurekaSet,
@@ -11,10 +11,10 @@ export function createEurekaSet({
 }) {
   const eureka = {
     ...eurekaSet,
-    image_url: eurekaSet?.eureka_variants.find((item) => item.default)?.image_url,
+    image_url: eurekaSet?.eureka_variants.find((variant) => variant.default)?.image_url,
     categories: categories,
-    colors: [...new Set(eurekaSet?.eureka_variants.map((item) => item.color))].flatMap((item) =>
-      colors?.filter((color) => color.title === item)
+    colors: [...new Set(eurekaSet?.eureka_variants.map((variant) => variant.color))].flatMap(
+      (colorSlug) => colors?.filter((color) => color.slug === colorSlug)
     ),
   } as EurekaSet
 
@@ -23,20 +23,20 @@ export function createEurekaSet({
 
 export function updateEurekaSet({
   eurekaSet,
-  obtained,
+  obtainedEureka,
 }: {
   eurekaSet: EurekaSet
-  obtained: Obtained[] | null
+  obtainedEureka: ObtainedEureka[] | null
 }) {
   const eurekaWithObtained = {
     ...eurekaSet,
-    eureka_variants: eurekaSet?.eureka_variants.map((item) => ({
-      ...item,
-      obtained: !!obtained?.find(
-        (value) =>
-          item.eureka_set === value.eureka_set &&
-          item.category === value.category &&
-          item.color === value.color
+    eureka_variants: eurekaSet?.eureka_variants.map((variant) => ({
+      ...variant,
+      obtained: !!obtainedEureka?.find(
+        (obtained) =>
+          variant.eureka_set === obtained.eureka_set &&
+          variant.category === obtained.category &&
+          variant.color === obtained.color
       ),
     })) as EurekaVariant[],
   } as EurekaSet
@@ -46,18 +46,18 @@ export function updateEurekaSet({
 
 export function updateEurekaVariants({
   eurekaVariants,
-  obtained,
+  obtainedEureka,
 }: {
   eurekaVariants: EurekaVariant[]
-  obtained: Obtained[] | null
+  obtainedEureka: ObtainedEureka[] | null
 }) {
-  const eurekaWithObtained = eurekaVariants.map((item) => ({
-    ...item,
-    obtained: !!obtained?.find(
-      (value) =>
-        item.eureka_set === value.eureka_set &&
-        item.category === value.category &&
-        item.color === value.color
+  const eurekaWithObtained = eurekaVariants.map((variant) => ({
+    ...variant,
+    obtained: !!obtainedEureka?.find(
+      (obtained) =>
+        variant.eureka_set === obtained.eureka_set &&
+        variant.category === obtained.category &&
+        variant.color === obtained.color
     ),
   })) as EurekaVariant[]
 

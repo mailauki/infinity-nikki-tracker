@@ -12,7 +12,7 @@ export default function SortColorToggle({
     <Tooltip title="Show by Color">
       <ToggleButton
         selected={showByColor}
-        sx={{ py: 1.5, whiteSpace: 'nowrap' }}
+        sx={{ py: 1.25, whiteSpace: 'nowrap' }}
         value="showByColor"
         onChange={onShowByColorChange}
       >

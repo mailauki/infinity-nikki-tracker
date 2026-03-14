@@ -17,7 +17,7 @@ export function CategoryItem({
   size?: AvatarSize
 }) {
   const filteredVariants = eurekaVariants.filter(
-    (variant) => (categoryType === 'colors' ? variant.color : variant.category) === item.title
+    (variant) => (categoryType === 'colors' ? variant.color : variant.category) === item.slug
   )
   const obtainedCount = countObtained(filteredVariants)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)

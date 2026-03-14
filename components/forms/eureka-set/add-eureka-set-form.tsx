@@ -87,10 +87,10 @@ export default function AddEurekaSetForm({
     if (colorSelect.length > 0) {
       const variants = colorSelect.flatMap((color) =>
         categories.map((cat) => ({
-          eureka_set: title.trim(),
-          category: cat.title,
+          eureka_set: slug.trim(),
+          category: cat.slug,
           color,
-          slug: toSlugVariant(title.trim(), cat.title ?? '', color),
+          slug: toSlugVariant(slug.trim(), cat.slug, color),
         }))
       )
       const { error: variantError } = await supabase.from('eureka_variants').insert(variants)
@@ -160,7 +160,7 @@ export default function AddEurekaSetForm({
           <Select label="Style" value={style} onChange={(e) => setStyle(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {styles.map((s) => (
-              <MenuItem key={s.title} value={s.title!}>
+              <MenuItem key={s.slug} value={s.slug}>
                 {s.title}
               </MenuItem>
             ))}
@@ -172,7 +172,7 @@ export default function AddEurekaSetForm({
           <Select label="Label" value={label} onChange={(e) => setLabel(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {labels.map((l) => (
-              <MenuItem key={l.title} value={l.title!}>
+              <MenuItem key={l.slug} value={l.slug}>
                 {l.title}
               </MenuItem>
             ))}
@@ -184,7 +184,7 @@ export default function AddEurekaSetForm({
           <Select label="Trial" value={trial} onChange={(e) => setTrial(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {trials.map((t) => (
-              <MenuItem key={t.title} value={t.title}>
+              <MenuItem key={t.slug} value={t.slug!}>
                 {t.title}
               </MenuItem>
             ))}

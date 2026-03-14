@@ -12,8 +12,8 @@ export default function EurekaColorSetCard({
   color: Color
   isLoggedIn: boolean
 }) {
-  const slug = `${eurekaSet.slug}-${color.title.toLowerCase()}`
-  const variants = eurekaSet.eureka_variants.filter((variant) => variant.color === color.title)
+  const slug = `${eurekaSet.slug}-${color.slug}`
+  const variants = eurekaSet.eureka_variants.filter((variant) => variant.color === color.slug)
 
   const obtainedCount = countObtained(variants)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)

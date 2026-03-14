@@ -1,3 +1,4 @@
+import { toTitle } from '@/lib/utils'
 import { handleObtained } from '@/app/(main)/eureka/actions'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { Card, CardActionArea, Chip } from '@mui/material'
@@ -39,14 +40,14 @@ export default function EurekaButton({
           alt={eurekaVariant.slug ?? ''}
           imageUrl={eurekaVariant.image_url!}
           size={size}
-          subheader={`${eurekaVariant.category} • ${eurekaVariant.color}`}
-          title={eurekaVariant.eureka_set!}
+          subheader={`${toTitle(eurekaVariant.category ?? '')} • ${toTitle(eurekaVariant.color ?? '')}`}
+          title={toTitle(eurekaVariant.eureka_set ?? '')}
         />
         {size !== 'sm' && (
           <EurekaCardContent
             size={size}
-            subheader={`${eurekaVariant.category} • ${eurekaVariant.color}`}
-            title={eurekaVariant.eureka_set!}
+            subheader={`${toTitle(eurekaVariant.category ?? '')} • ${toTitle(eurekaVariant.color ?? '')}`}
+            title={toTitle(eurekaVariant.eureka_set ?? '')}
           />
         )}
       </CardActionArea>

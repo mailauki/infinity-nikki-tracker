@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, EurekaSet, Obtained } from '@/lib/types/eureka'
+import { Category, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
 
 import EurekaVariantGrid from '@/components/eureka/eureka-variant-grid'
 import { Box, Card, List } from '@mui/material'
@@ -17,17 +17,17 @@ const supabase = createClient()
 
 export default function RealtimeEurekaSet({
   serverEurekaSet,
-  serverObtained,
+  serverObtainedEureka,
   isLoggedIn,
   userId,
 }: {
   serverEurekaSet: EurekaSet
-  serverObtained: Obtained[]
+  serverObtainedEureka: ObtainedEureka[]
   isLoggedIn: boolean
   userId: string | null
 }) {
   const [eurekaSet, setEurekaSet] = useState(serverEurekaSet)
-  const [obtained, setObtained] = useState(serverObtained)
+  const [obtainedEureka, setObtainedEureka] = useState(serverObtainedEureka)
 
   useEffect(() => {
     if (!userId) return
@@ -36,16 +36,26 @@ export default function RealtimeEurekaSet({
       .channel('obtained-set-channel')
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'obtained_eureka',
+          filter: `user_id=eq.${userId}`,
+        },
         (payload) => {
-          setObtained((prev) => [...prev, payload.new as Obtained])
+          setObtainedEureka((prev) => [...prev, payload.new as ObtainedEureka])
         }
       )
       .on(
         'postgres_changes',
-        { event: 'DELETE', schema: 'public', table: 'obtained', filter: `user_id=eq.${userId}` },
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'obtained_eureka',
+          filter: `user_id=eq.${userId}`,
+        },
         (payload) => {
-          setObtained((prev) => prev.filter((item) => item.id !== payload.old.id))
+          setObtainedEureka((prev) => prev.filter((obtained) => obtained.id !== payload.old.id))
         }
       )
       .subscribe()
@@ -56,10 +66,10 @@ export default function RealtimeEurekaSet({
   }, [userId])
 
   useEffect(() => {
-    const updatedEurekaSet = updateEurekaSet({ eurekaSet: serverEurekaSet, obtained })
+    const updatedEurekaSet = updateEurekaSet({ eurekaSet: serverEurekaSet, obtainedEureka })
 
     setEurekaSet(updatedEurekaSet)
-  }, [obtained, serverEurekaSet])
+  }, [obtainedEureka, serverEurekaSet])
 
   return (
     <>
@@ -75,7 +85,7 @@ export default function RealtimeEurekaSet({
               <List sx={{ width: '100%' }}>
                 {eurekaSet.categories.map((category: Category) => (
                   <Card
-                    key={category.title}
+                    key={category.slug}
                     component="li"
                     elevation={0}
                     sx={{ backgroundColor: 'transparent' }}
@@ -87,7 +97,7 @@ export default function RealtimeEurekaSet({
               <List sx={{ width: '100%' }}>
                 {eurekaSet.colors.map((color: Category) => (
                   <Card
-                    key={color.title}
+                    key={color.slug}
                     component="li"
                     elevation={0}
                     sx={{ backgroundColor: 'transparent' }}

@@ -1,84 +1,58 @@
-import React from 'react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Container,
-  Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  ListSubheader,
-  Skeleton,
-  Stack,
-} from '@mui/material'
-import GridContainer from '@/components/grid-container'
+import { Box, Container, Divider, Skeleton, Stack } from '@mui/material'
 
-function SetCardSkeleton() {
+function GroupHeaderSkeleton() {
   return (
-    <Card>
-      <CardHeader
-        action={<Skeleton height={24} variant="rounded" width={60} />}
-        avatar={<Skeleton height={40} variant="circular" width={40} />}
-        subheader={<Skeleton width="40%" />}
-        title={<Skeleton width="60%" />}
-      />
-      <CardContent component={Stack} spacing={1} sx={{ pt: 0 }}>
-        <Stack alignItems="center" direction="row" justifyContent="space-between">
-          <Skeleton width={40} />
-          <Skeleton height={24} variant="rounded" width={80} />
-        </Stack>
-        <Skeleton height={4} variant="rectangular" />
-      </CardContent>
-    </Card>
+    <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' }, mt: 2 }}>
+      <Stack alignItems="flex-end" direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+        <Skeleton height={28} variant="text" width={120} />
+        <Skeleton height={24} variant="rounded" width={60} />
+      </Stack>
+      <Divider />
+    </Box>
   )
 }
 
-function ProgressListSkeleton() {
+function VariantCardSkeleton() {
   return (
-    <List
-      subheader={
-        <ListSubheader disableSticky>
-          <Skeleton width={80} />
-        </ListSubheader>
-      }
-      sx={{ width: '100%' }}
-    >
-      {Array.from({ length: 3 }).map((_, i) => (
-        <React.Fragment key={i}>
-          <ListItem secondaryAction={<Skeleton height={24} variant="rounded" width={50} />}>
-            <ListItemAvatar>
-              <Skeleton height={40} variant="circular" width={40} />
-            </ListItemAvatar>
-            <ListItemText primary={<Skeleton width="60%" />} secondary={<Skeleton width="30%" />} />
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemText inset>
-              <Skeleton height={4} sx={{ mx: 2 }} variant="rectangular" />
-            </ListItemText>
-          </ListItem>
-        </React.Fragment>
-      ))}
-    </List>
+    <Skeleton
+      height={0}
+      style={{ paddingBottom: '133%' }}
+      sx={{ borderRadius: 1 }}
+      variant="rectangular"
+      width="100%"
+    />
   )
 }
 
-export default function EurekaSetsLoading() {
+export default function EurekaLoading() {
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-      <GridContainer
-        mainContent={
-          <Grid container spacing={2}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Grid key={i} size={{ xs: 12, md: 6 }}>
-                <SetCardSkeleton />
-              </Grid>
-            ))}
-          </Grid>
-        }
-        sideContent={<ProgressListSkeleton />}
-      />
+      <Skeleton height={20} sx={{ mt: 2, mb: 0.5 }} variant="text" width={100} />
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: {
+            xs: '1fr 1fr 1fr',
+            sm: '1fr 1fr 1fr 1fr',
+            md: '1fr 1fr 1fr 1fr 1fr',
+          },
+          gap: { xs: 1, sm: 1.5, md: 2 },
+          mb: 4,
+        }}
+      >
+        <GroupHeaderSkeleton />
+        {Array.from({ length: 5 }).map((_, i) => (
+          <VariantCardSkeleton key={i} />
+        ))}
+        <GroupHeaderSkeleton />
+        {Array.from({ length: 4 }).map((_, i) => (
+          <VariantCardSkeleton key={i} />
+        ))}
+        <GroupHeaderSkeleton />
+        {Array.from({ length: 3 }).map((_, i) => (
+          <VariantCardSkeleton key={i} />
+        ))}
+      </Box>
     </Container>
   )
 }

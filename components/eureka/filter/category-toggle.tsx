@@ -31,15 +31,15 @@ export default function CategoryToggle({
       onChange={onCategoryChange}
     >
       {categories.map((category) => (
-        <Tooltip key={category.title} title={category.title}>
-          <ToggleButton sx={{ py: 0.75 }} value={category.title}>
+        <Tooltip key={category.slug} title={category.title}>
+          <ToggleButton sx={{ py: 0.75 }} value={category.slug}>
             <Avatar
               alt={category.title}
               src={category.image_url!}
               sx={{
                 backgroundColor: 'transparent',
                 filter:
-                  isDarkMode || selectedCategory === category.title ? 'none' : 'brightness(40%)',
+                  isDarkMode || selectedCategory === category.slug ? 'none' : 'brightness(40%)',
                 opacity: disabled ? 0.3 : 1,
                 '&:hover': { filter: isDarkMode ? 'none' : 'brightness(40%)' },
               }}

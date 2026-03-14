@@ -1,98 +1,104 @@
 'use client'
 import React from 'react'
-import { Category, Color, EurekaSet } from '@/lib/types/eureka'
-import FilterToolbar from './filter-toolbar'
-import { Box, Button, Container, Divider, Stack, Typography } from '@mui/material'
-import EurekaColorSetCard from '../eureka-color-set-card'
-import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
-import { useState } from 'react'
-import { SelectChangeEvent } from '@mui/material'
-import EurekaVariantCard from '../eureka-variant-card'
-import ProgressChip from '../../progress-chip'
-import { countObtained, percent } from '@/hooks/count-obtained'
-import LoginAlert from '../../login-alert'
+import { useSearchParams } from 'next/navigation'
+import { Box, Button, Container, Divider, Skeleton, Stack, Typography } from '@mui/material'
 import { ChevronRight } from '@mui/icons-material'
 
-export default function FilterEureka({
-  eurekaSets,
-  categories,
-  colors,
-  isLoggedIn,
-}: {
-  eurekaSets: EurekaSet[]
-  categories: Category[]
-  colors: Color[]
-  isLoggedIn: boolean
-}) {
-  const [selectedEurekaSet, setSelectedEurekaSet] = useState<string | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter | null>(null)
-  const [selectedObtainedFilter, setSelectedObtainedFilter] = useState<ObtainedFilter | null>(null)
-  const [groupBySet, setGroupBySet] = useState(true)
-  const [showByColor, setShowByColor] = useState(false)
-  const [selectedColor, setSelectedColor] = useState<string | null>(null)
+import { useEurekaData } from '@/components/eureka/eureka-context'
+import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
+import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
+import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
+import ProgressChip from '@/components/progress-chip'
+import LoginAlert from '@/components/login-alert'
+import { countObtained, percent } from '@/hooks/count-obtained'
 
-  const handleEurekaSetChange = (event: SelectChangeEvent) => {
-    setSelectedEurekaSet(event.target.value || null)
+function GroupHeaderSkeleton() {
+  return (
+    <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' }, mt: 2 }}>
+      <Stack alignItems="flex-end" direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+        <Skeleton height={28} variant="text" width={120} />
+        <Skeleton height={24} variant="rounded" width={60} />
+      </Stack>
+      <Divider />
+    </Box>
+  )
+}
+
+function VariantCardSkeleton() {
+  return (
+    <Skeleton
+      height={0}
+      style={{ paddingBottom: '133%' }}
+      sx={{ borderRadius: 1 }}
+      variant="rectangular"
+      width="100%"
+    />
+  )
+}
+
+export default function FilterEureka() {
+  const { eurekaSets, isLoggedIn, isLoading } = useEurekaData()
+
+  const searchParams = useSearchParams()
+
+  if (isLoading) {
+    return (
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+        <Skeleton height={20} sx={{ mt: 2, mb: 0.5 }} variant="text" width={100} />
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr 1fr 1fr',
+              sm: '1fr 1fr 1fr 1fr',
+              md: '1fr 1fr 1fr 1fr 1fr',
+            },
+            gap: { xs: 1, sm: 1.5, md: 2 },
+            mb: 4,
+          }}
+        >
+          <GroupHeaderSkeleton />
+          {Array.from({ length: 5 }).map((_, i) => (
+            <VariantCardSkeleton key={i} />
+          ))}
+          <GroupHeaderSkeleton />
+          {Array.from({ length: 4 }).map((_, i) => (
+            <VariantCardSkeleton key={i} />
+          ))}
+          <GroupHeaderSkeleton />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <VariantCardSkeleton key={i} />
+          ))}
+        </Box>
+      </Container>
+    )
   }
 
-  const handleCategoryChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newCategory: CategoryFilter | null
-  ) => {
-    setSelectedCategory(newCategory)
-  }
-
-  const handleObtainedFilterChange = (
-    _event: React.MouseEvent<HTMLElement>,
-    newFilter: ObtainedFilter | null
-  ) => {
-    setSelectedObtainedFilter(newFilter)
-  }
-
-  const handleGroupBySetChange = () => {
-    setGroupBySet((prev) => !prev)
-  }
-
-  const handleShowByColorChange = () => {
-    setShowByColor((prev) => {
-      if (!prev) {
-        setSelectedCategory(null)
-        setSelectedObtainedFilter(null)
-        setSelectedColor(null)
-        setGroupBySet(groupBySet)
-      }
-      return !prev
-    })
-  }
-
-  const handleColorChange = (event: SelectChangeEvent) => {
-    setSelectedColor(event.target.value || null)
-  }
-
-  const handleClearFilters = () => {
-    setSelectedEurekaSet(null)
-    setSelectedCategory(null)
-    setSelectedObtainedFilter(null)
-    setSelectedColor(null)
-    setShowByColor(false)
-    setGroupBySet(groupBySet)
-  }
+  const selectedEurekaSet = searchParams.get('set')
+  const selectedCategory = searchParams.get('category') as CategoryFilter | null
+  const selectedObtainedFilter = searchParams.get('filter') as ObtainedFilter | null
+  const groupBySet = searchParams.get('groupBySet') !== 'false'
+  const showByColor = searchParams.get('showByColor') === 'true'
+  const selectedColor = searchParams.get('color')
+  const selectedRarities = searchParams.get('rarity')?.split(',').map(Number).filter(Boolean) ?? []
 
   const filteredSets = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
+    .filter((set) => selectedRarities.length === 0 || selectedRarities.includes(set.rarity ?? 0))
     .map((set) => {
-      const filteredColors = set.colors.filter((c) => !selectedColor || c.title === selectedColor)
-
+      const filteredColors = set.colors.filter(
+        (color) => !selectedColor || color.slug === selectedColor
+      )
       if (showByColor) {
         return { ...set, eureka_variants: set.eureka_variants, colors: filteredColors }
       }
 
       const filteredVariants = set.eureka_variants
-        .filter((v) => !selectedColor || v.color === selectedColor)
-        .filter((v) => !selectedCategory || v.category === selectedCategory)
-        .filter((v) => {
-          if (selectedObtainedFilter === 'Obtained') return v.obtained === true
-          if (selectedObtainedFilter === 'Missing') return v.obtained !== true
+        .filter((variant) => !selectedColor || variant.color === selectedColor)
+        .filter((variant) => !selectedCategory || variant.category === selectedCategory)
+        .filter((variant) => {
+          if (selectedObtainedFilter === 'obtained') return variant.obtained === true
+          if (selectedObtainedFilter === 'missing') return variant.obtained !== true
           return true
         })
 
@@ -105,110 +111,90 @@ export default function FilterEureka({
     : filteredSets.flatMap((set) => set.eureka_variants).length || 0
 
   return (
-    <>
-      <FilterToolbar
-        categories={categories}
-        colors={colors}
-        eurekaSets={eurekaSets}
-        groupBySet={groupBySet}
-        isLoggedIn={isLoggedIn}
-        resultsCount={resultsCount}
-        selectedCategory={selectedCategory}
-        selectedColor={selectedColor}
-        selectedEurekaSet={selectedEurekaSet}
-        selectedObtainedFilter={selectedObtainedFilter}
-        showByColor={showByColor}
-        onCategoryChange={handleCategoryChange}
-        onClearFilters={handleClearFilters}
-        onColorChange={handleColorChange}
-        onEurekaSetChange={handleEurekaSetChange}
-        onGroupBySetChange={handleGroupBySetChange}
-        onObtainedFilterChange={handleObtainedFilterChange}
-        onShowByColorChange={handleShowByColorChange}
-      />
+    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      {!isLoggedIn && <LoginAlert />}
 
-      <Container maxWidth="md">
-        {!isLoggedIn && <LoginAlert />}
+      <Typography color="textSecondary" sx={{ pt: 2, pb: 0.5, px: 0.5 }} variant="caption">
+        Showing: {resultsCount} results
+      </Typography>
 
-        {filteredSets.length === 0 ? (
-          <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>
-            <Typography color="textSecondary" variant="h6">
-              No results
-            </Typography>
-            <Typography color="textDisabled" variant="body2">
-              Try adjusting your filters
-            </Typography>
-          </Stack>
-        ) : (
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: {
-                xs: '1fr 1fr 1fr',
-                sm: '1fr 1fr 1fr 1fr',
-                md: '1fr 1fr 1fr 1fr 1fr',
-              },
-              gap: { xs: 1, sm: 1.5, md: 2 },
-              py: groupBySet ? 0 : 2,
-              mb: 4,
-            }}
-          >
-            {filteredSets.map((set) => {
-              const { obtained, total } = countObtained(set.eureka_variants)
-              return (
-                <React.Fragment key={set.slug}>
-                  {groupBySet && (
-                    <Box
-                      key={`${set.slug}-header`}
-                      sx={{
-                        gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' },
-                        mt: 2,
-                      }}
+      {filteredSets.length === 0 ? (
+        <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>
+          <Typography color="textSecondary" variant="h6">
+            No results
+          </Typography>
+          <Typography color="textDisabled" variant="body2">
+            Try adjusting your filters
+          </Typography>
+        </Stack>
+      ) : (
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr 1fr 1fr',
+              sm: '1fr 1fr 1fr 1fr',
+              md: '1fr 1fr 1fr 1fr 1fr',
+            },
+            gap: { xs: 1, sm: 1.5, md: 2 },
+            py: groupBySet ? 0 : 2,
+            mb: 4,
+          }}
+        >
+          {filteredSets.map((set) => {
+            const { obtained, total } = countObtained(set.eureka_variants)
+            return (
+              <React.Fragment key={set.slug}>
+                {groupBySet && (
+                  <Box
+                    key={`${set.slug}-header`}
+                    sx={{
+                      gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' },
+                      mt: 2,
+                    }}
+                  >
+                    <Stack
+                      alignItems="flex-end"
+                      direction="row"
+                      justifyContent="space-between"
+                      sx={{ mb: 0.5 }}
                     >
-                      <Stack
-                        alignItems="flex-end"
-                        direction="row"
-                        justifyContent="space-between"
-                        sx={{ mb: 0.5 }}
+                      <Button
+                        color="inherit"
+                        endIcon={<ChevronRight />}
+                        href={`/eureka/${set.slug}`}
+                        size="small"
                       >
-                        <Button
-                          color="inherit"
-                          endIcon={<ChevronRight />}
-                          href={`/eureka/${set.slug}`}
-                          size="small"
-                        >
-                          {set.title}
-                        </Button>
+                        {set.title}
+                      </Button>
 
-                        {isLoggedIn && (
-                          <ProgressChip percentage={percent(obtained, total)} size="lg" />
-                        )}
-                      </Stack>
-                      <Divider />
-                    </Box>
-                  )}
-                  {showByColor
-                    ? set.colors.map((color) => (
-                        <EurekaColorSetCard
-                          key={`${set.slug}-${color.title}`}
-                          color={color}
-                          eurekaSet={set}
-                          isLoggedIn={isLoggedIn}
-                        />
-                      ))
-                    : set.eureka_variants.map((variant) => (
-                        <EurekaVariantCard
-                          key={variant.id}
-                          eurekaVariant={variant}
-                          isLoggedIn={isLoggedIn}
-                        />
-                      ))}
-                </React.Fragment>
-              )
-            })}
-          </Box>
-        )}
-      </Container>
-    </>
-  )
+                      {isLoggedIn && (
+                        <ProgressChip percentage={percent(obtained, total)} size="lg" />
+                      )}
+                    </Stack>
+                    <Divider />
+                  </Box>
+                )}
+                {showByColor
+                  ? set.colors.map((color) => (
+                      <EurekaColorSetCard
+                        key={`${set.slug}-${color.slug}`}
+                        color={color}
+                        eurekaSet={set}
+                        isLoggedIn={isLoggedIn}
+                      />
+                    ))
+                  : set.eureka_variants.map((variant) => (
+                      <EurekaVariantCard
+                        key={variant.id}
+                        eurekaVariant={variant}
+                        isLoggedIn={isLoggedIn}
+                      />
+                    ))}
+              </React.Fragment>
+            )
+          })}
+        </Box>
+      )}
+    </Container>  )
 }

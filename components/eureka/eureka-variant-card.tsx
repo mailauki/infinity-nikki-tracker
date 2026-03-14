@@ -1,3 +1,4 @@
+import { toTitle } from '@/lib/utils'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { Avatar, Box, Card, IconButton, LinearProgress, Stack, Typography } from '@mui/material'
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
@@ -40,7 +41,7 @@ export default function EurekaVariantCard({
           sx={{ py: 0.75, px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: -2 }}
         >
           <Typography color="textSecondary" variant="caption">
-            {eurekaVariant.category} • {eurekaVariant.color}
+            {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}
           </Typography>
         </Stack>
         {isLoggedIn && (

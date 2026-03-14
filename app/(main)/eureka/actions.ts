@@ -1,7 +1,9 @@
-import { createClient } from '@/lib/supabase/client'
+'use server'
+
+import { createClient } from '@/lib/supabase/server'
 
 export async function handleObtained(eureka_set: string, category: string, color: string) {
-  const supabase = createClient()
+  const supabase = await createClient()
 
   const { error } = await supabase.rpc('toggle_obtained', {
     p_eureka_set: eureka_set,
@@ -9,5 +11,8 @@ export async function handleObtained(eureka_set: string, category: string, color
     p_color: color,
   })
 
-  if (error) console.log(error)
+  if (error) {
+    console.error('toggle_obtained failed:', error)
+    throw new Error(error.message)
+  }
 }

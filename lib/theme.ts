@@ -107,29 +107,29 @@ let theme = createTheme({
           gap: '0.25rem',
         },
         firstButton: {
-					borderColor: 'transparent',
+          borderColor: 'transparent',
           borderRadius: '6px',
           borderTopLeftRadius: '40px',
           borderBottomLeftRadius: '40px',
-					'&.Mui-disabled': {
-						borderColor: 'transparent',
-					}
+          '&.Mui-disabled': {
+            borderColor: 'transparent',
+          },
         },
         middleButton: {
-					borderColor: 'transparent',
+          borderColor: 'transparent',
           borderRadius: '6px',
-					'&.Mui-disabled': {
-						borderColor: 'transparent',
-					}
+          '&.Mui-disabled': {
+            borderColor: 'transparent',
+          },
         },
         lastButton: {
-					borderColor: 'transparent',
+          borderColor: 'transparent',
           borderRadius: '6px',
           borderTopRightRadius: '40px',
           borderBottomRightRadius: '40px',
-					'&.Mui-disabled': {
-						borderColor: 'transparent',
-					}
+          '&.Mui-disabled': {
+            borderColor: 'transparent',
+          },
         },
       },
     },
@@ -170,7 +170,7 @@ let theme = createTheme({
               style: ({ theme }) => ({
                 backgroundColor: alpha(theme.palette.secondary.main, 0.12),
                 borderRadius: '6px',
-								borderColor: 'transparent',
+                borderColor: 'transparent',
                 '&:hover': {
                   borderRadius: '12px',
                   backgroundColor: alpha(theme.palette.secondary.main, 0.24),

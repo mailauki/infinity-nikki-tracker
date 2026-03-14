@@ -21,8 +21,9 @@ import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Edit, MenuOpen } from '@mui/icons-material'
+import { Edit, FilterList, MenuOpen } from '@mui/icons-material'
 import FilterMenu from './filter-menu'
+import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 
 const DRAWER_WIDTH = 240
 const xsHeight = 48 * 3 // based on number of toolbars and toolbar minHeight
@@ -202,7 +203,11 @@ export default function NavDrawer({
       .filter((link) => pathname === link.url || pathname.startsWith(link.url + '/'))
       .sort((a, b) => b.url.length - a.url.length)[0]?.title ?? ''
 
-  return (
+  const isEurekaPage = pathname === '/eureka' || pathname.startsWith('/eureka/trials')
+  const userId = user?.sub ?? null
+  const isLoggedIn = !!userId
+
+  const content = (
     <>
       <Stack direction="row">
         <AppBar color="default" open={open} position="fixed" variant="outlined">
@@ -289,7 +294,17 @@ export default function NavDrawer({
               </AppBarTitle>
 
               <Stack sx={{ position: 'absolute', bottom: 0, right: 0 }}>
-                {pathname === '/eureka' && <FilterMenu />}
+                {pathname === '/eureka' && (
+                  <React.Suspense
+                    fallback={
+                      <IconButton disabled>
+                        <FilterList />
+                      </IconButton>
+                    }
+                  >
+                    <FilterMenu />
+                  </React.Suspense>
+                )}
                 {pathname === '/profile' && (
                   <IconButton>
                     <Edit />
@@ -332,4 +347,14 @@ export default function NavDrawer({
       <Footer />
     </>
   )
+
+  if (isEurekaPage) {
+    return (
+      <EurekaDataProvider isLoggedIn={isLoggedIn} userId={userId}>
+        {content}
+      </EurekaDataProvider>
+    )
+  }
+
+  return content
 }

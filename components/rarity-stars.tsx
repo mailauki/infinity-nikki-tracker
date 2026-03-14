@@ -1,7 +1,7 @@
 'use client'
 import { createSvgIcon, Stack } from '@mui/material'
 
-const SparkleIcon = createSvgIcon(
+export const SparkleIcon = createSvgIcon(
   <svg
     fill="currentColor"
     height="24"

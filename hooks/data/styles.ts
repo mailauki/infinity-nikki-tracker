@@ -8,7 +8,7 @@ export const getStyles = cache(async () => {
 
   const { data: styles } = await supabase
     .from('styles')
-    .select('title')
+    .select('slug, title')
     .not('title', 'is', null)
     .order('title', { ascending: true })
 

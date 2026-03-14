@@ -95,7 +95,7 @@ export default function AddEurekaVariantForm({
           >
             <MenuItem value="">—</MenuItem>
             {eurekaSets.map((set) => (
-              <MenuItem key={set.id} value={set.title ?? ''}>
+              <MenuItem key={set.id} value={set.slug ?? ''}>
                 {set.title}
               </MenuItem>
             ))}
@@ -107,7 +107,7 @@ export default function AddEurekaVariantForm({
           <Select label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {categories.map((c) => (
-              <MenuItem key={c.title} value={c.title}>
+              <MenuItem key={c.slug} value={c.slug}>
                 {c.title}
               </MenuItem>
             ))}
@@ -119,7 +119,7 @@ export default function AddEurekaVariantForm({
           <Select label="Color" value={color} onChange={(e) => setColor(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {colors.map((c) => (
-              <MenuItem key={c.title} value={c.title}>
+              <MenuItem key={c.slug} value={c.slug}>
                 {c.title}
               </MenuItem>
             ))}

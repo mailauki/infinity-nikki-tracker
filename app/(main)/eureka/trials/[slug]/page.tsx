@@ -40,7 +40,7 @@ async function Trial({ slug }: { slug: string }) {
   const user_id = await getUserID()
   const isLoggedIn = !!user_id
 
-  const trialSets = eurekaSets.filter((s) => s.trial === trial?.title)
+  const trialSets = eurekaSets.filter((set) => set.trial === trial.slug)
   const allVariants: EurekaVariant[] = trialSets.flatMap((s) => s.eureka_variants)
   const obtainedCount = countObtained(allVariants)
   const percentage = percent(obtainedCount.obtained, obtainedCount.total)
@@ -62,7 +62,7 @@ async function Trial({ slug }: { slug: string }) {
           }}
         >
           {trialSets.map((eurekaSet) => (
-            <EurekaSetCard key={eurekaSet.title} eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
+            <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} />
           ))}
         </Box>
       </Stack>
