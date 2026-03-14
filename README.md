@@ -71,68 +71,6 @@ A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/
 | `yarn lint:fix` | Run ESLint with auto-fix       |
 | `yarn format`   | Format all files with Prettier |
 
-## Project Structure
-
-```
-app/
-  (main)/               # Main app (nav drawer layout)
-    page.tsx              # Home / hero
-    eureka/
-      page.tsx            # All Eureka sets + overall progress
-      loading.tsx         # Skeleton loading UI
-      [slug]/             # Individual set detail with realtime updates
-      missing/            # Filterable missing items (auth required)
-      trials/             # Progress grouped by trial
-    (admin)/              # Admin section (admin role required)
-      dashboard/          # Stat cards + recent lists for sets, variants, and trials
-      eureka-set/         # Eureka sets table, add, and edit pages
-      eureka-variant/     # Eureka variants table, add, and edit pages
-      trial/              # Trials table, add, and edit pages
-    profile/              # User profile (auth required)
-    about/                # About page
-  auth/                   # Auth pages (login, sign-up, etc.)
-
-components/
-  navbar/                 # Nav drawer, tabs, user menu, theme switcher, filter menu
-  eureka/                 # Eureka display components (button, set-card, table)
-    filter/               # Decomposed filter controls (category, color, rarity, obtained, sort toggles)
-  admin/                  # Generic paginated table/list, entity-specific tables, dashboard components
-  realtime/               # Realtime-subscribed client components
-  forms/
-    auth/                 # Login, sign-up, profile, forgot-password, update-password forms
-    eureka-set/           # Add and edit eureka set forms
-    eureka-variant/       # Add and edit eureka variant forms
-    trial/                # Add and edit trial forms
-
-lib/
-  utils.ts                # cn(), toSlug(), toSlugVariant() helpers
-  theme.ts                # MUI theme configuration
-  nav-links.tsx           # Navigation link definitions
-  supabase/
-    server.ts             # Cookie-based client for Server Components/Actions
-    client.ts             # Browser client for Client Components
-    public.ts             # Cookie-free client for use inside `use cache` functions
-    proxy.ts              # updateSession() middleware
-  types/
-    eureka.ts             # Domain types derived from Supabase Tables<> (EurekaSet, EurekaVariant, Category, Color, Style, Label, Trial, etc.)
-    props.ts              # UI/nav types (NavLink, CardSize, AvatarSize, CategoryType)
-    dashboard.ts          # DashboardTabsProps (uses Tables<'eureka_sets'>, Tables<'eureka_variants'>, Trial)
-
-hooks/
-  user.ts                 # getUserID(), getUserClaims(), getUserRole() — server-side auth
-  eureka.ts               # createEurekaSet(), updateEurekaSet(), updateEurekaVariants() — data transforms
-  count-obtained.ts       # countObtained(), percent() — progress calculation
-  data/
-    categories.ts         # getCategories() — use cache, cacheLife('days')
-    colors.ts             # getColors() — use cache, cacheLife('days')
-    styles.ts             # getStyles() — use cache, cacheLife('days')
-    labels.ts             # getLabels() — use cache, cacheLife('days')
-    trials.ts             # getTrials() — use cache, cacheLife('hours')
-    eureka-sets.ts        # getEurekaSets(), getEurekaSet() — React cache (auth-dependent)
-    obtained-eureka.ts    # getObtained() — React cache (user-scoped)
-    admin/                # Admin-only queries (no cache() — mutations must not be cached)
-```
-
 ## Database Schema
 
 | Table             | Description                                                                                    |
