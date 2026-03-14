@@ -10,7 +10,16 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import Stack from '@mui/material/Stack'
-import { Button, Container, Paper, Typography } from '@mui/material'
+import {
+  Button,
+  Container,
+  Fab,
+  Paper,
+  Slide,
+  Tooltip,
+  Typography,
+  useScrollTrigger,
+} from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import { navLinksData } from '@/lib/nav-links'
@@ -21,7 +30,13 @@ import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Edit, EditOff, FilterList, MenuOpen } from '@mui/icons-material'
+import {
+  Edit,
+  EditOff,
+  FilterList,
+  KeyboardArrowUp,
+  MenuOpen,
+} from '@mui/icons-material'
 import FilterMenu from './filter-menu'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import ProfileEditProvider from '@/components/profile/profile-edit-provider'
@@ -232,6 +247,38 @@ export default function NavDrawer({
   const userId = user?.sub ?? null
   const isLoggedIn = !!userId
 
+  const [isVisible, setIsVisible] = React.useState(false)
+  const scrollRef = React.useRef(null) // Ref for the scrollable component
+
+  const toggleVisibility = () => {
+    // Use the ref to check the component's internal scrollTop
+    if (scrollRef.current.scrollTop > 300) {
+      setIsVisible(true)
+    } else {
+      setIsVisible(false)
+    }
+  }
+
+  const scrollToTop = () => {
+    scrollRef.current.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
+  React.useEffect(() => {
+    const currentRef = scrollRef.current
+    if (currentRef) {
+      // Add event listener to the component itself
+      currentRef.addEventListener('scroll', toggleVisibility)
+
+      // Cleanup function to remove the listener when the component unmounts
+      return () => {
+        currentRef.removeEventListener('scroll', toggleVisibility)
+      }
+    }
+  }, [])
+
   const content = (
     <>
       <Stack direction="row">
@@ -360,8 +407,24 @@ export default function NavDrawer({
 
         <Box className="h-screen" component="main" sx={{ flex: 1, minWidth: 0 }}>
           <StyledToolbar />
-          <MainContainer elevation={0} open={open}>
+          <MainContainer ref={scrollRef} elevation={0} open={open}>
             {children}
+            {isVisible && (
+              <Tooltip placement="top-end" title="Back to Top">
+                <Fab
+                  aria-label="scroll back to top"
+                  size="small"
+                  sx={{
+                    position: 'fixed',
+                    bottom: 80,
+                    right: 40,
+                  }}
+                  onClick={scrollToTop}
+                >
+                  <KeyboardArrowUp />
+                </Fab>
+              </Tooltip>
+            )}
           </MainContainer>
           <Toolbar />
         </Box>
