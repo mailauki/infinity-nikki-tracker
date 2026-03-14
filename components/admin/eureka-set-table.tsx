@@ -50,7 +50,12 @@ export function EurekaSetTable({
     {
       header: 'Image',
       cell: (set) => (
-        <Avatar alt={set.title || 'Image'} size="xs" src={set.image_url!}>
+        <Avatar
+          alt={set.title || 'Image'}
+          size="xs"
+          src={set.image_url!}
+          sx={{ bgcolor: 'transparent', color: 'inherit' }}
+        >
           <Category fontSize="inherit" />
         </Avatar>
       ),

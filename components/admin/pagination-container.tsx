@@ -6,9 +6,9 @@ import {
   Alert,
   Box,
   Button,
+  Card,
   CardHeader,
   Chip,
-  Paper,
   Stack,
   TablePagination,
   Typography,
@@ -66,7 +66,7 @@ export default function PaginationContainer<T>({
         disableTypography
         action={<Chip color="secondary" label={`Total: ${allRows.length}`} variant="outlined" />}
         title={
-          <Typography component="h2" variant="h4">
+          <Typography component="h2" variant="h5">
             {title}s
           </Typography>
         }
@@ -95,19 +95,28 @@ export default function PaginationContainer<T>({
           </Button>
         </Stack>
       </Stack>
-
-      <Paper elevation={3} sx={{ borderRadius: '12px', mb: 4 }}>
-        <Box sx={{ flex: 1, height: '100%', minHeight: '592px' }}>{children(visibleRows)}</Box>
-        <TablePagination
-          component="div"
-          count={allRows.length}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[6, 8, 15, 20, 30, 50, 100]}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleRowsPerPageChange}
-        />
-      </Paper>
+      <Card>
+        <Box
+          sx={{
+            flex: 1,
+            overflowX: 'auto',
+            overscrollBehavior: 'contain',
+            height: '100%',
+            minHeight: '592px',
+          }}
+        >
+          {children(visibleRows)}
+        </Box>
+      </Card>
+      <TablePagination
+        component="div"
+        count={allRows.length}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        rowsPerPageOptions={[6, 8, 15, 20, 30, 50, 100]}
+        onPageChange={handlePageChange}
+        onRowsPerPageChange={handleRowsPerPageChange}
+      />
     </>
   )
 }

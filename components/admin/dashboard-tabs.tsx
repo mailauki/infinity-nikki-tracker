@@ -62,15 +62,14 @@ export function DashboardTabs({
   }
 
   return (
-    <>
-      <DashboardToolbar
-        handleTabChange={handleTabChange}
-        handleViewChange={handleViewChange}
-        tab={tab}
-        view={view}
-      />
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+        <DashboardToolbar
+          handleTabChange={handleTabChange}
+          handleViewChange={handleViewChange}
+          tab={tab}
+          view={view}
+        />
 
-      <Container maxWidth="md">
         {tab === 'eureka-sets' && view === 'table' && (
           <EurekaSetTable rows={eurekaSets} {...paginationProps} />
         )}
@@ -87,6 +86,5 @@ export function DashboardTabs({
         )}
         {tab === 'trials' && view === 'list' && <TrialList rows={trials} {...paginationProps} />}
       </Container>
-    </>
   )
 }
