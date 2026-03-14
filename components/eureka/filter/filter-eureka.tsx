@@ -97,8 +97,8 @@ export default function FilterEureka() {
         .filter((variant) => !selectedColor || variant.color === selectedColor)
         .filter((variant) => !selectedCategory || variant.category === selectedCategory)
         .filter((variant) => {
-          if (selectedObtainedFilter === 'Obtained') return variant.obtained === true
-          if (selectedObtainedFilter === 'Missing') return variant.obtained !== true
+          if (selectedObtainedFilter === 'obtained') return variant.obtained === true
+          if (selectedObtainedFilter === 'missing') return variant.obtained !== true
           return true
         })
 

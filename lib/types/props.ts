@@ -6,9 +6,9 @@ export type CardSize = 'xs' | 'sm' | 'md' | 'lg'
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
-export type CategoryFilter = string
+export type CategoryFilter = 'head' | 'hands' | 'feet'
 
-export type ObtainedFilter = 'Missing' | 'Obtained'
+export type ObtainedFilter = 'missing' | 'obtained'
 
 
 export type RarityFilter = 2 | 3 | 4 | 5
