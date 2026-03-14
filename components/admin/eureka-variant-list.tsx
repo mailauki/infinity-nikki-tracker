@@ -36,7 +36,9 @@ export default function EurekaVariantList({
           image_url={row.image_url ?? undefined}
           list="eureka-variant"
           slug={row.slug ?? undefined}
-          subheader={[toTitle(row.category!), toTitle(row.color!)].filter(Boolean).join(' • ') || undefined}
+          subheader={
+            [toTitle(row.category!), toTitle(row.color!)].filter(Boolean).join(' • ') || undefined
+          }
           title={toTitle(row.eureka_set!) ?? '—'}
           updated_at={row.updated_at}
         />

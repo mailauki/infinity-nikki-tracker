@@ -6,6 +6,7 @@
 drop policy if exists profiles_user_policy on profiles;
 
 -- Users may read their own profile row
+drop policy if exists profiles_user_select on profiles;
 create policy profiles_user_select on profiles
   for select
   to authenticated
@@ -14,6 +15,7 @@ create policy profiles_user_select on profiles
 -- Users may update their own profile, but role must remain unchanged.
 -- Using JWT claim instead of a sub-select on profiles to avoid infinite recursion
 -- in RLS policy evaluation (WITH CHECK cannot re-query the same table safely).
+drop policy if exists profiles_user_update on profiles;
 create policy profiles_user_update on profiles
   for update
   to authenticated

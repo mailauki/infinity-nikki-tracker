@@ -1,9 +1,9 @@
--- RLS for obtained: users may only read/write their own collection records
-alter table obtained enable row level security;
-alter table obtained force row level security;
+-- RLS for obtained_eureka: users may only read/write their own collection records
+alter table obtained_eureka enable row level security;
+alter table obtained_eureka force row level security;
 
-drop policy if exists obtained_user_policy on obtained;
-create policy obtained_user_policy on obtained
+drop policy if exists obtained_user_policy on obtained_eureka;
+create policy obtained_user_policy on obtained_eureka
   for all
   to authenticated
   using ((select auth.uid()) = user_id)

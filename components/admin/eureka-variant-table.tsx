@@ -36,7 +36,9 @@ export function EurekaVariantTable({
       header: 'Edit',
       cellSx: { py: 0 },
       cell: (variant) => (
-        <Tooltip title={`Edit ${[toTitle(variant.eureka_set!), toTitle(variant.category!), toTitle(variant.color!)].filter(Boolean).join(' • ')}`}>
+        <Tooltip
+          title={`Edit ${[toTitle(variant.eureka_set!), toTitle(variant.category!), toTitle(variant.color!)].filter(Boolean).join(' • ')}`}
+        >
           <IconButton
             color="secondary"
             href={`/eureka-variant/edit/${variant.slug ?? toSlugVariant(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? '')}${backParam}`}
@@ -54,7 +56,7 @@ export function EurekaVariantTable({
           alt={variant.eureka_set || 'Image'}
           size="xs"
           src={variant.image_url!}
-          sx={{ bgcolor: 'transparent', color: 'inherit' }}
+          sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
         >
           <Category fontSize="inherit" />
         </Avatar>

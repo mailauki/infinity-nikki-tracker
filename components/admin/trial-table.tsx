@@ -49,12 +49,12 @@ export function TrialTable({
     },
     {
       header: 'Image',
-      cell: (v) => (
+      cell: (trial) => (
         <Avatar
-          alt={v.title || 'Image'}
+          alt={trial.title || 'Image'}
           size="xs"
-          src={v.image_url!}
-          sx={{ width: 40 }}
+          src={trial.image_url!}
+          sx={{ width: 40, bgcolor: 'transparent', color: 'text.disabled' }}
           variant="rounded"
         >
           <Category fontSize="inherit" />

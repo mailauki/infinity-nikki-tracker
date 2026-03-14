@@ -41,7 +41,7 @@ export default function ListRow({
       }
     >
       <ListItemAvatar>
-        <Avatar alt={slug} src={image_url} sx={{ bgcolor: 'transparent', color: 'inherit' }}>
+        <Avatar alt={slug} src={image_url} sx={{ bgcolor: 'transparent', color: 'text.disabled' }}>
           <Category fontSize="inherit" />
         </Avatar>
       </ListItemAvatar>
