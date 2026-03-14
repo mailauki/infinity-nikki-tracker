@@ -4,7 +4,6 @@ import { EurekaSet } from '@/lib/types/eureka'
 import { AdminList } from './admin-list'
 import ListRow from './list-row'
 import { useSearchParams } from 'next/navigation'
-import { toTitle } from '@/lib/utils'
 
 interface EurekaSetListProps {
   rows: EurekaSet[]
@@ -36,7 +35,7 @@ export default function EurekaSetList({
           image_url={row.image_url}
           list="eureka-set"
           slug={row.slug ?? undefined}
-          subheader={toTitle(row.trial!) ?? undefined}
+          subheader={row.trials?.title ?? undefined}
           title={row.title}
           updated_at={row.updated_at}
         />

@@ -16,7 +16,10 @@ export const getEurekaVariantsRaw = cache(async () => {
 			category,
 			image_url,
 			default,
-			updated_at
+			updated_at,
+			eureka_sets ( title ),
+			categories ( title ),
+			colors ( title )
 			`
     )
     .order('id', { ascending: false })
@@ -38,7 +41,10 @@ export const getEurekaVariantRaw = cache(async (slug: string) => {
 			category,
 			image_url,
 			default,
-			updated_at
+			updated_at,
+			eureka_sets ( title ),
+			categories ( title ),
+			colors ( title )
 			`
     )
     .eq('slug', slug)
