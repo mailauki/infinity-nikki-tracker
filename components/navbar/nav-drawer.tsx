@@ -15,7 +15,7 @@ import {
   Container,
   Fab,
   Paper,
-	Slide,
+  Slide,
   Tooltip,
   Typography,
 } from '@mui/material'
@@ -247,22 +247,15 @@ export default function NavDrawer({
   const isLoggedIn = !!userId
 
   const [isVisible, setIsVisible] = React.useState(false)
-  const scrollRef = React.useRef(null) // Ref for the scrollable component
+  const scrollRef = React.useRef<HTMLDivElement>(null)
 
   const toggleVisibility = () => {
-    // Use the ref to check the component's internal scrollTop
-    if (scrollRef.current.scrollTop > 300) {
-      setIsVisible(true)
-    } else {
-      setIsVisible(false)
-    }
+    if (!scrollRef.current) return
+    setIsVisible(scrollRef.current.scrollTop > 300)
   }
 
   const scrollToTop = () => {
-    scrollRef.current.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    })
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   React.useEffect(() => {
@@ -408,9 +401,8 @@ export default function NavDrawer({
           <StyledToolbar />
           <MainContainer ref={scrollRef} elevation={0} open={open}>
             {children}
-						
-						<Slide direction="up" in={isVisible}>
-							<Tooltip placement="top-end" title="Back to Top">
+            <Tooltip placement="top-end" title="Back to Top">
+              <Slide direction="up" in={isVisible}>
                 <Fab
                   aria-label="scroll back to top"
                   size="small"
@@ -423,8 +415,8 @@ export default function NavDrawer({
                 >
                   <KeyboardArrowUp />
                 </Fab>
-              </Tooltip>
-							</Slide>
+              </Slide>
+            </Tooltip>
           </MainContainer>
           <Toolbar />
         </Box>
