@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarPreview from '@/components/forms/auth/avatar-preview'
@@ -15,7 +15,7 @@ export default function ProfileView({
   user: User | null
   isAdmin?: boolean
 }) {
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
   const [fullname, setFullname] = useState<string | null>(null)
   const [username, setUsername] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)

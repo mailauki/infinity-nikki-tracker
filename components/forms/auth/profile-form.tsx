@@ -19,24 +19,24 @@ export default function ProfileForm({
   const profileEdit = useProfileEdit()
   const supabase = useMemo(() => createClient(), [])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(false)
+  const [saveError, setSaveError] = useState(false)
   const [fullname, setFullname] = useState<string | null>(null)
   const [username, setUsername] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
 
   const getProfile = useCallback(async () => {
+    if (!user) return
     try {
       setLoading(true)
 
       const { data, error, status } = await supabase
         .from('profiles')
         .select(`full_name, username, avatar_url`)
-        .eq('id', user!.id)
+        .eq('id', user.id)
         .single()
 
-      if (error && status !== 406) {
-        console.log(error)
-        throw error
-      }
+      if (error && status !== 406) throw error
 
       if (data) {
         setFullname(data.full_name)
@@ -44,8 +44,8 @@ export default function ProfileForm({
         setAvatarUrl(data.avatar_url)
       }
     } catch (error) {
-      alert('Error loading user data!')
-      console.log(error)
+      console.error('Error loading user data:', error)
+      setLoadError(true)
     } finally {
       setLoading(false)
     }
@@ -76,8 +76,8 @@ export default function ProfileForm({
       if (error) throw error
       profileEdit!.setIsEditing(false)
     } catch (error) {
-      alert('Error updating the data!')
-      console.log(error)
+      console.error('Error updating profile:', error)
+      setSaveError(true)
     } finally {
       setLoading(false)
     }
@@ -85,6 +85,10 @@ export default function ProfileForm({
 
   if (!profileEdit?.isEditing) {
     return <ProfileView isAdmin={isAdmin} user={user} />
+  }
+
+  if (loadError) {
+    return <Alert severity="error">Could not load your profile. Please refresh the page.</Alert>
   }
 
   return (
@@ -169,6 +173,12 @@ export default function ProfileForm({
             value={username || ''}
             onChange={(event) => setUsername(event.target.value)}
           />
+
+          {saveError && (
+            <Alert severity="error" sx={{ mb: 1 }}>
+              Failed to save profile. Please try again.
+            </Alert>
+          )}
 
           <Button
             fullWidth
