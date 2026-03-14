@@ -12,14 +12,14 @@ security definer
 set search_path = ''
 as $$
 begin
-  delete from public.obtained
+  delete from public.obtained_eureka
   where user_id    = (select auth.uid())
     and eureka_set = p_eureka_set
     and category   = p_category
     and color      = p_color;
 
   if not found then
-    insert into public.obtained (user_id, eureka_set, category, color)
+    insert into public.obtained_eureka (user_id, eureka_set, category, color)
     values ((select auth.uid()), p_eureka_set, p_category, p_color);
   end if;
 end;
