@@ -200,7 +200,7 @@ export default function FilterMenu() {
         </ListItem>
         <ListItem>
           <RarityToggle selectedRarities={selectedRarities} onRarityChange={handleRarityChange} />
-        </ListItem>{' '}
+        </ListItem>
       </Menu>
     </div>
   )
