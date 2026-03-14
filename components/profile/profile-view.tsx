@@ -50,9 +50,7 @@ export default function ProfileView({
   }, [getProfile])
 
   if (loadError) {
-    return (
-      <Alert severity="error">Could not load your profile. Please refresh the page.</Alert>
-    )
+    return <Alert severity="error">Could not load your profile. Please refresh the page.</Alert>
   }
 
   return (

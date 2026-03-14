@@ -130,7 +130,6 @@ export default function FilterMenu() {
           <Typography variant="subtitle2">Filter Eureka</Typography>
 
           <ClearFiltersButton
-            groupBySet={groupBySet}
             selectedCategory={selectedCategory}
             selectedColor={selectedColor}
             selectedEurekaSet={selectedEurekaSet}
