@@ -2,7 +2,7 @@
 
 import { Avatar, Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { toSlugVariant } from '@/lib/utils'
+import { toSlugVariant, toTitle } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 import { EurekaVariantRaw } from '@/lib/types/eureka'
 import { Category } from '@mui/icons-material'
@@ -35,11 +35,11 @@ export function EurekaVariantTable({
     {
       header: 'Edit',
       cellSx: { py: 0 },
-      cell: (v) => (
-        <Tooltip title={`Edit ${[v.eureka_set, v.category, v.color].filter(Boolean).join(' • ')}`}>
+      cell: (variant) => (
+        <Tooltip title={`Edit ${[toTitle(variant.eureka_set!), toTitle(variant.category!), toTitle(variant.color!)].filter(Boolean).join(' • ')}`}>
           <IconButton
             color="secondary"
-            href={`/eureka-variant/edit/${v.slug ?? toSlugVariant(v.eureka_set ?? '', v.category ?? '', v.color ?? '')}${backParam}`}
+            href={`/eureka-variant/edit/${variant.slug ?? toSlugVariant(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? '')}${backParam}`}
             size="small"
           >
             <EditIcon fontSize="small" />
@@ -49,11 +49,11 @@ export function EurekaVariantTable({
     },
     {
       header: 'Image',
-      cell: (v) => (
+      cell: (variant) => (
         <Avatar
-          alt={v.eureka_set || 'Image'}
+          alt={variant.eureka_set || 'Image'}
           size="xs"
-          src={v.image_url!}
+          src={variant.image_url!}
           sx={{ bgcolor: 'transparent', color: 'inherit' }}
         >
           <Category fontSize="inherit" />
@@ -62,34 +62,34 @@ export function EurekaVariantTable({
     },
     {
       header: 'Eureka Set',
-      cell: (v) => (
+      cell: (variant) => (
         <Typography noWrap fontWeight="medium" variant="body2">
-          {v.eureka_set}
+          {toTitle(variant.eureka_set!)}
         </Typography>
       ),
     },
     {
       header: 'Slug',
-      cell: (v) => (
+      cell: (variant) => (
         <Typography noWrap fontFamily="monospace" variant="caption">
-          {v.slug}
+          {variant.slug}
         </Typography>
       ),
     },
-    { header: 'Category', cell: (v) => v.category },
-    { header: 'Color', cell: (v) => v.color },
+    { header: 'Category', cell: (variant) => toTitle(variant.category!) },
+    { header: 'Color', cell: (variant) => toTitle(variant.color!) },
     {
       header: 'Default',
-      cell: (v) =>
-        v.default ? (
+      cell: (variant) =>
+        variant.default ? (
           <Chip color="secondary" label="default" size="small" variant="outlined" />
         ) : null,
     },
     {
       header: 'Updated',
-      cell: (v) => (
+      cell: (variant) => (
         <Typography noWrap variant="caption">
-          {v.updated_at ? new Date(v.updated_at).toLocaleDateString() : '—'}
+          {variant.updated_at ? new Date(variant.updated_at).toLocaleDateString() : '—'}
         </Typography>
       ),
     },
@@ -98,7 +98,7 @@ export function EurekaVariantTable({
   return (
     <AdminTable
       columns={columns}
-      getKey={(v) => v.id}
+      getKey={(variant) => variant.id}
       page={page}
       rows={rows}
       rowsPerPage={rowsPerPage}

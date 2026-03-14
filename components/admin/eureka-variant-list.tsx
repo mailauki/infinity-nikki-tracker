@@ -4,6 +4,7 @@ import { EurekaVariantRaw } from '@/lib/types/eureka'
 import { AdminList } from './admin-list'
 import ListRow from './list-row'
 import { useSearchParams } from 'next/navigation'
+import { toTitle } from '@/lib/utils'
 
 interface EurekaVariantListProps {
   rows: EurekaVariantRaw[]
@@ -27,7 +28,7 @@ export default function EurekaVariantList({
 
   return (
     <AdminList
-      getKey={(v) => v.id}
+      getKey={(variant) => variant.id}
       page={page}
       renderRow={(row) => (
         <ListRow
@@ -35,8 +36,8 @@ export default function EurekaVariantList({
           image_url={row.image_url ?? undefined}
           list="eureka-variant"
           slug={row.slug ?? undefined}
-          subheader={[row.category, row.color].filter(Boolean).join(' • ') || undefined}
-          title={row.eureka_set ?? '—'}
+          subheader={[toTitle(row.category!), toTitle(row.color!)].filter(Boolean).join(' • ') || undefined}
+          title={toTitle(row.eureka_set!) ?? '—'}
           updated_at={row.updated_at}
         />
       )}

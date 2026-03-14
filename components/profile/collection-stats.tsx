@@ -1,7 +1,7 @@
 import { Box, Card, CardHeader, Chip, Typography } from '@mui/material'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { EurekaSet } from '@/lib/types/eureka'
-import EurekaCardProgress from './eureka/eureka-card-progress'
+import EurekaCardProgress from '@/components/eureka/eureka-card-progress'
 
 function CollectionStatCard({
   title,
@@ -18,7 +18,10 @@ function CollectionStatCard({
     <Card variant="outlined">
       <CardHeader
         disableTypography
-        action={<Chip label={`${obtained} / ${total}`} size="small" variant="outlined" />}
+        action={
+          <Chip label={`${obtained} / ${total}`} size="small" sx={{ mt: 1 }} variant="outlined" />
+        }
+        sx={{ mt: -1 }}
         title={
           <Typography color="text.secondary" variant="overline">
             {title}

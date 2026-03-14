@@ -23,9 +23,9 @@ export default function ObtainedToggle({
       value={selectedObtainedFilter}
       onChange={onObtainedFilterChange}
     >
-      {['Missing', 'Obtained'].map((filter) => (
+      {(['missing', 'obtained'] as const).map((filter) => (
         <ToggleButton key={filter} sx={{ py: 0.75 }} value={filter}>
-          {filter}
+          {filter.charAt(0).toUpperCase() + filter.slice(1)}
         </ToggleButton>
       ))}
     </ToggleButtonGroup>

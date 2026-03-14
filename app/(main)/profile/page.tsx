@@ -1,5 +1,5 @@
 import ProfileForm from '@/components/forms/auth/profile-form'
-import CollectionStats from '@/components/collection-stats'
+import CollectionStats from '@/components/profile/collection-stats'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { redirect } from 'next/navigation'
@@ -41,8 +41,8 @@ async function UserDetails() {
 
   return (
     <>
-      {sets && <CollectionStats sets={sets} />}
       <ProfileForm isAdmin={role === 'admin'} user={user} />
+      {sets && <CollectionStats sets={sets} />}
     </>
   )
 }

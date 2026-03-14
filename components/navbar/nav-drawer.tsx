@@ -21,9 +21,25 @@ import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Edit, FilterList, MenuOpen } from '@mui/icons-material'
+import { Edit, EditOff, FilterList, MenuOpen } from '@mui/icons-material'
 import FilterMenu from './filter-menu'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
+import ProfileEditProvider from '@/components/profile/profile-edit-provider'
+import { useProfileEdit } from '@/components/profile/profile-context'
+
+function ProfileEditButton() {
+  const context = useProfileEdit()
+  if (!context) return null
+  const { isEditing, setIsEditing } = context
+  return (
+    <IconButton
+      aria-label={isEditing ? 'Cancel editing' : 'Edit profile'}
+      onClick={() => setIsEditing(!isEditing)}
+    >
+      {isEditing ? <EditOff /> : <Edit />}
+    </IconButton>
+  )
+}
 
 const DRAWER_WIDTH = 240
 const xsHeight = 48 * 3 // based on number of toolbars and toolbar minHeight
@@ -74,7 +90,7 @@ const MainContainer = styled(Paper, {
 
   overflowY: 'auto',
   overflowX: 'hidden',
-  overscrollBehavior: 'contain',
+  overscrollBehavior: 'auto',
   borderRadius: '12px',
 }))
 
@@ -212,6 +228,7 @@ export default function NavDrawer({
       .sort((a, b) => b.url.length - a.url.length)[0]?.title ?? ''
 
   const isEurekaPage = pathname === '/eureka' || pathname.startsWith('/eureka/trials')
+  const isProfilePage = pathname === '/profile'
   const userId = user?.sub ?? null
   const isLoggedIn = !!userId
 
@@ -313,11 +330,7 @@ export default function NavDrawer({
                     <FilterMenu />
                   </React.Suspense>
                 )}
-                {pathname === '/profile' && (
-                  <IconButton>
-                    <Edit />
-                  </IconButton>
-                )}
+                {isProfilePage && <ProfileEditButton />}
               </Stack>
             </Container>
           </Toolbar>
@@ -364,6 +377,10 @@ export default function NavDrawer({
         {content}
       </EurekaDataProvider>
     )
+  }
+
+  if (isProfilePage) {
+    return <ProfileEditProvider>{content}</ProfileEditProvider>
   }
 
   return content

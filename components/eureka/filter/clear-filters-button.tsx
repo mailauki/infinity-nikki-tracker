@@ -13,7 +13,6 @@ export default function ClearFiltersButton({
   selectedEurekaSet: string | null
   selectedCategory: CategoryFilter | null
   selectedObtainedFilter: ObtainedFilter | null
-  groupBySet: boolean
   showByColor: boolean
   selectedColor: string | null
   selectedRarities: number[]
