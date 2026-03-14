@@ -3,9 +3,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarUpload from './avatar-upload'
+import ProfileView from '../../profile/profile-view'
 import { Alert, Button, Chip, Stack, TextField } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import DashboardIcon from '@mui/icons-material/Dashboard'
+import { useProfileEdit } from '@/components/profile/profile-context'
 
 export default function ProfileForm({
   user,
@@ -14,6 +16,7 @@ export default function ProfileForm({
   user: User | null
   isAdmin?: boolean
 }) {
+  const context = useProfileEdit()
   const supabase = createClient()
   const [loading, setLoading] = useState(true)
   const [fullname, setFullname] = useState<string | null>(null)
@@ -71,13 +74,17 @@ export default function ProfileForm({
         updated_at: new Date().toISOString(),
       })
       if (error) throw error
-      alert('Profile updated!')
+      context?.setIsEditing(false)
     } catch (error) {
       alert('Error updating the data!')
       console.log(error)
     } finally {
       setLoading(false)
     }
+  }
+
+  if (!context?.isEditing) {
+    return <ProfileView isAdmin={isAdmin} user={user} />
   }
 
   return (

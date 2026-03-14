@@ -137,15 +137,15 @@ hooks/
 
 | Table             | Description                                                                                    |
 | ----------------- | ---------------------------------------------------------------------------------------------- |
-| `eureka_sets`     | Outfit set metadata (title, slug, rarity, style, label, trial) — FKs use slug columns         |
+| `eureka_sets`     | Outfit set metadata (title, slug, rarity, style, label, trial) — FKs use slug columns          |
 | `eureka_variants` | Individual Eureka items (eureka_set slug FK, color slug FK, category slug FK, image_url, slug) |
 | `categories`      | Category lookup with images (slug-keyed)                                                       |
 | `colors`          | Color lookup with images (slug-keyed)                                                          |
-| `styles`          | Style lookup (unique titles + slugs, FK target for `eureka_sets.style`); RLS enabled          |
-| `labels`          | Label lookup (unique titles + slugs, FK target for `eureka_sets.label`); RLS enabled          |
+| `styles`          | Style lookup (unique titles + slugs, FK target for `eureka_sets.style`); RLS enabled           |
+| `labels`          | Label lookup (unique titles + slugs, FK target for `eureka_sets.label`); RLS enabled           |
 | `obtained_eureka` | Per-user collection records (user_id, eureka_set slug, category slug, color slug)              |
 | `trials`          | Trial lookup with images and slug (FK target for `eureka_sets.trial`)                          |
-| `profiles`        | User profiles (full_name, username, avatar_url, role: 'user' \| 'admin')                      |
+| `profiles`        | User profiles (full_name, username, avatar_url, role: 'user' \| 'admin')                       |
 
 ## Authentication
 
