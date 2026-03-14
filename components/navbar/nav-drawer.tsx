@@ -15,10 +15,8 @@ import {
   Container,
   Fab,
   Paper,
-  Slide,
   Tooltip,
   Typography,
-  useScrollTrigger,
 } from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
