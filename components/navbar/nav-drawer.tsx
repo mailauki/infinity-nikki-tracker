@@ -339,7 +339,11 @@ export default function NavDrawer({
                 justifyContent={{ xs: 'center', sm: 'inherit' }}
                 open={open}
               >
-                <Typography component="h1" variant='h4'>
+                <Typography
+                  component="h1"
+                  sx={{ fontSize: { xs: 'h6.fontSize', sm: 'h5.fontSize', md: 'h4.fontSize' } }}
+                  variant="h4"
+                >
                   {pageTitle}
                 </Typography>
               </AppBarTitle>
