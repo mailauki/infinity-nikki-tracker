@@ -89,6 +89,25 @@ export default function FilterMenu() {
     router.push(pathname, { scroll: false })
   }
 
+  const handleShowByColorChange = () => {
+    if (!showByColor) {
+      push({ showByColor: 'true', category: null, filter: null, color: null })
+    } else {
+      push({ showByColor: null })
+    }
+  }
+
+  const handleColorChange = (event: SelectChangeEvent) => {
+    push({ color: event.target.value || null })
+  }
+
+  const handleRarityChange = (_event: React.MouseEvent<HTMLElement>, value: number[]) => {
+    push({ rarity: value.length ? value.join(',') : null })
+  }
+
+  const handleClearFilters = () => {
+    router.push(pathname, { scroll: false })  }
+
   return (
     <div>
       <Tooltip title="Open filter menu">
