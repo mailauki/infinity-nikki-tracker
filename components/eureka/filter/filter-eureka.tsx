@@ -133,17 +133,19 @@ export default function FilterEureka() {
         }}
       >
         <Stack
+          useFlexGap
           alignItems="flex-start"
           direction="row"
+          flexWrap="wrap"
           justifyContent="space-between"
-          spacing={2}
-          sx={{ flex: 1, px: 1 }}
+          spacing={1}
+          sx={{ flex: 1, px: 1, pt: 1, mb: -1 }}
         >
-          <Typography color="textSecondary" sx={{ pt: 1 }} variant="caption">
+          <Typography color="textSecondary" sx={{ pt: 1, whiteSpace: 'nowrap' }} variant="caption">
             Showing: {resultsCount} results
           </Typography>
 
-          {!isLoggedIn && <LoginAlert />}
+          {isLoggedIn && <LoginAlert />}
         </Stack>
       </Toolbar>
 

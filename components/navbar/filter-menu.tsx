@@ -91,7 +91,7 @@ export default function FilterMenu() {
 
   return (
     <div>
-      <Tooltip title="Open filter menu">
+      <Tooltip title="Open filter menu" placement='bottom-end'>
         <IconButton
           aria-controls={open ? 'filter-menu' : undefined}
           aria-expanded={open ? 'true' : undefined}

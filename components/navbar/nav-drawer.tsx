@@ -10,15 +10,7 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import Stack from '@mui/material/Stack'
-import {
-  Button,
-  Container,
-  Fab,
-  Paper,
-  Slide,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Button, Container, Fab, Paper, Slide, Tooltip, Typography } from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import { navLinksData } from '@/lib/nav-links'
@@ -29,13 +21,7 @@ import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import {
-  Edit,
-  EditOff,
-  FilterList,
-  KeyboardArrowUp,
-  MenuOpen,
-} from '@mui/icons-material'
+import { Edit, EditOff, FilterList, KeyboardArrowUp, MenuOpen } from '@mui/icons-material'
 import FilterMenu from './filter-menu'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import ProfileEditProvider from '@/components/profile/profile-edit-provider'
@@ -264,7 +250,7 @@ export default function NavDrawer({
       scrollRef.current = node
       node?.addEventListener('scroll', handleScroll)
     },
-    [handleScroll],
+    [handleScroll]
   )
 
   React.useEffect(() => {
@@ -353,7 +339,7 @@ export default function NavDrawer({
                 justifyContent={{ xs: 'center', sm: 'inherit' }}
                 open={open}
               >
-                <Typography component="h1" variant="h4">
+                <Typography component="h1" variant='h4'>
                   {pageTitle}
                 </Typography>
               </AppBarTitle>

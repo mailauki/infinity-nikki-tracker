@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Container } from '@mui/material'
+import { Container, useMediaQuery, useTheme } from '@mui/material'
 import { EurekaSetTable } from './eureka-set-table'
 import { EurekaVariantTable } from './eureka-variant-table'
 import { TrialTable } from './trial-table'
@@ -30,7 +30,11 @@ export function DashboardTabs({
   const tab: TabValue = TAB_VALUES.includes(rawTab as TabValue)
     ? (rawTab as TabValue)
     : 'eureka-sets'
-  const view = searchParams.get('view') === 'list' ? 'list' : 'table'
+  const theme = useTheme()
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
+  const defaultView = isSmallScreen ? 'list' : 'table'
+  const rawView = searchParams.get('view')
+  const view: 'list' | 'table' = rawView === 'list' || rawView === 'table' ? rawView : defaultView
   const page = Math.max(0, Number(searchParams.get('page') ?? '0'))
   const perPage = Number(searchParams.get('perPage') ?? '15')
 
