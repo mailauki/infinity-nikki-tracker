@@ -3,7 +3,14 @@
 import * as React from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Menu from '@mui/material/Menu'
-import { IconButton, ListItem, SelectChangeEvent, Typography } from '@mui/material'
+import {
+  IconButton,
+  ListItem,
+  SelectChangeEvent,
+  Toolbar,
+  Tooltip,
+  Typography,
+} from '@mui/material'
 import { FilterList } from '@mui/icons-material'
 
 import { useEurekaData } from '../eureka/eureka-context'
@@ -79,20 +86,43 @@ export default function FilterMenu() {
   }
 
   const handleClearFilters = () => {
+    router.push(pathname, { scroll: false })
+  }
+
+  const handleShowByColorChange = () => {
+    if (!showByColor) {
+      push({ showByColor: 'true', category: null, filter: null, color: null })
+    } else {
+      push({ showByColor: null })
+    }
+  }
+
+  const handleColorChange = (event: SelectChangeEvent) => {
+    push({ color: event.target.value || null })
+  }
+
+  const handleRarityChange = (_event: React.MouseEvent<HTMLElement>, value: number[]) => {
+    push({ rarity: value.length ? value.join(',') : null })
+  }
+
+  const handleClearFilters = () => {
     router.push(pathname, { scroll: false })  }
 
   return (
     <div>
-      <IconButton
-        aria-controls={open ? 'filter-menu' : undefined}
-        aria-expanded={open ? 'true' : undefined}
-        aria-haspopup="true"
-        aria-label="Filter menu"
-        id="filter-button"
-        onClick={(event) => setAnchorEl(event.currentTarget)}
-      >
-        <FilterList />
-      </IconButton>
+      <Tooltip title="Open filter menu">
+        <IconButton
+          aria-controls={open ? 'filter-menu' : undefined}
+          aria-expanded={open ? 'true' : undefined}
+          aria-haspopup="true"
+          aria-label="Filter menu"
+          id="filter-button"
+          onClick={(event) => setAnchorEl(event.currentTarget)}
+        >
+          <FilterList />
+        </IconButton>
+      </Tooltip>
+
       <Menu
         anchorEl={anchorEl}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
@@ -101,6 +131,10 @@ export default function FilterMenu() {
         slotProps={{
           list: {
             'aria-labelledby': 'filter-button',
+            disablePadding: true,
+            sx: {
+              paddingBottom: 2,
+            },
           },
           paper: {
             sx: {
@@ -111,7 +145,7 @@ export default function FilterMenu() {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         onClose={() => setAnchorEl(null)}
       >
-        <ListItem>
+        <Toolbar disableGutters sx={{ px: 2 }}>
           <Typography variant="subtitle2">Filter Eureka</Typography>
 
           <ClearFiltersButton
@@ -122,9 +156,9 @@ export default function FilterMenu() {
             selectedObtainedFilter={selectedObtainedFilter}
             selectedRarities={selectedRarities}
             showByColor={showByColor}
-            onClearFilters={handleClearFilters}          />
-        </ListItem>
-
+            onClearFilters={handleClearFilters}
+          />
+        </Toolbar>
         <ListItem sx={{ gap: 1 }}>
           <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={handleGroupBySetChange} />
 
@@ -134,7 +168,6 @@ export default function FilterMenu() {
             onEurekaSetChange={handleEurekaSetChange}
           />
         </ListItem>
-
         <ListItem sx={{ gap: 1 }}>
           <SortColorToggle
             showByColor={showByColor}
@@ -148,7 +181,6 @@ export default function FilterMenu() {
             onColorChange={handleColorChange}
           />
         </ListItem>
-
         {isLoggedIn && (
           <ListItem>
             <ObtainedToggle
@@ -158,7 +190,6 @@ export default function FilterMenu() {
             />
           </ListItem>
         )}
-
         <ListItem>
           <CategoryToggle
             categories={categories}
@@ -167,10 +198,10 @@ export default function FilterMenu() {
             onCategoryChange={handleCategoryChange}
           />
         </ListItem>
-
         <ListItem>
           <RarityToggle selectedRarities={selectedRarities} onRarityChange={handleRarityChange} />
-        </ListItem>      </Menu>
+        </ListItem>{' '}
+      </Menu>
     </div>
   )
 }

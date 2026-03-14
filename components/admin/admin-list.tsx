@@ -38,11 +38,13 @@ export function AdminList<T>({
       onRowsPerPageChange={onRowsPerPageChange}
     >
       {(visibleRows) => (
-        <List>
+        <List disablePadding>
           {visibleRows.map((row) => (
             <Fragment key={getKey(row)}>
               {renderRow(row)}
-              <Divider component="li" sx={{ mr: 2 }} variant="inset" />
+              {row !== visibleRows.at(-1) && (
+                <Divider component="li" sx={{ mr: 2 }} variant="inset" />
+              )}
             </Fragment>
           ))}
         </List>

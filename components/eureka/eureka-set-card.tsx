@@ -5,16 +5,14 @@ import { Card, CardActionArea } from '@mui/material'
 import EurekaCard from './eureka-card'
 import { CardSize } from '@/lib/types/props'
 
-
-
 export default function EurekaSetCard({
   eurekaSet,
   isLoggedIn,
-	size = 'sm'
+  size = 'sm',
 }: {
   eurekaSet: EurekaSet
   isLoggedIn: boolean
-	size?: CardSize
+  size?: CardSize
 }) {
   return (
     <Card>

@@ -54,7 +54,12 @@ const closedMixin = (theme: Theme): CSSObject => ({
   },
 })
 
-const MainContainer = styled(Paper)(({ theme }) => ({
+const MainContainer = styled(Paper, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})<AppBarProps>(({ theme }) => ({
+  marginLeft: 0,
+  minWidth: 0,
+  flex: 1,
   // Default height for small screens (portrait)
   height: `calc(100vh - ${mdHeight}px)`,
   [theme.breakpoints.up('xs')]: {
@@ -66,8 +71,11 @@ const MainContainer = styled(Paper)(({ theme }) => ({
   [theme.breakpoints.up('sm')]: {
     height: `calc(100vh - ${smHeight}px)`,
   },
+
   overflowY: 'auto',
-  borderRadius: 0,
+  overflowX: 'hidden',
+  overscrollBehavior: 'contain',
+  borderRadius: '12px',
 }))
 
 interface AppBarTitleProps {
@@ -337,9 +345,11 @@ export default function NavDrawer({
           <NavExtra items={navLinksData.navExtra} open={open} onClose={handleDrawerClose} />
         </Drawer>
 
-        <Box className="h-screen w-full" component="main">
+        <Box className="h-screen" component="main" sx={{ flex: 1, minWidth: 0 }}>
           <StyledToolbar />
-          <MainContainer elevation={0}>{children}</MainContainer>
+          <MainContainer elevation={0} open={open}>
+            {children}
+          </MainContainer>
           <Toolbar />
         </Box>
       </Stack>

@@ -1,6 +1,5 @@
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
-import { Clear } from '@mui/icons-material'
-import { Box, IconButton, Stack, Tooltip } from '@mui/material'
+import { Box, Button, Stack } from '@mui/material'
 
 export default function ClearFiltersButton({
   selectedEurekaSet,
@@ -29,11 +28,9 @@ export default function ClearFiltersButton({
         selectedRarities.length > 0 ||
         showByColor) && (
         <Box alignSelf="flex-end">
-          <Tooltip title="Clear filters">
-            <IconButton aria-label="Clear filters" onClick={onClearFilters}>
-              <Clear />
-            </IconButton>
-          </Tooltip>
+          <Button color="inherit" onClick={onClearFilters}>
+            Clear all
+          </Button>
         </Box>
       )}
     </Stack>

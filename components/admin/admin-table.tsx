@@ -46,7 +46,7 @@ export function AdminTable<T>({
       onRowsPerPageChange={onRowsPerPageChange}
     >
       {(visibleRows) => (
-        <TableContainer sx={{ overflowX: 'auto', flex: 1, height: '100%', minHeight: '592px' }}>
+        <TableContainer>
           <Table size="small">
             <TableHead>
               <TableRow>

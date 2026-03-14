@@ -71,7 +71,6 @@ export async function GET() {
 
   const {
     data: { user },
-    error: authError,
   } = await supabase.auth.getUser()
 
   if (!user) {

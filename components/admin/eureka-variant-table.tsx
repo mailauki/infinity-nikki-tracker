@@ -50,7 +50,12 @@ export function EurekaVariantTable({
     {
       header: 'Image',
       cell: (v) => (
-        <Avatar alt={v.eureka_set || 'Image'} size="xs" src={v.image_url!}>
+        <Avatar
+          alt={v.eureka_set || 'Image'}
+          size="xs"
+          src={v.image_url!}
+          sx={{ bgcolor: 'transparent', color: 'inherit' }}
+        >
           <Category fontSize="inherit" />
         </Avatar>
       ),

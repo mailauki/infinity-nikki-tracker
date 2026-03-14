@@ -62,7 +62,7 @@ export function DashboardTabs({
   }
 
   return (
-    <>
+    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <DashboardToolbar
         handleTabChange={handleTabChange}
         handleViewChange={handleViewChange}
@@ -70,23 +70,21 @@ export function DashboardTabs({
         view={view}
       />
 
-      <Container maxWidth="md">
-        {tab === 'eureka-sets' && view === 'table' && (
-          <EurekaSetTable rows={eurekaSets} {...paginationProps} />
-        )}
-        {tab === 'eureka-variants' && view === 'table' && (
-          <EurekaVariantTable rows={eurekaVariants} {...paginationProps} />
-        )}
-        {tab === 'trials' && view === 'table' && <TrialTable rows={trials} {...paginationProps} />}
+      {tab === 'eureka-sets' && view === 'table' && (
+        <EurekaSetTable rows={eurekaSets} {...paginationProps} />
+      )}
+      {tab === 'eureka-variants' && view === 'table' && (
+        <EurekaVariantTable rows={eurekaVariants} {...paginationProps} />
+      )}
+      {tab === 'trials' && view === 'table' && <TrialTable rows={trials} {...paginationProps} />}
 
-        {tab === 'eureka-sets' && view === 'list' && (
-          <EurekaSetList rows={eurekaSets} {...paginationProps} />
-        )}
-        {tab === 'eureka-variants' && view === 'list' && (
-          <EurekaVariantList rows={eurekaVariants} {...paginationProps} />
-        )}
-        {tab === 'trials' && view === 'list' && <TrialList rows={trials} {...paginationProps} />}
-      </Container>
-    </>
+      {tab === 'eureka-sets' && view === 'list' && (
+        <EurekaSetList rows={eurekaSets} {...paginationProps} />
+      )}
+      {tab === 'eureka-variants' && view === 'list' && (
+        <EurekaVariantList rows={eurekaVariants} {...paginationProps} />
+      )}
+      {tab === 'trials' && view === 'list' && <TrialList rows={trials} {...paginationProps} />}
+    </Container>
   )
 }
