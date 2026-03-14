@@ -30,8 +30,9 @@ export default function EurekaVariantCard({
             alt={eurekaVariant.slug || 'Eureka Variant'}
             size="lg"
             src={eurekaVariant.image_url!}
+            sx={{ bgcolor: 'transparent', color: 'inherit' }}
           >
-            <Category />
+            <Category fontSize="inherit" />
           </Avatar>
         </Stack>
         <Stack

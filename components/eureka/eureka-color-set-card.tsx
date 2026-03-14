@@ -33,8 +33,13 @@ export default function EurekaColorSetCard({
     >
       <Box sx={{ position: 'relative' }}>
         <Stack alignItems="center" sx={{ pt: 1 }}>
-          <Avatar alt={slug} size="lg" src={variants[0].image_url!}>
-            <Category />
+          <Avatar
+            alt={slug}
+            size="lg"
+            src={variants[0].image_url!}
+            sx={{ bgcolor: 'transparent', color: 'inherit' }}
+          >
+            <Category fontSize="inherit" />
           </Avatar>
         </Stack>
         <Stack
