@@ -249,27 +249,28 @@ export default function NavDrawer({
   const [isVisible, setIsVisible] = React.useState(false)
   const scrollRef = React.useRef<HTMLDivElement>(null)
 
-  const toggleVisibility = () => {
-    if (!scrollRef.current) return
-    setIsVisible(scrollRef.current.scrollTop > 300)
-  }
-
   const scrollToTop = () => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  React.useEffect(() => {
-    const currentRef = scrollRef.current
-    if (currentRef) {
-      // Add event listener to the component itself
-      currentRef.addEventListener('scroll', toggleVisibility)
-
-      // Cleanup function to remove the listener when the component unmounts
-      return () => {
-        currentRef.removeEventListener('scroll', toggleVisibility)
-      }
-    }
+  const handleScroll = React.useCallback(() => {
+    if (!scrollRef.current) return
+    setIsVisible(scrollRef.current.scrollTop > 300)
   }, [])
+
+  const setScrollRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      scrollRef.current?.removeEventListener('scroll', handleScroll)
+      scrollRef.current = node
+      node?.addEventListener('scroll', handleScroll)
+    },
+    [handleScroll],
+  )
+
+  React.useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' })
+    setIsVisible(false)
+  }, [pathname])
 
   const content = (
     <>
@@ -399,7 +400,7 @@ export default function NavDrawer({
 
         <Box className="h-screen" component="main" sx={{ flex: 1, minWidth: 0 }}>
           <StyledToolbar />
-          <MainContainer ref={scrollRef} elevation={0} open={open}>
+          <MainContainer ref={setScrollRef} elevation={0} open={open}>
             {children}
             <Tooltip placement="top-end" title="Back to Top">
               <Slide direction="up" in={isVisible}>
