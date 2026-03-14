@@ -129,7 +129,7 @@ export default function HelpPage() {
 async function AdminButton() {
   const role = await getUserRole()
 
-  if (role === 'admin') return null
+  if (!role || role === 'admin') return null
 
   return (
     <Alert
@@ -143,6 +143,7 @@ async function AdminButton() {
         </Button>
       }
       severity="info"
+      sx={{ my: 1 }}
     >
       You don&apos;t have admin access.
     </Alert>

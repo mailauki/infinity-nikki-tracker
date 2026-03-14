@@ -196,5 +196,6 @@ export default function FilterEureka() {
           })}
         </Box>
       )}
-    </Container>  )
+    </Container>
+  )
 }

@@ -10,7 +10,6 @@ export type CategoryFilter = 'head' | 'hands' | 'feet'
 
 export type ObtainedFilter = 'missing' | 'obtained'
 
-
 export type RarityFilter = 2 | 3 | 4 | 5
 
 export interface NavLink {

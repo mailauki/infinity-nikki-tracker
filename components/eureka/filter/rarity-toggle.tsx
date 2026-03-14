@@ -12,7 +12,8 @@ export default function RarityToggle({
     <ToggleButtonGroup value={selectedRarities} onChange={onRarityChange}>
       {([2, 3, 4, 5] as const).map((rarity) => (
         <ToggleButton key={rarity} sx={{ py: 1.25 }} value={rarity}>
-          {rarity}<SparkleIcon color="inherit" fontSize="inherit" sx={{ rotate: '15deg', ml: 0.5 }} />
+          {rarity}
+          <SparkleIcon color="inherit" fontSize="inherit" sx={{ rotate: '15deg', ml: 0.5 }} />
         </ToggleButton>
       ))}
     </ToggleButtonGroup>
