@@ -1,6 +1,7 @@
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { CardSize } from '@/lib/types/props'
 import { EurekaSet } from '@/lib/types/eureka'
+import { toTitle } from '@/lib/utils'
 import { Chip } from '@mui/material'
 
 import EurekaCardContent from './eureka-card-content'
@@ -22,7 +23,7 @@ export default function EurekaCard({
   return (
     <>
       <EurekaSetImage
-        action={<Chip label={eurekaSet.label} size="small" variant="outlined" />}
+        action={<Chip label={toTitle(eurekaSet.label ?? '')} size="small" variant="outlined" />}
         alt={eurekaSet.title}
         imageUrl={eurekaSet.image_url!}
         size={size}
@@ -33,9 +34,9 @@ export default function EurekaCard({
         <EurekaCardContent
           rarity={eurekaSet.rarity}
           size={size}
-          style={eurekaSet.style}
+          style={toTitle(eurekaSet.style ?? '')}
           title={eurekaSet.title}
-          trial={eurekaSet.trial}
+          trial={toTitle(eurekaSet.trial ?? '')}
         />
       )}
       {isLoggedIn && <EurekaCardProgress percentage={percentage} size={size} />}

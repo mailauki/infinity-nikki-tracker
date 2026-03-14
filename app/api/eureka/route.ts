@@ -74,11 +74,6 @@ export async function GET() {
     error: authError,
   } = await supabase.auth.getUser()
 
-  if (authError) {
-    console.error('Auth error in eureka route:', authError)
-    return NextResponse.json({ error: authError.message }, { status: 401 })
-  }
-
   if (!user) {
     return NextResponse.json(eureka)
   }

@@ -62,7 +62,7 @@ async function EditEurekaSet({
   const { data: variantRows } = await supabase
     .from('eureka_variants')
     .select('color')
-    .eq('eureka_set', eurekaSet.title)
+    .eq('eureka_set', eurekaSet.slug!)
     .not('color', 'is', null)
   const initialColors = [...new Set(variantRows?.map((v) => v.color as string) ?? [])]
 
