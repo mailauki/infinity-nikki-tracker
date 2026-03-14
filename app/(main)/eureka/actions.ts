@@ -11,5 +11,8 @@ export async function handleObtained(eureka_set: string, category: string, color
     p_color: color,
   })
 
-  if (error) console.log(error)
+  if (error) {
+    console.error('toggle_obtained failed:', error)
+    throw new Error(error.message)
+  }
 }

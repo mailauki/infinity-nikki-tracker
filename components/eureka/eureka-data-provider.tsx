@@ -10,6 +10,12 @@ import { EurekaDataContext } from './eureka-context'
 
 const supabase = createClient()
 
+async function fetchJson<T>(url: string): Promise<T> {
+  const r = await fetch(url)
+  if (!r.ok) throw new Error(`${url} returned ${r.status}`)
+  return r.json()
+}
+
 export default function EurekaDataProvider({
   isLoggedIn,
   userId,
@@ -28,10 +34,10 @@ export default function EurekaDataProvider({
 
   useEffect(() => {
     Promise.all([
-      fetch('/api/eureka').then((r) => r.json()),
-      fetch('/api/categories').then((r) => r.json()),
-      fetch('/api/colors').then((r) => r.json()),
-      fetch('/api/trials').then((r) => r.json()),
+      fetchJson<EurekaSet[]>('/api/eureka'),
+      fetchJson<Category[]>('/api/categories'),
+      fetchJson<Color[]>('/api/colors'),
+      fetchJson<Trial[]>('/api/trials'),
     ])
       .then(([sets, cats, cols, trls]) => {
         setEurekaSets(sets)
@@ -40,16 +46,18 @@ export default function EurekaDataProvider({
         setTrials(trls)
         setIsLoading(false)
       })
-      .catch(console.error)
+      .catch((err) => {
+        console.error('Failed to load eureka data:', err)
+        setIsLoading(false)
+      })
   }, [])
 
   useEffect(() => {
     if (!isLoggedIn) return
 
-    fetch('/api/obtained-eureka')
-      .then((r) => r.json())
-      .then((data: ObtainedEureka[]) => setObtainedEureka(data))
-      .catch(console.error)
+    fetchJson<ObtainedEureka[]>('/api/obtained-eureka')
+      .then((data) => setObtainedEureka(data))
+      .catch((err) => console.error('Failed to load obtained eureka:', err))
 
     const obtainedChannel = supabase
       .channel('obtained-filter-channel')
