@@ -79,8 +79,7 @@ export default function FilterMenu() {
   }
 
   const handleClearFilters = () => {
-    router.push(pathname, { scroll: false })
-  }
+    router.push(pathname, { scroll: false })  }
 
   return (
     <div>
@@ -123,8 +122,7 @@ export default function FilterMenu() {
             selectedObtainedFilter={selectedObtainedFilter}
             selectedRarities={selectedRarities}
             showByColor={showByColor}
-            onClearFilters={handleClearFilters}
-          />
+            onClearFilters={handleClearFilters}          />
         </ListItem>
 
         <ListItem sx={{ gap: 1 }}>
@@ -172,8 +170,7 @@ export default function FilterMenu() {
 
         <ListItem>
           <RarityToggle selectedRarities={selectedRarities} onRarityChange={handleRarityChange} />
-        </ListItem>
-      </Menu>
+        </ListItem>      </Menu>
     </div>
   )
 }
