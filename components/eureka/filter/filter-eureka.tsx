@@ -1,7 +1,16 @@
 'use client'
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Box, Button, Container, Divider, Skeleton, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Skeleton,
+  Stack,
+  Toolbar,
+  Typography,
+} from '@mui/material'
 import { ChevronRight } from '@mui/icons-material'
 
 import { useEurekaData } from '@/components/eureka/eureka-context'
@@ -112,11 +121,31 @@ export default function FilterEureka() {
 
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-      {!isLoggedIn && <LoginAlert />}
+      <Toolbar
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 'appBar',
+          backdropFilter: 'blur(8px)',
+          bgcolor: 'background.default',
+          mt: -3,
+          mx: -3,
+        }}
+      >
+        <Stack
+          alignItems="flex-start"
+          direction="row"
+          justifyContent="space-between"
+          spacing={2}
+          sx={{ flex: 1, px: 1 }}
+        >
+          <Typography color="textSecondary" sx={{ pt: 1 }} variant="caption">
+            Showing: {resultsCount} results
+          </Typography>
 
-      <Typography color="textSecondary" sx={{ pt: 2, pb: 0.5, px: 0.5 }} variant="caption">
-        Showing: {resultsCount} results
-      </Typography>
+          {!isLoggedIn && <LoginAlert />}
+        </Stack>
+      </Toolbar>
 
       {filteredSets.length === 0 ? (
         <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>
