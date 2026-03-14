@@ -1,30 +1,15 @@
 'use client'
 
-import {
-  Avatar,
-  Box,
-  Container,
-  FormControl,
-  IconButton,
-  InputLabel,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  MenuItem,
-  Select,
-  SelectChangeEvent,
-  Stack,
-  ToggleButton,
-  Toolbar,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Box, Container, SelectChangeEvent, Stack, Toolbar, Typography } from '@mui/material'
 import CategoryToggle from './category-toggle'
 import { Category, Color, EurekaSet } from '@/lib/types/eureka'
-import { CategoryFilter, ToggleFilter } from '@/lib/types/props'
-import { Clear, FilterList, Category as CategoryIcon, ColorLens } from '@mui/icons-material'
+import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
 import ObtainedToggle from './obtained-toggle'
-import ColorToggle from './color-toggle'
+import EurekaSelect from './eureka-select'
+import SortColorToggle from './sort-color-toggle'
+import ColorSelect from './color-select'
+import SortEurekaToggle from './sort-eureka-toggle'
+import ClearFiltersButton from './clear-filters-button'
 
 export default function FilterToolbar({
   eurekaSets,
@@ -32,13 +17,13 @@ export default function FilterToolbar({
   colors,
   selectedEurekaSet,
   selectedCategory,
-  selectedFilter,
+  selectedObtainedFilter,
   groupBySet,
   showByColor,
   selectedColor,
   onEurekaSetChange,
   onCategoryChange,
-  onFilterChange,
+  onObtainedFilterChange,
   onGroupBySetChange,
   onShowByColorChange,
   onColorChange,
@@ -51,7 +36,7 @@ export default function FilterToolbar({
   colors: Color[]
   selectedEurekaSet: string | null
   selectedCategory: CategoryFilter | null
-  selectedFilter: ToggleFilter | null
+  selectedObtainedFilter: ObtainedFilter | null
   groupBySet: boolean
   showByColor: boolean
   selectedColor: string | null
@@ -60,7 +45,10 @@ export default function FilterToolbar({
     event: React.MouseEvent<HTMLElement>,
     newCategory: CategoryFilter | null
   ) => void
-  onFilterChange: (event: React.MouseEvent<HTMLElement>, newFilter: ToggleFilter | null) => void
+  onObtainedFilterChange: (
+    event: React.MouseEvent<HTMLElement>,
+    newFilter: ObtainedFilter | null
+  ) => void
   onGroupBySetChange: () => void
   onShowByColorChange: () => void
   onColorChange: (event: SelectChangeEvent) => void
@@ -90,62 +78,17 @@ export default function FilterToolbar({
             spacing={1}
             sx={{ flex: 1 }}
           >
-            <Tooltip title="Sort by Eureka Set">
-              <ToggleButton
-                selected={groupBySet}
-                sx={{ py: 1.75, whiteSpace: 'nowrap' }}
-                value="groupBySet"
-                onChange={onGroupBySetChange}
-              >
-                <FilterList />
-              </ToggleButton>
-            </Tooltip>
+            <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={onGroupBySetChange} />
 
-            <FormControl
-              sx={{
-                flex: 1,
-                minWidth: { xs: '240px', sm: '260px', md: '300px' },
-                whiteSpace: 'nowrap',
-              }}
-            >
-              <InputLabel id="eureka-set-select-label">Eureka Set</InputLabel>
-              <Select
-                aria-label="Eureka Set"
-                id="eureka-set-select"
-                label="Eureka Set"
-                labelId="eureka-set-select-label"
-                sx={{ '& .MuiOutlinedInput-input': { py: selectedEurekaSet && 1 } }}
-                value={selectedEurekaSet ?? ''}
-                onChange={onEurekaSetChange}
-              >
-                <MenuItem value="">—</MenuItem>
-                {eurekaSets.map((set) => (
-                  <MenuItem key={set.slug} value={set.slug!}>
-                    <ListItem disablePadding component="div">
-                      <ListItemAvatar>
-                        <Avatar alt={set.title} size="sm" src={set.image_url}>
-                          <CategoryIcon fontSize="inherit" />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText>{set.title}</ListItemText>
-                    </ListItem>
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <EurekaSelect
+              eurekaSets={eurekaSets}
+              selectedEurekaSet={selectedEurekaSet}
+              onEurekaSetChange={onEurekaSetChange}
+            />
 
-            <Tooltip title="Show by Color">
-              <ToggleButton
-                selected={showByColor}
-                sx={{ py: 1.75, whiteSpace: 'nowrap' }}
-                value="showByColor"
-                onChange={onShowByColorChange}
-              >
-                <ColorLens />
-              </ToggleButton>
-            </Tooltip>
+            <SortColorToggle showByColor={showByColor} onShowByColorChange={onShowByColorChange} />
 
-            <ColorToggle
+            <ColorSelect
               colors={colors}
               disabled={showByColor}
               selectedColor={selectedColor}
@@ -155,8 +98,8 @@ export default function FilterToolbar({
             {isLoggedIn && (
               <ObtainedToggle
                 disabled={showByColor}
-                selectedFilter={selectedFilter}
-                onFilterChange={onFilterChange}
+                selectedObtainedFilter={selectedObtainedFilter}
+                onObtainedFilterChange={onObtainedFilterChange}
               />
             )}
 
@@ -166,21 +109,16 @@ export default function FilterToolbar({
               selectedCategory={showByColor ? null : selectedCategory}
               onCategoryChange={onCategoryChange}
             />
-            <Stack sx={{ flex: 1 }}>
-              {(selectedEurekaSet ||
-                selectedCategory ||
-                selectedFilter ||
-                selectedColor ||
-                showByColor) && (
-                <Box alignSelf="flex-end">
-                  <Tooltip title="Clear filters">
-                    <IconButton aria-label="Clear filters" onClick={onClearFilters}>
-                      <Clear />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              )}
-            </Stack>
+
+            <ClearFiltersButton
+              groupBySet={groupBySet}
+              selectedCategory={selectedCategory}
+              selectedColor={selectedColor}
+              selectedEurekaSet={selectedEurekaSet}
+              selectedObtainedFilter={selectedObtainedFilter}
+              showByColor={showByColor}
+              onClearFilters={onClearFilters}
+            />
           </Stack>
         </Toolbar>
 

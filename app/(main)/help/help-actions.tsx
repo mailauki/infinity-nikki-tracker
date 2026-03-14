@@ -22,7 +22,7 @@ export default function HelpActions() {
 
   return (
     <>
-      <Container disableGutters maxWidth="sm" component='section'>
+      <Container disableGutters component="section" maxWidth="sm">
         <List disablePadding>
           <ListItem disableGutters>
             <ListItemButton onClick={() => setFeatureOpen(true)}>

@@ -12,7 +12,7 @@ export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 export type CategoryFilter = 'Head' | 'Hands' | 'Feet' | ''
 
-export type ToggleFilter = 'Missing' | 'Obtained'
+export type ObtainedFilter = 'Missing' | 'Obtained'
 
 export type EurekaFilter = 'Sets' | 'Eureka' | 'Missing'
 export interface NavLink {

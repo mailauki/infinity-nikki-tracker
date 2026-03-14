@@ -8,6 +8,7 @@ export default function Footer() {
       component="footer"
       position="fixed"
       sx={{ top: 'auto', bottom: 0, zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      variant="outlined"
     >
       <Toolbar>
         <Stack

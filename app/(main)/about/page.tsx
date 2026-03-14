@@ -17,7 +17,7 @@ export default function AboutPage() {
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
-        <Container maxWidth="sm" component="section">
+        <Container component="section" maxWidth="sm">
           <Typography color="textSecondary" variant="subtitle1">
             Infinity Nikki Tracker is a collection tracker for{' '}
             <Anchor
@@ -33,7 +33,7 @@ export default function AboutPage() {
           </Typography>
         </Container>
 
-        <Container maxWidth="sm" component="section">
+        <Container component="section" maxWidth="sm">
           <Typography component="h2" variant="h5">
             Links &amp; Resources
           </Typography>
@@ -86,7 +86,7 @@ export default function AboutPage() {
           </List>
         </Container>
 
-        <Container maxWidth="sm" component="section">
+        <Container component="section" maxWidth="sm">
           <Typography component="h2" variant="h5">
             Roadmap
           </Typography>
@@ -115,7 +115,7 @@ export default function AboutPage() {
           </List>
         </Container>
 
-        <Container maxWidth="sm" component="section">
+        <Container component="section" maxWidth="sm">
           <Typography component="h2" variant="h5">
             Collaborate
           </Typography>

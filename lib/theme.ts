@@ -1,11 +1,21 @@
 'use client'
 import { lime, pink } from '@mui/material/colors'
-import { createTheme, responsiveFontSizes } from '@mui/material/styles'
+import { alpha, createTheme, responsiveFontSizes } from '@mui/material/styles'
 import { AvatarSize } from './types/props'
 
 declare module '@mui/material/Avatar' {
   interface AvatarOwnProps {
     size?: AvatarSize
+  }
+}
+declare module '@mui/material/ToggleButton' {
+  interface ToggleButtonOwnProps {
+    variant?: 'filled'
+  }
+}
+declare module '@mui/material/ToggleButtonGroup' {
+  interface ToggleButtonGroupProps {
+    variant?: 'filled'
   }
 }
 
@@ -51,9 +61,9 @@ let theme = createTheme({
     },
     MuiDialog: {
       styleOverrides: {
-				paper: {
-					borderRadius: 12,
-				}
+        paper: {
+          borderRadius: 12,
+        },
       },
     },
     MuiAvatar: {
@@ -82,6 +92,103 @@ let theme = createTheme({
             {
               props: { size: 'xl' },
               style: { width: 140, height: 140, fontSize: '3rem' },
+            },
+          ],
+        },
+      },
+    },
+    MuiToggleButtonGroup: {
+      defaultProps: {
+        variant: 'filled',
+        color: 'secondary',
+      },
+      styleOverrides: {
+        root: {
+          gap: '0.25rem',
+        },
+        firstButton: {
+					borderColor: 'transparent',
+          borderRadius: '6px',
+          borderTopLeftRadius: '40px',
+          borderBottomLeftRadius: '40px',
+					'&.Mui-disabled': {
+						borderColor: 'transparent',
+					}
+        },
+        middleButton: {
+					borderColor: 'transparent',
+          borderRadius: '6px',
+					'&.Mui-disabled': {
+						borderColor: 'transparent',
+					}
+        },
+        lastButton: {
+					borderColor: 'transparent',
+          borderRadius: '6px',
+          borderTopRightRadius: '40px',
+          borderBottomRightRadius: '40px',
+					'&.Mui-disabled': {
+						borderColor: 'transparent',
+					}
+        },
+      },
+    },
+    MuiToggleButton: {
+      defaultProps: {
+        variant: 'filled',
+        color: 'secondary',
+      },
+      styleOverrides: {
+        root: {
+          variants: [
+            {
+              props: { variant: 'filled', color: 'primary' },
+              style: ({ theme }) => ({
+                backgroundColor: alpha(theme.palette.primary.main, 0.08),
+                borderRadius: '6px',
+                '&:hover': {
+                  borderRadius: '12px',
+                  backgroundColor: alpha(theme.palette.primary.main, 0.16),
+                },
+                '&.Mui-selected': {
+                  borderRadius: '40px',
+                  backgroundColor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                },
+                '&.Mui-selected:hover': {
+                  borderRadius: '12px',
+                  backgroundColor: alpha(theme.palette.primary.main, 0.84),
+                  color: theme.palette.primary.contrastText,
+                },
+                '&.Mui-disabled': {
+                  backgroundColor: alpha(theme.palette.primary.main, 0.12),
+                },
+              }),
+            },
+            {
+              props: { variant: 'filled', color: 'secondary' },
+              style: ({ theme }) => ({
+                backgroundColor: alpha(theme.palette.secondary.main, 0.12),
+                borderRadius: '6px',
+								borderColor: 'transparent',
+                '&:hover': {
+                  borderRadius: '12px',
+                  backgroundColor: alpha(theme.palette.secondary.main, 0.24),
+                },
+                '&.Mui-selected': {
+                  borderRadius: '40px',
+                  backgroundColor: theme.palette.secondary.main,
+                  color: theme.palette.secondary.contrastText,
+                },
+                '&.Mui-selected:hover': {
+                  borderRadius: '12px',
+                  backgroundColor: alpha(theme.palette.secondary.main, 0.84),
+                  color: theme.palette.primary.contrastText,
+                },
+                '&.Mui-disabled': {
+                  backgroundColor: alpha(theme.palette.secondary.main, 0.12),
+                },
+              }),
             },
           ],
         },
