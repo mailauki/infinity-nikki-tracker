@@ -23,6 +23,7 @@ export const getEurekaSets = cache(async () => {
 			trial,
 			updated_at,
 			trials ( title ),
+			eureka_set_trials ( trial ),
 			eureka_variants (
 				id,
 				slug,
@@ -86,6 +87,7 @@ export const getEurekaSet = cache(async (slug: string) => {
 			trial,
 			updated_at,
 			trials ( title ),
+			eureka_set_trials ( trial ),
 			eureka_variants (
 				id,
 				slug,

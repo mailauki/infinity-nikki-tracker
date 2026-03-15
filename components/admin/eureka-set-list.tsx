@@ -35,7 +35,11 @@ export default function EurekaSetList({
           image_url={row.image_url}
           list="eureka-set"
           slug={row.slug ?? undefined}
-          subheader={row.trials?.title ?? undefined}
+          subheader={
+            row.eureka_set_trials?.length
+              ? row.eureka_set_trials.map((t) => t.trial).join(', ') || undefined
+              : (row.trials?.title ?? undefined)
+          }
           title={row.title}
           updated_at={row.updated_at}
         />

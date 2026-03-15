@@ -18,6 +18,7 @@ export async function GET() {
       label,
       trial,
       updated_at,
+      eureka_set_trials ( trial ),
       eureka_variants (
         id,
         slug,

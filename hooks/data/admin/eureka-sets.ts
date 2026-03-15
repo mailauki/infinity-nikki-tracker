@@ -17,7 +17,8 @@ export const getEurekaSetsRaw = cache(async () => {
 			label,
 			trial,
 			updated_at,
-			trials ( title )
+			trials ( title ),
+			eureka_set_trials ( trial, trials ( title ) )
 			`
     )
     .order('updated_at', { ascending: false, nullsFirst: false })
@@ -40,7 +41,8 @@ export const getEurekaSetRaw = cache(async (slug: string) => {
 			label,
 			trial,
 			updated_at,
-			trials ( title )
+			trials ( title ),
+			eureka_set_trials ( trial, trials ( title ) )
 			`
     )
     .eq('slug', slug)
