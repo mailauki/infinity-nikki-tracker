@@ -49,7 +49,7 @@ export default function ColorSelect({
           <MenuItem key={color.slug} value={color.slug}>
             <ListItem disablePadding component="div">
               <ListItemAvatar>
-                <Avatar alt={color.title} size="xs" src={color.image_url!}>
+                <Avatar alt={color.title || color.slug} color='transparent' size="xs" src={color.image_url!}>
                   <ColorLens fontSize="inherit" />
                 </Avatar>
               </ListItemAvatar>
