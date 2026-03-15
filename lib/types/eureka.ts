@@ -23,7 +23,7 @@ export type EurekaVariantRaw = Pick<
 > & {
   eureka_sets: { title: string } | null
   categories: { title: string } | null
-  colors: { title: string } | null
+  colors: { title: string | null } | null
 }
 
 export type EurekaVariant = Pick<
