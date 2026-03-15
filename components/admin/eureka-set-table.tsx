@@ -55,6 +55,7 @@ export function EurekaSetTable({
 					color='transparent'
           size="xs"
           src={set.image_url!}
+          sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
         >
           <Category fontSize="inherit" />
         </Avatar>

@@ -2,7 +2,7 @@
 
 import { Avatar, Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { toSlugVariant } from '@/lib/utils'
+import { toSlugVariant, toTitle } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 import { EurekaVariantRaw } from '@/lib/types/eureka'
 import { Category } from '@mui/icons-material'
@@ -37,7 +37,7 @@ export function EurekaVariantTable({
       cellSx: { py: 0 },
       cell: (variant) => (
         <Tooltip
-          title={`Edit ${[variant.eureka_sets?.title, variant.categories?.title, variant.colors?.title].filter(Boolean).join(' • ')}`}
+          title={`Edit ${[toTitle(variant.eureka_set!), toTitle(variant.category!), toTitle(variant.color!)].filter(Boolean).join(' • ')}`}
         >
           <IconButton
             color="secondary"
@@ -57,6 +57,7 @@ export function EurekaVariantTable({
           color="transparent"
           size="xs"
           src={variant.image_url!}
+          sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
         >
           <Category fontSize="inherit" />
         </Avatar>

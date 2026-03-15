@@ -4,6 +4,7 @@ import { EurekaVariantRaw } from '@/lib/types/eureka'
 import { AdminList } from './admin-list'
 import ListRow from './list-row'
 import { useSearchParams } from 'next/navigation'
+import { toTitle } from '@/lib/utils'
 
 interface EurekaVariantListProps {
   rows: EurekaVariantRaw[]
@@ -36,9 +37,9 @@ export default function EurekaVariantList({
           list="eureka-variant"
           slug={row.slug ?? undefined}
           subheader={
-            [row.categories?.title, row.colors?.title].filter(Boolean).join(' • ') || undefined
+            [toTitle(row.category!), toTitle(row.color!)].filter(Boolean).join(' • ') || undefined
           }
-          title={row.eureka_sets?.title ?? '—'}
+          title={toTitle(row.eureka_set!) ?? '—'}
           updated_at={row.updated_at}
         />
       )}
