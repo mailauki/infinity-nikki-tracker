@@ -9,7 +9,6 @@ import { Category, ChevronRight } from '@mui/icons-material'
 import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
-import { getEurekaSetRaw } from '@/hooks/data/admin/eureka-sets'
 
 const GRID_COLUMNS = {
   xs: '1fr 1fr 1fr',
@@ -110,10 +109,14 @@ async function EurekaSet({ slug }: { slug: string }) {
             <Button
               color="inherit"
               endIcon={<ChevronRight />}
-              href={eureka_set_trials.length > 1 ? '/eureka/trials' : `/eureka/trials/${eureka_set_trials[0].trial}`}
+              href={
+                eureka_set_trials.length > 1
+                  ? '/eureka/trials'
+                  : `/eureka/trials/${eureka_set_trials[0].trial}`
+              }
               size="small"
             >
-							{toTitle(eureka_set_trials[0].trial)}
+              {toTitle(eureka_set_trials[0].trial)}
             </Button>
           </Stack>
 

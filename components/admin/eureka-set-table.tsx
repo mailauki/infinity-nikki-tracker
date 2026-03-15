@@ -93,11 +93,11 @@ export function EurekaSetTable({
       header: 'Trial',
       cell: (set) => (
         <Typography noWrap variant="body2">
-          {set.eureka_set_trials?.length
-            ? set.eureka_set_trials.length > 1
-						? set.eureka_set_trials.length + ' trials'
-						: set.eureka_set_trials[0].trial
-            : (set.trial ?? '—')}
+          {(() => {
+            if (!set.eureka_set_trials?.length) return set.trial ?? '—'
+            if (set.eureka_set_trials.length > 1) return set.eureka_set_trials.length + ' trials'
+            return set.eureka_set_trials[0].trial
+          })()}
         </Typography>
       ),
     },

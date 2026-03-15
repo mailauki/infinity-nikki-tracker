@@ -224,13 +224,13 @@ export default function NavDrawer({
   }
 
   const bestMatch = allLinks
-    .filter((link) => link.url !== '/' && (pathname === link.url || pathname.startsWith(link.url + '/')))
+    .filter(
+      (link) => link.url !== '/' && (pathname === link.url || pathname.startsWith(link.url + '/'))
+    )
     .sort((a, b) => b.url.length - a.url.length)[0]
 
   const hasParams = bestMatch && pathname !== bestMatch.url
-  const pageTitle = hasParams
-    ? toTitle(pathname.split('/').at(-1) ?? '')
-    : (bestMatch?.title ?? '')
+  const pageTitle = hasParams ? toTitle(pathname.split('/').at(-1) ?? '') : (bestMatch?.title ?? '')
 
   const isEurekaPage = pathname === '/eureka' || pathname.startsWith('/eureka/trials')
   const isProfilePage = pathname === '/profile'

@@ -204,9 +204,7 @@ export default function AddEurekaSetForm({
             value={selectedTrials}
             onChange={(e) =>
               setSelectedTrials(
-                typeof e.target.value === 'string'
-                  ? e.target.value.split(',')
-                  : e.target.value
+                typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value
               )
             }
           >
