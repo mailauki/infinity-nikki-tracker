@@ -36,10 +36,12 @@ export default function ColorSelect({
   colors,
   colorSelect,
   handleChange,
+  maxColors,
 }: {
   colors: Color[]
   colorSelect: string[]
   handleChange: (event: SelectChangeEvent<typeof colorSelect>) => void
+  maxColors: number
 }) {
   const theme = useTheme()
   const colorBySlug = Object.fromEntries(colors.map((c) => [c.slug, c.title]))
@@ -66,7 +68,7 @@ export default function ColorSelect({
         {colors.map((color) => (
           <MenuItem
             key={color.slug}
-            disabled={colorSelect.length >= 5 && !colorSelect.includes(color.slug)}
+            disabled={colorSelect.length >= maxColors && !colorSelect.includes(color.slug)}
             style={getStyles(color.slug, colorSelect, theme)}
             value={color.slug}
           >
@@ -74,7 +76,7 @@ export default function ColorSelect({
           </MenuItem>
         ))}
       </Select>
-      <FormHelperText>{colorSelect.length}/5 colors selected</FormHelperText>
+      <FormHelperText>{colorSelect.length}/{maxColors} colors selected</FormHelperText>
     </FormControl>
   )
 }

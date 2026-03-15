@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Alert,
@@ -54,6 +54,13 @@ export default function EditEurekaSetForm({
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
   const [colorSelect, setColorSelect] = useState<string[]>(initialColors)
+
+  const maxColorsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
+  const maxColors = typeof rarity === 'number' ? (maxColorsByRarity[rarity] ?? 5) : 5
+
+  useEffect(() => {
+    setColorSelect((prev) => (prev.length > maxColors ? prev.slice(0, maxColors) : prev))
+  }, [maxColors])
 
   const handleColorChange = (event: SelectChangeEvent<typeof colorSelect>) => {
     const {
@@ -254,7 +261,7 @@ export default function EditEurekaSetForm({
           </Select>
         </FormControl>
 
-        <ColorSelect colorSelect={colorSelect} colors={colors} handleChange={handleColorChange} />
+        <ColorSelect colorSelect={colorSelect} colors={colors} handleChange={handleColorChange} maxColors={maxColors} />
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href={backUrl} variant="outlined">
