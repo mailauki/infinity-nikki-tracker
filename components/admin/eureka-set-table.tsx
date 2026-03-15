@@ -94,7 +94,9 @@ export function EurekaSetTable({
       cell: (set) => (
         <Typography noWrap variant="body2">
           {set.eureka_set_trials?.length
-            ? set.eureka_set_trials.map((t) => t.trial).join(', ')
+            ? set.eureka_set_trials.length > 1
+						? set.eureka_set_trials.length + ' trials'
+						: set.eureka_set_trials[0].trial
             : (set.trial ?? '—')}
         </Typography>
       ),

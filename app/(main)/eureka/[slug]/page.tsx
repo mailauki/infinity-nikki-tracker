@@ -9,6 +9,7 @@ import { Category, ChevronRight } from '@mui/icons-material'
 import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
+import { getEurekaSetRaw } from '@/hooks/data/admin/eureka-sets'
 
 const GRID_COLUMNS = {
   xs: '1fr 1fr 1fr',
@@ -47,8 +48,7 @@ async function EurekaSet({ slug }: { slug: string }) {
   const {
     title,
     image_url,
-    trial,
-    trials,
+    eureka_set_trials,
     eureka_variants,
     rarity,
     label,
@@ -93,7 +93,7 @@ async function EurekaSet({ slug }: { slug: string }) {
             {colors.map((color) => (
               <Chip
                 key={color.slug}
-                avatar={<Avatar alt={color.title} src={color.image_url!} />}
+                avatar={<Avatar alt={color.title || color.slug} src={color.image_url!} />}
                 label={color.title}
               />
             ))}
@@ -110,10 +110,10 @@ async function EurekaSet({ slug }: { slug: string }) {
             <Button
               color="inherit"
               endIcon={<ChevronRight />}
-              href={`/eureka/trials/${trial}`}
+              href={eureka_set_trials.length > 1 ? '/eureka/trials' : `/eureka/trials/${eureka_set_trials[0].trial}`}
               size="small"
             >
-              {trials?.title}
+							{toTitle(eureka_set_trials[0].trial)}
             </Button>
           </Stack>
 

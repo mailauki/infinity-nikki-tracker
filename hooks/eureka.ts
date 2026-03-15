@@ -1,13 +1,13 @@
-import { Category, EurekaVariant, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
+import { Category, EurekaVariant, EurekaSet, ObtainedEureka, Color } from '@/lib/types/eureka'
 
 export function createEurekaSet({
   eurekaSet,
   categories,
   colors,
 }: {
-  eurekaSet: Omit<EurekaSet, 'created_at' | 'image_url' | 'categories' | 'colors'> | null
+  eurekaSet: Omit<EurekaSet, 'created_at' | 'image_url' | 'categories' | 'colors'| 'trial'> | null
   categories: Category[] | null
-  colors: Category[] | null
+  colors: Color[] | null
 }) {
   const eureka = {
     ...eurekaSet,
