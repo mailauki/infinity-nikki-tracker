@@ -1,7 +1,8 @@
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { Color, EurekaSet } from '@/lib/types/eureka'
-import { Avatar, Box, Card, LinearProgress, Stack, Typography } from '@mui/material'
+import { Box, Card, LinearProgress, Stack, Typography } from '@mui/material'
 import { Category } from '@mui/icons-material'
+import LazyAvatar from './lazy-avatar'
 
 export default function EurekaColorSetCard({
   eurekaSet,
@@ -33,7 +34,7 @@ export default function EurekaColorSetCard({
     >
       <Box sx={{ position: 'relative' }}>
         <Stack alignItems="center" sx={{ pt: 1 }}>
-          <Avatar
+          <LazyAvatar
             alt={slug}
             color="transparent"
             size="lg"
@@ -41,7 +42,7 @@ export default function EurekaColorSetCard({
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
             <Category fontSize="inherit" />
-          </Avatar>
+          </LazyAvatar>
         </Stack>
         <Stack
           alignItems="center"

@@ -2,9 +2,10 @@
 
 import { toTitle } from '@/lib/utils'
 import { EurekaVariant } from '@/lib/types/eureka'
-import { Avatar, Box, Card, IconButton, LinearProgress, Stack, Typography } from '@mui/material'
+import { Box, Card, IconButton, LinearProgress, Stack, Typography } from '@mui/material'
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { handleObtained } from '@/app/(main)/eureka/actions'
+import LazyAvatar from './lazy-avatar'
 
 export default function EurekaVariantCard({
   eurekaVariant,
@@ -28,7 +29,7 @@ export default function EurekaVariantCard({
     >
       <Box sx={{ position: 'relative', height: '100%' }}>
         <Stack alignItems="center" sx={{ pt: 1 }}>
-          <Avatar
+          <LazyAvatar
             alt={eurekaVariant.slug || 'Eureka Variant'}
             color="transparent"
             size="lg"
@@ -36,7 +37,7 @@ export default function EurekaVariantCard({
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
             <Category fontSize="inherit" />
-          </Avatar>
+          </LazyAvatar>
         </Stack>
         <Stack
           alignItems="center"
