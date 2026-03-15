@@ -22,6 +22,7 @@ import Footer from './nav-footer'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Edit, EditOff, FilterList, KeyboardArrowUp, MenuOpen } from '@mui/icons-material'
+import { toTitle } from '@/lib/utils'
 import FilterMenu from './filter-menu'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import ProfileEditProvider from '@/components/profile/profile-edit-provider'
@@ -222,10 +223,14 @@ export default function NavDrawer({
     setOpen(false)
   }
 
-  const pageTitle = 
-    allLinks
-      .filter((link) => pathname === link.url || pathname.startsWith(link.url + '/'))
-      .sort((a, b) => b.url.length - a.url.length)[0]?.title ?? ''
+  const bestMatch = allLinks
+    .filter((link) => link.url !== '/' && (pathname === link.url || pathname.startsWith(link.url + '/')))
+    .sort((a, b) => b.url.length - a.url.length)[0]
+
+  const hasParams = bestMatch && pathname !== bestMatch.url
+  const pageTitle = hasParams
+    ? toTitle(pathname.split('/').at(-1) ?? '')
+    : (bestMatch?.title ?? '')
 
   const isEurekaPage = pathname === '/eureka' || pathname.startsWith('/eureka/trials')
   const isProfilePage = pathname === '/profile'
