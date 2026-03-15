@@ -5,7 +5,7 @@ export function createEurekaSet({
   categories,
   colors,
 }: {
-  eurekaSet: Omit<EurekaSet, 'created_at' | 'image_url' | 'categories' | 'colors' | 'trial'> | null
+  eurekaSet: Omit<EurekaSet, 'created_at' | 'image_url' | 'categories' | 'colors'> | null
   categories: Category[] | null
   colors: Color[] | null
 }) {

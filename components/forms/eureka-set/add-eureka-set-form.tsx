@@ -74,7 +74,6 @@ export default function AddEurekaSetForm({
         rarity: rarity === '' ? null : rarity,
         style: style || null,
         label: label || null,
-        trial: null,
       },
     ])
 

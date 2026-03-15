@@ -95,7 +95,6 @@ export type Database = {
           slug: string
           style: string | null
           title: string
-          trial: string | null
           updated_at: string | null
         }
         Insert: {
@@ -106,7 +105,6 @@ export type Database = {
           slug: string
           style?: string | null
           title?: string
-          trial?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -117,7 +115,6 @@ export type Database = {
           slug?: string
           style?: string | null
           title?: string
-          trial?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -133,13 +130,6 @@ export type Database = {
             columns: ['style']
             isOneToOne: false
             referencedRelation: 'styles'
-            referencedColumns: ['slug']
-          },
-          {
-            foreignKeyName: 'eureka_sets_trial_fkey'
-            columns: ['trial']
-            isOneToOne: false
-            referencedRelation: 'trials'
             referencedColumns: ['slug']
           },
         ]

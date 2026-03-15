@@ -36,11 +36,7 @@ export default function EurekaCard({
           size={size}
           style={toTitle(eurekaSet.style ?? '')}
           title={eurekaSet.title}
-          trial={
-            eurekaSet.eureka_set_trials?.[0]
-              ? toTitle(eurekaSet.eureka_set_trials[0].trial)
-              : toTitle(eurekaSet.trial ?? '')
-          }
+          trial={toTitle(eurekaSet.eureka_set_trials?.[0]?.trial ?? '')}
         />
       )}
       {isLoggedIn && <EurekaCardProgress percentage={percentage} size={size} />}

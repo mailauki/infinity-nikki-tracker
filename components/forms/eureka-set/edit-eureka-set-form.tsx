@@ -79,7 +79,6 @@ export default function EditEurekaSetForm({
         rarity: rarity === '' ? null : rarity,
         style: style || null,
         label: label || null,
-        trial: null,
         updated_at: new Date().toISOString(),
       })
       .eq('id', eurekaSet.id)
