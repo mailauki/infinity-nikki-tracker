@@ -1,8 +1,7 @@
 import { Suspense } from 'react'
 
-// import { getUserID } from '@/hooks/user'
+import { getUserID } from '@/hooks/user'
 import { getEurekaSet } from '@/hooks/data/eureka-sets'
-// import { getObtainedEureka } from '@/hooks/data/obtained-eureka'
 import { Container, Stack, Button, Box, Divider, Typography, Chip, Avatar } from '@mui/material'
 import type { Metadata } from 'next'
 import { Category, ChevronRight } from '@mui/icons-material'
@@ -39,10 +38,8 @@ export default async function EurekaSetPage({ params }: { params: Promise<{ slug
 }
 
 async function EurekaSet({ slug }: { slug: string }) {
-  const eurekaSet = await getEurekaSet(slug)
-  // const user_id = await getUserID()
-  // const obtainedEureka = user_id ? await getObtainedEureka(user_id) : []
-  // const isLoggedIn = !!user_id!
+  const [eurekaSet, user_id] = await Promise.all([getEurekaSet(slug), getUserID()])
+  const isLoggedIn = !!user_id
 
   const {
     title,
@@ -52,7 +49,6 @@ async function EurekaSet({ slug }: { slug: string }) {
     rarity,
     label,
     style,
-    // categories,
     colors,
   } = eurekaSet
 
@@ -99,29 +95,33 @@ async function EurekaSet({ slug }: { slug: string }) {
           </Stack>
         </Stack>
 
-        <Stack>
-          <Stack
-            alignItems="flex-end"
-            direction="row"
-            justifyContent="space-between"
-            sx={{ mb: 0.5 }}
-          >
-            <Button
-              color="inherit"
-              endIcon={<ChevronRight />}
-              href={
-                eureka_set_trials.length > 1
-                  ? '/eureka/trials'
-                  : `/eureka/trials/${eureka_set_trials[0].trial}`
-              }
-              size="small"
+        {eureka_set_trials.length > 0 && (
+          <Stack>
+            <Stack
+              alignItems="flex-end"
+              direction="row"
+              justifyContent="space-between"
+              sx={{ mb: 0.5 }}
             >
-              {toTitle(eureka_set_trials[0].trial)}
-            </Button>
-          </Stack>
+              <Button
+                color="inherit"
+                endIcon={<ChevronRight />}
+                href={
+                  eureka_set_trials.length > 1
+                    ? '/eureka/trials'
+                    : `/eureka/trials/${eureka_set_trials[0].trial}`
+                }
+                size="small"
+              >
+                {eureka_set_trials.length > 1
+                  ? `${eureka_set_trials.length} trials`
+                  : toTitle(eureka_set_trials[0].trial)}
+              </Button>
+            </Stack>
 
-          <Divider />
-        </Stack>
+            <Divider />
+          </Stack>
+        )}
 
         <Box
           sx={{
@@ -133,7 +133,7 @@ async function EurekaSet({ slug }: { slug: string }) {
           }}
         >
           {eureka_variants.map((variant) => (
-            <EurekaVariantCard key={variant.id} eurekaVariant={variant} isLoggedIn={false} />
+            <EurekaVariantCard key={variant.id} eurekaVariant={variant} isLoggedIn={isLoggedIn} />
           ))}
         </Box>
       </Stack>

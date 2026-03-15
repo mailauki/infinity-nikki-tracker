@@ -5,14 +5,14 @@ export type EurekaSet = Tables<'eureka_sets'> & {
   eureka_variants: EurekaVariant[]
   categories: Category[]
   colors: Color[]
-  eureka_set_trials: { trial: string }[]
+  eureka_set_trials: EurekaSetTrial[]
 }
 
 export type EurekaSetRaw = Pick<
   Tables<'eureka_sets'>,
   'id' | 'slug' | 'title' | 'rarity' | 'style' | 'label' | 'updated_at'
 > & {
-  eureka_set_trials: { trial: string }[]
+  eureka_set_trials: EurekaSetTrial[]
 }
 
 export type EurekaVariantRaw = Pick<
@@ -55,3 +55,5 @@ export type Style = Pick<Tables<'styles'>, 'slug' | 'title'>
 export type Label = Pick<Tables<'labels'>, 'slug' | 'title'>
 
 export type Trial = Pick<Tables<'trials'>, 'id' | 'slug' | 'title' | 'image_url' | 'updated_at'>
+
+export type EurekaSetTrial = Pick<Tables<'eureka_set_trials'>, 'trial'>

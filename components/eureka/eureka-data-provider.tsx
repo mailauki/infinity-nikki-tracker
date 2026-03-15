@@ -41,11 +41,11 @@ export default function EurekaDataProvider({
       fetchJson<Color[]>('/api/colors'),
       fetchJson<Trial[]>('/api/trials'),
     ])
-      .then(([sets, cats, cols, trls]) => {
+      .then(([sets, categories, colors, trials]) => {
         setEurekaSets(sets)
-        setCategories(cats)
-        setColors(cols)
-        setTrials(trls)
+        setCategories(categories)
+        setColors(colors)
+        setTrials(trials)
         setIsLoading(false)
       })
       .catch((err) => {

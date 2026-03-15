@@ -59,12 +59,13 @@ async function EditEurekaSet({
     getCategories(),
   ])
 
-  const { data: variantRows } = await supabase
+  const { data: variantRows, error: variantRowsError } = await supabase
     .from('eureka_variants')
     .select('color')
     .eq('eureka_set', eurekaSet.slug!)
     .not('color', 'is', null)
-  const initialColors = [...new Set(variantRows?.map((v) => v.color as string) ?? [])]
+  if (variantRowsError) throw variantRowsError
+  const initialColors = [...new Set(variantRows.map((v) => v.color as string))]
 
   return (
     <EditEurekaSetForm

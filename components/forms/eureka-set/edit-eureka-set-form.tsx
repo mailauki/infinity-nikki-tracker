@@ -134,7 +134,7 @@ export default function EditEurekaSetForm({
       const { error: deleteError } = await supabase
         .from('eureka_variants')
         .delete()
-        .eq('eureka_set', eurekaSet.slug ?? toSlug(eurekaSet.title))
+        .eq('eureka_set', slug.trim())
         .in('color', removedColors)
       if (deleteError) {
         setLoading(false)
