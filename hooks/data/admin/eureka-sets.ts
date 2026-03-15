@@ -46,5 +46,5 @@ export const getEurekaSetRaw = cache(async (slug: string) => {
     .eq('slug', slug)
     .maybeSingle()
 
-  return eurekaSet as EurekaSetRaw
+  return eurekaSet as EurekaSetRaw | null
 })
