@@ -22,7 +22,7 @@ export default function EurekaSetImage({
       <CardHeader
         action={action}
         avatar={
-          <Avatar alt={alt} size="lg" src={imageUrl} sx={{ bgcolor: imageUrl && 'transparent' }}>
+          <Avatar alt={alt} color='transparent' size="lg" src={imageUrl}>
             <Category fontSize="inherit" />
           </Avatar>
         }
@@ -36,7 +36,7 @@ export default function EurekaSetImage({
       disableTypography
       action={action}
       avatar={
-        <Avatar alt={alt} size="md" src={imageUrl} sx={{ bgcolor: imageUrl && 'transparent' }}>
+        <Avatar alt={alt} color='transparent' size="md" src={imageUrl}>
           <Category fontSize="inherit" />
         </Avatar>
       }

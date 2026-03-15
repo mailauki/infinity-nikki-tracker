@@ -54,9 +54,9 @@ export function EurekaVariantTable({
       cell: (variant) => (
         <Avatar
           alt={variant.eureka_set || 'Image'}
+					color='transparent'
           size="xs"
           src={variant.image_url!}
-          sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
         >
           <Category fontSize="inherit" />
         </Avatar>

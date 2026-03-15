@@ -28,9 +28,9 @@ export default function EurekaVariantCard({
         <Stack alignItems="center" sx={{ pt: 1 }}>
           <Avatar
             alt={eurekaVariant.slug || 'Eureka Variant'}
+						color='transparent'
             size="lg"
             src={eurekaVariant.image_url!}
-            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
             <Category fontSize="inherit" />
           </Avatar>

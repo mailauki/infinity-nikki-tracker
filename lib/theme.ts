@@ -6,6 +6,7 @@ import { AvatarSize } from './types/props'
 declare module '@mui/material/Avatar' {
   interface AvatarOwnProps {
     size?: AvatarSize
+		color?: 'transparent'
   }
 }
 declare module '@mui/material/ToggleButton' {
@@ -184,6 +185,10 @@ const theme = createTheme({
             {
               props: { size: 'xl' },
               style: { width: 140, height: 140, fontSize: '3rem' },
+            },
+            {
+              props: { color: 'transparent' },
+              style: { backgroundColor: 'transparent', color: 'inherit' },
             },
           ],
         },
