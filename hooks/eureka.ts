@@ -1,4 +1,4 @@
-import { Category, EurekaVariant, EurekaSet, ObtainedEureka, Color } from '@/lib/types/eureka'
+import { Category, Color, EurekaVariant, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
 
 export function createEurekaSet({
   eurekaSet,

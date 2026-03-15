@@ -72,7 +72,7 @@ export default function EditEurekaVariantForm({
         color: color || null,
         image_url: imageUrl || null,
         default: isDefault,
-        slug: slug || null,
+        slug: slug || toSlugVariant(eurekaSet, category, color),
         updated_at: new Date().toISOString(),
       })
       .eq('id', variant.id)

@@ -16,7 +16,6 @@ export async function GET() {
       rarity,
       style,
       label,
-      trial,
       updated_at,
       eureka_set_trials ( trial ),
       eureka_variants (

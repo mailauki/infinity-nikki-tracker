@@ -67,7 +67,7 @@ export default function AddEurekaVariantForm({
         color: color || null,
         image_url: imageUrl || null,
         default: isDefault,
-        slug: slug || null,
+        slug: slug || toSlugVariant(eurekaSet, category, color),
       },
     ])
 

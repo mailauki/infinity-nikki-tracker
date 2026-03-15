@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
+import { Category, Color, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
 
 import EurekaVariantGrid from '@/components/eureka/eureka-variant-grid'
 import { Box, Card, List } from '@mui/material'
@@ -95,7 +95,7 @@ export default function RealtimeEurekaSet({
                 ))}
               </List>
               <List sx={{ width: '100%' }}>
-                {eurekaSet.colors.map((color: Category) => (
+                {eurekaSet.colors.map((color: Color) => (
                   <Card
                     key={color.slug}
                     component="li"
