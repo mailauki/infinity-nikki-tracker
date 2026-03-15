@@ -49,7 +49,7 @@ async function EditEurekaSet({
     .eq('slug', slug)
     .single()
 
-  if (!eurekaSet) notFound()
+  if (!eurekaSet || !eurekaSet.slug) notFound()
 
   const [trials, styles, labels, colors, categories] = await Promise.all([
     getTrials(),

@@ -54,7 +54,7 @@ export function EurekaVariantTable({
       cell: (variant) => (
         <Avatar
           alt={variant.eureka_set || 'Image'}
-					color='transparent'
+          color="transparent"
           size="xs"
           src={variant.image_url!}
         >

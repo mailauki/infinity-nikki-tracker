@@ -83,13 +83,18 @@ export default function AddEurekaSetForm({
       return
     }
 
+    const rollback = async () => {
+      await supabase.from('eureka_sets').delete().eq('slug', slug.trim())
+    }
+
     if (selectedTrials.length > 0) {
       const { error: trialsError } = await supabase
         .from('eureka_set_trials')
         .insert(selectedTrials.map((t) => ({ eureka_set: slug.trim(), trial: t })))
       if (trialsError) {
+        await rollback()
         setLoading(false)
-        setError(trialsError.message)
+        setError('Failed to save trials. The set was not created — please try again.')
         return
       }
     }
@@ -105,8 +110,9 @@ export default function AddEurekaSetForm({
       )
       const { error: variantError } = await supabase.from('eureka_variants').insert(variants)
       if (variantError) {
+        await rollback()
         setLoading(false)
-        setError(variantError.message)
+        setError('Failed to save variants. The set was not created — please try again.')
         return
       }
     }

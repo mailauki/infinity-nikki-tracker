@@ -90,6 +90,7 @@ export default function EditEurekaSetForm({
     }
 
     // Replace junction rows for trials
+    const originalTrials = eurekaSet.eureka_set_trials.map((t) => t.trial)
     const { error: deleteTrialsError } = await supabase
       .from('eureka_set_trials')
       .delete()
@@ -104,8 +105,14 @@ export default function EditEurekaSetForm({
         .from('eureka_set_trials')
         .insert(selectedTrials.map((t) => ({ eureka_set: slug.trim(), trial: t })))
       if (insertTrialsError) {
+        // Restore original trial associations
+        if (originalTrials.length > 0) {
+          await supabase
+            .from('eureka_set_trials')
+            .insert(originalTrials.map((t) => ({ eureka_set: slug.trim(), trial: t })))
+        }
         setLoading(false)
-        setError(insertTrialsError.message)
+        setError('Failed to update trials. Your previous trial associations have been restored.')
         return
       }
     }
