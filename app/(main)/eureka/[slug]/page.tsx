@@ -41,16 +41,8 @@ async function EurekaSet({ slug }: { slug: string }) {
   const [eurekaSet, user_id] = await Promise.all([getEurekaSet(slug), getUserID()])
   const isLoggedIn = !!user_id
 
-  const {
-    title,
-    image_url,
-    eureka_set_trials,
-    eureka_variants,
-    rarity,
-    label,
-    style,
-    colors,
-  } = eurekaSet
+  const { title, image_url, eureka_set_trials, eureka_variants, rarity, label, style, colors } =
+    eurekaSet
 
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>

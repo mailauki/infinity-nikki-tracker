@@ -6,7 +6,7 @@ import { AvatarSize } from './types/props'
 declare module '@mui/material/Avatar' {
   interface AvatarOwnProps {
     size?: AvatarSize
-		color?: 'transparent'
+    color?: 'transparent'
   }
 }
 declare module '@mui/material/ToggleButton' {

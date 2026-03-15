@@ -42,7 +42,7 @@ export default function EurekaVariantCard({
           alignItems="center"
           direction="row"
           justifyContent="space-between"
-          sx={{ py: 0.75, px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: -2 }}
+          sx={{ py: 0.75, px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: 0 }}
         >
           <Typography color="textSecondary" variant="caption">
             {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}

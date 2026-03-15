@@ -35,7 +35,7 @@ export default function EurekaColorSetCard({
         <Stack alignItems="center" sx={{ pt: 1 }}>
           <Avatar
             alt={slug}
-						color='transparent'
+            color="transparent"
             size="lg"
             src={variants[0].image_url!}
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
@@ -47,7 +47,7 @@ export default function EurekaColorSetCard({
           alignItems="center"
           direction="row"
           justifyContent="space-between"
-          sx={{ px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: -2 }}
+          sx={{ py: 0.75, px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: 0 }}
         >
           <Typography variant="overline">{color.title}</Typography>
           {isLoggedIn && (
@@ -56,7 +56,11 @@ export default function EurekaColorSetCard({
             </Typography>
           )}
         </Stack>
-        {isLoggedIn && <LinearProgress color="inherit" value={percentage} variant="determinate" />}
+        {isLoggedIn && (
+          <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+            <LinearProgress color="inherit" value={percentage} variant="determinate" />
+          </Box>
+        )}
       </Box>
     </Card>
   )

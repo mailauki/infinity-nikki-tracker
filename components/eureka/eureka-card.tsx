@@ -23,7 +23,11 @@ export default function EurekaCard({
   return (
     <>
       <EurekaSetImage
-        action={eurekaSet.label ? <Chip label={toTitle(eurekaSet.label)} size="small" variant="outlined" /> : null}
+        action={
+          eurekaSet.label ? (
+            <Chip label={toTitle(eurekaSet.label)} size="small" variant="outlined" />
+          ) : null
+        }
         alt={eurekaSet.title}
         imageUrl={eurekaSet.image_url!}
         size={size}

@@ -52,7 +52,7 @@ export function EurekaSetTable({
       cell: (set) => (
         <Avatar
           alt={set.title || 'Image'}
-					color='transparent'
+          color="transparent"
           size="xs"
           src={set.image_url!}
           sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
