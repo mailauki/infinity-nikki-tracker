@@ -222,7 +222,7 @@ export default function NavDrawer({
     setOpen(false)
   }
 
-  const pageTitle =
+  const pageTitle = 
     allLinks
       .filter((link) => pathname === link.url || pathname.startsWith(link.url + '/'))
       .sort((a, b) => b.url.length - a.url.length)[0]?.title ?? ''
