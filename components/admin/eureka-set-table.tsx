@@ -93,7 +93,7 @@ export function EurekaSetTable({
       header: 'Trial',
       cell: (set) => (
         <Typography noWrap variant="body2">
-          {set.trial}
+          {set.trials?.title ?? set.trial ?? '—'}
         </Typography>
       ),
     },

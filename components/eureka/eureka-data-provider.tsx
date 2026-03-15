@@ -31,6 +31,7 @@ export default function EurekaDataProvider({
   const [trials, setTrials] = useState<Trial[]>([])
   const [obtainedEureka, setObtainedEureka] = useState<ObtainedEureka[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isError, setIsError] = useState(false)
 
   useEffect(() => {
     Promise.all([
@@ -48,6 +49,7 @@ export default function EurekaDataProvider({
       })
       .catch((err) => {
         console.error('Failed to load eureka data:', err)
+        setIsError(true)
         setIsLoading(false)
       })
   }, [])
@@ -108,6 +110,7 @@ export default function EurekaDataProvider({
         trials,
         isLoggedIn,
         isLoading,
+        isError,
         userId,
       }}
     >

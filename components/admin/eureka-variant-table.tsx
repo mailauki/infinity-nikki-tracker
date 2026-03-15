@@ -2,7 +2,7 @@
 
 import { Avatar, Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { toSlugVariant, toTitle } from '@/lib/utils'
+import { toSlugVariant } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 import { EurekaVariantRaw } from '@/lib/types/eureka'
 import { Category } from '@mui/icons-material'
@@ -37,7 +37,7 @@ export function EurekaVariantTable({
       cellSx: { py: 0 },
       cell: (variant) => (
         <Tooltip
-          title={`Edit ${[toTitle(variant.eureka_set!), toTitle(variant.category!), toTitle(variant.color!)].filter(Boolean).join(' • ')}`}
+          title={`Edit ${[variant.eureka_sets?.title, variant.categories?.title, variant.colors?.title].filter(Boolean).join(' • ')}`}
         >
           <IconButton
             color="secondary"
@@ -66,7 +66,7 @@ export function EurekaVariantTable({
       header: 'Eureka Set',
       cell: (variant) => (
         <Typography noWrap fontWeight="medium" variant="body2">
-          {toTitle(variant.eureka_set!)}
+          {variant.eureka_sets?.title ?? '—'}
         </Typography>
       ),
     },
@@ -78,8 +78,8 @@ export function EurekaVariantTable({
         </Typography>
       ),
     },
-    { header: 'Category', cell: (variant) => toTitle(variant.category!) },
-    { header: 'Color', cell: (variant) => toTitle(variant.color!) },
+    { header: 'Category', cell: (variant) => variant.categories?.title ?? '—' },
+    { header: 'Color', cell: (variant) => variant.colors?.title ?? '—' },
     {
       header: 'Default',
       cell: (variant) =>

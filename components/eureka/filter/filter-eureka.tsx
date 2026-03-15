@@ -2,6 +2,7 @@
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -46,9 +47,17 @@ function VariantCardSkeleton() {
 }
 
 export default function FilterEureka() {
-  const { eurekaSets, isLoggedIn, isLoading } = useEurekaData()
+  const { eurekaSets, isLoggedIn, isLoading, isError } = useEurekaData()
 
   const searchParams = useSearchParams()
+
+  if (isError) {
+    return (
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+        <Alert severity="error">Failed to load Eureka data. Please refresh the page.</Alert>
+      </Container>
+    )
+  }
 
   if (isLoading) {
     return (
