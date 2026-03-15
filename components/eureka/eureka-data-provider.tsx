@@ -31,6 +31,8 @@ export default function EurekaDataProvider({
   const [trials, setTrials] = useState<Trial[]>([])
   const [obtainedEureka, setObtainedEureka] = useState<ObtainedEureka[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isError, setIsError] = useState(false)
+  const [isObtainedError, setIsObtainedError] = useState(false)
 
   useEffect(() => {
     Promise.all([
@@ -39,15 +41,16 @@ export default function EurekaDataProvider({
       fetchJson<Color[]>('/api/colors'),
       fetchJson<Trial[]>('/api/trials'),
     ])
-      .then(([sets, cats, cols, trls]) => {
+      .then(([sets, categories, colors, trials]) => {
         setEurekaSets(sets)
-        setCategories(cats)
-        setColors(cols)
-        setTrials(trls)
+        setCategories(categories)
+        setColors(colors)
+        setTrials(trials)
         setIsLoading(false)
       })
       .catch((err) => {
         console.error('Failed to load eureka data:', err)
+        setIsError(true)
         setIsLoading(false)
       })
   }, [])
@@ -57,7 +60,10 @@ export default function EurekaDataProvider({
 
     fetchJson<ObtainedEureka[]>('/api/obtained-eureka')
       .then((data) => setObtainedEureka(data))
-      .catch((err) => console.error('Failed to load obtained eureka:', err))
+      .catch((err) => {
+        console.error('Failed to load obtained eureka:', err)
+        setIsObtainedError(true)
+      })
 
     const obtainedChannel = supabase
       .channel('obtained-filter-channel')
@@ -108,6 +114,8 @@ export default function EurekaDataProvider({
         trials,
         isLoggedIn,
         isLoading,
+        isError,
+        isObtainedError,
         userId,
       }}
     >

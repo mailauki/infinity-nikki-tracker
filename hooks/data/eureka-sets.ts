@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EurekaSet, EurekaVariant } from '@/lib/types/eureka'
 import { cache } from 'react'
@@ -20,8 +21,8 @@ export const getEurekaSets = cache(async () => {
 			rarity,
 			style,
 			label,
-			trial,
 			updated_at,
+			eureka_set_trials ( trial ),
 			eureka_variants (
 				id,
 				slug,
@@ -82,8 +83,8 @@ export const getEurekaSet = cache(async (slug: string) => {
 			rarity,
 			style,
 			label,
-			trial,
 			updated_at,
+			eureka_set_trials ( trial ),
 			eureka_variants (
 				id,
 				slug,
@@ -99,6 +100,8 @@ export const getEurekaSet = cache(async (slug: string) => {
     .order('id', { referencedTable: 'eureka_variants', ascending: false })
     .eq('slug', slug)
     .single()
+  if (!eurekaSet) notFound()
+
   const categories = await getCategories()
   const colors = await getColors()
 

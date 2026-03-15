@@ -40,7 +40,7 @@ export default function AddEurekaSetForm({
   const [rarity, setRarity] = useState<number | ''>('')
   const [style, setStyle] = useState('')
   const [label, setLabel] = useState('')
-  const [trial, setTrial] = useState('')
+  const [selectedTrials, setSelectedTrials] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
@@ -74,7 +74,6 @@ export default function AddEurekaSetForm({
         rarity: rarity === '' ? null : rarity,
         style: style || null,
         label: label || null,
-        trial: trial || null,
       },
     ])
 
@@ -82,6 +81,22 @@ export default function AddEurekaSetForm({
       setLoading(false)
       setError(error.message)
       return
+    }
+
+    const rollback = async () => {
+      await supabase.from('eureka_sets').delete().eq('slug', slug.trim())
+    }
+
+    if (selectedTrials.length > 0) {
+      const { error: trialsError } = await supabase
+        .from('eureka_set_trials')
+        .insert(selectedTrials.map((t) => ({ eureka_set: slug.trim(), trial: t })))
+      if (trialsError) {
+        await rollback()
+        setLoading(false)
+        setError('Failed to save trials. The set was not created — please try again.')
+        return
+      }
     }
 
     if (colorSelect.length > 0) {
@@ -95,8 +110,9 @@ export default function AddEurekaSetForm({
       )
       const { error: variantError } = await supabase.from('eureka_variants').insert(variants)
       if (variantError) {
+        await rollback()
         setLoading(false)
-        setError(variantError.message)
+        setError('Failed to save variants. The set was not created — please try again.')
         return
       }
     }
@@ -180,9 +196,23 @@ export default function AddEurekaSetForm({
         </FormControl>
 
         <FormControl>
-          <InputLabel>Trial</InputLabel>
-          <Select label="Trial" value={trial} onChange={(e) => setTrial(e.target.value)}>
-            <MenuItem value="">—</MenuItem>
+          <InputLabel>Trials</InputLabel>
+          <Select
+            multiple
+            label="Trials"
+            renderValue={(selected) =>
+              trials
+                .filter((t) => selected.includes(t.slug!))
+                .map((t) => t.title)
+                .join(', ')
+            }
+            value={selectedTrials}
+            onChange={(e) =>
+              setSelectedTrials(
+                typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value
+              )
+            }
+          >
             {trials.map((t) => (
               <MenuItem key={t.slug} value={t.slug!}>
                 {t.title}

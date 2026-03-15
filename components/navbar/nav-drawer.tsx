@@ -36,6 +36,7 @@ import {
   KeyboardArrowUp,
   MenuOpen,
 } from '@mui/icons-material'
+import { toTitle } from '@/lib/utils'
 import FilterMenu from './filter-menu'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import ProfileEditProvider from '@/components/profile/profile-edit-provider'
@@ -202,6 +203,16 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   ],
 }))
 
+const allLinks = [
+  navLinksData.home,
+  ...navLinksData.navMain.flatMap((item) => [item, ...(item.items ?? [])]),
+  ...navLinksData.navSecondary.flatMap((item) => [
+    item,
+    ...(item.items ?? []).map((sub) => ({ ...sub, url: item.url + sub.url })),
+  ]),
+  ...navLinksData.navExtra,
+]
+
 export default function NavDrawer({
   children,
   isAdmin = false,
@@ -226,20 +237,14 @@ export default function NavDrawer({
     setOpen(false)
   }
 
-  const allLinks = [
-    navLinksData.home,
-    ...navLinksData.navMain.flatMap((item) => [item, ...(item.items ?? [])]),
-    ...navLinksData.navSecondary.flatMap((item) => [
-      item,
-      ...(item.items ?? []).map((sub) => ({ ...sub, url: item.url + sub.url })),
-    ]),
-    ...navLinksData.navExtra,
-  ]
+  const bestMatch = allLinks
+    .filter(
+      (link) => link.url !== '/' && (pathname === link.url || pathname.startsWith(link.url + '/'))
+    )
+    .sort((a, b) => b.url.length - a.url.length)[0]
 
-  const pageTitle =
-    allLinks
-      .filter((link) => pathname === link.url || pathname.startsWith(link.url + '/'))
-      .sort((a, b) => b.url.length - a.url.length)[0]?.title ?? ''
+  const hasParams = bestMatch && pathname !== bestMatch.url
+  const pageTitle = hasParams ? toTitle(pathname.split('/').at(-1) ?? '') : (bestMatch?.title ?? '')
 
   const isEurekaPage = pathname === '/eureka' || pathname.startsWith('/eureka/trials')
   const isProfilePage = pathname === '/profile'
@@ -249,28 +254,28 @@ export default function NavDrawer({
   const [isVisible, setIsVisible] = React.useState(false)
   const scrollRef = React.useRef<HTMLDivElement>(null)
 
-  const toggleVisibility = () => {
-    if (!scrollRef.current) return
-    setIsVisible(scrollRef.current.scrollTop > 300)
-  }
-
   const scrollToTop = () => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  React.useEffect(() => {
-    const currentRef = scrollRef.current
-    if (currentRef) {
-      // Add event listener to the component itself
-      currentRef.addEventListener('scroll', toggleVisibility)
-
-      // Cleanup function to remove the listener when the component unmounts
-      return () => {
-        currentRef.removeEventListener('scroll', toggleVisibility)
-      }
-    }
+  const handleScroll = React.useCallback(() => {
+    if (!scrollRef.current) return
+    setIsVisible(scrollRef.current.scrollTop > 300)
   }, [])
 
+  const setScrollRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      scrollRef.current?.removeEventListener('scroll', handleScroll)
+      scrollRef.current = node
+      node?.addEventListener('scroll', handleScroll)
+    },
+    [handleScroll]
+  )
+
+  React.useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' })
+    setIsVisible(false)
+  }, [pathname])
   const content = (
     <>
       <Stack direction="row">
@@ -352,7 +357,11 @@ export default function NavDrawer({
                 justifyContent={{ xs: 'center', sm: 'inherit' }}
                 open={open}
               >
-                <Typography component="h1" variant="h4">
+                <Typography
+                  component="h1"
+                  sx={{ fontSize: { xs: 'h6.fontSize', sm: 'h5.fontSize', md: 'h4.fontSize' } }}
+                  variant="h4"
+                >
                   {pageTitle}
                 </Typography>
               </AppBarTitle>
@@ -399,7 +408,7 @@ export default function NavDrawer({
 
         <Box className="h-screen" component="main" sx={{ flex: 1, minWidth: 0 }}>
           <StyledToolbar />
-          <MainContainer ref={scrollRef} elevation={0} open={open}>
+          <MainContainer ref={setScrollRef} elevation={0} open={open}>
             {children}
             <Tooltip placement="top-end" title="Back to Top">
               <Slide direction="up" in={isVisible}>

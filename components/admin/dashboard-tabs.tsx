@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Container } from '@mui/material'
+import { Container, useMediaQuery, useTheme } from '@mui/material'
 import { EurekaSetTable } from './eureka-set-table'
 import { EurekaVariantTable } from './eureka-variant-table'
 import { TrialTable } from './trial-table'
@@ -10,6 +10,9 @@ import EurekaSetList from './eureka-set-list'
 import EurekaVariantList from './eureka-variant-list'
 import TrialList from './trial-list'
 import DashboardToolbar from './dashboard-toolbar'
+
+const TAB_VALUES = ['eureka-sets', 'eureka-variants', 'trials'] as const
+type TabValue = (typeof TAB_VALUES)[number]
 
 export function DashboardTabs({
   eurekaSets,
@@ -24,13 +27,15 @@ export function DashboardTabs({
   const router = useRouter()
   const pathname = usePathname()
 
-  const TAB_VALUES = ['eureka-sets', 'eureka-variants', 'trials'] as const
-  type TabValue = (typeof TAB_VALUES)[number]
   const rawTab = searchParams.get('tab') ?? 'eureka-sets'
   const tab: TabValue = TAB_VALUES.includes(rawTab as TabValue)
     ? (rawTab as TabValue)
     : 'eureka-sets'
-  const view = searchParams.get('view') === 'list' ? 'list' : 'table'
+  const theme = useTheme()
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
+  const defaultView = isSmallScreen ? 'list' : 'table'
+  const rawView = searchParams.get('view')
+  const view: 'list' | 'table' = rawView === 'list' || rawView === 'table' ? rawView : defaultView
   const page = Math.max(0, Number(searchParams.get('page') ?? '0'))
   const perPage = Number(searchParams.get('perPage') ?? '15')
 
@@ -70,21 +75,26 @@ export function DashboardTabs({
         view={view}
       />
 
-      {tab === 'eureka-sets' && view === 'table' && (
-        <EurekaSetTable rows={eurekaSets} {...paginationProps} />
-      )}
-      {tab === 'eureka-variants' && view === 'table' && (
-        <EurekaVariantTable rows={eurekaVariants} {...paginationProps} />
-      )}
-      {tab === 'trials' && view === 'table' && <TrialTable rows={trials} {...paginationProps} />}
+      {tab === 'eureka-sets' &&
+        (view === 'table' ? (
+          <EurekaSetTable rows={eurekaSets} {...paginationProps} />
+        ) : (
+          <EurekaSetList rows={eurekaSets} {...paginationProps} />
+        ))}
 
-      {tab === 'eureka-sets' && view === 'list' && (
-        <EurekaSetList rows={eurekaSets} {...paginationProps} />
-      )}
-      {tab === 'eureka-variants' && view === 'list' && (
-        <EurekaVariantList rows={eurekaVariants} {...paginationProps} />
-      )}
-      {tab === 'trials' && view === 'list' && <TrialList rows={trials} {...paginationProps} />}
+      {tab === 'eureka-variants' &&
+        (view === 'table' ? (
+          <EurekaVariantTable rows={eurekaVariants} {...paginationProps} />
+        ) : (
+          <EurekaVariantList rows={eurekaVariants} {...paginationProps} />
+        ))}
+
+      {tab === 'trials' &&
+        (view === 'table' ? (
+          <TrialTable rows={trials} {...paginationProps} />
+        ) : (
+          <TrialList rows={trials} {...paginationProps} />
+        ))}
     </Container>
   )
 }

@@ -45,11 +45,11 @@ async function EditEurekaSet({
 
   const { data: eurekaSet } = await supabase
     .from('eureka_sets')
-    .select('id, slug, title, rarity, style, label, trial, updated_at')
+    .select('id, slug, title, rarity, style, label, updated_at, eureka_set_trials ( trial )')
     .eq('slug', slug)
     .single()
 
-  if (!eurekaSet) notFound()
+  if (!eurekaSet || !eurekaSet.slug) notFound()
 
   const [trials, styles, labels, colors, categories] = await Promise.all([
     getTrials(),
@@ -59,12 +59,13 @@ async function EditEurekaSet({
     getCategories(),
   ])
 
-  const { data: variantRows } = await supabase
+  const { data: variantRows, error: variantRowsError } = await supabase
     .from('eureka_variants')
     .select('color')
     .eq('eureka_set', eurekaSet.slug!)
     .not('color', 'is', null)
-  const initialColors = [...new Set(variantRows?.map((v) => v.color as string) ?? [])]
+  if (variantRowsError) throw variantRowsError
+  const initialColors = [...new Set(variantRows.map((v) => v.color as string))]
 
   return (
     <EditEurekaSetForm

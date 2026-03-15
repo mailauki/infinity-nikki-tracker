@@ -47,7 +47,9 @@ export default function EditEurekaSetForm({
   const [rarity, setRarity] = useState<number | ''>(eurekaSet.rarity ?? '')
   const [style, setStyle] = useState(eurekaSet.style ?? '')
   const [label, setLabel] = useState(eurekaSet.label ?? '')
-  const [trial, setTrial] = useState(eurekaSet.trial ?? '')
+  const [selectedTrials, setSelectedTrials] = useState<string[]>(
+    eurekaSet.eureka_set_trials?.map((t) => t.trial) ?? []
+  )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
@@ -77,7 +79,6 @@ export default function EditEurekaSetForm({
         rarity: rarity === '' ? null : rarity,
         style: style || null,
         label: label || null,
-        trial: trial || null,
         updated_at: new Date().toISOString(),
       })
       .eq('id', eurekaSet.id)
@@ -86,6 +87,34 @@ export default function EditEurekaSetForm({
       setLoading(false)
       setError(error.message)
       return
+    }
+
+    // Replace junction rows for trials
+    const originalTrials = eurekaSet.eureka_set_trials.map((t) => t.trial)
+    const { error: deleteTrialsError } = await supabase
+      .from('eureka_set_trials')
+      .delete()
+      .eq('eureka_set', slug.trim())
+    if (deleteTrialsError) {
+      setLoading(false)
+      setError(deleteTrialsError.message)
+      return
+    }
+    if (selectedTrials.length > 0) {
+      const { error: insertTrialsError } = await supabase
+        .from('eureka_set_trials')
+        .insert(selectedTrials.map((t) => ({ eureka_set: slug.trim(), trial: t })))
+      if (insertTrialsError) {
+        // Restore original trial associations
+        if (originalTrials.length > 0) {
+          await supabase
+            .from('eureka_set_trials')
+            .insert(originalTrials.map((t) => ({ eureka_set: slug.trim(), trial: t })))
+        }
+        setLoading(false)
+        setError('Failed to update trials. Your previous trial associations have been restored.')
+        return
+      }
     }
 
     const addedColors = colorSelect.filter((c) => !initialColors.includes(c))
@@ -112,7 +141,7 @@ export default function EditEurekaSetForm({
       const { error: deleteError } = await supabase
         .from('eureka_variants')
         .delete()
-        .eq('eureka_set', eurekaSet.slug ?? toSlug(eurekaSet.title))
+        .eq('eureka_set', slug.trim())
         .in('color', removedColors)
       if (deleteError) {
         setLoading(false)
@@ -200,9 +229,23 @@ export default function EditEurekaSetForm({
         </FormControl>
 
         <FormControl>
-          <InputLabel>Trial</InputLabel>
-          <Select label="Trial" value={trial} onChange={(e) => setTrial(e.target.value)}>
-            <MenuItem value="">—</MenuItem>
+          <InputLabel>Trials</InputLabel>
+          <Select
+            multiple
+            label="Trials"
+            renderValue={(selected) =>
+              trials
+                .filter((t) => selected.includes(t.slug!))
+                .map((t) => t.title)
+                .join(', ')
+            }
+            value={selectedTrials}
+            onChange={(e) =>
+              setSelectedTrials(
+                typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value
+              )
+            }
+          >
             {trials.map((t) => (
               <MenuItem key={t.slug} value={t.slug!}>
                 {t.title}

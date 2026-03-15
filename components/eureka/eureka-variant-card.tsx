@@ -1,3 +1,5 @@
+'use client'
+
 import { toTitle } from '@/lib/utils'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { Avatar, Box, Card, IconButton, LinearProgress, Stack, Typography } from '@mui/material'
@@ -28,6 +30,7 @@ export default function EurekaVariantCard({
         <Stack alignItems="center" sx={{ pt: 1 }}>
           <Avatar
             alt={eurekaVariant.slug || 'Eureka Variant'}
+            color="transparent"
             size="lg"
             src={eurekaVariant.image_url!}
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}

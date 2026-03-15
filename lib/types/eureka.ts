@@ -1,21 +1,30 @@
 import { Tables } from './supabase'
 
+export type EurekaSetTrial = Pick<Tables<'eureka_set_trials'>, 'trial'>
+
 export type EurekaSet = Tables<'eureka_sets'> & {
   image_url: string
   eureka_variants: EurekaVariant[]
+  eureka_set_trials: EurekaSetTrial[]
   categories: Category[]
   colors: Color[]
 }
 
 export type EurekaSetRaw = Pick<
   Tables<'eureka_sets'>,
-  'id' | 'slug' | 'title' | 'rarity' | 'trial' | 'style' | 'label' | 'updated_at'
->
+  'id' | 'slug' | 'title' | 'rarity' | 'style' | 'label' | 'updated_at'
+> & {
+  eureka_set_trials: EurekaSetTrial[]
+}
 
 export type EurekaVariantRaw = Pick<
   Tables<'eureka_variants'>,
   'id' | 'slug' | 'eureka_set' | 'color' | 'category' | 'image_url' | 'default' | 'updated_at'
->
+> & {
+  eureka_sets: { title: string } | null
+  categories: { title: string } | null
+  colors: { title: string | null } | null
+}
 
 export type EurekaVariant = Pick<
   Tables<'eureka_variants'>,

@@ -52,6 +52,7 @@ export function EurekaSetTable({
       cell: (set) => (
         <Avatar
           alt={set.title || 'Image'}
+					color='transparent'
           size="xs"
           src={set.image_url!}
           sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
@@ -93,7 +94,11 @@ export function EurekaSetTable({
       header: 'Trial',
       cell: (set) => (
         <Typography noWrap variant="body2">
-          {set.trial}
+          {(() => {
+            if (!set.eureka_set_trials?.length) return '—'
+            if (set.eureka_set_trials.length > 1) return set.eureka_set_trials.length + ' trials'
+            return set.eureka_set_trials[0].trial
+          })()}
         </Typography>
       ),
     },

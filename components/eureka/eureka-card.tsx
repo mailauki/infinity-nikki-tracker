@@ -23,7 +23,7 @@ export default function EurekaCard({
   return (
     <>
       <EurekaSetImage
-        action={<Chip label={toTitle(eurekaSet.label ?? '')} size="small" variant="outlined" />}
+        action={eurekaSet.label ? <Chip label={toTitle(eurekaSet.label)} size="small" variant="outlined" /> : null}
         alt={eurekaSet.title}
         imageUrl={eurekaSet.image_url!}
         size={size}
@@ -36,7 +36,7 @@ export default function EurekaCard({
           size={size}
           style={toTitle(eurekaSet.style ?? '')}
           title={eurekaSet.title}
-          trial={toTitle(eurekaSet.trial ?? '')}
+          trial={toTitle(eurekaSet.eureka_set_trials?.[0]?.trial ?? '')}
         />
       )}
       {isLoggedIn && <EurekaCardProgress percentage={percentage} size={size} />}

@@ -1,19 +1,19 @@
-import { Category, EurekaVariant, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
+import { Category, Color, EurekaVariant, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
 
 export function createEurekaSet({
   eurekaSet,
   categories,
   colors,
 }: {
-  eurekaSet: Omit<EurekaSet, 'created_at' | 'image_url' | 'categories' | 'colors'> | null
+  eurekaSet: Omit<EurekaSet, 'created_at' | 'image_url' | 'categories' | 'colors'>
   categories: Category[] | null
-  colors: Category[] | null
+  colors: Color[] | null
 }) {
   const eureka = {
     ...eurekaSet,
-    image_url: eurekaSet?.eureka_variants.find((variant) => variant.default)?.image_url,
+    image_url: eurekaSet.eureka_variants.find((variant) => variant.default)?.image_url,
     categories: categories,
-    colors: [...new Set(eurekaSet?.eureka_variants.map((variant) => variant.color))].flatMap(
+    colors: [...new Set(eurekaSet.eureka_variants.map((variant) => variant.color))].flatMap(
       (colorSlug) => colors?.filter((color) => color.slug === colorSlug)
     ),
   } as EurekaSet

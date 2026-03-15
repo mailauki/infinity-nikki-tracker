@@ -54,6 +54,7 @@ export function EurekaVariantTable({
       cell: (variant) => (
         <Avatar
           alt={variant.eureka_set || 'Image'}
+          color="transparent"
           size="xs"
           src={variant.image_url!}
           sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
@@ -66,7 +67,7 @@ export function EurekaVariantTable({
       header: 'Eureka Set',
       cell: (variant) => (
         <Typography noWrap fontWeight="medium" variant="body2">
-          {toTitle(variant.eureka_set!)}
+          {variant.eureka_sets?.title ?? '—'}
         </Typography>
       ),
     },
@@ -78,8 +79,8 @@ export function EurekaVariantTable({
         </Typography>
       ),
     },
-    { header: 'Category', cell: (variant) => toTitle(variant.category!) },
-    { header: 'Color', cell: (variant) => toTitle(variant.color!) },
+    { header: 'Category', cell: (variant) => variant.categories?.title ?? '—' },
+    { header: 'Color', cell: (variant) => variant.colors?.title ?? '—' },
     {
       header: 'Default',
       cell: (variant) =>

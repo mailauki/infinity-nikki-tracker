@@ -35,6 +35,7 @@ export default function EurekaColorSetCard({
         <Stack alignItems="center" sx={{ pt: 1 }}>
           <Avatar
             alt={slug}
+						color='transparent'
             size="lg"
             src={variants[0].image_url!}
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}

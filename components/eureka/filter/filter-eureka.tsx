@@ -2,6 +2,7 @@
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
 import {
+  Alert,
   Box,
   Button,
   Container,
@@ -13,6 +14,7 @@ import {
 } from '@mui/material'
 import { ChevronRight } from '@mui/icons-material'
 
+import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
 import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
@@ -20,6 +22,12 @@ import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import ProgressChip from '@/components/progress-chip'
 import LoginAlert from '@/components/login-alert'
 import { countObtained, percent } from '@/hooks/count-obtained'
+
+const GRID_COLUMNS = {
+  xs: '1fr 1fr 1fr',
+  sm: '1fr 1fr 1fr 1fr',
+  md: '1fr 1fr 1fr 1fr 1fr',
+}
 
 function GroupHeaderSkeleton() {
   return (
@@ -46,9 +54,17 @@ function VariantCardSkeleton() {
 }
 
 export default function FilterEureka() {
-  const { eurekaSets, isLoggedIn, isLoading } = useEurekaData()
+  const { eurekaSets, isLoggedIn, isLoading, isError, isObtainedError } = useEurekaData()
 
   const searchParams = useSearchParams()
+
+  if (isError) {
+    return (
+      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+        <ErrorAlert message="Failed to load Eureka data. Please refresh the page." />
+      </Container>
+    )
+  }
 
   if (isLoading) {
     return (
@@ -57,11 +73,7 @@ export default function FilterEureka() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr 1fr 1fr',
-              sm: '1fr 1fr 1fr 1fr',
-              md: '1fr 1fr 1fr 1fr 1fr',
-            },
+            gridTemplateColumns: GRID_COLUMNS,
             gap: { xs: 1, sm: 1.5, md: 2 },
             mb: 4,
           }}
@@ -99,7 +111,7 @@ export default function FilterEureka() {
         (color) => !selectedColor || color.slug === selectedColor
       )
       if (showByColor) {
-        return { ...set, eureka_variants: set.eureka_variants, colors: filteredColors }
+        return { ...set, colors: filteredColors }
       }
 
       const filteredVariants = set.eureka_variants
@@ -117,7 +129,7 @@ export default function FilterEureka() {
 
   const resultsCount = showByColor
     ? filteredSets.flatMap((set) => set.colors).length
-    : filteredSets.flatMap((set) => set.eureka_variants).length || 0
+    : filteredSets.flatMap((set) => set.eureka_variants).length
 
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
@@ -133,19 +145,27 @@ export default function FilterEureka() {
         }}
       >
         <Stack
-          alignItems="flex-start"
+          useFlexGap
+          alignItems="center"
           direction="row"
+          flexWrap="wrap"
           justifyContent="space-between"
-          spacing={2}
-          sx={{ flex: 1, px: 1 }}
+          spacing={1}
+          sx={{ flex: 1, px: 1, pt: 1, mb: -1 }}
         >
-          <Typography color="textSecondary" sx={{ pt: 1 }} variant="caption">
+          <Typography color="textSecondary" sx={{ pb: 4, whiteSpace: 'nowrap' }} variant="caption">
             Showing: {resultsCount} results
           </Typography>
 
           {!isLoggedIn && <LoginAlert />}
         </Stack>
       </Toolbar>
+
+      {isObtainedError && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Could not load your collection status. Progress may be inaccurate.
+        </Alert>
+      )}
 
       {filteredSets.length === 0 ? (
         <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>
@@ -160,11 +180,7 @@ export default function FilterEureka() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr 1fr 1fr',
-              sm: '1fr 1fr 1fr 1fr',
-              md: '1fr 1fr 1fr 1fr 1fr',
-            },
+            gridTemplateColumns: GRID_COLUMNS,
             gap: { xs: 1, sm: 1.5, md: 2 },
             py: groupBySet ? 0 : 2,
             mb: 4,
@@ -176,7 +192,6 @@ export default function FilterEureka() {
               <React.Fragment key={set.slug}>
                 {groupBySet && (
                   <Box
-                    key={`${set.slug}-header`}
                     sx={{
                       gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' },
                       mt: 2,

@@ -41,7 +41,9 @@ async function EditEurekaVariant({
 
   const { data: variant } = await supabase
     .from('eureka_variants')
-    .select('id, eureka_set, category, color, image_url, default, slug, updated_at')
+    .select(
+      'id, eureka_set, category, color, image_url, default, slug, updated_at, eureka_sets ( title ), categories ( title ), colors ( title )'
+    )
     .eq('slug', slug)
     .single()
 

@@ -2,7 +2,7 @@ import { Alert, Link as Anchor } from '@mui/material'
 
 export default function LoginAlert() {
   return (
-    <Alert severity="info" sx={{ mb: 2 }}>
+    <Alert severity="info" sx={{ mb: 2, whiteSpace: 'nowrap' }}>
       <Anchor color="inherit" href="/auth/login">
         Login
       </Anchor>{' '}
