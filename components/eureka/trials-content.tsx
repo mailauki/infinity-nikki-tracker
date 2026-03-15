@@ -1,6 +1,8 @@
 'use client'
 
 import {
+  Alert,
+  Box,
   Card,
   CardActionArea,
   CardActions,
@@ -8,10 +10,10 @@ import {
   CardHeader,
   CardMedia,
   Chip,
-  Grid,
   LinearProgress,
   List,
   ListItem,
+  Skeleton,
 } from '@mui/material'
 
 import { countObtained, percent } from '@/hooks/count-obtained'
@@ -22,10 +24,20 @@ import { useEurekaData } from '@/components/eureka/eureka-context'
 import { EurekaSet, EurekaVariant, Total } from '@/lib/types/eureka'
 
 export default function TrialsContent() {
-  const { eurekaSets, trials, isLoggedIn, isError } = useEurekaData()
+  const { eurekaSets, trials, isLoggedIn, isLoading, isError, isObtainedError } = useEurekaData()
 
   if (isError) {
     return <ErrorAlert message="Failed to load Eureka data. Please refresh the page." />
+  }
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} height={320} sx={{ borderRadius: 1 }} variant="rectangular" />
+        ))}
+      </Box>
+    )
   }
 
   const totalTrials = trials.map((trial) => ({
@@ -34,17 +46,23 @@ export default function TrialsContent() {
   })) as Total[]
 
   return (
-    <Grid container spacing={2}>
-      {totalTrials.map((trial) => (
-        <Grid key={trial.title} size={{ xs: 12, md: 6 }}>
+    <>
+      {isObtainedError && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Could not load your collection status. Progress may be inaccurate.
+        </Alert>
+      )}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+        {totalTrials.map((trial) => (
           <TrialCard
+            key={trial.title}
             eureka={trial.eurekaSets!.flatMap((eurekaSet) => eurekaSet.eureka_variants)}
             isLoggedIn={isLoggedIn}
             trial={trial}
           />
-        </Grid>
-      ))}
-    </Grid>
+        ))}
+      </Box>
+    </>
   )
 }
 
@@ -57,48 +75,25 @@ function TrialCard({
   eureka: EurekaVariant[]
   isLoggedIn: boolean
 }) {
-  const obtainedCount = countObtained(eureka)
-  const percentage = percent(obtainedCount.obtained, obtainedCount.total)
-
-  if (!isLoggedIn) {
-    return (
-      <Card>
-        <CardHeader title={trial.title} />
-        <CardMedia image={trial.image_url!} sx={{ height: 160 }} title={trial.title} />
-        <CardContent sx={{ p: 0 }}>
-          <List sx={{ width: '100%' }}>
-            {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
-              <ListItem key={eurekaSet.id} disablePadding>
-                <CardActionArea href={`/eureka/${eurekaSet.slug}`}>
-                  <EurekaCard eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} size="sm" />
-                </CardActionArea>
-              </ListItem>
-            ))}
-          </List>
-        </CardContent>
-        <CardActions>
-          <ViewAllButton href={`/eureka/trials/${trial.slug}`} />
-        </CardActions>
-      </Card>
-    )
-  }
+  const { obtained, total } = countObtained(eureka)
+  const percentage = percent(obtained, total)
 
   return (
     <Card>
       <CardHeader
         action={
-          <Chip
-            label={`${obtainedCount.obtained} / ${obtainedCount.total}`}
-            size="small"
-            variant="outlined"
-          />
+          isLoggedIn ? (
+            <Chip label={`${obtained} / ${total}`} size="small" variant="outlined" />
+          ) : undefined
         }
-        subheader={`${percentage}%`}
+        subheader={isLoggedIn ? `${percentage}%` : undefined}
         title={trial.title}
       />
-      <CardContent sx={{ pt: 0 }}>
-        <LinearProgress color="inherit" value={percentage} variant="determinate" />
-      </CardContent>
+      {isLoggedIn && (
+        <CardContent sx={{ pt: 0 }}>
+          <LinearProgress color="inherit" value={percentage} variant="determinate" />
+        </CardContent>
+      )}
       <CardMedia image={trial.image_url!} sx={{ height: 160 }} title={trial.title} />
       <CardContent sx={{ p: 0 }}>
         <List sx={{ width: '100%' }}>

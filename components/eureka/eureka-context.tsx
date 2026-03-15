@@ -12,6 +12,7 @@ interface EurekaDataContextValue {
   isLoggedIn: boolean
   isLoading: boolean
   isError: boolean
+  isObtainedError: boolean
   userId: string | null
 }
 
@@ -23,6 +24,7 @@ export const EurekaDataContext = createContext<EurekaDataContextValue>({
   isLoggedIn: false,
   isLoading: true,
   isError: false,
+  isObtainedError: false,
   userId: null,
 })
 

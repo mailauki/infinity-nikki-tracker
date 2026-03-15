@@ -188,6 +188,16 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   ],
 }))
 
+const allLinks = [
+  navLinksData.home,
+  ...navLinksData.navMain.flatMap((item) => [item, ...(item.items ?? [])]),
+  ...navLinksData.navSecondary.flatMap((item) => [
+    item,
+    ...(item.items ?? []).map((sub) => ({ ...sub, url: item.url + sub.url })),
+  ]),
+  ...navLinksData.navExtra,
+]
+
 export default function NavDrawer({
   children,
   isAdmin = false,
@@ -211,16 +221,6 @@ export default function NavDrawer({
   const handleDrawerClose = () => {
     setOpen(false)
   }
-
-  const allLinks = [
-    navLinksData.home,
-    ...navLinksData.navMain.flatMap((item) => [item, ...(item.items ?? [])]),
-    ...navLinksData.navSecondary.flatMap((item) => [
-      item,
-      ...(item.items ?? []).map((sub) => ({ ...sub, url: item.url + sub.url })),
-    ]),
-    ...navLinksData.navExtra,
-  ]
 
   const pageTitle =
     allLinks
