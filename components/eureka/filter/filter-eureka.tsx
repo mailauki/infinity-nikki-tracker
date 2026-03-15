@@ -2,7 +2,6 @@
 import React from 'react'
 import { useSearchParams } from 'next/navigation'
 import {
-  Alert,
   Box,
   Button,
   Container,
@@ -14,6 +13,7 @@ import {
 } from '@mui/material'
 import { ChevronRight } from '@mui/icons-material'
 
+import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
 import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
@@ -54,7 +54,7 @@ export default function FilterEureka() {
   if (isError) {
     return (
       <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-        <Alert severity="error">Failed to load Eureka data. Please refresh the page.</Alert>
+        <ErrorAlert message="Failed to load Eureka data. Please refresh the page." />
       </Container>
     )
   }

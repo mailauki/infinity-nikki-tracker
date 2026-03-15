@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  Alert,
   Card,
   CardActionArea,
   CardActions,
@@ -18,6 +17,7 @@ import {
 import { countObtained, percent } from '@/hooks/count-obtained'
 import EurekaCard from '@/components/eureka/eureka-card'
 import { ViewAllButton } from '@/components/view-all-button'
+import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { EurekaSet, EurekaVariant, Total } from '@/lib/types/eureka'
 
@@ -25,7 +25,7 @@ export default function TrialsContent() {
   const { eurekaSets, trials, isLoggedIn, isError } = useEurekaData()
 
   if (isError) {
-    return <Alert severity="error">Failed to load Eureka data. Please refresh the page.</Alert>
+    return <ErrorAlert message="Failed to load Eureka data. Please refresh the page." />
   }
 
   const totalTrials = trials.map((trial) => ({
