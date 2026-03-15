@@ -12,14 +12,20 @@ export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps)
     <Box sx={{ position: 'relative', display: 'inline-flex' }}>
       {!loaded && src && (
         <Skeleton
-          variant="circular"
           sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+          variant="circular"
         />
       )}
       <Avatar
+        slotProps={{
+					img: {
+						onLoad: () => setLoaded(true),
+						onError: () => setLoaded(true),
+						loading: 'lazy',
+					},
+        }}
         src={src}
         sx={{ ...sx, opacity: loaded || !src ? 1 : 0 }}
-        imgProps={{ onLoad: () => setLoaded(true), onError: () => setLoaded(true), loading: 'lazy' }}
         {...props}
       >
         {children}
