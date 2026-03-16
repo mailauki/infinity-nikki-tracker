@@ -7,6 +7,9 @@ import { Suspense } from 'react'
 import { Container, Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
+import { getColors } from '@/hooks/data/colors'
+import { getCategories } from '@/hooks/data/categories'
+import { getTrials } from '@/hooks/data/trials'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -37,12 +40,22 @@ async function UserDetails() {
 
   const role = await getUserRole()
   const user_id = await getUserID()
-  const sets = user_id ? await getEurekaSets() : null
+  const sets = await getEurekaSets()
+  const categories = await getCategories()
+  const colors = await getColors()
+  const trials = await getTrials()
 
   return (
     <>
       <ProfileForm isAdmin={role === 'admin'} user={user} />
-      {sets && <CollectionStats sets={sets} />}
+      {user_id && (
+        <CollectionStats
+          categories={categories || []}
+          colors={colors || []}
+          sets={sets || []}
+          trials={trials || []}
+        />
+      )}
     </>
   )
 }

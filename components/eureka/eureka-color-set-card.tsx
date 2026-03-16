@@ -39,7 +39,7 @@ export default function EurekaColorSetCard({
             alt={slug}
             color="transparent"
             size="lg"
-            src={eurekaSet.image_url || variants[0].image_url!}
+            src={variants[0].image_url!}
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
             <Category fontSize="inherit" />

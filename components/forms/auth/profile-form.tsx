@@ -112,7 +112,7 @@ export default function ProfileForm({
         </Stack>
       )}
 
-      <Stack alignItems='flex-start' spacing={2}>
+      <Stack alignItems="flex-start" spacing={2}>
         <AvatarUpload
           uid={user?.id ?? null}
           url={avatar_url}
