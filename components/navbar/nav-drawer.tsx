@@ -10,15 +10,7 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import Stack from '@mui/material/Stack'
-import {
-  Button,
-  Container,
-  Fab,
-  Paper,
-  Slide,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Button, Container, Fab, Paper, Slide, Tooltip, Typography } from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import { navLinksData } from '@/lib/nav-links'
@@ -29,13 +21,7 @@ import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import {
-  Edit,
-  EditOff,
-  FilterList,
-  KeyboardArrowUp,
-  MenuOpen,
-} from '@mui/icons-material'
+import { Edit, EditOff, FilterList, KeyboardArrowUp, MenuOpen } from '@mui/icons-material'
 import { toTitle } from '@/lib/utils'
 import FilterMenu from './filter-menu'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'

@@ -3,7 +3,6 @@
 import { Color } from '@/lib/types/eureka'
 import { ColorLens } from '@mui/icons-material'
 import {
-  Avatar,
   FormControl,
   InputLabel,
   ListItem,
@@ -13,6 +12,7 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material'
+import LazyAvatar from '../lazy-avatar'
 
 export default function ColorSelect({
   colors,
@@ -49,9 +49,14 @@ export default function ColorSelect({
           <MenuItem key={color.slug} value={color.slug}>
             <ListItem disablePadding component="div">
               <ListItemAvatar>
-                <Avatar alt={color.title || color.slug} color="transparent" size="xs" src={color.image_url!}>
+                <LazyAvatar
+                  alt={color.title || color.slug}
+                  color="transparent"
+                  size="xs"
+                  src={color.image_url!}
+                >
                   <ColorLens fontSize="inherit" />
-                </Avatar>
+                </LazyAvatar>
               </ListItemAvatar>
               <ListItemText>{color.title}</ListItemText>
             </ListItem>

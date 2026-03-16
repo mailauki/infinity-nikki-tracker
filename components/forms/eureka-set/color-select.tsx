@@ -76,7 +76,9 @@ export default function ColorSelect({
           </MenuItem>
         ))}
       </Select>
-      <FormHelperText>{colorSelect.length}/{maxColors} colors selected</FormHelperText>
+      <FormHelperText>
+        {colorSelect.length}/{maxColors} colors selected
+      </FormHelperText>
     </FormControl>
   )
 }

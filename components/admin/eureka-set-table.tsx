@@ -1,12 +1,13 @@
 'use client'
 
-import { Avatar, Box, Chip, IconButton, Tooltip, Typography } from '@mui/material'
+import { Box, Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlug } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 import { EurekaSet } from '@/lib/types/eureka'
 import { Category } from '@mui/icons-material'
 import { useSearchParams } from 'next/navigation'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 
 type Row = EurekaSet
 
@@ -50,15 +51,15 @@ export function EurekaSetTable({
     {
       header: 'Image',
       cell: (set) => (
-        <Avatar
+        <LazyAvatar
           alt={set.title || 'Image'}
-					color='transparent'
+          color="transparent"
           size="xs"
           src={set.image_url!}
           sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
         >
           <Category fontSize="inherit" />
-        </Avatar>
+        </LazyAvatar>
       ),
     },
     {

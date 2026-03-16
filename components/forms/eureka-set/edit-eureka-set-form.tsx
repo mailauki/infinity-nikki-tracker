@@ -261,7 +261,12 @@ export default function EditEurekaSetForm({
           </Select>
         </FormControl>
 
-        <ColorSelect colorSelect={colorSelect} colors={colors} handleChange={handleColorChange} maxColors={maxColors} />
+        <ColorSelect
+          colorSelect={colorSelect}
+          colors={colors}
+          handleChange={handleColorChange}
+          maxColors={maxColors}
+        />
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href={backUrl} variant="outlined">

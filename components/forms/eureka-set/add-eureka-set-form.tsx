@@ -228,7 +228,12 @@ export default function AddEurekaSetForm({
           </Select>
         </FormControl>
 
-        <ColorSelect colorSelect={colorSelect} colors={colors} handleChange={handleColorChange} maxColors={maxColors} />
+        <ColorSelect
+          colorSelect={colorSelect}
+          colors={colors}
+          handleChange={handleColorChange}
+          maxColors={maxColors}
+        />
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href="/dashboard" variant="outlined">

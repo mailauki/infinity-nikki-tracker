@@ -7,10 +7,10 @@ import {
   MenuItem,
   ListItem,
   ListItemAvatar,
-  Avatar,
   ListItemText,
   SelectChangeEvent,
 } from '@mui/material'
+import LazyAvatar from '../lazy-avatar'
 
 export default function EurekaSelect({
   eurekaSets,
@@ -44,9 +44,9 @@ export default function EurekaSelect({
           <MenuItem key={set.slug} value={set.slug!}>
             <ListItem disablePadding component="div">
               <ListItemAvatar>
-                <Avatar alt={set.title} size="sm" src={set.image_url}>
+                <LazyAvatar alt={set.title} size="sm" src={set.image_url}>
                   <Category fontSize="inherit" />
-                </Avatar>
+                </LazyAvatar>
               </ListItemAvatar>
               <ListItemText>{set.title}</ListItemText>
             </ListItem>

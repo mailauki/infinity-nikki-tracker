@@ -4,10 +4,10 @@ import {
   Tooltip,
   IconButton,
   ListItemAvatar,
-  Avatar,
   ListItemText,
   Typography,
 } from '@mui/material'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 
 export default function ListRow({
   list,
@@ -41,9 +41,13 @@ export default function ListRow({
       }
     >
       <ListItemAvatar>
-        <Avatar alt={slug} src={image_url} sx={{ bgcolor: 'transparent', color: 'text.disabled' }}>
+        <LazyAvatar
+          alt={slug}
+          src={image_url}
+          sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+        >
           <Category fontSize="inherit" />
-        </Avatar>
+        </LazyAvatar>
       </ListItemAvatar>
       <ListItemText primary={title} secondary={subheader} />
       <ListItemText

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
-import { Box, CardMedia, Container, Stack } from '@mui/material'
+import { Box, Container, Stack } from '@mui/material'
 import type { Metadata } from 'next'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
@@ -10,6 +10,7 @@ import { getUserID } from '@/hooks/user'
 import { EurekaVariant } from '@/lib/types/eureka'
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
 import EurekaCardProgress from '@/components/eureka/eureka-card-progress'
+import LazyCardMedia from '@/components/eureka/lazy-card-media'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -50,7 +51,7 @@ async function Trial({ slug }: { slug: string }) {
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
-        <CardMedia image={trial.image_url!} sx={{ height: 240 }} title={trial.title} />
+        <LazyCardMedia image={trial.image_url!} sx={{ height: 240 }} title={trial.title} />
         {isLoggedIn && <EurekaCardProgress percentage={percentage} size="lg" />}
         <Box
           sx={{
