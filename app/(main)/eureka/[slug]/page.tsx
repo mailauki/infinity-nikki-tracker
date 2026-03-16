@@ -111,7 +111,6 @@ async function EurekaSet({ slug }: { slug: string }) {
             gridTemplateColumns: GRID_COLUMNS,
             gap: { xs: 1, sm: 1.5, md: 2 },
             py: 0,
-            mb: 4,
           }}
         >
           {eureka_variants.map((variant) => (

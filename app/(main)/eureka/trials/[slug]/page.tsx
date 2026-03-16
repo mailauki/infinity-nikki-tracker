@@ -48,7 +48,6 @@ async function Trial({ slug }: { slug: string }) {
             gridTemplateColumns: GRID_COLUMNS,
             gap: { xs: 1, sm: 1.5, md: 2 },
             py: 0,
-            mb: 4,
           }}
         >
           {trialSets.map((eurekaSet) => (

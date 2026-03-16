@@ -69,7 +69,6 @@ export default function FilterEureka() {
             display: 'grid',
             gridTemplateColumns: GRID_COLUMNS,
             gap: { xs: 1, sm: 1.5, md: 2 },
-            mb: 4,
           }}
         >
           <GroupHeaderSkeleton />

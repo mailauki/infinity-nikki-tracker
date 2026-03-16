@@ -397,6 +397,8 @@ export default function NavDrawer({
           <StyledToolbar />
           <MainContainer ref={setScrollRef} elevation={0} open={open}>
             {children}
+						{pathname !== '/' && <Toolbar />}
+
             <Tooltip placement="top-end" title="Back to Top">
               <Slide direction="up" in={isVisible}>
                 <Fab
