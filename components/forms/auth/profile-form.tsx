@@ -83,7 +83,16 @@ export default function ProfileForm({
   }
 
   if (!profileEdit?.isEditing) {
-    return <ProfileView isAdmin={isAdmin} user={user} />
+    return (
+      <ProfileView
+        avatar_url={avatar_url}
+        fullname={fullname}
+        isAdmin={isAdmin}
+        loadError={loadError}
+        user={user}
+        username={username}
+      />
+    )
   }
 
   if (loadError) {
@@ -103,17 +112,15 @@ export default function ProfileForm({
         </Stack>
       )}
 
-      <Stack spacing={2}>
-        <Stack alignItems="center" direction="row">
-          <AvatarUpload
-            uid={user?.id ?? null}
-            url={avatar_url}
-            onUpload={(url) => {
-              setAvatarUrl(url)
-              updateProfile({ fullname, username, avatar_url: url })
-            }}
-          />
-        </Stack>
+      <Stack alignItems='flex-start' spacing={2}>
+        <AvatarUpload
+          uid={user?.id ?? null}
+          url={avatar_url}
+          onUpload={(url) => {
+            setAvatarUrl(url)
+            updateProfile({ fullname, username, avatar_url: url })
+          }}
+        />
 
         <Container disableGutters maxWidth="sm">
           <Stack component="form">

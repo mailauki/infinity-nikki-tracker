@@ -1,7 +1,5 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarPreview from '@/components/forms/auth/avatar-preview'
 import { Alert, Chip, Stack, Typography } from '@mui/material'
@@ -10,44 +8,18 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 export default function ProfileView({
   user,
   isAdmin = false,
+  fullname,
+  username,
+  avatar_url,
+  loadError,
 }: {
   user: User | null
   isAdmin?: boolean
+  fullname: string | null
+  username: string | null
+  avatar_url: string | null
+  loadError: boolean
 }) {
-  const supabase = useMemo(() => createClient(), [])
-  const [fullname, setFullname] = useState<string | null>(null)
-  const [username, setUsername] = useState<string | null>(null)
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null)
-  const [loadError, setLoadError] = useState(false)
-
-  const getProfile = useCallback(async () => {
-    if (!user) return
-    try {
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select(`full_name, username, avatar_url`)
-        .eq('id', user.id)
-        .single()
-
-      if (error && status !== 406) {
-        throw error
-      }
-
-      if (data) {
-        setFullname(data.full_name)
-        setUsername(data.username)
-        setAvatarUrl(data.avatar_url)
-      }
-    } catch (error) {
-      console.error('Error loading user data:', error)
-      setLoadError(true)
-    }
-  }, [user, supabase])
-
-  useEffect(() => {
-    getProfile()
-  }, [getProfile])
-
   if (loadError) {
     return <Alert severity="error">Could not load your profile. Please refresh the page.</Alert>
   }
