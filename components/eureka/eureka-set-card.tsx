@@ -31,12 +31,15 @@ export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
             sx={{ py: 0.75, px: 1.25, my: 0 }}
           >
             <Typography variant="overline">{title}</Typography>
-            {rarity && (
-              <Typography color="textSecondary" variant="overline">
-                <RarityStars rarity={rarity} />
-              </Typography>
-            )}
           </Stack>
+					
+					<Box sx={{ position: 'absolute', top: 8, left: 8 }}>
+						{rarity && (
+								<Typography color="textSecondary" variant="overline">
+									<RarityStars rarity={rarity} />
+								</Typography>
+							)}
+					</Box>
         </Box>
       </CardActionArea>
     </Card>

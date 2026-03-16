@@ -6,6 +6,7 @@ import { Box, Card, IconButton, LinearProgress, Stack, Typography } from '@mui/m
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { handleObtained } from '@/app/(main)/eureka/actions'
 import LazyAvatar from './lazy-avatar'
+import RarityStars from '../rarity-stars'
 
 export default function EurekaVariantCard({
   eurekaVariant,

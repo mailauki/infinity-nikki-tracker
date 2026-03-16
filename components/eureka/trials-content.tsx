@@ -40,7 +40,7 @@ export default function TrialsContent() {
     ...trial,
     eurekaSets: eurekaSets.filter((eurekaSet) =>
       eurekaSet.eureka_set_trials.some((t) => t.trial === trial.slug)
-    ),
+    ).slice(0, 2),
   })) as Total[]
 
   return (

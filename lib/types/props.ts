@@ -22,3 +22,9 @@ export interface NavLink {
   exclusiveItems?: boolean
   items?: { title: string; url: string }[]
 }
+
+export const GRID_COLUMNS = {
+  xs: '1fr 1fr 1fr',
+  sm: '1fr 1fr 1fr 1fr',
+  md: '1fr 1fr 1fr 1fr 1fr',
+}

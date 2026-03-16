@@ -7,6 +7,7 @@ import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrial } from '@/hooks/data/trials'
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
 import LazyCardMedia from '@/components/eureka/lazy-card-media'
+import { GRID_COLUMNS } from '@/lib/types/props'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -41,17 +42,15 @@ async function Trial({ slug }: { slug: string }) {
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
         <LazyCardMedia image={trial.image_url!} sx={{ height: 240 }} title={trial.title} />
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: '1fr 1fr',
-              md: '1fr 1fr 1fr',
-            },
-            gap: 2,
-          }}
-        >
+					<Box
+						sx={{
+							display: 'grid',
+							gridTemplateColumns: GRID_COLUMNS,
+							gap: { xs: 1, sm: 1.5, md: 2 },
+							py: 0,
+							mb: 4,
+						}}
+					>
           {trialSets.map((eurekaSet) => (
             <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />
           ))}

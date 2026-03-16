@@ -3,6 +3,7 @@ import { Color, EurekaSet } from '@/lib/types/eureka'
 import { Box, Card, LinearProgress, Stack, Typography } from '@mui/material'
 import { Category } from '@mui/icons-material'
 import LazyAvatar from './lazy-avatar'
+import RarityStars from '../rarity-stars'
 
 export default function EurekaColorSetCard({
   eurekaSet,
@@ -38,7 +39,7 @@ export default function EurekaColorSetCard({
             alt={slug}
             color="transparent"
             size="lg"
-            src={variants[0].image_url!}
+            src={eurekaSet.image_url || variants[0].image_url!}
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
             <Category fontSize="inherit" />
@@ -62,6 +63,14 @@ export default function EurekaColorSetCard({
             <LinearProgress color="inherit" value={percentage} variant="determinate" />
           </Box>
         )}
+
+					<Box sx={{ position: 'absolute', top: 8, left: 8 }}>
+						{eurekaSet.rarity && (
+								<Typography color="textSecondary" variant="overline">
+									<RarityStars rarity={eurekaSet.rarity} />
+								</Typography>
+							)}
+					</Box>
       </Box>
     </Card>
   )
