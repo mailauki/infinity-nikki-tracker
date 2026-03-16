@@ -42,15 +42,15 @@ async function Trial({ slug }: { slug: string }) {
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
         <LazyCardMedia image={trial.image_url!} sx={{ height: 240 }} title={trial.title} />
-					<Box
-						sx={{
-							display: 'grid',
-							gridTemplateColumns: GRID_COLUMNS,
-							gap: { xs: 1, sm: 1.5, md: 2 },
-							py: 0,
-							mb: 4,
-						}}
-					>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: GRID_COLUMNS,
+            gap: { xs: 1, sm: 1.5, md: 2 },
+            py: 0,
+            mb: 4,
+          }}
+        >
           {trialSets.map((eurekaSet) => (
             <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />
           ))}
