@@ -8,12 +8,7 @@ import { Category, ChevronRight } from '@mui/icons-material'
 import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
-
-const GRID_COLUMNS = {
-  xs: '1fr 1fr 1fr',
-  sm: '1fr 1fr 1fr 1fr',
-  md: '1fr 1fr 1fr 1fr 1fr',
-}
+import { GRID_COLUMNS } from '@/lib/types/props'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -41,7 +36,7 @@ async function EurekaSet({ slug }: { slug: string }) {
   const [eurekaSet, user_id] = await Promise.all([getEurekaSet(slug), getUserID()])
   const isLoggedIn = !!user_id
 
-  const { title, image_url, eureka_set_trials, eureka_variants, rarity, label, style, colors } =
+  const { image_url, eureka_set_trials, eureka_variants, rarity, label, style, colors } =
     eurekaSet
 
   return (
@@ -62,10 +57,6 @@ async function EurekaSet({ slug }: { slug: string }) {
 
             <Chip label={toTitle(label ?? '')} variant="outlined" />
           </Stack>
-
-          <Typography component="h2" variant="subtitle1">
-            {title}
-          </Typography>
 
           <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
             <Typography color="textSecondary" variant="subtitle2">

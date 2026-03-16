@@ -1,30 +1,26 @@
 'use client'
 
 import {
-  Alert,
   Box,
   Card,
   CardActionArea,
   CardActions,
   CardContent,
   CardHeader,
-  Chip,
-  LinearProgress,
   List,
   ListItem,
   Skeleton,
 } from '@mui/material'
 
-import { countObtained, percent } from '@/hooks/count-obtained'
 import LazyCardMedia from './lazy-card-media'
 import EurekaCard from '@/components/eureka/eureka-card'
 import { ViewAllButton } from '@/components/view-all-button'
 import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
-import { EurekaSet, EurekaVariant, Total } from '@/lib/types/eureka'
+import { EurekaSet, Total } from '@/lib/types/eureka'
 
 export default function TrialsContent() {
-  const { eurekaSets, trials, isLoggedIn, isLoading, isError, isObtainedError } = useEurekaData()
+  const { eurekaSets, trials, isLoggedIn, isLoading, isError } = useEurekaData()
 
   if (isError) {
     return <ErrorAlert message="Failed to load Eureka data. Please refresh the page." />
@@ -44,58 +40,22 @@ export default function TrialsContent() {
     ...trial,
     eurekaSets: eurekaSets.filter((eurekaSet) =>
       eurekaSet.eureka_set_trials.some((t) => t.trial === trial.slug)
-    ),
+    ).slice(0, 2),
   })) as Total[]
 
   return (
-    <>
-      {isObtainedError && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
-          Could not load your collection status. Progress may be inaccurate.
-        </Alert>
-      )}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
-        {totalTrials.map((trial) => (
-          <TrialCard
-            key={trial.title}
-            eureka={trial.eurekaSets!.flatMap((eurekaSet) => eurekaSet.eureka_variants)}
-            isLoggedIn={isLoggedIn}
-            trial={trial}
-          />
-        ))}
-      </Box>
-    </>
+    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+      {totalTrials.map((trial) => (
+        <TrialCard key={trial.title} isLoggedIn={isLoggedIn} trial={trial} />
+      ))}
+    </Box>
   )
 }
 
-function TrialCard({
-  trial,
-  eureka,
-  isLoggedIn,
-}: {
-  trial: Total
-  eureka: EurekaVariant[]
-  isLoggedIn: boolean
-}) {
-  const { obtained, total } = countObtained(eureka)
-  const percentage = percent(obtained, total)
-
+function TrialCard({ trial, isLoggedIn }: { trial: Total; isLoggedIn: boolean }) {
   return (
     <Card>
-      <CardHeader
-        action={
-          isLoggedIn ? (
-            <Chip label={`${obtained} / ${total}`} size="small" variant="outlined" />
-          ) : undefined
-        }
-        subheader={isLoggedIn ? `${percentage}%` : undefined}
-        title={trial.title}
-      />
-      {isLoggedIn && (
-        <CardContent sx={{ pt: 0 }}>
-          <LinearProgress color="inherit" value={percentage} variant="determinate" />
-        </CardContent>
-      )}
+      <CardHeader title={trial.title} />
       <LazyCardMedia image={trial.image_url!} sx={{ height: 160 }} title={trial.title} />
       <CardContent sx={{ p: 0 }}>
         <List sx={{ width: '100%' }}>

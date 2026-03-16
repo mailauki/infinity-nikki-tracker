@@ -262,6 +262,7 @@ export default function NavDrawer({
     scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' })
     setIsVisible(false)
   }, [pathname])
+
   const content = (
     <>
       <Stack direction="row">

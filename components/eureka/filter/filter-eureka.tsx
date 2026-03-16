@@ -16,18 +16,12 @@ import { ChevronRight } from '@mui/icons-material'
 
 import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
-import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
+import { CategoryFilter, GRID_COLUMNS, ObtainedFilter } from '@/lib/types/props'
 import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
 import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import ProgressChip from '@/components/progress-chip'
 import LoginAlert from '@/components/login-alert'
 import { countObtained, percent } from '@/hooks/count-obtained'
-
-const GRID_COLUMNS = {
-  xs: '1fr 1fr 1fr',
-  sm: '1fr 1fr 1fr 1fr',
-  md: '1fr 1fr 1fr 1fr 1fr',
-}
 
 function GroupHeaderSkeleton() {
   return (

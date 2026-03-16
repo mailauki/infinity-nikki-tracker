@@ -6,6 +6,7 @@ import { Box, Card, IconButton, LinearProgress, Stack, Typography } from '@mui/m
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { handleObtained } from '@/app/(main)/eureka/actions'
 import LazyAvatar from './lazy-avatar'
+import RarityStars from '../rarity-stars'
 
 export default function EurekaVariantCard({
   eurekaVariant,
@@ -43,7 +44,7 @@ export default function EurekaVariantCard({
           alignItems="center"
           direction="row"
           justifyContent="space-between"
-          sx={{ py: 0.75, px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: 0 }}
+          sx={{ py: 0.75, px: 1.25, my: 0 }}
         >
           <Typography color="textSecondary" variant="caption">
             {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}
