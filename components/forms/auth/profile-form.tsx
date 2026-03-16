@@ -4,9 +4,8 @@ import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarUpload from './avatar-upload'
 import ProfileView from '@/components/profile/profile-view'
-import { Alert, Button, Chip, Stack, TextField } from '@mui/material'
+import { Alert, Button, Chip, Container, Stack, TextField } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
-import DashboardIcon from '@mui/icons-material/Dashboard'
 import { useProfileEdit } from '@/components/profile/profile-context'
 
 export default function ProfileForm({
@@ -84,7 +83,16 @@ export default function ProfileForm({
   }
 
   if (!profileEdit?.isEditing) {
-    return <ProfileView isAdmin={isAdmin} user={user} />
+    return (
+      <ProfileView
+        avatar_url={avatar_url}
+        fullname={fullname}
+        isAdmin={isAdmin}
+        loadError={loadError}
+        user={user}
+        username={username}
+      />
+    )
   }
 
   if (loadError) {
@@ -92,8 +100,19 @@ export default function ProfileForm({
   }
 
   return (
-    <>
-      <div className="mb-4 flex w-full flex-wrap justify-between gap-4">
+    <Stack>
+      {isAdmin && (
+        <Stack alignItems="flex-end" justifyContent="flex-start">
+          <Chip
+            color="secondary"
+            icon={<AdminPanelSettingsIcon />}
+            label="Admin access"
+            variant="outlined"
+          />
+        </Stack>
+      )}
+
+      <Stack alignItems="flex-start" spacing={2}>
         <AvatarUpload
           uid={user?.id ?? null}
           url={avatar_url}
@@ -103,95 +122,55 @@ export default function ProfileForm({
           }}
         />
 
-        <Stack
-          alignItems="flex-end"
-          justifyContent="flex-start"
-          spacing={1}
-          sx={{ mt: 2, maxWidth: 'sm' }}
-        >
-          {isAdmin ? (
-            <>
-              <Chip
-                color="secondary"
-                icon={<AdminPanelSettingsIcon />}
-                label="Admin access"
-                variant="outlined"
-              />
-              <Button
-                href="/dashboard"
-                size="small"
-                startIcon={<DashboardIcon />}
-                variant="outlined"
-              >
-                Go to Dashboard
-              </Button>
-            </>
-          ) : (
-            <Alert
-              action={
-                <Button
-                  color="inherit"
-                  href="mailto:julie.ux.dev@gmail.com?subject=Admin%20Access%20Request&body=Hi%2C%20I%27d%20like%20to%20request%20admin%20access%20for%20the%20Infinity%20Nikki%20Tracker."
-                  size="small"
-                >
-                  Request access
-                </Button>
-              }
-              severity="info"
+        <Container disableGutters maxWidth="sm">
+          <Stack component="form">
+            <TextField
+              disabled
+              id="email"
+              label="Email"
+              margin="normal"
+              placeholder="Email"
+              type="email"
+              value={user?.email}
+            />
+
+            <TextField
+              id="fullName"
+              label="Full Name"
+              margin="normal"
+              type="text"
+              value={fullname || ''}
+              onChange={(event) => setFullname(event.target.value)}
+            />
+
+            <TextField
+              id="username"
+              label="Username"
+              margin="normal"
+              type="text"
+              value={username || ''}
+              onChange={(event) => setUsername(event.target.value)}
+            />
+
+            {saveError && (
+              <Alert severity="error" sx={{ mb: 1 }}>
+                Failed to save profile. Please try again.
+              </Alert>
+            )}
+
+            <Button
+              fullWidth
+              disabled={loading}
+              size="large"
+              sx={{ my: 2 }}
+              variant="contained"
+              onClick={() => updateProfile({ fullname, username, avatar_url })}
             >
-              You don&apos;t have admin access.
-            </Alert>
-          )}
-        </Stack>
-      </div>
-      <div className="w-full max-w-sm">
-        <form className="flex flex-col">
-          <TextField
-            disabled
-            id="email"
-            label="Email"
-            margin="normal"
-            placeholder="Email"
-            type="email"
-            value={user?.email}
-          />
-
-          <TextField
-            id="fullName"
-            label="Full Name"
-            margin="normal"
-            type="text"
-            value={fullname || ''}
-            onChange={(event) => setFullname(event.target.value)}
-          />
-
-          <TextField
-            id="username"
-            label="Username"
-            margin="normal"
-            type="text"
-            value={username || ''}
-            onChange={(event) => setUsername(event.target.value)}
-          />
-
-          {saveError && (
-            <Alert severity="error" sx={{ mb: 1 }}>
-              Failed to save profile. Please try again.
-            </Alert>
-          )}
-
-          <Button
-            fullWidth
-            disabled={loading}
-            size="large"
-            sx={{ my: 2 }}
-            variant="contained"
-            onClick={() => updateProfile({ fullname, username, avatar_url })}
-          >
-            {loading ? 'Loading ...' : 'Update'}
-          </Button>
-        </form>
-      </div>
-    </>
+              {loading ? 'Loading ...' : 'Update'}
+            </Button>
+          </Stack>
+        </Container>
+      </Stack>
+    </Stack>
   )
 }

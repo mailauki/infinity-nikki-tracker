@@ -232,6 +232,7 @@ export default function NavDrawer({
   const hasParams = bestMatch && pathname !== bestMatch.url
   const pageTitle = hasParams ? toTitle(pathname.split('/').at(-1) ?? '') : (bestMatch?.title ?? '')
 
+  const isHome = pathname === '/'
   const isEurekaPage = pathname === '/eureka' || pathname.startsWith('/eureka/trials')
   const isProfilePage = pathname === '/profile'
   const userId = user?.sub ?? null
@@ -340,7 +341,7 @@ export default function NavDrawer({
             <Container disableGutters maxWidth="md" sx={{ position: 'relative' }}>
               <AppBarTitle
                 direction="row"
-                isHome={pathname === '/'}
+                isHome={isHome}
                 justifyContent={{ xs: 'center', sm: 'inherit' }}
                 open={open}
               >
@@ -397,6 +398,8 @@ export default function NavDrawer({
           <StyledToolbar />
           <MainContainer ref={setScrollRef} elevation={0} open={open}>
             {children}
+            {!isHome && <Toolbar />}
+
             <Tooltip placement="top-end" title="Back to Top">
               <Slide direction="up" in={isVisible}>
                 <Fab

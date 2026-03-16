@@ -16,8 +16,8 @@ export default function LazyCardMedia({ image, sx, ...props }: CardMediaProps<'d
       {image && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          alt=""
           aria-hidden
+          alt=""
           src={image}
           style={{ visibility: 'hidden', position: 'absolute', width: 0, height: 0 }}
           onError={() => setLoaded(true)}

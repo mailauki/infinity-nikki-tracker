@@ -39,7 +39,7 @@ export default function EurekaColorSetCard({
             alt={slug}
             color="transparent"
             size="lg"
-            src={eurekaSet.image_url || variants[0].image_url!}
+            src={variants[0].image_url!}
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
             <Category fontSize="inherit" />
@@ -64,13 +64,13 @@ export default function EurekaColorSetCard({
           </Box>
         )}
 
-					<Box sx={{ position: 'absolute', top: 8, left: 8 }}>
-						{eurekaSet.rarity && (
-								<Typography color="textSecondary" variant="overline">
-									<RarityStars rarity={eurekaSet.rarity} />
-								</Typography>
-							)}
-					</Box>
+        <Box sx={{ position: 'absolute', top: 8, left: 8 }}>
+          {eurekaSet.rarity && (
+            <Typography color="textSecondary" variant="overline">
+              <RarityStars rarity={eurekaSet.rarity} />
+            </Typography>
+          )}
+        </Box>
       </Box>
     </Card>
   )

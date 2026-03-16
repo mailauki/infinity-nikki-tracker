@@ -38,9 +38,9 @@ export default function TrialsContent() {
 
   const totalTrials = trials.map((trial) => ({
     ...trial,
-    eurekaSets: eurekaSets.filter((eurekaSet) =>
-      eurekaSet.eureka_set_trials.some((t) => t.trial === trial.slug)
-    ).slice(0, 2),
+    eurekaSets: eurekaSets
+      .filter((eurekaSet) => eurekaSet.eureka_set_trials.some((t) => t.trial === trial.slug))
+      .slice(0, 2),
   })) as Total[]
 
   return (
