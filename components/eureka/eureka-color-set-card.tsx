@@ -48,7 +48,7 @@ export default function EurekaColorSetCard({
           alignItems="center"
           direction="row"
           justifyContent="space-between"
-          sx={{ py: 0.75, px: 1.25, mb: !isLoggedIn ? 0.5 : 0, mt: 0 }}
+          sx={{ py: 0.75, px: 1.25, my: 0 }}
         >
           <Typography variant="overline">{color.title}</Typography>
           {isLoggedIn && (

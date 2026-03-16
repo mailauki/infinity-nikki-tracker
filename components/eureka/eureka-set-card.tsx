@@ -1,23 +1,47 @@
 'use client'
 
 import { EurekaSet } from '@/lib/types/eureka'
-import { Card, CardActionArea } from '@mui/material'
-import EurekaCard from './eureka-card'
-import { CardSize } from '@/lib/types/props'
+import { Box, Card, CardActionArea, Stack, Typography } from '@mui/material'
+import LazyAvatar from './lazy-avatar'
+import { Category } from '@mui/icons-material'
+import RarityStars from '../rarity-stars'
 
 export default function EurekaSetCard({
   eurekaSet,
-  isLoggedIn,
-  size = 'sm',
 }: {
   eurekaSet: EurekaSet
-  isLoggedIn: boolean
-  size?: CardSize
 }) {
+  const { slug, title, image_url, rarity, eureka_variants } = eurekaSet
+
   return (
     <Card>
       <CardActionArea href={`/eureka/${eurekaSet.slug}`}>
-        <EurekaCard eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} size={size} />
+        <Box sx={{ position: 'relative' }}>
+          <Stack alignItems="center" sx={{ pt: 1 }}>
+            <LazyAvatar
+              alt={slug}
+              color="transparent"
+              size="lg"
+              src={image_url || eureka_variants[0].image_url!}
+              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+            >
+              <Category fontSize="inherit" />
+            </LazyAvatar>
+          </Stack>
+          <Stack
+            alignItems="center"
+            direction="row"
+            justifyContent="space-between"
+            sx={{ py: 0.75, px: 1.25, my: 0 }}
+          >
+            <Typography variant="overline">{title}</Typography>
+            {rarity && (
+              <Typography color="textSecondary" variant="overline">
+                <RarityStars rarity={rarity} />
+              </Typography>
+            )}
+          </Stack>
+        </Box>
       </CardActionArea>
     </Card>
   )

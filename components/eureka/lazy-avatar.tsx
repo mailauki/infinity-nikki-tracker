@@ -18,11 +18,11 @@ export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps)
       )}
       <Avatar
         slotProps={{
-					img: {
-						onLoad: () => setLoaded(true),
-						onError: () => setLoaded(true),
-						loading: 'lazy',
-					},
+          img: {
+            onLoad: () => setLoaded(true),
+            onError: () => setLoaded(true),
+            loading: 'lazy',
+          },
         }}
         src={src}
         sx={{ ...sx, opacity: loaded || !src ? 1 : 0 }}
