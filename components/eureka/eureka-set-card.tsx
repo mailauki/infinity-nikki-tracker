@@ -6,11 +6,7 @@ import LazyAvatar from './lazy-avatar'
 import { Category } from '@mui/icons-material'
 import RarityStars from '../rarity-stars'
 
-export default function EurekaSetCard({
-  eurekaSet,
-}: {
-  eurekaSet: EurekaSet
-}) {
+export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
   const { slug, title, image_url, rarity, eureka_variants } = eurekaSet
 
   return (
