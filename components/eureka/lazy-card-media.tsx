@@ -3,7 +3,6 @@ import { useState } from 'react'
 import CardMedia from '@mui/material/CardMedia'
 import Skeleton from '@mui/material/Skeleton'
 import Box from '@mui/material/Box'
-import Image from 'next/image'
 import type { CardMediaProps } from '@mui/material/CardMedia'
 
 export default function LazyCardMedia({ image, sx, ...props }: CardMediaProps<'div'>) {
@@ -15,15 +14,15 @@ export default function LazyCardMedia({ image, sx, ...props }: CardMediaProps<'d
         <Skeleton sx={{ position: 'absolute', inset: 0, height: '100%' }} variant="rectangular" />
       )}
       {image && (
-        <Box aria-hidden sx={{ display: 'none' }}>
-          <Image
-            fill
-            alt=""
-            src={image}
-            onError={() => setLoaded(true)}
-            onLoad={() => setLoaded(true)}
-          />
-        </Box>
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          alt=""
+          aria-hidden
+          src={image}
+          style={{ visibility: 'hidden', position: 'absolute', width: 0, height: 0 }}
+          onError={() => setLoaded(true)}
+          onLoad={() => setLoaded(true)}
+        />
       )}
       <CardMedia
         image={image}

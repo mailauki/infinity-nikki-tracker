@@ -30,10 +30,8 @@ export default async function TrialPage({ params }: { params: Promise<{ slug: st
 }
 
 async function Trial({ slug }: { slug: string }) {
-  const trial = await getTrial(slug)
+  const [trial, eurekaSets] = await Promise.all([getTrial(slug), getEurekaSets()])
   if (!trial) notFound()
-
-  const eurekaSets = await getEurekaSets()
 
   const trialSets = eurekaSets.filter((set) =>
     set.eureka_set_trials.some((t) => t.trial === trial.slug)

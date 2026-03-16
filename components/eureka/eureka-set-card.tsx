@@ -18,7 +18,7 @@ export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
               alt={slug}
               color="transparent"
               size="lg"
-              src={image_url || eureka_variants[0].image_url!}
+              src={image_url || eureka_variants[0]?.image_url || undefined}
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <Category fontSize="inherit" />

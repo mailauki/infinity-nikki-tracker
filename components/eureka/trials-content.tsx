@@ -20,7 +20,7 @@ import { useEurekaData } from '@/components/eureka/eureka-context'
 import { EurekaSet, Total } from '@/lib/types/eureka'
 
 export default function TrialsContent() {
-  const { eurekaSets, trials, isLoading, isError } = useEurekaData()
+  const { eurekaSets, trials, isLoggedIn, isLoading, isError } = useEurekaData()
 
   if (isError) {
     return <ErrorAlert message="Failed to load Eureka data. Please refresh the page." />
@@ -38,23 +38,21 @@ export default function TrialsContent() {
 
   const totalTrials = trials.map((trial) => ({
     ...trial,
-    eurekaSets: eurekaSets.filter(
-      (eurekaSet) =>
-        eurekaSet.eureka_set_trials.length === 1 &&
-        eurekaSet.eureka_set_trials[0].trial === trial.slug
+    eurekaSets: eurekaSets.filter((eurekaSet) =>
+      eurekaSet.eureka_set_trials.some((t) => t.trial === trial.slug)
     ),
   })) as Total[]
 
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
       {totalTrials.map((trial) => (
-        <TrialCard key={trial.title} trial={trial} />
+        <TrialCard key={trial.title} isLoggedIn={isLoggedIn} trial={trial} />
       ))}
     </Box>
   )
 }
 
-function TrialCard({ trial }: { trial: Total }) {
+function TrialCard({ trial, isLoggedIn }: { trial: Total; isLoggedIn: boolean }) {
   return (
     <Card>
       <CardHeader title={trial.title} />
@@ -64,7 +62,7 @@ function TrialCard({ trial }: { trial: Total }) {
           {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
             <ListItem key={eurekaSet.id} disablePadding>
               <CardActionArea href={`/eureka/${eurekaSet.slug}`}>
-                <EurekaCard eurekaSet={eurekaSet} isLoggedIn={false} size="sm" />
+                <EurekaCard eurekaSet={eurekaSet} isLoggedIn={isLoggedIn} size="sm" />
               </CardActionArea>
             </ListItem>
           ))}
