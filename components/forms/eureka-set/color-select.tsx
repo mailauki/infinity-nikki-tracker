@@ -1,13 +1,12 @@
-import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { Color } from '@/lib/types/eureka'
-import { ColorLens } from '@mui/icons-material'
+import { CheckBox, CheckBoxOutlineBlank, ColorLens } from '@mui/icons-material'
 import {
+  Avatar,
   Box,
   Chip,
   FormControl,
   FormHelperText,
   InputLabel,
-  ListItem,
   ListItemAvatar,
   ListItemText,
   MenuItem,
@@ -63,35 +62,54 @@ export default function ColorSelect({
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {selected.map((slug) => (
-              <Chip key={slug} label={colorBySlug[slug] ?? slug} icon={<LazyAvatar alt={slug} src={colors.find(color => color.slug === slug)!.image_url!} size='xs' />} />
+              <Chip
+                key={slug}
+                icon={
+                  <Avatar
+                    alt={slug}
+                    color="transparent"
+                    size="xs"
+                    src={colors.find((color) => color.slug === slug)!.image_url!}
+                  >
+                    <ColorLens fontSize="inherit" />
+                  </Avatar>
+                }
+                label={colorBySlug[slug] ?? slug}
+              />
             ))}
           </Box>
         )}
         value={colorSelect}
         onChange={handleChange}
       >
-        {colors.map((color) => (
-          <MenuItem
-            key={color.slug}
-            disabled={colorSelect.length >= maxColors && !colorSelect.includes(color.slug)}
-            style={getStyles(color.slug, colorSelect, theme)}
-            value={color.slug}
-          >
-            <ListItem disablePadding component="div">
-              <ListItemAvatar>
-                <LazyAvatar
+        {colors.map((color) => {
+          const selected = colorSelect.includes(color.slug)
+          const SelectionIcon = selected ? CheckBox : CheckBoxOutlineBlank
+          return (
+            <MenuItem
+              key={color.slug}
+              disabled={colorSelect.length >= maxColors && !colorSelect.includes(color.slug)}
+              style={getStyles(color.slug, colorSelect, theme)}
+              value={color.slug}
+            >
+              <SelectionIcon
+                fontSize="small"
+                style={{ marginRight: 8, padding: 9, boxSizing: 'content-box' }}
+              />
+              <ListItemAvatar sx={{ mr: -1.5 }}>
+                <Avatar
                   alt={color.title || color.slug}
                   color="transparent"
                   size="xs"
                   src={color.image_url!}
                 >
                   <ColorLens fontSize="inherit" />
-                </LazyAvatar>
+                </Avatar>
               </ListItemAvatar>
-              <ListItemText>{color.title}</ListItemText>
-            </ListItem>
-          </MenuItem>
-        ))}
+              <ListItemText primary={color.title} />
+            </MenuItem>
+          )
+        })}
       </Select>
       <FormHelperText>
         {colorSelect.length}/{maxColors} colors selected

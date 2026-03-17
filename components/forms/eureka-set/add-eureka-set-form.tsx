@@ -14,13 +14,13 @@ import {
   SelectChangeEvent,
   Stack,
   TextField,
-  Typography,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug, toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 import { Category, Color, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from './color-select'
+import { SparkleIcon } from '@/components/rarity-stars'
 
 export default function AddEurekaSetForm({
   trials,
@@ -174,6 +174,11 @@ export default function AddEurekaSetForm({
             {[2, 3, 4, 5].map((n) => (
               <MenuItem key={n} value={n}>
                 {n}
+                <SparkleIcon
+                  color="inherit"
+                  fontSize="inherit"
+                  sx={{ rotate: '15deg', ml: 0.5, mt: -0.3 }}
+                />
               </MenuItem>
             ))}
           </Select>
@@ -213,10 +218,12 @@ export default function AddEurekaSetForm({
                 )
               }
             >
-              {selectedTrials.length === trials.length ? 'Deselect all trials' : 'Select all trials'}
+              {selectedTrials.length === trials.length
+                ? 'Deselect all trials'
+                : 'Select all trials'}
             </Button>
           </Stack>
-					
+
           <FormControl>
             <InputLabel>Trials</InputLabel>
             <Select
