@@ -11,6 +11,7 @@ yarn start        # Start production server
 yarn lint         # Run ESLint
 yarn lint:fix     # Run ESLint with auto-fix
 yarn format       # Format with Prettier
+yarn tsc --noEmit # Type-check without emitting
 ```
 
 Package manager: **Yarn** (not npm or pnpm).
@@ -19,7 +20,7 @@ Package manager: **Yarn** (not npm or pnpm).
 
 Required in `.env.local`:
 
-```
+```env
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 ```
@@ -73,6 +74,7 @@ Components are grouped into subdirectories:
 - `components/eureka/` — eureka-button, eureka-card, eureka-filter, eureka-set-card, eureka-table, category-image, category-item
 - `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, stat-card
 - `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
+- `components/profile/` — collection-stats, profile-view, profile-context
 - `components/forms/auth/` — login-form, sign-up-form, profile-form, forgot-password-form, update-password-form, avatar-preview, avatar-upload
 - `components/forms/` (root) — image-upload
 - `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
@@ -153,6 +155,7 @@ Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server C
 - `cn(...inputs)` — `clsx` + `tailwind-merge` class name helper
 - `toSlug(name)` — converts a name to a set slug (spaces → `_`, lowercase, trimmed)
 - `toSlugVariant(eurekaSet, category, color)` — builds a variant slug `{set}-{category}-{color}`
+- `toTitle(slug)` — converts a slug back to a display title (underscores/hyphens → spaces, title-cased)
 
 Eureka variant forms auto-generate the slug from the selected eureka set, category, and color via a `useEffect`. The slug field is read-only by default; an edit icon unlocks manual entry.
 
@@ -182,6 +185,16 @@ Eureka variant forms auto-generate the slug from the selected eureka set, catego
 - `hooks/user.ts` — `getUserClaims()`, `getUserID()`, `getUserRole()` (all server-side, cached)
 - `hooks/eureka.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEurekaVariants()` (pure data transforms)
 - `hooks/count-obtained.ts` — `countObtained(array)` → `{obtained, total}`, `percent(obtained, total)` → percentage string
+
+## Claude Automations
+
+Configured in `.claude/settings.json`:
+
+- **PostToolUse hooks** — `yarn format && yarn lint:fix` + `yarn tsc --noEmit` run automatically after every Edit/Write
+- **PreToolUse hook** — blocks edits to `.env*` files
+- **`/new-data-hook` skill** — scaffolds `hooks/data/` files with the correct `use cache` vs React `cache()` pattern
+- **`a11y-reviewer` subagent** — audits MUI components for WCAG 2.1 AA violations
+- **context7 MCP** — live docs for Next.js, MUI v7, and Supabase
 
 ## Git & Deployment
 
