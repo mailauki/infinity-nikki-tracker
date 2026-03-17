@@ -9,6 +9,7 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  ListItemText,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -17,9 +18,10 @@ import {
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug, toSlugVariant } from '@/lib/utils'
-import { Edit, EditOff } from '@mui/icons-material'
+import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
 import { Category, Color, EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from './color-select'
+import { SparkleIcon } from '@/components/rarity-stars'
 
 export default function EditEurekaSetForm({
   eurekaSet,
@@ -206,6 +208,11 @@ export default function EditEurekaSetForm({
             {[2, 3, 4, 5].map((n) => (
               <MenuItem key={n} value={n}>
                 {n}
+                <SparkleIcon
+                  color="inherit"
+                  fontSize="inherit"
+                  sx={{ rotate: '15deg', ml: 0.5, mt: -0.3 }}
+                />
               </MenuItem>
             ))}
           </Select>
@@ -235,31 +242,56 @@ export default function EditEurekaSetForm({
           </Select>
         </FormControl>
 
-        <FormControl>
-          <InputLabel>Trials</InputLabel>
-          <Select
-            multiple
-            label="Trials"
-            renderValue={(selected) =>
-              trials
-                .filter((t) => selected.includes(t.slug!))
-                .map((t) => t.title)
-                .join(', ')
-            }
-            value={selectedTrials}
-            onChange={(e) =>
-              setSelectedTrials(
-                typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value
-              )
-            }
-          >
-            {trials.map((t) => (
-              <MenuItem key={t.slug} value={t.slug!}>
-                {t.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Stack spacing={0.5}>
+          <Stack alignItems="center" direction="row" justifyContent="flex-end">
+            <Button
+              size="small"
+              onClick={() =>
+                setSelectedTrials(
+                  selectedTrials.length === trials.length ? [] : trials.map((t) => t.slug!)
+                )
+              }
+            >
+              {selectedTrials.length === trials.length
+                ? 'Deselect all trials'
+                : 'Select all trials'}
+            </Button>
+          </Stack>
+
+          <FormControl>
+            <InputLabel>Trials</InputLabel>
+            <Select
+              multiple
+              label="Trials"
+              renderValue={(selected) =>
+                trials
+                  .filter((t) => selected.includes(t.slug!))
+                  .map((t) => t.title)
+                  .join(', ')
+              }
+              value={selectedTrials}
+              onChange={(e) =>
+                setSelectedTrials(
+                  typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value
+                )
+              }
+            >
+              {trials.map((t) => {
+                const selected = selectedTrials.includes(t.slug)
+                const SelectionIcon = selected ? CheckBox : CheckBoxOutlineBlank
+                return (
+                  <MenuItem key={t.slug} value={t.slug!}>
+                    <SelectionIcon
+                      fontSize="small"
+                      style={{ marginRight: 8, padding: 9, boxSizing: 'content-box' }}
+                    />
+                    <ListItemText primary={t.title} />
+                  </MenuItem>
+                )
+              })}
+            </Select>
+          </FormControl>
+        </Stack>
 
         <ColorSelect
           colorSelect={colorSelect}
