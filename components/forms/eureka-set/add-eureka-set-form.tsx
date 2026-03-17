@@ -14,6 +14,7 @@ import {
   SelectChangeEvent,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug, toSlugVariant } from '@/lib/utils'
@@ -202,31 +203,46 @@ export default function AddEurekaSetForm({
           </Select>
         </FormControl>
 
-        <FormControl>
-          <InputLabel>Trials</InputLabel>
-          <Select
-            multiple
-            label="Trials"
-            renderValue={(selected) =>
-              trials
-                .filter((t) => selected.includes(t.slug!))
-                .map((t) => t.title)
-                .join(', ')
-            }
-            value={selectedTrials}
-            onChange={(e) =>
-              setSelectedTrials(
-                typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value
-              )
-            }
-          >
-            {trials.map((t) => (
-              <MenuItem key={t.slug} value={t.slug!}>
-                {t.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Stack spacing={0.5}>
+          <Stack alignItems="center" direction="row" justifyContent="flex-end">
+            <Button
+              size="small"
+              onClick={() =>
+                setSelectedTrials(
+                  selectedTrials.length === trials.length ? [] : trials.map((t) => t.slug!)
+                )
+              }
+            >
+              {selectedTrials.length === trials.length ? 'Deselect all trials' : 'Select all trials'}
+            </Button>
+          </Stack>
+					
+          <FormControl>
+            <InputLabel>Trials</InputLabel>
+            <Select
+              multiple
+              label="Trials"
+              renderValue={(selected) =>
+                trials
+                  .filter((t) => selected.includes(t.slug!))
+                  .map((t) => t.title)
+                  .join(', ')
+              }
+              value={selectedTrials}
+              onChange={(e) =>
+                setSelectedTrials(
+                  typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value
+                )
+              }
+            >
+              {trials.map((t) => (
+                <MenuItem key={t.slug} value={t.slug!}>
+                  {t.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Stack>
 
         <ColorSelect
           colorSelect={colorSelect}

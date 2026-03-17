@@ -1,10 +1,15 @@
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { Color } from '@/lib/types/eureka'
+import { ColorLens } from '@mui/icons-material'
 import {
   Box,
   Chip,
   FormControl,
   FormHelperText,
   InputLabel,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   MenuItem,
   OutlinedInput,
   Select,
@@ -58,7 +63,7 @@ export default function ColorSelect({
         renderValue={(selected) => (
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {selected.map((slug) => (
-              <Chip key={slug} label={colorBySlug[slug] ?? slug} />
+              <Chip key={slug} label={colorBySlug[slug] ?? slug} icon={<LazyAvatar alt={slug} src={colors.find(color => color.slug === slug)!.image_url!} size='xs' />} />
             ))}
           </Box>
         )}
@@ -72,7 +77,19 @@ export default function ColorSelect({
             style={getStyles(color.slug, colorSelect, theme)}
             value={color.slug}
           >
-            {color.title}
+            <ListItem disablePadding component="div">
+              <ListItemAvatar>
+                <LazyAvatar
+                  alt={color.title || color.slug}
+                  color="transparent"
+                  size="xs"
+                  src={color.image_url!}
+                >
+                  <ColorLens fontSize="inherit" />
+                </LazyAvatar>
+              </ListItemAvatar>
+              <ListItemText>{color.title}</ListItemText>
+            </ListItem>
           </MenuItem>
         ))}
       </Select>
