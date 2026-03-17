@@ -7,5 +7,33 @@
     "claude-md-management@claude-plugins-official": true,
     "supabase@claude-plugins-official": true,
     "vercel@claude-plugins-official": true
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn format && yarn lint:fix"
+          },
+          {
+            "type": "command",
+            "command": "cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn tsc --noEmit 2>&1 | head -20"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$CLAUDE_TOOL_INPUT\" | grep -q '\\.env' && echo 'Blocked: do not edit .env files' && exit 2 || exit 0"
+          }
+        ]
+      }
+    ]
   }
 }
