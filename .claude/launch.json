@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Next.js dev",
+      "runtimeExecutable": "/Users/mailauki/.nvm/versions/node/v22.9.0/bin/node",
+      "runtimeArgs": ["/Users/mailauki/Developer/infinity-nikki-tracker/node_modules/.bin/next", "dev"],
+      "port": 3000,
+      "cwd": "/Users/mailauki/Developer/infinity-nikki-tracker/.claude/worktrees/blissful-pare"
+    }
+  ]
+}

@@ -1,11 +1,22 @@
+import fs from 'fs'
 import path from 'path'
 
 import type { NextConfig } from 'next'
 
+// Walk up from __dirname to find the directory containing node_modules/next,
+// then use its parent as the Turbopack root. This works from both the main
+// repo and git worktrees, which don't have their own node_modules.
+let workspaceRoot = __dirname
+while (!fs.existsSync(path.join(workspaceRoot, 'node_modules', 'next'))) {
+  const parent = path.dirname(workspaceRoot)
+  if (parent === workspaceRoot) break
+  workspaceRoot = parent
+}
+
 const nextConfig: NextConfig = {
   cacheComponents: true,
   turbopack: {
-    root: path.join(__dirname, '..'), // Sets the root to the parent directory
+    root: path.dirname(workspaceRoot), // Sets the root to the parent directory
   },
   images: {
     remotePatterns: [
