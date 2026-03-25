@@ -1,8 +1,9 @@
 'use client'
 
-import { Avatar, IconButton, Tooltip, Typography } from '@mui/material'
+import { IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlug } from '@/lib/utils'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { Trial } from '@/lib/types/eureka'
 import { AdminTable, Column } from './admin-table'
 import { Category } from '@mui/icons-material'
@@ -50,7 +51,7 @@ export function TrialTable({
     {
       header: 'Image',
       cell: (trial) => (
-        <Avatar
+        <LazyAvatar
           alt={trial.title || 'Image'}
           size="xs"
           src={trial.image_url!}
@@ -58,7 +59,7 @@ export function TrialTable({
           variant="rounded"
         >
           <Category fontSize="inherit" />
-        </Avatar>
+        </LazyAvatar>
       ),
     },
     {

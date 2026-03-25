@@ -2,7 +2,6 @@ import Link from 'next/link'
 import ImageIcon from '@mui/icons-material/Image'
 
 import {
-  Avatar,
   List,
   ListItem,
   ListItemAvatar,
@@ -10,6 +9,7 @@ import {
   ListItemText,
   useColorScheme,
 } from '@mui/material'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { NavLink } from '@/lib/types/props'
 
 export function NavMain({
@@ -61,13 +61,13 @@ export function NavMain({
                     },
               ]}
             >
-              <Avatar
+              <LazyAvatar
                 alt={item.title}
                 src={item.image}
                 sx={{ filter: isDarkMode ? 'none' : 'brightness(40%)' }}
               >
                 <ImageIcon />
-              </Avatar>
+              </LazyAvatar>
             </ListItemAvatar>
             <ListItemText
               primary={item.title}

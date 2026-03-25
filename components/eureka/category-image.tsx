@@ -1,7 +1,7 @@
 'use client'
-import Image from 'next/image'
-import { Avatar, CardHeader, useColorScheme } from '@mui/material'
+import { CardHeader, useColorScheme } from '@mui/material'
 import { AvatarSize } from '@/lib/types/props'
+import LazyAvatar from './lazy-avatar'
 
 export default function CategoryImage({
   imageUrl,
@@ -25,15 +25,15 @@ export default function CategoryImage({
     <CardHeader
       action={action}
       avatar={
-        <Avatar
+        <LazyAvatar
+          alt={alt}
           size={size}
+          src={imageUrl}
           sx={{
             bgcolor: 'transparent',
             filter: isDarkMode || size === 'xs' ? 'none' : 'brightness(40%)',
           }}
-        >
-          <Image alt={alt} height={100} src={imageUrl} width={100} />
-        </Avatar>
+        />
       }
       subheader={subheader}
       sx={{ width: '100%' }}

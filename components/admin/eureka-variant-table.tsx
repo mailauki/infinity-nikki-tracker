@@ -1,8 +1,9 @@
 'use client'
 
-import { Avatar, Chip, IconButton, Tooltip, Typography } from '@mui/material'
+import { Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { toSlugVariant, toTitle } from '@/lib/utils'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { AdminTable, Column } from './admin-table'
 import { EurekaVariantRaw } from '@/lib/types/eureka'
 import { Category } from '@mui/icons-material'
@@ -52,7 +53,7 @@ export function EurekaVariantTable({
     {
       header: 'Image',
       cell: (variant) => (
-        <Avatar
+        <LazyAvatar
           alt={variant.eureka_set || 'Image'}
           color="transparent"
           size="xs"
@@ -60,7 +61,7 @@ export function EurekaVariantTable({
           sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
         >
           <Category fontSize="inherit" />
-        </Avatar>
+        </LazyAvatar>
       ),
     },
     {
