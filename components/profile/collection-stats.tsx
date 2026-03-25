@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { forwardRef, useState } from 'react'
 import {
   Box,
   Card,
@@ -14,11 +14,13 @@ import {
   LinearProgress,
   List,
   ListItem,
+  Slide,
   Stack,
   Typography,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
+import { TransitionProps } from '@mui/material/transitions'
 import { Close } from '@mui/icons-material'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { Category, Color, EurekaSet, Trial } from '@/lib/types/eureka'
@@ -26,6 +28,13 @@ import EurekaCardProgress from '@/components/eureka/eureka-card-progress'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { toTitle } from '@/lib/utils'
 import { AvatarSize } from '@/lib/types/props'
+
+const SlideUp = forwardRef(function SlideUp(
+  props: TransitionProps & { children: React.ReactElement },
+  ref: React.Ref<unknown>
+) {
+  return <Slide ref={ref} direction="up" {...props} />
+})
 
 type StatItem = { title: string; imageUrl?: string | null; obtained: number; total: number }
 
@@ -100,6 +109,7 @@ function CollectionStatCard({
         fullScreen={fullScreen}
         maxWidth="sm"
         open={open}
+        slots={{ transition: SlideUp }}
         onClose={() => setOpen(false)}
       >
         <DialogTitle>
@@ -110,7 +120,7 @@ function CollectionStatCard({
             </IconButton>
           </Stack>
         </DialogTitle>
-        <DialogContent dividers sx={{ pt: 1, pb: 4, maxHeight: { sm: '60vh' } }}>
+        <DialogContent dividers sx={{ pt: 1, pb: 8, maxHeight: { sm: '60vh' } }}>
           <List disablePadding>
             {items.map((item, index) => (
               <StatItemRow key={index} item={item} size={title === 'Colors' ? 'xs' : 'md'} />
