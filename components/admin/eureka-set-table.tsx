@@ -2,12 +2,13 @@
 
 import { Box, Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { toSlug } from '@/lib/utils'
+import { toSlug, toTitle } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 import { EurekaSet } from '@/lib/types/eureka'
 import { Category } from '@mui/icons-material'
 import { useSearchParams } from 'next/navigation'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
+import RarityStars from '../rarity-stars'
 
 type Row = EurekaSet
 
@@ -78,9 +79,9 @@ export function EurekaSetTable({
         </Typography>
       ),
     },
-    { header: 'Rarity', cell: (set) => set.rarity },
-    { header: 'Style', cell: (set) => set.style },
-    { header: 'Label', cell: (set) => set.label },
+    { header: 'Rarity', cell: (set) => <RarityStars rarity={set.rarity!} /> },
+    { header: 'Style', cell: (set) => toTitle(set.style! || '—') },
+    { header: 'Label', cell: (set) => toTitle(set.label! || '—') },
     {
       header: 'Colors',
       cell: (set) => (
@@ -98,7 +99,7 @@ export function EurekaSetTable({
           {(() => {
             if (!set.eureka_set_trials?.length) return '—'
             if (set.eureka_set_trials.length > 1) return set.eureka_set_trials.length + ' trials'
-            return set.eureka_set_trials[0].trial
+            return toTitle(set.eureka_set_trials[0].trial)
           })()}
         </Typography>
       ),
