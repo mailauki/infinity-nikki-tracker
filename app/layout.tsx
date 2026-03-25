@@ -6,6 +6,7 @@ import { ThemeProvider } from '@mui/material/styles'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import theme from '@/lib/theme'
 import { CssBaseline } from '@mui/material'
+import { Analytics } from '@vercel/analytics/next'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -49,6 +50,7 @@ export default async function RootLayout({
           <ThemeProvider defaultMode="system" theme={theme}>
             <CssBaseline />
             {children}
+            <Analytics />
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

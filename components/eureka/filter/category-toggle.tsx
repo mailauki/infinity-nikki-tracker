@@ -4,7 +4,6 @@ import { Category } from '@/lib/types/eureka'
 import { CategoryFilter } from '@/lib/types/props'
 import CategoryIcon from '@mui/icons-material/Category'
 import {
-  Avatar,
   FormControl,
   FormLabel,
   ToggleButton,
@@ -13,6 +12,7 @@ import {
   Typography,
   useColorScheme,
 } from '@mui/material'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 
 export default function CategoryToggle({
   categories,
@@ -46,7 +46,7 @@ export default function CategoryToggle({
         {categories.map((category) => (
           <Tooltip key={category.slug} title={category.title}>
             <ToggleButton sx={{ py: 0.75 }} value={category.slug}>
-              <Avatar
+              <LazyAvatar
                 alt={category.title}
                 src={category.image_url!}
                 sx={{
@@ -59,7 +59,7 @@ export default function CategoryToggle({
                 variant="rounded"
               >
                 <CategoryIcon sx={{ color: 'divider' }} />
-              </Avatar>
+              </LazyAvatar>
             </ToggleButton>
           </Tooltip>
         ))}

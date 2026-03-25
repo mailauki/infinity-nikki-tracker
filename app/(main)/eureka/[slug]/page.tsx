@@ -2,10 +2,11 @@ import { Suspense } from 'react'
 
 import { getUserID } from '@/hooks/user'
 import { getEurekaSet } from '@/hooks/data/eureka-sets'
-import { Container, Stack, Button, Box, Divider, Typography, Chip, Avatar } from '@mui/material'
+import { Container, Stack, Button, Box, Divider, Typography, Chip } from '@mui/material'
 import type { Metadata } from 'next'
 import { Category, ChevronRight } from '@mui/icons-material'
 import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
 import { GRID_COLUMNS } from '@/lib/types/props'
@@ -44,14 +45,14 @@ async function EurekaSet({ slug }: { slug: string }) {
         <Stack spacing={1}>
           <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
             <Stack alignItems="center" sx={{ pt: 1 }}>
-              <Avatar
+              <LazyAvatar
                 alt={slug || 'Eureka Variant'}
                 size="xl"
                 src={image_url!}
                 sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
               >
                 <Category fontSize="inherit" />
-              </Avatar>
+              </LazyAvatar>
             </Stack>
 
             <Chip label={toTitle(label ?? '')} variant="outlined" />
@@ -70,7 +71,11 @@ async function EurekaSet({ slug }: { slug: string }) {
             {colors.map((color) => (
               <Chip
                 key={color.slug}
-                avatar={<Avatar alt={color.title || color.slug} src={color.image_url!} />}
+                avatar={
+                  <div>
+                    <LazyAvatar alt={color.title || color.slug} size="xs" src={color.image_url!} />
+                  </div>
+                }
                 label={color.title}
               />
             ))}

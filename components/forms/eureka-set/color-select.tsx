@@ -1,7 +1,6 @@
 import { Color } from '@/lib/types/eureka'
 import { CheckBox, CheckBoxOutlineBlank, ColorLens } from '@mui/icons-material'
 import {
-  Avatar,
   Box,
   Chip,
   FormControl,
@@ -16,6 +15,7 @@ import {
   Theme,
   useTheme,
 } from '@mui/material'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8
@@ -65,14 +65,14 @@ export default function ColorSelect({
               <Chip
                 key={slug}
                 icon={
-                  <Avatar
+                  <LazyAvatar
                     alt={slug}
                     color="transparent"
                     size="xs"
                     src={colors.find((color) => color.slug === slug)!.image_url!}
                   >
                     <ColorLens fontSize="inherit" />
-                  </Avatar>
+                  </LazyAvatar>
                 }
                 label={colorBySlug[slug] ?? slug}
               />
@@ -97,14 +97,14 @@ export default function ColorSelect({
                 style={{ marginRight: 8, padding: 9, boxSizing: 'content-box' }}
               />
               <ListItemAvatar sx={{ mr: -1.5 }}>
-                <Avatar
+                <LazyAvatar
                   alt={color.title || color.slug}
                   color="transparent"
                   size="xs"
                   src={color.image_url!}
                 >
                   <ColorLens fontSize="inherit" />
-                </Avatar>
+                </LazyAvatar>
               </ListItemAvatar>
               <ListItemText primary={color.title} />
             </MenuItem>
