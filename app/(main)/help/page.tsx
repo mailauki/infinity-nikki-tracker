@@ -35,7 +35,7 @@ export default function HelpPage() {
                     <Anchor color="textSecondary" href="/eureka">
                       Eureka
                     </Anchor>{' '}
-                    page.
+                    page. No account needed — you can browse freely as a guest.
                   </Typography>
                 }
               />
@@ -44,7 +44,8 @@ export default function HelpPage() {
               <ListItemText
                 primary={
                   <Typography color="textSecondary" variant="body1">
-                    Sign in to enable collection tracking for your account.
+                    Sign in to enable collection tracking for your account. Progress won&apos;t be
+                    saved without an account.
                   </Typography>
                 }
               />
@@ -53,20 +54,32 @@ export default function HelpPage() {
               <ListItemText
                 primary={
                   <Typography color="textSecondary" variant="body1">
-                    Open any set and click individual items to mark them as obtained.
-                  </Typography>
-                }
-              />
-            </ListItem>
-            <ListItem sx={{ display: 'list-item' }}>
-              <ListItemText
-                primary={
-                  <Typography color="textSecondary" variant="body1">
-                    Use the{' '}
-                    <Anchor color="textSecondary" href="/eureka/missing">
-                      Missing
+                    Click individual items to mark them as obtained — either from the{' '}
+                    <Anchor color="textSecondary" href="/eureka">
+                      Eureka
                     </Anchor>{' '}
-                    view to see items you haven&apos;t collected yet.
+                    page or from within a set&apos;s detail page.
+                  </Typography>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Typography color="textSecondary" variant="body1">
+                    Use the filters to narrow things down by category, color, rarity, or completion
+                    status.
+                  </Typography>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Typography color="textSecondary" variant="body1">
+                    Use the filter menu to show only missing pieces — select{' '}
+                    <strong>Missing</strong> under completion status to see only what you
+                    haven&apos;t collected yet.
                   </Typography>
                 }
               />
@@ -88,7 +101,8 @@ export default function HelpPage() {
               <ListItemText
                 primary={
                   <Typography color="textSecondary" variant="body1">
-                    Manage your display name and avatar from the{' '}
+                    Manage your display name and avatar, and view your overall collection stats,
+                    from the{' '}
                     <Anchor color="textSecondary" href="/profile">
                       Profile
                     </Anchor>{' '}
