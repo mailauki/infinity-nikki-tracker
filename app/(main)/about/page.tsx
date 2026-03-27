@@ -18,8 +18,11 @@ export default function AboutPage() {
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
         <Container component="section" maxWidth="sm">
+          <Typography component="h2" variant="h5">
+            What is this?
+          </Typography>
           <Typography color="textSecondary" variant="subtitle2">
-            Infinity Nikki Tracker is a collection tracker for{' '}
+            A fan-made collection tracker for{' '}
             <Anchor
               color="textSecondary"
               href="https://infinitynikki.infoldgames.com/"
@@ -27,15 +30,120 @@ export default function AboutPage() {
               target="_blank"
             >
               Infinity Nikki
-            </Anchor>
-            , the cozy open-world fashion game. Track your Eureka outfit progress across sets,
-            categories, colors, and trials — with real-time updates and per-user collection state.
+            </Anchor>{' '}
+            — see your Eureka sets and variants at a glance, track your progress, and know exactly
+            what you&apos;re still missing.
           </Typography>
         </Container>
 
         <Container component="section" maxWidth="sm">
           <Typography component="h2" variant="h5">
+            Features
+          </Typography>
+          <List dense sx={{ listStyle: 'disc', pl: 4 }}>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Typography color="textSecondary" variant="body1">
+                    Browse all Eureka sets — see every set and its individual pieces in one place,
+                    organized by style and rarity
+                  </Typography>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Typography color="textSecondary" variant="body1">
+                    Track what you have — mark pieces as obtained and watch your progress update in
+                    real time
+                  </Typography>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Typography color="textSecondary" variant="body1">
+                    See what&apos;s missing — a dedicated view filters down to only the pieces you
+                    haven&apos;t collected yet
+                  </Typography>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Typography color="textSecondary" variant="body1">
+                    Progress by trial — see how far along you are in each in-game trial
+                  </Typography>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Typography color="textSecondary" variant="body1">
+                    Filter and sort — narrow things down by category, color, rarity, or completion
+                    status
+                  </Typography>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Typography color="textSecondary" variant="body1">
+                    Use it as a guest or sign in — browse freely without an account, or sign in to
+                    save and track your own personal collection
+                  </Typography>
+                }
+              />
+            </ListItem>
+          </List>
+        </Container>
+
+        <Container component="section" maxWidth="sm">
+          <Typography component="h2" variant="h5">
             Links &amp; Resources
+          </Typography>
+          <Typography color="textSecondary" sx={{ mt: 1 }} variant="subtitle2">
+            This project
+          </Typography>
+          <List dense sx={{ listStyle: 'disc', pl: 4 }}>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Anchor
+                    color="textSecondary"
+                    href="https://github.com/mailauki/infinity-nikki-tracker"
+                    rel="noreferrer"
+                    target="_blank"
+                    variant="body1"
+                  >
+                    GitHub Repository
+                  </Anchor>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Anchor
+                    color="textSecondary"
+                    href="https://medium.com/@julieuxdev/i-built-a-collection-tracker-for-infinity-nikki-because-the-game-wouldnt-tell-me-what-i-was-missing-95ffcf3b2109"
+                    rel="noreferrer"
+                    target="_blank"
+                    variant="body1"
+                  >
+                    Behind the build — Medium article
+                  </Anchor>
+                }
+              />
+            </ListItem>
+          </List>
+          <Typography color="textSecondary" sx={{ mt: 1 }} variant="subtitle2">
+            Helpful resources
           </Typography>
           <List dense sx={{ listStyle: 'disc', pl: 4 }}>
             <ListItem sx={{ display: 'list-item' }}>
@@ -68,21 +176,6 @@ export default function AboutPage() {
                 }
               />
             </ListItem>
-            <ListItem sx={{ display: 'list-item' }}>
-              <ListItemText
-                primary={
-                  <Anchor
-                    color="textSecondary"
-                    href="https://github.com/mailauki/infinity-nikki-tracker"
-                    rel="noreferrer"
-                    target="_blank"
-                    variant="body1"
-                  >
-                    GitHub Repository
-                  </Anchor>
-                }
-              />
-            </ListItem>
           </List>
         </Container>
 
@@ -98,7 +191,7 @@ export default function AboutPage() {
               <ListItemText
                 primary={
                   <Typography color="textSecondary" variant="body1">
-                    More outfit types — expand tracking beyond Eureka sets
+                    Search — quickly find sets and variants by name
                   </Typography>
                 }
               />
@@ -107,7 +200,16 @@ export default function AboutPage() {
               <ListItemText
                 primary={
                   <Typography color="textSecondary" variant="body1">
-                    Item search — search across all items globally
+                    Outfits (Glow-up) — tracking support for Glow-up outfit variants
+                  </Typography>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Typography color="textSecondary" variant="body1">
+                    Outfits (Evolution) — tracking support for Evolution outfit variants
                   </Typography>
                 }
               />
@@ -160,7 +262,9 @@ export default function AboutPage() {
         </Container>
 
         <Typography color="textDisabled" variant="caption">
-          &copy; 2026 mailauki. Not affiliated with Infold Games or Infinity Nikki.
+          This is a fan-made project and is not affiliated with, endorsed by, or officially
+          connected to Papergames or the Infinity Nikki development team. All game content, names,
+          and assets are the property of their respective owners.
         </Typography>
       </Stack>
     </Container>
