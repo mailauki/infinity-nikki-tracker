@@ -1,92 +1,88 @@
 # Infinity Nikki Tracker
 
-A collection tracker for [Infinity Nikki](https://infinitynikki.infoldgames.com/), the cozy open-world fashion game. Track your Eureka outfit progress across sets, categories, colors, and trials — with real-time updates and per-user collection state.
+A fan-made collection tracker for **Infinity Nikki** — see your Eureka sets and variants at a glance, track your progress, and know exactly what you're still missing.
+
+🔗 **[infinity-nikki-tracker.vercel.app](https://infinity-nikki-tracker.vercel.app/)**
 
 ![Eureka page in light mode showing a grid of outfit set cards with style chip, set name, and quality stars, alongside a category progress sidebar](public/screenshot-light.png)
 
 ![Eureka page in dark mode showing the same layout with dark theme applied](public/screenshot-dark.png)
 
+---
+
+## Why This Exists
+
+Infinity Nikki has a built-in collection view, but it doesn't give you a clear picture of your overall progress — how complete each set is, which variants you're missing, or where you stand without clicking around. This tracker solves that.
+
+It lives outside the game, so you can check your collection status any time, even when you're not playing.
+
+---
+
 ## Features
 
-- **Eureka Set Tracking** — Browse all Eureka sets and mark individual pieces as obtained
-- **Progress Visualization** — Per-category, per-color, and per-trial progress bars with percentages
-- **Missing Items View** — Filterable list of Eureka pieces you haven't collected yet
-- **Trials View** — Progress grouped by in-game trial
-- **Filter & Sort** — Filter by category, color, rarity, obtained status, and eureka set; group by set or color
-- **Realtime Updates** — Collection state updates instantly across tabs via Supabase Realtime
-- **Auth-aware** — Browse as a guest (read-only) or sign in to track your own collection
-- **Profile Management** — Update display name, username, and avatar
-- **Admin Dashboard** — Manage Eureka sets, variants, and trials from the frontend (admin role required)
-- **Dark/Light/System Theme** — Theme switcher in the footer
+- Browse all Eureka sets and their variants in one place
+- See which pieces you've collected and which are still missing
+- Track overall collection progress at a glance
+- Accessible on any device, anytime — no login required
 
-## Tech Stack
+---
 
-- **[Next.js 16](https://nextjs.org)** — App Router, Server Components, Server Actions, Partial Prerendering (`cacheComponents`)
-- **[Supabase](https://supabase.com)** — Postgres database, Auth (cookie-based via `@supabase/ssr`), Realtime subscriptions, Storage (avatars and game images)
-- **[MUI (Material UI)](https://mui.com)** — Component library with CSS variables and built-in dark mode
-- **[Tailwind CSS](https://tailwindcss.com)** — Utility classes for layout
-- **[MUI Icons](https://mui.com/material-ui/material-icons/)** — Icons (`@mui/icons-material`)
+## Project Status
 
-## Getting Started
+✅ **Live** — the tracker is up and running at [infinity-nikki-tracker.vercel.app](https://infinity-nikki-tracker.vercel.app/).
 
-### Prerequisites
+This project is actively maintained. Planned additions include:
 
-- Node.js 18+
-- Yarn
-- A [Supabase](https://supabase.com) project
+- [ ] Search — quickly find sets and variants by name
+- [ ] Outfits (Glow-up) — tracking support for Glow-up outfit variants
+- [ ] Outfits (Evolution) — tracking support for Evolution outfit variants
 
-### Setup
+---
 
-1. Clone the repository and install dependencies:
+## For Developers
 
-   ```bash
-   yarn install
-   ```
+### Tech Stack
 
-2. Create `.env.local` with your Supabase credentials:
+- [Next.js](https://nextjs.org/) — React framework for the frontend and routing
+- [Node.js](https://nodejs.org/) 24.x
+- Deployed on [Vercel](https://vercel.com/)
 
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
-   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-or-publishable-key
-   ```
+### Getting Started
 
-   Both values can be found in your [Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true).
+```bash
+# Clone the repo
+git clone https://github.com/mailauki/infinity-nikki-tracker.git
+cd infinity-nikki-tracker
 
-3. Start the development server:
+# Install dependencies
+npm install
 
-   ```bash
-   yarn dev
-   ```
+# Start the development server
+npm run dev
+```
 
-   The app will be running at [localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000) in your browser to see the app running locally.
 
-## Scripts
+### Contributing
 
-| Command         | Description                    |
-| --------------- | ------------------------------ |
-| `yarn dev`      | Start the development server   |
-| `yarn build`    | Build for production           |
-| `yarn start`    | Start the production server    |
-| `yarn lint`     | Run ESLint                     |
-| `yarn lint:fix` | Run ESLint with auto-fix       |
-| `yarn format`   | Format all files with Prettier |
+Contributions are welcome! If you've spotted a missing set, a bug, or have a feature idea:
 
-## Database Schema
+1. [Open an issue](https://github.com/mailauki/infinity-nikki-tracker/issues) to discuss the change
+2. Fork the repo and create a branch for your changes
+3. Submit a pull request with a clear description of what you've done
 
-| Table             | Description                                                                                    |
-| ----------------- | ---------------------------------------------------------------------------------------------- |
-| `eureka_sets`     | Outfit set metadata (title, slug, rarity, style, label, trial) — FKs use slug columns          |
-| `eureka_variants` | Individual Eureka items (eureka_set slug FK, color slug FK, category slug FK, image_url, slug) |
-| `categories`      | Category lookup with images (slug-keyed)                                                       |
-| `colors`          | Color lookup with images (slug-keyed)                                                          |
-| `styles`          | Style lookup (unique titles + slugs, FK target for `eureka_sets.style`); RLS enabled           |
-| `labels`          | Label lookup (unique titles + slugs, FK target for `eureka_sets.label`); RLS enabled           |
-| `obtained_eureka` | Per-user collection records (user_id, eureka_set slug, category slug, color slug)              |
-| `trials`          | Trial lookup with images and slug (FK target for `eureka_sets.trial`)                          |
-| `profiles`        | User profiles (full_name, username, avatar_url, role: 'user' \| 'admin')                       |
+For small fixes, feel free to open a PR directly.
 
-## Authentication
+---
 
-The app uses Supabase Auth with cookie-based sessions. The middleware in `lib/supabase/proxy.ts` handles session refresh on every request. Public routes (`/`, `/eureka/**`, `/about`) are accessible without signing in — users just won't see progress tracking until they authenticate.
+## Support
 
-Roles are stored in the `profiles` table. Admin role is required to access the dashboard.
+If you enjoy using the tracker and want to support its continued development, a coffee would be greatly appreciated!
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/mailauki)
+
+---
+
+## Disclaimer
+
+This is a fan-made project and is not affiliated with, endorsed by, or officially connected to Papergames or the Infinity Nikki development team. All game content, names, and assets are the property of their respective owners.
