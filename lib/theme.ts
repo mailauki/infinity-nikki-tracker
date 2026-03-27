@@ -1,6 +1,6 @@
 'use client'
-import { lime, pink } from '@mui/material/colors'
-import { alpha, createTheme } from '@mui/material/styles'
+import { brown, lime, pink } from '@mui/material/colors'
+import { alpha, createTheme, PaletteColor } from '@mui/material/styles'
 import { AvatarSize } from './types/props'
 
 declare module '@mui/material/Avatar' {
@@ -17,6 +17,54 @@ declare module '@mui/material/ToggleButton' {
 declare module '@mui/material/ToggleButtonGroup' {
   interface ToggleButtonGroupProps {
     variant?: 'filled'
+  }
+}
+
+// declare module '@mui/material/Paper' {
+//   interface PaperOwnProps {
+//     color?: 'surface'
+//   }
+// }
+
+declare module '@mui/material/styles' {
+  interface PaletteColor {
+    lowest: string
+    lowestHover: string
+    low: string
+    lowHover: string
+    main: string
+    mainHover: string
+    high: string
+    highHover: string
+    highest: string
+    highestHover: string
+  }
+
+  interface SurfacePaletteColorOptions {
+    lowest?: string
+    lowestHover?: string
+    low?: string
+    lowHover?: string
+    main?: string
+    mainHover?: string
+    high?: string
+    highHover?: string
+    highest?: string
+    highestHover?: string
+  }
+  interface Palette {
+    surface: Palette['primary']
+    // surface: {
+    // 	lowest?: string;
+    // 	low?: string;
+    // 	main: string;
+    // 	high?: string;
+    // 	highest?: string;
+    // }
+  }
+
+  interface PaletteOptions {
+    surface?: SurfacePaletteColorOptions
   }
 }
 
@@ -128,6 +176,18 @@ const theme = createTheme({
         secondary: {
           main: pink['400'],
         },
+        surface: {
+          lowest: brown['50'],
+          lowestHover: alpha(brown['50'], 0.7),
+          low: brown['100'],
+          lowHover: alpha(brown['100'], 0.7),
+          main: brown['200'],
+          mainHover: alpha(brown['200'], 0.7),
+          high: brown['300'],
+          highHover: alpha(brown['300'], 0.7),
+          highest: brown['400'],
+          highestHover: alpha(brown['400'], 0.7),
+        },
       },
     },
     dark: {
@@ -138,10 +198,36 @@ const theme = createTheme({
         secondary: {
           main: pink['100'],
         },
+        surface: {
+          lowest: brown['900'],
+          lowestHover: alpha(brown['700'], 0.7),
+          low: brown['800'],
+          lowHover: alpha(brown['600'], 0.7),
+          main: brown['700'],
+          mainHover: alpha(brown['500'], 0.7),
+          high: brown['600'],
+          highHover: alpha(brown['400'], 0.7),
+          highest: brown['500'],
+          highestHover: alpha(brown['300'], 0.7),
+        },
       },
     },
   },
   components: {
+    // MuiPaper: {
+    // 	styleOverrides: {
+    // 		root: {
+    // 			variants: [
+    // 				{ props: { color: 'surface', elevation: 1 },
+    //           style: { backgroundColor: brown['50'] },
+    // 				},
+    // 				{ props: { color: 'surface', elevation: 2 },
+    //           style: { backgroundColor: brown['100'] },
+    // 				},
+    // 			]
+    // 		}
+    // 	}
+    // },
     MuiCard: {
       defaultProps: {
         elevation: 3,

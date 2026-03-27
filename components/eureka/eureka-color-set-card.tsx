@@ -26,10 +26,7 @@ export default function EurekaColorSetCard({
       sx={{
         minWidth: 'fit-content',
         '&[data-active]': {
-          backgroundColor: 'action.selected',
-          '&:hover': {
-            backgroundColor: 'action.selectedHover',
-          },
+          backgroundColor: 'surface.lowest',
         },
       }}
     >

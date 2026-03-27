@@ -20,10 +20,7 @@ export default function EurekaVariantCard({
       sx={{
         minWidth: 'fit-content',
         '&[data-active]': {
-          backgroundColor: 'action.selected',
-          '&:hover': {
-            backgroundColor: 'action.selectedHover',
-          },
+          backgroundColor: 'surface.lowest',
         },
       }}
     >
@@ -49,7 +46,7 @@ export default function EurekaVariantCard({
             {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}
           </Typography>
         </Stack>
-        {isLoggedIn && (
+        {/* {isLoggedIn && (
           <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
             <LinearProgress
               color="inherit"
@@ -57,7 +54,7 @@ export default function EurekaVariantCard({
               variant="determinate"
             />
           </Box>
-        )}
+        )} */}
         <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
           {isLoggedIn && (
             <IconButton

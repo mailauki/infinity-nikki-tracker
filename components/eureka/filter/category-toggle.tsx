@@ -43,26 +43,31 @@ export default function CategoryToggle({
         value={selectedCategory}
         onChange={onCategoryChange}
       >
-        {categories.map((category) => (
-          <Tooltip key={category.slug} title={category.title}>
-            <ToggleButton sx={{ py: 0.75 }} value={category.slug}>
-              <LazyAvatar
-                alt={category.title}
-                src={category.image_url!}
-                sx={{
-                  backgroundColor: 'transparent',
-                  filter:
-                    isDarkMode || selectedCategory === category.slug ? 'none' : 'brightness(40%)',
-                  opacity: disabled ? 0.3 : 1,
-                  '&:hover': { filter: isDarkMode ? 'none' : 'brightness(40%)' },
-                }}
-                variant="rounded"
-              >
-                <CategoryIcon sx={{ color: 'divider' }} />
-              </LazyAvatar>
-            </ToggleButton>
-          </Tooltip>
-        ))}
+        {categories.map((category) => {
+          const isSelected = selectedCategory === category.slug
+          const brightness = isDarkMode || isSelected ? null : 'brightness(40%)'
+          const opacity = disabled ? 'opacity(0.3)' : null
+          const filter = [brightness, opacity].filter(Boolean).join(' ') || 'none'
+
+          return (
+            <Tooltip key={category.slug} title={category.title}>
+              <ToggleButton sx={{ py: 0.75 }} value={category.slug}>
+                <LazyAvatar
+                  alt={category.title}
+                  src={category.image_url!}
+                  sx={{
+                    backgroundColor: 'transparent',
+                    filter,
+                    '&:hover': { filter: isDarkMode ? 'none' : 'brightness(40%)' },
+                  }}
+                  variant="rounded"
+                >
+                  <CategoryIcon sx={{ color: 'divider' }} />
+                </LazyAvatar>
+              </ToggleButton>
+            </Tooltip>
+          )
+        })}
       </ToggleButtonGroup>
     </FormControl>
   )
