@@ -20,16 +20,29 @@ It lives outside the game, so you can check your collection status any time, eve
 
 ## Features
 
-- Browse all Eureka sets and their variants in one place
-- See which pieces you've collected and which are still missing
-- Track overall collection progress at a glance
-- Accessible on any device, anytime — no login required
+- **Browse all Eureka sets** — see every set and its individual pieces in one place, organized by style and rarity
+- **Track what you have** — mark pieces as obtained and watch your progress update in real time
+- **See what's missing** — a dedicated view filters down to only the pieces you haven't collected yet, so nothing slips through the cracks
+- **Progress by trial** — see how far along you are in each in-game trial
+- **Filter and sort** — narrow things down by category, color, rarity, or completion status
+- **Use it as a guest or sign in** — browse freely without an account, or sign in to save and track your own personal collection
+- **Looks great in any theme** — switch between light, dark, or system theme from the footer
+
+---
+
+## Getting Started
+
+No installation needed — just open the tracker in your browser:
+
+**[infinity-nikki-tracker.vercel.app](https://infinity-nikki-tracker.vercel.app/)**
+
+To save your collection progress, create a free account or sign in. Guests can browse all sets and variants without signing in, but progress won't be saved.
 
 ---
 
 ## Project Status
 
-✅ **Live** — the tracker is up and running at [infinity-nikki-tracker.vercel.app](https://infinity-nikki-tracker.vercel.app/).
+✅ **Live** — the tracker is up and running.
 
 This project is actively maintained. Planned additions include:
 
@@ -39,29 +52,67 @@ This project is actively maintained. Planned additions include:
 
 ---
 
+## Support
+
+If you enjoy using the tracker and want to support its continued development, a coffee would be greatly appreciated!
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/mailauki)
+
+---
+
 ## For Developers
 
 ### Tech Stack
 
-- [Next.js](https://nextjs.org/) — React framework for the frontend and routing
-- [Node.js](https://nodejs.org/) 24.x
-- Deployed on [Vercel](https://vercel.com/)
+- **[Next.js 16](https://nextjs.org)** — App Router, Server Components, Server Actions
+- **[Supabase](https://supabase.com)** — Postgres database, Auth, Realtime subscriptions, Storage
+- **[MUI (Material UI)](https://mui.com)** — Component library with CSS variables and built-in dark mode
+- **[Tailwind CSS](https://tailwindcss.com)** — Utility classes for layout
+- Deployed on **[Vercel](https://vercel.com)**
+
+### Prerequisites
+
+- Node.js 18+
+- Yarn
+- A [Supabase](https://supabase.com) project
 
 ### Getting Started
 
-```bash
-# Clone the repo
-git clone https://github.com/mailauki/infinity-nikki-tracker.git
-cd infinity-nikki-tracker
+1. Clone the repository and install dependencies:
 
-# Install dependencies
-npm install
+   ```bash
+   git clone https://github.com/mailauki/infinity-nikki-tracker.git
+   cd infinity-nikki-tracker
+   yarn install
+   ```
 
-# Start the development server
-npm run dev
-```
+2. Create `.env.local` with your Supabase credentials:
 
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the app running locally.
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-project-url
+   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-or-publishable-key
+   ```
+
+   Both values can be found in your [Supabase project's API settings](https://supabase.com/dashboard/project/_?showConnect=true).
+
+3. Start the development server:
+
+   ```bash
+   yarn dev
+   ```
+
+   The app will be running at [localhost:3000](http://localhost:3000).
+
+### Scripts
+
+| Command         | Description                    |
+| --------------- | ------------------------------ |
+| `yarn dev`      | Start the development server   |
+| `yarn build`    | Build for production           |
+| `yarn start`    | Start the production server    |
+| `yarn lint`     | Run ESLint                     |
+| `yarn lint:fix` | Run ESLint with auto-fix       |
+| `yarn format`   | Format all files with Prettier |
 
 ### Contributing
 
@@ -72,14 +123,6 @@ Contributions are welcome! If you've spotted a missing set, a bug, or have a fea
 3. Submit a pull request with a clear description of what you've done
 
 For small fixes, feel free to open a PR directly.
-
----
-
-## Support
-
-If you enjoy using the tracker and want to support its continued development, a coffee would be greatly appreciated!
-
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/mailauki)
 
 ---
 
