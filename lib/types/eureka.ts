@@ -36,6 +36,15 @@ export type ObtainedEureka = Pick<
   'id' | 'eureka_set' | 'category' | 'color'
 >
 
+export type RecentObtained = Pick<
+  Tables<'obtained_eureka'>,
+  'id' | 'eureka_set' | 'category' | 'color' | 'created_at'
+> & {
+  eureka_sets: { title: string } | null
+  categories: { title: string } | null
+  colors: { title: string | null } | null
+}
+
 export interface ObtainedCount {
   obtained: number
   total: number
