@@ -20,13 +20,14 @@ export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
     <Card variant="outlined">
       <CardHeader
         disableTypography
+        sx={{ pb: 0 }}
         title={
           <Typography color="text.secondary" variant="overline">
             Recently Updated
           </Typography>
         }
       />
-      <CardContent sx={{ pt: 0 }}>
+      <CardContent>
         <List disablePadding>
           {items.map((item) => (
             <ListItem key={item.id} disableGutters>

@@ -92,7 +92,7 @@ const MainContainer = styled(Paper, {
   overflowY: 'auto',
   overflowX: 'hidden',
   overscrollBehavior: 'auto',
-  borderRadius: '12px',
+  borderRadius: 0,
 }))
 
 interface AppBarTitleProps {
@@ -267,7 +267,7 @@ export default function NavDrawer({
   const content = (
     <>
       <Stack direction="row">
-        <AppBar color="default" open={open} position="fixed" variant="outlined">
+        <AppBar color="inherit" open={open} position="fixed" variant="outlined">
           <Toolbar>
             <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
               <Stack
