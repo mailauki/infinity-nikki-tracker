@@ -1,5 +1,6 @@
 import ProfileForm from '@/components/forms/auth/profile-form'
 import CollectionStats from '@/components/profile/collection-stats'
+import RecentUpdates from '@/components/profile/recent-updates'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { redirect } from 'next/navigation'
@@ -10,6 +11,7 @@ import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getColors } from '@/hooks/data/colors'
 import { getCategories } from '@/hooks/data/categories'
 import { getTrials } from '@/hooks/data/trials'
+import { getRecentObtained } from '@/hooks/data/obtained-eureka'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -44,6 +46,7 @@ async function UserDetails() {
   const categories = await getCategories()
   const colors = await getColors()
   const trials = await getTrials()
+  const recentObtained = user_id ? await getRecentObtained(user_id) : []
 
   return (
     <>
@@ -56,6 +59,7 @@ async function UserDetails() {
           trials={trials || []}
         />
       )}
+      {user_id && <RecentUpdates items={recentObtained || []} />}
     </>
   )
 }

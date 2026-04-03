@@ -4,10 +4,14 @@ import ThemeSwitcher from './theme-switcher'
 export default function Footer() {
   return (
     <AppBar
-      color="default"
+      color="inherit"
       component="footer"
       position="fixed"
-      sx={{ top: 'auto', bottom: 0, zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      sx={{
+        top: 'auto',
+        bottom: 0,
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
       variant="outlined"
     >
       <Toolbar>

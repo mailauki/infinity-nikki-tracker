@@ -1,7 +1,7 @@
 'use client'
-import { brown, lime, pink } from '@mui/material/colors'
-import { alpha, createTheme, PaletteColor } from '@mui/material/styles'
+import { alpha, createTheme } from '@mui/material/styles'
 import { AvatarSize } from './types/props'
+import { blueGrey } from '@mui/material/colors'
 
 declare module '@mui/material/Avatar' {
   interface AvatarOwnProps {
@@ -20,47 +20,57 @@ declare module '@mui/material/ToggleButtonGroup' {
   }
 }
 
-// declare module '@mui/material/Paper' {
-//   interface PaperOwnProps {
-//     color?: 'surface'
-//   }
-// }
+declare module '@mui/material/Paper' {
+  interface PaperOwnProps {
+    color?: 'surface'
+  }
+}
 
 declare module '@mui/material/styles' {
   interface PaletteColor {
-    lowest: string
-    lowestHover: string
-    low: string
-    lowHover: string
+    // M3 tonal roles for primary/secondary/tertiary
+    on: string
+    container: string
+    onContainer: string
+    // M3 surface roles (surface palette only)
+    dim: string
+    dimHover: string
     main: string
     mainHover: string
-    high: string
-    highHover: string
-    highest: string
-    highestHover: string
+    bright: string
+    brightHover: string
+    containerLowest: string
+    containerLowestHover: string
+    containerLow: string
+    containerLowHover: string
+    containerHover: string
+    containerHigh: string
+    containerHighHover: string
+    containerHighest: string
+    containerHighestHover: string
   }
 
   interface SurfacePaletteColorOptions {
-    lowest?: string
-    lowestHover?: string
-    low?: string
-    lowHover?: string
+    dim?: string
+    dimHover?: string
     main?: string
     mainHover?: string
-    high?: string
-    highHover?: string
-    highest?: string
-    highestHover?: string
+    bright?: string
+    brightHover?: string
+    containerLowest?: string
+    containerLowestHover?: string
+    containerLow?: string
+    containerLowHover?: string
+    container?: string
+    containerHover?: string
+    containerHigh?: string
+    containerHighHover?: string
+    containerHighest?: string
+    containerHighestHover?: string
   }
+
   interface Palette {
     surface: Palette['primary']
-    // surface: {
-    // 	lowest?: string;
-    // 	low?: string;
-    // 	main: string;
-    // 	high?: string;
-    // 	highest?: string;
-    // }
   }
 
   interface PaletteOptions {
@@ -171,63 +181,105 @@ const theme = createTheme({
     light: {
       palette: {
         primary: {
-          main: lime['900'],
+          main: '#8F4C33',
         },
         secondary: {
-          main: pink['400'],
+          main: '#77574C',
         },
+        success: {
+          main: '#695E2F',
+        },
+        error: {
+          main: '#BA1A1A',
+        },
+        info: {
+          main: blueGrey[600],
+        },
+        background: {
+          default: '#FFF8F6',
+          paper: '#FFF8F6',
+        },
+        text: {
+          primary: '#180F0C',
+          secondary: '#41332E',
+        },
+        divider: '#D8C2BB',
         surface: {
-          lowest: brown['50'],
-          lowestHover: alpha(brown['50'], 0.7),
-          low: brown['100'],
-          lowHover: alpha(brown['100'], 0.7),
-          main: brown['200'],
-          mainHover: alpha(brown['200'], 0.7),
-          high: brown['300'],
-          highHover: alpha(brown['300'], 0.7),
-          highest: brown['400'],
-          highestHover: alpha(brown['400'], 0.7),
+          // Surface Dim — darkened base (below Surface)
+          dim: '#E8D6D1',
+          dimHover: alpha('#E8D6D1', 0.7),
+          // Surface — base page/app background
+          main: '#FFF8F6',
+          mainHover: alpha('#FFF8F6', 0.7),
+          // Surface Bright — elevated base (above Surface)
+          bright: '#FFF8F6',
+          brightHover: alpha('#FFF8F6', 0.7),
+          // Surface Container Lowest → Highest
+          containerLowest: '#FFFFFF',
+          containerLowestHover: alpha('#FFFFFF', 0.7),
+          containerLow: '#FFF1EC',
+          containerLowHover: alpha('#FFF1EC', 0.7),
+          container: '#FCEAE4',
+          containerHover: alpha('#FCEAE4', 0.7),
+          containerHigh: '#F7E4DF',
+          containerHighHover: alpha('#F7E4DF', 0.7),
+          containerHighest: '#F1DFD9',
+          containerHighestHover: alpha('#F1DFD9', 0.7),
         },
       },
     },
     dark: {
       palette: {
         primary: {
-          main: lime['500'],
+          main: '#FFB59A',
         },
         secondary: {
-          main: pink['100'],
+          main: '#E7BEAF',
         },
+        success: {
+          main: '#D5C68E',
+        },
+        error: {
+          main: '#FFB4AB',
+        },
+        info: {
+          main: blueGrey[400],
+        },
+        background: {
+          default: '#1a110e',
+          paper: '#1a110e',
+        },
+        text: {
+          primary: '#f1dfd9',
+          secondary: '#d8c2bb',
+        },
+        divider: '#53433e',
         surface: {
-          lowest: brown['900'],
-          lowestHover: alpha(brown['700'], 0.7),
-          low: brown['800'],
-          lowHover: alpha(brown['600'], 0.7),
-          main: brown['700'],
-          mainHover: alpha(brown['500'], 0.7),
-          high: brown['600'],
-          highHover: alpha(brown['400'], 0.7),
-          highest: brown['500'],
-          highestHover: alpha(brown['300'], 0.7),
+          // Surface Dim — darkened base (below Surface)
+          dim: '#1A110E',
+          dimHover: alpha('#1A110E', 0.7),
+          // Surface — base page/app background
+          main: '#1A110E',
+          mainHover: alpha('#1A110E', 0.7),
+          // Surface Bright — elevated base (above Surface)
+          bright: '#423733',
+          brightHover: alpha('#423733', 0.7),
+          // Surface Container Lowest → Highest
+          containerLowest: '#140C09',
+          containerLowestHover: alpha('#140C09', 0.7),
+          containerLow: '#231A16',
+          containerLowHover: alpha('#231A16', 0.7),
+          container: '#271E1A',
+          containerHover: alpha('#271E1A', 0.7),
+          containerHigh: '#322824',
+          containerHighHover: alpha('#322824', 0.7),
+          containerHighest: '#3D322F',
+          containerHighestHover: alpha('#3D322F', 0.7),
         },
       },
     },
   },
   components: {
-    // MuiPaper: {
-    // 	styleOverrides: {
-    // 		root: {
-    // 			variants: [
-    // 				{ props: { color: 'surface', elevation: 1 },
-    //           style: { backgroundColor: brown['50'] },
-    // 				},
-    // 				{ props: { color: 'surface', elevation: 2 },
-    //           style: { backgroundColor: brown['100'] },
-    // 				},
-    // 			]
-    // 		}
-    // 	}
-    // },
     MuiCard: {
       defaultProps: {
         elevation: 3,
