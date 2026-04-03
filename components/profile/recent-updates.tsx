@@ -1,26 +1,17 @@
+'use client'
 import {
   Card,
   CardContent,
   CardHeader,
   List,
   ListItem,
+  ListItemAvatar,
   ListItemText,
   Typography,
 } from '@mui/material'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { RecentObtained } from '@/lib/types/eureka'
-import { toTitle } from '@/lib/utils'
-
-function formatDate(dateString: string) {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-
-  if (diffDays === 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
-  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
-}
+import { toTitle, formatDate } from '@/lib/utils'
 
 export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
   if (!items?.length) return null
@@ -34,17 +25,25 @@ export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
             Recently Updated
           </Typography>
         }
-        sx={{ pb: 0 }}
       />
-      <CardContent sx={{ pt: 0, '&:last-child': { pb: 1 } }}>
+      <CardContent sx={{ pt: 0 }}>
         <List disablePadding>
           {items.map((item) => (
             <ListItem key={item.id} disableGutters>
+              <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
+                <LazyAvatar
+                  alt={item.eureka_sets?.title}
+                  size="md"
+                  src={
+                    item.eureka_sets?.eureka_variants.find(
+                      (v) => v.category === item.category && v.color === item.color
+                    )?.image_url ?? undefined
+                  }
+                />
+              </ListItemAvatar>
               <ListItemText
                 primary={item.eureka_sets?.title ?? toTitle(item.eureka_set ?? '')}
-                secondary={[item.categories?.title, item.colors?.title]
-                  .filter(Boolean)
-                  .join(' — ')}
+                secondary={[item.categories?.title, item.colors?.title].filter(Boolean).join(' • ')}
                 slotProps={{
                   primary: { variant: 'body2' },
                   secondary: { variant: 'caption' },

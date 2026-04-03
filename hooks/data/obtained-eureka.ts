@@ -33,7 +33,7 @@ export const getRecentObtained = cache(async (user_id: UUID | string) => {
 			category,
 			color,
 			created_at,
-			eureka_sets ( title ),
+			eureka_sets ( title, eureka_variants ( image_url, category, color ) ),
 			categories ( title ),
 			colors ( title )
 		`

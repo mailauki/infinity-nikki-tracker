@@ -40,7 +40,10 @@ export type RecentObtained = Pick<
   Tables<'obtained_eureka'>,
   'id' | 'eureka_set' | 'category' | 'color' | 'created_at'
 > & {
-  eureka_sets: { title: string } | null
+  eureka_sets: {
+    title: string
+    eureka_variants: { image_url: string | null; category: string | null; color: string | null }[]
+  } | null
   categories: { title: string } | null
   colors: { title: string | null } | null
 }
