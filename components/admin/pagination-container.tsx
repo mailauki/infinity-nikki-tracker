@@ -95,7 +95,7 @@ export default function PaginationContainer<T>({
           </Button>
         </Stack>
       </Stack>
-      <Card>
+      <Card sx={{ borderColor: 'transparent' }}>
         <Box
           sx={{
             flex: 1,

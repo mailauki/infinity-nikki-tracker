@@ -2,7 +2,7 @@
 
 import { Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { toSlugVariant, toTitle } from '@/lib/utils'
+import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { AdminTable, Column } from './admin-table'
 import { EurekaVariantRaw } from '@/lib/types/eureka'
@@ -93,7 +93,7 @@ export function EurekaVariantTable({
       header: 'Updated',
       cell: (variant) => (
         <Typography noWrap variant="caption">
-          {variant.updated_at ? new Date(variant.updated_at).toLocaleDateString() : '—'}
+          {variant.updated_at ? formatDate(variant.updated_at) : '—'}
         </Typography>
       ),
     },

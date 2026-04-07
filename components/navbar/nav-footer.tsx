@@ -11,6 +11,7 @@ export default function Footer() {
         top: 'auto',
         bottom: 0,
         zIndex: (theme) => theme.zIndex.drawer + 1,
+        borderColor: 'transparent',
       }}
       variant="outlined"
     >

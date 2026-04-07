@@ -48,6 +48,7 @@ const smHeight = 64 * 3
 const mdHeight = 56 * 3
 
 const openedMixin = (theme: Theme): CSSObject => ({
+  borderColor: 'transparent',
   width: '100%',
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -60,6 +61,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
 })
 
 const closedMixin = (theme: Theme): CSSObject => ({
+  borderColor: 'transparent',
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -74,25 +76,26 @@ const closedMixin = (theme: Theme): CSSObject => ({
 const MainContainer = styled(Paper, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme }) => ({
-  marginLeft: 0,
   minWidth: 0,
   flex: 1,
   // Default height for small screens (portrait)
-  height: `calc(100vh - ${mdHeight}px)`,
+  height: `calc(100vh - ${mdHeight + 2}px)`,
   [theme.breakpoints.up('xs')]: {
     '@media (orientation: landscape)': {
-      height: `calc(100vh - ${xsHeight}px)`,
+      height: `calc(100vh - ${xsHeight + 2}px)`,
     },
   },
   // Large screens (sm breakpoint and up)
   [theme.breakpoints.up('sm')]: {
-    height: `calc(100vh - ${smHeight}px)`,
+    height: `calc(100vh - ${smHeight + 2}px)`,
   },
 
   overflowY: 'auto',
   overflowX: 'hidden',
   overscrollBehavior: 'auto',
-  borderRadius: 0,
+  borderRadius: '12px',
+  marginLeft: '1rem',
+  marginRight: '1rem',
 }))
 
 interface AppBarTitleProps {
@@ -129,6 +132,7 @@ const AppBar = styled(MuiAppBar, {
   borderTop: 0,
   borderLeft: 0,
   borderRight: 0,
+  borderColor: 'transparent',
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -379,11 +383,11 @@ export default function NavDrawer({
             </IconButton>
           </StyledToolbar>
 
-          <Divider />
+          {/* <Divider /> */}
 
           <NavMain items={navLinksData.navMain} open={open} onClose={handleDrawerClose} />
 
-          <Divider />
+          {/* <Divider /> */}
 
           <NavSecondary
             items={navLinksData.navSecondary.filter((item) => !item.adminOnly || isAdmin)}
@@ -396,7 +400,12 @@ export default function NavDrawer({
 
         <Box className="h-screen" component="main" sx={{ flex: 1, minWidth: 0 }}>
           <StyledToolbar />
-          <MainContainer ref={setScrollRef} elevation={0} open={open}>
+          <MainContainer
+            ref={setScrollRef}
+            elevation={0}
+            open={open}
+            sx={{ backgroundColor: 'surface.containerLowest' }}
+          >
             {children}
             {!isHome && <Toolbar />}
 
@@ -404,11 +413,12 @@ export default function NavDrawer({
               <Slide direction="up" in={isVisible}>
                 <Fab
                   aria-label="scroll back to top"
+                  color="primary"
                   size="small"
                   sx={{
                     position: 'fixed',
                     bottom: 80,
-                    right: 40,
+                    right: 50,
                   }}
                   onClick={scrollToTop}
                 >
