@@ -132,7 +132,7 @@ export default function FilterEureka() {
           top: 0,
           zIndex: 'appBar',
           backdropFilter: 'blur(8px)',
-          bgcolor: 'background.default',
+          bgcolor: 'surface.containerLowest',
           mt: -3,
           mx: -3,
         }}

@@ -79,7 +79,14 @@ export function EurekaSetTable({
         </Typography>
       ),
     },
-    { header: 'Rarity', cell: (set) => <Typography noWrap color='textSecondary' variant="caption"><RarityStars rarity={set.rarity!} /></Typography> },
+    {
+      header: 'Rarity',
+      cell: (set) => (
+        <Typography noWrap color="textSecondary" variant="caption">
+          <RarityStars rarity={set.rarity!} />
+        </Typography>
+      ),
+    },
     { header: 'Style', cell: (set) => toTitle(set.style! || '—') },
     { header: 'Label', cell: (set) => toTitle(set.label! || '—') },
     {
