@@ -2,7 +2,7 @@
 
 import { IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { toSlug } from '@/lib/utils'
+import { formatDate, toSlug } from '@/lib/utils'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { Trial } from '@/lib/types/eureka'
 import { AdminTable, Column } from './admin-table'
@@ -82,7 +82,7 @@ export function TrialTable({
       header: 'Updated At',
       cell: (trial) => (
         <Typography noWrap variant="caption">
-          {trial.updated_at ? new Date(trial.updated_at).toLocaleDateString() : '—'}
+          {trial.updated_at ? formatDate(trial.updated_at) : '—'}
         </Typography>
       ),
     },

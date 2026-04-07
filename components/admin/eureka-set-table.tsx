@@ -2,7 +2,7 @@
 
 import { Box, Chip, IconButton, Tooltip, Typography } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { toSlug, toTitle } from '@/lib/utils'
+import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { AdminTable, Column } from './admin-table'
 import { EurekaSet } from '@/lib/types/eureka'
 import { Category } from '@mui/icons-material'
@@ -79,7 +79,7 @@ export function EurekaSetTable({
         </Typography>
       ),
     },
-    { header: 'Rarity', cell: (set) => <RarityStars rarity={set.rarity!} /> },
+    { header: 'Rarity', cell: (set) => <Typography noWrap color='textSecondary' variant="caption"><RarityStars rarity={set.rarity!} /></Typography> },
     { header: 'Style', cell: (set) => toTitle(set.style! || '—') },
     { header: 'Label', cell: (set) => toTitle(set.label! || '—') },
     {
@@ -108,7 +108,7 @@ export function EurekaSetTable({
       header: 'Updated',
       cell: (set) => (
         <Typography noWrap variant="caption">
-          {set.updated_at ? new Date(set.updated_at).toLocaleDateString() : '—'}
+          {set.updated_at ? formatDate(set.updated_at) : '—'}
         </Typography>
       ),
     },

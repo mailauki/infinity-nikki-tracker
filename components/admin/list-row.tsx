@@ -8,6 +8,7 @@ import {
   Typography,
 } from '@mui/material'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
+import { formatDate } from '@/lib/utils'
 
 export default function ListRow({
   list,
@@ -54,7 +55,7 @@ export default function ListRow({
         disableTypography
         secondary={
           <Typography variant="caption">
-            {updated_at ? new Date(updated_at).toLocaleDateString() : '—'}
+            {updated_at ? formatDate(updated_at) : '—'}
           </Typography>
         }
         sx={{ textAlign: 'right', mr: 2 }}
