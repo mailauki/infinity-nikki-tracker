@@ -49,6 +49,8 @@ const mdHeight = 56 * 3
 
 const openedMixin = (theme: Theme): CSSObject => ({
   borderColor: 'transparent',
+  marginLeft: '1rem',
+  marginRight: '0.5rem',
   width: '100%',
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -62,6 +64,8 @@ const openedMixin = (theme: Theme): CSSObject => ({
 
 const closedMixin = (theme: Theme): CSSObject => ({
   borderColor: 'transparent',
+  marginLeft: '1rem',
+  marginRight: '0.5rem',
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -79,22 +83,22 @@ const MainContainer = styled(Paper, {
   minWidth: 0,
   flex: 1,
   // Default height for small screens (portrait)
-  height: `calc(100vh - ${mdHeight + 2}px)`,
+  height: `calc(100vh - ${mdHeight + 6}px)`,
   [theme.breakpoints.up('xs')]: {
     '@media (orientation: landscape)': {
-      height: `calc(100vh - ${xsHeight + 2}px)`,
+      height: `calc(100vh - ${xsHeight + 6}px)`,
     },
   },
   // Large screens (sm breakpoint and up)
   [theme.breakpoints.up('sm')]: {
-    height: `calc(100vh - ${smHeight + 2}px)`,
+    height: `calc(100vh - ${smHeight + 6}px)`,
   },
 
   overflowY: 'auto',
   overflowX: 'hidden',
   overscrollBehavior: 'auto',
   borderRadius: '12px',
-  marginLeft: '1rem',
+  marginLeft: '0.5rem',
   marginRight: '1rem',
 }))
 
@@ -203,7 +207,7 @@ const allLinks = [
   ...navLinksData.navExtra,
 ]
 
-export default function NavDrawer({
+export default function NavContainer({
   children,
   isAdmin = false,
   user,
@@ -383,11 +387,9 @@ export default function NavDrawer({
             </IconButton>
           </StyledToolbar>
 
-          {/* <Divider /> */}
-
           <NavMain items={navLinksData.navMain} open={open} onClose={handleDrawerClose} />
 
-          {/* <Divider /> */}
+          <Divider />
 
           <NavSecondary
             items={navLinksData.navSecondary.filter((item) => !item.adminOnly || isAdmin)}
