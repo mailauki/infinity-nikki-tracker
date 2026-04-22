@@ -202,8 +202,8 @@ export default function HelpPage() {
                   <ListItemText
                     primary={
                       <Typography color="textSecondary" variant="body2">
-                        Tap <strong>Add to Home screen</strong> or{' '}
-                        <strong>Install app</strong> if shown.
+                        Tap <strong>Add to Home screen</strong> or <strong>Install app</strong> if
+                        shown.
                       </Typography>
                     }
                   />
