@@ -15,11 +15,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn format && yarn lint:fix"
+            "command": "cd /home/user/infinity-nikki-tracker && yarn format && yarn lint:fix"
           },
           {
             "type": "command",
-            "command": "cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn tsc --noEmit 2>&1 | head -20"
+            "command": "cd /home/user/infinity-nikki-tracker && yarn tsc --noEmit 2>&1 | head -20"
           }
         ]
       }

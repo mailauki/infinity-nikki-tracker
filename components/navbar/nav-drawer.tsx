@@ -10,7 +10,16 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import Stack from '@mui/material/Stack'
-import { Button, Container, Fab, Paper, Slide, Tooltip, Typography } from '@mui/material'
+import {
+  Button,
+  CircularProgress,
+  Container,
+  Fab,
+  Paper,
+  Slide,
+  Tooltip,
+  Typography,
+} from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import { navLinksData } from '@/lib/nav-links'
@@ -20,7 +29,7 @@ import { NavExtra } from './nav-extra'
 import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Edit, EditOff, FilterList, KeyboardArrowUp, MenuOpen } from '@mui/icons-material'
 import { toTitle } from '@/lib/utils'
 import FilterMenu from './filter-menu'
@@ -43,6 +52,7 @@ function ProfileEditButton() {
 }
 
 const DRAWER_WIDTH = 240
+const PULL_THRESHOLD = 80
 const xsHeight = 48 * 3 // based on number of toolbars and toolbar minHeight
 const smHeight = 64 * 3
 const mdHeight = 56 * 3
@@ -213,6 +223,7 @@ export default function NavDrawer({
   user: JwtPayload
 }>) {
   const pathname = usePathname()
+  const router = useRouter()
   const theme = useTheme()
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
@@ -243,7 +254,12 @@ export default function NavDrawer({
   const isLoggedIn = !!userId
 
   const [isVisible, setIsVisible] = React.useState(false)
+  const [pullDistance, setPullDistance] = React.useState(0)
+  const [isRefreshing, setIsRefreshing] = React.useState(false)
   const scrollRef = React.useRef<HTMLDivElement>(null)
+  const touchStartYRef = React.useRef(0)
+  const isPullingRef = React.useRef(false)
+  const pullDistanceRef = React.useRef(0)
 
   const scrollToTop = () => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
@@ -254,18 +270,76 @@ export default function NavDrawer({
     setIsVisible(scrollRef.current.scrollTop > 300)
   }, [])
 
+  const handleTouchStart = React.useCallback((e: TouchEvent) => {
+    if (!scrollRef.current || scrollRef.current.scrollTop > 0) return
+    touchStartYRef.current = e.touches[0].clientY
+    isPullingRef.current = true
+  }, [])
+
+  const handleTouchMove = React.useCallback((e: TouchEvent) => {
+    if (!isPullingRef.current || !scrollRef.current) return
+    if (scrollRef.current.scrollTop > 0) {
+      isPullingRef.current = false
+      return
+    }
+    const distance = e.touches[0].clientY - touchStartYRef.current
+    if (distance > 0) {
+      e.preventDefault()
+      const capped = Math.min(distance, PULL_THRESHOLD * 1.5)
+      pullDistanceRef.current = capped
+      setPullDistance(capped)
+    }
+  }, [])
+
+  const handleTouchCancel = React.useCallback(() => {
+    isPullingRef.current = false
+    pullDistanceRef.current = 0
+    setPullDistance(0)
+  }, [])
+
+  const handleTouchEnd = React.useCallback(() => {
+    if (!isPullingRef.current) return
+    isPullingRef.current = false
+    if (pullDistanceRef.current >= PULL_THRESHOLD) {
+      setIsRefreshing(true)
+      pullDistanceRef.current = 0
+      setPullDistance(0)
+      router.refresh()
+      setTimeout(() => setIsRefreshing(false), 1500)
+    } else {
+      pullDistanceRef.current = 0
+      setPullDistance(0)
+    }
+  }, [router])
+
   const setScrollRef = React.useCallback(
     (node: HTMLDivElement | null) => {
-      scrollRef.current?.removeEventListener('scroll', handleScroll)
+      if (scrollRef.current) {
+        scrollRef.current.removeEventListener('scroll', handleScroll)
+        scrollRef.current.removeEventListener('touchstart', handleTouchStart)
+        scrollRef.current.removeEventListener('touchmove', handleTouchMove)
+        scrollRef.current.removeEventListener('touchend', handleTouchEnd)
+        scrollRef.current.removeEventListener('touchcancel', handleTouchCancel)
+      }
       scrollRef.current = node
-      node?.addEventListener('scroll', handleScroll)
+      if (node) {
+        node.addEventListener('scroll', handleScroll)
+        node.addEventListener('touchstart', handleTouchStart, { passive: true })
+        node.addEventListener('touchmove', handleTouchMove, { passive: false })
+        node.addEventListener('touchend', handleTouchEnd)
+        node.addEventListener('touchcancel', handleTouchCancel)
+      }
     },
-    [handleScroll]
+    [handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd, handleTouchCancel]
   )
 
   React.useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' })
     setIsVisible(false)
+    isPullingRef.current = false
+    pullDistanceRef.current = 0
+    setPullDistance(0)
+    setIsRefreshing(false)
   }, [pathname])
 
   const content = (
@@ -406,6 +480,23 @@ export default function NavDrawer({
             open={open}
             sx={{ backgroundColor: 'surface.containerLowest' }}
           >
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: isRefreshing ? 56 : pullDistance,
+                transition: isRefreshing || pullDistance === 0 ? 'height 0.3s ease' : 'none',
+                overflow: 'hidden',
+              }}
+            >
+              <CircularProgress
+                size={24}
+                sx={{ opacity: isRefreshing ? 1 : Math.min(pullDistance / PULL_THRESHOLD, 1) }}
+                value={Math.min((pullDistance / PULL_THRESHOLD) * 100, 100)}
+                variant={isRefreshing ? 'indeterminate' : 'determinate'}
+              />
+            </Box>
             {children}
             {!isHome && <Toolbar />}
 
