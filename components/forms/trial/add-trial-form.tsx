@@ -20,6 +20,7 @@ export default function AddTrialForm() {
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
+  const [realm, setRealm] = useState('')
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -40,6 +41,7 @@ export default function AddTrialForm() {
       {
         title: title.trim(),
         slug: slug.trim(),
+        realm: realm.trim() || null,
         image_url: imageUrl || null,
       },
     ])
@@ -85,6 +87,12 @@ export default function AddTrialForm() {
           }}
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
+        />
+
+        <TextField
+          label="Realm"
+          value={realm}
+          onChange={(e) => setRealm(e.target.value)}
         />
 
         <Stack spacing={0.5}>

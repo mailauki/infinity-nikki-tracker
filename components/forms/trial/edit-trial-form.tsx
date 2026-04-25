@@ -22,6 +22,7 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
   const backUrl = back ?? '/dashboard'
   const [title, setTitle] = useState(trial.title)
   const [slug, setSlug] = useState(trial.slug ?? toSlug(trial.title))
+  const [realm, setRealm] = useState(trial.realm ?? '')
   const [imageUrl, setImageUrl] = useState<string | null>(trial.image_url)
   const [editSlug, setEditSlug] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -38,6 +39,7 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
       .update({
         title: title.trim(),
         slug: slug.trim(),
+        realm: realm.trim() || null,
         image_url: imageUrl || null,
         updated_at: new Date().toISOString(),
       })
@@ -84,6 +86,12 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
           }}
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
+        />
+
+        <TextField
+          label="Realm"
+          value={realm}
+          onChange={(e) => setRealm(e.target.value)}
         />
 
         <Stack spacing={0.5}>
