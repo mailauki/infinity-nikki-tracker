@@ -20,13 +20,14 @@ import { NavExtra } from './nav-extra'
 import Link from 'next/link'
 import Footer from './nav-footer'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Edit, EditOff, FilterList, KeyboardArrowUp, MenuOpen } from '@mui/icons-material'
 import { toTitle } from '@/lib/utils'
 import FilterMenu from './filter-menu'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import ProfileEditProvider from '@/components/profile/profile-edit-provider'
 import { useProfileEdit } from '@/components/profile/profile-context'
+import PullToRefresh from 'material-ui-pull-to-refresh'
 
 function ProfileEditButton() {
   const context = useProfileEdit()
@@ -221,6 +222,8 @@ export default function NavContainer({
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
 
+  const router = useRouter()
+
   const [open, setOpen] = React.useState(false)
 
   const handleDrawerOpen = () => {
@@ -408,8 +411,10 @@ export default function NavContainer({
             open={open}
             sx={{ backgroundColor: 'surface.containerLowest' }}
           >
-            {children}
-            {!isHome && <Toolbar />}
+            <PullToRefresh onRefresh={() => router.refresh()}>
+              {children}
+              {!isHome && <Toolbar />}
+            </PullToRefresh>
 
             <Tooltip placement="top-end" title="Back to Top">
               <Slide direction="up" in={isVisible}>
