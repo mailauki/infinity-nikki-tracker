@@ -58,7 +58,7 @@ export default function CategoryToggle({
                   sx={{
                     backgroundColor: 'transparent',
                     filter,
-                    '&:hover': { filter: isDarkMode ? 'none' : 'brightness(40%)' },
+                    '&:hover': { filter: isDarkMode || isSelected ? 'none' : 'brightness(40%)' },
                   }}
                   variant="rounded"
                 >
