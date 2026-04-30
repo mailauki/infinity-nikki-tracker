@@ -68,4 +68,7 @@ export type Style = Pick<Tables<'styles'>, 'slug' | 'title'>
 
 export type Label = Pick<Tables<'labels'>, 'slug' | 'title'>
 
-export type Trial = Pick<Tables<'trials'>, 'id' | 'slug' | 'title' | 'image_url' | 'realm' | 'updated_at'>
+export type Trial = Pick<
+  Tables<'trials'>,
+  'id' | 'slug' | 'title' | 'image_url' | 'realm' | 'updated_at'
+>

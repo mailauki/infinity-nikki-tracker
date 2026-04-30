@@ -97,7 +97,7 @@ export default function FeatureRequestForm({ onClose }: FeatureRequestFormProps)
         <Box>
           <Button component="label" size="small" startIcon={<AttachFileIcon />} variant="outlined">
             Add screenshots
-            <input accept="image/*" hidden multiple type="file" onChange={handleFileChange} />
+            <input hidden multiple accept="image/*" type="file" onChange={handleFileChange} />
           </Button>
           {screenshots.length > 0 && (
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
