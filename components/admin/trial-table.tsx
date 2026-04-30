@@ -71,18 +71,18 @@ export function TrialTable({
       ),
     },
     {
-      header: 'Realm',
-      cell: (trial) => (
-        <Typography noWrap variant="body2">
-          {trial.realm ?? '—'}
-        </Typography>
-      ),
-    },
-    {
       header: 'Slug',
       cell: (trial) => (
         <Typography noWrap fontFamily="monospace" variant="caption">
           {trial.slug}
+        </Typography>
+      ),
+    },
+    {
+      header: 'Realm',
+      cell: (trial) => (
+        <Typography noWrap variant="body2">
+          {trial.realm ?? '—'}
         </Typography>
       ),
     },
