@@ -318,6 +318,7 @@ export type Database = {
           created_at: string
           id: number
           image_url: string | null
+          realm: string | null
           slug: string
           title: string
           updated_at: string | null
@@ -326,6 +327,7 @@ export type Database = {
           created_at?: string
           id?: number
           image_url?: string | null
+          realm?: string | null
           slug: string
           title: string
           updated_at?: string | null
@@ -334,6 +336,7 @@ export type Database = {
           created_at?: string
           id?: number
           image_url?: string | null
+          realm?: string | null
           slug?: string
           title?: string
           updated_at?: string | null
