@@ -88,11 +88,7 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
           onChange={(e) => setSlug(e.target.value)}
         />
 
-        <TextField
-          label="Realm"
-          value={realm}
-          onChange={(e) => setRealm(e.target.value)}
-        />
+        <TextField label="Realm" value={realm} onChange={(e) => setRealm(e.target.value)} />
 
         <Stack spacing={0.5}>
           <FormLabel>Image</FormLabel>

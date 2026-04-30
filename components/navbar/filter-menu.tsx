@@ -4,14 +4,17 @@ import * as React from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Menu from '@mui/material/Menu'
 import {
+  Button,
+  Divider,
   IconButton,
   ListItem,
   SelectChangeEvent,
+  Stack,
   Toolbar,
   Tooltip,
   Typography,
 } from '@mui/material'
-import { FilterList } from '@mui/icons-material'
+import { Close, FilterList } from '@mui/icons-material'
 
 import { useEurekaData } from '../eureka/eureka-context'
 import { applyFilterParams } from '@/lib/filter-params'
@@ -22,7 +25,6 @@ import CategoryToggle from '../eureka/filter/category-toggle'
 import SortColorToggle from '../eureka/filter/sort-color-toggle'
 import SortEurekaToggle from '../eureka/filter/sort-eureka-toggle'
 import EurekaSelect from '../eureka/filter/eureka-select'
-import ClearFiltersButton from '../eureka/filter/clear-filters-button'
 import RarityToggle from '../eureka/filter/rarity-toggle'
 
 export default function FilterMenu() {
@@ -42,6 +44,14 @@ export default function FilterMenu() {
   const showByColor = searchParams.get('showByColor') === 'true'
   const selectedColor = searchParams.get('color')
   const selectedRarities = searchParams.get('rarity')?.split(',').map(Number).filter(Boolean) ?? []
+
+  React.useEffect(() => {
+    if (isLoggedIn && !searchParams.has('filter')) {
+      router.replace(applyFilterParams(pathname, searchParams, { filter: 'missing' }), {
+        scroll: false,
+      })
+    }
+  }, [isLoggedIn]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function push(updates: Record<string, string | null>) {
     router.push(applyFilterParams(pathname, searchParams, updates), { scroll: false })
@@ -127,17 +137,13 @@ export default function FilterMenu() {
         onClose={() => setAnchorEl(null)}
       >
         <Toolbar disableGutters sx={{ px: 2 }}>
-          <Typography variant="subtitle2">Filter Eureka</Typography>
+          <Stack sx={{ flex: 1 }}>
+            <Typography variant="subtitle2">Filter Eureka</Typography>
+          </Stack>
 
-          <ClearFiltersButton
-            selectedCategory={selectedCategory}
-            selectedColor={selectedColor}
-            selectedEurekaSet={selectedEurekaSet}
-            selectedObtainedFilter={selectedObtainedFilter}
-            selectedRarities={selectedRarities}
-            showByColor={showByColor}
-            onClearFilters={handleClearFilters}
-          />
+          <IconButton aria-label="Close filter menu" onClick={() => setAnchorEl(null)}>
+            <Close />
+          </IconButton>
         </Toolbar>
         <ListItem sx={{ gap: 1 }}>
           <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={handleGroupBySetChange} />
@@ -180,6 +186,24 @@ export default function FilterMenu() {
         </ListItem>
         <ListItem>
           <RarityToggle selectedRarities={selectedRarities} onRarityChange={handleRarityChange} />
+        </ListItem>
+        <Divider sx={{ mx: 2, mt: 2 }} />
+        <ListItem>
+          <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
+            {(selectedEurekaSet ||
+              selectedCategory ||
+              selectedObtainedFilter ||
+              selectedColor ||
+              selectedRarities.length > 0 ||
+              showByColor) && (
+              <Button color="secondary" variant="outlined" onClick={handleClearFilters}>
+                Clear all
+              </Button>
+            )}
+            <Button variant="contained" onClick={() => setAnchorEl(null)}>
+              Apply
+            </Button>
+          </Stack>
         </ListItem>
       </Menu>
     </div>

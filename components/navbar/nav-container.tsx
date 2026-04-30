@@ -10,7 +10,16 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import Stack from '@mui/material/Stack'
-import { Button, Container, Fab, Paper, Slide, Tooltip, Typography } from '@mui/material'
+import {
+  Button,
+  CircularProgress,
+  Container,
+  Fab,
+  Paper,
+  Slide,
+  Tooltip,
+  Typography,
+} from '@mui/material'
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
 import { navLinksData } from '@/lib/nav-links'
@@ -27,7 +36,6 @@ import FilterMenu from './filter-menu'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import ProfileEditProvider from '@/components/profile/profile-edit-provider'
 import { useProfileEdit } from '@/components/profile/profile-context'
-import PullToRefresh from 'material-ui-pull-to-refresh'
 
 function ProfileEditButton() {
   const context = useProfileEdit()
@@ -252,6 +260,39 @@ export default function NavContainer({
   const [isVisible, setIsVisible] = React.useState(false)
   const scrollRef = React.useRef<HTMLDivElement>(null)
 
+  const pullStartY = React.useRef(0)
+  const [pullDistance, setPullDistance] = React.useState(0)
+  const [isRefreshing, setIsRefreshing] = React.useState(false)
+  const PULL_THRESHOLD = 80
+
+  const handleTouchStart = React.useCallback((e: TouchEvent) => {
+    if (scrollRef.current && scrollRef.current.scrollTop === 0) {
+      pullStartY.current = e.touches[0].clientY
+    } else {
+      pullStartY.current = 0
+    }
+  }, [])
+
+  const handleTouchMove = React.useCallback((e: TouchEvent) => {
+    if (!pullStartY.current) return
+    const delta = e.touches[0].clientY - pullStartY.current
+    if (delta > 0) setPullDistance(Math.min(delta * 0.5, PULL_THRESHOLD))
+  }, [])
+
+  const handleTouchEnd = React.useCallback(() => {
+    if (pullDistance >= PULL_THRESHOLD && !isRefreshing) {
+      setIsRefreshing(true)
+      router.refresh()
+      setTimeout(() => {
+        setIsRefreshing(false)
+        setPullDistance(0)
+      }, 1000)
+    } else {
+      setPullDistance(0)
+    }
+    pullStartY.current = 0
+  }, [pullDistance, isRefreshing, router])
+
   const scrollToTop = () => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -264,10 +305,16 @@ export default function NavContainer({
   const setScrollRef = React.useCallback(
     (node: HTMLDivElement | null) => {
       scrollRef.current?.removeEventListener('scroll', handleScroll)
+      scrollRef.current?.removeEventListener('touchstart', handleTouchStart)
+      scrollRef.current?.removeEventListener('touchmove', handleTouchMove)
+      scrollRef.current?.removeEventListener('touchend', handleTouchEnd)
       scrollRef.current = node
       node?.addEventListener('scroll', handleScroll)
+      node?.addEventListener('touchstart', handleTouchStart, { passive: true })
+      node?.addEventListener('touchmove', handleTouchMove, { passive: true })
+      node?.addEventListener('touchend', handleTouchEnd)
     },
-    [handleScroll]
+    [handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd]
   )
 
   React.useEffect(() => {
@@ -411,10 +458,34 @@ export default function NavContainer({
             open={open}
             sx={{ backgroundColor: 'surface.containerLowest' }}
           >
-            <PullToRefresh onRefresh={() => router.refresh()}>
+            <Slide direction="down" in={pullDistance > 0 || isRefreshing}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  pt: 1,
+                  pb: 0.5,
+                  transform: `translateY(${pullDistance}px)`,
+                  transition: pullDistance === 0 ? 'transform 0.3s ease' : 'none',
+                }}
+              >
+                <CircularProgress
+                  size={24}
+                  sx={{ opacity: isRefreshing ? 1 : pullDistance / 80 }}
+                  value={isRefreshing ? undefined : (pullDistance / 80) * 100}
+                  variant={isRefreshing ? 'indeterminate' : 'determinate'}
+                />
+              </Box>
+            </Slide>
+            <Box
+              sx={{
+                transform: `translateY(${pullDistance}px)`,
+                transition: pullDistance === 0 ? 'transform 0.3s ease' : 'none',
+              }}
+            >
               {children}
               {!isHome && <Toolbar />}
-            </PullToRefresh>
+            </Box>
 
             <Tooltip placement="top-end" title="Back to Top">
               <Slide direction="up" in={isVisible}>
