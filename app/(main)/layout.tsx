@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import NavDrawer from '@/components/navbar/nav-drawer'
+import NavContainer from '@/components/navbar/nav-container'
 import NavSkeleton from '@/components/navbar/nav-skeleton'
 import { getUserClaims, getUserRole } from '@/hooks/user'
 
@@ -10,12 +10,12 @@ export default async function MainLayout({
 }>) {
   return (
     <Suspense fallback={<NavSkeleton />}>
-      <NavContainer>{children}</NavContainer>
+      <NavigationContainer>{children}</NavigationContainer>
     </Suspense>
   )
 }
 
-async function NavContainer({
+async function NavigationContainer({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -24,8 +24,8 @@ async function NavContainer({
   const user = await getUserClaims()
 
   return (
-    <NavDrawer isAdmin={role === 'admin'} user={user!}>
+    <NavContainer isAdmin={role === 'admin'} user={user!}>
       {children}
-    </NavDrawer>
+    </NavContainer>
   )
 }
