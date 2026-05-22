@@ -14,6 +14,10 @@ interface EurekaDataContextValue {
   isError: boolean
   isObtainedError: boolean
   userId: string | null
+  groupBySet: boolean
+  showByColor: boolean
+  onGroupBySetChange: () => void
+  onShowByColorChange: () => void
 }
 
 export const EurekaDataContext = createContext<EurekaDataContextValue>({
@@ -26,6 +30,10 @@ export const EurekaDataContext = createContext<EurekaDataContextValue>({
   isError: false,
   isObtainedError: false,
   userId: null,
+  groupBySet: true,
+  showByColor: false,
+  onGroupBySetChange: () => {},
+  onShowByColorChange: () => {},
 })
 
 export function useEurekaData() {

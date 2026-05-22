@@ -4,6 +4,8 @@ import { StatCard } from '@/components/admin/stat-card'
 import { DashboardTabs } from '@/components/admin/dashboard-tabs'
 import { getAdminData } from '@/hooks/data/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
+import { getUserID } from '@/hooks/user'
+import { getPreferences, DEFAULT_PREFERENCES } from '@/hooks/data/preferences'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -19,8 +21,14 @@ export default function DashboardPage() {
 }
 
 async function AdminDashboard() {
-  const eurekaSets = await getEurekaSets()
-  const { eurekaVariants, trials } = await getAdminData()
+  const [eurekaSets, { eurekaVariants, trials }, user_id] = await Promise.all([
+    getEurekaSets(),
+    getAdminData(),
+    getUserID(),
+  ])
+
+  const prefs = user_id ? await getPreferences(user_id) : DEFAULT_PREFERENCES
+  const defaultView = prefs.dashboard_view as 'list' | 'table'
 
   return (
     <>
@@ -44,6 +52,7 @@ async function AdminDashboard() {
       </Container>
 
       <DashboardTabs
+        defaultView={defaultView}
         eurekaSets={eurekaSets ?? []}
         eurekaVariants={eurekaVariants ?? []}
         trials={trials ?? []}

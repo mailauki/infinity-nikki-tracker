@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, Color, EurekaSet, ObtainedEureka, Trial } from '@/lib/types/eureka'
+import { Category, Color, EurekaSet, ObtainedEureka, Trial, UserPreferences } from '@/lib/types/eureka'
+import { updateGroupBySet, updateShowByColor } from '@/app/actions/preferences'
+import { DEFAULT_PREFERENCES } from '@/hooks/data/preferences'
 
 import { EurekaDataContext } from './eureka-context'
 
@@ -33,6 +35,9 @@ export default function EurekaDataProvider({
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [isObtainedError, setIsObtainedError] = useState(false)
+  const [groupBySet, setGroupBySet] = useState<boolean>(DEFAULT_PREFERENCES.group_by_set)
+  const [showByColor, setShowByColor] = useState<boolean>(DEFAULT_PREFERENCES.show_by_color)
+  const [, startTransition] = useTransition()
 
   useEffect(() => {
     Promise.all([
@@ -54,6 +59,28 @@ export default function EurekaDataProvider({
         setIsLoading(false)
       })
   }, [])
+
+  useEffect(() => {
+    if (!isLoggedIn) return
+    fetchJson<UserPreferences>('/api/preferences')
+      .then((prefs) => {
+        setGroupBySet(prefs.group_by_set)
+        setShowByColor(prefs.show_by_color)
+      })
+      .catch(() => {})
+  }, [isLoggedIn])
+
+  const handleGroupBySetChange = () => {
+    const next = !groupBySet
+    setGroupBySet(next)
+    if (isLoggedIn) startTransition(() => updateGroupBySet(next))
+  }
+
+  const handleShowByColorChange = () => {
+    const next = !showByColor
+    setShowByColor(next)
+    if (isLoggedIn) startTransition(() => updateShowByColor(next))
+  }
 
   useEffect(() => {
     if (!isLoggedIn) return
@@ -117,6 +144,10 @@ export default function EurekaDataProvider({
         isError,
         isObtainedError,
         userId,
+        groupBySet,
+        showByColor,
+        onGroupBySetChange: handleGroupBySetChange,
+        onShowByColorChange: handleShowByColorChange,
       }}
     >
       {children}
