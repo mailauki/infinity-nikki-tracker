@@ -30,6 +30,7 @@ async function AdminDashboard() {
 
   const prefs = user_id ? await getPreferences(user_id) : DEFAULT_PREFERENCES
   const defaultView = prefs.dashboard_view as 'list' | 'table'
+  const defaultTab = prefs.dashboard_tab as 'eureka-sets' | 'eureka-variants' | 'trials'
 
   return (
     <>
@@ -53,6 +54,7 @@ async function AdminDashboard() {
       </Container>
 
       <DashboardTabs
+        defaultTab={defaultTab}
         defaultView={defaultView}
         eurekaSets={eurekaSets ?? []}
         eurekaVariants={eurekaVariants ?? []}

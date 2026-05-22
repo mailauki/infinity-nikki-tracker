@@ -19,6 +19,7 @@ import { Close, FilterList } from '@mui/icons-material'
 import { useEurekaData } from '../eureka/eureka-context'
 import { applyFilterParams } from '@/lib/filter-params'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
+import { updateEurekaFilters } from '@/app/actions/preferences'
 import ObtainedToggle from '../eureka/filter/obtained-toggle'
 import ColorSelect from '../eureka/filter/color-select'
 import CategoryToggle from '../eureka/filter/category-toggle'
@@ -36,6 +37,7 @@ export default function FilterMenu() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
+  const [, startTransition] = React.useTransition()
 
   const selectedEurekaSet = searchParams.get('set')
   const selectedCategory = searchParams.get('category') as CategoryFilter | null
@@ -55,8 +57,22 @@ export default function FilterMenu() {
     router.push(applyFilterParams(pathname, searchParams, updates), { scroll: false })
   }
 
+  function saveFilters(updates: Record<string, string | null>) {
+    if (!isLoggedIn) return
+    const merged = {
+      eureka_set_filter: updates.set !== undefined ? updates.set : selectedEurekaSet,
+      eureka_category: updates.category !== undefined ? updates.category : selectedCategory,
+      eureka_obtained_filter: updates.filter !== undefined ? updates.filter : selectedObtainedFilter,
+      eureka_color: updates.color !== undefined ? updates.color : selectedColor,
+      eureka_rarity: updates.rarity !== undefined ? updates.rarity : (selectedRarities.length ? selectedRarities.join(',') : null),
+    }
+    startTransition(() => updateEurekaFilters(merged))
+  }
+
   const handleEurekaSetChange = (event: SelectChangeEvent) => {
-    push({ set: event.target.value || null })
+    const val = event.target.value || null
+    push({ set: val })
+    saveFilters({ set: val })
   }
 
   const handleCategoryChange = (
@@ -64,6 +80,7 @@ export default function FilterMenu() {
     newCategory: CategoryFilter | null
   ) => {
     push({ category: newCategory })
+    saveFilters({ category: newCategory })
   }
 
   const handleObtainedFilterChange = (
@@ -71,25 +88,42 @@ export default function FilterMenu() {
     newFilter: ObtainedFilter | null
   ) => {
     push({ filter: newFilter })
+    saveFilters({ filter: newFilter })
   }
 
   const handleShowByColorChange = () => {
     if (!showByColor) {
       push({ category: null, filter: null, color: null })
+      saveFilters({ category: null, filter: null, color: null })
     }
     onShowByColorChange()
   }
 
   const handleColorChange = (event: SelectChangeEvent) => {
-    push({ color: event.target.value || null })
+    const val = event.target.value || null
+    push({ color: val })
+    saveFilters({ color: val })
   }
 
   const handleRarityChange = (_event: React.MouseEvent<HTMLElement>, value: number[]) => {
-    push({ rarity: value.length ? value.join(',') : null })
+    const val = value.length ? value.join(',') : null
+    push({ rarity: val })
+    saveFilters({ rarity: val })
   }
 
   const handleClearFilters = () => {
     router.push(pathname, { scroll: false })
+    if (isLoggedIn) {
+      startTransition(() =>
+        updateEurekaFilters({
+          eureka_set_filter: null,
+          eureka_category: null,
+          eureka_obtained_filter: null,
+          eureka_color: null,
+          eureka_rarity: null,
+        })
+      )
+    }
   }
 
   return (

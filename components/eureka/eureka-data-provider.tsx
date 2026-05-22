@@ -1,12 +1,14 @@
 'use client'
 
 import { useEffect, useState, useTransition } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
 import { Category, Color, EurekaSet, ObtainedEureka, Trial, UserPreferences } from '@/lib/types/eureka'
 import { updateGroupBySet, updateShowByColor } from '@/app/actions/preferences'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
+import { applyFilterParams } from '@/lib/filter-params'
 
 import { EurekaDataContext } from './eureka-context'
 
@@ -27,6 +29,10 @@ export default function EurekaDataProvider({
   userId: string | null
   children: React.ReactNode
 }) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+
   const [eurekaSets, setEurekaSets] = useState<EurekaSet[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [colors, setColors] = useState<Color[]>([])
@@ -37,6 +43,7 @@ export default function EurekaDataProvider({
   const [isObtainedError, setIsObtainedError] = useState(false)
   const [groupBySet, setGroupBySet] = useState<boolean>(DEFAULT_PREFERENCES.group_by_set)
   const [showByColor, setShowByColor] = useState<boolean>(DEFAULT_PREFERENCES.show_by_color)
+  const [prefsRestored, setPrefsRestored] = useState(false)
   const [, startTransition] = useTransition()
 
   useEffect(() => {
@@ -66,9 +73,26 @@ export default function EurekaDataProvider({
       .then((prefs) => {
         setGroupBySet(prefs.group_by_set)
         setShowByColor(prefs.show_by_color)
+
+        const FILTER_KEYS = ['set', 'category', 'filter', 'color', 'rarity']
+        const hasAnyFilterParam = FILTER_KEYS.some((k) => searchParams.has(k))
+        if (!hasAnyFilterParam) {
+          const updates: Record<string, string | null> = {
+            set: prefs.eureka_set_filter ?? null,
+            category: prefs.eureka_category ?? null,
+            filter: prefs.eureka_obtained_filter ?? null,
+            color: prefs.eureka_color ?? null,
+            rarity: prefs.eureka_rarity ?? null,
+          }
+          const hasAnySavedFilter = Object.values(updates).some((v) => v !== null)
+          if (hasAnySavedFilter) {
+            router.replace(applyFilterParams(pathname, searchParams, updates), { scroll: false })
+          }
+        }
+        setPrefsRestored(true)
       })
-      .catch(() => {})
-  }, [isLoggedIn])
+      .catch(() => setPrefsRestored(true))
+  }, [isLoggedIn]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleGroupBySetChange = () => {
     const next = !groupBySet

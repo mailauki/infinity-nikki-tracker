@@ -75,5 +75,13 @@ export type Trial = Pick<
 
 export type UserPreferences = Pick<
   Tables<'user_preferences'>,
-  'group_by_set' | 'show_by_color' | 'dashboard_view'
+  | 'group_by_set'
+  | 'show_by_color'
+  | 'dashboard_view'
+  | 'dashboard_tab'
+  | 'eureka_set_filter'
+  | 'eureka_category'
+  | 'eureka_obtained_filter'
+  | 'eureka_color'
+  | 'eureka_rarity'
 >
