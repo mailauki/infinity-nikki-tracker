@@ -5,7 +5,8 @@ import { DashboardTabs } from '@/components/admin/dashboard-tabs'
 import { getAdminData } from '@/hooks/data/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getUserID } from '@/hooks/user'
-import { getPreferences, DEFAULT_PREFERENCES } from '@/hooks/data/preferences'
+import { getPreferences } from '@/hooks/data/preferences'
+import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {

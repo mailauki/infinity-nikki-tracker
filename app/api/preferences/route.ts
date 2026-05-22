@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { createClient } from '@/lib/supabase/server'
-import { DEFAULT_PREFERENCES } from '@/hooks/data/preferences'
+import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 
 export async function GET() {
   const supabase = await createClient()

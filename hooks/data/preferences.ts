@@ -2,12 +2,7 @@ import { cache } from 'react'
 
 import { createClient } from '../../lib/supabase/server'
 import { UserPreferences } from '../../lib/types/eureka'
-
-export const DEFAULT_PREFERENCES: UserPreferences = {
-  group_by_set: true,
-  show_by_color: false,
-  dashboard_view: 'table',
-}
+import { DEFAULT_PREFERENCES } from '../../lib/preferences'
 
 export const getPreferences = cache(async (user_id: string): Promise<UserPreferences> => {
   const supabase = await createClient()
