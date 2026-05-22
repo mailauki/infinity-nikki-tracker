@@ -31,7 +31,7 @@ export default function FilterMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-  const { eurekaSets, categories, colors, isLoggedIn } = useEurekaData()
+  const { eurekaSets, categories, colors, isLoggedIn, groupBySet, showByColor, onGroupBySetChange, onShowByColorChange } = useEurekaData()
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -40,8 +40,6 @@ export default function FilterMenu() {
   const selectedEurekaSet = searchParams.get('set')
   const selectedCategory = searchParams.get('category') as CategoryFilter | null
   const selectedObtainedFilter = searchParams.get('filter') as ObtainedFilter | null
-  const groupBySet = searchParams.get('groupBySet') !== 'false'
-  const showByColor = searchParams.get('showByColor') === 'true'
   const selectedColor = searchParams.get('color')
   const selectedRarities = searchParams.get('rarity')?.split(',').map(Number).filter(Boolean) ?? []
 
@@ -75,16 +73,11 @@ export default function FilterMenu() {
     push({ filter: newFilter })
   }
 
-  const handleGroupBySetChange = () => {
-    push({ groupBySet: groupBySet ? 'false' : null })
-  }
-
   const handleShowByColorChange = () => {
     if (!showByColor) {
-      push({ showByColor: 'true', category: null, filter: null, color: null })
-    } else {
-      push({ showByColor: null })
+      push({ category: null, filter: null, color: null })
     }
+    onShowByColorChange()
   }
 
   const handleColorChange = (event: SelectChangeEvent) => {
@@ -146,7 +139,7 @@ export default function FilterMenu() {
           </IconButton>
         </Toolbar>
         <ListItem sx={{ gap: 1 }}>
-          <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={handleGroupBySetChange} />
+          <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={onGroupBySetChange} />
 
           <EurekaSelect
             eurekaSets={eurekaSets}
@@ -194,8 +187,7 @@ export default function FilterMenu() {
               selectedCategory ||
               selectedObtainedFilter ||
               selectedColor ||
-              selectedRarities.length > 0 ||
-              showByColor) && (
+              selectedRarities.length > 0) && (
               <Button color="secondary" variant="outlined" onClick={handleClearFilters}>
                 Clear all
               </Button>

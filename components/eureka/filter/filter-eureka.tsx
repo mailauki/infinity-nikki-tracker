@@ -48,7 +48,7 @@ function VariantCardSkeleton() {
 }
 
 export default function FilterEureka() {
-  const { eurekaSets, isLoggedIn, isLoading, isError, isObtainedError } = useEurekaData()
+  const { eurekaSets, isLoggedIn, isLoading, isError, isObtainedError, groupBySet, showByColor } = useEurekaData()
 
   const searchParams = useSearchParams()
 
@@ -91,8 +91,6 @@ export default function FilterEureka() {
   const selectedEurekaSet = searchParams.get('set')
   const selectedCategory = searchParams.get('category') as CategoryFilter | null
   const selectedObtainedFilter = searchParams.get('filter') as ObtainedFilter | null
-  const groupBySet = searchParams.get('groupBySet') !== 'false'
-  const showByColor = searchParams.get('showByColor') === 'true'
   const selectedColor = searchParams.get('color')
   const selectedRarities = searchParams.get('rarity')?.split(',').map(Number).filter(Boolean) ?? []
 

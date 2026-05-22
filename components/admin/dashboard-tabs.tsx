@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useTransition } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Container, useMediaQuery, useTheme } from '@mui/material'
 import { EurekaSetTable } from './eureka-set-table'
@@ -10,6 +11,7 @@ import EurekaSetList from './eureka-set-list'
 import EurekaVariantList from './eureka-variant-list'
 import TrialList from './trial-list'
 import DashboardToolbar from './dashboard-toolbar'
+import { updateDashboardView } from '@/app/actions/preferences'
 
 const TAB_VALUES = ['eureka-sets', 'eureka-variants', 'trials'] as const
 type TabValue = (typeof TAB_VALUES)[number]
@@ -18,14 +20,17 @@ export function DashboardTabs({
   eurekaSets,
   eurekaVariants,
   trials,
+  defaultView,
 }: {
   eurekaSets: EurekaSet[]
   eurekaVariants: EurekaVariantRaw[]
   trials: Trial[]
+  defaultView: 'list' | 'table'
 }) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
+  const [, startTransition] = useTransition()
 
   const rawTab = searchParams.get('tab') ?? 'eureka-sets'
   const tab: TabValue = TAB_VALUES.includes(rawTab as TabValue)
@@ -33,9 +38,9 @@ export function DashboardTabs({
     : 'eureka-sets'
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
-  const defaultView = isSmallScreen ? 'list' : 'table'
-  const rawView = searchParams.get('view')
-  const view: 'list' | 'table' = rawView === 'list' || rawView === 'table' ? rawView : defaultView
+  const [view, setView] = useState<'list' | 'table'>(
+    isSmallScreen ? 'list' : defaultView
+  )
   const page = Math.max(0, Number(searchParams.get('page') ?? '0'))
   const perPage = Number(searchParams.get('perPage') ?? '15')
 
@@ -50,7 +55,10 @@ export function DashboardTabs({
   }
 
   const handleViewChange = (_: React.MouseEvent<HTMLElement>, nextView: 'list' | 'table') => {
-    if (nextView) updateParams({ view: nextView })
+    if (nextView) {
+      setView(nextView)
+      startTransition(() => updateDashboardView(nextView))
+    }
   }
 
   const handlePageChange = (newPage: number) => updateParams({ page: String(newPage) })

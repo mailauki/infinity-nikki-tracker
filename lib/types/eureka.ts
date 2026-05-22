@@ -72,3 +72,8 @@ export type Trial = Pick<
   Tables<'trials'>,
   'id' | 'slug' | 'title' | 'image_url' | 'realm' | 'updated_at'
 >
+
+export type UserPreferences = Pick<
+  Tables<'user_preferences'>,
+  'group_by_set' | 'show_by_color' | 'dashboard_view'
+>
