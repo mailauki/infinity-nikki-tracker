@@ -11,7 +11,7 @@ import EurekaSetList from './eureka-set-list'
 import EurekaVariantList from './eureka-variant-list'
 import TrialList from './trial-list'
 import DashboardToolbar from './dashboard-toolbar'
-import { updateDashboardView } from '@/app/actions/preferences'
+import { updateDashboardTab, updateDashboardView } from '@/app/actions/preferences'
 
 const TAB_VALUES = ['eureka-sets', 'eureka-variants', 'trials'] as const
 type TabValue = (typeof TAB_VALUES)[number]
@@ -21,21 +21,23 @@ export function DashboardTabs({
   eurekaVariants,
   trials,
   defaultView,
+  defaultTab,
 }: {
   eurekaSets: EurekaSet[]
   eurekaVariants: EurekaVariantRaw[]
   trials: Trial[]
   defaultView: 'list' | 'table'
+  defaultTab: 'eureka-sets' | 'eureka-variants' | 'trials'
 }) {
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
   const [, startTransition] = useTransition()
 
-  const rawTab = searchParams.get('tab') ?? 'eureka-sets'
+  const rawTab = searchParams.get('tab') ?? defaultTab
   const tab: TabValue = TAB_VALUES.includes(rawTab as TabValue)
     ? (rawTab as TabValue)
-    : 'eureka-sets'
+    : defaultTab
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
   const [view, setView] = useState<'list' | 'table'>(
@@ -51,7 +53,10 @@ export function DashboardTabs({
   }
 
   const handleTabChange = (_: React.MouseEvent<HTMLElement>, value: string) => {
-    if (value) updateParams({ tab: value, page: '0' })
+    if (value) {
+      updateParams({ tab: value, page: '0' })
+      startTransition(() => updateDashboardTab(value as TabValue))
+    }
   }
 
   const handleViewChange = (_: React.MouseEvent<HTMLElement>, nextView: 'list' | 'table') => {
