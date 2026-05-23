@@ -50,7 +50,6 @@ export default function EurekaDataProvider({
   const [isObtainedError, setIsObtainedError] = useState(false)
   const [groupBySet, setGroupBySet] = useState<boolean>(DEFAULT_PREFERENCES.group_by_set)
   const [showByColor, setShowByColor] = useState<boolean>(DEFAULT_PREFERENCES.show_by_color)
-  const [prefsRestored, setPrefsRestored] = useState(false)
   const [, startTransition] = useTransition()
 
   useEffect(() => {
@@ -96,9 +95,8 @@ export default function EurekaDataProvider({
             router.replace(applyFilterParams(pathname, searchParams, updates), { scroll: false })
           }
         }
-        setPrefsRestored(true)
       })
-      .catch(() => setPrefsRestored(true))
+      .catch(() => {})
   }, [isLoggedIn]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleGroupBySetChange = () => {

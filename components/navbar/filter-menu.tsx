@@ -74,12 +74,10 @@ export default function FilterMenu() {
       eureka_obtained_filter:
         updates.filter !== undefined ? updates.filter : selectedObtainedFilter,
       eureka_color: updates.color !== undefined ? updates.color : selectedColor,
-      eureka_rarity:
-        updates.rarity !== undefined
-          ? updates.rarity
-          : selectedRarities.length
-            ? selectedRarities.join(',')
-            : null,
+      eureka_rarity: (() => {
+        if (updates.rarity !== undefined) return updates.rarity
+        return selectedRarities.length ? selectedRarities.join(',') : null
+      })(),
     }
     startTransition(() => updateEurekaFilters(merged))
   }
