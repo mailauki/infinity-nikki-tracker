@@ -35,6 +35,7 @@ export function NavMain({
               {
                 minHeight: 48,
                 px: 2.5,
+                borderRadius: 2,
               },
               open
                 ? {
@@ -86,7 +87,12 @@ export function NavMain({
             <List disablePadding>
               {item.items?.map((subItem) => (
                 <ListItem key={subItem.title} disablePadding sx={{ display: 'block' }}>
-                  <ListItemButton component={Link} href={subItem.url} onClick={onClose}>
+                  <ListItemButton
+                    component={Link}
+                    href={subItem.url}
+                    sx={{ borderRadius: 2 }}
+                    onClick={onClose}
+                  >
                     <ListItemText inset primary={subItem.title} />
                   </ListItemButton>
                 </ListItem>

@@ -7,8 +7,8 @@ export function Hero() {
       sx={{
         position: 'relative',
         height: {
-          sm: `calc(100vh - ${48 * 3 + 6}px)`,
-          md: `calc(100vh - ${64 * 3 + 6}px)`,
+          xs: `calc(100vh - ${56 * 3 + 6}px)`,
+          sm: `calc(100vh - ${64 * 3 + 6}px)`,
         },
       }}
     >

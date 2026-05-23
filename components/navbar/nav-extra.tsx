@@ -35,6 +35,7 @@ export function NavExtra({
                   {
                     minHeight: 48,
                     px: 2.5,
+                    borderRadius: 2,
                   },
                   open
                     ? {

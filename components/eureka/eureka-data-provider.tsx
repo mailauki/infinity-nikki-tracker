@@ -5,7 +5,14 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, Color, EurekaSet, ObtainedEureka, Trial, UserPreferences } from '@/lib/types/eureka'
+import {
+  Category,
+  Color,
+  EurekaSet,
+  ObtainedEureka,
+  Trial,
+  UserPreferences,
+} from '@/lib/types/eureka'
 import { updateGroupBySet, updateShowByColor } from '@/app/actions/preferences'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 import { applyFilterParams } from '@/lib/filter-params'
@@ -43,7 +50,6 @@ export default function EurekaDataProvider({
   const [isObtainedError, setIsObtainedError] = useState(false)
   const [groupBySet, setGroupBySet] = useState<boolean>(DEFAULT_PREFERENCES.group_by_set)
   const [showByColor, setShowByColor] = useState<boolean>(DEFAULT_PREFERENCES.show_by_color)
-  const [prefsRestored, setPrefsRestored] = useState(false)
   const [, startTransition] = useTransition()
 
   useEffect(() => {
@@ -89,9 +95,8 @@ export default function EurekaDataProvider({
             router.replace(applyFilterParams(pathname, searchParams, updates), { scroll: false })
           }
         }
-        setPrefsRestored(true)
       })
-      .catch(() => setPrefsRestored(true))
+      .catch(() => {})
   }, [isLoggedIn]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleGroupBySetChange = () => {

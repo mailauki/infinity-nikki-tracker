@@ -32,7 +32,16 @@ export default function FilterMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
 
-  const { eurekaSets, categories, colors, isLoggedIn, groupBySet, showByColor, onGroupBySetChange, onShowByColorChange } = useEurekaData()
+  const {
+    eurekaSets,
+    categories,
+    colors,
+    isLoggedIn,
+    groupBySet,
+    showByColor,
+    onGroupBySetChange,
+    onShowByColorChange,
+  } = useEurekaData()
 
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -62,9 +71,13 @@ export default function FilterMenu() {
     const merged = {
       eureka_set_filter: updates.set !== undefined ? updates.set : selectedEurekaSet,
       eureka_category: updates.category !== undefined ? updates.category : selectedCategory,
-      eureka_obtained_filter: updates.filter !== undefined ? updates.filter : selectedObtainedFilter,
+      eureka_obtained_filter:
+        updates.filter !== undefined ? updates.filter : selectedObtainedFilter,
       eureka_color: updates.color !== undefined ? updates.color : selectedColor,
-      eureka_rarity: updates.rarity !== undefined ? updates.rarity : (selectedRarities.length ? selectedRarities.join(',') : null),
+      eureka_rarity: (() => {
+        if (updates.rarity !== undefined) return updates.rarity
+        return selectedRarities.length ? selectedRarities.join(',') : null
+      })(),
     }
     startTransition(() => updateEurekaFilters(merged))
   }
