@@ -11,11 +11,11 @@ export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
 
   return (
     <Card>
-      <CardActionArea href={`/eureka/${eurekaSet.slug}`}>
+      <CardActionArea aria-label={title} href={`/eureka/${eurekaSet.slug}`}>
         <Box sx={{ position: 'relative' }}>
           <Stack alignItems="center" sx={{ pt: 1 }}>
             <LazyAvatar
-              alt={slug}
+              alt={title ?? slug}
               color="transparent"
               size="lg"
               src={image_url || eureka_variants[0]?.image_url || undefined}

@@ -83,7 +83,7 @@ const theme = createTheme({
     colorSchemeSelector: 'class',
   },
   typography: {
-    fontFamily: 'var(--font-roboto)',
+    fontFamily: 'var(--font-noto-sans-jp), var(--font-roboto), sans-serif',
     // Display Large
     h1: {
       fontSize: '3.5625rem',
@@ -280,6 +280,30 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        '@media (prefers-reduced-motion: reduce)': {
+          '*, *::before, *::after': {
+            animationDuration: '1ms !important',
+            animationIterationCount: '1 !important',
+            transitionDuration: '1ms !important',
+            scrollBehavior: 'auto !important',
+          },
+        },
+      },
+    },
+    MuiCardActionArea: {
+      styleOverrides: {
+        root: {
+          '&:not(:disabled):not([aria-disabled="true"])': {
+            cursor: 'pointer',
+          },
+          '&[aria-disabled="true"]': {
+            pointerEvents: 'none',
+          },
+        },
+      },
+    },
     MuiCard: {
       defaultProps: {
         elevation: 0,

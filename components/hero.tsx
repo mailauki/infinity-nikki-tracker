@@ -7,11 +7,8 @@ export function Hero() {
       sx={{
         position: 'relative',
         height: {
-          xs: `calc(100vh - ${48 * 3 + 30}px)`,
-          sm: `calc(100vh - ${64 * 3 + 6}px)`,
-        },
-        '@media (orientation: landscape)': {
-          height: `calc(100vh - ${48 * 3 + 6}px)`,
+          sm: `calc(100vh - ${48 * 3 + 6}px)`,
+          md: `calc(100vh - ${64 * 3 + 6}px)`,
         },
       }}
     >

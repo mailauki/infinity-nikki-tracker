@@ -1,8 +1,11 @@
+'use client'
+
 import { toTitle } from '@/lib/utils'
 import { handleObtained } from '@/app/(main)/eureka/actions'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { Card, CardActionArea, Chip } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
+import { useTransition } from 'react'
 
 import EurekaSetImage from './eureka-set-image'
 import EurekaCardContent from './eureka-card-content'
@@ -17,11 +20,21 @@ export default function EurekaButton({
   isLoggedIn: boolean
   size?: CardSize
 }) {
+  const [isPending, startTransition] = useTransition()
+  const obtained = eurekaVariant.obtained === true
+  const setTitle = toTitle(eurekaVariant.eureka_set ?? '')
+  const category = toTitle(eurekaVariant.category ?? '')
+  const color = toTitle(eurekaVariant.color ?? '')
+  const label = `${setTitle} – ${category} ${color}${obtained ? ', obtained' : ''}`
+
   return (
     <Card>
       <CardActionArea
-        data-active={eurekaVariant.obtained === true ? '' : undefined}
-        disabled={!isLoggedIn}
+        aria-busy={isPending || undefined}
+        aria-disabled={!isLoggedIn || isPending || undefined}
+        aria-label={label}
+        aria-pressed={obtained}
+        data-active={obtained ? '' : undefined}
         sx={{
           height: '100%',
           '&[data-active]': {
@@ -31,24 +44,23 @@ export default function EurekaButton({
             },
           },
         }}
-        onClick={() =>
-          handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
-        }
+        onClick={() => {
+          if (!isLoggedIn || isPending) return
+          startTransition(() =>
+            handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!),
+          )
+        }}
       >
         <EurekaSetImage
-          action={eurekaVariant.obtained === true && <Chip label={<CheckIcon />} size="small" />}
-          alt={eurekaVariant.slug ?? ''}
+          action={obtained && <Chip aria-hidden="true" label={<CheckIcon />} size="small" />}
+          alt={`${setTitle} – ${category} in ${color}`}
           imageUrl={eurekaVariant.image_url!}
           size={size}
-          subheader={`${toTitle(eurekaVariant.category ?? '')} • ${toTitle(eurekaVariant.color ?? '')}`}
-          title={toTitle(eurekaVariant.eureka_set ?? '')}
+          subheader={`${category} • ${color}`}
+          title={setTitle}
         />
         {size !== 'sm' && (
-          <EurekaCardContent
-            size={size}
-            subheader={`${toTitle(eurekaVariant.category ?? '')} • ${toTitle(eurekaVariant.color ?? '')}`}
-            title={toTitle(eurekaVariant.eureka_set ?? '')}
-          />
+          <EurekaCardContent size={size} subheader={`${category} • ${color}`} title={setTitle} />
         )}
       </CardActionArea>
     </Card>
