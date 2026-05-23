@@ -48,7 +48,8 @@ function VariantCardSkeleton() {
 }
 
 export default function FilterEureka() {
-  const { eurekaSets, isLoggedIn, isLoading, isError, isObtainedError, groupBySet, showByColor } = useEurekaData()
+  const { eurekaSets, isLoggedIn, isLoading, isError, isObtainedError, groupBySet, showByColor } =
+    useEurekaData()
 
   const searchParams = useSearchParams()
 

@@ -5,7 +5,14 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
-import { Category, Color, EurekaSet, ObtainedEureka, Trial, UserPreferences } from '@/lib/types/eureka'
+import {
+  Category,
+  Color,
+  EurekaSet,
+  ObtainedEureka,
+  Trial,
+  UserPreferences,
+} from '@/lib/types/eureka'
 import { updateGroupBySet, updateShowByColor } from '@/app/actions/preferences'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 import { applyFilterParams } from '@/lib/filter-params'

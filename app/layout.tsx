@@ -50,7 +50,11 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html suppressHydrationWarning className={`${roboto.variable} ${notoSansJP.variable}`} lang="en">
+    <html
+      suppressHydrationWarning
+      className={`${roboto.variable} ${notoSansJP.variable}`}
+      lang="en"
+    >
       <body className="overflow-hidden">
         <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppRouterCacheProvider options={{ key: 'css' }}>

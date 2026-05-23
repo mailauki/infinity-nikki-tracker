@@ -73,7 +73,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
 
 const closedMixin = (theme: Theme): CSSObject => ({
   borderColor: 'transparent',
-  marginLeft: '1rem',
+  marginLeft: 0,
   marginRight: '0.5rem',
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -83,6 +83,8 @@ const closedMixin = (theme: Theme): CSSObject => ({
   width: 0,
   [theme.breakpoints.up('sm')]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
+    marginLeft: '1rem',
+    marginRight: '0.5rem',
   },
 })
 

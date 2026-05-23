@@ -47,7 +47,7 @@ export default function EurekaButton({
         onClick={() => {
           if (!isLoggedIn || isPending) return
           startTransition(() =>
-            handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!),
+            handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
           )
         }}
       >

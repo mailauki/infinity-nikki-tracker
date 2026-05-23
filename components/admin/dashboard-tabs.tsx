@@ -35,14 +35,10 @@ export function DashboardTabs({
   const [, startTransition] = useTransition()
 
   const rawTab = searchParams.get('tab') ?? defaultTab
-  const tab: TabValue = TAB_VALUES.includes(rawTab as TabValue)
-    ? (rawTab as TabValue)
-    : defaultTab
+  const tab: TabValue = TAB_VALUES.includes(rawTab as TabValue) ? (rawTab as TabValue) : defaultTab
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
-  const [view, setView] = useState<'list' | 'table'>(
-    isSmallScreen ? 'list' : defaultView
-  )
+  const [view, setView] = useState<'list' | 'table'>(isSmallScreen ? 'list' : defaultView)
   const page = Math.max(0, Number(searchParams.get('page') ?? '0'))
   const perPage = Number(searchParams.get('perPage') ?? '15')
 

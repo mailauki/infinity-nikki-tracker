@@ -23,6 +23,7 @@ export function NavSecondary({
                 {
                   minHeight: 48,
                   px: 2.5,
+                  borderRadius: 2,
                 },
                 open
                   ? {
