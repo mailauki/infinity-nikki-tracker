@@ -461,7 +461,7 @@ export default function NavContainer({
             <Slide direction="down" in={pullDistance > 0 || isRefreshing}>
               <Box
                 sx={{
-                  display: 'flex',
+                  display: isHome ? 'none' : 'flex',
                   justifyContent: 'center',
                   pt: 1,
                   pb: 0.5,
