@@ -1,8 +1,11 @@
+'use client'
+
 import { toTitle } from '@/lib/utils'
 import { handleObtained } from '@/app/(main)/eureka/actions'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { Card, CardActionArea, Chip } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
+import { useTransition } from 'react'
 
 import EurekaSetImage from './eureka-set-image'
 import EurekaCardContent from './eureka-card-content'
@@ -17,11 +20,13 @@ export default function EurekaButton({
   isLoggedIn: boolean
   size?: CardSize
 }) {
+  const [isPending, startTransition] = useTransition()
+
   return (
     <Card>
       <CardActionArea
         data-active={eurekaVariant.obtained === true ? '' : undefined}
-        disabled={!isLoggedIn}
+        disabled={!isLoggedIn || isPending}
         sx={{
           height: '100%',
           '&[data-active]': {
@@ -32,7 +37,9 @@ export default function EurekaButton({
           },
         }}
         onClick={() =>
-          handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
+          startTransition(() =>
+            handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!),
+          )
         }
       >
         <EurekaSetImage

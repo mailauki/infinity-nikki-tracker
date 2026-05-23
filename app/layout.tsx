@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
-import { Roboto } from 'next/font/google'
+import { Noto_Sans_JP, Roboto } from 'next/font/google'
 import { ThemeProvider } from '@mui/material/styles'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import theme from '@/lib/theme'
@@ -13,6 +13,13 @@ const roboto = Roboto({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-roboto',
+})
+
+const notoSansJP = Noto_Sans_JP({
+  weight: ['300', '400', '500', '700'],
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-noto-sans-jp',
 })
 
 const defaultUrl = process.env.VERCEL_URL
@@ -43,7 +50,7 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html suppressHydrationWarning className={roboto.variable} lang="en">
+    <html suppressHydrationWarning className={`${roboto.variable} ${notoSansJP.variable}`} lang="en">
       <body className="overflow-hidden">
         <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppRouterCacheProvider options={{ key: 'css' }}>
