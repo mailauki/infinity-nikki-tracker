@@ -284,9 +284,9 @@ const theme = createTheme({
       styleOverrides: {
         '@media (prefers-reduced-motion: reduce)': {
           '*, *::before, *::after': {
-            animationDuration: '0.01ms !important',
+            animationDuration: '1ms !important',
             animationIterationCount: '1 !important',
-            transitionDuration: '0.01ms !important',
+            transitionDuration: '1ms !important',
             scrollBehavior: 'auto !important',
           },
         },
@@ -295,7 +295,12 @@ const theme = createTheme({
     MuiCardActionArea: {
       styleOverrides: {
         root: {
-          cursor: 'pointer',
+          '&:not(:disabled):not([aria-disabled="true"])': {
+            cursor: 'pointer',
+          },
+          '&[aria-disabled="true"]': {
+            pointerEvents: 'none',
+          },
         },
       },
     },
