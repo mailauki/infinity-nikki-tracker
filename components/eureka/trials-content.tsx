@@ -84,7 +84,7 @@ function TrialCard({
           <Typography noWrap component="h2" sx={{ maxWidth: { xs: 480, md: 340 } }} variant="h6">
             {trial.title
               .split(' ')
-              .filter((word) => word !== 'Trial' && word !== 'Phantom')
+              .filter((word) => word !== 'Trial' && word !== 'Phantom' && word !== 'Trial:')
               .join(' ')}
           </Typography>
         }

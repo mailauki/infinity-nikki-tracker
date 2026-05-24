@@ -37,6 +37,28 @@ import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import ProfileEditProvider from '@/components/profile/profile-edit-provider'
 import { useProfileEdit } from '@/components/profile/profile-context'
 
+function EurekaSetEditButton({ slug, isAdmin }: { slug: string; isAdmin: boolean }) {
+  if (!isAdmin) return null
+  return (
+    <Tooltip title={`Edit ${toTitle(slug) || 'Eureka'} Set`}>
+      <IconButton aria-label="Edit Eureka Set" href={`/eureka-set/edit/${slug}`}>
+        <Edit />
+      </IconButton>
+    </Tooltip>
+  )
+}
+
+function TrialEditButton({ slug, isAdmin }: { slug: string; isAdmin: boolean }) {
+  if (!isAdmin) return null
+  return (
+    <Tooltip title={`Edit ${toTitle(slug) || 'Trial'}`}>
+      <IconButton aria-label="Edit Trial" href={`/trial/edit/${slug}`}>
+        <Edit />
+      </IconButton>
+    </Tooltip>
+  )
+}
+
 function ProfileEditButton() {
   const context = useProfileEdit()
   if (!context) return null
@@ -256,6 +278,12 @@ export default function NavContainer({
   const isHome = pathname === '/'
   const isEurekaPage = pathname === '/eureka' || pathname.startsWith('/eureka/trials')
   const isProfilePage = pathname === '/profile'
+  const eurekaSetSlugMatch = pathname.match(/^\/eureka\/([^/]+)$/)
+  const eurekaSetSlug =
+    eurekaSetSlugMatch && !['trials', 'missing'].includes(eurekaSetSlugMatch[1])
+      ? eurekaSetSlugMatch[1]
+      : null
+  const trialSlug = pathname.match(/^\/eureka\/trials\/([^/]+)$/)?.[1] ?? null
   const userId = user?.sub ?? null
   const isLoggedIn = !!userId
 
@@ -427,6 +455,10 @@ export default function NavContainer({
                   </React.Suspense>
                 )}
                 {isProfilePage && <ProfileEditButton />}
+                {eurekaSetSlug && (
+                  <EurekaSetEditButton isAdmin={isAdmin} slug={eurekaSetSlug} />
+                )}
+                {trialSlug && <TrialEditButton isAdmin={isAdmin} slug={trialSlug} />}
               </Stack>
             </Container>
           </Toolbar>

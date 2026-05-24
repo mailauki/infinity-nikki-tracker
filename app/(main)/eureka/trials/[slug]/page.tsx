@@ -41,7 +41,7 @@ async function Trial({ slug }: { slug: string }) {
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
-        <LazyCardMedia image={trial.image_url!} sx={{ height: 240 }} title={trial.title} />
+        <LazyCardMedia image={trial.image_url!} sx={{ height: 360 }} title={trial.title} />
         <Box
           sx={{
             display: 'grid',
