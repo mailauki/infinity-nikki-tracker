@@ -11,7 +11,8 @@ import {
   List,
   ListItem,
   Skeleton,
-	Tooltip,
+  Tooltip,
+  Typography,
 } from '@mui/material'
 
 import LazyCardMedia from './lazy-card-media'
@@ -43,7 +44,9 @@ export default function TrialsContent() {
     ...trial,
     eurekaSets: eurekaSets
       .filter((eurekaSet) => eurekaSet.eureka_set_trials.some((t) => t.trial === trial.slug))
-      .slice(0, 2),
+      .sort((a, b) => b.rarity! - a.rarity!)
+      .slice(0, 2)
+      .sort((a, b) => a.id! - b.id!),
   })) as Total[]
 
   return (
@@ -67,16 +70,24 @@ function TrialCard({
   return (
     <Card>
       <CardHeader
+        disableTypography
         action={
           isAdmin && (
             <Tooltip title={`Edit ${trial.title}`}>
-              <IconButton href={`/trial/edit/${trial.slug}`} size="small">
-                <Edit fontSize="small" />
+              <IconButton href={`/trial/edit/${trial.slug}`}>
+                <Edit />
               </IconButton>
             </Tooltip>
           )
         }
-        title={trial.title}
+        title={
+          <Typography noWrap component="h2" sx={{ maxWidth: { xs: 480, md: 340 } }} variant="h6">
+            {trial.title
+              .split(' ')
+              .filter((word) => word !== 'Trial' && word !== 'Phantom')
+              .join(' ')}
+          </Typography>
+        }
       />
       <LazyCardMedia image={trial.image_url!} sx={{ height: 160 }} title={trial.title} />
       <CardContent sx={{ p: 0 }}>
