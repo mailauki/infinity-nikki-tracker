@@ -20,6 +20,7 @@ import {
   SelectChangeEvent,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material'
 import { ColorLens } from '@mui/icons-material'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
@@ -29,6 +30,7 @@ import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-materi
 import { Category, Color, EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from './color-select'
 import { SparkleIcon } from '@/components/rarity-stars'
+import ImageUpload from '@/components/forms/image-upload'
 
 export default function EditEurekaSetForm({
   eurekaSet,
@@ -39,6 +41,7 @@ export default function EditEurekaSetForm({
   categories,
   initialColors,
   initialDefaultColor = '',
+  initialVariants = [],
   back,
 }: {
   eurekaSet: EurekaSetRaw
@@ -49,6 +52,7 @@ export default function EditEurekaSetForm({
   categories: Category[]
   initialColors: string[]
   initialDefaultColor?: string
+  initialVariants?: { slug: string; color: string; category: string; image_url: string | null }[]
   back?: string
 }) {
   const router = useRouter()
@@ -66,6 +70,9 @@ export default function EditEurekaSetForm({
   const [editSlug, setEditSlug] = useState<boolean>(false)
   const [colorSelect, setColorSelect] = useState<string[]>(initialColors)
   const [defaultColor, setDefaultColor] = useState<string>(initialDefaultColor)
+  const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
+    Object.fromEntries(initialVariants.map((v) => [v.slug, v.image_url]))
+  )
 
   const maxColorsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
   const maxColors = typeof rarity === 'number' ? (maxColorsByRarity[rarity] ?? 5) : 5
@@ -395,6 +402,40 @@ export default function EditEurekaSetForm({
             })}
           </Select>
         </FormControl>
+
+        {initialVariants.length > 0 && (
+          <Stack spacing={2}>
+            {[...new Set(initialVariants.map((v) => v.color))].map((colorSlug) => {
+              const colorObj = colors.find((c) => c.slug === colorSlug)
+              const colorVariants = initialVariants.filter((v) => v.color === colorSlug)
+              return (
+                <Stack key={colorSlug} spacing={1}>
+                  <Typography variant="subtitle2">{colorObj?.title ?? colorSlug}</Typography>
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                    {colorVariants.map((variant) => {
+                      const catObj = categories.find((c) => c.slug === variant.category)
+                      return (
+                        <Stack key={variant.slug} alignItems="center" spacing={0.5}>
+                          <ImageUpload
+                            slug={variant.slug}
+                            table="eureka_variants"
+                            url={variantImages[variant.slug] ?? null}
+                            onUpload={(url) =>
+                              setVariantImages((prev) => ({ ...prev, [variant.slug]: url }))
+                            }
+                          />
+                          <Typography variant="caption">
+                            {catObj?.title ?? variant.category}
+                          </Typography>
+                        </Stack>
+                      )
+                    })}
+                  </Box>
+                </Stack>
+              )
+            })}
+          </Stack>
+        )}
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href={backUrl} variant="outlined">
