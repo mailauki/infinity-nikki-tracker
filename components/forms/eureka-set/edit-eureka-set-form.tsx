@@ -31,6 +31,7 @@ export default function EditEurekaSetForm({
   colors,
   categories,
   initialColors,
+  initialDefaultColor = '',
   back,
 }: {
   eurekaSet: EurekaSetRaw
@@ -40,6 +41,7 @@ export default function EditEurekaSetForm({
   colors: Color[]
   categories: Category[]
   initialColors: string[]
+  initialDefaultColor?: string
   back?: string
 }) {
   const router = useRouter()
@@ -56,6 +58,7 @@ export default function EditEurekaSetForm({
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
   const [colorSelect, setColorSelect] = useState<string[]>(initialColors)
+  const [defaultColor, setDefaultColor] = useState<string>(initialDefaultColor)
 
   const maxColorsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
   const maxColors = typeof rarity === 'number' ? (maxColorsByRarity[rarity] ?? 5) : 5
@@ -63,6 +66,10 @@ export default function EditEurekaSetForm({
   useEffect(() => {
     setColorSelect((prev) => (prev.length > maxColors ? prev.slice(0, maxColors) : prev))
   }, [maxColors])
+
+  useEffect(() => {
+    if (defaultColor && !colorSelect.includes(defaultColor)) setDefaultColor('')
+  }, [colorSelect, defaultColor])
 
   const handleColorChange = (event: SelectChangeEvent<typeof colorSelect>) => {
     const {
@@ -136,6 +143,7 @@ export default function EditEurekaSetForm({
           category: cat.slug,
           color,
           slug: toSlugVariant(slug.trim(), cat.slug, color),
+          default: defaultColor ? color === defaultColor : false,
         }))
       )
       const { error: insertError } = await supabase.from('eureka_variants').insert(newVariants)
@@ -155,6 +163,29 @@ export default function EditEurekaSetForm({
       if (deleteError) {
         setLoading(false)
         setError(deleteError.message)
+        return
+      }
+    }
+
+    // Sync default flag: clear all, then set for chosen color
+    const { error: clearDefaultError } = await supabase
+      .from('eureka_variants')
+      .update({ default: false })
+      .eq('eureka_set', slug.trim())
+    if (clearDefaultError) {
+      setLoading(false)
+      setError(clearDefaultError.message)
+      return
+    }
+    if (defaultColor) {
+      const { error: setDefaultError } = await supabase
+        .from('eureka_variants')
+        .update({ default: true })
+        .eq('eureka_set', slug.trim())
+        .eq('color', defaultColor)
+      if (setDefaultError) {
+        setLoading(false)
+        setError(setDefaultError.message)
         return
       }
     }
@@ -299,6 +330,25 @@ export default function EditEurekaSetForm({
           handleChange={handleColorChange}
           maxColors={maxColors}
         />
+
+        <FormControl disabled={colorSelect.length === 0}>
+          <InputLabel>Default Color</InputLabel>
+          <Select
+            label="Default Color"
+            value={defaultColor}
+            onChange={(e) => setDefaultColor(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {colorSelect.map((slug) => {
+              const color = colors.find((c) => c.slug === slug)
+              return (
+                <MenuItem key={slug} value={slug}>
+                  {color?.title ?? slug}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </FormControl>
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href={backUrl} variant="outlined">

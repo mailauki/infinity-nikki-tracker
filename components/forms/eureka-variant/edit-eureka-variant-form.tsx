@@ -55,7 +55,7 @@ export default function EditEurekaVariantForm({
   const [editSlug, setEditSlug] = useState<boolean>(false)
 
   const hasDefault = variants.some(
-    (v) => v.id !== variant.id && v.eureka_set === eurekaSet && v.default
+    (v) => v.id !== variant.id && v.eureka_set === eurekaSet && v.category === category && v.default
   )
 
   async function handleSubmit(e: { preventDefault(): void }) {
@@ -176,8 +176,8 @@ export default function EditEurekaVariantForm({
           />
           <FormHelperText>
             {hasDefault
-              ? 'This set already has a default variant'
-              : 'Used to determine the Eureka set thumbnail image — limit one per set'}
+              ? 'This category already has a default variant for this set'
+              : 'Used to determine the Eureka set thumbnail image — limit one per category'}
           </FormHelperText>
         </FormControl>
 
