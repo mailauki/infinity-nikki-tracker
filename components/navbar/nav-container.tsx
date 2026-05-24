@@ -280,9 +280,7 @@ export default function NavContainer({
   const isProfilePage = pathname === '/profile'
   const eurekaSetSlugMatch = pathname.match(/^\/eureka\/([^/]+)$/)
   const eurekaSetSlug =
-    eurekaSetSlugMatch && !['trials', 'missing'].includes(eurekaSetSlugMatch[1])
-      ? eurekaSetSlugMatch[1]
-      : null
+    eurekaSetSlugMatch && eurekaSetSlugMatch[1] !== 'trials' ? eurekaSetSlugMatch[1] : null
   const trialSlug = pathname.match(/^\/eureka\/trials\/([^/]+)$/)?.[1] ?? null
   const userId = user?.sub ?? null
   const isLoggedIn = !!userId
