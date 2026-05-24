@@ -2,11 +2,13 @@ import Link from 'next/link'
 import ImageIcon from '@mui/icons-material/Image'
 
 import {
+  Avatar,
   List,
   ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemText,
+  Tooltip,
   useColorScheme,
 } from '@mui/material'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
@@ -28,61 +30,68 @@ export function NavMain({
     <List component="nav">
       {items.map((item) => (
         <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
-          <ListItemButton
-            component={Link}
-            href={item.url}
-            sx={[
-              {
-                minHeight: 48,
-                px: 2.5,
-                borderRadius: 2,
-              },
-              open
-                ? {
-                    justifyContent: 'initial',
-                  }
-                : {
-                    justifyContent: 'center',
-                  },
-            ]}
-            onClick={onClose}
-          >
-            <ListItemAvatar
+          <Tooltip placement="right" title={open ? '' : item.title}>
+            <ListItemButton
+              component={Link}
+              href={item.url}
               sx={[
                 {
-                  minWidth: 0,
-                  justifyContent: 'center',
+                  minHeight: 48,
+                  px: 2.5,
+                  borderRadius: 2,
                 },
                 open
                   ? {
-                      mr: 1.5,
+                      justifyContent: 'initial',
                     }
                   : {
-                      mr: 'auto',
+                      justifyContent: 'center',
                     },
               ]}
+              onClick={onClose}
             >
-              <LazyAvatar
+              <ListItemAvatar
+                sx={[
+                  {
+                    minWidth: 0,
+                    justifyContent: 'center',
+                  },
+                  open
+                    ? {
+                        mr: 1.5,
+                      }
+                    : {
+                        mr: 'auto',
+                      },
+                ]}
+              >
+                {/* <LazyAvatar
                 alt={item.title}
                 src={item.image}
                 sx={{ filter: isDarkMode ? 'none' : 'brightness(40%)' }}
               >
                 <ImageIcon />
-              </LazyAvatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={item.title}
-              sx={[
-                open
-                  ? {
-                      opacity: 1,
-                    }
-                  : {
-                      opacity: 0,
-                    },
-              ]}
-            />
-          </ListItemButton>
+              </LazyAvatar> */}
+                <Avatar
+                  alt={item.title}
+                  src={item.image}
+                  sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={item.title}
+                sx={[
+                  open
+                    ? {
+                        opacity: 1,
+                      }
+                    : {
+                        opacity: 0,
+                      },
+                ]}
+              />
+            </ListItemButton>
+          </Tooltip>
           {item.items?.length && open ? (
             <List disablePadding>
               {item.items?.map((subItem) => (
@@ -93,7 +102,43 @@ export function NavMain({
                     sx={{ borderRadius: 2 }}
                     onClick={onClose}
                   >
-                    <ListItemText inset primary={subItem.title} />
+                    <ListItemAvatar
+                      sx={[
+                        {
+                          minWidth: 0,
+                          justifyContent: 'center',
+                        },
+                        open
+                          ? {
+                              mr: 1.5,
+                            }
+                          : {
+                              mr: 'auto',
+                            },
+                      ]}
+                    >
+                      <Avatar
+                        alt={subItem.title}
+                        src={subItem.image}
+                        sx={{
+                          filter: isDarkMode
+                            ? 'none'
+                            : 'grayscale(100%) brightness(80%) invert(80%)',
+                        }}
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={subItem.title}
+                      sx={[
+                        open
+                          ? {
+                              opacity: 1,
+                            }
+                          : {
+                              opacity: 0,
+                            },
+                      ]}
+                    />
                   </ListItemButton>
                 </ListItem>
               ))}

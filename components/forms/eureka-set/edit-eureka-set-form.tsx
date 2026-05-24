@@ -416,34 +416,34 @@ export default function EditEurekaSetForm({
                 return 0
               })
               .map((colorSlug) => {
-              const colorObj = colors.find((c) => c.slug === colorSlug)
-              const colorVariants = initialVariants.filter((v) => v.color === colorSlug)
-              return (
-                <Stack key={colorSlug} spacing={1}>
-                  <Typography variant="subtitle2">{colorObj?.title ?? colorSlug}</Typography>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                    {colorVariants.map((variant) => {
-                      const catObj = categories.find((c) => c.slug === variant.category)
-                      return (
-                        <Stack key={variant.slug} alignItems="center" spacing={0.5}>
-                          <ImageUpload
-                            slug={variant.slug}
-                            table="eureka_variants"
-                            url={variantImages[variant.slug] ?? null}
-                            onUpload={(url) =>
-                              setVariantImages((prev) => ({ ...prev, [variant.slug]: url }))
-                            }
-                          />
-                          <Typography variant="caption">
-                            {catObj?.title ?? variant.category}
-                          </Typography>
-                        </Stack>
-                      )
-                    })}
-                  </Box>
-                </Stack>
-              )
-            })}
+                const colorObj = colors.find((c) => c.slug === colorSlug)
+                const colorVariants = initialVariants.filter((v) => v.color === colorSlug)
+                return (
+                  <Stack key={colorSlug} spacing={1}>
+                    <Typography variant="subtitle2">{colorObj?.title ?? colorSlug}</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                      {colorVariants.map((variant) => {
+                        const catObj = categories.find((c) => c.slug === variant.category)
+                        return (
+                          <Stack key={variant.slug} alignItems="center" spacing={0.5}>
+                            <ImageUpload
+                              slug={variant.slug}
+                              table="eureka_variants"
+                              url={variantImages[variant.slug] ?? null}
+                              onUpload={(url) =>
+                                setVariantImages((prev) => ({ ...prev, [variant.slug]: url }))
+                              }
+                            />
+                            <Typography variant="caption">
+                              {catObj?.title ?? variant.category}
+                            </Typography>
+                          </Stack>
+                        )
+                      })}
+                    </Box>
+                  </Stack>
+                )
+              })}
           </Stack>
         )}
 
