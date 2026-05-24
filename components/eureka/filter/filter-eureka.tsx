@@ -16,6 +16,7 @@ import { ChevronRight } from '@mui/icons-material'
 
 import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
+import { useSortOrder } from '@/components/sort-context'
 import { CategoryFilter, GRID_COLUMNS, ObtainedFilter } from '@/lib/types/props'
 import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
 import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
@@ -50,6 +51,7 @@ function VariantCardSkeleton() {
 export default function FilterEureka() {
   const { eurekaSets, isLoggedIn, isLoading, isError, isObtainedError, groupBySet, showByColor } =
     useEurekaData()
+  const { sortOrder } = useSortOrder()
 
   const searchParams = useSearchParams()
 
@@ -118,6 +120,7 @@ export default function FilterEureka() {
       return { ...set, eureka_variants: filteredVariants, colors: filteredColors }
     })
     .filter((set) => (showByColor ? set.colors.length > 0 : set.eureka_variants.length > 0))
+    .sort((a, b) => (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!))
 
   const resultsCount = showByColor
     ? filteredSets.flatMap((set) => set.colors).length

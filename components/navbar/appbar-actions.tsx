@@ -2,10 +2,11 @@
 
 import IconButton from '@mui/material/IconButton'
 import { Tooltip } from '@mui/material'
-import { Edit, EditOff } from '@mui/icons-material'
+import { Edit, EditOff, SwapVert } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
 import { toTitle } from '@/lib/utils'
 import { useProfileEdit } from '@/components/profile/profile-context'
+import { useSortOrder } from '@/components/sort-context'
 
 export function EurekaSetEditButton({ slug, isAdmin }: { slug: string; isAdmin: boolean }) {
   const pathname = usePathname()
@@ -44,5 +45,18 @@ export function ProfileEditButton() {
     >
       {isEditing ? <EditOff /> : <Edit />}
     </IconButton>
+  )
+}
+
+export function SortButton() {
+  const { sortOrder, toggleSort } = useSortOrder()
+  const label = sortOrder === 'new' ? 'New to Old' : 'Old to New'
+
+  return (
+    <Tooltip title={`Sort: ${label}`}>
+      <IconButton aria-label={`Sort ${label}`} onClick={toggleSort}>
+        <SwapVert />
+      </IconButton>
+    </Tooltip>
   )
 }

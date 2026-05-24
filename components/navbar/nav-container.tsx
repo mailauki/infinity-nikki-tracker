@@ -22,12 +22,13 @@ import { NavExtra } from './nav-extra'
 import Footer from './nav-footer'
 import FilterMenu from './filter-menu'
 import { AppBar, AppBarTitle, Drawer, MainContainer, StyledToolbar } from './nav-styled'
-import { EurekaSetEditButton, ProfileEditButton, TrialEditButton } from './appbar-actions'
+import { EurekaSetEditButton, ProfileEditButton, SortButton, TrialEditButton } from './appbar-actions'
 import { useScrollContainer } from './use-scroll-container'
 import { navLinksData } from '@/lib/nav-links'
 import { toTitle } from '@/lib/utils'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import ProfileEditProvider from '@/components/profile/profile-edit-provider'
+import { SortProvider } from '@/components/sort-context'
 
 const allLinks = [
   navLinksData.home,
@@ -69,6 +70,10 @@ export default function NavContainer({
   const isHome = pathname === '/'
   const isEurekaPage = pathname === '/eureka' || pathname.startsWith('/eureka/trials')
   const isProfilePage = pathname === '/profile'
+  const isSortablePage =
+    pathname === '/eureka' ||
+    pathname.startsWith('/eureka/trials') ||
+    pathname.startsWith('/dashboard')
   const eurekaSetSlugMatch = pathname.match(/^\/eureka\/([^/]+)$/)
   const eurekaSetSlug =
     eurekaSetSlugMatch && eurekaSetSlugMatch[1] !== 'trials' ? eurekaSetSlugMatch[1] : null
@@ -166,7 +171,7 @@ export default function NavContainer({
                 </Typography>
               </AppBarTitle>
 
-              <Stack sx={{ position: 'absolute', bottom: 0, right: 0 }}>
+              <Stack direction='row' sx={{ position: 'absolute', bottom: 0, right: 0 }}>
                 {pathname === '/eureka' && (
                   <React.Suspense
                     fallback={
@@ -178,6 +183,7 @@ export default function NavContainer({
                     <FilterMenu />
                   </React.Suspense>
                 )}
+								{isSortablePage && <SortButton />}
                 {isProfilePage && <ProfileEditButton />}
                 {eurekaSetSlug && (
                   <EurekaSetEditButton isAdmin={isAdmin} slug={eurekaSetSlug} />
@@ -267,17 +273,19 @@ export default function NavContainer({
     </>
   )
 
+  const wrapped = <SortProvider>{content}</SortProvider>
+
   if (isEurekaPage) {
     return (
       <EurekaDataProvider isAdmin={isAdmin} isLoggedIn={isLoggedIn} userId={userId}>
-        {content}
+        {wrapped}
       </EurekaDataProvider>
     )
   }
 
   if (isProfilePage) {
-    return <ProfileEditProvider>{content}</ProfileEditProvider>
+    return <ProfileEditProvider>{wrapped}</ProfileEditProvider>
   }
 
-  return content
+  return wrapped
 }

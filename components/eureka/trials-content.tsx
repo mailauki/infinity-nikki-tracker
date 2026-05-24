@@ -20,11 +20,13 @@ import EurekaCard from '@/components/eureka/eureka-card'
 import { ViewAllButton } from '@/components/view-all-button'
 import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
+import { useSortOrder } from '@/components/sort-context'
 import { EurekaSet, Total } from '@/lib/types/eureka'
 import { Edit } from '@mui/icons-material'
 
 export default function TrialsContent() {
   const { eurekaSets, trials, isLoggedIn, isAdmin, isLoading, isError } = useEurekaData()
+  const { sortOrder } = useSortOrder()
 
   if (isError) {
     return <ErrorAlert message="Failed to load Eureka data. Please refresh the page." />
@@ -40,14 +42,16 @@ export default function TrialsContent() {
     )
   }
 
-  const totalTrials = trials.map((trial) => ({
-    ...trial,
-    eurekaSets: eurekaSets
-      .filter((eurekaSet) => eurekaSet.eureka_set_trials.some((t) => t.trial === trial.slug))
-      .sort((a, b) => b.rarity! - a.rarity!)
-      .slice(0, 2)
-      .sort((a, b) => a.id! - b.id!),
-  })) as Total[]
+  const totalTrials = trials
+    .map((trial) => ({
+      ...trial,
+      eurekaSets: eurekaSets
+        .filter((eurekaSet) => eurekaSet.eureka_set_trials.some((t) => t.trial === trial.slug))
+        .sort((a, b) => b.rarity! - a.rarity!)
+        .slice(0, 2)
+        .sort((a, b) => a.id! - b.id!),
+    }))
+    .sort((a, b) => (sortOrder === 'new' ? b.id - a.id : a.id - b.id)) as Total[]
 
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
@@ -81,7 +85,7 @@ function TrialCard({
           )
         }
         title={
-          <Typography noWrap component="h2" sx={{ maxWidth: { xs: 480, md: 340 } }} variant="h6">
+          <Typography noWrap component="h2" sx={{ maxWidth: { xs: 300, sm: 360 } }} variant="h6">
             {trial.title
               .split(' ')
               .filter((word) => word !== 'Trial' && word !== 'Phantom' && word !== 'Trial:')

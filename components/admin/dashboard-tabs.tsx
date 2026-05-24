@@ -12,6 +12,7 @@ import EurekaVariantList from './eureka-variant-list'
 import TrialList from './trial-list'
 import DashboardToolbar from './dashboard-toolbar'
 import { updateDashboardTab, updateDashboardView } from '@/app/actions/preferences'
+import { useSortOrder } from '@/components/sort-context'
 
 const TAB_VALUES = ['eureka-sets', 'eureka-variants', 'trials'] as const
 type TabValue = (typeof TAB_VALUES)[number]
@@ -33,6 +34,7 @@ export function DashboardTabs({
   const router = useRouter()
   const pathname = usePathname()
   const [, startTransition] = useTransition()
+  const { sortOrder } = useSortOrder()
 
   const rawTab = searchParams.get('tab') ?? defaultTab
   const tab: TabValue = TAB_VALUES.includes(rawTab as TabValue) ? (rawTab as TabValue) : defaultTab
@@ -75,6 +77,13 @@ export function DashboardTabs({
     back: currentUrl,
   }
 
+  const sortById = (a: { id: number }, b: { id: number }) =>
+    sortOrder === 'new' ? b.id - a.id : a.id - b.id
+
+  const sortedEurekaSets = [...eurekaSets].sort(sortById)
+  const sortedVariants = [...eurekaVariants].sort(sortById)
+  const sortedTrials = [...trials].sort(sortById)
+
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <DashboardToolbar
@@ -86,23 +95,23 @@ export function DashboardTabs({
 
       {tab === 'eureka-sets' &&
         (view === 'table' ? (
-          <EurekaSetTable rows={eurekaSets} {...paginationProps} />
+          <EurekaSetTable rows={sortedEurekaSets} {...paginationProps} />
         ) : (
-          <EurekaSetList rows={eurekaSets} {...paginationProps} />
+          <EurekaSetList rows={sortedEurekaSets} {...paginationProps} />
         ))}
 
       {tab === 'eureka-variants' &&
         (view === 'table' ? (
-          <EurekaVariantTable rows={eurekaVariants} {...paginationProps} />
+          <EurekaVariantTable rows={sortedVariants} {...paginationProps} />
         ) : (
-          <EurekaVariantList rows={eurekaVariants} {...paginationProps} />
+          <EurekaVariantList rows={sortedVariants} {...paginationProps} />
         ))}
 
       {tab === 'trials' &&
         (view === 'table' ? (
-          <TrialTable rows={trials} {...paginationProps} />
+          <TrialTable rows={sortedTrials} {...paginationProps} />
         ) : (
-          <TrialList rows={trials} {...paginationProps} />
+          <TrialList rows={sortedTrials} {...paginationProps} />
         ))}
     </Container>
   )
