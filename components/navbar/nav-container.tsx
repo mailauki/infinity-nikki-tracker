@@ -517,7 +517,7 @@ export default function NavContainer({
 
   if (isEurekaPage) {
     return (
-      <EurekaDataProvider isLoggedIn={isLoggedIn} userId={userId}>
+      <EurekaDataProvider isAdmin={isAdmin} isLoggedIn={isLoggedIn} userId={userId}>
         {content}
       </EurekaDataProvider>
     )

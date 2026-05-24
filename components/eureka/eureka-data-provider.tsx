@@ -29,10 +29,12 @@ async function fetchJson<T>(url: string): Promise<T> {
 
 export default function EurekaDataProvider({
   isLoggedIn,
+  isAdmin = false,
   userId,
   children,
 }: {
   isLoggedIn: boolean
+  isAdmin?: boolean
   userId: string | null
   children: React.ReactNode
 }) {
@@ -169,6 +171,7 @@ export default function EurekaDataProvider({
         colors,
         trials,
         isLoggedIn,
+        isAdmin,
         isLoading,
         isError,
         isObtainedError,

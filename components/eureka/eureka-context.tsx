@@ -10,6 +10,7 @@ interface EurekaDataContextValue {
   colors: Color[]
   trials: Trial[]
   isLoggedIn: boolean
+  isAdmin: boolean
   isLoading: boolean
   isError: boolean
   isObtainedError: boolean
@@ -26,6 +27,7 @@ export const EurekaDataContext = createContext<EurekaDataContextValue>({
   colors: [],
   trials: [],
   isLoggedIn: false,
+  isAdmin: false,
   isLoading: true,
   isError: false,
   isObtainedError: false,
