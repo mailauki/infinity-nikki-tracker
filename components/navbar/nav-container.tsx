@@ -1,234 +1,33 @@
 'use client'
 
 import * as React from 'react'
-import { styled, useTheme, Theme, CSSObject, useColorScheme } from '@mui/material/styles'
+import { useTheme, useColorScheme } from '@mui/material/styles'
 import Box from '@mui/material/Box'
-import MuiDrawer from '@mui/material/Drawer'
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import Stack from '@mui/material/Stack'
-import {
-  Button,
-  CircularProgress,
-  Container,
-  Fab,
-  Paper,
-  Slide,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { Button, CircularProgress, Container, Fab, Slide, Tooltip, Typography } from '@mui/material'
+import { FilterList, KeyboardArrowUp, MenuOpen } from '@mui/icons-material'
+import { usePathname } from 'next/navigation'
+import { JwtPayload } from '@supabase/supabase-js'
+import Link from 'next/link'
+import Image from 'next/image'
+
 import { NavMain } from './nav-main'
 import { NavSecondary } from './nav-secondary'
-import { navLinksData } from '@/lib/nav-links'
 import { NavUser } from './nav-user'
-import { JwtPayload } from '@supabase/supabase-js'
 import { NavExtra } from './nav-extra'
-import Link from 'next/link'
 import Footer from './nav-footer'
-import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
-import { Edit, EditOff, FilterList, KeyboardArrowUp, MenuOpen } from '@mui/icons-material'
-import { toTitle } from '@/lib/utils'
 import FilterMenu from './filter-menu'
+import { AppBar, AppBarTitle, Drawer, MainContainer, StyledToolbar } from './nav-styled'
+import { EurekaSetEditButton, ProfileEditButton, TrialEditButton } from './appbar-actions'
+import { useScrollContainer } from './use-scroll-container'
+import { navLinksData } from '@/lib/nav-links'
+import { toTitle } from '@/lib/utils'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import ProfileEditProvider from '@/components/profile/profile-edit-provider'
-import { useProfileEdit } from '@/components/profile/profile-context'
-
-function EurekaSetEditButton({ slug, isAdmin }: { slug: string; isAdmin: boolean }) {
-  if (!isAdmin) return null
-  return (
-    <Tooltip title={`Edit ${toTitle(slug) || 'Eureka'} Set`}>
-      <IconButton aria-label="Edit Eureka Set" href={`/eureka-set/edit/${slug}`}>
-        <Edit />
-      </IconButton>
-    </Tooltip>
-  )
-}
-
-function TrialEditButton({ slug, isAdmin }: { slug: string; isAdmin: boolean }) {
-  if (!isAdmin) return null
-  return (
-    <Tooltip title={`Edit ${toTitle(slug) || 'Trial'}`}>
-      <IconButton aria-label="Edit Trial" href={`/trial/edit/${slug}`}>
-        <Edit />
-      </IconButton>
-    </Tooltip>
-  )
-}
-
-function ProfileEditButton() {
-  const context = useProfileEdit()
-  if (!context) return null
-  const { isEditing, setIsEditing } = context
-  return (
-    <IconButton
-      aria-label={isEditing ? 'Cancel editing' : 'Edit profile'}
-      onClick={() => setIsEditing(!isEditing)}
-    >
-      {isEditing ? <EditOff /> : <Edit />}
-    </IconButton>
-  )
-}
-
-const DRAWER_WIDTH = 240
-const xsHeight = 48 * 3 // based on number of toolbars and toolbar minHeight
-const smHeight = 64 * 3
-const mdHeight = 56 * 3
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  borderColor: 'transparent',
-  marginLeft: '1rem',
-  marginRight: '0.5rem',
-  width: '100%',
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: 'hidden',
-  [theme.breakpoints.up('sm')]: {
-    width: DRAWER_WIDTH,
-  },
-})
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  borderColor: 'transparent',
-  marginLeft: 0,
-  marginRight: '0.5rem',
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: 'hidden',
-  width: 0,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-    marginLeft: '1rem',
-    marginRight: '0.5rem',
-  },
-})
-
-const MainContainer = styled(Paper, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme }) => ({
-  minWidth: 0,
-  flex: 1,
-  // Default height for small screens (portrait)
-  height: `calc(100vh - ${mdHeight + 6}px)`,
-  [theme.breakpoints.up('xs')]: {
-    '@media (orientation: landscape)': {
-      height: `calc(100vh - ${xsHeight + 6}px)`,
-    },
-  },
-  // Large screens (sm breakpoint and up)
-  [theme.breakpoints.up('sm')]: {
-    height: `calc(100vh - ${smHeight + 6}px)`,
-  },
-
-  overflowY: 'auto',
-  overflowX: 'hidden',
-  overscrollBehavior: 'auto',
-  borderRadius: '12px',
-  marginLeft: '0.5rem',
-  marginRight: '1rem',
-}))
-
-interface AppBarTitleProps {
-  open?: boolean
-  isHome?: boolean
-}
-
-const AppBarTitle = styled(Stack, {
-  shouldForwardProp: (prop) => prop !== 'open' && prop !== 'isHome',
-})<AppBarTitleProps>(({ theme, open, isHome }) => ({
-  flex: 1,
-  alignSelf: 'flex-end',
-  color: isHome ? 'transparent' : 'inherit',
-  marginLeft: 0,
-  transition: theme.transitions.create('margin-left', {
-    easing: theme.transitions.easing.sharp,
-    duration: open
-      ? theme.transitions.duration.enteringScreen
-      : theme.transitions.duration.leavingScreen,
-  }),
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: open ? 0 : '64px',
-  },
-}))
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean
-}
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})<AppBarProps>(({ theme }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  borderTop: 0,
-  borderLeft: 0,
-  borderRight: 0,
-  borderColor: 'transparent',
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        display: 'none',
-        transition: theme.transitions.create(['width', 'margin'], {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-        [theme.breakpoints.up('sm')]: {
-          display: 'flex',
-          marginLeft: DRAWER_WIDTH,
-          width: `calc(100% - ${DRAWER_WIDTH}px)`,
-        },
-      },
-    },
-  ],
-}))
-
-const StyledToolbar = styled(Toolbar)(({ theme }) => ({
-  alignItems: 'flex-start',
-  paddingTop: theme.spacing(1),
-  paddingBottom: theme.spacing(2),
-  // Override media queries injected by theme.mixins.toolbar
-  minHeight: 114,
-  [theme.breakpoints.up('sm')]: {
-    minHeight: 128,
-  },
-}))
-
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(({ theme }) => ({
-  width: 0,
-  flexShrink: 0,
-  whiteSpace: 'nowrap',
-  boxSizing: 'border-box',
-  [theme.breakpoints.up('sm')]: {
-    width: DRAWER_WIDTH,
-  },
-  variants: [
-    {
-      props: ({ open }) => open,
-      style: {
-        ...openedMixin(theme),
-        '& .MuiDrawer-paper': openedMixin(theme),
-      },
-    },
-    {
-      props: ({ open }) => !open,
-      style: {
-        ...closedMixin(theme),
-        '& .MuiDrawer-paper': closedMixin(theme),
-      },
-    },
-  ],
-}))
 
 const allLinks = [
   navLinksData.home,
@@ -254,17 +53,9 @@ export default function NavContainer({
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
 
-  const router = useRouter()
-
   const [open, setOpen] = React.useState(false)
 
-  const handleDrawerOpen = () => {
-    setOpen(true)
-  }
-
-  const handleDrawerClose = () => {
-    setOpen(false)
-  }
+  const { setScrollRef, scrollToTop, isVisible, pullDistance, isRefreshing } = useScrollContainer()
 
   const bestMatch = allLinks
     .filter(
@@ -284,71 +75,6 @@ export default function NavContainer({
   const trialSlug = pathname.match(/^\/eureka\/trials\/([^/]+)$/)?.[1] ?? null
   const userId = user?.sub ?? null
   const isLoggedIn = !!userId
-
-  const [isVisible, setIsVisible] = React.useState(false)
-  const scrollRef = React.useRef<HTMLDivElement>(null)
-
-  const pullStartY = React.useRef(0)
-  const [pullDistance, setPullDistance] = React.useState(0)
-  const [isRefreshing, setIsRefreshing] = React.useState(false)
-  const PULL_THRESHOLD = 80
-
-  const handleTouchStart = React.useCallback((e: TouchEvent) => {
-    if (scrollRef.current && scrollRef.current.scrollTop === 0) {
-      pullStartY.current = e.touches[0].clientY
-    } else {
-      pullStartY.current = 0
-    }
-  }, [])
-
-  const handleTouchMove = React.useCallback((e: TouchEvent) => {
-    if (!pullStartY.current) return
-    const delta = e.touches[0].clientY - pullStartY.current
-    if (delta > 0) setPullDistance(Math.min(delta * 0.5, PULL_THRESHOLD))
-  }, [])
-
-  const handleTouchEnd = React.useCallback(() => {
-    if (pullDistance >= PULL_THRESHOLD && !isRefreshing) {
-      setIsRefreshing(true)
-      router.refresh()
-      setTimeout(() => {
-        setIsRefreshing(false)
-        setPullDistance(0)
-      }, 1000)
-    } else {
-      setPullDistance(0)
-    }
-    pullStartY.current = 0
-  }, [pullDistance, isRefreshing, router])
-
-  const scrollToTop = () => {
-    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  const handleScroll = React.useCallback(() => {
-    if (!scrollRef.current) return
-    setIsVisible(scrollRef.current.scrollTop > 300)
-  }, [])
-
-  const setScrollRef = React.useCallback(
-    (node: HTMLDivElement | null) => {
-      scrollRef.current?.removeEventListener('scroll', handleScroll)
-      scrollRef.current?.removeEventListener('touchstart', handleTouchStart)
-      scrollRef.current?.removeEventListener('touchmove', handleTouchMove)
-      scrollRef.current?.removeEventListener('touchend', handleTouchEnd)
-      scrollRef.current = node
-      node?.addEventListener('scroll', handleScroll)
-      node?.addEventListener('touchstart', handleTouchStart, { passive: true })
-      node?.addEventListener('touchmove', handleTouchMove, { passive: true })
-      node?.addEventListener('touchend', handleTouchEnd)
-    },
-    [handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd]
-  )
-
-  React.useEffect(() => {
-    scrollRef.current?.scrollTo({ top: 0, behavior: 'instant' })
-    setIsVisible(false)
-  }, [pathname])
 
   const content = (
     <>
@@ -374,7 +100,7 @@ export default function NavContainer({
                     },
                     open && { display: 'none' },
                   ]}
-                  onClick={handleDrawerOpen}
+                  onClick={() => setOpen(true)}
                 >
                   <MenuIcon />
                 </IconButton>
@@ -464,22 +190,22 @@ export default function NavContainer({
 
         <Drawer className="h-screen overflow-hidden" open={open} variant="permanent">
           <StyledToolbar>
-            <IconButton onClick={handleDrawerClose}>
+            <IconButton onClick={() => setOpen(false)}>
               <MenuOpen />
             </IconButton>
           </StyledToolbar>
 
-          <NavMain items={navLinksData.navMain} open={open} onClose={handleDrawerClose} />
+          <NavMain items={navLinksData.navMain} open={open} onClose={() => setOpen(false)} />
 
           <Divider />
 
           <NavSecondary
             items={navLinksData.navSecondary.filter((item) => !item.adminOnly || isAdmin)}
             open={open}
-            onClose={handleDrawerClose}
+            onClose={() => setOpen(false)}
           />
 
-          <NavExtra items={navLinksData.navExtra} open={open} onClose={handleDrawerClose} />
+          <NavExtra items={navLinksData.navExtra} open={open} onClose={() => setOpen(false)} />
         </Drawer>
 
         <Box className="h-screen" component="main" sx={{ flex: 1, minWidth: 0 }}>
@@ -525,11 +251,7 @@ export default function NavContainer({
                   aria-label="scroll back to top"
                   color="primary"
                   size="small"
-                  sx={{
-                    position: 'fixed',
-                    bottom: 80,
-                    right: 50,
-                  }}
+                  sx={{ position: 'fixed', bottom: 80, right: 50 }}
                   onClick={scrollToTop}
                 >
                   <KeyboardArrowUp />
