@@ -65,13 +65,6 @@ export function NavMain({
                       },
                 ]}
               >
-                {/* <LazyAvatar
-                alt={item.title}
-                src={item.image}
-                sx={{ filter: isDarkMode ? 'none' : 'brightness(40%)' }}
-              >
-                <ImageIcon />
-              </LazyAvatar> */}
                 <Avatar
                   alt={item.title}
                   src={item.image}
