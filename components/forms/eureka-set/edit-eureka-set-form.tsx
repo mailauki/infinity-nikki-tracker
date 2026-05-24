@@ -405,7 +405,17 @@ export default function EditEurekaSetForm({
 
         {initialVariants.length > 0 && (
           <Stack spacing={2}>
-            {[...new Set(initialVariants.map((v) => v.color))].map((colorSlug) => {
+            {[...new Set(initialVariants.map((v) => v.color))]
+              .sort((a, b) => {
+                if (a === defaultColor) return -1
+                if (b === defaultColor) return 1
+                const aTitle = colors.find((c) => c.slug === a)?.title?.toLowerCase() ?? ''
+                const bTitle = colors.find((c) => c.slug === b)?.title?.toLowerCase() ?? ''
+                if (aTitle === 'iridescent') return 1
+                if (bTitle === 'iridescent') return -1
+                return 0
+              })
+              .map((colorSlug) => {
               const colorObj = colors.find((c) => c.slug === colorSlug)
               const colorVariants = initialVariants.filter((v) => v.color === colorSlug)
               return (

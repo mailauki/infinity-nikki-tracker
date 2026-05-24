@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Avatar, Box, ButtonBase, CircularProgress } from '@mui/material'
 import ImageIcon from '@mui/icons-material/Image'
+import FileUploadIcon from '@mui/icons-material/FileUpload'
 
 const SIZE = 140
 
@@ -85,21 +86,22 @@ export default function ImageUpload({
         >
           <ImageIcon fontSize="large" />
         </Avatar>
-        {uploading && (
-          <Box
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              borderRadius: 1,
-              bgcolor: 'action.disabledBackground',
-            }}
-          >
-            <CircularProgress size={32} />
-          </Box>
-        )}
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: 1,
+            bgcolor: 'action.disabledBackground',
+            opacity: 0,
+            transition: 'opacity 0.2s',
+            'label:hover &': { opacity: 1 },
+          }}
+        >
+          {uploading ? <CircularProgress size={32} /> : <FileUploadIcon fontSize="large" />}
+        </Box>
       </Box>
       <input
         accept="image/*"
