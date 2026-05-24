@@ -7,9 +7,12 @@ import {
   CardActions,
   CardContent,
   CardHeader,
+  IconButton,
   List,
   ListItem,
   Skeleton,
+  Tooltip,
+  Typography,
 } from '@mui/material'
 
 import LazyCardMedia from './lazy-card-media'
@@ -18,9 +21,10 @@ import { ViewAllButton } from '@/components/view-all-button'
 import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { EurekaSet, Total } from '@/lib/types/eureka'
+import { Edit } from '@mui/icons-material'
 
 export default function TrialsContent() {
-  const { eurekaSets, trials, isLoggedIn, isLoading, isError } = useEurekaData()
+  const { eurekaSets, trials, isLoggedIn, isAdmin, isLoading, isError } = useEurekaData()
 
   if (isError) {
     return <ErrorAlert message="Failed to load Eureka data. Please refresh the page." />
@@ -40,22 +44,51 @@ export default function TrialsContent() {
     ...trial,
     eurekaSets: eurekaSets
       .filter((eurekaSet) => eurekaSet.eureka_set_trials.some((t) => t.trial === trial.slug))
-      .slice(0, 2),
+      .sort((a, b) => b.rarity! - a.rarity!)
+      .slice(0, 2)
+      .sort((a, b) => a.id! - b.id!),
   })) as Total[]
 
   return (
     <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
       {totalTrials.map((trial) => (
-        <TrialCard key={trial.title} isLoggedIn={isLoggedIn} trial={trial} />
+        <TrialCard key={trial.title} isAdmin={isAdmin} isLoggedIn={isLoggedIn} trial={trial} />
       ))}
     </Box>
   )
 }
 
-function TrialCard({ trial, isLoggedIn }: { trial: Total; isLoggedIn: boolean }) {
+function TrialCard({
+  trial,
+  isLoggedIn,
+  isAdmin,
+}: {
+  trial: Total
+  isLoggedIn: boolean
+  isAdmin: boolean
+}) {
   return (
     <Card>
-      <CardHeader title={trial.title} />
+      <CardHeader
+        disableTypography
+        action={
+          isAdmin && (
+            <Tooltip title={`Edit ${trial.title}`}>
+              <IconButton href={`/trial/edit/${trial.slug}`}>
+                <Edit />
+              </IconButton>
+            </Tooltip>
+          )
+        }
+        title={
+          <Typography noWrap component="h2" sx={{ maxWidth: { xs: 480, md: 340 } }} variant="h6">
+            {trial.title
+              .split(' ')
+              .filter((word) => word !== 'Trial' && word !== 'Phantom' && word !== 'Trial:')
+              .join(' ')}
+          </Typography>
+        }
+      />
       <LazyCardMedia image={trial.image_url!} sx={{ height: 160 }} title={trial.title} />
       <CardContent sx={{ p: 0 }}>
         <List sx={{ width: '100%' }}>

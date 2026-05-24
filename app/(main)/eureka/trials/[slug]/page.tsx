@@ -34,14 +34,14 @@ async function Trial({ slug }: { slug: string }) {
   const [trial, eurekaSets] = await Promise.all([getTrial(slug), getEurekaSets()])
   if (!trial) notFound()
 
-  const trialSets = eurekaSets.filter((set) =>
-    set.eureka_set_trials.some((t) => t.trial === trial.slug)
-  )
+  const trialSets = eurekaSets
+    .filter((set) => set.eureka_set_trials.some((t) => t.trial === trial.slug))
+    .sort((a, b) => b.rarity! - a.rarity!)
 
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
-        <LazyCardMedia image={trial.image_url!} sx={{ height: 240 }} title={trial.title} />
+        <LazyCardMedia image={trial.image_url!} sx={{ height: 360 }} title={trial.title} />
         <Box
           sx={{
             display: 'grid',

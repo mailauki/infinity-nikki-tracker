@@ -151,6 +151,21 @@ export default function AboutPage() {
                 primary={
                   <Anchor
                     color="textSecondary"
+                    href="https://infinitynikki.infoldgames.com/"
+                    rel="noreferrer"
+                    target="_blank"
+                    variant="body1"
+                  >
+                    Infinity Nikki Official Website
+                  </Anchor>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Anchor
+                    color="textSecondary"
                     href="https://infinitynikki.fandom.com/"
                     rel="noreferrer"
                     target="_blank"
@@ -166,12 +181,27 @@ export default function AboutPage() {
                 primary={
                   <Anchor
                     color="textSecondary"
-                    href="https://infinitynikki.infoldgames.com/"
+                    href="https://www.miralandcollection.com/"
                     rel="noreferrer"
                     target="_blank"
                     variant="body1"
                   >
-                    Infinity Nikki Official Website
+                    Miraland Collection
+                  </Anchor>
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ display: 'list-item' }}>
+              <ListItemText
+                primary={
+                  <Anchor
+                    color="textSecondary"
+                    href="https://infinitynikkilibrary.com/"
+                    rel="noreferrer"
+                    target="_blank"
+                    variant="body1"
+                  >
+                    Infinity Nikki Library
                   </Anchor>
                 }
               />
