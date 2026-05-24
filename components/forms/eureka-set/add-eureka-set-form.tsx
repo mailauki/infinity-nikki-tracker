@@ -4,17 +4,25 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Alert,
+  Box,
   Button,
+  Chip,
   FormControl,
   IconButton,
   InputAdornment,
   InputLabel,
+  ListItemAvatar,
+  ListItemText,
+  ListSubheader,
   MenuItem,
+  OutlinedInput,
   Select,
   SelectChangeEvent,
   Stack,
   TextField,
 } from '@mui/material'
+import { ColorLens } from '@mui/icons-material'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug, toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
@@ -248,11 +256,20 @@ export default function AddEurekaSetForm({
                 )
               }
             >
-              {trials.map((t) => (
-                <MenuItem key={t.slug} value={t.slug!}>
-                  {t.title}
-                </MenuItem>
-              ))}
+              {Object.entries(
+                trials.reduce<Record<string, typeof trials>>((groups, t) => {
+                  const realm = t.realm ?? 'Other'
+                  ;(groups[realm] ??= []).push(t)
+                  return groups
+                }, {})
+              ).flatMap(([realm, group]) => [
+                <ListSubheader key={realm}>{realm}</ListSubheader>,
+                ...group.map((t) => (
+                  <MenuItem key={t.slug} value={t.slug!}>
+                    {t.title}
+                  </MenuItem>
+                )),
+              ])}
             </Select>
           </FormControl>
         </Stack>
@@ -267,7 +284,27 @@ export default function AddEurekaSetForm({
         <FormControl disabled={colorSelect.length === 0}>
           <InputLabel>Default Color</InputLabel>
           <Select
-            label="Default Color"
+            input={<OutlinedInput label="Default Color" />}
+            renderValue={(slug) => {
+              const color = colors.find((c) => c.slug === slug)
+              return (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  <Chip
+                    icon={
+                      <LazyAvatar
+                        alt={slug}
+                        color="transparent"
+                        size="xs"
+                        src={color?.image_url ?? ''}
+                      >
+                        <ColorLens fontSize="inherit" />
+                      </LazyAvatar>
+                    }
+                    label={color?.title ?? slug}
+                  />
+                </Box>
+              )
+            }}
             value={defaultColor}
             onChange={(e) => setDefaultColor(e.target.value)}
           >
@@ -276,7 +313,17 @@ export default function AddEurekaSetForm({
               const color = colors.find((c) => c.slug === slug)
               return (
                 <MenuItem key={slug} value={slug}>
-                  {color?.title ?? slug}
+                  <ListItemAvatar sx={{ mr: -1.5 }}>
+                    <LazyAvatar
+                      alt={color?.title ?? slug}
+                      color="transparent"
+                      size="xs"
+                      src={color?.image_url ?? ''}
+                    >
+                      <ColorLens fontSize="inherit" />
+                    </LazyAvatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={color?.title ?? slug} />
                 </MenuItem>
               )
             })}
