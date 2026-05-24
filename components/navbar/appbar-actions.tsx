@@ -3,14 +3,17 @@
 import IconButton from '@mui/material/IconButton'
 import { Tooltip } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
+import { usePathname } from 'next/navigation'
 import { toTitle } from '@/lib/utils'
 import { useProfileEdit } from '@/components/profile/profile-context'
 
 export function EurekaSetEditButton({ slug, isAdmin }: { slug: string; isAdmin: boolean }) {
+  const pathname = usePathname()
   if (!isAdmin) return null
+  const back = `?back=${encodeURIComponent(pathname)}`
   return (
     <Tooltip title={`Edit ${toTitle(slug) || 'Eureka'} Set`}>
-      <IconButton aria-label="Edit Eureka Set" href={`/eureka-set/edit/${slug}`}>
+      <IconButton aria-label="Edit Eureka Set" href={`/eureka-set/edit/${slug}${back}`}>
         <Edit />
       </IconButton>
     </Tooltip>
@@ -18,10 +21,12 @@ export function EurekaSetEditButton({ slug, isAdmin }: { slug: string; isAdmin: 
 }
 
 export function TrialEditButton({ slug, isAdmin }: { slug: string; isAdmin: boolean }) {
+  const pathname = usePathname()
   if (!isAdmin) return null
+  const back = `?back=${encodeURIComponent(pathname)}`
   return (
     <Tooltip title={`Edit ${toTitle(slug) || 'Trial'}`}>
-      <IconButton aria-label="Edit Trial" href={`/trial/edit/${slug}`}>
+      <IconButton aria-label="Edit Trial" href={`/trial/edit/${slug}${back}`}>
         <Edit />
       </IconButton>
     </Tooltip>

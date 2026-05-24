@@ -46,6 +46,7 @@ export default function AddEurekaSetForm({
   const [error, setError] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState<boolean>(false)
   const [colorSelect, setColorSelect] = useState<string[]>([])
+  const [defaultColor, setDefaultColor] = useState<string>('')
 
   const maxColorsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
   const maxColors = typeof rarity === 'number' ? (maxColorsByRarity[rarity] ?? 5) : 5
@@ -53,6 +54,10 @@ export default function AddEurekaSetForm({
   useEffect(() => {
     setColorSelect((prev) => (prev.length > maxColors ? prev.slice(0, maxColors) : prev))
   }, [maxColors])
+
+  useEffect(() => {
+    if (defaultColor && !colorSelect.includes(defaultColor)) setDefaultColor('')
+  }, [colorSelect, defaultColor])
 
   const handleColorChange = (event: SelectChangeEvent<typeof colorSelect>) => {
     const {
@@ -114,6 +119,7 @@ export default function AddEurekaSetForm({
           category: cat.slug,
           color,
           slug: toSlugVariant(slug.trim(), cat.slug, color),
+          default: defaultColor ? color === defaultColor : false,
         }))
       )
       const { error: variantError } = await supabase.from('eureka_variants').insert(variants)
@@ -257,6 +263,25 @@ export default function AddEurekaSetForm({
           handleChange={handleColorChange}
           maxColors={maxColors}
         />
+
+        <FormControl disabled={colorSelect.length === 0}>
+          <InputLabel>Default Color</InputLabel>
+          <Select
+            label="Default Color"
+            value={defaultColor}
+            onChange={(e) => setDefaultColor(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {colorSelect.map((slug) => {
+              const color = colors.find((c) => c.slug === slug)
+              return (
+                <MenuItem key={slug} value={slug}>
+                  {color?.title ?? slug}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </FormControl>
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href="/dashboard" variant="outlined">

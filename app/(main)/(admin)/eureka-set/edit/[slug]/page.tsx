@@ -61,11 +61,12 @@ async function EditEurekaSet({
 
   const { data: variantRows, error: variantRowsError } = await supabase
     .from('eureka_variants')
-    .select('color')
+    .select('color, default')
     .eq('eureka_set', eurekaSet.slug!)
     .not('color', 'is', null)
   if (variantRowsError) throw variantRowsError
   const initialColors = [...new Set(variantRows.map((v) => v.color as string))]
+  const initialDefaultColor = variantRows.find((v) => v.default)?.color ?? ''
 
   return (
     <EditEurekaSetForm
@@ -74,6 +75,7 @@ async function EditEurekaSet({
       colors={colors ?? []}
       eurekaSet={eurekaSet}
       initialColors={initialColors}
+      initialDefaultColor={initialDefaultColor}
       labels={labels ?? []}
       styles={styles ?? []}
       trials={trials ?? []}
