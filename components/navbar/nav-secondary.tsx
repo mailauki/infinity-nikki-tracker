@@ -19,36 +19,20 @@ export function NavSecondary({
             <ListItemButton
               component={Link}
               href={item.url}
-              sx={[
-                {
-                  minHeight: 48,
-                  px: 2.5,
-                  borderRadius: 2,
-                },
-                open
-                  ? {
-                      justifyContent: 'initial',
-                    }
-                  : {
-                      justifyContent: 'center',
-                    },
-              ]}
+              sx={{
+                minHeight: 48,
+                px: 2.5,
+                borderRadius: 2,
+                justifyContent: 'initial',
+              }}
               onClick={onClose}
             >
               <ListItemIcon
-                sx={[
-                  {
-                    minWidth: 0,
-                    justifyContent: 'center',
-                  },
-                  open
-                    ? {
-                        mr: 3.5,
-                      }
-                    : {
-                        mr: 'auto',
-                      },
-                ]}
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  mr: 3.5,
+                }}
               >
                 {item.icon}
               </ListItemIcon>

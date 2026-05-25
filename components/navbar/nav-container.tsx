@@ -97,14 +97,19 @@ export default function NavContainer({
                   aria-label="open drawer"
                   color="inherit"
                   edge="start"
-                  sx={[
-                    {
-                      marginLeft: -1,
-                      marginRight: 5,
-                      zIndex: theme.zIndex.drawer + 1,
-                    },
-                    open && { display: 'none' },
-                  ]}
+                  sx={{
+                    marginLeft: -1,
+                    marginRight: 5,
+                    zIndex: theme.zIndex.drawer + 1,
+                    opacity: open ? 0 : 1,
+                    pointerEvents: open ? 'none' : 'auto',
+                    transition: theme.transitions.create('opacity', {
+                      easing: theme.transitions.easing.sharp,
+                      duration: open
+                        ? theme.transitions.duration.enteringScreen
+                        : theme.transitions.duration.leavingScreen,
+                    }),
+                  }}
                   onClick={() => setOpen(true)}
                 >
                   <MenuIcon />

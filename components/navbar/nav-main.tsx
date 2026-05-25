@@ -34,36 +34,20 @@ export function NavMain({
             <ListItemButton
               component={Link}
               href={item.url}
-              sx={[
-                {
-                  minHeight: 48,
-                  px: 2.5,
-                  borderRadius: 2,
-                },
-                open
-                  ? {
-                      justifyContent: 'initial',
-                    }
-                  : {
-                      justifyContent: 'center',
-                    },
-              ]}
+              sx={{
+                minHeight: 48,
+                px: 2.5,
+                borderRadius: 2,
+                justifyContent: 'initial',
+              }}
               onClick={onClose}
             >
               <ListItemAvatar
-                sx={[
-                  {
-                    minWidth: 0,
-                    justifyContent: 'center',
-                  },
-                  open
-                    ? {
-                        mr: 1.5,
-                      }
-                    : {
-                        mr: 'auto',
-                      },
-                ]}
+                sx={{
+                  minWidth: 0,
+                  justifyContent: 'center',
+                  mr: 1.5,
+                }}
               >
                 <Avatar
                   alt={item.title}
@@ -96,19 +80,11 @@ export function NavMain({
                     onClick={onClose}
                   >
                     <ListItemAvatar
-                      sx={[
-                        {
-                          minWidth: 0,
-                          justifyContent: 'center',
-                        },
-                        open
-                          ? {
-                              mr: 1.5,
-                            }
-                          : {
-                              mr: 'auto',
-                            },
-                      ]}
+                      sx={{
+                        minWidth: 0,
+                        justifyContent: 'center',
+                        mr: 1.5,
+                      }}
                     >
                       <Avatar
                         alt={subItem.title}
