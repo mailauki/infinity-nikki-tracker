@@ -330,6 +330,11 @@ export default function AddEurekaSetForm({
           </Select>
         </FormControl>
 
+        <Alert severity="info">
+          Images can be added after saving — use the eureka set edit form, or edit each variant
+          individually via its eureka variant form.
+        </Alert>
+
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href="/dashboard" variant="outlined">
             Cancel
