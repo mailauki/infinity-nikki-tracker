@@ -4,24 +4,33 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Alert,
+  Box,
   Button,
+  Chip,
   FormControl,
   IconButton,
   InputAdornment,
   InputLabel,
+  ListItemAvatar,
   ListItemText,
+  ListSubheader,
   MenuItem,
+  OutlinedInput,
   Select,
   SelectChangeEvent,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material'
+import { ColorLens } from '@mui/icons-material'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug, toSlugVariant } from '@/lib/utils'
 import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
 import { Category, Color, EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from './color-select'
 import { SparkleIcon } from '@/components/rarity-stars'
+import ImageUpload from '@/components/forms/image-upload'
 
 export default function EditEurekaSetForm({
   eurekaSet,
@@ -32,6 +41,7 @@ export default function EditEurekaSetForm({
   categories,
   initialColors,
   initialDefaultColor = '',
+  initialVariants = [],
   back,
 }: {
   eurekaSet: EurekaSetRaw
@@ -42,6 +52,7 @@ export default function EditEurekaSetForm({
   categories: Category[]
   initialColors: string[]
   initialDefaultColor?: string
+  initialVariants?: { slug: string; color: string; category: string; image_url: string | null }[]
   back?: string
 }) {
   const router = useRouter()
@@ -59,6 +70,9 @@ export default function EditEurekaSetForm({
   const [editSlug, setEditSlug] = useState<boolean>(false)
   const [colorSelect, setColorSelect] = useState<string[]>(initialColors)
   const [defaultColor, setDefaultColor] = useState<string>(initialDefaultColor)
+  const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
+    Object.fromEntries(initialVariants.map((v) => [v.slug, v.image_url]))
+  )
 
   const maxColorsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
   const maxColors = typeof rarity === 'number' ? (maxColorsByRarity[rarity] ?? 5) : 5
@@ -307,19 +321,28 @@ export default function EditEurekaSetForm({
                 )
               }
             >
-              {trials.map((t) => {
-                const selected = selectedTrials.includes(t.slug)
-                const SelectionIcon = selected ? CheckBox : CheckBoxOutlineBlank
-                return (
-                  <MenuItem key={t.slug} value={t.slug!}>
-                    <SelectionIcon
-                      fontSize="small"
-                      style={{ marginRight: 8, padding: 9, boxSizing: 'content-box' }}
-                    />
-                    <ListItemText primary={t.title} />
-                  </MenuItem>
-                )
-              })}
+              {Object.entries(
+                trials.reduce<Record<string, typeof trials>>((groups, t) => {
+                  const realm = t.realm ?? 'Other'
+                  ;(groups[realm] ??= []).push(t)
+                  return groups
+                }, {})
+              ).flatMap(([realm, group]) => [
+                <ListSubheader key={realm}>{realm}</ListSubheader>,
+                ...group.map((t) => {
+                  const selected = selectedTrials.includes(t.slug)
+                  const SelectionIcon = selected ? CheckBox : CheckBoxOutlineBlank
+                  return (
+                    <MenuItem key={t.slug} value={t.slug!}>
+                      <SelectionIcon
+                        fontSize="small"
+                        style={{ marginRight: 8, padding: 9, boxSizing: 'content-box' }}
+                      />
+                      <ListItemText primary={t.title} />
+                    </MenuItem>
+                  )
+                }),
+              ])}
             </Select>
           </FormControl>
         </Stack>
@@ -334,7 +357,27 @@ export default function EditEurekaSetForm({
         <FormControl disabled={colorSelect.length === 0}>
           <InputLabel>Default Color</InputLabel>
           <Select
-            label="Default Color"
+            input={<OutlinedInput label="Default Color" />}
+            renderValue={(slug) => {
+              const color = colors.find((c) => c.slug === slug)
+              return (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  <Chip
+                    icon={
+                      <LazyAvatar
+                        alt={slug}
+                        color="transparent"
+                        size="xs"
+                        src={color?.image_url ?? ''}
+                      >
+                        <ColorLens fontSize="inherit" />
+                      </LazyAvatar>
+                    }
+                    label={color?.title ?? slug}
+                  />
+                </Box>
+              )
+            }}
             value={defaultColor}
             onChange={(e) => setDefaultColor(e.target.value)}
           >
@@ -343,12 +386,66 @@ export default function EditEurekaSetForm({
               const color = colors.find((c) => c.slug === slug)
               return (
                 <MenuItem key={slug} value={slug}>
-                  {color?.title ?? slug}
+                  <ListItemAvatar sx={{ mr: -1.5 }}>
+                    <LazyAvatar
+                      alt={color?.title ?? slug}
+                      color="transparent"
+                      size="xs"
+                      src={color?.image_url ?? ''}
+                    >
+                      <ColorLens fontSize="inherit" />
+                    </LazyAvatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={color?.title ?? slug} />
                 </MenuItem>
               )
             })}
           </Select>
         </FormControl>
+
+        {initialVariants.length > 0 && (
+          <Stack spacing={2}>
+            {[...new Set(initialVariants.map((v) => v.color))]
+              .sort((a, b) => {
+                if (a === defaultColor) return -1
+                if (b === defaultColor) return 1
+                const aTitle = colors.find((c) => c.slug === a)?.title?.toLowerCase() ?? ''
+                const bTitle = colors.find((c) => c.slug === b)?.title?.toLowerCase() ?? ''
+                if (aTitle === 'iridescent') return 1
+                if (bTitle === 'iridescent') return -1
+                return 0
+              })
+              .map((colorSlug) => {
+                const colorObj = colors.find((c) => c.slug === colorSlug)
+                const colorVariants = initialVariants.filter((v) => v.color === colorSlug)
+                return (
+                  <Stack key={colorSlug} spacing={1}>
+                    <Typography variant="subtitle2">{colorObj?.title ?? colorSlug}</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                      {colorVariants.map((variant) => {
+                        const catObj = categories.find((c) => c.slug === variant.category)
+                        return (
+                          <Stack key={variant.slug} alignItems="center" spacing={0.5}>
+                            <ImageUpload
+                              slug={variant.slug}
+                              table="eureka_variants"
+                              url={variantImages[variant.slug] ?? null}
+                              onUpload={(url) =>
+                                setVariantImages((prev) => ({ ...prev, [variant.slug]: url }))
+                              }
+                            />
+                            <Typography variant="caption">
+                              {catObj?.title ?? variant.category}
+                            </Typography>
+                          </Stack>
+                        )
+                      })}
+                    </Box>
+                  </Stack>
+                )
+              })}
+          </Stack>
+        )}
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href={backUrl} variant="outlined">
