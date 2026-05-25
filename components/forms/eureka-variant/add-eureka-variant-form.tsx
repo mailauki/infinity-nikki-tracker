@@ -120,7 +120,7 @@ export default function AddEurekaVariantForm({
           <InputLabel>Color</InputLabel>
           <Select label="Color" value={color} onChange={(e) => setColor(e.target.value)}>
             <MenuItem value="">—</MenuItem>
-            {colors.map((c) => (
+            {[...colors].sort((a, b) => (a.slug === 'iridescent' ? 1 : b.slug === 'iridescent' ? -1 : 0)).map((c) => (
               <MenuItem key={c.slug} value={c.slug}>
                 {c.title}
               </MenuItem>

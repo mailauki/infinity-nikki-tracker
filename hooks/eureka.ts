@@ -1,5 +1,24 @@
 import { Category, Color, EurekaVariant, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
 
+function colorRank(slug: string | null, defaultColorSlug: string | null | undefined): number {
+  if (slug === defaultColorSlug) return -1
+  if (slug === 'iridescent') return 1
+  return 0
+}
+
+export function sortVariants(
+  variants: EurekaVariant[],
+  defaultColorSlug: string | null | undefined,
+  categoryOrder: string[]
+): EurekaVariant[] {
+  return [...variants].sort((a, b) => {
+    const colorDiff = colorRank(a.color, defaultColorSlug) - colorRank(b.color, defaultColorSlug)
+    if (colorDiff !== 0) return colorDiff
+    if (a.color !== b.color) return 0
+    return categoryOrder.indexOf(a.category ?? '') - categoryOrder.indexOf(b.category ?? '')
+  })
+}
+
 export function createEurekaSet({
   eurekaSet,
   categories,
@@ -9,13 +28,19 @@ export function createEurekaSet({
   categories: Category[] | null
   colors: Color[] | null
 }) {
+  const defaultColorSlug = eurekaSet.eureka_variants.find((v) => v.default)?.color
+  const categoryOrder = (categories ?? []).map((c) => c.slug)
+  const colorSlugs = [...new Set(eurekaSet.eureka_variants.map((v) => v.color))]
+  const resolvedColors = colorSlugs
+    .flatMap((slug) => colors?.filter((c) => c.slug === slug) ?? [])
+    .sort((a, b) => colorRank(a.slug, defaultColorSlug) - colorRank(b.slug, defaultColorSlug))
+
   const eureka = {
     ...eurekaSet,
     image_url: eurekaSet.eureka_variants.find((variant) => variant.default)?.image_url,
     categories: categories,
-    colors: [...new Set(eurekaSet.eureka_variants.map((variant) => variant.color))].flatMap(
-      (colorSlug) => colors?.filter((color) => color.slug === colorSlug)
-    ),
+    colors: resolvedColors,
+    eureka_variants: sortVariants(eurekaSet.eureka_variants as EurekaVariant[], defaultColorSlug, categoryOrder),
   } as EurekaSet
 
   return eureka
