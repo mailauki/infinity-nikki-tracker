@@ -82,34 +82,36 @@ export default function ColorSelect({
         value={colorSelect}
         onChange={handleChange}
       >
-        {[...colors].sort((a, b) => (a.slug === 'iridescent' ? 1 : b.slug === 'iridescent' ? -1 : 0)).map((color) => {
-          const selected = colorSelect.includes(color.slug)
-          const SelectionIcon = selected ? CheckBox : CheckBoxOutlineBlank
-          return (
-            <MenuItem
-              key={color.slug}
-              disabled={colorSelect.length >= maxColors && !colorSelect.includes(color.slug)}
-              style={getStyles(color.slug, colorSelect, theme)}
-              value={color.slug}
-            >
-              <SelectionIcon
-                fontSize="small"
-                style={{ marginRight: 8, padding: 9, boxSizing: 'content-box' }}
-              />
-              <ListItemAvatar sx={{ mr: -1.5 }}>
-                <LazyAvatar
-                  alt={color.title || color.slug}
-                  color="transparent"
-                  size="xs"
-                  src={color.image_url!}
-                >
-                  <ColorLens fontSize="inherit" />
-                </LazyAvatar>
-              </ListItemAvatar>
-              <ListItemText primary={color.title} />
-            </MenuItem>
-          )
-        })}
+        {[...colors]
+          .sort((a, b) => (a.slug === 'iridescent' ? 1 : b.slug === 'iridescent' ? -1 : 0))
+          .map((color) => {
+            const selected = colorSelect.includes(color.slug)
+            const SelectionIcon = selected ? CheckBox : CheckBoxOutlineBlank
+            return (
+              <MenuItem
+                key={color.slug}
+                disabled={colorSelect.length >= maxColors && !colorSelect.includes(color.slug)}
+                style={getStyles(color.slug, colorSelect, theme)}
+                value={color.slug}
+              >
+                <SelectionIcon
+                  fontSize="small"
+                  style={{ marginRight: 8, padding: 9, boxSizing: 'content-box' }}
+                />
+                <ListItemAvatar sx={{ mr: -1.5 }}>
+                  <LazyAvatar
+                    alt={color.title || color.slug}
+                    color="transparent"
+                    size="xs"
+                    src={color.image_url!}
+                  >
+                    <ColorLens fontSize="inherit" />
+                  </LazyAvatar>
+                </ListItemAvatar>
+                <ListItemText primary={color.title} />
+              </MenuItem>
+            )
+          })}
       </Select>
       <FormHelperText>
         {colorSelect.length}/{maxColors} colors selected

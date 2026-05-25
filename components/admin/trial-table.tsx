@@ -97,7 +97,7 @@ export function TrialTable({
     {
       header: 'Description',
       cell: (trial) => (
-        <Typography variant="body2" sx={{ maxWidth: 280 }}>
+        <Typography sx={{ maxWidth: 280 }} variant="body2">
           {trial.description ?? '—'}
         </Typography>
       ),

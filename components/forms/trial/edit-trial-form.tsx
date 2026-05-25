@@ -99,9 +99,9 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
         <TextField label="Realm" value={realm} onChange={(e) => setRealm(e.target.value)} />
 
         <TextField
+          multiline
           label="Description"
           minRows={3}
-          multiline
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />

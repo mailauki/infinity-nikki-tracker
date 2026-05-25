@@ -36,13 +36,13 @@ export function NavMain({
                 minHeight: 48,
                 borderRadius: 2,
                 justifyContent: 'initial',
-							}}
+              }}
               onClick={onClose}
             >
               <ListItemAvatar
                 sx={{
                   mr: 0.5,
-									ml: -0.5,
+                  ml: -0.5,
                 }}
               >
                 <Avatar
@@ -77,8 +77,8 @@ export function NavMain({
                   >
                     <ListItemAvatar
                       sx={{
-												mr: 0.5,
-												ml: -0.5,
+                        mr: 0.5,
+                        ml: -0.5,
                       }}
                     >
                       <Avatar
