@@ -93,27 +93,20 @@ export default function NavContainer({
                 justifyContent="flex-start"
                 sx={{ width: '64px' }}
               >
-                <IconButton
+								<IconButton
                   aria-label="open drawer"
                   color="inherit"
                   edge="start"
-                  sx={{
-                    marginLeft: -1,
-                    marginRight: 5,
-                    zIndex: theme.zIndex.drawer + 1,
-                    opacity: open ? 0 : 1,
-                    pointerEvents: open ? 'none' : 'auto',
-                    transition: theme.transitions.create('opacity', {
-                      easing: theme.transitions.easing.sharp,
-                      duration: open
-                        ? theme.transitions.duration.enteringScreen
-                        : theme.transitions.duration.leavingScreen,
-                    }),
-                  }}
-                  onClick={() => setOpen(true)}
-                >
-                  <MenuIcon />
-                </IconButton>
+									sx={{
+										zIndex: theme.zIndex.drawer + 1,
+										position: 'fixed',
+										top: 12,
+										left: 40,
+									}}
+									onClick={() => open ? setOpen(false) : setOpen(true)}
+								>
+									{open ? <MenuOpen /> : <MenuIcon />}
+								</IconButton>
               </Stack>
               <Stack
                 alignItems="center"
@@ -201,9 +194,6 @@ export default function NavContainer({
 
         <Drawer className="h-screen overflow-hidden" open={open} variant="permanent">
           <StyledToolbar>
-            <IconButton onClick={() => setOpen(false)}>
-              <MenuOpen />
-            </IconButton>
           </StyledToolbar>
 
           <NavMain items={navLinksData.navMain} open={open} onClose={() => setOpen(false)} />
