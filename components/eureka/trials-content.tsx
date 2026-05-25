@@ -10,7 +10,9 @@ import {
   IconButton,
   List,
   ListItem,
+  ListSubheader,
   Skeleton,
+  Stack,
   Tooltip,
   Typography,
 } from '@mui/material'
@@ -51,14 +53,34 @@ export default function TrialsContent() {
         .slice(0, 2)
         .sort((a, b) => a.id! - b.id!),
     }))
-    .sort((a, b) => (sortOrder === 'new' ? b.id - a.id : a.id - b.id)) as Total[]
+    .sort((a, b) => (sortOrder === 'new' ? b.id - a.id : a.id - b.id))
+
+  const realmGroups = Object.entries(
+    totalTrials.reduce<Record<string, typeof totalTrials>>((groups, trial) => {
+      const realm = trial.realm ?? 'Other'
+      ;(groups[realm] ??= []).push(trial)
+      return groups
+    }, {})
+  )
 
   return (
-    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
-      {totalTrials.map((trial) => (
-        <TrialCard key={trial.title} isAdmin={isAdmin} isLoggedIn={isLoggedIn} trial={trial} />
+    <Stack spacing={4}>
+      {realmGroups.map(([realm, group]) => (
+        <Box key={realm}>
+          <ListSubheader sx={{ bgcolor: 'surface.containerLowest' }}>{realm}</ListSubheader>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+            {group.map((trial) => (
+              <TrialCard
+                key={trial.title}
+                isAdmin={isAdmin}
+                isLoggedIn={isLoggedIn}
+                trial={trial as Total}
+              />
+            ))}
+          </Box>
+        </Box>
       ))}
-    </Box>
+    </Stack>
   )
 }
 
