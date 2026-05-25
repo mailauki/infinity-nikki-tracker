@@ -5,9 +5,13 @@ import { useRouter } from 'next/navigation'
 import {
   Alert,
   Button,
+  FormControl,
   FormLabel,
   IconButton,
   InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   TextField,
 } from '@mui/material'
@@ -23,6 +27,8 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
   const [title, setTitle] = useState(trial.title)
   const [slug, setSlug] = useState(trial.slug ?? toSlug(trial.title))
   const [realm, setRealm] = useState(trial.realm ?? '')
+  const [description, setDescription] = useState(trial.description ?? '')
+  const [location, setLocation] = useState(trial.location ?? '')
   const [imageUrl, setImageUrl] = useState<string | null>(trial.image_url)
   const [editSlug, setEditSlug] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -40,6 +46,8 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
         title: title.trim(),
         slug: slug.trim(),
         realm: realm.trim() || null,
+        description: description.trim() || null,
+        location: location || null,
         image_url: imageUrl || null,
         updated_at: new Date().toISOString(),
       })
@@ -89,6 +97,23 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
         />
 
         <TextField label="Realm" value={realm} onChange={(e) => setRealm(e.target.value)} />
+
+        <TextField
+          label="Description"
+          minRows={3}
+          multiline
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+
+        <FormControl>
+          <InputLabel>Location</InputLabel>
+          <Select label="Location" value={location} onChange={(e) => setLocation(e.target.value)}>
+            <MenuItem value="">—</MenuItem>
+            <MenuItem value="Wishfield">Wishfield</MenuItem>
+            <MenuItem value="Itzaland">Itzaland</MenuItem>
+          </Select>
+        </FormControl>
 
         <Stack spacing={0.5}>
           <FormLabel>Image</FormLabel>

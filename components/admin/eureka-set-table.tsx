@@ -100,6 +100,14 @@ export function EurekaSetTable({
       ),
     },
     {
+      header: 'Description',
+      cell: (set) => (
+        <Typography variant="body2" sx={{ maxWidth: 280 }}>
+          {set.description ?? '—'}
+        </Typography>
+      ),
+    },
+    {
       header: 'Trial',
       cell: (set) => (
         <Typography noWrap variant="body2">

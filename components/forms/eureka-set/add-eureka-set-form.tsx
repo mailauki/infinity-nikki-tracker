@@ -49,6 +49,7 @@ export default function AddEurekaSetForm({
   const [rarity, setRarity] = useState<number | ''>('')
   const [style, setStyle] = useState('')
   const [label, setLabel] = useState('')
+  const [description, setDescription] = useState('')
   const [selectedTrials, setSelectedTrials] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -92,6 +93,7 @@ export default function AddEurekaSetForm({
       {
         title: title.trim(),
         slug: slug.trim(),
+        description: description.trim() || null,
         rarity: rarity === '' ? null : rarity,
         style: style || null,
         label: label || null,
@@ -175,6 +177,14 @@ export default function AddEurekaSetForm({
           }}
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
+        />
+
+        <TextField
+          label="Description"
+          minRows={3}
+          multiline
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
 
         <FormControl>

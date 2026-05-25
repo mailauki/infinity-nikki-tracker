@@ -87,6 +87,22 @@ export function TrialTable({
       ),
     },
     {
+      header: 'Location',
+      cell: (trial) => (
+        <Typography noWrap variant="body2">
+          {trial.location ?? '—'}
+        </Typography>
+      ),
+    },
+    {
+      header: 'Description',
+      cell: (trial) => (
+        <Typography variant="body2" sx={{ maxWidth: 280 }}>
+          {trial.description ?? '—'}
+        </Typography>
+      ),
+    },
+    {
       header: 'Updated At',
       cell: (trial) => (
         <Typography noWrap variant="caption">
