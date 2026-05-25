@@ -45,7 +45,7 @@ async function EditEurekaSet({
 
   const { data: eurekaSet } = await supabase
     .from('eureka_sets')
-    .select('id, slug, title, rarity, style, label, updated_at, eureka_set_trials ( trial )')
+    .select('id, slug, title, description, rarity, style, label, updated_at, eureka_set_trials ( trial )')
     .eq('slug', slug)
     .single()
 

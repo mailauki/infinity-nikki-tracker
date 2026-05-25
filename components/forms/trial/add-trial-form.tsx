@@ -5,9 +5,13 @@ import { useRouter } from 'next/navigation'
 import {
   Alert,
   Button,
+  FormControl,
   FormLabel,
   IconButton,
   InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
   Stack,
   TextField,
 } from '@mui/material'
@@ -21,6 +25,8 @@ export default function AddTrialForm() {
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [realm, setRealm] = useState('')
+  const [description, setDescription] = useState('')
+  const [location, setLocation] = useState('')
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -42,6 +48,8 @@ export default function AddTrialForm() {
         title: title.trim(),
         slug: slug.trim(),
         realm: realm.trim() || null,
+        description: description.trim() || null,
+        location: location || null,
         image_url: imageUrl || null,
       },
     ])
@@ -90,6 +98,23 @@ export default function AddTrialForm() {
         />
 
         <TextField label="Realm" value={realm} onChange={(e) => setRealm(e.target.value)} />
+
+        <TextField
+          label="Description"
+          minRows={3}
+          multiline
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+
+        <FormControl>
+          <InputLabel>Location</InputLabel>
+          <Select label="Location" value={location} onChange={(e) => setLocation(e.target.value)}>
+            <MenuItem value="">—</MenuItem>
+            <MenuItem value="Wishfield">Wishfield</MenuItem>
+            <MenuItem value="Itzaland">Itzaland</MenuItem>
+          </Select>
+        </FormControl>
 
         <Stack spacing={0.5}>
           <FormLabel>Image</FormLabel>

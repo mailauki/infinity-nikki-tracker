@@ -12,7 +12,7 @@ export type EurekaSet = Tables<'eureka_sets'> & {
 
 export type EurekaSetRaw = Pick<
   Tables<'eureka_sets'>,
-  'id' | 'slug' | 'title' | 'rarity' | 'style' | 'label' | 'updated_at'
+  'id' | 'slug' | 'title' | 'description' | 'rarity' | 'style' | 'label' | 'updated_at'
 > & {
   eureka_set_trials: EurekaSetTrial[]
 }
@@ -70,7 +70,7 @@ export type Label = Pick<Tables<'labels'>, 'slug' | 'title'>
 
 export type Trial = Pick<
   Tables<'trials'>,
-  'id' | 'slug' | 'title' | 'image_url' | 'realm' | 'updated_at'
+  'id' | 'slug' | 'title' | 'image_url' | 'realm' | 'description' | 'location' | 'updated_at'
 >
 
 export type UserPreferences = Pick<

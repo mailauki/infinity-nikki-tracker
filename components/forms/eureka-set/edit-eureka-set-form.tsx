@@ -60,6 +60,7 @@ export default function EditEurekaSetForm({
   const [title, setTitle] = useState(eurekaSet.title)
   const [slug, setSlug] = useState(eurekaSet.slug ?? toSlug(eurekaSet.title))
   const [rarity, setRarity] = useState<number | ''>(eurekaSet.rarity ?? '')
+  const [description, setDescription] = useState(eurekaSet.description ?? '')
   const [style, setStyle] = useState(eurekaSet.style ?? '')
   const [label, setLabel] = useState(eurekaSet.label ?? '')
   const [selectedTrials, setSelectedTrials] = useState<string[]>(
@@ -106,6 +107,7 @@ export default function EditEurekaSetForm({
       .update({
         title: title.trim(),
         slug: slug.trim(),
+        description: description.trim() || null,
         rarity: rarity === '' ? null : rarity,
         style: style || null,
         label: label || null,
@@ -240,6 +242,14 @@ export default function EditEurekaSetForm({
           }}
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
+        />
+
+        <TextField
+          label="Description"
+          minRows={3}
+          multiline
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
 
         <FormControl>
