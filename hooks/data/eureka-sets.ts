@@ -5,7 +5,7 @@ import { cache } from 'react'
 import { getUserID } from '../user'
 import { getColors } from './colors'
 import { getCategories } from './categories'
-import { createEurekaSet, updateEurekaSet } from '../eureka'
+import { createEurekaSet, sortVariants, updateEurekaSet } from '../eureka'
 import { getObtainedEureka } from './obtained-eureka'
 
 export const getEurekaSets = cache(async () => {
@@ -40,14 +40,27 @@ export const getEurekaSets = cache(async () => {
   const categories = await getCategories()
   const colors = await getColors()
 
-  const eureka = eurekaSets?.map((eurekaSet) => ({
-    ...eurekaSet,
-    image_url: eurekaSet.eureka_variants.find((variant) => variant.default)?.image_url,
-    categories: categories,
-    colors: [...new Set(eurekaSet.eureka_variants.map((variant) => variant.color))].flatMap(
-      (colorSlug) => colors?.filter((color) => color.slug === colorSlug)
-    ),
-  })) as EurekaSet[]
+  const categoryOrder = (categories ?? []).map((c) => c.slug)
+  const eureka = eurekaSets?.map((eurekaSet) => {
+    const defaultColorSlug = eurekaSet.eureka_variants.find((v) => v.default)?.color
+    const colorSlugs = [...new Set(eurekaSet.eureka_variants.map((v) => v.color))]
+    const resolvedColors = colorSlugs
+      .flatMap((slug) => colors?.filter((c) => c.slug === slug) ?? [])
+      .sort((a, b) => {
+        if (a.slug === defaultColorSlug) return -1
+        if (b.slug === defaultColorSlug) return 1
+        if (a.slug === 'iridescent') return 1
+        if (b.slug === 'iridescent') return -1
+        return 0
+      })
+    return {
+      ...eurekaSet,
+      image_url: eurekaSet.eureka_variants.find((v) => v.default)?.image_url,
+      categories: categories,
+      colors: resolvedColors,
+      eureka_variants: sortVariants(eurekaSet.eureka_variants as EurekaVariant[], defaultColorSlug, categoryOrder),
+    }
+  }) as EurekaSet[]
 
   const user_id = await getUserID()
 
