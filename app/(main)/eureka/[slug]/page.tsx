@@ -67,7 +67,7 @@ async function EurekaSet({ slug }: { slug: string }) {
               {toTitle(style ?? '')}
             </Typography>
           </Stack>
-          <Stack direction="row" spacing={0.5}>
+          <Stack direction="row" spacing={0.5} flexWrap='wrap' useFlexGap>
             {colors.map((color) => (
               <Chip
                 key={color.slug}

@@ -194,6 +194,21 @@ export default function NavContainer({
 
         <Drawer className="h-screen overflow-hidden" open={open} variant="permanent">
           <StyledToolbar>
+						<IconButton
+							aria-label="close drawer"
+							color="inherit"
+							edge="start"
+							sx={{
+								display: { xs: open ? 'flex' : 'none', sm: 'none' },
+								zIndex: theme.zIndex.drawer + 1,
+								position: 'fixed',
+								top: 12,
+								left: 40,
+							}}
+							onClick={() => setOpen(false)}
+						>
+							<MenuOpen />
+						</IconButton>
           </StyledToolbar>
 
           <NavMain items={navLinksData.navMain} open={open} onClose={() => setOpen(false)} />
