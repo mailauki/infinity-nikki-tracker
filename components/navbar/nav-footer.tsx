@@ -1,4 +1,5 @@
 import { AppBar, Stack, Toolbar, Typography } from '@mui/material'
+import CoffeeButton from './coffee-button'
 import ThemeSwitcher from './theme-switcher'
 
 export default function Footer() {
@@ -26,7 +27,10 @@ export default function Footer() {
           <Typography color="textDisabled" variant="caption">
             &copy; 2026 mailauki
           </Typography>
-          <ThemeSwitcher />
+          <Stack alignItems="center" direction="row" gap={0.5}>
+            <CoffeeButton />
+            <ThemeSwitcher />
+          </Stack>
         </Stack>
       </Toolbar>
     </AppBar>
