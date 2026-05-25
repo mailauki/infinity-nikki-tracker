@@ -22,7 +22,12 @@ import { NavExtra } from './nav-extra'
 import Footer from './nav-footer'
 import FilterMenu from './filter-menu'
 import { AppBar, AppBarTitle, Drawer, MainContainer, StyledToolbar } from './nav-styled'
-import { EurekaSetEditButton, ProfileEditButton, SortButton, TrialEditButton } from './appbar-actions'
+import {
+  EurekaSetEditButton,
+  ProfileEditButton,
+  SortButton,
+  TrialEditButton,
+} from './appbar-actions'
 import { useScrollContainer } from './use-scroll-container'
 import { navLinksData } from '@/lib/nav-links'
 import { toTitle } from '@/lib/utils'
@@ -93,20 +98,20 @@ export default function NavContainer({
                 justifyContent="flex-start"
                 sx={{ width: '64px' }}
               >
-								<IconButton
+                <IconButton
                   aria-label="open drawer"
                   color="inherit"
                   edge="start"
-									sx={{
-										zIndex: theme.zIndex.drawer + 1,
-										position: 'fixed',
-										top: 12,
-										left: 40,
-									}}
-									onClick={() => open ? setOpen(false) : setOpen(true)}
-								>
-									{open ? <MenuOpen /> : <MenuIcon />}
-								</IconButton>
+                  sx={{
+                    zIndex: theme.zIndex.drawer + 1,
+                    position: 'fixed',
+                    top: 12,
+                    left: 40,
+                  }}
+                  onClick={() => (open ? setOpen(false) : setOpen(true))}
+                >
+                  {open ? <MenuOpen /> : <MenuIcon />}
+                </IconButton>
               </Stack>
               <Stack
                 alignItems="center"
@@ -169,7 +174,7 @@ export default function NavContainer({
                 </Typography>
               </AppBarTitle>
 
-              <Stack direction='row' sx={{ position: 'absolute', bottom: 0, right: 0 }}>
+              <Stack direction="row" sx={{ position: 'absolute', bottom: 0, right: 0 }}>
                 {pathname === '/eureka' && (
                   <React.Suspense
                     fallback={
@@ -181,11 +186,9 @@ export default function NavContainer({
                     <FilterMenu />
                   </React.Suspense>
                 )}
-								{isSortablePage && <SortButton />}
+                {isSortablePage && <SortButton />}
                 {isProfilePage && <ProfileEditButton />}
-                {eurekaSetSlug && (
-                  <EurekaSetEditButton isAdmin={isAdmin} slug={eurekaSetSlug} />
-                )}
+                {eurekaSetSlug && <EurekaSetEditButton isAdmin={isAdmin} slug={eurekaSetSlug} />}
                 {trialSlug && <TrialEditButton isAdmin={isAdmin} slug={trialSlug} />}
               </Stack>
             </Container>
@@ -194,21 +197,21 @@ export default function NavContainer({
 
         <Drawer className="h-screen overflow-hidden" open={open} variant="permanent">
           <StyledToolbar>
-						<IconButton
-							aria-label="close drawer"
-							color="inherit"
-							edge="start"
-							sx={{
-								display: { xs: open ? 'flex' : 'none', sm: 'none' },
-								zIndex: theme.zIndex.drawer + 1,
-								position: 'fixed',
-								top: 12,
-								left: 40,
-							}}
-							onClick={() => setOpen(false)}
-						>
-							<MenuOpen />
-						</IconButton>
+            <IconButton
+              aria-label="close drawer"
+              color="inherit"
+              edge="start"
+              sx={{
+                display: { xs: open ? 'flex' : 'none', sm: 'none' },
+                zIndex: theme.zIndex.drawer + 1,
+                position: 'fixed',
+                top: 12,
+                left: 40,
+              }}
+              onClick={() => setOpen(false)}
+            >
+              <MenuOpen />
+            </IconButton>
           </StyledToolbar>
 
           <NavMain items={navLinksData.navMain} open={open} onClose={() => setOpen(false)} />

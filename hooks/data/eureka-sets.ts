@@ -58,7 +58,11 @@ export const getEurekaSets = cache(async () => {
       image_url: eurekaSet.eureka_variants.find((v) => v.default)?.image_url,
       categories: categories,
       colors: resolvedColors,
-      eureka_variants: sortVariants(eurekaSet.eureka_variants as EurekaVariant[], defaultColorSlug, categoryOrder),
+      eureka_variants: sortVariants(
+        eurekaSet.eureka_variants as EurekaVariant[],
+        defaultColorSlug,
+        categoryOrder
+      ),
     }
   }) as EurekaSet[]
 

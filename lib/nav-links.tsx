@@ -20,7 +20,7 @@ export const navLinksData: {
         {
           title: 'Trials',
           url: '/eureka/trials',
-					image: "/icons/realm-of-breakthrough.png",
+          image: '/icons/realm-of-breakthrough.png',
         },
       ],
     },

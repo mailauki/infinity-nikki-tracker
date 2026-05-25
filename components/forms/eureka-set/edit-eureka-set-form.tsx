@@ -245,9 +245,9 @@ export default function EditEurekaSetForm({
         />
 
         <TextField
+          multiline
           label="Description"
           minRows={3}
-          multiline
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />

@@ -45,11 +45,16 @@ export default function EurekaCardProgress({
                 color={percentage === 100 ? 'primary' : 'textPrimary'}
                 component="p"
                 fontWeight="medium"
+                sx={{ pb: 0.5 }}
                 variant="subtitle1"
-								sx={{ pb: 0.5 }}
               >
                 {percentage === 100 ? <Check fontSize="large" /> : `${percentage}`}
-								{percentage !== 100 && <Typography component='span' variant='caption'> %</Typography>}
+                {percentage !== 100 && (
+                  <Typography component="span" variant="caption">
+                    {' '}
+                    %
+                  </Typography>
+                )}
               </Typography>
             </Avatar>
           </Box>

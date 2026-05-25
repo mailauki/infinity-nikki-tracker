@@ -20,7 +20,7 @@ export interface NavLink {
   icon?: ReactNode
   adminOnly?: boolean
   exclusiveItems?: boolean
-  items?: { title: string; url: string, image?: string }[]
+  items?: { title: string; url: string; image?: string }[]
 }
 
 export const GRID_COLUMNS = {

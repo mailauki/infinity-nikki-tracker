@@ -102,7 +102,7 @@ export function EurekaSetTable({
     {
       header: 'Description',
       cell: (set) => (
-        <Typography variant="body2" sx={{ maxWidth: 280 }}>
+        <Typography sx={{ maxWidth: 280 }} variant="body2">
           {set.description ?? '—'}
         </Typography>
       ),
