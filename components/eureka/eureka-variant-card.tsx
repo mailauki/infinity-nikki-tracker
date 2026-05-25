@@ -1,10 +1,12 @@
 'use client'
 
+import * as React from 'react'
 import { toTitle } from '@/lib/utils'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { Box, Card, IconButton, Stack, Typography } from '@mui/material'
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { handleObtained } from '@/app/(main)/eureka/actions'
+import { useRouter } from 'next/navigation'
 import LazyAvatar from './lazy-avatar'
 
 export default function EurekaVariantCard({
@@ -14,6 +16,16 @@ export default function EurekaVariantCard({
   eurekaVariant: EurekaVariant
   isLoggedIn: boolean
 }) {
+  const [pending, setPending] = React.useState(false)
+  const router = useRouter()
+
+  async function onToggle() {
+    setPending(true)
+    await handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
+    router.refresh()
+    setPending(false)
+  }
+
   return (
     <Card
       data-active={eurekaVariant.obtained ? '' : undefined}
@@ -58,14 +70,8 @@ export default function EurekaVariantCard({
         <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
           {isLoggedIn && (
             <IconButton
-              disabled={!isLoggedIn}
-              onClick={() =>
-                handleObtained(
-                  eurekaVariant.eureka_set!,
-                  eurekaVariant.category!,
-                  eurekaVariant.color!
-                )
-              }
+              disabled={!isLoggedIn || pending}
+              onClick={onToggle}
             >
               {eurekaVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
             </IconButton>
