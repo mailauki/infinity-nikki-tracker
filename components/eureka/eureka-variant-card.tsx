@@ -1,6 +1,6 @@
 'use client'
 
-import * as React from 'react'
+import { useState } from 'react'
 import { toTitle } from '@/lib/utils'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { Box, Card, IconButton, Stack, Typography } from '@mui/material'
@@ -16,7 +16,7 @@ export default function EurekaVariantCard({
   eurekaVariant: EurekaVariant
   isLoggedIn: boolean
 }) {
-  const [pending, setPending] = React.useState(false)
+  const [pending, setPending] = useState(false)
   const router = useRouter()
 
   async function onToggle() {
@@ -58,21 +58,9 @@ export default function EurekaVariantCard({
             {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}
           </Typography>
         </Stack>
-        {/* {isLoggedIn && (
-          <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-            <LinearProgress
-              color="inherit"
-              value={eurekaVariant.obtained ? 100 : 0}
-              variant="determinate"
-            />
-          </Box>
-        )} */}
         <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
           {isLoggedIn && (
-            <IconButton
-              disabled={!isLoggedIn || pending}
-              onClick={onToggle}
-            >
+            <IconButton disabled={pending} onClick={onToggle}>
               {eurekaVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
             </IconButton>
           )}
