@@ -141,7 +141,7 @@ export default function NavContainer({
               right: 0,
               py: 1.5,
               zIndex: theme.zIndex.drawer,
-              filter: isDarkMode ? 'none' : 'brightness(40%)',
+              filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)',
             }}
           >
             <Link href="/" style={{ cursor: 'pointer' }}>
