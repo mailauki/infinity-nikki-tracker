@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Alert,
@@ -57,6 +57,12 @@ export default function EditEurekaVariantForm({
   const hasDefault = variants.some(
     (v) => v.id !== variant.id && v.eureka_set === eurekaSet && v.category === category && v.default
   )
+
+  useEffect(() => {
+    if (!editSlug && eurekaSet && category && color) {
+      setSlug(toSlugVariant(eurekaSet, category, color))
+    }
+  }, [eurekaSet, category, color, editSlug])
 
   async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
@@ -156,7 +162,7 @@ export default function EditEurekaVariantForm({
         <Stack spacing={0.5}>
           <FormLabel>Image</FormLabel>
           <ImageUpload
-            slug={variant.slug ?? undefined}
+            slug={slug || undefined}
             table="eureka_variants"
             url={imageUrl}
             onUpload={(url) => setImageUrl(url)}

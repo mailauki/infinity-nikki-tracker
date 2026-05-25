@@ -94,7 +94,7 @@ export default function RealtimeEurekaSet({
                   </Card>
                 ))}
               </List>
-              <List sx={{ width: '100%' }}>
+              {/* <List sx={{ width: '100%' }}>
                 {eurekaSet.colors.map((color: Color) => (
                   <Card
                     key={color.slug}
@@ -110,7 +110,7 @@ export default function RealtimeEurekaSet({
                     />
                   </Card>
                 ))}
-              </List>
+              </List> */}
             </>
           )
         }
