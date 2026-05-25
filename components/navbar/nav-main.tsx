@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import ImageIcon from '@mui/icons-material/Image'
 
 import {
   Avatar,
@@ -11,7 +10,6 @@ import {
   Tooltip,
   useColorScheme,
 } from '@mui/material'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { NavLink } from '@/lib/types/props'
 
 export function NavMain({
@@ -36,17 +34,15 @@ export function NavMain({
               href={item.url}
               sx={{
                 minHeight: 48,
-                px: 2.5,
                 borderRadius: 2,
                 justifyContent: 'initial',
-              }}
+							}}
               onClick={onClose}
             >
               <ListItemAvatar
                 sx={{
-                  minWidth: 0,
-                  justifyContent: 'center',
-                  mr: 1.5,
+                  mr: 0.5,
+									ml: -0.5,
                 }}
               >
                 <Avatar
@@ -81,9 +77,8 @@ export function NavMain({
                   >
                     <ListItemAvatar
                       sx={{
-                        minWidth: 0,
-                        justifyContent: 'center',
-                        mr: 1.5,
+												mr: 0.5,
+												ml: -0.5,
                       }}
                     >
                       <Avatar
