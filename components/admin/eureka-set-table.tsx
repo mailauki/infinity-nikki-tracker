@@ -156,7 +156,7 @@ export function EurekaSetTable({ rows: initialRows, back, styles, labels }: Eure
           <LazyAvatar
             alt={row.title || 'Image'}
             color="transparent"
-            size="sm"
+            size="xs"
             src={row.image_url!}
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
