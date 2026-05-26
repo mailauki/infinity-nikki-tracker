@@ -6,7 +6,15 @@ import { Container, useMediaQuery, useTheme } from '@mui/material'
 import { EurekaSetTable } from '@/components/admin/eureka-set-table'
 import { EurekaVariantTable } from '@/components/admin/eureka-variant-table'
 import { TrialTable } from '@/components/admin/trial-table'
-import { EurekaSet, EurekaVariantRaw, Trial } from '@/lib/types/eureka'
+import {
+  Category,
+  Color,
+  EurekaSet,
+  EurekaVariantRaw,
+  Label,
+  Style,
+  Trial,
+} from '@/lib/types/eureka'
 import EurekaSetList from '@/components/admin/eureka-set-list'
 import EurekaVariantList from '@/components/admin/eureka-variant-list'
 import TrialList from '@/components/admin/trial-list'
@@ -23,12 +31,20 @@ export function DashboardTabs({
   trials,
   defaultView,
   defaultTab,
+  styles,
+  labels,
+  categories,
+  colors,
 }: {
   eurekaSets: EurekaSet[]
   eurekaVariants: EurekaVariantRaw[]
   trials: Trial[]
   defaultView: 'list' | 'table'
   defaultTab: 'eureka-sets' | 'eureka-variants' | 'trials'
+  styles: Style[]
+  labels: Label[]
+  categories: Category[]
+  colors: Color[]
 }) {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -83,14 +99,20 @@ export function DashboardTabs({
 
       {tab === 'eureka-sets' &&
         (view === 'table' ? (
-          <EurekaSetTable back={back} rows={sortedEurekaSets} />
+          <EurekaSetTable back={back} labels={labels} rows={sortedEurekaSets} styles={styles} />
         ) : (
           <EurekaSetList rows={sortedEurekaSets} {...listProps} />
         ))}
 
       {tab === 'eureka-variants' &&
         (view === 'table' ? (
-          <EurekaVariantTable back={back} rows={sortedVariants} />
+          <EurekaVariantTable
+            back={back}
+            categories={categories}
+            colors={colors}
+            eurekaSets={eurekaSets}
+            rows={sortedVariants}
+          />
         ) : (
           <EurekaVariantList rows={sortedVariants} {...listProps} />
         ))}
