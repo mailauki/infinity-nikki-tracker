@@ -15,6 +15,7 @@
     "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.8",
     "@mui/material-nextjs": "^7.3.8",
+    "@mui/x-data-grid": "^9.3.0",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "^2.100.0",
     "@vercel/analytics": "^2.0.1",

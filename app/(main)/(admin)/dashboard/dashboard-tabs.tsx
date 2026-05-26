@@ -41,8 +41,6 @@ export function DashboardTabs({
   const theme = useTheme()
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
   const [view, setView] = useState<'list' | 'table'>(isSmallScreen ? 'list' : defaultView)
-  const page = Math.max(0, Number(searchParams.get('page') ?? '0'))
-  const perPage = Number(searchParams.get('perPage') ?? '15')
 
   const updateParams = (updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -52,7 +50,7 @@ export function DashboardTabs({
 
   const handleTabChange = (_: React.MouseEvent<HTMLElement>, value: string) => {
     if (value) {
-      updateParams({ tab: value, page: '0' })
+      updateParams({ tab: value })
       startTransition(() => updateDashboardTab(value as TabValue))
     }
   }
@@ -64,18 +62,8 @@ export function DashboardTabs({
     }
   }
 
-  const handlePageChange = (newPage: number) => updateParams({ page: String(newPage) })
-  const handleRowsPerPageChange = (newPerPage: number) =>
-    updateParams({ perPage: String(newPerPage), page: '0' })
-
-  const currentUrl = `/dashboard?${searchParams.toString()}`
-  const paginationProps = {
-    page,
-    rowsPerPage: perPage,
-    onPageChange: handlePageChange,
-    onRowsPerPageChange: handleRowsPerPageChange,
-    back: currentUrl,
-  }
+  const back = `/dashboard?${searchParams.toString()}`
+  const listProps = { back }
 
   const sortById = (a: { id: number }, b: { id: number }) =>
     sortOrder === 'new' ? b.id - a.id : a.id - b.id
@@ -95,23 +83,23 @@ export function DashboardTabs({
 
       {tab === 'eureka-sets' &&
         (view === 'table' ? (
-          <EurekaSetTable rows={sortedEurekaSets} {...paginationProps} />
+          <EurekaSetTable back={back} rows={sortedEurekaSets} />
         ) : (
-          <EurekaSetList rows={sortedEurekaSets} {...paginationProps} />
+          <EurekaSetList rows={sortedEurekaSets} {...listProps} />
         ))}
 
       {tab === 'eureka-variants' &&
         (view === 'table' ? (
-          <EurekaVariantTable rows={sortedVariants} {...paginationProps} />
+          <EurekaVariantTable back={back} rows={sortedVariants} />
         ) : (
-          <EurekaVariantList rows={sortedVariants} {...paginationProps} />
+          <EurekaVariantList rows={sortedVariants} {...listProps} />
         ))}
 
       {tab === 'trials' &&
         (view === 'table' ? (
-          <TrialTable rows={sortedTrials} {...paginationProps} />
+          <TrialTable back={back} rows={sortedTrials} />
         ) : (
-          <TrialList rows={sortedTrials} {...paginationProps} />
+          <TrialList rows={sortedTrials} {...listProps} />
         ))}
     </Container>
   )

@@ -1,12 +1,12 @@
 'use client'
 
-import { Box, Chip, IconButton, Tooltip, Typography } from '@mui/material'
+import { Box, Chip, IconButton, Stack, Tooltip } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { formatDate, toSlug, toTitle } from '@/lib/utils'
-import { AdminTable, Column } from './admin-table'
-import { EurekaSet } from '@/lib/types/eureka'
 import { Category } from '@mui/icons-material'
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { useSearchParams } from 'next/navigation'
+import { formatDate, toSlug, toTitle } from '@/lib/utils'
+import { EurekaSet } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import RarityStars from '../rarity-stars'
 
@@ -14,34 +14,25 @@ type Row = EurekaSet
 
 interface EurekaSetTableProps {
   rows: Row[]
-  page?: number
-  rowsPerPage?: number
-  onPageChange?: (page: number) => void
-  onRowsPerPageChange?: (rowsPerPage: number) => void
   back?: string
 }
 
-export function EurekaSetTable({
-  rows,
-  page,
-  rowsPerPage,
-  onPageChange,
-  onRowsPerPageChange,
-  back,
-}: EurekaSetTableProps) {
+export function EurekaSetTable({ rows, back }: EurekaSetTableProps) {
   const searchParams = useSearchParams()
   const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
   const backParam = backUrl ? `?back=${encodeURIComponent(backUrl)}` : ''
 
-  const columns: Column<Row>[] = [
+  const columns: GridColDef<Row>[] = [
     {
-      header: 'Edit',
-      cellSx: { py: 0 },
-      cell: (set) => (
-        <Tooltip title={`Edit ${set.title}`}>
+      field: 'edit',
+      headerName: '',
+      width: 48,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Tooltip title={`Edit ${row.title}`}>
           <IconButton
             color="secondary"
-            href={`/eureka-set/edit/${set.slug ?? toSlug(set.title)}${backParam}`}
+            href={`/eureka-set/edit/${row.slug ?? toSlug(row.title)}${backParam}`}
             size="small"
           >
             <EditIcon fontSize="small" />
@@ -50,13 +41,16 @@ export function EurekaSetTable({
       ),
     },
     {
-      header: 'Image',
-      cell: (set) => (
+      field: 'image_url',
+      headerName: 'Image',
+      width: 64,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
         <LazyAvatar
-          alt={set.title || 'Image'}
+          alt={row.title || 'Image'}
           color="transparent"
-          size="xs"
-          src={set.image_url!}
+          size="sm"
+          src={row.image_url!}
           sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
         >
           <Category fontSize="inherit" />
@@ -64,82 +58,88 @@ export function EurekaSetTable({
       ),
     },
     {
-      header: 'Title',
-      cell: (set) => (
-        <Typography noWrap fontWeight="medium" variant="body2">
-          {set.title}
-        </Typography>
+      field: 'title',
+      headerName: 'Title',
+      width: 200,
+      renderCell: ({ value }: GridRenderCellParams<Row>) => (
+        <span style={{ fontWeight: 500 }}>{value}</span>
       ),
     },
     {
-      header: 'Slug',
-      cell: (set) => (
-        <Typography noWrap fontFamily="monospace" variant="caption">
-          {set.slug}
-        </Typography>
+      field: 'slug',
+      headerName: 'Slug',
+      width: 200,
+      renderCell: ({ value }: GridRenderCellParams<Row>) => (
+        <span style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{value}</span>
       ),
     },
     {
-      header: 'Rarity',
-      cell: (set) => (
-        <Typography noWrap color="textSecondary" variant="caption">
-          <RarityStars rarity={set.rarity!} />
-        </Typography>
-      ),
+      field: 'rarity',
+      headerName: 'Rarity',
+      width: 120,
+      renderCell: ({ value }: GridRenderCellParams<Row>) =>
+        value ? <Stack justifyContent='center' sx={{ flex: 1, height: 35 }}><RarityStars rarity={value} /></Stack> : '—',
     },
-    { header: 'Style', cell: (set) => toTitle(set.style! || '—') },
-    { header: 'Label', cell: (set) => toTitle(set.label! || '—') },
     {
-      header: 'Colors',
-      cell: (set) => (
-        <Box sx={{ display: 'flex', gap: 0.5 }}>
-          {set.colors
-            ? set.colors.map((color) => <Chip key={color.slug} label={color.title} size="small" />)
+      field: 'style',
+      headerName: 'Style',
+      width: 120,
+      valueFormatter: (value: string | null) => toTitle(value || '—'),
+    },
+    {
+      field: 'label',
+      headerName: 'Label',
+      width: 120,
+      valueFormatter: (value: string | null) => toTitle(value || '—'),
+    },
+    {
+      field: 'colors',
+      headerName: 'Colors',
+      width: 340,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
+          {row.colors
+            ? row.colors.map((color) => <Chip key={color.slug} label={color.title} size="small" />)
             : '—'}
         </Box>
       ),
     },
     {
-      header: 'Description',
-      cell: (set) => (
-        <Typography sx={{ maxWidth: 280 }} variant="body2">
-          {set.description ?? '—'}
-        </Typography>
-      ),
+      field: 'description',
+      headerName: 'Description',
+      width: 280,
+      sortable: false,
     },
     {
-      header: 'Trial',
-      cell: (set) => (
-        <Typography noWrap variant="body2">
-          {(() => {
-            if (!set.eureka_set_trials?.length) return '—'
-            if (set.eureka_set_trials.length > 1) return set.eureka_set_trials.length + ' trials'
-            return toTitle(set.eureka_set_trials[0].trial)
-          })()}
-        </Typography>
-      ),
+      field: 'eureka_set_trials',
+      headerName: 'Trial',
+      width: 160,
+      sortable: false,
+      valueGetter: (_value: unknown, row: Row) => {
+        if (!row.eureka_set_trials?.length) return '—'
+        if (row.eureka_set_trials.length > 1) return `${row.eureka_set_trials.length} trials`
+        return toTitle(row.eureka_set_trials[0].trial)
+      },
     },
     {
-      header: 'Updated',
-      cell: (set) => (
-        <Typography noWrap variant="caption">
-          {set.updated_at ? formatDate(set.updated_at) : '—'}
-        </Typography>
-      ),
+      field: 'updated_at',
+      headerName: 'Updated',
+      width: 120,
+      valueFormatter: (value: string | null) => (value ? formatDate(value) : '—'),
     },
   ]
 
   return (
-    <AdminTable
+    <DataGrid
+      disableRowSelectionOnClick
       columns={columns}
-      getKey={(set) => set.id}
-      page={page}
+      density="compact"
+      getRowId={(row) => row.id}
+      initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+      pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       rows={rows}
-      rowsPerPage={rowsPerPage}
-      slug="eureka-set"
-      title="Eureka Set"
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
+      sx={{ border: 0 }}
     />
   )
 }
