@@ -1,48 +1,39 @@
 'use client'
 
-import { Chip, IconButton, Tooltip, Typography } from '@mui/material'
+import { Chip, IconButton, Tooltip } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
-import { AdminTable, Column } from './admin-table'
-import { EurekaVariantRaw } from '@/lib/types/eureka'
 import { Category } from '@mui/icons-material'
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { useSearchParams } from 'next/navigation'
+import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
+import { EurekaVariantRaw } from '@/lib/types/eureka'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 
 type Row = EurekaVariantRaw
 
 interface EurekaVariantTableProps {
   rows: Row[]
-  page?: number
-  rowsPerPage?: number
-  onPageChange?: (page: number) => void
-  onRowsPerPageChange?: (rowsPerPage: number) => void
   back?: string
 }
 
-export function EurekaVariantTable({
-  rows,
-  page,
-  rowsPerPage,
-  onPageChange,
-  onRowsPerPageChange,
-  back,
-}: EurekaVariantTableProps) {
+export function EurekaVariantTable({ rows, back }: EurekaVariantTableProps) {
   const searchParams = useSearchParams()
   const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
   const backParam = backUrl ? `?back=${encodeURIComponent(backUrl)}` : ''
 
-  const columns: Column<Row>[] = [
+  const columns: GridColDef<Row>[] = [
     {
-      header: 'Edit',
-      cellSx: { py: 0 },
-      cell: (variant) => (
+      field: 'edit',
+      headerName: '',
+      width: 48,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
         <Tooltip
-          title={`Edit ${[toTitle(variant.eureka_set!), toTitle(variant.category!), toTitle(variant.color!)].filter(Boolean).join(' • ')}`}
+          title={`Edit ${[toTitle(row.eureka_set!), toTitle(row.category!), toTitle(row.color!)].filter(Boolean).join(' • ')}`}
         >
           <IconButton
             color="secondary"
-            href={`/eureka-variant/edit/${variant.slug ?? toSlugVariant(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? '')}${backParam}`}
+            href={`/eureka-variant/edit/${row.slug ?? toSlugVariant(row.eureka_set ?? '', row.category ?? '', row.color ?? '')}${backParam}`}
             size="small"
           >
             <EditIcon fontSize="small" />
@@ -51,13 +42,16 @@ export function EurekaVariantTable({
       ),
     },
     {
-      header: 'Image',
-      cell: (variant) => (
+      field: 'image_url',
+      headerName: 'Image',
+      width: 64,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
         <LazyAvatar
-          alt={variant.eureka_set || 'Image'}
+          alt={row.eureka_set || 'Image'}
           color="transparent"
           size="xs"
-          src={variant.image_url!}
+          src={row.image_url!}
           sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
         >
           <Category fontSize="inherit" />
@@ -65,51 +59,61 @@ export function EurekaVariantTable({
       ),
     },
     {
-      header: 'Eureka Set',
-      cell: (variant) => (
-        <Typography noWrap fontWeight="medium" variant="body2">
-          {variant.eureka_sets?.title ?? '—'}
-        </Typography>
+      field: 'eureka_sets',
+      headerName: 'Eureka Set',
+      width: 200,
+      valueGetter: (_value: unknown, row: Row) => row.eureka_sets?.title ?? '—',
+      renderCell: ({ value }: GridRenderCellParams<Row>) => (
+        <span style={{ fontWeight: 500 }}>{value}</span>
       ),
     },
     {
-      header: 'Slug',
-      cell: (variant) => (
-        <Typography noWrap fontFamily="monospace" variant="caption">
-          {variant.slug}
-        </Typography>
+      field: 'slug',
+      headerName: 'Slug',
+      width: 240,
+      renderCell: ({ value }: GridRenderCellParams<Row>) => (
+        <span style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{value}</span>
       ),
     },
-    { header: 'Category', cell: (variant) => variant.categories?.title ?? '—' },
-    { header: 'Color', cell: (variant) => variant.colors?.title ?? '—' },
     {
-      header: 'Default',
-      cell: (variant) =>
-        variant.default ? (
+      field: 'categories',
+      headerName: 'Category',
+      width: 120,
+      valueGetter: (_value: unknown, row: Row) => row.categories?.title ?? '—',
+    },
+    {
+      field: 'colors',
+      headerName: 'Color',
+      width: 120,
+      valueGetter: (_value: unknown, row: Row) => row.colors?.title ?? '—',
+    },
+    {
+      field: 'default',
+      headerName: 'Default',
+      width: 100,
+      renderCell: ({ value }: GridRenderCellParams<Row>) =>
+        value ? (
           <Chip color="secondary" label="default" size="small" variant="outlined" />
         ) : null,
     },
     {
-      header: 'Updated',
-      cell: (variant) => (
-        <Typography noWrap variant="caption">
-          {variant.updated_at ? formatDate(variant.updated_at) : '—'}
-        </Typography>
-      ),
+      field: 'updated_at',
+      headerName: 'Updated',
+      width: 120,
+      valueFormatter: (value: string | null) => (value ? formatDate(value) : '—'),
     },
   ]
 
   return (
-    <AdminTable
+    <DataGrid
+      disableRowSelectionOnClick
       columns={columns}
-      getKey={(variant) => variant.id}
-      page={page}
+      density="compact"
+      getRowId={(row) => row.id}
+      initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+      pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       rows={rows}
-      rowsPerPage={rowsPerPage}
-      slug="eureka-variant"
-      title="Eureka Variant"
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
+      sx={{ border: 0 }}
     />
   )
 }

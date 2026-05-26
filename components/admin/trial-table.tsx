@@ -1,46 +1,37 @@
 'use client'
 
-import { IconButton, Tooltip, Typography } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
-import { formatDate, toSlug } from '@/lib/utils'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
-import { Trial } from '@/lib/types/eureka'
-import { AdminTable, Column } from './admin-table'
 import { Category } from '@mui/icons-material'
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { useSearchParams } from 'next/navigation'
+import { formatDate, toSlug } from '@/lib/utils'
+import { Trial } from '@/lib/types/eureka'
+import LazyAvatar from '@/components/eureka/lazy-avatar'
 
 type Row = Trial
 
 interface TrialTableProps {
   rows: Row[]
-  page?: number
-  rowsPerPage?: number
-  onPageChange?: (page: number) => void
-  onRowsPerPageChange?: (rowsPerPage: number) => void
   back?: string
 }
 
-export function TrialTable({
-  rows,
-  page,
-  rowsPerPage,
-  onPageChange,
-  onRowsPerPageChange,
-  back,
-}: TrialTableProps) {
+export function TrialTable({ rows, back }: TrialTableProps) {
   const searchParams = useSearchParams()
   const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
   const backParam = backUrl ? `?back=${encodeURIComponent(backUrl)}` : ''
 
-  const columns: Column<Row>[] = [
+  const columns: GridColDef<Row>[] = [
     {
-      header: 'Edit',
-      cellSx: { py: 0 },
-      cell: (trial) => (
-        <Tooltip title={`Edit ${trial.title}`}>
+      field: 'edit',
+      headerName: '',
+      width: 48,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Tooltip title={`Edit ${row.title}`}>
           <IconButton
             color="secondary"
-            href={`/trial/edit/${trial.slug ?? toSlug(trial.title)}${backParam}`}
+            href={`/trial/edit/${row.slug ?? toSlug(row.title)}${backParam}`}
             size="small"
           >
             <EditIcon fontSize="small" />
@@ -49,12 +40,15 @@ export function TrialTable({
       ),
     },
     {
-      header: 'Image',
-      cell: (trial) => (
+      field: 'image_url',
+      headerName: 'Image',
+      width: 64,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
         <LazyAvatar
-          alt={trial.title || 'Image'}
+          alt={row.title || 'Image'}
           size="xs"
-          src={trial.image_url!}
+          src={row.image_url!}
           sx={{ width: 40, bgcolor: 'transparent', color: 'text.disabled' }}
           variant="rounded"
         >
@@ -63,66 +57,58 @@ export function TrialTable({
       ),
     },
     {
-      header: 'Title',
-      cell: (trial) => (
-        <Typography noWrap fontWeight="medium" variant="body2">
-          {trial.title}
-        </Typography>
+      field: 'title',
+      headerName: 'Title',
+      width: 240,
+      renderCell: ({ value }: GridRenderCellParams<Row>) => (
+        <span style={{ fontWeight: 500 }}>{value}</span>
       ),
     },
     {
-      header: 'Slug',
-      cell: (trial) => (
-        <Typography noWrap fontFamily="monospace" variant="caption">
-          {trial.slug}
-        </Typography>
+      field: 'slug',
+      headerName: 'Slug',
+      width: 200,
+      renderCell: ({ value }: GridRenderCellParams<Row>) => (
+        <span style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{value}</span>
       ),
     },
     {
-      header: 'Realm',
-      cell: (trial) => (
-        <Typography noWrap variant="body2">
-          {trial.realm ?? '—'}
-        </Typography>
-      ),
+      field: 'realm',
+      headerName: 'Realm',
+      width: 140,
+      valueFormatter: (value: string | null) => value ?? '—',
     },
     {
-      header: 'Location',
-      cell: (trial) => (
-        <Typography noWrap variant="body2">
-          {trial.location ?? '—'}
-        </Typography>
-      ),
+      field: 'location',
+      headerName: 'Location',
+      width: 120,
+      valueFormatter: (value: string | null) => value ?? '—',
     },
     {
-      header: 'Description',
-      cell: (trial) => (
-        <Typography sx={{ maxWidth: 280 }} variant="body2">
-          {trial.description ?? '—'}
-        </Typography>
-      ),
+      field: 'description',
+      headerName: 'Description',
+      width: 280,
+      sortable: false,
+      valueFormatter: (value: string | null) => value ?? '—',
     },
     {
-      header: 'Updated At',
-      cell: (trial) => (
-        <Typography noWrap variant="caption">
-          {trial.updated_at ? formatDate(trial.updated_at) : '—'}
-        </Typography>
-      ),
+      field: 'updated_at',
+      headerName: 'Updated',
+      width: 120,
+      valueFormatter: (value: string | null) => (value ? formatDate(value) : '—'),
     },
   ]
 
   return (
-    <AdminTable
+    <DataGrid
+      disableRowSelectionOnClick
       columns={columns}
-      getKey={(trial) => trial.id}
-      page={page}
+      density="compact"
+      getRowId={(row) => row.id}
+      initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+      pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       rows={rows}
-      rowsPerPage={rowsPerPage}
-      slug="trial"
-      title="Trial"
-      onPageChange={onPageChange}
-      onRowsPerPageChange={onRowsPerPageChange}
+      sx={{ border: 0 }}
     />
   )
 }
