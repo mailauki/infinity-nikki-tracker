@@ -22,6 +22,7 @@ import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
 import { Category as CategoryType, Color, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { updateEurekaVariant } from '@/app/(main)/(admin)/dashboard/actions'
+import PaginationContainer from './pagination-container'
 
 type Row = EurekaVariantRaw
 
@@ -237,21 +238,25 @@ export function EurekaVariantTable({
   ]
 
   return (
-    <DataGrid
-      disableRowSelectionOnClick
-      apiRef={apiRef}
-      columns={columns}
-      density="compact"
-      editMode="row"
-      getRowId={(row) => row.id}
-      initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
-      isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
-      pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
-      processRowUpdate={processRowUpdate}
-      rowModesModel={rowModesModel}
-      rows={rows}
-      sx={{ border: 0 }}
-      onRowModesModelChange={setRowModesModel}
-    />
+    <PaginationContainer noPagination rows={rows} slug="eureka-variant" title="Eureka Variant">
+      {() => (
+        <DataGrid
+          disableRowSelectionOnClick
+          apiRef={apiRef}
+          columns={columns}
+          density="compact"
+          editMode="row"
+          getRowId={(row) => row.id}
+          initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+          isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
+          pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
+          processRowUpdate={processRowUpdate}
+          rowModesModel={rowModesModel}
+          rows={rows}
+          sx={{ border: 0 }}
+          onRowModesModelChange={setRowModesModel}
+        />
+      )}
+    </PaginationContainer>
   )
 }

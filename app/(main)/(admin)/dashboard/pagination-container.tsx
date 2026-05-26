@@ -19,6 +19,7 @@ interface PaginationContainerProps<T> {
   slug: string
   rows: T[] | null | undefined
   children: (visibleRows: T[]) => ReactNode
+  noPagination?: boolean
   page?: number
   rowsPerPage?: number
   onPageChange?: (page: number) => void
@@ -30,6 +31,7 @@ export default function PaginationContainer<T>({
   slug,
   rows,
   children,
+  noPagination = false,
   page: controlledPage,
   rowsPerPage: controlledRowsPerPage,
   onPageChange,
@@ -58,7 +60,9 @@ export default function PaginationContainer<T>({
   }
 
   const allRows = rows ?? []
-  const visibleRows = allRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+  const visibleRows = noPagination
+    ? allRows
+    : allRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 
   return (
     <>
@@ -108,15 +112,17 @@ export default function PaginationContainer<T>({
           {children(visibleRows)}
         </Box>
       </Card>
-      <TablePagination
-        component="div"
-        count={allRows.length}
-        page={page}
-        rowsPerPage={rowsPerPage}
-        rowsPerPageOptions={[6, 8, 15, 20, 30, 50, 100]}
-        onPageChange={handlePageChange}
-        onRowsPerPageChange={handleRowsPerPageChange}
-      />
+      {!noPagination && (
+        <TablePagination
+          component="div"
+          count={allRows.length}
+          page={page}
+          rowsPerPage={rowsPerPage}
+          rowsPerPageOptions={[6, 8, 15, 20, 30, 50, 100]}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
+        />
+      )}
     </>
   )
 }

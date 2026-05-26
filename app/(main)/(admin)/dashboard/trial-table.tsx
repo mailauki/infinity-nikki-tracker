@@ -23,6 +23,7 @@ import { Trial } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { updateTrial } from '@/app/(main)/(admin)/dashboard/actions'
 import { useState } from 'react'
+import PaginationContainer from './pagination-container'
 
 type Row = Trial
 
@@ -218,21 +219,25 @@ export function TrialTable({ rows: initialRows, back }: TrialTableProps) {
   ]
 
   return (
-    <DataGrid
-      disableRowSelectionOnClick
-      apiRef={apiRef}
-      columns={columns}
-      density="compact"
-      editMode="row"
-      getRowId={(row) => row.id}
-      initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
-      isCellEditable={({ field }) => !['slug', 'image_url', 'updated_at'].includes(field)}
-      pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
-      processRowUpdate={processRowUpdate}
-      rowModesModel={rowModesModel}
-      rows={rows}
-      sx={{ border: 0 }}
-      onRowModesModelChange={setRowModesModel}
-    />
+    <PaginationContainer noPagination rows={rows} slug="trial" title="Trial">
+      {() => (
+        <DataGrid
+          disableRowSelectionOnClick
+          apiRef={apiRef}
+          columns={columns}
+          density="compact"
+          editMode="row"
+          getRowId={(row) => row.id}
+          initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+          isCellEditable={({ field }) => !['slug', 'image_url', 'updated_at'].includes(field)}
+          pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
+          processRowUpdate={processRowUpdate}
+          rowModesModel={rowModesModel}
+          rows={rows}
+          sx={{ border: 0 }}
+          onRowModesModelChange={setRowModesModel}
+        />
+      )}
+    </PaginationContainer>
   )
 }

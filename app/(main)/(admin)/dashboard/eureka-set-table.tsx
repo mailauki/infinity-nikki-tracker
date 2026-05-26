@@ -23,6 +23,7 @@ import { EurekaSet, Label, Style } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import RarityStars from '@/components/rarity-stars'
 import { updateEurekaSet } from '@/app/(main)/(admin)/dashboard/actions'
+import PaginationContainer from './pagination-container'
 
 type Row = EurekaSet
 
@@ -282,21 +283,25 @@ export function EurekaSetTable({ rows: initialRows, back, styles, labels }: Eure
   ]
 
   return (
-    <DataGrid
-      disableRowSelectionOnClick
-      apiRef={apiRef}
-      columns={columns}
-      density="compact"
-      editMode="row"
-      getRowId={(row) => row.id}
-      initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
-      isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
-      pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
-      processRowUpdate={processRowUpdate}
-      rowModesModel={rowModesModel}
-      rows={rows}
-      sx={{ border: 0 }}
-      onRowModesModelChange={setRowModesModel}
-    />
+    <PaginationContainer noPagination rows={rows} slug="eureka-set" title="Eureka Set">
+      {() => (
+        <DataGrid
+          disableRowSelectionOnClick
+          apiRef={apiRef}
+          columns={columns}
+          density="compact"
+          editMode="row"
+          getRowId={(row) => row.id}
+          initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+          isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
+          pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
+          processRowUpdate={processRowUpdate}
+          rowModesModel={rowModesModel}
+          rows={rows}
+          sx={{ border: 0 }}
+          onRowModesModelChange={setRowModesModel}
+        />
+      )}
+    </PaginationContainer>
   )
 }
