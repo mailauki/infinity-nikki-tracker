@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useTransition } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
@@ -13,11 +12,11 @@ import {
   Trial,
   UserPreferences,
 } from '@/lib/types/eureka'
-import { updateGroupBySet, updateShowByColor } from '@/app/actions/preferences'
+import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
+import { updateEurekaFilters, updateGroupBySet, updateShowByColor } from '@/app/actions/preferences'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
-import { applyFilterParams } from '@/lib/filter-params'
 
-import { EurekaDataContext } from './eureka-context'
+import { DEFAULT_FILTERS, EurekaDataContext, FilterState } from './eureka-context'
 
 const supabase = createClient()
 
@@ -38,10 +37,6 @@ export default function EurekaDataProvider({
   userId: string | null
   children: React.ReactNode
 }) {
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const pathname = usePathname()
-
   const [eurekaSets, setEurekaSets] = useState<EurekaSet[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [colors, setColors] = useState<Color[]>([])
@@ -52,6 +47,7 @@ export default function EurekaDataProvider({
   const [isObtainedError, setIsObtainedError] = useState(false)
   const [groupBySet, setGroupBySet] = useState<boolean>(DEFAULT_PREFERENCES.group_by_set)
   const [showByColor, setShowByColor] = useState<boolean>(DEFAULT_PREFERENCES.show_by_color)
+  const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS)
   const [, startTransition] = useTransition()
 
   useEffect(() => {
@@ -61,11 +57,11 @@ export default function EurekaDataProvider({
       fetchJson<Color[]>('/api/colors'),
       fetchJson<Trial[]>('/api/trials'),
     ])
-      .then(([sets, categories, colors, trials]) => {
+      .then(([sets, cats, cols, trls]) => {
         setEurekaSets(sets)
-        setCategories(categories)
-        setColors(colors)
-        setTrials(trials)
+        setCategories(cats)
+        setColors(cols)
+        setTrials(trls)
         setIsLoading(false)
       })
       .catch((err) => {
@@ -81,25 +77,18 @@ export default function EurekaDataProvider({
       .then((prefs) => {
         setGroupBySet(prefs.group_by_set)
         setShowByColor(prefs.show_by_color)
-
-        const FILTER_KEYS = ['set', 'category', 'filter', 'color', 'rarity']
-        const hasAnyFilterParam = FILTER_KEYS.some((k) => searchParams.has(k))
-        if (!hasAnyFilterParam) {
-          const updates: Record<string, string | null> = {
-            set: prefs.eureka_set_filter ?? null,
-            category: prefs.eureka_category ?? null,
-            filter: prefs.eureka_obtained_filter ?? null,
-            color: prefs.eureka_color ?? null,
-            rarity: prefs.eureka_rarity ?? null,
-          }
-          const hasAnySavedFilter = Object.values(updates).some((v) => v !== null)
-          if (hasAnySavedFilter) {
-            router.replace(applyFilterParams(pathname, searchParams, updates), { scroll: false })
-          }
-        }
+        setFilters({
+          selectedEurekaSet: prefs.eureka_set_filter ?? null,
+          selectedCategory: (prefs.eureka_category as CategoryFilter) ?? null,
+          selectedObtainedFilter: (prefs.eureka_obtained_filter as ObtainedFilter) ?? null,
+          selectedColor: prefs.eureka_color ?? null,
+          selectedRarities: prefs.eureka_rarity
+            ? prefs.eureka_rarity.split(',').map(Number).filter(Boolean)
+            : [],
+        })
       })
       .catch(() => {})
-  }, [isLoggedIn]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isLoggedIn])
 
   const handleGroupBySetChange = () => {
     const next = !groupBySet
@@ -111,6 +100,39 @@ export default function EurekaDataProvider({
     const next = !showByColor
     setShowByColor(next)
     if (isLoggedIn) startTransition(() => updateShowByColor(next))
+  }
+
+  const handleFiltersChange = (updates: Partial<FilterState>) => {
+    setFilters((prev) => {
+      const next = { ...prev, ...updates }
+      if (isLoggedIn) {
+        startTransition(() =>
+          updateEurekaFilters({
+            eureka_set_filter: next.selectedEurekaSet,
+            eureka_category: next.selectedCategory,
+            eureka_obtained_filter: next.selectedObtainedFilter,
+            eureka_color: next.selectedColor,
+            eureka_rarity: next.selectedRarities.length ? next.selectedRarities.join(',') : null,
+          })
+        )
+      }
+      return next
+    })
+  }
+
+  const handleClearFilters = () => {
+    setFilters(DEFAULT_FILTERS)
+    if (isLoggedIn) {
+      startTransition(() =>
+        updateEurekaFilters({
+          eureka_set_filter: null,
+          eureka_category: null,
+          eureka_obtained_filter: null,
+          eureka_color: null,
+          eureka_rarity: null,
+        })
+      )
+    }
   }
 
   useEffect(() => {
@@ -180,6 +202,9 @@ export default function EurekaDataProvider({
         showByColor,
         onGroupBySetChange: handleGroupBySetChange,
         onShowByColorChange: handleShowByColorChange,
+        filters,
+        onFiltersChange: handleFiltersChange,
+        onClearFilters: handleClearFilters,
       }}
     >
       {children}
