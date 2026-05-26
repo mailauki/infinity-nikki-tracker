@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import EditTrialForm from '@/components/forms/trial/edit-trial-form'
+import EditTrialForm from './edit-trial-form'
 import { getTrialRaw } from '@/hooks/data/admin/trials'
 import { Container, Stack } from '@mui/material'
 import { Metadata } from 'next'

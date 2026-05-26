@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import EditEurekaSetForm from '@/components/forms/eureka-set/edit-eureka-set-form'
+import EditEurekaSetForm from './edit-eureka-set-form'
 import { getTrials } from '@/hooks/data/trials'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'

@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { DashboardTabs } from '@/components/admin/dashboard-tabs'
+import { DashboardTabs } from './dashboard-tabs'
 import { getAdminData } from '@/hooks/data/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getUserID } from '@/hooks/user'

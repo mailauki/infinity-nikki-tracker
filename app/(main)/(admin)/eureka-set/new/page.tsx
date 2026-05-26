@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import AddEurekaSetForm from '@/components/forms/eureka-set/add-eureka-set-form'
+import AddEurekaSetForm from './add-eureka-set-form'
 import { getTrials } from '@/hooks/data/trials'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'

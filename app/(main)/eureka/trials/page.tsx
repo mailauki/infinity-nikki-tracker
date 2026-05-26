@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { Container, Stack } from '@mui/material'
 
-import TrialsContent from '@/components/eureka/trials-content'
+import TrialsContent from './trials-content'
 
 export const metadata: Metadata = {
   title: 'Trials',

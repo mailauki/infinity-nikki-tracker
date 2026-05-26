@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import EditEurekaVariantForm from '@/components/forms/eureka-variant/edit-eureka-variant-form'
+import EditEurekaVariantForm from './edit-eureka-variant-form'
 import { getAdminData } from '@/hooks/data/user'
 import { Container, Stack } from '@mui/material'
 import { Metadata } from 'next'

@@ -27,7 +27,7 @@ import { createClient } from '@/lib/supabase/client'
 import { toSlug, toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 import { Category, Color, Label, Style, Trial } from '@/lib/types/eureka'
-import ColorSelect from './color-select'
+import ColorSelect from '@/components/forms/eureka-set/color-select'
 import { SparkleIcon } from '@/components/rarity-stars'
 
 export default function AddEurekaSetForm({

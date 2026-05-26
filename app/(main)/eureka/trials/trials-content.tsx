@@ -17,7 +17,7 @@ import {
   Typography,
 } from '@mui/material'
 
-import LazyCardMedia from './lazy-card-media'
+import LazyCardMedia from '@/components/eureka/lazy-card-media'
 import EurekaCard from '@/components/eureka/eureka-card'
 import { ViewAllButton } from '@/components/view-all-button'
 import ErrorAlert from '@/components/error-alert'

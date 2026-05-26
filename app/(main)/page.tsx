@@ -1,4 +1,4 @@
-import { Hero } from '@/components/hero'
+import { Hero } from './hero'
 import { Container } from '@mui/material'
 
 export default function Home() {

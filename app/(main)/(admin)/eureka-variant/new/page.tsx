@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import AddEurekaVariantForm from '@/components/forms/eureka-variant/add-eureka-variant-form'
+import AddEurekaVariantForm from './add-eureka-variant-form'
 import { getAdminData } from '@/hooks/data/user'
 import { Container, Stack } from '@mui/material'
 import { Metadata } from 'next'

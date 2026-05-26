@@ -1,4 +1,4 @@
-import AddTrialForm from '@/components/forms/trial/add-trial-form'
+import AddTrialForm from './add-trial-form'
 import { Container, Stack } from '@mui/material'
 import { Metadata } from 'next'
 
