@@ -83,7 +83,11 @@ export default function ColorSelect({
         onChange={handleChange}
       >
         {[...colors]
-          .sort((a, b) => (a.slug === 'iridescent' ? 1 : b.slug === 'iridescent' ? -1 : 0))
+          .sort((a, b) => {
+            if (a.slug === 'iridescent') return 1
+            if (b.slug === 'iridescent') return -1
+            return 0
+          })
           .map((color) => {
             const selected = colorSelect.includes(color.slug)
             const SelectionIcon = selected ? CheckBox : CheckBoxOutlineBlank

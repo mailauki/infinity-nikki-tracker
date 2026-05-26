@@ -1,6 +1,5 @@
 import { ViewList, ViewHeadline } from '@mui/icons-material'
-import { SelectChangeEvent, Stack, ToggleButton, ToggleButtonGroup, Toolbar, Tooltip } from '@mui/material'
-import DashboardViewSelect from './dashboard-view-select'
+import { Stack, ToggleButton, ToggleButtonGroup, Toolbar, Tooltip } from '@mui/material'
 
 export default function DashboardToolbar({
   tab,
@@ -11,8 +10,7 @@ export default function DashboardToolbar({
   tab: string
   handleTabChange: (_: React.MouseEvent<HTMLElement>, value: string) => void
   view: string
-  // handleViewChange: (_: React.MouseEvent<HTMLElement>, nextView: 'list' | 'table') => void
-	handleViewChange: (event: SelectChangeEvent<typeof view>) => void
+  handleViewChange: (_: React.MouseEvent<HTMLElement>, nextView: 'list' | 'table') => void
 }) {
   return (
     <Toolbar
@@ -53,24 +51,23 @@ export default function DashboardToolbar({
         </ToggleButtonGroup>
 
         <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
-          {/* <ToggleButtonGroup
+          <ToggleButtonGroup
             exclusive
             sx={{ height: 'fit-content' }}
             value={view}
             onChange={handleViewChange}
           >
             <Tooltip title="List view">
-              <ToggleButton aria-label="list" value="list">
-                <ViewList />
+              <ToggleButton aria-label="list" size="small" value="list">
+                <ViewList fontSize="small" />
               </ToggleButton>
             </Tooltip>
             <Tooltip title="Table view">
-              <ToggleButton aria-label="table" value="table">
-                <ViewHeadline />
+              <ToggleButton aria-label="table" size="small" value="table">
+                <ViewHeadline fontSize="small" />
               </ToggleButton>
             </Tooltip>
-          </ToggleButtonGroup> */}
-					<DashboardViewSelect handleChange={handleViewChange} view={view} />
+          </ToggleButtonGroup>
         </Stack>
       </Stack>
     </Toolbar>

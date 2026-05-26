@@ -1,6 +1,4 @@
 import { Suspense } from 'react'
-import { Box, Container } from '@mui/material'
-import { StatCard } from '@/components/admin/stat-card'
 import { DashboardTabs } from '@/components/admin/dashboard-tabs'
 import { getAdminData } from '@/hooks/data/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
