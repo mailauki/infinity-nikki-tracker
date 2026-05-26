@@ -1,5 +1,6 @@
 import { ViewList, ViewHeadline } from '@mui/icons-material'
-import { Stack, ToggleButton, ToggleButtonGroup, Toolbar, Tooltip } from '@mui/material'
+import { SelectChangeEvent, Stack, ToggleButton, ToggleButtonGroup, Toolbar, Tooltip } from '@mui/material'
+import DashboardViewSelect from './dashboard-view-select'
 
 export default function DashboardToolbar({
   tab,
@@ -10,7 +11,8 @@ export default function DashboardToolbar({
   tab: string
   handleTabChange: (_: React.MouseEvent<HTMLElement>, value: string) => void
   view: string
-  handleViewChange: (_: React.MouseEvent<HTMLElement>, nextView: 'list' | 'table') => void
+  // handleViewChange: (_: React.MouseEvent<HTMLElement>, nextView: 'list' | 'table') => void
+	handleViewChange: (event: SelectChangeEvent<typeof view>) => void
 }) {
   return (
     <Toolbar
@@ -51,7 +53,7 @@ export default function DashboardToolbar({
         </ToggleButtonGroup>
 
         <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
-          <ToggleButtonGroup
+          {/* <ToggleButtonGroup
             exclusive
             sx={{ height: 'fit-content' }}
             value={view}
@@ -67,7 +69,8 @@ export default function DashboardToolbar({
                 <ViewHeadline />
               </ToggleButton>
             </Tooltip>
-          </ToggleButtonGroup>
+          </ToggleButtonGroup> */}
+					<DashboardViewSelect handleChange={handleViewChange} view={view} />
         </Stack>
       </Stack>
     </Toolbar>

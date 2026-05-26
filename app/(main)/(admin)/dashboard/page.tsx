@@ -34,7 +34,7 @@ async function AdminDashboard() {
 
   return (
     <>
-      <Container maxWidth="md" sx={{ flexGrow: 1, mt: -2, mb: 2 }}>
+      {/* <Container maxWidth="md" sx={{ flexGrow: 1, mt: -2, mb: 2 }}>
         <Box
           sx={{
             display: { xs: 'none', md: 'grid' },
@@ -51,7 +51,7 @@ async function AdminDashboard() {
           />
           <StatCard addHref="/trial/new" count={trials?.length ?? 0} title="Trials" />
         </Box>
-      </Container>
+      </Container> */}
 
       <DashboardTabs
         defaultTab={defaultTab}
