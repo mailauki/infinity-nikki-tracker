@@ -1,6 +1,5 @@
 'use client'
 import React from 'react'
-import { useSearchParams } from 'next/navigation'
 import {
   Alert,
   Box,
@@ -17,7 +16,7 @@ import { ChevronRight } from '@mui/icons-material'
 import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { useSortOrder } from '@/components/sort-context'
-import { CategoryFilter, GRID_COLUMNS, ObtainedFilter } from '@/lib/types/props'
+import { GRID_COLUMNS } from '@/lib/types/props'
 import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
 import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import ProgressChip from '@/components/progress-chip'
@@ -49,11 +48,19 @@ function VariantCardSkeleton() {
 }
 
 export default function FilterEureka() {
-  const { eurekaSets, isLoggedIn, isLoading, isError, isObtainedError, groupBySet, showByColor } =
-    useEurekaData()
+  const {
+    eurekaSets,
+    isLoggedIn,
+    isLoading,
+    isError,
+    isObtainedError,
+    groupBySet,
+    showByColor,
+    filters,
+  } = useEurekaData()
   const { sortOrder } = useSortOrder()
 
-  const searchParams = useSearchParams()
+  const { selectedEurekaSet, selectedCategory, selectedObtainedFilter, selectedColor, selectedRarities } = filters
 
   if (isError) {
     return (
@@ -90,12 +97,6 @@ export default function FilterEureka() {
       </Container>
     )
   }
-
-  const selectedEurekaSet = searchParams.get('set')
-  const selectedCategory = searchParams.get('category') as CategoryFilter | null
-  const selectedObtainedFilter = searchParams.get('filter') as ObtainedFilter | null
-  const selectedColor = searchParams.get('color')
-  const selectedRarities = searchParams.get('rarity')?.split(',').map(Number).filter(Boolean) ?? []
 
   const filteredSets = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)

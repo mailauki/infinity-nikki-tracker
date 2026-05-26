@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import Menu from '@mui/material/Menu'
 import {
   Button,
@@ -17,9 +16,7 @@ import {
 import { Close, FilterList } from '@mui/icons-material'
 
 import { useEurekaData } from '../eureka/eureka-context'
-import { applyFilterParams } from '@/lib/filter-params'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
-import { updateEurekaFilters } from '@/app/actions/preferences'
 import ObtainedToggle from '../eureka/filter/obtained-toggle'
 import ColorSelect from '../eureka/filter/color-select'
 import CategoryToggle from '../eureka/filter/category-toggle'
@@ -41,103 +38,58 @@ export default function FilterMenu() {
     showByColor,
     onGroupBySetChange,
     onShowByColorChange,
+    filters,
+    onFiltersChange,
+    onClearFilters,
   } = useEurekaData()
 
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  const pathname = usePathname()
-  const [, startTransition] = React.useTransition()
-
-  const selectedEurekaSet = searchParams.get('set')
-  const selectedCategory = searchParams.get('category') as CategoryFilter | null
-  const selectedObtainedFilter = searchParams.get('filter') as ObtainedFilter | null
-  const selectedColor = searchParams.get('color')
-  const selectedRarities = searchParams.get('rarity')?.split(',').map(Number).filter(Boolean) ?? []
-
-  React.useEffect(() => {
-    if (isLoggedIn && !searchParams.has('filter')) {
-      router.replace(applyFilterParams(pathname, searchParams, { filter: 'missing' }), {
-        scroll: false,
-      })
-    }
-  }, [isLoggedIn]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  function push(updates: Record<string, string | null>) {
-    router.push(applyFilterParams(pathname, searchParams, updates), { scroll: false })
-  }
-
-  function saveFilters(updates: Record<string, string | null>) {
-    if (!isLoggedIn) return
-    const merged = {
-      eureka_set_filter: updates.set !== undefined ? updates.set : selectedEurekaSet,
-      eureka_category: updates.category !== undefined ? updates.category : selectedCategory,
-      eureka_obtained_filter:
-        updates.filter !== undefined ? updates.filter : selectedObtainedFilter,
-      eureka_color: updates.color !== undefined ? updates.color : selectedColor,
-      eureka_rarity: (() => {
-        if (updates.rarity !== undefined) return updates.rarity
-        return selectedRarities.length ? selectedRarities.join(',') : null
-      })(),
-    }
-    startTransition(() => updateEurekaFilters(merged))
-  }
+  const {
+    selectedEurekaSet,
+    selectedCategory,
+    selectedObtainedFilter,
+    selectedColor,
+    selectedRarities,
+  } = filters
 
   const handleEurekaSetChange = (event: SelectChangeEvent) => {
-    const val = event.target.value || null
-    push({ set: val })
-    saveFilters({ set: val })
+    onFiltersChange({ selectedEurekaSet: event.target.value || null })
   }
 
   const handleCategoryChange = (
     _event: React.MouseEvent<HTMLElement>,
     newCategory: CategoryFilter | null
   ) => {
-    push({ category: newCategory })
-    saveFilters({ category: newCategory })
+    onFiltersChange({ selectedCategory: newCategory })
   }
 
   const handleObtainedFilterChange = (
     _event: React.MouseEvent<HTMLElement>,
     newFilter: ObtainedFilter | null
   ) => {
-    push({ filter: newFilter })
-    saveFilters({ filter: newFilter })
+    onFiltersChange({ selectedObtainedFilter: newFilter })
   }
 
   const handleShowByColorChange = () => {
     if (!showByColor) {
-      push({ category: null, filter: null, color: null })
-      saveFilters({ category: null, filter: null, color: null })
+      onFiltersChange({ selectedCategory: null, selectedObtainedFilter: null, selectedColor: null })
     }
     onShowByColorChange()
   }
 
   const handleColorChange = (event: SelectChangeEvent) => {
-    const val = event.target.value || null
-    push({ color: val })
-    saveFilters({ color: val })
+    onFiltersChange({ selectedColor: event.target.value || null })
   }
 
   const handleRarityChange = (_event: React.MouseEvent<HTMLElement>, value: number[]) => {
-    const val = value.length ? value.join(',') : null
-    push({ rarity: val })
-    saveFilters({ rarity: val })
+    onFiltersChange({ selectedRarities: value })
   }
 
-  const handleClearFilters = () => {
-    router.push(pathname, { scroll: false })
-    if (isLoggedIn) {
-      startTransition(() =>
-        updateEurekaFilters({
-          eureka_set_filter: null,
-          eureka_category: null,
-          eureka_obtained_filter: null,
-          eureka_color: null,
-          eureka_rarity: null,
-        })
-      )
-    }
-  }
+  const hasActiveFilters =
+    selectedEurekaSet ||
+    selectedCategory ||
+    selectedObtainedFilter ||
+    selectedColor ||
+    selectedRarities.length > 0
 
   return (
     <div>
@@ -163,15 +115,9 @@ export default function FilterMenu() {
           list: {
             'aria-labelledby': 'filter-button',
             disablePadding: true,
-            sx: {
-              paddingBottom: 2,
-            },
+            sx: { paddingBottom: 2 },
           },
-          paper: {
-            sx: {
-              borderRadius: '12px',
-            },
-          },
+          paper: { sx: { borderRadius: '12px' } },
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         onClose={() => setAnchorEl(null)}
@@ -180,14 +126,12 @@ export default function FilterMenu() {
           <Stack sx={{ flex: 1 }}>
             <Typography variant="subtitle2">Filter Eureka</Typography>
           </Stack>
-
           <IconButton aria-label="Close filter menu" onClick={() => setAnchorEl(null)}>
             <Close />
           </IconButton>
         </Toolbar>
         <ListItem sx={{ gap: 1 }}>
           <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={onGroupBySetChange} />
-
           <EurekaSelect
             eurekaSets={eurekaSets}
             selectedEurekaSet={selectedEurekaSet}
@@ -195,11 +139,7 @@ export default function FilterMenu() {
           />
         </ListItem>
         <ListItem sx={{ gap: 1 }}>
-          <SortColorToggle
-            showByColor={showByColor}
-            onShowByColorChange={handleShowByColorChange}
-          />
-
+          <SortColorToggle showByColor={showByColor} onShowByColorChange={handleShowByColorChange} />
           <ColorSelect
             colors={colors}
             disabled={showByColor}
@@ -230,12 +170,8 @@ export default function FilterMenu() {
         <Divider sx={{ mx: 2, mt: 2 }} />
         <ListItem>
           <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
-            {(selectedEurekaSet ||
-              selectedCategory ||
-              selectedObtainedFilter ||
-              selectedColor ||
-              selectedRarities.length > 0) && (
-              <Button color="secondary" variant="outlined" onClick={handleClearFilters}>
+            {hasActiveFilters && (
+              <Button color="secondary" variant="outlined" onClick={onClearFilters}>
                 Clear all
               </Button>
             )}
