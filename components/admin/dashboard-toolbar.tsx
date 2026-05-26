@@ -58,13 +58,13 @@ export default function DashboardToolbar({
             onChange={handleViewChange}
           >
             <Tooltip title="List view">
-              <ToggleButton aria-label="list" value="list">
-                <ViewList />
+              <ToggleButton aria-label="list" size="small" value="list">
+                <ViewList fontSize="small" />
               </ToggleButton>
             </Tooltip>
             <Tooltip title="Table view">
-              <ToggleButton aria-label="table" value="table">
-                <ViewHeadline />
+              <ToggleButton aria-label="table" size="small" value="table">
+                <ViewHeadline fontSize="small" />
               </ToggleButton>
             </Tooltip>
           </ToggleButtonGroup>

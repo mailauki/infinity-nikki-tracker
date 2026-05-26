@@ -24,6 +24,23 @@ export const navLinksData: {
         },
       ],
     },
+    // {
+    //   title: 'Outfits',
+    //   url: '/outfits',
+    //   image: '/icons/outfits.png',
+    // 	items: [
+    // 		{
+    // 			title: 'Glow Up',
+    // 			url: '/outfits/glowup',
+    // 			image: '/icons/glowup.png',
+    // 		},
+    // 		{
+    // 			title: 'Evolution',
+    // 			url: '/outfits/evolution',
+    // 			image: '/icons/evolution.png',
+    // 		},
+    // 	],
+    // },
   ],
   navSecondary: [
     {
