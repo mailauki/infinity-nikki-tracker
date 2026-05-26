@@ -66,16 +66,6 @@ export default function PaginationContainer<T>({
 
   return (
     <>
-      <CardHeader
-        disableTypography
-        action={<Chip color="secondary" label={`Total: ${allRows.length}`} variant="outlined" />}
-        title={
-          <Typography component="h2" variant="h5">
-            {title}s
-          </Typography>
-        }
-      />
-
       <Stack
         useFlexGap
         alignItems="flex-end"
