@@ -3,9 +3,9 @@
 import { useState, useTransition } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Container, useMediaQuery, useTheme } from '@mui/material'
-import { EurekaSetTable } from '@/components/admin/eureka-set-table'
-import { EurekaVariantTable } from '@/components/admin/eureka-variant-table'
-import { TrialTable } from '@/components/admin/trial-table'
+import { EurekaSetTable } from './eureka-set-table'
+import { EurekaVariantTable } from './eureka-variant-table'
+import { TrialTable } from './trial-table'
 import {
   Category,
   Color,
@@ -15,9 +15,9 @@ import {
   Style,
   Trial,
 } from '@/lib/types/eureka'
-import EurekaSetList from '@/components/admin/eureka-set-list'
-import EurekaVariantList from '@/components/admin/eureka-variant-list'
-import TrialList from '@/components/admin/trial-list'
+import EurekaSetList from './eureka-set-list'
+import EurekaVariantList from './eureka-variant-list'
+import TrialList from './trial-list'
 import DashboardToolbar from './dashboard-toolbar'
 import { updateDashboardTab, updateDashboardView } from '@/app/actions/preferences'
 import { useSortOrder } from '@/components/sort-context'

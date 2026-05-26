@@ -21,7 +21,7 @@ import { useSearchParams } from 'next/navigation'
 import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { EurekaSet, Label, Style } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
-import RarityStars from '../rarity-stars'
+import RarityStars from '@/components/rarity-stars'
 import { updateEurekaSet } from '@/app/(main)/(admin)/dashboard/actions'
 
 type Row = EurekaSet

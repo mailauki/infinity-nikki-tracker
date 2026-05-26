@@ -5,7 +5,7 @@ import { Tooltip } from '@mui/material'
 import { Edit, EditOff, SwapVert } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
 import { toTitle } from '@/lib/utils'
-import { useProfileEdit } from '@/components/profile/profile-context'
+import { useProfileEdit } from '@/app/(main)/profile/profile-context'
 import { useSortOrder } from '@/components/sort-context'
 
 export function EurekaSetEditButton({ slug, isAdmin }: { slug: string; isAdmin: boolean }) {

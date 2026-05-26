@@ -1,6 +1,6 @@
 import ProfileForm from '@/components/forms/auth/profile-form'
-import CollectionStats from '@/components/profile/collection-stats'
-import RecentUpdates from '@/components/profile/recent-updates'
+import CollectionStats from './collection-stats'
+import RecentUpdates from './recent-updates'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { redirect } from 'next/navigation'

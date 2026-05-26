@@ -32,7 +32,7 @@ import { useScrollContainer } from './use-scroll-container'
 import { navLinksData } from '@/lib/nav-links'
 import { toTitle } from '@/lib/utils'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
-import ProfileEditProvider from '@/components/profile/profile-edit-provider'
+import ProfileEditProvider from '@/app/(main)/profile/profile-edit-provider'
 import { SortProvider } from '@/components/sort-context'
 
 const allLinks = [
