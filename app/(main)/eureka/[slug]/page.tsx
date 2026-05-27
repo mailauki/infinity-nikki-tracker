@@ -2,14 +2,15 @@ import { Suspense } from 'react'
 
 import { getUserID } from '@/hooks/user'
 import { getEurekaSet } from '@/hooks/data/eureka-sets'
-import { Container, Stack, Button, Box, Divider, Typography, Chip } from '@mui/material'
+import { Container, Stack, Button, Divider, Typography, Chip } from '@mui/material'
 import type { Metadata } from 'next'
 import { Category, ChevronRight } from '@mui/icons-material'
-import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
+import EurekaVariantColorFilter from '@/components/eureka/eureka-variant-color-filter'
 import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
-import { GRID_COLUMNS } from '@/lib/types/props'
+import { countObtained, percent } from '@/hooks/count-obtained'
+import ProgressChip from '@/components/progress-chip'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -39,6 +40,8 @@ async function EurekaSet({ slug }: { slug: string }) {
 
   const { image_url, eureka_set_trials, eureka_variants, rarity, label, style, colors } = eurekaSet
 
+	const { obtained, total } = countObtained(eureka_variants)
+
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
       <Stack spacing={3}>
@@ -67,19 +70,6 @@ async function EurekaSet({ slug }: { slug: string }) {
               {toTitle(style ?? '')}
             </Typography>
           </Stack>
-          <Stack useFlexGap direction="row" flexWrap="wrap" spacing={0.5}>
-            {colors.map((color) => (
-              <Chip
-                key={color.slug}
-                avatar={
-                  <div>
-                    <LazyAvatar alt={color.title || color.slug} size="xs" src={color.image_url!} />
-                  </div>
-                }
-                label={color.title}
-              />
-            ))}
-          </Stack>
         </Stack>
 
         {eureka_set_trials.length > 0 && (
@@ -104,24 +94,19 @@ async function EurekaSet({ slug }: { slug: string }) {
                   ? `${eureka_set_trials.length} trials`
                   : toTitle(eureka_set_trials[0].trial)}
               </Button>
+
+							<ProgressChip percentage={percent(obtained, total)} size='sm' />
             </Stack>
 
             <Divider />
           </Stack>
         )}
 
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: GRID_COLUMNS,
-            gap: { xs: 1, sm: 1.5, md: 2 },
-            py: 0,
-          }}
-        >
-          {eureka_variants.map((variant) => (
-            <EurekaVariantCard key={variant.id} eurekaVariant={variant} isLoggedIn={isLoggedIn} />
-          ))}
-        </Box>
+        <EurekaVariantColorFilter
+          colors={colors}
+          eureka_variants={eureka_variants}
+          isLoggedIn={isLoggedIn}
+        />
       </Stack>
     </Container>
   )

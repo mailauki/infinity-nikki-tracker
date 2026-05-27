@@ -37,7 +37,10 @@ export function createEurekaSet({
 
   const eureka = {
     ...eurekaSet,
-    image_url: eurekaSet.eureka_variants.find((variant) => variant.default)?.image_url,
+    image_url: (
+      eurekaSet.eureka_variants.find((v) => v.default && v.category === 'head') ??
+      eurekaSet.eureka_variants.find((v) => v.default)
+    )?.image_url,
     categories: categories,
     colors: resolvedColors,
     eureka_variants: sortVariants(
