@@ -6,7 +6,6 @@ import {
   Alert,
   Button,
   FormControl,
-  FormLabel,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -115,15 +114,12 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
           </Select>
         </FormControl>
 
-        <Stack spacing={0.5}>
-          <FormLabel>Image</FormLabel>
-          <ImageUpload
-            slug={trial.slug ?? undefined}
-            table="trials"
-            url={imageUrl}
-            onUpload={(url) => setImageUrl(url)}
-          />
-        </Stack>
+        <ImageUpload
+          slug={trial.slug ?? undefined}
+          table="trials"
+          url={imageUrl}
+          onUpload={(url) => setImageUrl(url)}
+        />
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href={backUrl} variant="outlined">

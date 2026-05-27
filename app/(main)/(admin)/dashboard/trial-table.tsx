@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import { IconButton, Tooltip } from '@mui/material'
+import { IconButton, Stack, Tooltip } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Cancel'
@@ -119,7 +119,7 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
               />,
               <GridActionsCellItem
                 key="open"
-                icon={<OpenInNewIcon />}
+                icon={<OpenInNewIcon color='secondary' />}
                 label="View trials"
                 title="View trials"
                 onClick={() => (window.location.href = '/eureka/trials')}
@@ -132,13 +132,15 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
       width: 64,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) =>
-        isEditing(row.id) ? (
+        
+				<Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+					{isEditing(row.id) ? (
           <LockedCell href={editHref(row)}>
             <LazyAvatar
               alt={row.title || 'Image'}
-              size="xs"
+              size="sm"
               src={row.image_url!}
-              sx={{ width: 40, bgcolor: 'transparent', color: 'text.disabled' }}
+              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
               variant="rounded"
             >
               <Category fontSize="inherit" />
@@ -147,14 +149,15 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
         ) : (
           <LazyAvatar
             alt={row.title || 'Image'}
-            size="xs"
+            size="sm"
             src={row.image_url!}
-            sx={{ width: 40, bgcolor: 'transparent', color: 'text.disabled' }}
+            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             variant="rounded"
           >
             <Category fontSize="inherit" />
           </LazyAvatar>
-        ),
+        )}
+				</Stack>
     },
     {
       field: 'title',

@@ -6,6 +6,7 @@ import {
   Alert,
   Box,
   Button,
+  Card,
   Chip,
   FormControl,
   IconButton,
@@ -25,9 +26,9 @@ import {
 import { ColorLens } from '@mui/icons-material'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { createClient } from '@/lib/supabase/client'
-import { toSlug, toSlugVariant } from '@/lib/utils'
+import { toSlug, toSlugVariant, toTitle } from '@/lib/utils'
 import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
-import { Category, Color, EurekaSetRaw, Label, Style, Trial } from '@/lib/types/eureka'
+import { Category, Color, EurekaSetRaw, EurekaVariant, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from '@/components/forms/eureka-set/color-select'
 import { SparkleIcon } from '@/components/rarity-stars'
 import ImageUpload from '@/components/forms/image-upload'
@@ -52,7 +53,7 @@ export default function EditEurekaSetForm({
   categories: Category[]
   initialColors: string[]
   initialDefaultColor?: string
-  initialVariants?: { slug: string; color: string; category: string; image_url: string | null }[]
+  initialVariants?: EurekaVariant[]
   back?: string
 }) {
   const router = useRouter()
@@ -412,50 +413,24 @@ export default function EditEurekaSetForm({
             })}
           </Select>
         </FormControl>
-
-        {initialVariants.length > 0 && (
-          <Stack spacing={2}>
-            {[...new Set(initialVariants.map((v) => v.color))]
-              .sort((a, b) => {
-                if (a === defaultColor) return -1
-                if (b === defaultColor) return 1
-                const aTitle = colors.find((c) => c.slug === a)?.title?.toLowerCase() ?? ''
-                const bTitle = colors.find((c) => c.slug === b)?.title?.toLowerCase() ?? ''
-                if (aTitle === 'iridescent') return 1
-                if (bTitle === 'iridescent') return -1
-                return 0
-              })
-              .map((colorSlug) => {
-                const colorObj = colors.find((c) => c.slug === colorSlug)
-                const colorVariants = initialVariants.filter((v) => v.color === colorSlug)
-                return (
-                  <Stack key={colorSlug} spacing={1}>
-                    <Typography variant="subtitle2">{colorObj?.title ?? colorSlug}</Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-                      {colorVariants.map((variant) => {
-                        const catObj = categories.find((c) => c.slug === variant.category)
-                        return (
-                          <Stack key={variant.slug} alignItems="center" spacing={0.5}>
-                            <ImageUpload
-                              slug={variant.slug}
-                              table="eureka_variants"
-                              url={variantImages[variant.slug] ?? null}
-                              onUpload={(url) =>
-                                setVariantImages((prev) => ({ ...prev, [variant.slug]: url }))
-                              }
-                            />
-                            <Typography variant="caption">
-                              {catObj?.title ?? variant.category}
-                            </Typography>
-                          </Stack>
-                        )
-                      })}
-                    </Box>
-                  </Stack>
-                )
-              })}
-          </Stack>
-        )}
+				<Box
+					sx={{ 
+						display: 'grid',
+						gridTemplateColumns: '1fr 1fr 1fr',
+						gap: { xs: 0.5, sm: 1, md: 2 },
+					}}
+				>
+					{initialVariants.map((variant) => (
+						<ImageUpload
+							key={variant.slug}
+							caption={`${toTitle(variant.category ?? '')} • ${toTitle(variant.color ?? '')}`}
+							slug={variant.slug ?? undefined}
+							table="eureka_variants"
+							url={variantImages[variant.slug] ?? null}
+							onUpload={(url) => setVariantImages((prev) => ({ ...prev, [variant.slug]: url }))}
+						/>
+					))}
+				</Box>
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href={backUrl} variant="outlined">

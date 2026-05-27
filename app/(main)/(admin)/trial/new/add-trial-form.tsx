@@ -6,7 +6,6 @@ import {
   Alert,
   Button,
   FormControl,
-  FormLabel,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -116,15 +115,12 @@ export default function AddTrialForm() {
           </Select>
         </FormControl>
 
-        <Stack spacing={0.5}>
-          <FormLabel>Image</FormLabel>
-          <ImageUpload
-            slug={slug}
-            table="trials"
-            url={imageUrl}
-            onUpload={(url) => setImageUrl(url)}
-          />
-        </Stack>
+        <ImageUpload
+          slug={slug}
+          table="trials"
+          url={imageUrl}
+          onUpload={(url) => setImageUrl(url)}
+        />
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href="/trial" variant="outlined">

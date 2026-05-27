@@ -126,7 +126,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
               />,
               <GridActionsCellItem
                 key="open"
-                icon={<OpenInNewIcon />}
+                icon={<OpenInNewIcon color='secondary' />}
                 label="View page"
                 title="View page"
                 onClick={() => (window.location.href = `/eureka/${row.slug}`)}
@@ -139,7 +139,8 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       width: 64,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) =>
-        isEditing(row.id) ? (
+				<Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+        {isEditing(row.id) ? (
           <LockedCell href={editHref(row)}>
             <LazyAvatar
               alt={row.title || 'Image'}
@@ -161,7 +162,8 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
           >
             <Category fontSize="inherit" />
           </LazyAvatar>
-        ),
+        )}
+				</Stack>
     },
     {
       field: 'title',
@@ -194,7 +196,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       valueOptions: [2, 3, 4, 5],
       renderCell: ({ value }: GridRenderCellParams<Row>) =>
         value ? (
-          <Stack justifyContent="center" sx={{ flex: 1, height: 35 }}>
+          <Stack justifyContent="center" sx={{ flex: 1, height: 52, color: 'text.secondary' }}>
             <RarityStars rarity={value} />
           </Stack>
         ) : (
@@ -225,25 +227,27 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       width: 340,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) =>
-        isEditing(row.id) ? (
-          <LockedCell href={editHref(row)}>
-            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
-              {row.colors
-                ? row.colors.map((color) => (
-                    <Chip key={color.slug} label={color.title} size="small" />
-                  ))
-                : '—'}
-            </Box>
-          </LockedCell>
-        ) : (
-          <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
-            {row.colors
-              ? row.colors.map((color) => (
-                  <Chip key={color.slug} label={color.title} size="small" />
-                ))
-              : '—'}
-          </Box>
-        ),
+				<Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+					{isEditing(row.id) ? (
+						<LockedCell href={editHref(row)}>
+							<Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
+								{row.colors
+									? row.colors.map((color) => (
+											<Chip key={color.slug} label={color.title} size="small" />
+										))
+									: '—'}
+							</Box>
+						</LockedCell>
+					) : (
+						<Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
+							{row.colors
+								? row.colors.map((color) => (
+										<Chip key={color.slug} label={color.title} size="small" />
+									))
+								: '—'}
+						</Box>
+					)}
+				</Stack>
     },
     {
       field: 'description',

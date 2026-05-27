@@ -8,7 +8,6 @@ import {
   FormControl,
   FormControlLabel,
   FormHelperText,
-  FormLabel,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -155,15 +154,12 @@ export default function AddEurekaVariantForm({
           onChange={(e) => setSlug(e.target.value)}
         />
 
-        <Stack spacing={0.5}>
-          <FormLabel>Image</FormLabel>
-          <ImageUpload
-            slug={slug}
-            table="eureka_variants"
-            url={imageUrl}
-            onUpload={(url) => setImageUrl(url)}
-          />
-        </Stack>
+        <ImageUpload
+          slug={slug}
+          table="eureka_variants"
+          url={imageUrl}
+          onUpload={(url) => setImageUrl(url)}
+        />
 
         <FormControl>
           <FormControlLabel

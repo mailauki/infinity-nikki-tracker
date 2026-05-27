@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { IconButton, Tooltip } from '@mui/material'
+import { IconButton, Stack, Tooltip } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Cancel'
@@ -124,7 +124,7 @@ export function EurekaVariantTable({
               />,
               <GridActionsCellItem
                 key="open"
-                icon={<OpenInNewIcon />}
+                icon={<OpenInNewIcon color='secondary' />}
                 label="View page"
                 title="View page"
                 onClick={() => (window.location.href = `/eureka/${row.eureka_set}`)}
@@ -137,7 +137,8 @@ export function EurekaVariantTable({
       width: 64,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) =>
-        isEditing(row.id) ? (
+				<Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+        {isEditing(row.id) ? (
           <LockedCell href={editHref(row)}>
             <LazyAvatar
               alt={row.eureka_set || 'Image'}
@@ -159,7 +160,8 @@ export function EurekaVariantTable({
           >
             <Category fontSize="inherit" />
           </LazyAvatar>
-        ),
+        )}
+				</Stack>
     },
     {
       field: 'eureka_set',
