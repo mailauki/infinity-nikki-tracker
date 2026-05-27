@@ -84,7 +84,12 @@ export function DashboardTabs({
 
       {tab === 'eureka-sets' &&
         (view === 'table' ? (
-          <EurekaSetTable back="/dashboard" labels={labels} rows={sortedEurekaSets} styles={styles} />
+          <EurekaSetTable
+            back="/dashboard"
+            labels={labels}
+            rows={sortedEurekaSets}
+            styles={styles}
+          />
         ) : (
           <EurekaSetList back="/dashboard" rows={sortedEurekaSets} />
         ))}
@@ -92,7 +97,6 @@ export function DashboardTabs({
       {tab === 'eureka-variants' &&
         (view === 'table' ? (
           <EurekaVariantTable
-            back="/dashboard"
             categories={categories}
             colors={colors}
             eurekaSets={eurekaSets}
@@ -104,7 +108,7 @@ export function DashboardTabs({
 
       {tab === 'trials' &&
         (view === 'table' ? (
-          <TrialTable back="/dashboard" rows={sortedTrials} />
+          <TrialTable rows={sortedTrials} />
         ) : (
           <TrialList back="/dashboard" rows={sortedTrials} />
         ))}

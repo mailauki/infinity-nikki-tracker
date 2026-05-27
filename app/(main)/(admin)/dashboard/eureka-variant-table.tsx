@@ -15,20 +15,16 @@ import {
   GridRowId,
   GridRowModes,
   GridRowModesModel,
-  useGridApiRef,
 } from '@mui/x-data-grid'
-import { useSearchParams } from 'next/navigation'
 import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
 import { Category as CategoryType, Color, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { updateEurekaVariant } from '@/app/(main)/(admin)/dashboard/actions'
-import PaginationContainer from './pagination-container'
 
 type Row = EurekaVariantRaw
 
 interface EurekaVariantTableProps {
   rows: Row[]
-  back?: string
   eurekaSets: EurekaSet[]
   categories: CategoryType[]
   colors: Color[]
@@ -48,21 +44,15 @@ function LockedCell({ children, href }: { children: React.ReactNode; href: strin
 
 export function EurekaVariantTable({
   rows: initialRows,
-  back,
   eurekaSets,
   categories,
   colors,
 }: EurekaVariantTableProps) {
-  const searchParams = useSearchParams()
-  const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
-  const backParam = backUrl ? `?back=${encodeURIComponent(backUrl)}` : ''
-  const apiRef = useGridApiRef()
-
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
   const editHref = (row: Row) =>
-    `/eureka-variant/edit/${row.slug ?? toSlugVariant(row.eureka_set ?? '', row.category ?? '', row.color ?? '')}${backParam}`
+    `/eureka-variant/edit/${row.slug ?? toSlugVariant(row.eureka_set ?? '', row.category ?? '', row.color ?? '')}`
 
   const isEditing = (id: GridRowId) => rowModesModel[id]?.mode === GridRowModes.Edit
 
@@ -152,7 +142,7 @@ export function EurekaVariantTable({
             <LazyAvatar
               alt={row.eureka_set || 'Image'}
               color="transparent"
-              size="xs"
+              size="sm"
               src={row.image_url!}
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
@@ -163,7 +153,7 @@ export function EurekaVariantTable({
           <LazyAvatar
             alt={row.eureka_set || 'Image'}
             color="transparent"
-            size="xs"
+            size="sm"
             src={row.image_url!}
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
@@ -225,9 +215,7 @@ export function EurekaVariantTable({
       editable: true,
       type: 'boolean',
       renderCell: ({ value }: GridRenderCellParams<Row>) =>
-        value ? (
-          <CheckBox color="secondary" fontSize="small" />
-        ) : null,
+        value ? <CheckBox color="secondary" fontSize="small" /> : null,
     },
     {
       field: 'updated_at',
@@ -238,25 +226,19 @@ export function EurekaVariantTable({
   ]
 
   return (
-    <PaginationContainer noPagination rows={rows} slug="eureka-variant" title="Eureka Variant">
-      {() => (
-        <DataGrid
-          disableRowSelectionOnClick
-          apiRef={apiRef}
-          columns={columns}
-          density="compact"
-          editMode="row"
-          getRowId={(row) => row.id}
-          initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
-          isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
-          pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
-          processRowUpdate={processRowUpdate}
-          rowModesModel={rowModesModel}
-          rows={rows}
-          sx={{ border: 0 }}
-          onRowModesModelChange={setRowModesModel}
-        />
-      )}
-    </PaginationContainer>
+    <DataGrid
+      disableRowSelectionOnClick
+      columns={columns}
+      editMode="row"
+      getRowId={(row) => row.id}
+      initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+      isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
+      pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
+      processRowUpdate={processRowUpdate}
+      rowModesModel={rowModesModel}
+      rows={rows}
+      sx={{ border: 0 }}
+      onRowModesModelChange={setRowModesModel}
+    />
   )
 }

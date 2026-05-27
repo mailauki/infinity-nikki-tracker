@@ -60,7 +60,13 @@ export default function FilterEureka() {
   } = useEurekaData()
   const { sortOrder } = useSortOrder()
 
-  const { selectedEurekaSet, selectedCategory, selectedObtainedFilter, selectedColor, selectedRarities } = filters
+  const {
+    selectedEurekaSet,
+    selectedCategory,
+    selectedObtainedFilter,
+    selectedColor,
+    selectedRarities,
+  } = filters
 
   if (isError) {
     return (
