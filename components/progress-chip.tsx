@@ -4,10 +4,17 @@ import { Chip } from '@mui/material'
 
 export default function ProgressChip({ percentage, size }: { percentage: number; size: CardSize }) {
   const isComplete = percentage === 100
-  const completeLabel = size === 'md' ? <Check /> : 'Complete'
-  const unfinishedLabel = size === 'md' ? <MoreHoriz /> : 'Unfinished'
+  const completeLabel = size === 'sm' ? <Check /> : 'Complete'
+  const unfinishedLabel = size === 'sm' ? `${percentage}%` : 'Unfinished'
 
-  if (size === 'sm') return null
+	if (size === 'xs') return (
+		<Chip
+      color={isComplete ? 'success' : 'default'}
+      label={isComplete ? <Check /> : <MoreHoriz />}
+      size="small"
+      sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}
+    />
+	)
 
   return (
     <Chip
