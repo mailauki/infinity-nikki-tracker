@@ -2,17 +2,7 @@
 
 import { ReactNode, useState } from 'react'
 import { Add } from '@mui/icons-material'
-import {
-  Alert,
-  Box,
-  Button,
-  Card,
-  CardHeader,
-  Chip,
-  Stack,
-  TablePagination,
-  Typography,
-} from '@mui/material'
+import { Alert, Box, Button, Card, Chip, Stack, TablePagination } from '@mui/material'
 
 interface PaginationContainerProps<T> {
   title: string
@@ -113,9 +103,9 @@ export default function PaginationContainer<T>({
           onRowsPerPageChange={handleRowsPerPageChange}
         />
       )}
-			<Box sx={{ position: 'relative', bottom: 0, left: 0, mt: -5, px: 1, width: 'fit-content' }}>
-				<Chip color="secondary" label={`Total: ${allRows.length}`} variant="outlined" />
-			</Box>
+      <Box sx={{ position: 'relative', bottom: 0, left: 0, mt: -5, px: 1, width: 'fit-content' }}>
+        <Chip color="secondary" label={`Total: ${allRows.length}`} variant="outlined" />
+      </Box>
     </>
   )
 }

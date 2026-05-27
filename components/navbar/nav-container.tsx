@@ -52,7 +52,7 @@ export default function NavContainer({
 }: Readonly<{
   children: React.ReactNode
   isAdmin?: boolean
-  user: JwtPayload
+  user: JwtPayload | null
 }>) {
   const pathname = usePathname()
   const theme = useTheme()

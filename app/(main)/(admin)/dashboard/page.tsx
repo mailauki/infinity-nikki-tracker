@@ -1,15 +1,9 @@
 import { Suspense } from 'react'
-import { DashboardTabs } from './dashboard-tabs'
 import { getAdminData } from '@/hooks/data/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
-import { getUserID } from '@/hooks/user'
-import { getPreferences } from '@/hooks/data/preferences'
-import { DEFAULT_PREFERENCES } from '@/lib/preferences'
-import { getStyles } from '@/hooks/data/styles'
-import { getLabels } from '@/hooks/data/labels'
-import { getCategories } from '@/hooks/data/categories'
-import { getColors } from '@/hooks/data/colors'
 import { Metadata } from 'next'
+import { Box } from '@mui/material'
+import { StatCard } from './stat-card'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -24,53 +18,27 @@ export default function DashboardPage() {
 }
 
 async function AdminDashboard() {
-  const [eurekaSets, { eurekaVariants, trials }, user_id, styles, labels, categories, colors] =
-    await Promise.all([
-      getEurekaSets(),
-      getAdminData(),
-      getUserID(),
-      getStyles(),
-      getLabels(),
-      getCategories(),
-      getColors(),
-    ])
-
-  const prefs = user_id ? await getPreferences(user_id) : DEFAULT_PREFERENCES
-  const defaultView = prefs.dashboard_view as 'list' | 'table'
-  const defaultTab = prefs.dashboard_tab as 'eureka-sets' | 'eureka-variants' | 'trials'
+  const [eurekaSets, { eurekaVariants, trials }] = await Promise.all([
+    getEurekaSets(),
+    getAdminData(),
+  ])
 
   return (
-    <>
-      {/* <Container maxWidth="md" sx={{ flexGrow: 1, mt: -2, mb: 2 }}>
-        <Box
-          sx={{
-            display: { xs: 'none', md: 'grid' },
-            gridTemplateColumns: '1fr 1fr 1fr',
-            gap: 2,
-            pt: 4,
-          }}
-        >
-          <StatCard addHref="/eureka-set/new" count={eurekaSets?.length ?? 0} title="Eureka Sets" />
-          <StatCard
-            addHref="/eureka-variant/new"
-            count={eurekaVariants?.length ?? 0}
-            title="Eureka Variants"
-          />
-          <StatCard addHref="/trial/new" count={trials?.length ?? 0} title="Trials" />
-        </Box>
-      </Container> */}
-
-      <DashboardTabs
-        categories={categories}
-        colors={colors}
-        defaultTab={defaultTab}
-        defaultView={defaultView}
-        eurekaSets={eurekaSets ?? []}
-        eurekaVariants={eurekaVariants ?? []}
-        labels={labels}
-        styles={styles}
-        trials={trials ?? []}
+    <Box
+      sx={{
+        display: { xs: 'none', md: 'grid' },
+        gridTemplateColumns: '1fr 1fr 1fr',
+        gap: 2,
+        pt: 4,
+      }}
+    >
+      <StatCard addHref="/eureka-set/new" count={eurekaSets?.length ?? 0} title="Eureka Sets" />
+      <StatCard
+        addHref="/eureka-variant/new"
+        count={eurekaVariants?.length ?? 0}
+        title="Eureka Variants"
       />
-    </>
+      <StatCard addHref="/trial/new" count={trials?.length ?? 0} title="Trials" />
+    </Box>
   )
 }

@@ -15,21 +15,17 @@ import {
   GridRowId,
   GridRowModes,
   GridRowModesModel,
-  useGridApiRef,
 } from '@mui/x-data-grid'
-import { useSearchParams } from 'next/navigation'
 import { formatDate, toSlug } from '@/lib/utils'
 import { Trial } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { updateTrial } from '@/app/(main)/(admin)/dashboard/actions'
 import { useState } from 'react'
-import PaginationContainer from './pagination-container'
 
 type Row = Trial
 
 interface TrialTableProps {
   rows: Row[]
-  back?: string
 }
 
 function LockedCell({ children, href }: { children: React.ReactNode; href: string }) {
@@ -42,16 +38,11 @@ function LockedCell({ children, href }: { children: React.ReactNode; href: strin
   )
 }
 
-export function TrialTable({ rows: initialRows, back }: TrialTableProps) {
-  const searchParams = useSearchParams()
-  const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
-  const backParam = backUrl ? `?back=${encodeURIComponent(backUrl)}` : ''
-  const apiRef = useGridApiRef()
-
+export function TrialTable({ rows: initialRows }: TrialTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  const editHref = (row: Row) => `/trial/edit/${row.slug ?? toSlug(row.title)}${backParam}`
+  const editHref = (row: Row) => `/trial/edit/${row.slug ?? toSlug(row.title)}`
 
   const handleEditClick = useCallback(
     (id: GridRowId) => () => {
@@ -219,25 +210,19 @@ export function TrialTable({ rows: initialRows, back }: TrialTableProps) {
   ]
 
   return (
-    <PaginationContainer noPagination rows={rows} slug="trial" title="Trial">
-      {() => (
-        <DataGrid
-          disableRowSelectionOnClick
-          apiRef={apiRef}
-          columns={columns}
-          density="compact"
-          editMode="row"
-          getRowId={(row) => row.id}
-          initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
-          isCellEditable={({ field }) => !['slug', 'image_url', 'updated_at'].includes(field)}
-          pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
-          processRowUpdate={processRowUpdate}
-          rowModesModel={rowModesModel}
-          rows={rows}
-          sx={{ border: 0 }}
-          onRowModesModelChange={setRowModesModel}
-        />
-      )}
-    </PaginationContainer>
+    <DataGrid
+      disableRowSelectionOnClick
+      columns={columns}
+      editMode="row"
+      getRowId={(row) => row.id}
+      initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+      isCellEditable={({ field }) => !['slug', 'image_url', 'updated_at'].includes(field)}
+      pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
+      processRowUpdate={processRowUpdate}
+      rowModesModel={rowModesModel}
+      rows={rows}
+      sx={{ border: 0 }}
+      onRowModesModelChange={setRowModesModel}
+    />
   )
 }

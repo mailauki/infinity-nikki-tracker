@@ -15,15 +15,12 @@ import {
   GridRowId,
   GridRowModes,
   GridRowModesModel,
-  useGridApiRef,
 } from '@mui/x-data-grid'
-import { useSearchParams } from 'next/navigation'
 import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { EurekaSet, Label, Style } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import RarityStars from '@/components/rarity-stars'
 import { updateEurekaSet } from '@/app/(main)/(admin)/dashboard/actions'
-import PaginationContainer from './pagination-container'
 
 type Row = EurekaSet
 
@@ -46,16 +43,17 @@ function LockedCell({ children, href }: { children: React.ReactNode; href: strin
   )
 }
 
-export function EurekaSetTable({ rows: initialRows, back, styles, labels }: EurekaSetTableProps) {
-  const searchParams = useSearchParams()
-  const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
-  const backParam = backUrl ? `?back=${encodeURIComponent(backUrl)}` : ''
-  const apiRef = useGridApiRef()
+export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetTableProps) {
+  // const searchParams = useSearchParams()
+  // const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
+  // const backParam = backUrl ? `?back=${encodeURIComponent(backUrl)}` : ''
+  // const apiRef = useGridApiRef()
 
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  const editHref = (row: Row) => `/eureka-set/edit/${row.slug ?? toSlug(row.title)}${backParam}`
+  // const editHref = (row: Row) => `/eureka-set/edit/${row.slug ?? toSlug(row.title)}${backParam}`
+  const editHref = (row: Row) => `/eureka-set/edit/${row.slug ?? toSlug(row.title)}`
 
   const isEditing = (id: GridRowId) => rowModesModel[id]?.mode === GridRowModes.Edit
 
@@ -146,7 +144,7 @@ export function EurekaSetTable({ rows: initialRows, back, styles, labels }: Eure
             <LazyAvatar
               alt={row.title || 'Image'}
               color="transparent"
-              size="xs"
+              size="sm"
               src={row.image_url!}
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
@@ -157,7 +155,7 @@ export function EurekaSetTable({ rows: initialRows, back, styles, labels }: Eure
           <LazyAvatar
             alt={row.title || 'Image'}
             color="transparent"
-            size="xs"
+            size="sm"
             src={row.image_url!}
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
@@ -283,25 +281,19 @@ export function EurekaSetTable({ rows: initialRows, back, styles, labels }: Eure
   ]
 
   return (
-    <PaginationContainer noPagination rows={rows} slug="eureka-set" title="Eureka Set">
-      {() => (
-        <DataGrid
-          disableRowSelectionOnClick
-          apiRef={apiRef}
-          columns={columns}
-          density="compact"
-          editMode="row"
-          getRowId={(row) => row.id}
-          initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
-          isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
-          pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
-          processRowUpdate={processRowUpdate}
-          rowModesModel={rowModesModel}
-          rows={rows}
-          sx={{ border: 0 }}
-          onRowModesModelChange={setRowModesModel}
-        />
-      )}
-    </PaginationContainer>
+    <DataGrid
+      disableRowSelectionOnClick
+      columns={columns}
+      editMode="row"
+      getRowId={(row) => row.id}
+      initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+      isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
+      pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
+      processRowUpdate={processRowUpdate}
+      rowModesModel={rowModesModel}
+      rows={rows}
+      sx={{ border: 0, bgcolor: 'transparent' }}
+      onRowModesModelChange={setRowModesModel}
+    />
   )
 }
