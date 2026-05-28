@@ -31,6 +31,7 @@ export default function NavRail() {
 				position: 'sticky',
 				top: 16,
 				left: 16,
+				zIndex: 1206,
       }}
       variant="outlined"
     >

@@ -74,24 +74,7 @@ export default function NavAppBar() {
 
   return (
     <AppBar color="inherit" position="fixed" variant="outlined">
-      <Toolbar>
-        <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
-          <Stack alignItems="center" direction="row" justifyContent="flex-start" sx={{ width: '64px' }} />
-          <Stack alignItems="center" direction="row" justifyContent="flex-end" sx={{ width: '64px' }}>
-            {user === undefined ? (
-              <Skeleton height={40} variant="circular" width={40} />
-            ) : !user ? (
-              <Button color="inherit" href="/auth/login">
-                Login
-              </Button>
-            ) : (
-              <NavUser isAdmin={isAdmin} user={user} />
-            )}
-          </Stack>
-        </Stack>
-      </Toolbar>
-
-      <Toolbar
+      {/* <Toolbar
         alignItems="center"
         component={Stack}
         direction="row"
@@ -110,7 +93,7 @@ export default function NavAppBar() {
         <Link href="/" style={{ cursor: 'pointer' }}>
           <Image alt="Infinity Nikki Logo" height={39} src="/infinity-nikki-logo.png" width={90} />
         </Link>
-      </Toolbar>
+      </Toolbar> */}
 
       <Toolbar>
         <Container disableGutters maxWidth="md" sx={{ position: 'relative' }}>
@@ -134,6 +117,18 @@ export default function NavAppBar() {
             {isProfilePage && <ProfileEditButton />}
             {eurekaSetSlug && <EurekaSetEditButton isAdmin={isAdmin} slug={eurekaSetSlug} />}
             {trialSlug && <TrialEditButton isAdmin={isAdmin} slug={trialSlug} />}
+						<Stack alignItems="center" direction="row" justifyContent="flex-end" sx={{ width: '64px' }}>
+						{!user && (
+							<Button color="inherit" href="/auth/login">
+                Login
+              </Button>
+						)}
+						{user === undefined ? (
+							<Skeleton height={40} variant="circular" width={40} />
+						) : (
+							<NavUser isAdmin={isAdmin} user={user!} />
+						)}
+          </Stack>
           </Stack>
         </Container>
       </Toolbar>

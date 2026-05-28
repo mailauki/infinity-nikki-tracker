@@ -1,3 +1,4 @@
+'use client'
 import { AppBar, Stack, Toolbar, Typography } from '@mui/material'
 import CoffeeButton from './coffee-button'
 import ThemeSwitcher from './theme-switcher'
