@@ -55,7 +55,7 @@ export default async function RootLayout({
       className={`${roboto.variable} ${notoSansJP.variable}`}
       lang="en"
     >
-      <body className="overflow-hidden">
+      <body>
         <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppRouterCacheProvider options={{ key: 'css' }}>
           <ThemeProvider defaultMode="system" theme={theme}>

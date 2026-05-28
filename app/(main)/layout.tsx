@@ -1,40 +1,25 @@
-import { Suspense } from 'react'
-import NavSkeleton from '@/components/navbar/nav-skeleton'
-import NavContainer from '@/components/navbar/nav-container'
-import { getUserClaims, getUserRole } from '@/hooks/user'
+import { Stack } from '@mui/material'
+import NavRail from '@/components/navbar/nav-rail'
+import Footer from '@/components/navbar/nav-footer'
+import NavAppBar from '@/components/navbar/nav-appbar'
+import { StyledToolbar } from '@/components/navbar/nav-styled'
 
-export default async function MainLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <Suspense fallback={<NavSkeleton />}>
-      <NavigationContainer>{children}</NavigationContainer>
-    </Suspense>
-  )
-}
-
-async function NavigationContainer({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
-  const role = await getUserRole()
-  const user = await getUserClaims()
-
-  return (
-    <NavContainer isAdmin={role === 'admin'} user={user}>
-      {children}
-    </NavContainer>
-    // <Stack direction="row" spacing={2} sx={{ px: 2 }}>
-    //   <NavRail />
-    //   <Stack
-    //     spacing={2}
-    //     sx={{ flex: 1, minWidth: '300px', maxWidth: 'calc(100vw - 240px - 16px - 32px)' }}
-    //   >
-    //     {children}
-    //   </Stack>
-    // </Stack>
+    <>
+      <NavAppBar />
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ minHeight: '100vh', p: 2, backgroundColor: 'surface.containerLowest' }}
+      >
+        <NavRail />
+        <Stack spacing={2} sx={{ flex: 1, minWidth: '300px' }}>
+          <StyledToolbar />
+          {children}
+        </Stack>
+      </Stack>
+      <Footer />
+    </>
   )
 }
