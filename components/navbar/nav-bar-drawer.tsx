@@ -25,7 +25,7 @@ export default function NavBar() {
 
   return (
     <>
-		<AppBar color="inherit" position="fixed">
+		<AppBar color="inherit" position="fixed" sx={{ zIndex: (theme) => theme.zIndex.appBar + 10}}>
       <Toolbar>
         <Stack alignItems="center" direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
           <IconButton onClick={toggleNavDrawer(true)}>

@@ -137,7 +137,7 @@ export default function FilterEureka() {
       <Toolbar
         sx={{
           position: 'sticky',
-          top: 0,
+          top: 64,
           zIndex: 'appBar',
           backdropFilter: 'blur(8px)',
           bgcolor: 'surface.containerLowest',
