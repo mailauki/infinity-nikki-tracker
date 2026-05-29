@@ -32,30 +32,32 @@ export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
         <List disablePadding>
           {items.map((item) => (
             <ListItem key={item.id} disablePadding>
-							<ListItemButton component='a' href={`/eureka/${toSlug(item.eureka_sets!.title!)}`}>
-              <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
-                <LazyAvatar
-                  alt={item.eureka_sets?.title}
-                  size="md"
-                  src={
-                    item.eureka_sets?.eureka_variants.find(
-                      (v) => v.category === item.category && v.color === item.color
-                    )?.image_url ?? undefined
-                  }
+              <ListItemButton component="a" href={`/eureka/${toSlug(item.eureka_sets!.title!)}`}>
+                <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
+                  <LazyAvatar
+                    alt={item.eureka_sets?.title}
+                    size="md"
+                    src={
+                      item.eureka_sets?.eureka_variants.find(
+                        (v) => v.category === item.category && v.color === item.color
+                      )?.image_url ?? undefined
+                    }
+                  />
+                </ListItemAvatar>
+                <ListItemText
+                  primary={item.eureka_sets?.title ?? toTitle(item.eureka_set ?? '')}
+                  secondary={[item.categories?.title, item.colors?.title]
+                    .filter(Boolean)
+                    .join(' • ')}
+                  slotProps={{
+                    primary: { variant: 'body2' },
+                    secondary: { variant: 'caption' },
+                  }}
                 />
-              </ListItemAvatar>
-              <ListItemText
-                primary={item.eureka_sets?.title ?? toTitle(item.eureka_set ?? '')}
-                secondary={[item.categories?.title, item.colors?.title].filter(Boolean).join(' • ')}
-                slotProps={{
-                  primary: { variant: 'body2' },
-                  secondary: { variant: 'caption' },
-                }}
-              />
-              <Typography color="text.secondary" variant="caption">
-                {formatDate(item.created_at)}
-              </Typography>
-							</ListItemButton>
+                <Typography color="text.secondary" variant="caption">
+                  {formatDate(item.created_at)}
+                </Typography>
+              </ListItemButton>
             </ListItem>
           ))}
         </List>

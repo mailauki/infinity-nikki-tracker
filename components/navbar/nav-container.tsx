@@ -124,7 +124,7 @@ export default function NavContainer({
                     Login
                   </Button>
                 ) : (
-                  <NavUser isAdmin={isAdmin} user={user} />
+                  <NavUser />
                 )}
               </Stack>
             </Stack>

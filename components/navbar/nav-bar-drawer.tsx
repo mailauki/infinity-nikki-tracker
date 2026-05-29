@@ -1,12 +1,11 @@
 'use client'
 import { Menu, MenuOpen } from '@mui/icons-material'
-import { AppBar, Box, Divider, Drawer, IconButton, Stack, Toolbar } from '@mui/material'
+import { AppBar, Divider, Drawer, IconButton, Stack, Toolbar } from '@mui/material'
 import React from 'react'
 import { NavMain } from './nav-main'
 import { navLinksData } from '@/lib/nav-links'
 import { NavSecondary } from './nav-secondary'
 import { NavExtra } from './nav-extra'
-import FilterMenu from './filter-menu'
 import PageTitle from './page-title'
 import { NavUser } from './nav-user'
 
@@ -29,24 +28,7 @@ export default function NavBar() {
               <Menu />
             </IconButton>
             <PageTitle />
-            <Box sx={{ width: '64px' }} />
-						{/* <Stack
-              alignItems="center"
-              direction="row"
-              justifyContent="flex-end"
-              sx={{ width: '64px' }}
-            >
-              {!user && (
-                <Button color="inherit" href="/auth/login">
-                  Login
-                </Button>
-              )}
-              {user === undefined ? (
-                <Skeleton height={40} variant="circular" width={40} />
-              ) : (
-                <NavUser isAdmin={isAdmin} user={user!} />
-              )}
-            </Stack> */}
+            <NavUser />
           </Stack>
         </Toolbar>
       </AppBar>

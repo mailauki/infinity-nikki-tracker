@@ -114,7 +114,7 @@ export default function NavAppBar() {
               {user === undefined ? (
                 <Skeleton height={40} variant="circular" width={40} />
               ) : (
-                <NavUser isAdmin={isAdmin} user={user!} />
+                <NavUser />
               )}
             </Stack>
           </Stack>

@@ -26,7 +26,7 @@ export default function PageTitle() {
   const pageTitle = hasParams ? toTitle(pathname.split('/').at(-1) ?? '') : (bestMatch?.title ?? '')
 
   return (
-    <Typography component="h1" variant="h6">
+    <Typography component="h1" sx={{ fontSize: 'subtitle2.fontSize' }} variant="overline">
       {pageTitle}
     </Typography>
   )

@@ -1,16 +1,24 @@
 'use client'
 
-import { JwtPayload } from '@supabase/supabase-js'
 import Link from 'next/link'
-
-import { LogoutButton } from '../logout-button'
-import AvatarPreview from '../forms/auth/avatar-preview'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Box, Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material'
+import {
+  Box,
+  Button,
+  Divider,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Skeleton,
+  Tooltip,
+} from '@mui/material'
 import React from 'react'
 import { navLinksData } from '@/lib/nav-links'
 import { AccountCircle, Dashboard, ViewList } from '@mui/icons-material'
+import { LogoutButton } from '../logout-button'
+import AvatarPreview from '../forms/auth/avatar-preview'
 
 function navIcon(url: string) {
   if (url === '/dashboard') return <Dashboard fontSize="small" />
@@ -18,68 +26,62 @@ function navIcon(url: string) {
   return <ViewList fontSize="small" />
 }
 
-export function NavUser({ user, isAdmin = false }: { user: JwtPayload; isAdmin?: boolean }) {
+export function NavUser() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
-
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget)
-  }
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null)
-  }
-
-  const supabase = createClient()
-  const [avatar_url, setAvatarUrl] = useState<string | null>(null)
-
-  const getAvatar = useCallback(async () => {
-    try {
-      const { data, error, status } = await supabase
-        .from('profiles')
-        .select(`avatar_url`)
-        .eq('id', user!.user_metadata!.sub)
-        .single()
-
-      if (error && status !== 406) {
-        console.log(error)
-        throw error
-      }
-
-      if (data) {
-        setAvatarUrl(data.avatar_url)
-      }
-    } catch (error) {
-      alert('Error loading user data!')
-      console.log(error)
-    }
-  }, [user, supabase])
+  // undefined = not yet loaded, null = no user
+  const [userId, setUserId] = useState<string | null | undefined>(undefined)
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    getAvatar()
-  }, [user, getAvatar])
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data }) => {
+      const user = data.user
+      const id = user?.id ?? null
+      setUserId(id)
+      if (!id) return
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('avatar_url, role')
+        .eq('id', id)
+        .single()
+
+      if (profile) {
+        setAvatarUrl(profile.avatar_url)
+        setIsAdmin(profile.role === 'admin')
+      }
+    })
+  }, [])
+
+  if (userId === undefined) {
+    return <Skeleton height={40} sx={{ flexShrink: 0 }} variant="circular" width={40} />
+  }
+
+  if (!userId) {
+    return (
+      <Button color="inherit" href="/auth/login">
+        Login
+      </Button>
+    )
+  }
 
   return (
     <Box sx={{ flexGrow: 0 }}>
       <Tooltip placement="bottom-end" title="Open menu">
-        <IconButton sx={{ p: 0 }} onClick={handleOpenUserMenu}>
-          <AvatarPreview url={avatar_url} />
+        <IconButton sx={{ p: 0 }} onClick={(e) => setAnchorElUser(e.currentTarget)}>
+          <AvatarPreview url={avatarUrl} />
         </IconButton>
       </Tooltip>
       <Menu
         keepMounted
         anchorEl={anchorElUser}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         id="menu-appbar"
         open={Boolean(anchorElUser)}
         sx={{ mt: '45px' }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
-        }}
-        onClose={handleCloseUserMenu}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        onClose={() => setAnchorElUser(null)}
       >
         {navLinksData.navSecondary
           .filter((link) => !link.adminOnly || isAdmin)
@@ -88,7 +90,7 @@ export function NavUser({ user, isAdmin = false }: { user: JwtPayload; isAdmin?:
               key={link.title}
               component={Link}
               href={link.url}
-              onClick={handleCloseUserMenu}
+              onClick={() => setAnchorElUser(null)}
             >
               <ListItemIcon>{navIcon(link.url)}</ListItemIcon>
               {link.title}
