@@ -19,7 +19,7 @@ import {
 import { formatDate, toSlug } from '@/lib/utils'
 import { Trial } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
-import { updateTrial } from '@/app/(admin)/dashboard/actions'
+import { updateTrial } from '@/app/dashboard/actions'
 import { useState } from 'react'
 
 type Row = Trial

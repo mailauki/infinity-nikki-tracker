@@ -127,6 +127,7 @@ export default function FilterEureka() {
   return (
     <>
       <Toolbar
+				disableGutters
         sx={{
           position: 'sticky',
           top: 64,
@@ -134,8 +135,9 @@ export default function FilterEureka() {
           zIndex: 'appBar',
           backdropFilter: 'blur(8px)',
           bgcolor: 'surface.containerLowest',
-          // mt: -3,
-          mx: -3,
+          mt: -3,
+          // mx: -3,
+					px: 0.75,
         }}
       >
         <Stack alignItems="center" direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
@@ -148,18 +150,16 @@ export default function FilterEureka() {
       </Toolbar>
 
       {!isLoggedIn && (
-        <Box sx={{ width: 'fit-content' }}>
+        <Box sx={{ width: 'fit-content', my: 2 }}>
           <LoginAlert />
         </Box>
       )}
 
       {isObtainedError && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
+        <Alert severity="warning" sx={{ width: 'fit-content', my: 2 }}>
           Could not load your collection status. Progress may be inaccurate.
         </Alert>
       )}
-			
-			<Toolbar />
 
       {filteredSets.length === 0 ? (
         <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>

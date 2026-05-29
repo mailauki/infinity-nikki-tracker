@@ -19,7 +19,7 @@ import {
 import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
 import { Category as CategoryType, Color, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
-import { updateEurekaVariant } from '@/app/(admin)/dashboard/actions'
+import { updateEurekaVariant } from '@/app/dashboard/actions'
 
 type Row = EurekaVariantRaw
 

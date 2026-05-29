@@ -1,9 +1,11 @@
 import { Suspense } from 'react'
 import { getAdminData } from '@/hooks/data/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
+import { getUserRole } from '@/hooks/user'
 import { Metadata } from 'next'
 import { Box } from '@mui/material'
 import { StatCard } from './stat-card'
+import DashboardNav from './dashboard-nav'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -12,18 +14,23 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <Suspense>
-      <AdminDashboard />
+      <DashboardContent />
     </Suspense>
   )
 }
 
-async function AdminDashboard() {
-  const [eurekaSets, { eurekaVariants, trials }] = await Promise.all([
+async function DashboardContent() {
+  const [eurekaSets, { eurekaVariants, trials }, role] = await Promise.all([
     getEurekaSets(),
     getAdminData(),
+    getUserRole(),
   ])
 
+  const isAdmin = role === 'admin'
+
   return (
+		<>
+		{isAdmin && <DashboardNav />}
     <Box
       sx={{
         display: 'grid',
@@ -32,13 +39,22 @@ async function AdminDashboard() {
         pt: 4,
       }}
     >
-      <StatCard addHref="/eureka-set/new" count={eurekaSets?.length ?? 0} title="Eureka Sets" />
       <StatCard
-        addHref="/eureka-variant/new"
+        addHref={isAdmin ? '/eureka-set/new' : undefined}
+        count={eurekaSets?.length ?? 0}
+        title="Eureka Sets"
+      />
+      <StatCard
+        addHref={isAdmin ? '/eureka-variant/new' : undefined}
         count={eurekaVariants?.length ?? 0}
         title="Eureka Variants"
       />
-      <StatCard addHref="/trial/new" count={trials?.length ?? 0} title="Trials" />
+      <StatCard
+        addHref={isAdmin ? '/trial/new' : undefined}
+        count={trials?.length ?? 0}
+        title="Trials"
+      />
     </Box>
+		</>
   )
 }

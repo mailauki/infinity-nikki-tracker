@@ -20,7 +20,7 @@ import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { EurekaSet, Label, Style } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import RarityStars from '@/components/rarity-stars'
-import { updateEurekaSet } from '@/app/(admin)/dashboard/actions'
+import { updateEurekaSet } from '@/app/dashboard/actions'
 
 type Row = EurekaSet
 

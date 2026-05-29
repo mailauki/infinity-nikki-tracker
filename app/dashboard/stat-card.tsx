@@ -8,7 +8,7 @@ export function StatCard({
 }: {
   title: string
   count: number
-  addHref: string
+  addHref?: string
 }) {
   return (
     <Card variant="outlined">
@@ -25,18 +25,20 @@ export function StatCard({
           </Typography>
         }
       />
-      <CardContent component={Stack} justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
-        <Divider />
-        <Button
-          href={addHref}
-          size="small"
-          startIcon={<AddIcon />}
-          sx={{ width: 'fit-content' }}
-          variant="outlined"
-        >
-          Add
-        </Button>
-      </CardContent>
+      {addHref && (
+        <CardContent component={Stack} justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
+          <Divider />
+          <Button
+            href={addHref}
+            size="small"
+            startIcon={<AddIcon />}
+            sx={{ width: 'fit-content' }}
+            variant="outlined"
+          >
+            Add
+          </Button>
+        </CardContent>
+      )}
     </Card>
   )
 }

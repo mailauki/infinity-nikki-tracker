@@ -1,3 +1,5 @@
+'use client'
+
 import { navLinksData } from '@/lib/nav-links'
 import { toTitle } from '@/lib/utils'
 import { Typography } from '@mui/material'
