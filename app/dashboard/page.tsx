@@ -29,32 +29,32 @@ async function DashboardContent() {
   const isAdmin = role === 'admin'
 
   return (
-		<>
-		{isAdmin && <DashboardNav />}
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-        gap: 2,
-        pt: 4,
-      }}
-    >
-      <StatCard
-        addHref={isAdmin ? '/eureka-set/new' : undefined}
-        count={eurekaSets?.length ?? 0}
-        title="Eureka Sets"
-      />
-      <StatCard
-        addHref={isAdmin ? '/eureka-variant/new' : undefined}
-        count={eurekaVariants?.length ?? 0}
-        title="Eureka Variants"
-      />
-      <StatCard
-        addHref={isAdmin ? '/trial/new' : undefined}
-        count={trials?.length ?? 0}
-        title="Trials"
-      />
-    </Box>
-		</>
+    <>
+      {isAdmin && <DashboardNav />}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+          gap: 2,
+          pt: 4,
+        }}
+      >
+        <StatCard
+          addHref={isAdmin ? '/eureka-set/new' : undefined}
+          count={eurekaSets?.length ?? 0}
+          title="Eureka Sets"
+        />
+        <StatCard
+          addHref={isAdmin ? '/eureka-variant/new' : undefined}
+          count={eurekaVariants?.length ?? 0}
+          title="Eureka Variants"
+        />
+        <StatCard
+          addHref={isAdmin ? '/trial/new' : undefined}
+          count={trials?.length ?? 0}
+          title="Trials"
+        />
+      </Box>
+    </>
   )
 }

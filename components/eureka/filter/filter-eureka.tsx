@@ -127,7 +127,7 @@ export default function FilterEureka() {
   return (
     <>
       <Toolbar
-				disableGutters
+        disableGutters
         sx={{
           position: 'sticky',
           top: 64,
@@ -137,7 +137,7 @@ export default function FilterEureka() {
           bgcolor: 'surface.containerLowest',
           mt: -3,
           // mx: -3,
-					px: 0.75,
+          px: 0.75,
         }}
       >
         <Stack alignItems="center" direction="row" justifyContent="space-between" sx={{ flex: 1 }}>

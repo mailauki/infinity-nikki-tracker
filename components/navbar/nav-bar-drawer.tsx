@@ -29,7 +29,7 @@ export default function NavBar() {
               <Menu />
             </IconButton>
             <PageTitle />
-						<Box sx={{ width: '64px' }} />
+            <Box sx={{ width: '64px' }} />
           </Stack>
         </Toolbar>
       </AppBar>

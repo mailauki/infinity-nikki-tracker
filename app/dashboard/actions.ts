@@ -1,6 +1,12 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { getUserRole } from '@/hooks/user'
+
+async function requireAdmin() {
+  const role = await getUserRole()
+  if (role !== 'admin') throw new Error('Forbidden')
+}
 
 export async function updateTrial(
   id: number,
@@ -11,6 +17,7 @@ export async function updateTrial(
     description?: string | null
   }
 ) {
+  await requireAdmin()
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('trials')
@@ -33,6 +40,7 @@ export async function updateEurekaSet(
     label?: string | null
   }
 ) {
+  await requireAdmin()
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('eureka_sets')
@@ -54,6 +62,7 @@ export async function updateEurekaVariant(
     default?: boolean
   }
 ) {
+  await requireAdmin()
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('eureka_variants')
