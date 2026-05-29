@@ -5,8 +5,11 @@ import { Noto_Sans_JP, Roboto } from 'next/font/google'
 import { ThemeProvider } from '@mui/material/styles'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import theme from '@/lib/theme'
-import { CssBaseline } from '@mui/material'
+import { CssBaseline, Stack, Toolbar } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
+import { Suspense } from 'react'
+import Footer from '@/components/navbar/nav-footer'
+import NavBar from '@/components/navbar/nav-bar-drawer'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -44,7 +47,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -55,12 +58,30 @@ export default async function RootLayout({
       className={`${roboto.variable} ${notoSansJP.variable}`}
       lang="en"
     >
-      <body className="overflow-hidden">
+      <body>
         <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppRouterCacheProvider options={{ key: 'css' }}>
           <ThemeProvider defaultMode="system" theme={theme}>
             <CssBaseline />
-            {children}
+            <Suspense>
+              <NavBar />
+            </Suspense>
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{
+                minHeight: '100vh',
+                p: 2,
+                backgroundColor: 'surface.containerLowest',
+              }}
+            >
+              <Stack sx={{ flex: 1, minWidth: '300px' }}>
+                <Toolbar />
+                {children}
+                <Toolbar />
+              </Stack>
+            </Stack>
+            <Footer />
             <Analytics />
           </ThemeProvider>
         </AppRouterCacheProvider>

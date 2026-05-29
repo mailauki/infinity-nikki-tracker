@@ -36,13 +36,13 @@ export default function EurekaVariantColorFilter({
           return (
             <Chip
               key={color.slug}
+              clickable
               avatar={
                 <LazyAvatar alt={color.title || color.slug} size="xs" src={color.image_url!} />
               }
               color={active ? 'primary' : 'default'}
               deleteIcon={<Done />}
               label={color.title}
-              clickable
               onClick={() => toggleColor(color.slug)}
               onDelete={active ? () => toggleColor(color.slug) : undefined}
             />

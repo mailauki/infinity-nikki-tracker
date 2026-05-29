@@ -1,16 +1,6 @@
 'use client'
 import React from 'react'
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  Divider,
-  Skeleton,
-  Stack,
-  Toolbar,
-  Typography,
-} from '@mui/material'
+import { Alert, Box, Button, Divider, Skeleton, Stack, Toolbar, Typography } from '@mui/material'
 import { ChevronRight } from '@mui/icons-material'
 
 import ErrorAlert from '@/components/error-alert'
@@ -22,6 +12,7 @@ import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import ProgressChip from '@/components/progress-chip'
 import LoginAlert from '@/components/login-alert'
 import { countObtained, percent } from '@/hooks/count-obtained'
+import FilterMenu from '@/components/navbar/filter-menu'
 
 function GroupHeaderSkeleton() {
   return (
@@ -70,15 +61,15 @@ export default function FilterEureka() {
 
   if (isError) {
     return (
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Box sx={{ flexGrow: 1, py: 3 }}>
         <ErrorAlert message="Failed to load Eureka data. Please refresh the page." />
-      </Container>
+      </Box>
     )
   }
 
   if (isLoading) {
     return (
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Box sx={{ flexGrow: 1, py: 3 }}>
         <Skeleton height={20} sx={{ mt: 2, mb: 0.5 }} variant="text" width={100} />
         <Box
           sx={{
@@ -100,7 +91,7 @@ export default function FilterEureka() {
             <VariantCardSkeleton key={i} />
           ))}
         </Box>
-      </Container>
+      </Box>
     )
   }
 
@@ -134,37 +125,38 @@ export default function FilterEureka() {
     : filteredSets.flatMap((set) => set.eureka_variants).length
 
   return (
-    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+    <>
       <Toolbar
+        disableGutters
         sx={{
           position: 'sticky',
-          top: 0,
+          top: 64,
+          left: 0,
           zIndex: 'appBar',
           backdropFilter: 'blur(8px)',
           bgcolor: 'surface.containerLowest',
           mt: -3,
-          mx: -3,
+          // mx: -3,
+          px: 0.75,
         }}
       >
-        <Stack
-          useFlexGap
-          alignItems="center"
-          direction="row"
-          flexWrap="wrap"
-          justifyContent="space-between"
-          spacing={1}
-          sx={{ flex: 1, px: 1, pt: 1, mb: -1 }}
-        >
-          <Typography color="textSecondary" sx={{ pb: 4, whiteSpace: 'nowrap' }} variant="caption">
+        <Stack alignItems="center" direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
+          <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
             Showing: {resultsCount} results
           </Typography>
 
-          {!isLoggedIn && <LoginAlert />}
+          <FilterMenu />
         </Stack>
       </Toolbar>
 
+      {!isLoggedIn && (
+        <Box sx={{ width: 'fit-content', my: 2 }}>
+          <LoginAlert />
+        </Box>
+      )}
+
       {isObtainedError && (
-        <Alert severity="warning" sx={{ mb: 2 }}>
+        <Alert severity="warning" sx={{ width: 'fit-content', my: 2 }}>
           Could not load your collection status. Progress may be inaccurate.
         </Alert>
       )}
@@ -242,6 +234,6 @@ export default function FilterEureka() {
           })}
         </Box>
       )}
-    </Container>
+    </>
   )
 }

@@ -7,14 +7,15 @@ export default function ProgressChip({ percentage, size }: { percentage: number;
   const completeLabel = size === 'sm' ? <Check /> : 'Complete'
   const unfinishedLabel = size === 'sm' ? `${percentage}%` : 'Unfinished'
 
-	if (size === 'xs') return (
-		<Chip
-      color={isComplete ? 'success' : 'default'}
-      label={isComplete ? <Check /> : <MoreHoriz />}
-      size="small"
-      sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}
-    />
-	)
+  if (size === 'xs')
+    return (
+      <Chip
+        color={isComplete ? 'success' : 'default'}
+        label={isComplete ? <Check /> : <MoreHoriz />}
+        size="small"
+        sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}
+      />
+    )
 
   return (
     <Chip

@@ -1,7 +1,7 @@
 'use client'
 
 import { toTitle } from '@/lib/utils'
-import { handleObtained } from '@/app/(main)/eureka/actions'
+import { handleObtained } from '@/app/eureka/actions'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { Card, CardActionArea, Chip } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
