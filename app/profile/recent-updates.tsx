@@ -6,12 +6,13 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  ListItemButton,
   ListItemText,
   Typography,
 } from '@mui/material'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { RecentObtained } from '@/lib/types/eureka'
-import { toTitle, formatDate } from '@/lib/utils'
+import { toTitle, formatDate, toSlug } from '@/lib/utils'
 
 export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
   if (!items?.length) return null
@@ -30,7 +31,8 @@ export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
       <CardContent>
         <List disablePadding>
           {items.map((item) => (
-            <ListItem key={item.id} disableGutters>
+            <ListItem key={item.id} disablePadding>
+							<ListItemButton component='a' href={`/eureka/${toSlug(item.eureka_sets!.title!)}`}>
               <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
                 <LazyAvatar
                   alt={item.eureka_sets?.title}
@@ -53,6 +55,7 @@ export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
               <Typography color="text.secondary" variant="caption">
                 {formatDate(item.created_at)}
               </Typography>
+							</ListItemButton>
             </ListItem>
           ))}
         </List>
