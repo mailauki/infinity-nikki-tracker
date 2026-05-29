@@ -30,6 +30,23 @@ export default function NavBar() {
             </IconButton>
             <PageTitle />
             <Box sx={{ width: '64px' }} />
+						{/* <Stack
+              alignItems="center"
+              direction="row"
+              justifyContent="flex-end"
+              sx={{ width: '64px' }}
+            >
+              {!user && (
+                <Button color="inherit" href="/auth/login">
+                  Login
+                </Button>
+              )}
+              {user === undefined ? (
+                <Skeleton height={40} variant="circular" width={40} />
+              ) : (
+                <NavUser isAdmin={isAdmin} user={user!} />
+              )}
+            </Stack> */}
           </Stack>
         </Toolbar>
       </AppBar>
