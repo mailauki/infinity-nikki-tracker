@@ -6,7 +6,6 @@ import {
   Alert,
   Box,
   Button,
-  Card,
   Chip,
   FormControl,
   IconButton,
@@ -81,7 +80,7 @@ export default function EditEurekaSetForm({
   const [colorSelect, setColorSelect] = useState<string[]>(initialColors)
   const [defaultColor, setDefaultColor] = useState<string>(initialDefaultColor)
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
-    Object.fromEntries(initialVariants.map((v) => [v.slug, v.image_url]))
+    Object.fromEntries(initialVariants.filter((v) => v.slug).map((v) => [v.slug, v.image_url]))
   )
 
   const maxColorsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
@@ -421,24 +420,43 @@ export default function EditEurekaSetForm({
             })}
           </Select>
         </FormControl>
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr 1fr',
-            gap: { xs: 0.5, sm: 1, md: 2 },
-          }}
-        >
-          {initialVariants.map((variant) => (
-            <ImageUpload
-              key={variant.slug}
-              caption={`${toTitle(variant.category ?? '')} • ${toTitle(variant.color ?? '')}`}
-              slug={variant.slug ?? undefined}
-              table="eureka_variants"
-              url={variantImages[variant.slug] ?? null}
-              onUpload={(url) => setVariantImages((prev) => ({ ...prev, [variant.slug]: url }))}
-            />
-          ))}
-        </Box>
+        {initialVariants.length > 0 && (
+          <Stack spacing={2}>
+            {[...new Set(initialVariants.map((v) => v.color))]
+              .sort((a, b) => {
+                if (a === defaultColor) return -1
+                if (b === defaultColor) return 1
+                const aTitle = colors.find((c) => c.slug === a)?.title?.toLowerCase() ?? ''
+                const bTitle = colors.find((c) => c.slug === b)?.title?.toLowerCase() ?? ''
+                if (aTitle === 'iridescent') return 1
+                if (bTitle === 'iridescent') return -1
+                return 0
+              })
+              .map((colorSlug) => {
+                const colorObj = colors.find((c) => c.slug === colorSlug)
+                const colorVariants = initialVariants.filter((v) => v.color === colorSlug)
+                return (
+                  <Stack key={colorSlug} spacing={1}>
+                    <Typography variant="subtitle2">{colorObj?.title ?? colorSlug}</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                      {colorVariants.map((variant) => (
+                        <ImageUpload
+                          key={variant.slug}
+                          caption={`${toTitle(variant.category ?? '')} • ${toTitle(variant.color ?? '')}`}
+                          slug={variant.slug ?? undefined}
+                          table="eureka_variants"
+                          url={variantImages[variant.slug] ?? null}
+                          onUpload={(url) =>
+                            setVariantImages((prev) => ({ ...prev, [variant.slug]: url }))
+                          }
+                        />
+                      ))}
+                    </Box>
+                  </Stack>
+                )
+              })}
+          </Stack>
+        )}
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href={backUrl} variant="outlined">

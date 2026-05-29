@@ -44,68 +44,68 @@ async function EurekaSet({ slug }: { slug: string }) {
 
   return (
     <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-        <Stack spacing={1}>
-          <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
-            <Stack alignItems="center" sx={{ pt: 1 }}>
-              <LazyAvatar
-                alt={slug || 'Eureka Variant'}
-                size="xl"
-                src={image_url!}
-                sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-              >
-                <Category fontSize="inherit" />
-              </LazyAvatar>
-            </Stack>
-
-            <Chip label={toTitle(label ?? '')} variant="outlined" />
+      <Stack spacing={1}>
+        <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
+          <Stack alignItems="center" sx={{ pt: 1 }}>
+            <LazyAvatar
+              alt={slug || 'Eureka Variant'}
+              size="xl"
+              src={image_url!}
+              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+            >
+              <Category fontSize="inherit" />
+            </LazyAvatar>
           </Stack>
 
-          <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
-            <Typography color="textSecondary" variant="subtitle2">
-              <RarityStars rarity={rarity!} />
-            </Typography>
-
-            <Typography color="textSecondary" variant="body1">
-              {toTitle(style ?? '')}
-            </Typography>
-          </Stack>
+          <Chip label={toTitle(label ?? '')} variant="outlined" />
         </Stack>
 
-        {eureka_set_trials.length > 0 && (
-          <Stack>
-            <Stack
-              alignItems="flex-end"
-              direction="row"
-              justifyContent="space-between"
-              sx={{ mb: 0.5 }}
+        <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
+          <Typography color="textSecondary" variant="subtitle2">
+            <RarityStars rarity={rarity!} />
+          </Typography>
+
+          <Typography color="textSecondary" variant="body1">
+            {toTitle(style ?? '')}
+          </Typography>
+        </Stack>
+      </Stack>
+
+      {eureka_set_trials.length > 0 && (
+        <Stack>
+          <Stack
+            alignItems="flex-end"
+            direction="row"
+            justifyContent="space-between"
+            sx={{ mb: 0.5 }}
+          >
+            <Button
+              color="inherit"
+              endIcon={<ChevronRight />}
+              href={
+                eureka_set_trials.length > 1
+                  ? '/eureka/trials'
+                  : `/eureka/trials/${eureka_set_trials[0].trial}`
+              }
+              size="small"
             >
-              <Button
-                color="inherit"
-                endIcon={<ChevronRight />}
-                href={
-                  eureka_set_trials.length > 1
-                    ? '/eureka/trials'
-                    : `/eureka/trials/${eureka_set_trials[0].trial}`
-                }
-                size="small"
-              >
-                {eureka_set_trials.length > 1
-                  ? `${eureka_set_trials.length} trials`
-                  : toTitle(eureka_set_trials[0].trial)}
-              </Button>
+              {eureka_set_trials.length > 1
+                ? `${eureka_set_trials.length} trials`
+                : toTitle(eureka_set_trials[0].trial)}
+            </Button>
 
-              <ProgressChip percentage={percent(obtained, total)} size="sm" />
-            </Stack>
-
-            <Divider />
+            <ProgressChip percentage={percent(obtained, total)} size="sm" />
           </Stack>
-        )}
 
-        <EurekaVariantColorFilter
-          colors={colors}
-          eureka_variants={eureka_variants}
-          isLoggedIn={isLoggedIn}
-        />
+          <Divider />
+        </Stack>
+      )}
+
+      <EurekaVariantColorFilter
+        colors={colors}
+        eureka_variants={eureka_variants}
+        isLoggedIn={isLoggedIn}
+      />
     </Stack>
   )
 }

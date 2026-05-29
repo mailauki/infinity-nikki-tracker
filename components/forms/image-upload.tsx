@@ -24,8 +24,8 @@ export default function ImageUpload({
   caption,
 }: {
   url: string | null
-  table?: 'eureka_variants' | 'trials'
-  slug?: string
+  table: 'eureka_variants' | 'trials'
+  slug: string | undefined
   onUpload: (url: string) => void
   caption?: string
 }) {
@@ -45,8 +45,8 @@ export default function ImageUpload({
       }
 
       const file = event.target.files[0]
+      if (!slug) throw new Error('Cannot upload image: record has no slug yet.')
       const fileExt = file.name.split('.').pop()
-      if (!table || !slug) throw new Error('Table and slug are required to upload an image.')
       const filePath = `${table}/${slug}/${crypto.randomUUID()}.${fileExt}`
 
       const { error: uploadError } = await supabase.storage

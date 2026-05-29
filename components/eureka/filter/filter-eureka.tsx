@@ -1,15 +1,6 @@
 'use client'
 import React from 'react'
-import {
-  Alert,
-  Box,
-  Button,
-  Divider,
-  Skeleton,
-  Stack,
-  Toolbar,
-  Typography,
-} from '@mui/material'
+import { Alert, Box, Button, Divider, Skeleton, Stack, Toolbar, Typography } from '@mui/material'
 import { ChevronRight } from '@mui/icons-material'
 
 import ErrorAlert from '@/components/error-alert'
@@ -21,6 +12,7 @@ import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import ProgressChip from '@/components/progress-chip'
 import LoginAlert from '@/components/login-alert'
 import { countObtained, percent } from '@/hooks/count-obtained'
+import FilterMenu from '@/components/navbar/filter-menu'
 
 function GroupHeaderSkeleton() {
   return (
@@ -138,6 +130,7 @@ export default function FilterEureka() {
         sx={{
           position: 'sticky',
           top: 64,
+          left: 0,
           zIndex: 'appBar',
           backdropFilter: 'blur(8px)',
           bgcolor: 'surface.containerLowest',
@@ -145,22 +138,20 @@ export default function FilterEureka() {
           mx: -3,
         }}
       >
-        <Stack
-          useFlexGap
-          alignItems="center"
-          direction="row"
-          flexWrap="wrap"
-          justifyContent="space-between"
-          spacing={1}
-          sx={{ flex: 1, px: 1, pt: 1, mb: -1 }}
-        >
-          <Typography color="textSecondary" sx={{ pb: 4, whiteSpace: 'nowrap' }} variant="caption">
+        <Stack alignItems="center" direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
+          <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
             Showing: {resultsCount} results
           </Typography>
 
-          {!isLoggedIn && <LoginAlert />}
+          <FilterMenu />
         </Stack>
       </Toolbar>
+
+      {!isLoggedIn && (
+        <Box sx={{ width: 'fit-content' }}>
+          <LoginAlert />
+        </Box>
+      )}
 
       {isObtainedError && (
         <Alert severity="warning" sx={{ mb: 2 }}>

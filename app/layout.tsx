@@ -7,9 +7,6 @@ import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import theme from '@/lib/theme'
 import { CssBaseline, Stack, Toolbar } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
-import NavAppBar from '@/components/navbar/nav-appbar'
-import NavRail from '@/components/navbar/nav-rail'
-import { StyledToolbar } from '@/components/navbar/nav-styled'
 import Footer from '@/components/navbar/nav-footer'
 import NavBar from '@/components/navbar/nav-bar-drawer'
 
@@ -49,7 +46,7 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
@@ -65,24 +62,20 @@ export default async function RootLayout({
         <AppRouterCacheProvider options={{ key: 'css' }}>
           <ThemeProvider defaultMode="system" theme={theme}>
             <CssBaseline />
-            {/* {children} */}
-            {/* <NavAppBar /> */}
             <NavBar />
             <Stack
               direction="row"
               spacing={2}
               sx={{
-								minHeight: '100vh',
-								p: 2,
-								backgroundColor: 'surface.containerLowest'
-							}}
+                minHeight: '100vh',
+                p: 2,
+                backgroundColor: 'surface.containerLowest',
+              }}
             >
-              {/* <NavRail /> */}
               <Stack spacing={2} sx={{ flex: 1, minWidth: '300px' }}>
-                {/* <StyledToolbar /> */}
-								<Toolbar />
+                <Toolbar />
                 {children}
-								<Toolbar />
+                <Toolbar />
               </Stack>
             </Stack>
             <Footer />

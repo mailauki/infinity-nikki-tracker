@@ -123,51 +123,51 @@ export default function ProfileForm({
         />
 
         <Stack component="form">
-            <TextField
-              disabled
-              id="email"
-              label="Email"
-              margin="normal"
-              placeholder="Email"
-              type="email"
-              value={user?.email}
-            />
+          <TextField
+            disabled
+            id="email"
+            label="Email"
+            margin="normal"
+            placeholder="Email"
+            type="email"
+            value={user?.email}
+          />
 
-            <TextField
-              id="fullName"
-              label="Full Name"
-              margin="normal"
-              type="text"
-              value={fullname || ''}
-              onChange={(event) => setFullname(event.target.value)}
-            />
+          <TextField
+            id="fullName"
+            label="Full Name"
+            margin="normal"
+            type="text"
+            value={fullname || ''}
+            onChange={(event) => setFullname(event.target.value)}
+          />
 
-            <TextField
-              id="username"
-              label="Username"
-              margin="normal"
-              type="text"
-              value={username || ''}
-              onChange={(event) => setUsername(event.target.value)}
-            />
+          <TextField
+            id="username"
+            label="Username"
+            margin="normal"
+            type="text"
+            value={username || ''}
+            onChange={(event) => setUsername(event.target.value)}
+          />
 
-            {saveError && (
-              <Alert severity="error" sx={{ mb: 1 }}>
-                Failed to save profile. Please try again.
-              </Alert>
-            )}
+          {saveError && (
+            <Alert severity="error" sx={{ mb: 1 }}>
+              Failed to save profile. Please try again.
+            </Alert>
+          )}
 
-            <Button
-              fullWidth
-              disabled={loading}
-              size="large"
-              sx={{ my: 2 }}
-              variant="contained"
-              onClick={() => updateProfile({ fullname, username, avatar_url })}
-            >
-              {loading ? 'Loading ...' : 'Update'}
-            </Button>
-          </Stack>
+          <Button
+            fullWidth
+            disabled={loading}
+            size="large"
+            sx={{ my: 2 }}
+            variant="contained"
+            onClick={() => updateProfile({ fullname, username, avatar_url })}
+          >
+            {loading ? 'Loading ...' : 'Update'}
+          </Button>
+        </Stack>
       </Stack>
     </Stack>
   )

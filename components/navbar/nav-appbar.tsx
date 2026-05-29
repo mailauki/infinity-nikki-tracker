@@ -1,14 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import { useColorScheme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Stack from '@mui/material/Stack'
 import { Box, Button, Skeleton, Typography } from '@mui/material'
 import { usePathname } from 'next/navigation'
 import { JwtPayload } from '@supabase/supabase-js'
-import Link from 'next/link'
-import Image from 'next/image'
 
 import { NavUser } from './nav-user'
 import FilterMenu from './filter-menu'
@@ -35,8 +32,6 @@ const allLinks = [
 
 export default function NavAppBar() {
   const pathname = usePathname()
-  const { mode, systemMode } = useColorScheme()
-  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
 
   const [user, setUser] = React.useState<JwtPayload | null | undefined>(undefined)
   const [isAdmin, setIsAdmin] = React.useState(false)
@@ -79,27 +74,6 @@ export default function NavAppBar() {
 
   return (
     <AppBar color="inherit" position="fixed" variant="outlined">
-      {/* <Toolbar
-        alignItems="center"
-        component={Stack}
-        direction="row"
-        justifyContent="center"
-        sx={{
-          flex: 1,
-          width: '100%',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          py: 1.5,
-          filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)',
-        }}
-      >
-        <Link href="/" style={{ cursor: 'pointer' }}>
-          <Image alt="Infinity Nikki Logo" height={39} src="/infinity-nikki-logo.png" width={90} />
-        </Link>
-      </Toolbar> */}
-
       <Toolbar>
         <Box sx={{ position: 'relative', flex: 1 }}>
           <AppBarTitle

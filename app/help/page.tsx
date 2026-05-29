@@ -24,108 +24,107 @@ export const metadata: Metadata = {
 export default function HelpPage() {
   return (
     <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-        <Stack component="section" spacing={1}>
-          <Typography component="h2" variant="h5">
-            How to use
-          </Typography>
-          <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
-            <ListItem sx={{ display: 'list-item' }}>
-              <ListItemText
-                primary={
-                  <Typography color="textSecondary" variant="body1">
-                    Browse all Eureka sets from the{' '}
-                    <Anchor color="textSecondary" href="/eureka">
-                      Eureka
-                    </Anchor>{' '}
-                    page. No account needed — you can browse freely as a guest.
-                  </Typography>
-                }
-              />
-            </ListItem>
-            <ListItem sx={{ display: 'list-item' }}>
-              <ListItemText
-                primary={
-                  <Typography color="textSecondary" variant="body1">
-                    Sign in to enable collection tracking for your account. Progress won&apos;t be
-                    saved without an account.
-                  </Typography>
-                }
-              />
-            </ListItem>
-            <ListItem sx={{ display: 'list-item' }}>
-              <ListItemText
-                primary={
-                  <Typography color="textSecondary" variant="body1">
-                    Click individual items to mark them as obtained — either from the{' '}
-                    <Anchor color="textSecondary" href="/eureka">
-                      Eureka
-                    </Anchor>{' '}
-                    page or from within a set&apos;s detail page.
-                  </Typography>
-                }
-              />
-            </ListItem>
-            <ListItem sx={{ display: 'list-item' }}>
-              <ListItemText
-                primary={
-                  <Typography color="textSecondary" variant="body1">
-                    Use the filters to narrow things down by category, color, rarity, or completion
-                    status.
-                  </Typography>
-                }
-              />
-            </ListItem>
-            <ListItem sx={{ display: 'list-item' }}>
-              <ListItemText
-                primary={
-                  <Typography color="textSecondary" variant="body1">
-                    Use the filter menu to show only missing pieces — select{' '}
-                    <strong>Missing</strong> under completion status to see only what you
-                    haven&apos;t collected yet.
-                  </Typography>
-                }
-              />
-            </ListItem>
-            <ListItem sx={{ display: 'list-item' }}>
-              <ListItemText
-                primary={
-                  <Typography color="textSecondary" variant="body1">
-                    Use the{' '}
-                    <Anchor color="textSecondary" href="/eureka/trials">
-                      Trials
-                    </Anchor>{' '}
-                    view to see your progress grouped by in-game trial.
-                  </Typography>
-                }
-              />
-            </ListItem>
-            <ListItem sx={{ display: 'list-item' }}>
-              <ListItemText
-                primary={
-                  <Typography color="textSecondary" variant="body1">
-                    Manage your display name and avatar, and view your overall collection stats,
-                    from the{' '}
-                    <Anchor color="textSecondary" href="/profile">
-                      Profile
-                    </Anchor>{' '}
-                    page.
-                  </Typography>
-                }
-              />
-            </ListItem>
-          </List>
-        </Stack>
+      <Stack component="section" spacing={1}>
+        <Typography component="h2" variant="h5">
+          How to use
+        </Typography>
+        <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Browse all Eureka sets from the{' '}
+                  <Anchor color="textSecondary" href="/eureka">
+                    Eureka
+                  </Anchor>{' '}
+                  page. No account needed — you can browse freely as a guest.
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Sign in to enable collection tracking for your account. Progress won&apos;t be
+                  saved without an account.
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Click individual items to mark them as obtained — either from the{' '}
+                  <Anchor color="textSecondary" href="/eureka">
+                    Eureka
+                  </Anchor>{' '}
+                  page or from within a set&apos;s detail page.
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Use the filters to narrow things down by category, color, rarity, or completion
+                  status.
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Use the filter menu to show only missing pieces — select <strong>Missing</strong>{' '}
+                  under completion status to see only what you haven&apos;t collected yet.
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Use the{' '}
+                  <Anchor color="textSecondary" href="/eureka/trials">
+                    Trials
+                  </Anchor>{' '}
+                  view to see your progress grouped by in-game trial.
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  Manage your display name and avatar, and view your overall collection stats, from
+                  the{' '}
+                  <Anchor color="textSecondary" href="/profile">
+                    Profile
+                  </Anchor>{' '}
+                  page.
+                </Typography>
+              }
+            />
+          </ListItem>
+        </List>
+      </Stack>
 
-        <Stack component="section" spacing={1}>
-          <Typography component="h2" variant="h5">
-            Add to home screen
-          </Typography>
-          <Typography color="textSecondary" sx={{ mb: 2 }} variant="body1">
-            You can add this app to your home screen or bookmark bar for quick access — no app store
-            required.
-          </Typography>
+      <Stack component="section" spacing={1}>
+        <Typography component="h2" variant="h5">
+          Add to home screen
+        </Typography>
+        <Typography color="textSecondary" sx={{ mb: 2 }} variant="body1">
+          You can add this app to your home screen or bookmark bar for quick access — no app store
+          required.
+        </Typography>
 
-					<Stack>
+        <Stack>
           <Accordion disableGutters>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">iOS / iPadOS (Safari)</Typography>
@@ -296,30 +295,30 @@ export default function HelpPage() {
               </List>
             </AccordionDetails>
           </Accordion>
-					</Stack>
         </Stack>
+      </Stack>
 
-        <Stack component="section" spacing={1}>
-          <Typography component="h2" variant="h5">
-            Admin access
-          </Typography>
-          <Typography color="textSecondary" sx={{ mb: 1 }} variant="body1">
-            As an admin, you can manage the data that powers this tracker:
-          </Typography>
-          <Typography color="textSecondary" variant="body1">
-            Use the{' '}
-            <Anchor color="textSecondary" href="/dashboard">
-              Dashboard
-            </Anchor>{' '}
-            to manage Eureka sets, variants, and trials — add, edit, and track counts and recent
-            activity.
-          </Typography>
-          <Suspense>
-            <AdminButton />
-          </Suspense>
-        </Stack>
+      <Stack component="section" spacing={1}>
+        <Typography component="h2" variant="h5">
+          Admin access
+        </Typography>
+        <Typography color="textSecondary" sx={{ mb: 1 }} variant="body1">
+          As an admin, you can manage the data that powers this tracker:
+        </Typography>
+        <Typography color="textSecondary" variant="body1">
+          Use the{' '}
+          <Anchor color="textSecondary" href="/dashboard">
+            Dashboard
+          </Anchor>{' '}
+          to manage Eureka sets, variants, and trials — add, edit, and track counts and recent
+          activity.
+        </Typography>
+        <Suspense>
+          <AdminButton />
+        </Suspense>
+      </Stack>
 
-        <HelpActions />
+      <HelpActions />
     </Stack>
   )
 }
