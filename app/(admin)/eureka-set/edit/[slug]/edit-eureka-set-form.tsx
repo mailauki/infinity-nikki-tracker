@@ -28,7 +28,15 @@ import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { createClient } from '@/lib/supabase/client'
 import { toSlug, toSlugVariant, toTitle } from '@/lib/utils'
 import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
-import { Category, Color, EurekaSetRaw, EurekaVariant, Label, Style, Trial } from '@/lib/types/eureka'
+import {
+  Category,
+  Color,
+  EurekaSetRaw,
+  EurekaVariant,
+  Label,
+  Style,
+  Trial,
+} from '@/lib/types/eureka'
 import ColorSelect from '@/components/forms/eureka-set/color-select'
 import { SparkleIcon } from '@/components/rarity-stars'
 import ImageUpload from '@/components/forms/image-upload'
@@ -413,24 +421,24 @@ export default function EditEurekaSetForm({
             })}
           </Select>
         </FormControl>
-				<Box
-					sx={{ 
-						display: 'grid',
-						gridTemplateColumns: '1fr 1fr 1fr',
-						gap: { xs: 0.5, sm: 1, md: 2 },
-					}}
-				>
-					{initialVariants.map((variant) => (
-						<ImageUpload
-							key={variant.slug}
-							caption={`${toTitle(variant.category ?? '')} • ${toTitle(variant.color ?? '')}`}
-							slug={variant.slug ?? undefined}
-							table="eureka_variants"
-							url={variantImages[variant.slug] ?? null}
-							onUpload={(url) => setVariantImages((prev) => ({ ...prev, [variant.slug]: url }))}
-						/>
-					))}
-				</Box>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr',
+            gap: { xs: 0.5, sm: 1, md: 2 },
+          }}
+        >
+          {initialVariants.map((variant) => (
+            <ImageUpload
+              key={variant.slug}
+              caption={`${toTitle(variant.category ?? '')} • ${toTitle(variant.color ?? '')}`}
+              slug={variant.slug ?? undefined}
+              table="eureka_variants"
+              url={variantImages[variant.slug] ?? null}
+              onUpload={(url) => setVariantImages((prev) => ({ ...prev, [variant.slug]: url }))}
+            />
+          ))}
+        </Box>
 
         <Stack direction="row" justifyContent="flex-end" spacing={1}>
           <Button href={backUrl} variant="outlined">

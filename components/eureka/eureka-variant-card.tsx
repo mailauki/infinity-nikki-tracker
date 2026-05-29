@@ -5,7 +5,7 @@ import { toTitle } from '@/lib/utils'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { Box, Card, IconButton, Stack, Typography } from '@mui/material'
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
-import { handleObtained } from '@/app/(main)/eureka/actions'
+import { handleObtained } from '@/app/eureka/actions'
 import { useRouter } from 'next/navigation'
 import LazyAvatar from './lazy-avatar'
 

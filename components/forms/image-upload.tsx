@@ -134,7 +134,7 @@ export default function ImageUpload({
             justifyContent: 'center',
             bgcolor: 'action.disabledBackground',
             borderRadius: 'inherit',
-						color: 'surface.containerLowest'
+            color: 'surface.containerLowest',
           }}
         >
           {uploading ? <CircularProgress size={32} /> : <FileUploadIcon fontSize="large" />}

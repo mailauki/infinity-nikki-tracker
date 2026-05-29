@@ -20,7 +20,7 @@ import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { EurekaSet, Label, Style } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import RarityStars from '@/components/rarity-stars'
-import { updateEurekaSet } from '@/app/(main)/(admin)/dashboard/actions'
+import { updateEurekaSet } from '@/app/(admin)/dashboard/actions'
 
 type Row = EurekaSet
 
@@ -126,7 +126,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
               />,
               <GridActionsCellItem
                 key="open"
-                icon={<OpenInNewIcon color='secondary' />}
+                icon={<OpenInNewIcon color="secondary" />}
                 label="View page"
                 title="View page"
                 onClick={() => (window.location.href = `/eureka/${row.slug}`)}
@@ -138,10 +138,21 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       headerName: 'Image',
       width: 64,
       sortable: false,
-      renderCell: ({ row }: GridRenderCellParams<Row>) =>
-				<Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
-        {isEditing(row.id) ? (
-          <LockedCell href={editHref(row)}>
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+          {isEditing(row.id) ? (
+            <LockedCell href={editHref(row)}>
+              <LazyAvatar
+                alt={row.title || 'Image'}
+                color="transparent"
+                size="sm"
+                src={row.image_url!}
+                sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+              >
+                <Category fontSize="inherit" />
+              </LazyAvatar>
+            </LockedCell>
+          ) : (
             <LazyAvatar
               alt={row.title || 'Image'}
               color="transparent"
@@ -151,19 +162,9 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
             >
               <Category fontSize="inherit" />
             </LazyAvatar>
-          </LockedCell>
-        ) : (
-          <LazyAvatar
-            alt={row.title || 'Image'}
-            color="transparent"
-            size="sm"
-            src={row.image_url!}
-            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-          >
-            <Category fontSize="inherit" />
-          </LazyAvatar>
-        )}
-				</Stack>
+          )}
+        </Stack>
+      ),
     },
     {
       field: 'title',
@@ -226,28 +227,29 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       headerName: 'Colors',
       width: 340,
       sortable: false,
-      renderCell: ({ row }: GridRenderCellParams<Row>) =>
-				<Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
-					{isEditing(row.id) ? (
-						<LockedCell href={editHref(row)}>
-							<Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
-								{row.colors
-									? row.colors.map((color) => (
-											<Chip key={color.slug} label={color.title} size="small" />
-										))
-									: '—'}
-							</Box>
-						</LockedCell>
-					) : (
-						<Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
-							{row.colors
-								? row.colors.map((color) => (
-										<Chip key={color.slug} label={color.title} size="small" />
-									))
-								: '—'}
-						</Box>
-					)}
-				</Stack>
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+          {isEditing(row.id) ? (
+            <LockedCell href={editHref(row)}>
+              <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
+                {row.colors
+                  ? row.colors.map((color) => (
+                      <Chip key={color.slug} label={color.title} size="small" />
+                    ))
+                  : '—'}
+              </Box>
+            </LockedCell>
+          ) : (
+            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
+              {row.colors
+                ? row.colors.map((color) => (
+                    <Chip key={color.slug} label={color.title} size="small" />
+                  ))
+                : '—'}
+            </Box>
+          )}
+        </Stack>
+      ),
     },
     {
       field: 'description',

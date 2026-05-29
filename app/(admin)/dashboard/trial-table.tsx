@@ -19,7 +19,7 @@ import {
 import { formatDate, toSlug } from '@/lib/utils'
 import { Trial } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
-import { updateTrial } from '@/app/(main)/(admin)/dashboard/actions'
+import { updateTrial } from '@/app/(admin)/dashboard/actions'
 import { useState } from 'react'
 
 type Row = Trial
@@ -119,7 +119,7 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
               />,
               <GridActionsCellItem
                 key="open"
-                icon={<OpenInNewIcon color='secondary' />}
+                icon={<OpenInNewIcon color="secondary" />}
                 label="View trials"
                 title="View trials"
                 onClick={() => (window.location.href = '/eureka/trials')}
@@ -131,11 +131,21 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
       headerName: 'Image',
       width: 64,
       sortable: false,
-      renderCell: ({ row }: GridRenderCellParams<Row>) =>
-        
-				<Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
-					{isEditing(row.id) ? (
-          <LockedCell href={editHref(row)}>
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+          {isEditing(row.id) ? (
+            <LockedCell href={editHref(row)}>
+              <LazyAvatar
+                alt={row.title || 'Image'}
+                size="sm"
+                src={row.image_url!}
+                sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+                variant="rounded"
+              >
+                <Category fontSize="inherit" />
+              </LazyAvatar>
+            </LockedCell>
+          ) : (
             <LazyAvatar
               alt={row.title || 'Image'}
               size="sm"
@@ -145,19 +155,9 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
             >
               <Category fontSize="inherit" />
             </LazyAvatar>
-          </LockedCell>
-        ) : (
-          <LazyAvatar
-            alt={row.title || 'Image'}
-            size="sm"
-            src={row.image_url!}
-            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-            variant="rounded"
-          >
-            <Category fontSize="inherit" />
-          </LazyAvatar>
-        )}
-				</Stack>
+          )}
+        </Stack>
+      ),
     },
     {
       field: 'title',

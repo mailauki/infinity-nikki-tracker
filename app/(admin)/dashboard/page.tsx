@@ -26,8 +26,8 @@ async function AdminDashboard() {
   return (
     <Box
       sx={{
-				display: 'grid',
-				gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
         gap: 2,
         pt: 4,
       }}

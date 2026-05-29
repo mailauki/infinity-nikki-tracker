@@ -3,10 +3,10 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarUpload from './avatar-upload'
-import ProfileView from '@/app/(main)/profile/profile-view'
+import ProfileView from '@/app/profile/profile-view'
 import { Alert, Button, Chip, Container, Stack, TextField } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
-import { useProfileEdit } from '@/app/(main)/profile/profile-context'
+import { useProfileEdit } from '@/app/profile/profile-context'
 
 export default function ProfileForm({
   user,

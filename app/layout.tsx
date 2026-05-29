@@ -5,8 +5,13 @@ import { Noto_Sans_JP, Roboto } from 'next/font/google'
 import { ThemeProvider } from '@mui/material/styles'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import theme from '@/lib/theme'
-import { CssBaseline } from '@mui/material'
+import { CssBaseline, Stack, Toolbar } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
+import NavAppBar from '@/components/navbar/nav-appbar'
+import NavRail from '@/components/navbar/nav-rail'
+import { StyledToolbar } from '@/components/navbar/nav-styled'
+import Footer from '@/components/navbar/nav-footer'
+import Nav from '@/components/navbar/nav'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -60,7 +65,23 @@ export default async function RootLayout({
         <AppRouterCacheProvider options={{ key: 'css' }}>
           <ThemeProvider defaultMode="system" theme={theme}>
             <CssBaseline />
-            {children}
+            {/* {children} */}
+            {/* <NavAppBar /> */}
+            <Nav />
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ minHeight: '100vh', p: 2, backgroundColor: 'surface.containerLowest' }}
+            >
+              {/* <NavRail /> */}
+              <Stack spacing={2} sx={{ flex: 1, minWidth: '300px' }}>
+                {/* <StyledToolbar /> */}
+								<Toolbar />
+                {children}
+								<Toolbar />
+              </Stack>
+            </Stack>
+            <Footer />
             <Analytics />
           </ThemeProvider>
         </AppRouterCacheProvider>

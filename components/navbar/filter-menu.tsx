@@ -26,8 +26,8 @@ import EurekaSelect from '../eureka/filter/eureka-select'
 import RarityToggle from '../eureka/filter/rarity-toggle'
 
 export default function FilterMenu() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  // const open = Boolean(anchorEl)
 
   const {
     eurekaSets,
@@ -92,8 +92,9 @@ export default function FilterMenu() {
     selectedRarities.length > 0
 
   return (
-    <div>
-      <Tooltip placement="bottom-end" title="Open filter menu">
+    <>
+      {/* <div> */}
+      {/* <Tooltip placement="bottom-end" title="Open filter menu">
         <IconButton
           aria-controls={open ? 'filter-menu' : undefined}
           aria-expanded={open ? 'true' : undefined}
@@ -104,9 +105,9 @@ export default function FilterMenu() {
         >
           <FilterList />
         </IconButton>
-      </Tooltip>
+      </Tooltip> */}
 
-      <Menu
+      {/* <Menu
         anchorEl={anchorEl}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         id="filter-menu"
@@ -129,61 +130,59 @@ export default function FilterMenu() {
           <IconButton aria-label="Close filter menu" onClick={() => setAnchorEl(null)}>
             <Close />
           </IconButton>
-        </Toolbar>
-        <ListItem sx={{ gap: 1 }}>
-          <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={onGroupBySetChange} />
-          <EurekaSelect
-            eurekaSets={eurekaSets}
-            selectedEurekaSet={selectedEurekaSet}
-            onEurekaSetChange={handleEurekaSetChange}
-          />
-        </ListItem>
-        <ListItem sx={{ gap: 1 }}>
-          <SortColorToggle
-            showByColor={showByColor}
-            onShowByColorChange={handleShowByColorChange}
-          />
-          <ColorSelect
-            colors={colors}
+        </Toolbar> */}
+      <ListItem sx={{ gap: 1 }}>
+        <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={onGroupBySetChange} />
+        <EurekaSelect
+          eurekaSets={eurekaSets}
+          selectedEurekaSet={selectedEurekaSet}
+          onEurekaSetChange={handleEurekaSetChange}
+        />
+      </ListItem>
+      <ListItem sx={{ gap: 1 }}>
+        <SortColorToggle showByColor={showByColor} onShowByColorChange={handleShowByColorChange} />
+        <ColorSelect
+          colors={colors}
+          disabled={showByColor}
+          selectedColor={selectedColor}
+          onColorChange={handleColorChange}
+        />
+      </ListItem>
+      {isLoggedIn && (
+        <ListItem>
+          <ObtainedToggle
             disabled={showByColor}
-            selectedColor={selectedColor}
-            onColorChange={handleColorChange}
+            selectedObtainedFilter={selectedObtainedFilter}
+            onObtainedFilterChange={handleObtainedFilterChange}
           />
         </ListItem>
-        {isLoggedIn && (
-          <ListItem>
-            <ObtainedToggle
-              disabled={showByColor}
-              selectedObtainedFilter={selectedObtainedFilter}
-              onObtainedFilterChange={handleObtainedFilterChange}
-            />
-          </ListItem>
-        )}
-        <ListItem>
-          <CategoryToggle
-            categories={categories}
-            disabled={showByColor}
-            selectedCategory={showByColor ? null : selectedCategory}
-            onCategoryChange={handleCategoryChange}
-          />
-        </ListItem>
-        <ListItem>
-          <RarityToggle selectedRarities={selectedRarities} onRarityChange={handleRarityChange} />
-        </ListItem>
-        <Divider sx={{ mx: 2, mt: 2 }} />
-        <ListItem>
-          <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
-            {hasActiveFilters && (
-              <Button color="secondary" variant="outlined" onClick={onClearFilters}>
-                Clear all
-              </Button>
-            )}
-            <Button variant="contained" onClick={() => setAnchorEl(null)}>
-              Apply
+      )}
+      <ListItem>
+        <CategoryToggle
+          categories={categories}
+          disabled={showByColor}
+          selectedCategory={showByColor ? null : selectedCategory}
+          onCategoryChange={handleCategoryChange}
+        />
+      </ListItem>
+      <ListItem>
+        <RarityToggle selectedRarities={selectedRarities} onRarityChange={handleRarityChange} />
+      </ListItem>
+      <Divider sx={{ mx: 2, mt: 2 }} />
+      <ListItem>
+        <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
+          {hasActiveFilters && (
+            <Button color="secondary" variant="outlined" onClick={onClearFilters}>
+              Clear all
             </Button>
-          </Stack>
-        </ListItem>
-      </Menu>
-    </div>
+          )}
+          {/* <Button variant="contained" onClick={() => setAnchorEl(null)}>
+              Apply
+            </Button> */}
+        </Stack>
+      </ListItem>
+      {/* </Menu>
+    </div> */}
+    </>
   )
 }

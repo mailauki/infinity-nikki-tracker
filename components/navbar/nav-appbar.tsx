@@ -13,7 +13,12 @@ import Image from 'next/image'
 import { NavUser } from './nav-user'
 import FilterMenu from './filter-menu'
 import { AppBar, AppBarTitle } from './nav-styled'
-import { EurekaSetEditButton, ProfileEditButton, SortButton, TrialEditButton } from './appbar-actions'
+import {
+  EurekaSetEditButton,
+  ProfileEditButton,
+  SortButton,
+  TrialEditButton,
+} from './appbar-actions'
 import { navLinksData } from '@/lib/nav-links'
 import { toTitle } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
@@ -97,7 +102,11 @@ export default function NavAppBar() {
 
       <Toolbar>
         <Container disableGutters maxWidth="md" sx={{ position: 'relative' }}>
-          <AppBarTitle direction="row" isHome={isHome} justifyContent={{ xs: 'center', sm: 'inherit' }}>
+          <AppBarTitle
+            direction="row"
+            isHome={isHome}
+            justifyContent={{ xs: 'center', sm: 'inherit' }}
+          >
             <Typography
               component="h1"
               sx={{ fontSize: { xs: 'h6.fontSize', sm: 'h5.fontSize', md: 'h4.fontSize' } }}
@@ -117,18 +126,23 @@ export default function NavAppBar() {
             {isProfilePage && <ProfileEditButton />}
             {eurekaSetSlug && <EurekaSetEditButton isAdmin={isAdmin} slug={eurekaSetSlug} />}
             {trialSlug && <TrialEditButton isAdmin={isAdmin} slug={trialSlug} />}
-						<Stack alignItems="center" direction="row" justifyContent="flex-end" sx={{ width: '64px' }}>
-						{!user && (
-							<Button color="inherit" href="/auth/login">
-                Login
-              </Button>
-						)}
-						{user === undefined ? (
-							<Skeleton height={40} variant="circular" width={40} />
-						) : (
-							<NavUser isAdmin={isAdmin} user={user!} />
-						)}
-          </Stack>
+            <Stack
+              alignItems="center"
+              direction="row"
+              justifyContent="flex-end"
+              sx={{ width: '64px' }}
+            >
+              {!user && (
+                <Button color="inherit" href="/auth/login">
+                  Login
+                </Button>
+              )}
+              {user === undefined ? (
+                <Skeleton height={40} variant="circular" width={40} />
+              ) : (
+                <NavUser isAdmin={isAdmin} user={user!} />
+              )}
+            </Stack>
           </Stack>
         </Container>
       </Toolbar>

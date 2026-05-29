@@ -19,7 +19,7 @@ import {
 import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
 import { Category as CategoryType, Color, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
-import { updateEurekaVariant } from '@/app/(main)/(admin)/dashboard/actions'
+import { updateEurekaVariant } from '@/app/(admin)/dashboard/actions'
 
 type Row = EurekaVariantRaw
 
@@ -124,7 +124,7 @@ export function EurekaVariantTable({
               />,
               <GridActionsCellItem
                 key="open"
-                icon={<OpenInNewIcon color='secondary' />}
+                icon={<OpenInNewIcon color="secondary" />}
                 label="View page"
                 title="View page"
                 onClick={() => (window.location.href = `/eureka/${row.eureka_set}`)}
@@ -136,10 +136,21 @@ export function EurekaVariantTable({
       headerName: 'Image',
       width: 64,
       sortable: false,
-      renderCell: ({ row }: GridRenderCellParams<Row>) =>
-				<Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
-        {isEditing(row.id) ? (
-          <LockedCell href={editHref(row)}>
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+          {isEditing(row.id) ? (
+            <LockedCell href={editHref(row)}>
+              <LazyAvatar
+                alt={row.eureka_set || 'Image'}
+                color="transparent"
+                size="sm"
+                src={row.image_url!}
+                sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+              >
+                <Category fontSize="inherit" />
+              </LazyAvatar>
+            </LockedCell>
+          ) : (
             <LazyAvatar
               alt={row.eureka_set || 'Image'}
               color="transparent"
@@ -149,19 +160,9 @@ export function EurekaVariantTable({
             >
               <Category fontSize="inherit" />
             </LazyAvatar>
-          </LockedCell>
-        ) : (
-          <LazyAvatar
-            alt={row.eureka_set || 'Image'}
-            color="transparent"
-            size="sm"
-            src={row.image_url!}
-            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-          >
-            <Category fontSize="inherit" />
-          </LazyAvatar>
-        )}
-				</Stack>
+          )}
+        </Stack>
+      ),
     },
     {
       field: 'eureka_set',

@@ -28,10 +28,10 @@ export default function NavRail() {
         flexDirection: 'column',
         flexShrink: 0,
         transition: mixin.transition,
-				position: 'sticky',
-				top: 16,
-				left: 16,
-				zIndex: 1206,
+        position: 'sticky',
+        top: 16,
+        left: 16,
+        zIndex: 1206,
       }}
       variant="outlined"
     >

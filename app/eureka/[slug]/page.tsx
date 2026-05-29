@@ -40,7 +40,7 @@ async function EurekaSet({ slug }: { slug: string }) {
 
   const { image_url, eureka_set_trials, eureka_variants, rarity, label, style, colors } = eurekaSet
 
-	const { obtained, total } = countObtained(eureka_variants)
+  const { obtained, total } = countObtained(eureka_variants)
 
   return (
     <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
@@ -95,7 +95,7 @@ async function EurekaSet({ slug }: { slug: string }) {
                   : toTitle(eureka_set_trials[0].trial)}
               </Button>
 
-							<ProgressChip percentage={percent(obtained, total)} size='sm' />
+              <ProgressChip percentage={percent(obtained, total)} size="sm" />
             </Stack>
 
             <Divider />
