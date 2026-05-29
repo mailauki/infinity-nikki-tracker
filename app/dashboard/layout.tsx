@@ -1,4 +1,4 @@
-import { Box, Stack, Toolbar } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (

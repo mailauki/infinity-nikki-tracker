@@ -128,16 +128,31 @@ export default function FilterEureka() {
     <>
       <Toolbar
         disableGutters
-        sx={{
-          position: 'sticky',
-          top: 64,
-          left: 0,
-          zIndex: 'appBar',
-          backdropFilter: 'blur(8px)',
-          bgcolor: 'surface.containerLowest',
-          mt: -3,
-          // mx: -3,
-          px: 0.75,
+        sx={(theme) => {
+          // Build responsive `top` from theme.mixins.toolbar so this tracks the
+          // AppBar height automatically if the theme ever changes.
+          const toolbarMixin = theme.mixins.toolbar
+          const topOffset = Object.entries(toolbarMixin).reduce<Record<string, unknown>>(
+            (acc, [key, value]) => {
+              if (key === 'minHeight') {
+                acc.top = value
+              } else if (typeof value === 'object' && value !== null && 'minHeight' in value) {
+                acc[key] = { top: (value as { minHeight: number }).minHeight }
+              }
+              return acc
+            },
+            {}
+          )
+          return {
+            position: 'sticky',
+            ...topOffset,
+            left: 0,
+            zIndex: 'appBar',
+            backdropFilter: 'blur(8px)',
+            bgcolor: 'surface.containerLowest',
+            mt: -3,
+            px: 0.75,
+          }
         }}
       >
         <Stack alignItems="center" direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
