@@ -7,7 +7,7 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getColors } from '@/hooks/data/colors'
 import { getCategories } from '@/hooks/data/categories'
-import { Container, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -23,11 +23,9 @@ export default async function EditEurekaSetPage({
 }) {
   return (
     <Suspense>
-      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
-        <Stack spacing={3}>
-          <EditEurekaSet params={params} searchParams={searchParams} />
-        </Stack>
-      </Container>
+      <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+        <EditEurekaSet params={params} searchParams={searchParams} />
+      </Stack>
     </Suspense>
   )
 }

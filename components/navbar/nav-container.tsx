@@ -8,7 +8,7 @@ import Divider from '@mui/material/Divider'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import Stack from '@mui/material/Stack'
-import { Button, CircularProgress, Container, Fab, Slide, Tooltip, Typography } from '@mui/material'
+import { Button, CircularProgress, Fab, Slide, Tooltip, Typography } from '@mui/material'
 import { FilterList, KeyboardArrowUp, MenuOpen } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
 import { JwtPayload } from '@supabase/supabase-js'
@@ -158,7 +158,7 @@ export default function NavContainer({
           </Toolbar>
 
           <Toolbar>
-            <Container disableGutters maxWidth="md" sx={{ position: 'relative' }}>
+            <Box sx={{ position: 'relative', flex: 1 }}>
               <AppBarTitle
                 direction="row"
                 isHome={isHome}
@@ -191,7 +191,7 @@ export default function NavContainer({
                 {eurekaSetSlug && <EurekaSetEditButton isAdmin={isAdmin} slug={eurekaSetSlug} />}
                 {trialSlug && <TrialEditButton isAdmin={isAdmin} slug={trialSlug} />}
               </Stack>
-            </Container>
+            </Box>
           </Toolbar>
         </AppBar>
 

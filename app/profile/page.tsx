@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
-import { Container, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getColors } from '@/hooks/data/colors'
@@ -20,11 +20,9 @@ export const metadata: Metadata = {
 export default function ProfilePage() {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-        <Stack spacing={3}>
-          <UserDetails />
-        </Stack>
-      </Container>
+      <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+        <UserDetails />
+      </Stack>
     </Suspense>
   )
 }

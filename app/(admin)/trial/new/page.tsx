@@ -1,5 +1,5 @@
 import AddTrialForm from './add-trial-form'
-import { Container, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -8,10 +8,8 @@ export const metadata: Metadata = {
 
 export default function NewTrialPage() {
   return (
-    <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
-      <Stack spacing={3}>
-        <AddTrialForm />
-      </Stack>
-    </Container>
+    <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+      <AddTrialForm />
+    </Stack>
   )
 }

@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarUpload from './avatar-upload'
 import ProfileView from '@/app/profile/profile-view'
-import { Alert, Button, Chip, Container, Stack, TextField } from '@mui/material'
+import { Alert, Button, Chip, Stack, TextField } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import { useProfileEdit } from '@/app/profile/profile-context'
 
@@ -122,8 +122,7 @@ export default function ProfileForm({
           }}
         />
 
-        <Container disableGutters maxWidth="sm">
-          <Stack component="form">
+        <Stack component="form">
             <TextField
               disabled
               id="email"
@@ -169,7 +168,6 @@ export default function ProfileForm({
               {loading ? 'Loading ...' : 'Update'}
             </Button>
           </Stack>
-        </Container>
       </Stack>
     </Stack>
   )

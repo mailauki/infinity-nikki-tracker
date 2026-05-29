@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 
 import { getUserID } from '@/hooks/user'
 import { getEurekaSet } from '@/hooks/data/eureka-sets'
-import { Container, Stack, Button, Divider, Typography, Chip } from '@mui/material'
+import { Stack, Button, Divider, Typography, Chip } from '@mui/material'
 import type { Metadata } from 'next'
 import { Category, ChevronRight } from '@mui/icons-material'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
@@ -43,8 +43,7 @@ async function EurekaSet({ slug }: { slug: string }) {
   const { obtained, total } = countObtained(eureka_variants)
 
   return (
-    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-      <Stack spacing={3}>
+    <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <Stack spacing={1}>
           <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
             <Stack alignItems="center" sx={{ pt: 1 }}>
@@ -107,7 +106,6 @@ async function EurekaSet({ slug }: { slug: string }) {
           eureka_variants={eureka_variants}
           isLoggedIn={isLoggedIn}
         />
-      </Stack>
-    </Container>
+    </Stack>
   )
 }

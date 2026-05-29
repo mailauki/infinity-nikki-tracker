@@ -6,7 +6,6 @@ import {
   AccordionSummary,
   Alert,
   Button,
-  Container,
   Link as Anchor,
   List,
   ListItem,
@@ -24,9 +23,8 @@ export const metadata: Metadata = {
 
 export default function HelpPage() {
   return (
-    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-      <Stack spacing={3}>
-        <Container component="section" maxWidth="sm">
+    <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+        <Stack component="section" spacing={1}>
           <Typography component="h2" variant="h5">
             How to use
           </Typography>
@@ -116,9 +114,9 @@ export default function HelpPage() {
               />
             </ListItem>
           </List>
-        </Container>
+        </Stack>
 
-        <Container component="section" maxWidth="sm">
+        <Stack component="section" spacing={1}>
           <Typography component="h2" variant="h5">
             Add to home screen
           </Typography>
@@ -127,6 +125,7 @@ export default function HelpPage() {
             required.
           </Typography>
 
+					<Stack>
           <Accordion disableGutters>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography variant="subtitle1">iOS / iPadOS (Safari)</Typography>
@@ -297,9 +296,10 @@ export default function HelpPage() {
               </List>
             </AccordionDetails>
           </Accordion>
-        </Container>
+					</Stack>
+        </Stack>
 
-        <Container component="section" maxWidth="sm">
+        <Stack component="section" spacing={1}>
           <Typography component="h2" variant="h5">
             Admin access
           </Typography>
@@ -317,11 +317,10 @@ export default function HelpPage() {
           <Suspense>
             <AdminButton />
           </Suspense>
-        </Container>
+        </Stack>
 
         <HelpActions />
-      </Stack>
-    </Container>
+    </Stack>
   )
 }
 

@@ -4,7 +4,6 @@ import {
   Alert,
   Box,
   Button,
-  Container,
   Divider,
   Skeleton,
   Stack,
@@ -70,15 +69,15 @@ export default function FilterEureka() {
 
   if (isError) {
     return (
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Box sx={{ flexGrow: 1, py: 3 }}>
         <ErrorAlert message="Failed to load Eureka data. Please refresh the page." />
-      </Container>
+      </Box>
     )
   }
 
   if (isLoading) {
     return (
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+      <Box sx={{ flexGrow: 1, py: 3 }}>
         <Skeleton height={20} sx={{ mt: 2, mb: 0.5 }} variant="text" width={100} />
         <Box
           sx={{
@@ -100,7 +99,7 @@ export default function FilterEureka() {
             <VariantCardSkeleton key={i} />
           ))}
         </Box>
-      </Container>
+      </Box>
     )
   }
 
@@ -134,7 +133,7 @@ export default function FilterEureka() {
     : filteredSets.flatMap((set) => set.eureka_variants).length
 
   return (
-    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+    <>
       <Toolbar
         sx={{
           position: 'sticky',
@@ -242,6 +241,6 @@ export default function FilterEureka() {
           })}
         </Box>
       )}
-    </Container>
+    </>
   )
 }

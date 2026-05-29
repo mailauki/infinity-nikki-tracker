@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Metadata } from 'next'
-import { Container, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 
 import TrialsContent from './trials-content'
 
@@ -11,11 +11,9 @@ export const metadata: Metadata = {
 export default function TrialsPage() {
   return (
     <Suspense>
-      <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-        <Stack spacing={3}>
-          <TrialsContent />
-        </Stack>
-      </Container>
+      <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+        <TrialsContent />
+      </Stack>
     </Suspense>
   )
 }

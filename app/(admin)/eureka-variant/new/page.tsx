@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import AddEurekaVariantForm from './add-eureka-variant-form'
 import { getAdminData } from '@/hooks/data/user'
-import { Container, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -11,11 +11,9 @@ export const metadata: Metadata = {
 export default function NewEurekaVariantPage() {
   return (
     <Suspense>
-      <Container maxWidth="sm" sx={{ flexGrow: 1, py: 3 }}>
-        <Stack spacing={3}>
-          <NewEurekaVariant />
-        </Stack>
-      </Container>
+      <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+        <NewEurekaVariant />
+      </Stack>
     </Suspense>
   )
 }

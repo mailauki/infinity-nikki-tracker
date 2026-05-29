@@ -4,7 +4,6 @@ import BugReportForm from '@/components/forms/bug-report-form'
 import FeatureRequestForm from '@/components/forms/feature-request-form'
 import { AddComment, BugReport, Coffee, GitHub } from '@mui/icons-material'
 import {
-  Container,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -13,6 +12,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+	Stack,
 } from '@mui/material'
 import { useState } from 'react'
 
@@ -22,7 +22,7 @@ export default function HelpActions() {
 
   return (
     <>
-      <Container disableGutters component="section" maxWidth="sm">
+      <Stack component="section" spacing={0}>
         <List disablePadding>
           <ListItem disableGutters>
             <ListItemButton onClick={() => setFeatureOpen(true)}>
@@ -72,7 +72,7 @@ export default function HelpActions() {
             </ListItemButton>
           </ListItem>
         </List>
-      </Container>
+      </Stack>
 
       <Dialog fullWidth maxWidth="sm" open={featureOpen} onClose={() => setFeatureOpen(false)}>
         <DialogTitle>Feature Request</DialogTitle>

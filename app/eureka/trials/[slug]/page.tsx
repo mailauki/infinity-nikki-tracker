@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
-import { Box, Container, Stack } from '@mui/material'
+import { Box, Stack } from '@mui/material'
 import type { Metadata } from 'next'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrial } from '@/hooks/data/trials'
@@ -39,22 +39,20 @@ async function Trial({ slug }: { slug: string }) {
     .sort((a, b) => b.rarity! - a.rarity!)
 
   return (
-    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-      <Stack spacing={3}>
-        <LazyCardMedia image={trial.image_url!} sx={{ height: 360 }} title={trial.title} />
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: GRID_COLUMNS,
-            gap: { xs: 1, sm: 1.5, md: 2 },
-            py: 0,
-          }}
-        >
-          {trialSets.map((eurekaSet) => (
-            <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />
-          ))}
-        </Box>
-      </Stack>
-    </Container>
+    <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+      <LazyCardMedia image={trial.image_url!} sx={{ height: 360 }} title={trial.title} />
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: GRID_COLUMNS,
+          gap: { xs: 1, sm: 1.5, md: 2 },
+          py: 0,
+        }}
+      >
+        {trialSets.map((eurekaSet) => (
+          <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />
+        ))}
+      </Box>
+    </Stack>
   )
 }

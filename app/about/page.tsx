@@ -1,5 +1,4 @@
 import {
-  Container,
   Typography,
   Link as Anchor,
   Stack,
@@ -15,9 +14,8 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
-      <Stack spacing={3}>
-        <Container component="section" maxWidth="sm">
+    <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+        <Stack component="section" spacing={1}>
           <Typography component="h2" variant="h5">
             What is this?
           </Typography>
@@ -34,9 +32,9 @@ export default function AboutPage() {
             — see your Eureka sets and variants at a glance, track your progress, and know exactly
             what you&apos;re still missing.
           </Typography>
-        </Container>
+        </Stack>
 
-        <Container component="section" maxWidth="sm">
+        <Stack component="section" spacing={1}>
           <Typography component="h2" variant="h5">
             Features
           </Typography>
@@ -101,9 +99,9 @@ export default function AboutPage() {
               />
             </ListItem>
           </List>
-        </Container>
+        </Stack>
 
-        <Container component="section" maxWidth="sm">
+        <Stack component="section" spacing={1}>
           <Typography component="h2" variant="h5">
             Links &amp; Resources
           </Typography>
@@ -207,9 +205,9 @@ export default function AboutPage() {
               />
             </ListItem>
           </List>
-        </Container>
+        </Stack>
 
-        <Container component="section" maxWidth="sm">
+        <Stack component="section" spacing={1}>
           <Typography component="h2" variant="h5">
             Roadmap
           </Typography>
@@ -245,9 +243,9 @@ export default function AboutPage() {
               />
             </ListItem>
           </List>
-        </Container>
+        </Stack>
 
-        <Container component="section" maxWidth="sm">
+        <Stack component="section" spacing={1}>
           <Typography component="h2" variant="h5">
             Collaborate
           </Typography>
@@ -289,14 +287,13 @@ export default function AboutPage() {
               />
             </ListItem>
           </List>
-        </Container>
+        </Stack>
 
         <Typography color="textDisabled" variant="caption">
           This is a fan-made project and is not affiliated with, endorsed by, or officially
           connected to Papergames or the Infinity Nikki development team. All game content, names,
           and assets are the property of their respective owners.
         </Typography>
-      </Stack>
-    </Container>
+    </Stack>
   )
 }

@@ -1,4 +1,4 @@
-import { Box, Container, Divider, Skeleton, Stack } from '@mui/material'
+import { Box, Divider, Skeleton, Stack } from '@mui/material'
 
 function GroupHeaderSkeleton() {
   return (
@@ -26,7 +26,7 @@ function VariantCardSkeleton() {
 
 export default function EurekaLoading() {
   return (
-    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+    <Box sx={{ flexGrow: 1, py: 3 }}>
       <Skeleton height={20} sx={{ mt: 2, mb: 0.5 }} variant="text" width={100} />
       <Box
         sx={{
@@ -53,6 +53,6 @@ export default function EurekaLoading() {
           <VariantCardSkeleton key={i} />
         ))}
       </Box>
-    </Container>
+    </Box>
   )
 }

@@ -1,9 +1,9 @@
 import {
+  Box,
   Card,
   CardActions,
   CardContent,
   CardHeader,
-  Container,
   Grid,
   List,
   ListItem,
@@ -47,7 +47,7 @@ function TrialCardSkeleton() {
 
 export default function TrialsLoading() {
   return (
-    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+    <Box sx={{ flexGrow: 1, py: 3 }}>
       <Grid container spacing={2}>
         {Array.from({ length: 4 }).map((_, i) => (
           <Grid key={i} size={{ xs: 12, md: 6 }}>
@@ -55,6 +55,6 @@ export default function TrialsLoading() {
           </Grid>
         ))}
       </Grid>
-    </Container>
+    </Box>
   )
 }

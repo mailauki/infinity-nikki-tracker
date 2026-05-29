@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Container, useMediaQuery, useTheme } from '@mui/material'
+import { Box, useMediaQuery, useTheme } from '@mui/material'
 import { EurekaSetTable } from './eureka-set-table'
 import { EurekaVariantTable } from './eureka-variant-table'
 import { TrialTable } from './trial-table'
@@ -74,7 +74,7 @@ export function DashboardTabs({
   const sortedTrials = [...trials].sort(sortById)
 
   return (
-    <Container maxWidth="md" sx={{ flexGrow: 1, py: 3 }}>
+    <Box sx={{ flexGrow: 1, py: 3 }}>
       <DashboardToolbar
         handleTabChange={handleTabChange}
         handleViewChange={handleViewChange}
@@ -112,6 +112,6 @@ export function DashboardTabs({
         ) : (
           <TrialList back="/dashboard" rows={sortedTrials} />
         ))}
-    </Container>
+    </Box>
   )
 }

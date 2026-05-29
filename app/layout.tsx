@@ -11,7 +11,7 @@ import NavAppBar from '@/components/navbar/nav-appbar'
 import NavRail from '@/components/navbar/nav-rail'
 import { StyledToolbar } from '@/components/navbar/nav-styled'
 import Footer from '@/components/navbar/nav-footer'
-import Nav from '@/components/navbar/nav'
+import NavBar from '@/components/navbar/nav-bar'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -67,7 +67,7 @@ export default async function RootLayout({
             <CssBaseline />
             {/* {children} */}
             {/* <NavAppBar /> */}
-            <Nav />
+            <NavBar />
             <Stack
               direction="row"
               spacing={2}

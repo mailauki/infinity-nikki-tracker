@@ -4,7 +4,7 @@ import * as React from 'react'
 import { useColorScheme } from '@mui/material/styles'
 import Toolbar from '@mui/material/Toolbar'
 import Stack from '@mui/material/Stack'
-import { Button, Container, Skeleton, Typography } from '@mui/material'
+import { Box, Button, Skeleton, Typography } from '@mui/material'
 import { usePathname } from 'next/navigation'
 import { JwtPayload } from '@supabase/supabase-js'
 import Link from 'next/link'
@@ -101,7 +101,7 @@ export default function NavAppBar() {
       </Toolbar> */}
 
       <Toolbar>
-        <Container disableGutters maxWidth="md" sx={{ position: 'relative' }}>
+        <Box sx={{ position: 'relative', flex: 1 }}>
           <AppBarTitle
             direction="row"
             isHome={isHome}
@@ -144,7 +144,7 @@ export default function NavAppBar() {
               )}
             </Stack>
           </Stack>
-        </Container>
+        </Box>
       </Toolbar>
     </AppBar>
   )

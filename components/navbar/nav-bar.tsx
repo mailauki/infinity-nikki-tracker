@@ -11,7 +11,7 @@ import PageTitle from './page-title'
 
 export const DRAWER_WIDTH = 350
 
-export default function Nav() {
+export default function NavBar() {
   const [openNav, setOpenNav] = React.useState(false)
   const [openFilter, setOpenFilter] = React.useState(false)
 
