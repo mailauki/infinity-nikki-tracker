@@ -134,7 +134,7 @@ export default function FilterEureka() {
           zIndex: 'appBar',
           backdropFilter: 'blur(8px)',
           bgcolor: 'surface.containerLowest',
-          mt: -3,
+          // mt: -3,
           mx: -3,
         }}
       >
@@ -158,6 +158,8 @@ export default function FilterEureka() {
           Could not load your collection status. Progress may be inaccurate.
         </Alert>
       )}
+			
+			<Toolbar />
 
       {filteredSets.length === 0 ? (
         <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>

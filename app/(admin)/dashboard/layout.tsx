@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material'
+import { Box, Stack, Toolbar } from '@mui/material'
 import DashboardNav from './dashboard-nav'
 
 export default function DashboardLayout({
@@ -7,12 +7,14 @@ export default function DashboardLayout({
   children: React.ReactNode
 }>) {
   return (
-    <Stack
-      spacing={2}
+    <Box
       sx={{ flex: 1, minWidth: '300px', maxWidth: 'calc(100vw - 240px - 16px - 32px)' }}
     >
+			<Toolbar />
+			<Stack spacing={2}>
       <DashboardNav />
       {children}
     </Stack>
+		</Box>
   )
 }

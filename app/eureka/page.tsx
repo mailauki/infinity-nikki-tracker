@@ -5,8 +5,6 @@ import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import { SortProvider } from '@/components/sort-context'
 import FilterEureka from '@/components/eureka/filter/filter-eureka'
 import EurekaLoading from './loading'
-import { Toolbar } from '@mui/material'
-import FilterMenu from '@/components/navbar/filter-menu'
 
 export const metadata: Metadata = {
   title: 'Eureka Sets',

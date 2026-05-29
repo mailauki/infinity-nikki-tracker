@@ -73,7 +73,7 @@ export default function RootLayout({
               }}
             >
               <Stack spacing={2} sx={{ flex: 1, minWidth: '300px' }}>
-                <Toolbar />
+                {/* <Toolbar /> */}
                 {children}
                 <Toolbar />
               </Stack>
