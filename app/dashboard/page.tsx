@@ -5,7 +5,7 @@ import { getUserRole } from '@/hooks/user'
 import { Metadata } from 'next'
 import { Box } from '@mui/material'
 import { StatCard } from './stat-card'
-import DashboardNav from './dashboard-nav'
+import DashboardToolBar from './dashboard-tool-bar'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -30,7 +30,7 @@ async function DashboardContent() {
 
   return (
     <>
-      {isAdmin && <DashboardNav />}
+      {isAdmin && <DashboardToolBar />}
       <Box
         sx={{
           display: 'grid',
