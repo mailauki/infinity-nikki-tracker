@@ -85,13 +85,12 @@ export function DashboardTabs({
       {tab === 'eureka-sets' &&
         (view === 'table' ? (
           <EurekaSetTable
-            back="/dashboard"
             labels={labels}
             rows={sortedEurekaSets}
             styles={styles}
           />
         ) : (
-          <EurekaSetList back="/dashboard" rows={sortedEurekaSets} />
+          <EurekaSetList rows={sortedEurekaSets} />
         ))}
 
       {tab === 'eureka-variants' &&
@@ -103,14 +102,14 @@ export function DashboardTabs({
             rows={sortedVariants}
           />
         ) : (
-          <EurekaVariantList back="/dashboard" rows={sortedVariants} />
+          <EurekaVariantList rows={sortedVariants} />
         ))}
 
       {tab === 'trials' &&
         (view === 'table' ? (
           <TrialTable rows={sortedTrials} />
         ) : (
-          <TrialList back="/dashboard" rows={sortedTrials} />
+          <TrialList rows={sortedTrials} />
         ))}
     </Box>
   )

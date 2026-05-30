@@ -3,8 +3,8 @@
 import { EurekaVariantRaw } from '@/lib/types/eureka'
 import { AdminList } from './admin-list'
 import ListRow from './list-row'
-import { useSearchParams } from 'next/navigation'
 import { toTitle } from '@/lib/utils'
+import { navLinksData } from '@/lib/nav-links'
 
 interface EurekaVariantListProps {
   rows: EurekaVariantRaw[]
@@ -12,7 +12,6 @@ interface EurekaVariantListProps {
   rowsPerPage?: number
   onPageChange?: (page: number) => void
   onRowsPerPageChange?: (rowsPerPage: number) => void
-  back?: string
 }
 
 export default function EurekaVariantList({
@@ -21,18 +20,14 @@ export default function EurekaVariantList({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
-  back,
 }: EurekaVariantListProps) {
-  const searchParams = useSearchParams()
-  const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
-
   return (
     <AdminList
+			addHref={navLinksData.dashboard.eureka.variants.add}
       getKey={(variant) => variant.id}
       page={page}
       renderRow={(row) => (
         <ListRow
-          back={backUrl || undefined}
           image_url={row.image_url ?? undefined}
           list="eureka/variants"
           slug={row.slug ?? undefined}
@@ -45,7 +40,6 @@ export default function EurekaVariantList({
       )}
       rows={rows}
       rowsPerPage={rowsPerPage}
-      slug="eureka/variants"
       title="Eureka Variant"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}

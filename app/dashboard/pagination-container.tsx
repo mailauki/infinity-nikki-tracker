@@ -6,7 +6,7 @@ import { Alert, Box, Button, Card, Chip, Stack, TablePagination } from '@mui/mat
 
 interface PaginationContainerProps<T> {
   title: string
-  slug: string
+  addHref: string
   rows: T[] | null | undefined
   children: (visibleRows: T[]) => ReactNode
   noPagination?: boolean
@@ -18,7 +18,7 @@ interface PaginationContainerProps<T> {
 
 export default function PaginationContainer<T>({
   title,
-  slug,
+  addHref,
   rows,
   children,
   noPagination = false,
@@ -69,7 +69,7 @@ export default function PaginationContainer<T>({
 
         <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
           <Button
-            href={`/${slug}/new`}
+            href={addHref}
             size="small"
             startIcon={<Add />}
             sx={{ '&.MuiButton-root': { textWrap: 'nowrap' } }}

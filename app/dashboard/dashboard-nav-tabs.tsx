@@ -2,21 +2,17 @@
 
 import { Tab, Tabs } from '@mui/material'
 import { usePathname } from 'next/navigation'
-
-const tabs = [
-  { label: 'Sets', href: '/dashboard/eureka/sets' },
-  { label: 'Variants', href: '/dashboard/eureka/variants' },
-  { label: 'Trials', href: '/dashboard/eureka/trials' },
-]
+import { navLinksData } from '@/lib/nav-links'
 
 export default function DashboardNavTabs() {
   const pathname = usePathname()
-  const tab = tabs.findIndex((t) => t.href === pathname)
+	const dashboardTabs = navLinksData.navSecondary.find(item => item.url === '/dashboard')?.items
+  const tab = dashboardTabs?.findIndex((t) => t.url === pathname)
 
   return (
     <Tabs value={tab === -1 ? false : tab}>
-      {tabs.map((t) => (
-        <Tab key={t.href} href={t.href} label={t.label} />
+      {dashboardTabs?.map((t) => (
+        <Tab key={t.url} href={t.url} label={t.title} />
       ))}
     </Tabs>
   )

@@ -3,8 +3,8 @@
 import { EurekaSet } from '@/lib/types/eureka'
 import { AdminList } from './admin-list'
 import ListRow from './list-row'
-import { useSearchParams } from 'next/navigation'
 import { toTitle } from '@/lib/utils'
+import { navLinksData } from '@/lib/nav-links'
 
 interface EurekaSetListProps {
   rows: EurekaSet[]
@@ -12,7 +12,6 @@ interface EurekaSetListProps {
   rowsPerPage?: number
   onPageChange?: (page: number) => void
   onRowsPerPageChange?: (rowsPerPage: number) => void
-  back?: string
 }
 
 export default function EurekaSetList({
@@ -21,18 +20,14 @@ export default function EurekaSetList({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
-  back,
 }: EurekaSetListProps) {
-  const searchParams = useSearchParams()
-  const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
-
   return (
     <AdminList
+			addHref={navLinksData.dashboard.eureka.sets.add}
       getKey={(set) => set.id}
       page={page}
       renderRow={(row) => (
         <ListRow
-          back={backUrl || undefined}
           image_url={row.image_url}
           list="eureka/sets"
           slug={row.slug ?? undefined}
@@ -47,7 +42,6 @@ export default function EurekaSetList({
       )}
       rows={rows}
       rowsPerPage={rowsPerPage}
-      slug="eureka/sets"
       title="Eureka Set"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}

@@ -6,6 +6,7 @@ import { Metadata } from 'next'
 import { Box } from '@mui/material'
 import { StatCard } from './stat-card'
 import DashboardToolBar from './dashboard-tool-bar'
+import { navLinksData } from '@/lib/nav-links'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -40,17 +41,17 @@ async function DashboardContent() {
         }}
       >
         <StatCard
-          addHref={isAdmin ? '/eureka-set/new' : undefined}
+          addHref={isAdmin ? navLinksData.dashboard.eureka.sets.add : undefined}
           count={eurekaSets?.length ?? 0}
           title="Eureka Sets"
         />
         <StatCard
-          addHref={isAdmin ? '/eureka-variant/new' : undefined}
+          addHref={isAdmin ? navLinksData.dashboard.eureka.variants.add : undefined}
           count={eurekaVariants?.length ?? 0}
           title="Eureka Variants"
         />
         <StatCard
-          addHref={isAdmin ? '/trial/new' : undefined}
+          addHref={isAdmin ? navLinksData.dashboard.eureka.trials.add : undefined}
           count={trials?.length ?? 0}
           title="Trials"
         />

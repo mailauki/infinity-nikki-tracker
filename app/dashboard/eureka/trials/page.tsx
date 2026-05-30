@@ -5,12 +5,12 @@ import TrialView from './trial-view'
 export default function TrialsDashboard() {
   return (
     <Suspense>
-      <DataTable />
+      <DashboardView />
     </Suspense>
   )
 }
 
-async function DataTable() {
+async function DashboardView() {
   const trials = await getTrials()
   return <TrialView trials={trials} />
 }

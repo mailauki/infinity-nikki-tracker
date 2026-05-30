@@ -17,6 +17,7 @@ import {
   GridRowModesModel,
 } from '@mui/x-data-grid'
 import { formatDate, toSlug, toTitle } from '@/lib/utils'
+import { navLinksData } from '@/lib/nav-links'
 import { EurekaSet, Label, Style } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import RarityStars from '@/components/rarity-stars'
@@ -26,7 +27,6 @@ type Row = EurekaSet
 
 interface EurekaSetTableProps {
   rows: Row[]
-  back?: string
   styles: Style[]
   labels: Label[]
 }
@@ -44,16 +44,10 @@ function LockedCell({ children, href }: { children: React.ReactNode; href: strin
 }
 
 export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetTableProps) {
-  // const searchParams = useSearchParams()
-  // const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
-  // const backParam = backUrl ? `?back=${encodeURIComponent(backUrl)}` : ''
-  // const apiRef = useGridApiRef()
-
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  // const editHref = (row: Row) => `/eureka-set/edit/${row.slug ?? toSlug(row.title)}${backParam}`
-  const editHref = (row: Row) => `/eureka-set/edit/${row.slug ?? toSlug(row.title)}`
+  const editHref = (row: Row) => `${navLinksData.dashboard.eureka.sets.edit}/${row.slug ?? toSlug(row.title)}`
 
   const isEditing = (id: GridRowId) => rowModesModel[id]?.mode === GridRowModes.Edit
 
