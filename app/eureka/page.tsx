@@ -4,6 +4,7 @@ import { getUserID } from '@/hooks/user'
 import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
 import { SortProvider } from '@/components/sort-context'
 import FilterEureka from '@/components/eureka/filter/filter-eureka'
+import EurekaResultsBar from '@/components/eureka/filter/eureka-results-bar'
 import EurekaLoading from './loading'
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export default async function EurekaSetsPage() {
   return (
     <SortProvider>
       <EurekaDataProvider isLoggedIn={!!userId} userId={userId}>
+        <EurekaResultsBar />
         <Suspense fallback={<EurekaLoading />}>
           <FilterEureka />
         </Suspense>

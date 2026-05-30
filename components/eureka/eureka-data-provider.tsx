@@ -103,21 +103,21 @@ export default function EurekaDataProvider({
   }
 
   const handleFiltersChange = (updates: Partial<FilterState>) => {
-    setFilters((prev) => {
-      const next = { ...prev, ...updates }
-      if (isLoggedIn) {
-        startTransition(() =>
-          updateEurekaFilters({
-            eureka_set_filter: next.selectedEurekaSet,
-            eureka_category: next.selectedCategory,
-            eureka_obtained_filter: next.selectedObtainedFilter,
-            eureka_color: next.selectedColor,
-            eureka_rarity: next.selectedRarities.length ? next.selectedRarities.join(',') : null,
-          })
-        )
-      }
-      return next
-    })
+    setFilters((prev) => ({ ...prev, ...updates }))
+    if (isLoggedIn) {
+      startTransition(() =>
+        updateEurekaFilters({
+          eureka_set_filter: filters.selectedEurekaSet,
+          eureka_category: filters.selectedCategory,
+          eureka_obtained_filter: filters.selectedObtainedFilter,
+          eureka_color: filters.selectedColor,
+          eureka_rarity: filters.selectedRarities.length
+            ? filters.selectedRarities.join(',')
+            : null,
+          ...updates,
+        })
+      )
+    }
   }
 
   const handleClearFilters = () => {

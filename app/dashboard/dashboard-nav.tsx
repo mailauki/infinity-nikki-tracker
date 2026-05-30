@@ -15,14 +15,14 @@ export default function DashboardNav() {
   const value = tabs.findIndex((t) => t.href === pathname)
 
   return (
-	<SubAppBar>
-    <Stack sx={{ flex: 1, borderBottom: 1, borderColor: 'divider' }}>
-      <Tabs value={value === -1 ? false : value}>
-        {tabs.map((tab) => (
-          <Tab key={tab.href} href={tab.href} label={tab.label} />
-        ))}
-      </Tabs>
-    </Stack>
-		</SubAppBar>
+    <SubAppBar>
+      <Stack sx={{ flex: 1, borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={value === -1 ? false : value}>
+          {tabs.map((tab) => (
+            <Tab key={tab.href} href={tab.href} label={tab.label} />
+          ))}
+        </Tabs>
+      </Stack>
+    </SubAppBar>
   )
 }

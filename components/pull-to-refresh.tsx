@@ -14,6 +14,7 @@ export default function PullToRefresh() {
   const [pullDistance, setPullDistance] = React.useState(0)
   const [isRefreshing, setIsRefreshing] = React.useState(false)
   const pullStartY = React.useRef(0)
+  const isPulling = React.useRef(false)
 
   // Scroll visibility + reset on route change
   React.useEffect(() => {
@@ -27,32 +28,41 @@ export default function PullToRefresh() {
     setIsVisible(false)
   }, [pathname])
 
+  React.useEffect(() => {
+    if (!isRefreshing) return
+    router.refresh()
+    const timer = setTimeout(() => {
+      setIsRefreshing(false)
+      setPullDistance(0)
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [isRefreshing, router])
+
   // Pull-to-refresh touch handlers on document
+   
   React.useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
-      pullStartY.current = window.scrollY === 0 ? e.touches[0].clientY : 0
+      if (window.scrollY === 0) {
+        pullStartY.current = e.touches[0].clientY
+        isPulling.current = true
+      }
     }
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!pullStartY.current) return
+      if (!isPulling.current) return
       const delta = e.touches[0].clientY - pullStartY.current
       if (delta > 0) setPullDistance(Math.min(delta * 0.5, PULL_THRESHOLD))
     }
 
     const handleTouchEnd = () => {
+      isPulling.current = false
       setPullDistance((prev) => {
         if (prev >= PULL_THRESHOLD) {
           setIsRefreshing(true)
-          router.refresh()
-          setTimeout(() => {
-            setIsRefreshing(false)
-            setPullDistance(0)
-          }, 1000)
           return prev
         }
         return 0
       })
-      pullStartY.current = 0
     }
 
     document.addEventListener('touchstart', handleTouchStart, { passive: true })
@@ -64,7 +74,7 @@ export default function PullToRefresh() {
       document.removeEventListener('touchmove', handleTouchMove)
       document.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [router])
+  }, [])
 
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
