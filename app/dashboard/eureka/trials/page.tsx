@@ -1,7 +1,6 @@
 import { getTrials } from '@/hooks/data/trials'
 import { Suspense } from 'react'
-import { TrialTable } from '../../trial-table'
-import TableContainer from '../../table-container'
+import TrialView from './trial-view'
 
 export default function TrialsDashboard() {
   return (
@@ -13,10 +12,5 @@ export default function TrialsDashboard() {
 
 async function DataTable() {
   const trials = await getTrials()
-
-  return (
-    <TableContainer>
-      <TrialTable rows={trials} />
-    </TableContainer>
-  )
+  return <TrialView trials={trials} />
 }

@@ -103,9 +103,6 @@ export default function PaginationContainer<T>({
           onRowsPerPageChange={handleRowsPerPageChange}
         />
       )}
-      <Box sx={{ position: 'relative', bottom: 0, left: 0, mt: -5, px: 1, width: 'fit-content' }}>
-        <Chip color="secondary" label={`Total: ${allRows.length}`} variant="outlined" />
-      </Box>
     </>
   )
 }

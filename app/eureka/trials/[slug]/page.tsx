@@ -33,7 +33,11 @@ export default async function TrialPage({ params }: { params: Promise<{ slug: st
 }
 
 async function Trial({ slug }: { slug: string }) {
-  const [trial, eurekaSets, role] = await Promise.all([getTrial(slug), getEurekaSets(), getUserRole()])
+  const [trial, eurekaSets, role] = await Promise.all([
+    getTrial(slug),
+    getEurekaSets(),
+    getUserRole(),
+  ])
   const isAdmin = role === 'admin'
   if (!trial) notFound()
 
