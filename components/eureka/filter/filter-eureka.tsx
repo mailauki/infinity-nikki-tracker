@@ -13,6 +13,7 @@ import ProgressChip from '@/components/progress-chip'
 import LoginAlert from '@/components/login-alert'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import FilterMenu from '@/components/navbar/filter-menu'
+import SubAppBar from '@/components/sub-appbar'
 
 function GroupHeaderSkeleton() {
   return (
@@ -126,7 +127,7 @@ export default function FilterEureka() {
 
   return (
     <>
-      <Toolbar
+      {/* <Toolbar
         disableGutters
         sx={(theme) => {
           // Build responsive `top` from theme.mixins.toolbar so this tracks the
@@ -154,7 +155,8 @@ export default function FilterEureka() {
             px: 0.75,
           }
         }}
-      >
+      > */}
+			<SubAppBar>
         <Stack alignItems="center" direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
           <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
             Showing: {resultsCount} results
@@ -162,7 +164,7 @@ export default function FilterEureka() {
 
           <FilterMenu />
         </Stack>
-      </Toolbar>
+      </SubAppBar>
 
       {!isLoggedIn && (
         <Box sx={{ width: 'fit-content', my: 2 }}>
@@ -192,6 +194,7 @@ export default function FilterEureka() {
             gridTemplateColumns: GRID_COLUMNS,
             gap: { xs: 1, sm: 1.5, md: 2 },
             py: groupBySet ? 0 : 2,
+						mt: 2,
             mb: 4,
           }}
         >
