@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { Stack } from '@mui/material'
 
 import TrialsContent from './trials-content'
+import TrialsToolBar from './trials-tool-bar'
 
 export const metadata: Metadata = {
   title: 'Trials',
@@ -10,10 +11,13 @@ export const metadata: Metadata = {
 
 export default function TrialsPage() {
   return (
-    <Suspense>
-      <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-        <TrialsContent />
-      </Stack>
-    </Suspense>
+    <>
+      <TrialsToolBar />
+      <Suspense>
+        <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+          <TrialsContent />
+        </Stack>
+      </Suspense>
+    </>
   )
 }

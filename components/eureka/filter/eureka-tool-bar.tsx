@@ -42,10 +42,10 @@ export default function EurekaToolBar() {
         <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
           Showing: {resultsCount} results
         </Typography>
-				<Stack direction='row' spacing={1}>
-				<SortButton />
-        <FilterMenu />
-				</Stack>
+        <Stack direction="row" spacing={1}>
+          <SortButton />
+          <FilterMenu />
+        </Stack>
       </Stack>
     </SubAppBar>
   )
