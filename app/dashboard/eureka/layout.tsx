@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
-import DashboardNav from '../dashboard-nav'
+import DashboardNav from '../dashboard-tool-bar'
 
 async function AdminGuard({ children }: { children: React.ReactNode }) {
   const role = await getUserRole()

@@ -14,6 +14,7 @@ export default function Footer() {
         bottom: 0,
         zIndex: (theme) => theme.zIndex.drawer + 1,
         borderColor: 'transparent',
+				pb: 2,
       }}
       variant="outlined"
     >
@@ -23,7 +24,7 @@ export default function Footer() {
           direction="row"
           flex={1}
           justifyContent="space-between"
-          sx={{ mx: 1, mb: 1 }}
+          sx={{ mx: 1 }}
         >
           <Typography color="textDisabled" variant="caption">
             &copy; 2026 mailauki

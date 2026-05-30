@@ -4,8 +4,9 @@ import { Stack, Typography } from '@mui/material'
 import SubAppBar from '@/components/sub-appbar'
 import FilterMenu from '@/components/navbar/filter-menu'
 import { useEurekaData } from '@/components/eureka/eureka-context'
+import { SortButton } from '@/components/navbar/appbar-actions'
 
-export default function EurekaResultsBar() {
+export default function EurekaToolBar() {
   const { eurekaSets, showByColor, filters } = useEurekaData()
 
   const {
@@ -41,7 +42,10 @@ export default function EurekaResultsBar() {
         <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
           Showing: {resultsCount} results
         </Typography>
+				<Stack direction='row' spacing={1}>
+				<SortButton />
         <FilterMenu />
+				</Stack>
       </Stack>
     </SubAppBar>
   )

@@ -81,7 +81,7 @@ export default function RootLayout({
                   <PullToRefresh />
                 </Suspense>
                 {children}
-                <Toolbar />
+                <Toolbar sx={{ pb: 2 }} />
               </Stack>
             </Stack>
             <Footer />

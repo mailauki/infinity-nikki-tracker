@@ -10,7 +10,7 @@ const tabs = [
   { label: 'Trials', href: '/dashboard/eureka/trials' },
 ]
 
-export default function DashboardNav() {
+export default function DashboardToolBar() {
   const pathname = usePathname()
   const value = tabs.findIndex((t) => t.href === pathname)
 
