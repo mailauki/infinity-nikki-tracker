@@ -2,7 +2,7 @@
 
 import { updateDashboardView } from '@/app/actions/preferences'
 import { useDashboardView } from './dashboard-view-context'
-import { CalendarViewMonth, ViewHeadline, ViewList } from '@mui/icons-material'
+import { CalendarViewMonth, ViewList } from '@mui/icons-material'
 import { ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
 
 export default function DashboardViewToggle() {
