@@ -10,6 +10,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { Suspense } from 'react'
 import Footer from '@/components/navbar/nav-footer'
 import NavBar from '@/components/navbar/nav-bar-drawer'
+import PullToRefresh from '@/components/pull-to-refresh'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -76,7 +77,9 @@ export default function RootLayout({
               }}
             >
               <Stack sx={{ flex: 1, minWidth: '300px' }}>
-                <Toolbar />
+                <Suspense>
+                  <PullToRefresh />
+                </Suspense>
                 {children}
                 <Toolbar />
               </Stack>

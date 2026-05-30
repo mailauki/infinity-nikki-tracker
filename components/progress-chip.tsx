@@ -13,7 +13,6 @@ export default function ProgressChip({ percentage, size }: { percentage: number;
         color={isComplete ? 'success' : 'default'}
         label={isComplete ? <Check /> : <MoreHoriz />}
         size="small"
-        sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}
       />
     )
 

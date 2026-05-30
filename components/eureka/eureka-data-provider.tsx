@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useTransition } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
@@ -49,6 +49,7 @@ export default function EurekaDataProvider({
   const [showByColor, setShowByColor] = useState<boolean>(DEFAULT_PREFERENCES.show_by_color)
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS)
   const [, startTransition] = useTransition()
+  const prefsLoaded = useRef(false)
 
   useEffect(() => {
     Promise.all([
@@ -86,8 +87,11 @@ export default function EurekaDataProvider({
             ? prefs.eureka_rarity.split(',').map(Number).filter(Boolean)
             : [],
         })
+        prefsLoaded.current = true
       })
-      .catch(() => {})
+      .catch(() => {
+        prefsLoaded.current = true
+      })
   }, [isLoggedIn])
 
   const handleGroupBySetChange = () => {
@@ -103,37 +107,26 @@ export default function EurekaDataProvider({
   }
 
   const handleFiltersChange = (updates: Partial<FilterState>) => {
-    setFilters((prev) => {
-      const next = { ...prev, ...updates }
-      if (isLoggedIn) {
-        startTransition(() =>
-          updateEurekaFilters({
-            eureka_set_filter: next.selectedEurekaSet,
-            eureka_category: next.selectedCategory,
-            eureka_obtained_filter: next.selectedObtainedFilter,
-            eureka_color: next.selectedColor,
-            eureka_rarity: next.selectedRarities.length ? next.selectedRarities.join(',') : null,
-          })
-        )
-      }
-      return next
-    })
+    setFilters((prev) => ({ ...prev, ...updates }))
   }
 
   const handleClearFilters = () => {
     setFilters(DEFAULT_FILTERS)
-    if (isLoggedIn) {
-      startTransition(() =>
-        updateEurekaFilters({
-          eureka_set_filter: null,
-          eureka_category: null,
-          eureka_obtained_filter: null,
-          eureka_color: null,
-          eureka_rarity: null,
-        })
-      )
-    }
   }
+
+  useEffect(() => {
+    if (!isLoggedIn || !prefsLoaded.current) return
+    startTransition(() =>
+      updateEurekaFilters({
+        eureka_set_filter: filters.selectedEurekaSet,
+        eureka_category: filters.selectedCategory,
+        eureka_obtained_filter: filters.selectedObtainedFilter,
+        eureka_color: filters.selectedColor,
+        eureka_rarity: filters.selectedRarities.length ? filters.selectedRarities.join(',') : null,
+      })
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters])
 
   useEffect(() => {
     if (!isLoggedIn) return

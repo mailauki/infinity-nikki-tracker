@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { Alert, Box, Button, Divider, Skeleton, Stack, Toolbar, Typography } from '@mui/material'
+import { Alert, Box, Button, Divider, Skeleton, Stack, Typography } from '@mui/material'
 import { ChevronRight } from '@mui/icons-material'
 
 import ErrorAlert from '@/components/error-alert'
@@ -12,7 +12,6 @@ import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import ProgressChip from '@/components/progress-chip'
 import LoginAlert from '@/components/login-alert'
 import { countObtained, percent } from '@/hooks/count-obtained'
-import FilterMenu from '@/components/navbar/filter-menu'
 
 function GroupHeaderSkeleton() {
   return (
@@ -120,50 +119,8 @@ export default function FilterEureka() {
     .filter((set) => (showByColor ? set.colors.length > 0 : set.eureka_variants.length > 0))
     .sort((a, b) => (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!))
 
-  const resultsCount = showByColor
-    ? filteredSets.flatMap((set) => set.colors).length
-    : filteredSets.flatMap((set) => set.eureka_variants).length
-
   return (
     <>
-      <Toolbar
-        disableGutters
-        sx={(theme) => {
-          // Build responsive `top` from theme.mixins.toolbar so this tracks the
-          // AppBar height automatically if the theme ever changes.
-          const toolbarMixin = theme.mixins.toolbar
-          const topOffset = Object.entries(toolbarMixin).reduce<Record<string, unknown>>(
-            (acc, [key, value]) => {
-              if (key === 'minHeight') {
-                acc.top = value
-              } else if (typeof value === 'object' && value !== null && 'minHeight' in value) {
-                acc[key] = { top: (value as { minHeight: number }).minHeight }
-              }
-              return acc
-            },
-            {}
-          )
-          return {
-            position: 'sticky',
-            ...topOffset,
-            left: 0,
-            zIndex: 'appBar',
-            backdropFilter: 'blur(8px)',
-            bgcolor: 'surface.containerLowest',
-            mt: -3,
-            px: 0.75,
-          }
-        }}
-      >
-        <Stack alignItems="center" direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
-          <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
-            Showing: {resultsCount} results
-          </Typography>
-
-          <FilterMenu />
-        </Stack>
-      </Toolbar>
-
       {!isLoggedIn && (
         <Box sx={{ width: 'fit-content', my: 2 }}>
           <LoginAlert />
@@ -192,6 +149,7 @@ export default function FilterEureka() {
             gridTemplateColumns: GRID_COLUMNS,
             gap: { xs: 1, sm: 1.5, md: 2 },
             py: groupBySet ? 0 : 2,
+            mt: 2,
             mb: 4,
           }}
         >
