@@ -39,7 +39,7 @@ export default function PullToRefresh() {
   }, [isRefreshing, router])
 
   // Pull-to-refresh touch handlers on document
-   
+
   React.useEffect(() => {
     const handleTouchStart = (e: TouchEvent) => {
       if (window.scrollY === 0) {
@@ -111,7 +111,7 @@ export default function PullToRefresh() {
             aria-label="scroll back to top"
             color="primary"
             size="small"
-            sx={{ position: 'fixed', bottom: 80, right: 50 }}
+            sx={{ position: 'fixed', bottom: 80, right: 40 }}
             onClick={scrollToTop}
           >
             <KeyboardArrowUp />

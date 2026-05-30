@@ -8,7 +8,13 @@ import { useEurekaData } from '@/components/eureka/eureka-context'
 export default function EurekaResultsBar() {
   const { eurekaSets, showByColor, filters } = useEurekaData()
 
-  const { selectedEurekaSet, selectedColor, selectedCategory, selectedObtainedFilter, selectedRarities } = filters
+  const {
+    selectedEurekaSet,
+    selectedColor,
+    selectedCategory,
+    selectedObtainedFilter,
+    selectedRarities,
+  } = filters
 
   const filtered = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
