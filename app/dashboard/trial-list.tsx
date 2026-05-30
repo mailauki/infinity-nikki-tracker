@@ -33,10 +33,11 @@ export default function TrialList({
         <ListRow
           back={backUrl || undefined}
           image_url={trial.image_url ?? undefined}
-          list="trial"
+          list="eureka/trials"
           slug={trial.slug ?? undefined}
           title={trial.title}
           updated_at={trial.updated_at}
+					subheader={trial.location ?? ''}
         />
       )}
       rows={rows}

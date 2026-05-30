@@ -34,7 +34,7 @@ export default function EurekaSetList({
         <ListRow
           back={backUrl || undefined}
           image_url={row.image_url}
-          list="eureka-set"
+          list="eureka/sets"
           slug={row.slug ?? undefined}
           subheader={(() => {
             if (!row.eureka_set_trials?.length) return '—'
