@@ -47,7 +47,7 @@ export default function EurekaSetList({
       )}
       rows={rows}
       rowsPerPage={rowsPerPage}
-      slug="eureka-set"
+      slug="eureka/sets"
       title="Eureka Set"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}

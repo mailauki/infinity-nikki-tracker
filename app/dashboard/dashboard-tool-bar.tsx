@@ -1,27 +1,16 @@
-'use client'
-
 import SubAppBar from '@/components/sub-appbar'
-import { Box, Stack, Tab, Tabs } from '@mui/material'
-import { usePathname } from 'next/navigation'
-
-const tabs = [
-  { label: 'Sets', href: '/dashboard/eureka/sets' },
-  { label: 'Variants', href: '/dashboard/eureka/variants' },
-  { label: 'Trials', href: '/dashboard/eureka/trials' },
-]
+import { Stack } from '@mui/material'
+import DashboardNavTabs from './dashboard-nav-tabs'
+import DashboardViewToggle from './dashboard-view-toggle'
 
 export default function DashboardToolBar() {
-  const pathname = usePathname()
-  const value = tabs.findIndex((t) => t.href === pathname)
-
   return (
     <SubAppBar>
       <Stack sx={{ flex: 1, borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value === -1 ? false : value}>
-          {tabs.map((tab) => (
-            <Tab key={tab.href} href={tab.href} label={tab.label} />
-          ))}
-        </Tabs>
+        <Stack alignItems="center" direction="row" justifyContent="space-between">
+          <DashboardNavTabs />
+          <DashboardViewToggle />
+        </Stack>
       </Stack>
     </SubAppBar>
   )

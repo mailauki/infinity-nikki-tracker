@@ -2,8 +2,7 @@ import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getLabels } from '@/hooks/data/labels'
 import { getStyles } from '@/hooks/data/styles'
 import { Suspense } from 'react'
-import { EurekaSetTable } from '../../eureka-set-table'
-import TableContainer from '../../table-container'
+import EurekaSetView from './eureka-set-view'
 
 export default function EurekaSetsDashboard() {
   return (
@@ -20,9 +19,5 @@ async function DataTable() {
     getLabels(),
   ])
 
-  return (
-    <TableContainer>
-      <EurekaSetTable labels={labels} rows={eurekaSets} styles={styles} />
-    </TableContainer>
-  )
+  return <EurekaSetView eurekaSets={eurekaSets} labels={labels} styles={styles} />
 }

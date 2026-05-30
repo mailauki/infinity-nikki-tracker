@@ -45,7 +45,7 @@ export default function EurekaVariantList({
       )}
       rows={rows}
       rowsPerPage={rowsPerPage}
-      slug="eureka-variant"
+      slug="eureka/variants"
       title="Eureka Variant"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}

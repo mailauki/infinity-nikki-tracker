@@ -36,7 +36,11 @@ export default async function EurekaSetPage({ params }: { params: Promise<{ slug
 }
 
 async function EurekaSet({ slug }: { slug: string }) {
-  const [eurekaSet, user_id, role] = await Promise.all([getEurekaSet(slug), getUserID(), getUserRole()])
+  const [eurekaSet, user_id, role] = await Promise.all([
+    getEurekaSet(slug),
+    getUserID(),
+    getUserRole(),
+  ])
   const isLoggedIn = !!user_id
   const isAdmin = role === 'admin'
 

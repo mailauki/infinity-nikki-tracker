@@ -41,7 +41,7 @@ export default function TrialList({
       )}
       rows={rows}
       rowsPerPage={rowsPerPage}
-      slug="trial"
+      slug="eureka/trials"
       title="Trial"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}

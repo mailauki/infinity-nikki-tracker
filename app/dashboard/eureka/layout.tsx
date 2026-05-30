@@ -1,23 +1,28 @@
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
-import { getUserRole } from '@/hooks/user'
-import DashboardNav from '../dashboard-tool-bar'
+import { getUserID, getUserRole } from '@/hooks/user'
+import { getPreferences } from '@/hooks/data/preferences'
+import { DashboardViewProvider } from '../dashboard-view-context'
+import DashboardToolBar from '../dashboard-tool-bar'
 
 async function AdminGuard({ children }: { children: React.ReactNode }) {
-  const role = await getUserRole()
+  const [role, user_id] = await Promise.all([getUserRole(), getUserID()])
   if (role !== 'admin') redirect('/dashboard')
-  return <>{children}</>
+  const prefs = user_id ? await getPreferences(user_id) : null
+  const initialView = (prefs?.dashboard_view ?? 'list') as 'list' | 'table'
+
+  return (
+    <DashboardViewProvider initialView={initialView} userId={user_id ?? ''}>
+      <DashboardToolBar />
+      {children}
+    </DashboardViewProvider>
+  )
 }
 
 export default function EurekaDashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense>
-      <AdminGuard>
-        <Suspense>
-          <DashboardNav />
-        </Suspense>
-        {children}
-      </AdminGuard>
+      <AdminGuard>{children}</AdminGuard>
     </Suspense>
   )
 }

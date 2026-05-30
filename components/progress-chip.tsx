@@ -13,6 +13,7 @@ export default function ProgressChip({ percentage, size }: { percentage: number;
         color={isComplete ? 'success' : 'default'}
         label={isComplete ? <Check /> : <MoreHoriz />}
         size="small"
+        sx={{ bgcolor: isComplete ? 'success' : 'surface.main' }}
       />
     )
 
@@ -21,7 +22,11 @@ export default function ProgressChip({ percentage, size }: { percentage: number;
       color={isComplete ? 'success' : 'default'}
       label={isComplete ? completeLabel : unfinishedLabel}
       size="small"
-      sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}
+      sx={{
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
+        bgcolor: isComplete ? 'success' : 'surface.main',
+      }}
     />
   )
 }
