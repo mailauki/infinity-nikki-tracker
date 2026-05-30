@@ -25,6 +25,7 @@ import { useEurekaData } from '@/components/eureka/eureka-context'
 import { useSortOrder } from '@/components/sort-context'
 import { EurekaSet, Total } from '@/lib/types/eureka'
 import { Edit } from '@mui/icons-material'
+import { navLinksData } from '@/lib/nav-links'
 
 export default function TrialsContent() {
   const { eurekaSets, trials, isLoggedIn, isAdmin, isLoading, isError } = useEurekaData()
@@ -100,7 +101,7 @@ function TrialCard({
         action={
           isAdmin && (
             <Tooltip title={`Edit ${trial.title}`}>
-              <IconButton href={`/trial/edit/${trial.slug}`}>
+              <IconButton href={`${navLinksData.dashboard.eureka.trials.edit}/${trial.slug}`}>
                 <Edit />
               </IconButton>
             </Tooltip>

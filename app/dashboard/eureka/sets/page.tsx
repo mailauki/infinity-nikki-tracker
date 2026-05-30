@@ -7,12 +7,12 @@ import EurekaSetView from './eureka-set-view'
 export default function EurekaSetsDashboard() {
   return (
     <Suspense>
-      <DataTable />
+      <DashboardView />
     </Suspense>
   )
 }
 
-async function DataTable() {
+async function DashboardView() {
   const [eurekaSets, styles, labels] = await Promise.all([
     getEurekaSets(),
     getStyles(),

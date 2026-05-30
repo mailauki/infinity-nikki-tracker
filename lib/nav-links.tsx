@@ -1,4 +1,4 @@
-import { NavLink } from '@/lib/types/props'
+import { DashboardLinks, NavLink } from '@/lib/types/props'
 import { Help, Info, Dashboard, AccountCircle } from '@mui/icons-material'
 
 export const navLinksData: {
@@ -6,6 +6,7 @@ export const navLinksData: {
   navMain: NavLink[]
   navSecondary: NavLink[]
   navExtra: NavLink[]
+	dashboard: DashboardLinks
 } = {
   home: {
     title: 'Home',
@@ -48,32 +49,11 @@ export const navLinksData: {
       url: '/dashboard',
       icon: <Dashboard />,
       adminOnly: true,
-      items: [
-        {
-          title: 'Add Eureka Set',
-          url: '/eureka-set/new',
-        },
-        {
-          title: 'Edit Eureka Set',
-          url: '/eureka-set/edit',
-        },
-        {
-          title: 'Add Eureka Variant',
-          url: '/eureka-variant/new',
-        },
-        {
-          title: 'Edit Eureka Variant',
-          url: '/eureka-variant/edit',
-        },
-        {
-          title: 'Add Trial',
-          url: '/trial/new',
-        },
-        {
-          title: 'Edit Trial',
-          url: '/trial/edit',
-        },
-      ],
+			items: [
+				{ title: 'Sets', url: '/dashboard/eureka/sets' },
+				{ title: 'Variants', url: '/dashboard/eureka/variants' },
+				{ title: 'Trials', url: '/dashboard/eureka/trials' },
+			],
     },
     {
       title: 'Profile',
@@ -93,4 +73,20 @@ export const navLinksData: {
       icon: <Help />,
     },
   ],
+	dashboard: {
+		eureka: {
+			sets: {
+				add: '/eureka/sets/new',
+				edit: '/eureka/sets/edit',
+			},
+			variants: {
+				add: '/eureka/variants/new',
+				edit: '/eureka/variants/edit',
+			},
+			trials: {
+				add: '/eureka/trials/new',
+				edit: '/eureka/trials/edit',
+			},
+		},
+	},
 }

@@ -16,7 +16,7 @@ interface AdminTableProps<T> {
   title: string
   rows: T[] | null | undefined
   columns: Column<T>[]
-  slug: string
+  addHref: string
   getKey: (row: T) => string | number
   page?: number
   rowsPerPage?: number
@@ -28,7 +28,7 @@ export function AdminTable<T>({
   title,
   rows,
   columns,
-  slug,
+  addHref,
   getKey,
   page,
   rowsPerPage,
@@ -40,7 +40,7 @@ export function AdminTable<T>({
       page={page}
       rows={rows}
       rowsPerPage={rowsPerPage}
-      slug={slug}
+      addHref={addHref}
       title={title}
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}

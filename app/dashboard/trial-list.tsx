@@ -3,7 +3,7 @@
 import { Trial } from '@/lib/types/eureka'
 import { AdminList } from './admin-list'
 import ListRow from './list-row'
-import { useSearchParams } from 'next/navigation'
+import { navLinksData } from '@/lib/nav-links'
 
 interface TrialListProps {
   rows: Trial[]
@@ -11,7 +11,6 @@ interface TrialListProps {
   rowsPerPage?: number
   onPageChange?: (page: number) => void
   onRowsPerPageChange?: (rowsPerPage: number) => void
-  back?: string
 }
 
 export default function TrialList({
@@ -20,28 +19,24 @@ export default function TrialList({
   rowsPerPage,
   onPageChange,
   onRowsPerPageChange,
-  back,
 }: TrialListProps) {
-  const searchParams = useSearchParams()
-  const backUrl = back ?? (searchParams.toString() ? `/dashboard?${searchParams.toString()}` : '')
-
   return (
     <AdminList
+			addHref={navLinksData.dashboard.eureka.trials.add}
       getKey={(trial) => trial.id}
       page={page}
       renderRow={(trial) => (
         <ListRow
-          back={backUrl || undefined}
           image_url={trial.image_url ?? undefined}
-          list="trial"
+          list="eureka/trials"
           slug={trial.slug ?? undefined}
+          subheader={trial.location ?? ''}
           title={trial.title}
           updated_at={trial.updated_at}
         />
       )}
       rows={rows}
       rowsPerPage={rowsPerPage}
-      slug="eureka/trials"
       title="Trial"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}

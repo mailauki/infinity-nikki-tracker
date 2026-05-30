@@ -8,12 +8,12 @@ import EurekaVariantView from './eureka-variant-view'
 export default function EurekaVariantsDashboard() {
   return (
     <Suspense>
-      <DataTable />
+      <DashboardView />
     </Suspense>
   )
 }
 
-async function DataTable() {
+async function DashboardView() {
   const [eurekaVariants, eurekaSets, categories, colors] = await Promise.all([
     getEurekaVariantsRaw(),
     getEurekaSets(),

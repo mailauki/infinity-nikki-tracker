@@ -17,6 +17,7 @@ import {
   GridRowModesModel,
 } from '@mui/x-data-grid'
 import { formatDate, toSlug } from '@/lib/utils'
+import { navLinksData } from '@/lib/nav-links'
 import { Trial } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { updateTrial } from '@/app/dashboard/actions'
@@ -42,7 +43,7 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  const editHref = (row: Row) => `/trial/edit/${row.slug ?? toSlug(row.title)}`
+  const editHref = (row: Row) => `${navLinksData.dashboard.eureka.trials.edit}/${row.slug ?? toSlug(row.title)}`
 
   const handleEditClick = useCallback(
     (id: GridRowId) => () => {
