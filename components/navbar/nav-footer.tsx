@@ -14,7 +14,7 @@ export default function Footer() {
         bottom: 0,
         zIndex: (theme) => theme.zIndex.drawer + 1,
         borderColor: 'transparent',
-				pb: 2,
+        pb: 2,
       }}
       variant="outlined"
     >

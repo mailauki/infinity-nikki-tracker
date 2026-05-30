@@ -8,6 +8,7 @@ import { getTrial } from '@/hooks/data/trials'
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
 import LazyCardMedia from '@/components/eureka/lazy-card-media'
 import { GRID_COLUMNS } from '@/lib/types/props'
+import EditToolBar from '../../../../components/edit-tool-bar'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -39,20 +40,23 @@ async function Trial({ slug }: { slug: string }) {
     .sort((a, b) => b.rarity! - a.rarity!)
 
   return (
-    <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-      <LazyCardMedia image={trial.image_url!} sx={{ height: 360 }} title={trial.title} />
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: GRID_COLUMNS,
-          gap: { xs: 1, sm: 1.5, md: 2 },
-          py: 0,
-        }}
-      >
-        {trialSets.map((eurekaSet) => (
-          <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />
-        ))}
-      </Box>
-    </Stack>
+    <>
+      <EditToolBar />
+      <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+        <LazyCardMedia image={trial.image_url!} sx={{ height: 360 }} title={trial.title} />
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: GRID_COLUMNS,
+            gap: { xs: 1, sm: 1.5, md: 2 },
+            py: 0,
+          }}
+        >
+          {trialSets.map((eurekaSet) => (
+            <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />
+          ))}
+        </Box>
+      </Stack>
+    </>
   )
 }
