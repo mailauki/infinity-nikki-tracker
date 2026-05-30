@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import { getUserID } from '@/hooks/user'
+import { getUserID, getUserRole } from '@/hooks/user'
 import { getEurekaSet } from '@/hooks/data/eureka-sets'
 import { Stack, Button, Divider, Typography, Chip } from '@mui/material'
 import type { Metadata } from 'next'
@@ -36,8 +36,9 @@ export default async function EurekaSetPage({ params }: { params: Promise<{ slug
 }
 
 async function EurekaSet({ slug }: { slug: string }) {
-  const [eurekaSet, user_id] = await Promise.all([getEurekaSet(slug), getUserID()])
+  const [eurekaSet, user_id, role] = await Promise.all([getEurekaSet(slug), getUserID(), getUserRole()])
   const isLoggedIn = !!user_id
+  const isAdmin = role === 'admin'
 
   const { image_url, eureka_set_trials, eureka_variants, rarity, label, style, colors } = eurekaSet
 
@@ -45,7 +46,7 @@ async function EurekaSet({ slug }: { slug: string }) {
 
   return (
     <>
-      <EditToolBar />
+      <EditToolBar isAdmin={isAdmin} />
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <Stack spacing={1}>
           <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>

@@ -5,6 +5,7 @@ import { Box, Stack } from '@mui/material'
 import type { Metadata } from 'next'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrial } from '@/hooks/data/trials'
+import { getUserRole } from '@/hooks/user'
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
 import LazyCardMedia from '@/components/eureka/lazy-card-media'
 import { GRID_COLUMNS } from '@/lib/types/props'
@@ -32,7 +33,8 @@ export default async function TrialPage({ params }: { params: Promise<{ slug: st
 }
 
 async function Trial({ slug }: { slug: string }) {
-  const [trial, eurekaSets] = await Promise.all([getTrial(slug), getEurekaSets()])
+  const [trial, eurekaSets, role] = await Promise.all([getTrial(slug), getEurekaSets(), getUserRole()])
+  const isAdmin = role === 'admin'
   if (!trial) notFound()
 
   const trialSets = eurekaSets
@@ -41,7 +43,7 @@ async function Trial({ slug }: { slug: string }) {
 
   return (
     <>
-      <EditToolBar />
+      <EditToolBar isAdmin={isAdmin} />
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <LazyCardMedia image={trial.image_url!} sx={{ height: 360 }} title={trial.title} />
         <Box
