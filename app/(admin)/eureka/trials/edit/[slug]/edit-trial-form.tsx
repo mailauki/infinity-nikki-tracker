@@ -43,12 +43,12 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back: str
 
         <TextField required defaultValue={trial.title} label="Title" name="title" />
 
+        <input name="slug" type="hidden" value={slug} />
         <TextField
           required
           disabled={!editSlug}
           helperText="Used in the URL — edit with caution"
           label="Slug"
-          name="slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {

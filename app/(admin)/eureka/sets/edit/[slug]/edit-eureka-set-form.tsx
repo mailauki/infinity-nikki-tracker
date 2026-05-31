@@ -119,12 +119,12 @@ export default function EditEurekaSetForm({
           onChange={(e) => setTitle(e.target.value)}
         />
 
+        <input name="slug" type="hidden" value={slug} />
         <TextField
           required
           disabled={!editSlug}
           helperText="Used in the URL — edit with caution"
           label="Slug"
-          name="slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {

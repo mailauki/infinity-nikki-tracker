@@ -7,8 +7,8 @@ import { navLinksData } from '@/lib/nav-links'
 export async function addTrial(_: unknown, formData: FormData) {
   const supabase = await createClient()
 
-  const title = (formData.get('title') as string).trim()
-  const slug = (formData.get('slug') as string).trim()
+  const title = (formData.get('title') as string | null)?.trim() ?? ''
+  const slug = (formData.get('slug') as string | null)?.trim() ?? ''
   const realm = (formData.get('realm') as string | null)?.trim() || null
   const description = (formData.get('description') as string | null)?.trim() || null
   const location = (formData.get('location') as string | null) || null
@@ -26,8 +26,8 @@ export async function addTrial(_: unknown, formData: FormData) {
 export async function editTrial(id: number, backUrl: string, _: unknown, formData: FormData) {
   const supabase = await createClient()
 
-  const title = (formData.get('title') as string).trim()
-  const slug = (formData.get('slug') as string).trim()
+  const title = (formData.get('title') as string | null)?.trim() ?? ''
+  const slug = (formData.get('slug') as string | null)?.trim() ?? ''
   const realm = (formData.get('realm') as string | null)?.trim() || null
   const description = (formData.get('description') as string | null)?.trim() || null
   const location = (formData.get('location') as string | null) || null

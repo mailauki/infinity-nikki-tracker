@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
+import { headers } from 'next/headers'
 import EditTrialForm from './edit-trial-form'
 import { getTrialRaw } from '@/hooks/data/admin/trials'
 import { Stack } from '@mui/material'
@@ -23,5 +24,12 @@ async function EditTrial({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const trial = await getTrialRaw(slug)
   if (!trial) notFound()
-  return <EditTrialForm back="/dashboard/eureka/trials" trial={trial} />
+
+  const referer = (await headers()).get('referer') ?? ''
+  const refererPath = new URL(referer, 'http://localhost').pathname
+  const back = refererPath.startsWith('/eureka/trials/')
+    ? refererPath
+    : '/dashboard/eureka/trials'
+
+  return <EditTrialForm back={back} trial={trial} />
 }
