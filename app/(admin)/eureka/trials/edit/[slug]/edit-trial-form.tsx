@@ -33,7 +33,7 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back: str
 
   useEffect(() => {
     setFormConfig({ formId: FORM_ID, backUrl: back, pending })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, back])
 
   return (
@@ -77,7 +77,12 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back: str
 
         <FormControl>
           <InputLabel>Location</InputLabel>
-          <Select label="Location" name="location" value={location} onChange={(e) => setLocation(e.target.value)}>
+          <Select
+            label="Location"
+            name="location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          >
             <MenuItem value="">—</MenuItem>
             <MenuItem value="Wishfield">Wishfield</MenuItem>
             <MenuItem value="Itzaland">Itzaland</MenuItem>

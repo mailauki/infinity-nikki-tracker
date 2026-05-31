@@ -50,7 +50,7 @@ async function Trial({ slug }: { slug: string }) {
       <SlugToolBar isAdmin={isAdmin} />
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <LazyCardMedia image={trial.image_url!} sx={{ height: 360 }} title={trial.title} />
-				<Typography>{trial.description}</Typography>
+        <Typography variant="body2">{trial.description}</Typography>
         <Box
           sx={{
             display: 'grid',

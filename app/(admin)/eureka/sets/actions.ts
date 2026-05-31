@@ -18,7 +18,9 @@ export async function addEurekaSet(_: unknown, formData: FormData) {
   const selectedTrials = JSON.parse((formData.get('selected_trials') as string) || '[]') as string[]
   const colorSelect = JSON.parse((formData.get('color_select') as string) || '[]') as string[]
   const defaultColor = (formData.get('default_color') as string | null) || ''
-  const categories = JSON.parse((formData.get('categories') as string) || '[]') as { slug: string }[]
+  const categories = JSON.parse((formData.get('categories') as string) || '[]') as {
+    slug: string
+  }[]
 
   const { error } = await supabase
     .from('eureka_sets')
@@ -79,12 +81,22 @@ export async function editEurekaSet(
   const selectedTrials = JSON.parse((formData.get('selected_trials') as string) || '[]') as string[]
   const colorSelect = JSON.parse((formData.get('color_select') as string) || '[]') as string[]
   const defaultColor = (formData.get('default_color') as string | null) || ''
-  const categories = JSON.parse((formData.get('categories') as string) || '[]') as { slug: string }[]
+  const categories = JSON.parse((formData.get('categories') as string) || '[]') as {
+    slug: string
+  }[]
   const originalTrials = JSON.parse((formData.get('original_trials') as string) || '[]') as string[]
 
   const { error } = await supabase
     .from('eureka_sets')
-    .update({ title, slug, description, rarity, style, label, updated_at: new Date().toISOString() })
+    .update({
+      title,
+      slug,
+      description,
+      rarity,
+      style,
+      label,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', id)
 
   if (error) return { error: error.message }
@@ -107,7 +119,9 @@ export async function editEurekaSet(
           .from('eureka_set_trials')
           .insert(originalTrials.map((t) => ({ eureka_set: slug, trial: t })))
       }
-      return { error: 'Failed to update trials. Your previous trial associations have been restored.' }
+      return {
+        error: 'Failed to update trials. Your previous trial associations have been restored.',
+      }
     }
   }
 

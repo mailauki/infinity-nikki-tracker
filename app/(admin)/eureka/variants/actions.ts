@@ -17,16 +17,21 @@ export async function addEurekaVariant(_: unknown, formData: FormData) {
     (formData.get('slug') as string | null)?.trim() ||
     toSlugVariant(eureka_set ?? '', category ?? '', color ?? '')
 
-  const { error } = await supabase.from('eureka_variants').insert([
-    { eureka_set, category, color, image_url, default: isDefault, slug },
-  ])
+  const { error } = await supabase
+    .from('eureka_variants')
+    .insert([{ eureka_set, category, color, image_url, default: isDefault, slug }])
 
   if (error) return { error: error.message }
 
   redirect(navLinksData.dashboard.eureka.variants.add.replace('/new', ''))
 }
 
-export async function editEurekaVariant(id: number, backUrl: string, _: unknown, formData: FormData) {
+export async function editEurekaVariant(
+  id: number,
+  backUrl: string,
+  _: unknown,
+  formData: FormData
+) {
   const supabase = await createClient()
 
   const eureka_set = (formData.get('eureka_set') as string | null) || null

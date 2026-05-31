@@ -93,7 +93,9 @@ export default function EditEurekaSetForm({
   }, [colorSelect, defaultColor])
 
   const handleColorChange = (event: SelectChangeEvent<typeof colorSelect>) => {
-    const { target: { value } } = event
+    const {
+      target: { value },
+    } = event
     setColorSelect(typeof value === 'string' ? value.split(',') : value)
   }
 
@@ -103,7 +105,7 @@ export default function EditEurekaSetForm({
 
   useEffect(() => {
     setFormConfig({ formId: FORM_ID, backUrl: back, pending })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, back])
 
   return (
@@ -162,7 +164,11 @@ export default function EditEurekaSetForm({
             {[2, 3, 4, 5].map((n) => (
               <MenuItem key={n} value={n}>
                 {n}
-                <SparkleIcon color="inherit" fontSize="inherit" sx={{ rotate: '15deg', ml: 0.5, mt: -0.3 }} />
+                <SparkleIcon
+                  color="inherit"
+                  fontSize="inherit"
+                  sx={{ rotate: '15deg', ml: 0.5, mt: -0.3 }}
+                />
               </MenuItem>
             ))}
           </Select>
@@ -170,20 +176,34 @@ export default function EditEurekaSetForm({
 
         <FormControl>
           <InputLabel>Style</InputLabel>
-          <Select label="Style" name="style" value={style} onChange={(e) => setStyle(e.target.value)}>
+          <Select
+            label="Style"
+            name="style"
+            value={style}
+            onChange={(e) => setStyle(e.target.value)}
+          >
             <MenuItem value="">—</MenuItem>
             {styles.map((s) => (
-              <MenuItem key={s.slug} value={s.slug}>{s.title}</MenuItem>
+              <MenuItem key={s.slug} value={s.slug}>
+                {s.title}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
 
         <FormControl>
           <InputLabel>Label</InputLabel>
-          <Select label="Label" name="label" value={label} onChange={(e) => setLabel(e.target.value)}>
+          <Select
+            label="Label"
+            name="label"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+          >
             <MenuItem value="">—</MenuItem>
             {labels.map((l) => (
-              <MenuItem key={l.slug} value={l.slug}>{l.title}</MenuItem>
+              <MenuItem key={l.slug} value={l.slug}>
+                {l.title}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -198,7 +218,9 @@ export default function EditEurekaSetForm({
                 )
               }
             >
-              {selectedTrials.length === trials.length ? 'Deselect all trials' : 'Select all trials'}
+              {selectedTrials.length === trials.length
+                ? 'Deselect all trials'
+                : 'Select all trials'}
             </Button>
           </Stack>
 
@@ -208,7 +230,10 @@ export default function EditEurekaSetForm({
               multiple
               label="Trials"
               renderValue={(selected) =>
-                trials.filter((t) => selected.includes(t.slug!)).map((t) => t.title).join(', ')
+                trials
+                  .filter((t) => selected.includes(t.slug!))
+                  .map((t) => t.title)
+                  .join(', ')
               }
               value={selectedTrials}
               onChange={(e) =>
@@ -230,7 +255,10 @@ export default function EditEurekaSetForm({
                   const SelectionIcon = selected ? CheckBox : CheckBoxOutlineBlank
                   return (
                     <MenuItem key={t.slug} value={t.slug!}>
-                      <SelectionIcon fontSize="small" style={{ marginRight: 8, padding: 9, boxSizing: 'content-box' }} />
+                      <SelectionIcon
+                        fontSize="small"
+                        style={{ marginRight: 8, padding: 9, boxSizing: 'content-box' }}
+                      />
                       <ListItemText primary={t.title} />
                     </MenuItem>
                   )
@@ -240,7 +268,12 @@ export default function EditEurekaSetForm({
           </FormControl>
         </Stack>
 
-        <ColorSelect colorSelect={colorSelect} colors={colors} handleChange={handleColorChange} maxColors={maxColors} />
+        <ColorSelect
+          colorSelect={colorSelect}
+          colors={colors}
+          handleChange={handleColorChange}
+          maxColors={maxColors}
+        />
 
         <FormControl disabled={colorSelect.length === 0}>
           <InputLabel>Default Color</InputLabel>
@@ -252,7 +285,12 @@ export default function EditEurekaSetForm({
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   <Chip
                     icon={
-                      <LazyAvatar alt={slug} color="transparent" size="xs" src={color?.image_url ?? ''}>
+                      <LazyAvatar
+                        alt={slug}
+                        color="transparent"
+                        size="xs"
+                        src={color?.image_url ?? ''}
+                      >
                         <ColorLens fontSize="inherit" />
                       </LazyAvatar>
                     }
@@ -270,7 +308,12 @@ export default function EditEurekaSetForm({
               return (
                 <MenuItem key={slug} value={slug}>
                   <ListItemAvatar sx={{ mr: -1.5 }}>
-                    <LazyAvatar alt={color?.title ?? slug} color="transparent" size="xs" src={color?.image_url ?? ''}>
+                    <LazyAvatar
+                      alt={color?.title ?? slug}
+                      color="transparent"
+                      size="xs"
+                      src={color?.image_url ?? ''}
+                    >
                       <ColorLens fontSize="inherit" />
                     </LazyAvatar>
                   </ListItemAvatar>

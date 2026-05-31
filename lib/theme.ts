@@ -2,6 +2,7 @@
 import { alpha, createTheme } from '@mui/material/styles'
 import { AvatarSize } from './types/props'
 import { blueGrey } from '@mui/material/colors'
+import { toggleButtonGroupClasses } from '@mui/material'
 
 declare module '@mui/material/Avatar' {
   interface AvatarOwnProps {
@@ -360,35 +361,73 @@ const theme = createTheme({
       defaultProps: {
         variant: 'filled',
         color: 'secondary',
+        orientation: 'horizontal',
       },
       styleOverrides: {
         root: {
           gap: '0.25rem',
-        },
-        firstButton: {
-          borderColor: 'transparent',
-          borderRadius: '6px',
-          borderTopLeftRadius: '40px',
-          borderBottomLeftRadius: '40px',
-          '&.Mui-disabled': {
-            borderColor: 'transparent',
-          },
-        },
-        middleButton: {
-          borderColor: 'transparent',
-          borderRadius: '6px',
-          '&.Mui-disabled': {
-            borderColor: 'transparent',
-          },
-        },
-        lastButton: {
-          borderColor: 'transparent',
-          borderRadius: '6px',
-          borderTopRightRadius: '40px',
-          borderBottomRightRadius: '40px',
-          '&.Mui-disabled': {
-            borderColor: 'transparent',
-          },
+          variants: [
+            {
+              props: { orientation: 'horizontal' },
+              style: {
+                [`& .${toggleButtonGroupClasses.firstButton}`]: {
+                  borderColor: 'transparent',
+                  borderRadius: '6px',
+                  borderTopLeftRadius: '40px',
+                  borderBottomLeftRadius: '40px',
+                  '&.Mui-disabled': {
+                    borderColor: 'transparent',
+                  },
+                },
+                [`& .${toggleButtonGroupClasses.middleButton}`]: {
+                  borderColor: 'transparent',
+                  borderRadius: '6px',
+                  '&.Mui-disabled': {
+                    borderColor: 'transparent',
+                  },
+                },
+                [`& .${toggleButtonGroupClasses.lastButton}`]: {
+                  borderColor: 'transparent',
+                  borderRadius: '6px',
+                  borderTopRightRadius: '40px',
+                  borderBottomRightRadius: '40px',
+                  '&.Mui-disabled': {
+                    borderColor: 'transparent',
+                  },
+                },
+              },
+            },
+            {
+              props: { orientation: 'vertical' },
+              style: {
+                [`& .${toggleButtonGroupClasses.firstButton}`]: {
+                  borderColor: 'transparent',
+                  borderRadius: '6px',
+                  borderTopLeftRadius: '40px',
+                  borderTopRightRadius: '40px',
+                  '&.Mui-disabled': {
+                    borderColor: 'transparent',
+                  },
+                },
+                [`& .${toggleButtonGroupClasses.middleButton}`]: {
+                  borderColor: 'transparent',
+                  borderRadius: '6px',
+                  '&.Mui-disabled': {
+                    borderColor: 'transparent',
+                  },
+                },
+                [`& .${toggleButtonGroupClasses.lastButton}`]: {
+                  borderColor: 'transparent',
+                  borderRadius: '6px',
+                  borderBottomRightRadius: '40px',
+                  borderBottomLeftRadius: '40px',
+                  '&.Mui-disabled': {
+                    borderColor: 'transparent',
+                  },
+                },
+              },
+            },
+          ],
         },
       },
     },

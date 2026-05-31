@@ -81,7 +81,7 @@ export function NavExtra({
           </ListItem>
         ))}
       </List>
-      <Toolbar />
+      <Toolbar sx={{ mb: 2 }} />
     </Stack>
   )
 }

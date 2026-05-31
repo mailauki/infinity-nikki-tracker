@@ -107,6 +107,7 @@ export default function FilterMenu() {
         sx={{ '& .MuiDrawer-paper': { width: 350 } }}
         onClose={() => setOpen(false)}
       >
+        <Toolbar />
         <Toolbar>
           <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1, mx: 2 }}>
             <IconButton onClick={() => setOpen(false)}>
