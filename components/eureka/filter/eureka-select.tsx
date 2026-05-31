@@ -25,7 +25,7 @@ export default function EurekaSelect({
     <FormControl
       sx={{
         flex: 1,
-        minWidth: { xs: '240px', sm: '260px', md: '300px' },
+        // minWidth: { xs: '240px', sm: '260px', md: '300px' },
         whiteSpace: 'nowrap',
       }}
     >

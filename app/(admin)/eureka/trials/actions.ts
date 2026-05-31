@@ -14,9 +14,9 @@ export async function addTrial(_: unknown, formData: FormData) {
   const location = (formData.get('location') as string | null) || null
   const image_url = (formData.get('image_url') as string | null) || null
 
-  const { error } = await supabase.from('trials').insert([
-    { title, slug, realm, description, location, image_url },
-  ])
+  const { error } = await supabase
+    .from('trials')
+    .insert([{ title, slug, realm, description, location, image_url }])
 
   if (error) return { error: error.message }
 
@@ -35,7 +35,15 @@ export async function editTrial(id: number, backUrl: string, _: unknown, formDat
 
   const { error } = await supabase
     .from('trials')
-    .update({ title, slug, realm, description, location, image_url, updated_at: new Date().toISOString() })
+    .update({
+      title,
+      slug,
+      realm,
+      description,
+      location,
+      image_url,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', id)
 
   if (error) return { error: error.message }

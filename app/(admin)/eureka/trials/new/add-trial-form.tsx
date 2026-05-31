@@ -31,8 +31,12 @@ export default function AddTrialForm() {
   const [state, action, pending] = useActionState(addTrial, null)
 
   useEffect(() => {
-    setFormConfig({ formId: FORM_ID, backUrl: navLinksData.dashboard.eureka.trials.add.replace('/new', ''), pending })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setFormConfig({
+      formId: FORM_ID,
+      backUrl: navLinksData.dashboard.eureka.trials.add.replace('/new', ''),
+      pending,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
 
   function handleTitleChange(value: string) {
@@ -81,7 +85,7 @@ export default function AddTrialForm() {
 
         <FormControl>
           <InputLabel>Location</InputLabel>
-          <Select label="Location" name="location" defaultValue="">
+          <Select defaultValue="" label="Location" name="location">
             <MenuItem value="">—</MenuItem>
             <MenuItem value="Wishfield">Wishfield</MenuItem>
             <MenuItem value="Itzaland">Itzaland</MenuItem>
@@ -89,7 +93,12 @@ export default function AddTrialForm() {
         </FormControl>
 
         <input name="image_url" type="hidden" value={imageUrl ?? ''} />
-        <ImageUpload slug={slug} table="trials" url={imageUrl} onUpload={(url) => setImageUrl(url)} />
+        <ImageUpload
+          slug={slug}
+          table="trials"
+          url={imageUrl}
+          onUpload={(url) => setImageUrl(url)}
+        />
       </Stack>
     </form>
   )

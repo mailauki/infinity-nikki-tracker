@@ -63,7 +63,7 @@ export default function AddEurekaVariantForm({
       backUrl: navLinksData.dashboard.eureka.variants.add.replace('/new', ''),
       pending,
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
 
   return (

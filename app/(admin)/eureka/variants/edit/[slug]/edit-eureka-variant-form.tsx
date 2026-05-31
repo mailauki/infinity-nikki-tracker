@@ -46,7 +46,8 @@ export default function EditEurekaVariantForm({
   const [imageUrl, setImageUrl] = useState<string | null>(variant.image_url)
   const [isDefault, setIsDefault] = useState(variant.default)
   const [slug, setSlug] = useState(
-    variant.slug ?? toSlugVariant(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? '')
+    variant.slug ??
+      toSlugVariant(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? '')
   )
   const [editSlug, setEditSlug] = useState(false)
 
@@ -65,7 +66,7 @@ export default function EditEurekaVariantForm({
 
   useEffect(() => {
     setFormConfig({ formId: FORM_ID, backUrl: back, pending })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, back])
 
   return (

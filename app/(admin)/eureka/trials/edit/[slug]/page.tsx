@@ -27,9 +27,7 @@ async function EditTrial({ params }: { params: Promise<{ slug: string }> }) {
 
   const referer = (await headers()).get('referer') ?? ''
   const refererPath = new URL(referer, 'http://localhost').pathname
-  const back = refererPath.startsWith('/eureka/trials/')
-    ? refererPath
-    : '/dashboard/eureka/trials'
+  const back = refererPath.startsWith('/eureka/trials/') ? refererPath : '/dashboard/eureka/trials'
 
   return <EditTrialForm back={back} trial={trial} />
 }

@@ -70,7 +70,9 @@ export default function AddEurekaSetForm({
   }, [colorSelect, defaultColor])
 
   const handleColorChange = (event: SelectChangeEvent<typeof colorSelect>) => {
-    const { target: { value } } = event
+    const {
+      target: { value },
+    } = event
     setColorSelect(typeof value === 'string' ? value.split(',') : value)
   }
 
@@ -87,7 +89,7 @@ export default function AddEurekaSetForm({
       backUrl: navLinksData.dashboard.eureka.sets.add.replace('/new', ''),
       pending,
     })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
 
   return (
@@ -146,7 +148,11 @@ export default function AddEurekaSetForm({
             {[2, 3, 4, 5].map((n) => (
               <MenuItem key={n} value={n}>
                 {n}
-                <SparkleIcon color="inherit" fontSize="inherit" sx={{ rotate: '15deg', ml: 0.5, mt: -0.3 }} />
+                <SparkleIcon
+                  color="inherit"
+                  fontSize="inherit"
+                  sx={{ rotate: '15deg', ml: 0.5, mt: -0.3 }}
+                />
               </MenuItem>
             ))}
           </Select>
@@ -154,20 +160,34 @@ export default function AddEurekaSetForm({
 
         <FormControl>
           <InputLabel>Style</InputLabel>
-          <Select label="Style" name="style" value={style} onChange={(e) => setStyle(e.target.value)}>
+          <Select
+            label="Style"
+            name="style"
+            value={style}
+            onChange={(e) => setStyle(e.target.value)}
+          >
             <MenuItem value="">—</MenuItem>
             {styles.map((s) => (
-              <MenuItem key={s.slug} value={s.slug}>{s.title}</MenuItem>
+              <MenuItem key={s.slug} value={s.slug}>
+                {s.title}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
 
         <FormControl>
           <InputLabel>Label</InputLabel>
-          <Select label="Label" name="label" value={label} onChange={(e) => setLabel(e.target.value)}>
+          <Select
+            label="Label"
+            name="label"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+          >
             <MenuItem value="">—</MenuItem>
             {labels.map((l) => (
-              <MenuItem key={l.slug} value={l.slug}>{l.title}</MenuItem>
+              <MenuItem key={l.slug} value={l.slug}>
+                {l.title}
+              </MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -182,7 +202,9 @@ export default function AddEurekaSetForm({
                 )
               }
             >
-              {selectedTrials.length === trials.length ? 'Deselect all trials' : 'Select all trials'}
+              {selectedTrials.length === trials.length
+                ? 'Deselect all trials'
+                : 'Select all trials'}
             </Button>
           </Stack>
 
@@ -192,7 +214,10 @@ export default function AddEurekaSetForm({
               multiple
               label="Trials"
               renderValue={(selected) =>
-                trials.filter((t) => selected.includes(t.slug!)).map((t) => t.title).join(', ')
+                trials
+                  .filter((t) => selected.includes(t.slug!))
+                  .map((t) => t.title)
+                  .join(', ')
               }
               value={selectedTrials}
               onChange={(e) =>
@@ -210,14 +235,21 @@ export default function AddEurekaSetForm({
               ).flatMap(([realm, group]) => [
                 <ListSubheader key={realm}>{realm}</ListSubheader>,
                 ...group.map((t) => (
-                  <MenuItem key={t.slug} value={t.slug!}>{t.title}</MenuItem>
+                  <MenuItem key={t.slug} value={t.slug!}>
+                    {t.title}
+                  </MenuItem>
                 )),
               ])}
             </Select>
           </FormControl>
         </Stack>
 
-        <ColorSelect colorSelect={colorSelect} colors={colors} handleChange={handleColorChange} maxColors={maxColors} />
+        <ColorSelect
+          colorSelect={colorSelect}
+          colors={colors}
+          handleChange={handleColorChange}
+          maxColors={maxColors}
+        />
 
         <FormControl disabled={colorSelect.length === 0}>
           <InputLabel>Default Color</InputLabel>
@@ -229,7 +261,12 @@ export default function AddEurekaSetForm({
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   <Chip
                     icon={
-                      <LazyAvatar alt={slug} color="transparent" size="xs" src={color?.image_url ?? ''}>
+                      <LazyAvatar
+                        alt={slug}
+                        color="transparent"
+                        size="xs"
+                        src={color?.image_url ?? ''}
+                      >
                         <ColorLens fontSize="inherit" />
                       </LazyAvatar>
                     }
@@ -247,7 +284,12 @@ export default function AddEurekaSetForm({
               return (
                 <MenuItem key={slug} value={slug}>
                   <ListItemAvatar sx={{ mr: -1.5 }}>
-                    <LazyAvatar alt={color?.title ?? slug} color="transparent" size="xs" src={color?.image_url ?? ''}>
+                    <LazyAvatar
+                      alt={color?.title ?? slug}
+                      color="transparent"
+                      size="xs"
+                      src={color?.image_url ?? ''}
+                    >
                       <ColorLens fontSize="inherit" />
                     </LazyAvatar>
                   </ListItemAvatar>
@@ -259,7 +301,8 @@ export default function AddEurekaSetForm({
         </FormControl>
 
         <Alert severity="info">
-          Images can be added after saving — use the eureka set edit form, or edit each variant individually via its eureka variant form.
+          Images can be added after saving — use the eureka set edit form, or edit each variant
+          individually via its eureka variant form.
         </Alert>
 
         {/* Hidden inputs for server action */}

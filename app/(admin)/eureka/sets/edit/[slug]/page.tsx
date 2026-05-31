@@ -29,9 +29,10 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
   const { slug } = await params
   const referer = (await headers()).get('referer') ?? ''
   const refererPath = new URL(referer, 'http://localhost').pathname
-  const back = refererPath.startsWith('/eureka/') && !refererPath.startsWith('/eureka/trials')
-    ? refererPath
-    : '/dashboard/eureka/sets'
+  const back =
+    refererPath.startsWith('/eureka/') && !refererPath.startsWith('/eureka/trials')
+      ? refererPath
+      : '/dashboard/eureka/sets'
 
   const supabase = await createClient()
 
