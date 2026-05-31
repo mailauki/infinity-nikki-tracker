@@ -53,12 +53,12 @@ export default function AddTrialForm() {
           onChange={(e) => handleTitleChange(e.target.value)}
         />
 
+        <input name="slug" type="hidden" value={slug} />
         <TextField
           required
           disabled={!editSlug}
           helperText="Auto-generated from name — edit if needed"
           label="Slug"
-          name="slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {

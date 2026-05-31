@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
-import { Box, Stack } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
 import type { Metadata } from 'next'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrial } from '@/hooks/data/trials'
@@ -50,6 +50,7 @@ async function Trial({ slug }: { slug: string }) {
       <EditToolBar isAdmin={isAdmin} />
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <LazyCardMedia image={trial.image_url!} sx={{ height: 360 }} title={trial.title} />
+				<Typography>{trial.description}</Typography>
         <Box
           sx={{
             display: 'grid',

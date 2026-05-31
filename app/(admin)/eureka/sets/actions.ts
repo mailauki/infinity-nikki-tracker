@@ -8,8 +8,8 @@ import { navLinksData } from '@/lib/nav-links'
 export async function addEurekaSet(_: unknown, formData: FormData) {
   const supabase = await createClient()
 
-  const title = (formData.get('title') as string).trim()
-  const slug = (formData.get('slug') as string).trim()
+  const title = (formData.get('title') as string | null)?.trim() ?? ''
+  const slug = (formData.get('slug') as string | null)?.trim() ?? ''
   const description = (formData.get('description') as string | null)?.trim() || null
   const rarityRaw = formData.get('rarity') as string | null
   const rarity = rarityRaw ? parseInt(rarityRaw, 10) : null
@@ -69,8 +69,8 @@ export async function editEurekaSet(
 ) {
   const supabase = await createClient()
 
-  const title = (formData.get('title') as string).trim()
-  const slug = (formData.get('slug') as string).trim()
+  const title = (formData.get('title') as string | null)?.trim() ?? ''
+  const slug = (formData.get('slug') as string | null)?.trim() ?? ''
   const description = (formData.get('description') as string | null)?.trim() || null
   const rarityRaw = formData.get('rarity') as string | null
   const rarity = rarityRaw ? parseInt(rarityRaw, 10) : null

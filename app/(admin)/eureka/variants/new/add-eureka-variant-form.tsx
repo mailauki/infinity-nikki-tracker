@@ -128,12 +128,12 @@ export default function AddEurekaVariantForm({
           </Select>
         </FormControl>
 
+        <input name="slug" type="hidden" value={slug} />
         <TextField
           required
           disabled={!editSlug}
           helperText="Auto-generated from name, category, and color — edit if needed"
           label="Slug"
-          name="slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {
