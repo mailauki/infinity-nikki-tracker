@@ -11,7 +11,7 @@ import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import ProgressChip from '@/components/progress-chip'
-import EditToolBar from '@/components/edit-toolbar'
+import EditToolBar from '@/components/slug-toolbar'
 
 type Props = {
   params: Promise<{ slug: string }>

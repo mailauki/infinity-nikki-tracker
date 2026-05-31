@@ -9,7 +9,7 @@ import { getUserRole } from '@/hooks/user'
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
 import LazyCardMedia from '@/components/eureka/lazy-card-media'
 import { GRID_COLUMNS } from '@/lib/types/props'
-import EditToolBar from '../../../../components/edit-toolbar'
+import EditToolBar from '../../../../components/slug-toolbar'
 
 type Props = {
   params: Promise<{ slug: string }>
