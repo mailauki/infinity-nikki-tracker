@@ -12,9 +12,11 @@ export type ObtainedFilter = 'missing' | 'obtained'
 
 export type RarityFilter = 2 | 3 | 4 | 5
 
-type DashboardLink = { add: string, edit: string }
+type DashboardLink = { add: string; edit: string }
 
-export type DashboardLinks = { eureka: { sets: DashboardLink, variants: DashboardLink, trials: DashboardLink } }
+export type DashboardLinks = {
+  eureka: { sets: DashboardLink; variants: DashboardLink; trials: DashboardLink }
+}
 
 export interface NavLink {
   title: string
@@ -25,7 +27,7 @@ export interface NavLink {
   adminOnly?: boolean
   exclusiveItems?: boolean
   items?: { title: string; url: string; image?: string }[]
-	tabs?: { title: string; url: string; }[]
+  tabs?: { title: string; url: string }[]
 }
 
 export const GRID_COLUMNS = {

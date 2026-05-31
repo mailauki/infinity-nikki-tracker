@@ -37,10 +37,10 @@ export function AdminTable<T>({
 }: AdminTableProps<T>) {
   return (
     <PaginationContainer
+      addHref={addHref}
       page={page}
       rows={rows}
       rowsPerPage={rowsPerPage}
-      addHref={addHref}
       title={title}
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}

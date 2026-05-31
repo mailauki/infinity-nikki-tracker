@@ -5,7 +5,7 @@ import { getUserRole } from '@/hooks/user'
 import { Metadata } from 'next'
 import { Box } from '@mui/material'
 import { StatCard } from './stat-card'
-import DashboardToolBar from './dashboard-tool-bar'
+import DashboardToolBar from './dashboard-toolbar'
 import { navLinksData } from '@/lib/nav-links'
 
 export const metadata: Metadata = {

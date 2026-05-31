@@ -1,11 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useActionState, useEffect, useState } from 'react'
 import {
   Alert,
   Box,
-  Button,
   Chip,
   FormControl,
   IconButton,
@@ -23,12 +21,17 @@ import {
 } from '@mui/material'
 import { ColorLens } from '@mui/icons-material'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
-import { createClient } from '@/lib/supabase/client'
-import { toSlug, toSlugVariant } from '@/lib/utils'
+import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 import { Category, Color, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from '@/components/forms/eureka-set/color-select'
 import { SparkleIcon } from '@/components/rarity-stars'
+import { useFormConfig } from '@/app/(admin)/form-context'
+import { addEurekaSet } from '../actions'
+import { navLinksData } from '@/lib/nav-links'
+import { Button } from '@mui/material'
+
+const FORM_ID = 'add-eureka-set'
 
 export default function AddEurekaSetForm({
   trials,
@@ -43,7 +46,7 @@ export default function AddEurekaSetForm({
   colors: Color[]
   categories: Category[]
 }) {
-  const router = useRouter()
+  const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [rarity, setRarity] = useState<number | ''>('')
@@ -51,11 +54,9 @@ export default function AddEurekaSetForm({
   const [label, setLabel] = useState('')
   const [description, setDescription] = useState('')
   const [selectedTrials, setSelectedTrials] = useState<string[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [editSlug, setEditSlug] = useState<boolean>(false)
+  const [editSlug, setEditSlug] = useState(false)
   const [colorSelect, setColorSelect] = useState<string[]>([])
-  const [defaultColor, setDefaultColor] = useState<string>('')
+  const [defaultColor, setDefaultColor] = useState('')
 
   const maxColorsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
   const maxColors = typeof rarity === 'number' ? (maxColorsByRarity[rarity] ?? 5) : 5
@@ -69,13 +70,8 @@ export default function AddEurekaSetForm({
   }, [colorSelect, defaultColor])
 
   const handleColorChange = (event: SelectChangeEvent<typeof colorSelect>) => {
-    const {
-      target: { value },
-    } = event
-    setColorSelect(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value
-    )
+    const { target: { value } } = event
+    setColorSelect(typeof value === 'string' ? value.split(',') : value)
   }
 
   function handleTitleChange(value: string) {
@@ -83,77 +79,26 @@ export default function AddEurekaSetForm({
     if (!editSlug) setSlug(toSlug(value))
   }
 
-  async function handleSubmit(e: { preventDefault(): void }) {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+  const [state, action, pending] = useActionState(addEurekaSet, null)
 
-    const supabase = createClient()
-    const { error } = await supabase.from('eureka_sets').insert([
-      {
-        title: title.trim(),
-        slug: slug.trim(),
-        description: description.trim() || null,
-        rarity: rarity === '' ? null : rarity,
-        style: style || null,
-        label: label || null,
-      },
-    ])
-
-    if (error) {
-      setLoading(false)
-      setError(error.message)
-      return
-    }
-
-    const rollback = async () => {
-      await supabase.from('eureka_sets').delete().eq('slug', slug.trim())
-    }
-
-    if (selectedTrials.length > 0) {
-      const { error: trialsError } = await supabase
-        .from('eureka_set_trials')
-        .insert(selectedTrials.map((t) => ({ eureka_set: slug.trim(), trial: t })))
-      if (trialsError) {
-        await rollback()
-        setLoading(false)
-        setError('Failed to save trials. The set was not created — please try again.')
-        return
-      }
-    }
-
-    if (colorSelect.length > 0) {
-      const variants = colorSelect.flatMap((color) =>
-        categories.map((cat) => ({
-          eureka_set: slug.trim(),
-          category: cat.slug,
-          color,
-          slug: toSlugVariant(slug.trim(), cat.slug, color),
-          default: defaultColor ? color === defaultColor : false,
-        }))
-      )
-      const { error: variantError } = await supabase.from('eureka_variants').insert(variants)
-      if (variantError) {
-        await rollback()
-        setLoading(false)
-        setError('Failed to save variants. The set was not created — please try again.')
-        return
-      }
-    }
-
-    setLoading(false)
-    router.push('/dashboard')
-    router.refresh()
-  }
+  useEffect(() => {
+    setFormConfig({
+      formId: FORM_ID,
+      backUrl: navLinksData.dashboard.eureka.sets.add.replace('/new', ''),
+      pending,
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pending])
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form action={action} id={FORM_ID}>
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
-        {error && <Alert severity="error">{error}</Alert>}
+        {state?.error && <Alert severity="error">{state.error}</Alert>}
 
         <TextField
           required
           label="Title"
+          name="title"
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
         />
@@ -163,6 +108,7 @@ export default function AddEurekaSetForm({
           disabled={!editSlug}
           helperText="Auto-generated from name — edit if needed"
           label="Slug"
+          name="slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {
@@ -183,6 +129,7 @@ export default function AddEurekaSetForm({
           multiline
           label="Description"
           minRows={3}
+          name="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
@@ -191,6 +138,7 @@ export default function AddEurekaSetForm({
           <InputLabel>Rarity</InputLabel>
           <Select
             label="Rarity"
+            name="rarity"
             value={rarity}
             onChange={(e) => setRarity(e.target.value as number | '')}
           >
@@ -198,11 +146,7 @@ export default function AddEurekaSetForm({
             {[2, 3, 4, 5].map((n) => (
               <MenuItem key={n} value={n}>
                 {n}
-                <SparkleIcon
-                  color="inherit"
-                  fontSize="inherit"
-                  sx={{ rotate: '15deg', ml: 0.5, mt: -0.3 }}
-                />
+                <SparkleIcon color="inherit" fontSize="inherit" sx={{ rotate: '15deg', ml: 0.5, mt: -0.3 }} />
               </MenuItem>
             ))}
           </Select>
@@ -210,24 +154,20 @@ export default function AddEurekaSetForm({
 
         <FormControl>
           <InputLabel>Style</InputLabel>
-          <Select label="Style" value={style} onChange={(e) => setStyle(e.target.value)}>
+          <Select label="Style" name="style" value={style} onChange={(e) => setStyle(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {styles.map((s) => (
-              <MenuItem key={s.slug} value={s.slug}>
-                {s.title}
-              </MenuItem>
+              <MenuItem key={s.slug} value={s.slug}>{s.title}</MenuItem>
             ))}
           </Select>
         </FormControl>
 
         <FormControl>
           <InputLabel>Label</InputLabel>
-          <Select label="Label" value={label} onChange={(e) => setLabel(e.target.value)}>
+          <Select label="Label" name="label" value={label} onChange={(e) => setLabel(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             {labels.map((l) => (
-              <MenuItem key={l.slug} value={l.slug}>
-                {l.title}
-              </MenuItem>
+              <MenuItem key={l.slug} value={l.slug}>{l.title}</MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -242,9 +182,7 @@ export default function AddEurekaSetForm({
                 )
               }
             >
-              {selectedTrials.length === trials.length
-                ? 'Deselect all trials'
-                : 'Select all trials'}
+              {selectedTrials.length === trials.length ? 'Deselect all trials' : 'Select all trials'}
             </Button>
           </Stack>
 
@@ -254,10 +192,7 @@ export default function AddEurekaSetForm({
               multiple
               label="Trials"
               renderValue={(selected) =>
-                trials
-                  .filter((t) => selected.includes(t.slug!))
-                  .map((t) => t.title)
-                  .join(', ')
+                trials.filter((t) => selected.includes(t.slug!)).map((t) => t.title).join(', ')
               }
               value={selectedTrials}
               onChange={(e) =>
@@ -275,21 +210,14 @@ export default function AddEurekaSetForm({
               ).flatMap(([realm, group]) => [
                 <ListSubheader key={realm}>{realm}</ListSubheader>,
                 ...group.map((t) => (
-                  <MenuItem key={t.slug} value={t.slug!}>
-                    {t.title}
-                  </MenuItem>
+                  <MenuItem key={t.slug} value={t.slug!}>{t.title}</MenuItem>
                 )),
               ])}
             </Select>
           </FormControl>
         </Stack>
 
-        <ColorSelect
-          colorSelect={colorSelect}
-          colors={colors}
-          handleChange={handleColorChange}
-          maxColors={maxColors}
-        />
+        <ColorSelect colorSelect={colorSelect} colors={colors} handleChange={handleColorChange} maxColors={maxColors} />
 
         <FormControl disabled={colorSelect.length === 0}>
           <InputLabel>Default Color</InputLabel>
@@ -301,12 +229,7 @@ export default function AddEurekaSetForm({
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   <Chip
                     icon={
-                      <LazyAvatar
-                        alt={slug}
-                        color="transparent"
-                        size="xs"
-                        src={color?.image_url ?? ''}
-                      >
+                      <LazyAvatar alt={slug} color="transparent" size="xs" src={color?.image_url ?? ''}>
                         <ColorLens fontSize="inherit" />
                       </LazyAvatar>
                     }
@@ -324,12 +247,7 @@ export default function AddEurekaSetForm({
               return (
                 <MenuItem key={slug} value={slug}>
                   <ListItemAvatar sx={{ mr: -1.5 }}>
-                    <LazyAvatar
-                      alt={color?.title ?? slug}
-                      color="transparent"
-                      size="xs"
-                      src={color?.image_url ?? ''}
-                    >
+                    <LazyAvatar alt={color?.title ?? slug} color="transparent" size="xs" src={color?.image_url ?? ''}>
                       <ColorLens fontSize="inherit" />
                     </LazyAvatar>
                   </ListItemAvatar>
@@ -341,18 +259,14 @@ export default function AddEurekaSetForm({
         </FormControl>
 
         <Alert severity="info">
-          Images can be added after saving — use the eureka set edit form, or edit each variant
-          individually via its eureka variant form.
+          Images can be added after saving — use the eureka set edit form, or edit each variant individually via its eureka variant form.
         </Alert>
 
-        <Stack direction="row" justifyContent="flex-end" spacing={1}>
-          <Button href="/dashboard" variant="outlined">
-            Cancel
-          </Button>
-          <Button disabled={loading} type="submit" variant="contained">
-            {loading ? 'Saving...' : 'Add Eureka Set'}
-          </Button>
-        </Stack>
+        {/* Hidden inputs for server action */}
+        <input name="selected_trials" type="hidden" value={JSON.stringify(selectedTrials)} />
+        <input name="color_select" type="hidden" value={JSON.stringify(colorSelect)} />
+        <input name="default_color" type="hidden" value={defaultColor} />
+        <input name="categories" type="hidden" value={JSON.stringify(categories)} />
       </Stack>
     </form>
   )

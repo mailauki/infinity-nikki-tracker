@@ -22,7 +22,7 @@ export default function TrialList({
 }: TrialListProps) {
   return (
     <AdminList
-			addHref={navLinksData.dashboard.eureka.trials.add}
+      addHref={navLinksData.dashboard.eureka.trials.add}
       getKey={(trial) => trial.id}
       page={page}
       renderRow={(trial) => (

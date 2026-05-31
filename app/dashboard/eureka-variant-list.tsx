@@ -23,7 +23,7 @@ export default function EurekaVariantList({
 }: EurekaVariantListProps) {
   return (
     <AdminList
-			addHref={navLinksData.dashboard.eureka.variants.add}
+      addHref={navLinksData.dashboard.eureka.variants.add}
       getKey={(variant) => variant.id}
       page={page}
       renderRow={(row) => (

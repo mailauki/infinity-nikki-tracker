@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useActionState, useEffect, useState } from 'react'
 import {
   Alert,
-  Button,
   FormControl,
   IconButton,
   InputAdornment,
@@ -15,70 +13,42 @@ import {
   TextField,
 } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
-import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
 import ImageUpload from '@/components/forms/image-upload'
 import { Trial } from '@/lib/types/eureka'
+import { useFormConfig } from '@/app/(admin)/form-context'
+import { editTrial } from '../../actions'
 
-export default function EditTrialForm({ trial, back }: { trial: Trial; back?: string }) {
-  const router = useRouter()
-  const backUrl = back ?? '/dashboard'
-  const [title, setTitle] = useState(trial.title)
+const FORM_ID = 'edit-trial'
+
+export default function EditTrialForm({ trial, back }: { trial: Trial; back: string }) {
+  const { setFormConfig } = useFormConfig()
   const [slug, setSlug] = useState(trial.slug ?? toSlug(trial.title))
-  const [realm, setRealm] = useState(trial.realm ?? '')
-  const [description, setDescription] = useState(trial.description ?? '')
   const [location, setLocation] = useState(trial.location ?? '')
-  const [imageUrl, setImageUrl] = useState<string | null>(trial.image_url)
   const [editSlug, setEditSlug] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [imageUrl, setImageUrl] = useState<string | null>(trial.image_url)
 
-  async function handleSubmit(e: { preventDefault(): void }) {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
+  const boundAction = editTrial.bind(null, trial.id, back)
+  const [state, action, pending] = useActionState(boundAction, null)
 
-    const supabase = createClient()
-    const { error } = await supabase
-      .from('trials')
-      .update({
-        title: title.trim(),
-        slug: slug.trim(),
-        realm: realm.trim() || null,
-        description: description.trim() || null,
-        location: location || null,
-        image_url: imageUrl || null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', trial.id)
-
-    setLoading(false)
-
-    if (error) {
-      setError(error.message)
-    } else {
-      router.push(backUrl)
-      router.refresh()
-    }
-  }
+  useEffect(() => {
+    setFormConfig({ formId: FORM_ID, backUrl: back, pending })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pending, back])
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form action={action} id={FORM_ID}>
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
-        {error && <Alert severity="error">{error}</Alert>}
+        {state?.error && <Alert severity="error">{state.error}</Alert>}
 
-        <TextField
-          required
-          label="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+        <TextField required defaultValue={trial.title} label="Title" name="title" />
 
         <TextField
           required
           disabled={!editSlug}
           helperText="Used in the URL — edit with caution"
           label="Slug"
+          name="slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {
@@ -95,40 +65,32 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back?: st
           onChange={(e) => setSlug(e.target.value)}
         />
 
-        <TextField label="Realm" value={realm} onChange={(e) => setRealm(e.target.value)} />
+        <TextField defaultValue={trial.realm ?? ''} label="Realm" name="realm" />
 
         <TextField
           multiline
+          defaultValue={trial.description ?? ''}
           label="Description"
           minRows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          name="description"
         />
 
         <FormControl>
           <InputLabel>Location</InputLabel>
-          <Select label="Location" value={location} onChange={(e) => setLocation(e.target.value)}>
+          <Select label="Location" name="location" value={location} onChange={(e) => setLocation(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             <MenuItem value="Wishfield">Wishfield</MenuItem>
             <MenuItem value="Itzaland">Itzaland</MenuItem>
           </Select>
         </FormControl>
 
+        <input name="image_url" type="hidden" value={imageUrl ?? ''} />
         <ImageUpload
           slug={trial.slug ?? undefined}
           table="trials"
           url={imageUrl}
           onUpload={(url) => setImageUrl(url)}
         />
-
-        <Stack direction="row" justifyContent="flex-end" spacing={1}>
-          <Button href={backUrl} variant="outlined">
-            Cancel
-          </Button>
-          <Button disabled={loading} type="submit" variant="contained">
-            {loading ? 'Saving...' : 'Save Changes'}
-          </Button>
-        </Stack>
       </Stack>
     </form>
   )

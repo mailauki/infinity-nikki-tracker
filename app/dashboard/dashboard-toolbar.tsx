@@ -1,76 +1,22 @@
-import { ViewList, ViewHeadline } from '@mui/icons-material'
-import { Stack, ToggleButton, ToggleButtonGroup, Toolbar, Tooltip } from '@mui/material'
+'use client'
 
-export default function DashboardToolbar({
-  tab,
-  handleTabChange,
-  view,
-  handleViewChange,
-}: {
-  tab: string
-  handleTabChange: (_: React.MouseEvent<HTMLElement>, value: string) => void
-  view: string
-  handleViewChange: (_: React.MouseEvent<HTMLElement>, nextView: 'list' | 'table') => void
-}) {
+import SubAppBar from '@/components/sub-appbar'
+import { Stack } from '@mui/material'
+import DashboardNavTabs from './dashboard-nav-tabs'
+import DashboardViewToggle from './dashboard-view-toggle'
+import { usePathname } from 'next/navigation'
+
+export default function DashboardToolBar() {
+  const pathname = usePathname()
+  const isDashboardMainPage = pathname === '/dashboard'
   return (
-    <Toolbar
-      sx={{
-        position: 'sticky',
-        top: 0,
-        zIndex: 'appBar',
-        backdropFilter: 'blur(8px)',
-        bgcolor: 'surface.containerLowest',
-        mt: -3,
-        mx: -3,
-        py: 1.5,
-      }}
-    >
-      <Stack
-        useFlexGap
-        alignItems="flex-end"
-        direction="row"
-        flexWrap="wrap"
-        justifyContent="space-between"
-        spacing={1}
-        sx={{ flex: 1 }}
-      >
-        <ToggleButtonGroup
-          exclusive
-          sx={{ whiteSpace: 'nowrap', height: 'fit-content', pt: 1 }}
-          value={tab}
-          onChange={handleTabChange}
-        >
-          <ToggleButton aria-label="Eureka Sets" sx={{ py: 0.75 }} value="eureka-sets">
-            Eureka Sets
-          </ToggleButton>
-          <ToggleButton aria-label="Eureka Variants" sx={{ py: 0.75 }} value="eureka-variants">
-            Eureka Variants
-          </ToggleButton>
-          <ToggleButton aria-label="Trials" sx={{ py: 0.75 }} value="trials">
-            Trials
-          </ToggleButton>
-        </ToggleButtonGroup>
-
-        <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
-          <ToggleButtonGroup
-            exclusive
-            sx={{ height: 'fit-content' }}
-            value={view}
-            onChange={handleViewChange}
-          >
-            <Tooltip title="List view">
-              <ToggleButton aria-label="list" size="small" value="list">
-                <ViewList fontSize="small" />
-              </ToggleButton>
-            </Tooltip>
-            <Tooltip title="Table view">
-              <ToggleButton aria-label="table" size="small" value="table">
-                <ViewHeadline fontSize="small" />
-              </ToggleButton>
-            </Tooltip>
-          </ToggleButtonGroup>
+    <SubAppBar>
+      <Stack sx={{ flex: 1, borderBottom: 1, borderColor: 'divider' }}>
+        <Stack alignItems="center" direction="row" justifyContent="space-between">
+          <DashboardNavTabs />
+          {!isDashboardMainPage && <DashboardViewToggle />}
         </Stack>
       </Stack>
-    </Toolbar>
+    </SubAppBar>
   )
 }

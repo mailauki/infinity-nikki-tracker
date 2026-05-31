@@ -23,7 +23,7 @@ export default function EurekaSetList({
 }: EurekaSetListProps) {
   return (
     <AdminList
-			addHref={navLinksData.dashboard.eureka.sets.add}
+      addHref={navLinksData.dashboard.eureka.sets.add}
       getKey={(set) => set.id}
       page={page}
       renderRow={(row) => (
