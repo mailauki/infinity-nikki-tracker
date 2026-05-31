@@ -24,6 +24,7 @@ const FORM_ID = 'edit-trial'
 export default function EditTrialForm({ trial, back }: { trial: Trial; back: string }) {
   const { setFormConfig } = useFormConfig()
   const [slug, setSlug] = useState(trial.slug ?? toSlug(trial.title))
+  const [location, setLocation] = useState(trial.location ?? '')
   const [editSlug, setEditSlug] = useState(false)
   const [imageUrl, setImageUrl] = useState<string | null>(trial.image_url)
 
@@ -76,7 +77,7 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back: str
 
         <FormControl>
           <InputLabel>Location</InputLabel>
-          <Select defaultValue={trial.location ?? ''} label="Location" name="location">
+          <Select label="Location" name="location" value={location} onChange={(e) => setLocation(e.target.value)}>
             <MenuItem value="">—</MenuItem>
             <MenuItem value="Wishfield">Wishfield</MenuItem>
             <MenuItem value="Itzaland">Itzaland</MenuItem>
