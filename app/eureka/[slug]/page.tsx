@@ -11,7 +11,7 @@ import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import ProgressChip from '@/components/progress-chip'
-import EditToolBar from '@/components/slug-toolbar'
+import SlugToolBar from '@/components/slug-toolbar'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -50,7 +50,7 @@ async function EurekaSet({ slug }: { slug: string }) {
 
   return (
     <>
-      <EditToolBar isAdmin={isAdmin} />
+      <SlugToolBar isAdmin={isAdmin} />
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <Stack spacing={1}>
           <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
