@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { getPreferences } from '@/hooks/data/preferences'
 import { DashboardViewProvider } from '../dashboard-view-context'
-import DashboardToolBar from '../dashboard-tool-bar'
+import DashboardToolBar from '../dashboard-toolbar'
 
 async function AdminGuard({ children }: { children: React.ReactNode }) {
   const [role, user_id] = await Promise.all([getUserRole(), getUserID()])

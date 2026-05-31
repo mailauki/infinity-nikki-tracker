@@ -10,7 +10,7 @@ export default function EditToolBar({ isAdmin }: { isAdmin: boolean }) {
   const { slug } = useParams()
   const path =
     pathname.split('/')[2] === slug
-      ? `${pathname.split('/')[1]}/set`
+      ? `${pathname.split('/')[1]}/sets`
       : pathname.split('/').slice(1, 3).join('/')
 
   if (!isAdmin) return null

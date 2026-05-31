@@ -1,10 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useActionState, useEffect, useState } from 'react'
 import {
   Alert,
-  Button,
   FormControl,
   IconButton,
   InputAdornment,
@@ -15,64 +13,44 @@ import {
   TextField,
 } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
-import { createClient } from '@/lib/supabase/client'
 import { toSlug } from '@/lib/utils'
 import ImageUpload from '@/components/forms/image-upload'
+import { useFormConfig } from '@/app/(admin)/form-context'
+import { addTrial } from '../actions'
+import { navLinksData } from '@/lib/nav-links'
+
+const FORM_ID = 'add-trial'
 
 export default function AddTrialForm() {
-  const router = useRouter()
+  const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
-  const [realm, setRealm] = useState('')
-  const [description, setDescription] = useState('')
-  const [location, setLocation] = useState('')
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [editSlug, setEditSlug] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [imageUrl, setImageUrl] = useState<string | null>(null)
 
-  function handleNameChange(value: string) {
+  const [state, action, pending] = useActionState(addTrial, null)
+
+  useEffect(() => {
+    setFormConfig({ formId: FORM_ID, backUrl: navLinksData.dashboard.eureka.trials.add.replace('/new', ''), pending })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pending])
+
+  function handleTitleChange(value: string) {
     setTitle(value)
     if (!editSlug) setSlug(toSlug(value))
   }
 
-  async function handleSubmit(e: { preventDefault(): void }) {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-
-    const supabase = createClient()
-    const { error } = await supabase.from('trials').insert([
-      {
-        title: title.trim(),
-        slug: slug.trim(),
-        realm: realm.trim() || null,
-        description: description.trim() || null,
-        location: location || null,
-        image_url: imageUrl || null,
-      },
-    ])
-
-    setLoading(false)
-
-    if (error) {
-      setError(error.message)
-    } else {
-      router.push('/dashboard')
-      router.refresh()
-    }
-  }
-
   return (
-    <form onSubmit={handleSubmit}>
+    <form action={action} id={FORM_ID}>
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
-        {error && <Alert severity="error">{error}</Alert>}
+        {state?.error && <Alert severity="error">{state.error}</Alert>}
 
         <TextField
           required
           label="Title"
+          name="title"
           value={title}
-          onChange={(e) => handleNameChange(e.target.value)}
+          onChange={(e) => handleTitleChange(e.target.value)}
         />
 
         <TextField
@@ -80,6 +58,7 @@ export default function AddTrialForm() {
           disabled={!editSlug}
           helperText="Auto-generated from name — edit if needed"
           label="Slug"
+          name="slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
             input: {
@@ -96,40 +75,21 @@ export default function AddTrialForm() {
           onChange={(e) => setSlug(e.target.value)}
         />
 
-        <TextField label="Realm" value={realm} onChange={(e) => setRealm(e.target.value)} />
+        <TextField label="Realm" name="realm" />
 
-        <TextField
-          multiline
-          label="Description"
-          minRows={3}
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+        <TextField multiline label="Description" minRows={3} name="description" />
 
         <FormControl>
           <InputLabel>Location</InputLabel>
-          <Select label="Location" value={location} onChange={(e) => setLocation(e.target.value)}>
+          <Select label="Location" name="location" defaultValue="">
             <MenuItem value="">—</MenuItem>
             <MenuItem value="Wishfield">Wishfield</MenuItem>
             <MenuItem value="Itzaland">Itzaland</MenuItem>
           </Select>
         </FormControl>
 
-        <ImageUpload
-          slug={slug}
-          table="trials"
-          url={imageUrl}
-          onUpload={(url) => setImageUrl(url)}
-        />
-
-        <Stack direction="row" justifyContent="flex-end" spacing={1}>
-          <Button href="/trial" variant="outlined">
-            Cancel
-          </Button>
-          <Button disabled={loading} type="submit" variant="contained">
-            {loading ? 'Saving...' : 'Add Trial'}
-          </Button>
-        </Stack>
+        <input name="image_url" type="hidden" value={imageUrl ?? ''} />
+        <ImageUpload slug={slug} table="trials" url={imageUrl} onUpload={(url) => setImageUrl(url)} />
       </Stack>
     </form>
   )

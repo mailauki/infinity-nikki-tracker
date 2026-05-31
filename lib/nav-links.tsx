@@ -6,7 +6,7 @@ export const navLinksData: {
   navMain: NavLink[]
   navSecondary: NavLink[]
   navExtra: NavLink[]
-	dashboard: DashboardLinks
+  dashboard: DashboardLinks
 } = {
   home: {
     title: 'Home',
@@ -49,11 +49,11 @@ export const navLinksData: {
       url: '/dashboard',
       icon: <Dashboard />,
       adminOnly: true,
-			items: [
-				{ title: 'Sets', url: '/dashboard/eureka/sets' },
-				{ title: 'Variants', url: '/dashboard/eureka/variants' },
-				{ title: 'Trials', url: '/dashboard/eureka/trials' },
-			],
+      items: [
+        { title: 'Sets', url: '/dashboard/eureka/sets' },
+        { title: 'Variants', url: '/dashboard/eureka/variants' },
+        { title: 'Trials', url: '/dashboard/eureka/trials' },
+      ],
     },
     {
       title: 'Profile',
@@ -73,20 +73,20 @@ export const navLinksData: {
       icon: <Help />,
     },
   ],
-	dashboard: {
-		eureka: {
-			sets: {
-				add: '/eureka/sets/new',
-				edit: '/eureka/sets/edit',
-			},
-			variants: {
-				add: '/eureka/variants/new',
-				edit: '/eureka/variants/edit',
-			},
-			trials: {
-				add: '/eureka/trials/new',
-				edit: '/eureka/trials/edit',
-			},
-		},
-	},
+  dashboard: {
+    eureka: {
+      sets: {
+        add: '/eureka/sets/new',
+        edit: '/eureka/sets/edit',
+      },
+      variants: {
+        add: '/eureka/variants/new',
+        edit: '/eureka/variants/edit',
+      },
+      trials: {
+        add: '/eureka/trials/new',
+        edit: '/eureka/trials/edit',
+      },
+    },
+  },
 }

@@ -43,7 +43,8 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  const editHref = (row: Row) => `${navLinksData.dashboard.eureka.trials.edit}/${row.slug ?? toSlug(row.title)}`
+  const editHref = (row: Row) =>
+    `${navLinksData.dashboard.eureka.trials.edit}/${row.slug ?? toSlug(row.title)}`
 
   const handleEditClick = useCallback(
     (id: GridRowId) => () => {
