@@ -4,16 +4,18 @@ import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarUpload from './avatar-upload'
 import ProfileView from '@/app/profile/profile-view'
-import { Alert, Button, Chip, Stack, TextField } from '@mui/material'
+import { Alert, Button, Chip, Stack, TextField, Typography } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import { useProfileEdit } from '@/app/profile/profile-context'
 
 export default function ProfileForm({
   user,
   isAdmin = false,
+  alwaysEdit = false,
 }: {
   user: User | null
   isAdmin?: boolean
+  alwaysEdit?: boolean
 }) {
   const profileEdit = useProfileEdit()
   const supabase = useMemo(() => createClient(), [])
@@ -73,7 +75,7 @@ export default function ProfileForm({
         updated_at: new Date().toISOString(),
       })
       if (error) throw error
-      profileEdit!.setIsEditing(false)
+      if (!alwaysEdit) profileEdit?.setIsEditing(false)
     } catch (error) {
       console.error('Error updating profile:', error)
       setSaveError(true)
@@ -82,7 +84,7 @@ export default function ProfileForm({
     }
   }
 
-  if (!profileEdit?.isEditing) {
+  if (!alwaysEdit && !profileEdit?.isEditing) {
     return (
       <ProfileView
         avatar_url={avatar_url}
@@ -113,14 +115,35 @@ export default function ProfileForm({
       )}
 
       <Stack alignItems="flex-start" spacing={2}>
-        <AvatarUpload
-          uid={user?.id ?? null}
-          url={avatar_url}
-          onUpload={(url) => {
-            setAvatarUrl(url)
-            updateProfile({ fullname, username, avatar_url: url })
-          }}
-        />
+        <Stack alignItems='flex-start' direction="row" spacing={2}>
+          <AvatarUpload
+            uid={user?.id ?? null}
+            url={avatar_url}
+            onUpload={(url) => {
+              setAvatarUrl(url)
+              updateProfile({ fullname, username, avatar_url: url })
+            }}
+          />
+          <Stack spacing={2}>
+						<Typography variant="subtitle1">Profile picture</Typography>
+            <Stack direction="row" spacing={2}>
+              <Button component="label" htmlFor="avatar" variant="outlined">
+                Upload
+              </Button>
+              {avatar_url && (
+                <Button
+                  color="inherit"
+                  onClick={() => {
+                    setAvatarUrl(null)
+                    updateProfile({ fullname, username, avatar_url: null })
+                  }}
+                >
+                  Remove
+                </Button>
+              )}
+            </Stack>
+          </Stack>
+        </Stack>
 
         <Stack component="form">
           <TextField

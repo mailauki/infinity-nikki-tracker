@@ -364,6 +364,7 @@ export type Database = {
           eureka_set_filter: string | null
           group_by_set: boolean
           show_by_color: boolean
+          theme: string
           updated_at: string | null
           user_id: string
         }
@@ -378,6 +379,7 @@ export type Database = {
           eureka_set_filter?: string | null
           group_by_set?: boolean
           show_by_color?: boolean
+          theme?: string
           updated_at?: string | null
           user_id: string
         }
@@ -392,6 +394,7 @@ export type Database = {
           eureka_set_filter?: string | null
           group_by_set?: boolean
           show_by_color?: boolean
+          theme?: string
           updated_at?: string | null
           user_id?: string
         }

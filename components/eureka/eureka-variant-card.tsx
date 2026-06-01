@@ -34,46 +34,46 @@ export default function EurekaVariantCard({
 
   return (
     <Grow in={!exiting} timeout={300} onExited={onExited}>
-    <Card
-      data-active={eurekaVariant.obtained ? '' : undefined}
-      sx={{
-        minWidth: 'fit-content',
-        '&[data-active]': {
-          backgroundColor: 'surface.lowest',
-        },
-      }}
-    >
-      <Box sx={{ position: 'relative', height: '100%' }}>
-        <Stack alignItems="center" sx={{ pt: 1 }}>
-          <LazyAvatar
-            alt={eurekaVariant.slug || 'Eureka Variant'}
-            color="transparent"
-            size="lg"
-            src={eurekaVariant.image_url!}
-            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+      <Card
+        data-active={eurekaVariant.obtained ? '' : undefined}
+        sx={{
+          minWidth: 'fit-content',
+          '&[data-active]': {
+            backgroundColor: 'surface.lowest',
+          },
+        }}
+      >
+        <Box sx={{ position: 'relative', height: '100%' }}>
+          <Stack alignItems="center" sx={{ pt: 1 }}>
+            <LazyAvatar
+              alt={eurekaVariant.slug || 'Eureka Variant'}
+              color="transparent"
+              size="lg"
+              src={eurekaVariant.image_url!}
+              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+            >
+              <Category fontSize="inherit" />
+            </LazyAvatar>
+          </Stack>
+          <Stack
+            alignItems="center"
+            direction="row"
+            justifyContent="space-between"
+            sx={{ py: 0.75, px: 1.25, my: 0 }}
           >
-            <Category fontSize="inherit" />
-          </LazyAvatar>
-        </Stack>
-        <Stack
-          alignItems="center"
-          direction="row"
-          justifyContent="space-between"
-          sx={{ py: 0.75, px: 1.25, my: 0 }}
-        >
-          <Typography color="textSecondary" variant="caption">
-            {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}
-          </Typography>
-        </Stack>
-        <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
-          {isLoggedIn && (
-            <IconButton onClick={onToggle}>
-              {eurekaVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
-            </IconButton>
-          )}
+            <Typography color="textSecondary" variant="caption">
+              {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}
+            </Typography>
+          </Stack>
+          <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
+            {isLoggedIn && (
+              <IconButton onClick={onToggle}>
+                {eurekaVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
+              </IconButton>
+            )}
+          </Box>
         </Box>
-      </Box>
-    </Card>
+      </Card>
     </Grow>
   )
 }

@@ -1,5 +1,5 @@
 import { DashboardLinks, NavLink } from '@/lib/types/props'
-import { Help, Info, Dashboard, AccountCircle } from '@mui/icons-material'
+import { Help, Info, Dashboard, AccountCircle, Settings } from '@mui/icons-material'
 
 export const navLinksData: {
   home: NavLink
@@ -75,6 +75,11 @@ export const navLinksData: {
       title: 'Help',
       url: '/help',
       icon: <Help />,
+    },
+    {
+      title: 'Settings',
+      url: '/settings',
+      icon: <Settings />,
     },
   ],
   dashboard: {

@@ -84,4 +84,5 @@ export type UserPreferences = Pick<
   | 'eureka_obtained_filter'
   | 'eureka_color'
   | 'eureka_rarity'
+  | 'theme'
 >

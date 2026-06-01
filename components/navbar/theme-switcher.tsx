@@ -12,7 +12,8 @@ import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
 import BrightnessMediumIcon from '@mui/icons-material/BrightnessMedium'
 import CheckIcon from '@mui/icons-material/Check'
-import { useState } from 'react'
+import { useState, startTransition } from 'react'
+import { updateTheme } from '@/app/actions/preferences'
 
 const modes = [
   { value: 'system', label: 'System', icon: <BrightnessMediumIcon fontSize="small" /> },
@@ -48,6 +49,7 @@ export default function ThemeSwitcher() {
             selected={mode === value}
             onClick={() => {
               setMode(value)
+              startTransition(() => updateTheme(value))
               setAnchorEl(null)
             }}
           >
