@@ -25,6 +25,7 @@ import SortEurekaToggle from '../eureka/filter/sort-eureka-toggle'
 import EurekaSelect from '../eureka/filter/eureka-select'
 import RarityToggle from '../eureka/filter/rarity-toggle'
 
+
 const FILTER_PAGES = ['/eureka']
 
 export default function FilterMenu() {
@@ -107,9 +108,8 @@ export default function FilterMenu() {
         sx={{ '& .MuiDrawer-paper': { width: 350 } }}
         onClose={() => setOpen(false)}
       >
-        <Toolbar />
         <Toolbar>
-          <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1, mx: 2 }}>
+          <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
             <IconButton onClick={() => setOpen(false)}>
               <Close />
             </IconButton>

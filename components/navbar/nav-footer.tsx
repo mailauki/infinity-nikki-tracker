@@ -8,12 +8,10 @@ export default function Footer() {
     <AppBar
       color="inherit"
       component="footer"
-      position="fixed"
+      position="relative"
       sx={{
-        top: 'auto',
-        bottom: 0,
-        zIndex: (theme) => theme.zIndex.drawer + 1,
         borderColor: 'transparent',
+        backgroundColor: 'surface.containerLowest',
         pb: 2,
       }}
       variant="outlined"
@@ -23,7 +21,8 @@ export default function Footer() {
           alignItems="center"
           direction="row"
           flex={1}
-          justifyContent="space-between"
+          justifyContent="center"
+          spacing={3}
           sx={{ mx: 1 }}
         >
           <Typography color="textDisabled" variant="caption">

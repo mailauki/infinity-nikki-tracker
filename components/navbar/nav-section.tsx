@@ -1,47 +1,17 @@
-import { navLinksData } from '@/lib/nav-links'
 import { NavLink } from '@/lib/types/props'
 import {
   Avatar,
-  Divider,
   List,
   ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Stack,
-  Toolbar,
   Tooltip,
   useColorScheme,
 } from '@mui/material'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-
-// export default function NavTabs({
-// 	open = false,
-// 	onClose,
-// }: {
-// 	open?: boolean
-// 	onClose?: () => void
-// }) {
-
-// 	return (
-// 	<Stack component="nav" sx={{ flex: 1, mx: 1.5 }}>
-
-// 			<NavSection items={navLinksData.navMain} />
-
-// 			<Divider sx={{ mx: 2, my: 0.5 }} />
-
-// 			<NavSection items={navLinksData.navSecondary} />
-
-//     <Stack sx={{ flex: 1 }}>
-// 			<Stack sx={{ flex: 1 }} />
-// 			<NavSection items={navLinksData.navExtra} />
-//       <Toolbar sx={{ mb: 2 }} />
-// 			</Stack>
-// 		</Stack>
-// 	)
-// }
 
 export default function NavSection({
   items,
@@ -67,17 +37,16 @@ export default function NavSection({
               selected={item.url === pathname}
               sx={{
                 minHeight: 48,
-                px: 2.5,
                 borderRadius: 2,
-                justifyContent: 'initial',
+								justifyContent: 'initial',
               }}
               onClick={onClose}
             >
               {item.image ? (
                 <ListItemAvatar
                   sx={{
-                    mr: 0.5,
-                    ml: -0.5,
+                    ml: -1,
+                    mr: open ? 0.5 : 0,
                   }}
                 >
                   <Avatar
@@ -91,13 +60,13 @@ export default function NavSection({
                   sx={{
                     minWidth: 0,
                     justifyContent: 'center',
-                    mr: 3.5,
+                    mr: open ? 3.5 : 0,
                   }}
                 >
                   {item.icon}
                 </ListItemIcon>
               )}
-              <ListItemText primary={item.title} />
+              {open && <ListItemText primary={item.title} />}
             </ListItemButton>
           </Tooltip>
         </ListItem>
