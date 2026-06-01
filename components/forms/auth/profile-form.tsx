@@ -11,9 +11,11 @@ import { useProfileEdit } from '@/app/profile/profile-context'
 export default function ProfileForm({
   user,
   isAdmin = false,
+  alwaysEdit = false,
 }: {
   user: User | null
   isAdmin?: boolean
+  alwaysEdit?: boolean
 }) {
   const profileEdit = useProfileEdit()
   const supabase = useMemo(() => createClient(), [])
@@ -82,7 +84,7 @@ export default function ProfileForm({
     }
   }
 
-  if (!profileEdit?.isEditing) {
+  if (!alwaysEdit && !profileEdit?.isEditing) {
     return (
       <ProfileView
         avatar_url={avatar_url}
