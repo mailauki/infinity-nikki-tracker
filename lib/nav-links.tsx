@@ -19,6 +19,10 @@ export const navLinksData: {
       image: '/icons/eureka.png',
       items: [
         {
+          title: 'Sets',
+          url: '/eureka/sets',
+        },
+        {
           title: 'Trials',
           url: '/eureka/trials',
           image: '/icons/realm-of-breakthrough.png',

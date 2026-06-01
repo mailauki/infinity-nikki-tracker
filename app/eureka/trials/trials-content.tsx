@@ -7,13 +7,11 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  IconButton,
   List,
   ListItem,
   ListSubheader,
   Skeleton,
   Stack,
-  Tooltip,
   Typography,
 } from '@mui/material'
 
@@ -24,11 +22,11 @@ import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { useSortOrder } from '@/components/sort-context'
 import { EurekaSet, Total } from '@/lib/types/eureka'
-import { Edit } from '@mui/icons-material'
-import { navLinksData } from '@/lib/nav-links'
+import ProgressChip from '@/components/progress-chip'
+import { countObtained, percent } from '@/hooks/count-obtained'
 
 export default function TrialsContent() {
-  const { eurekaSets, trials, isLoggedIn, isAdmin, isLoading, isError } = useEurekaData()
+  const { eurekaSets, trials, isLoggedIn, isLoading, isError } = useEurekaData()
   const { sortOrder } = useSortOrder()
 
   if (isError) {
@@ -71,12 +69,7 @@ export default function TrialsContent() {
           <ListSubheader sx={{ bgcolor: 'surface.containerLowest' }}>{realm}</ListSubheader>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
             {group.map((trial) => (
-              <TrialCard
-                key={trial.title}
-                isAdmin={isAdmin}
-                isLoggedIn={isLoggedIn}
-                trial={trial as Total}
-              />
+              <TrialCard key={trial.title} isLoggedIn={isLoggedIn} trial={trial as Total} />
             ))}
           </Box>
         </Box>
@@ -85,26 +78,15 @@ export default function TrialsContent() {
   )
 }
 
-function TrialCard({
-  trial,
-  isLoggedIn,
-  isAdmin,
-}: {
-  trial: Total
-  isLoggedIn: boolean
-  isAdmin: boolean
-}) {
+function TrialCard({ trial, isLoggedIn }: { trial: Total; isLoggedIn: boolean }) {
+  const obtained = countObtained(trial.eurekaSets!.flatMap((set) => set.eureka_variants))
   return (
     <Card>
       <CardHeader
         disableTypography
         action={
-          isAdmin && (
-            <Tooltip title={`Edit ${trial.title}`}>
-              <IconButton href={`${navLinksData.dashboard.eureka.trials.edit}/${trial.slug}`}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
+          isLoggedIn && (
+            <ProgressChip percentage={percent(obtained.obtained, obtained.total)} size="xs" />
           )
         }
         title={

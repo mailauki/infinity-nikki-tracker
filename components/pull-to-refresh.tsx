@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Box, CircularProgress, Fab, Slide, Toolbar, Tooltip } from '@mui/material'
+import { Box, CircularProgress, Fab, Slide, Tooltip } from '@mui/material'
 import { KeyboardArrowUp } from '@mui/icons-material'
 
 const PULL_THRESHOLD = 80
@@ -80,11 +80,8 @@ export default function PullToRefresh() {
 
   return (
     <>
-      {/* AppBar offset spacer */}
-      <Toolbar />
-
       {/* Pull indicator */}
-      <Slide direction="down" in={pullDistance > 0 || isRefreshing}>
+      <Slide unmountOnExit direction="down" in={pullDistance > 0 || isRefreshing}>
         <Box
           sx={{
             display: 'flex',

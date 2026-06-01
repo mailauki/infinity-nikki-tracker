@@ -92,12 +92,14 @@ export default function NavDrawer() {
   if (isMobile) {
     return (
       <>
-        {!open && <IconButton
-          sx={{ position: 'fixed', top: 24, left: 18, zIndex: theme.zIndex.drawer + 1 }}
-          onClick={() => setOpen(true)}
-        >
-          <Menu />
-        </IconButton>}
+        {!open && (
+          <IconButton
+            sx={{ position: 'fixed', top: 24, left: 18, zIndex: theme.zIndex.drawer + 1 }}
+            onClick={() => setOpen(true)}
+          >
+            <Menu />
+          </IconButton>
+        )}
 
         <MuiDrawer
           anchor="left"

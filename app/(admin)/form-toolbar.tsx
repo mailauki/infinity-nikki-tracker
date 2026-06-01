@@ -1,7 +1,7 @@
 'use client'
 
 import { Button, Stack } from '@mui/material'
-import SubAppBar from '@/components/sub-appbar'
+import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { useFormConfig } from './form-context'
 
 export default function FormToolBar() {
@@ -10,7 +10,7 @@ export default function FormToolBar() {
   if (!formId) return null
 
   return (
-    <SubAppBar>
+    <NavBarToolbar>
       <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
         <Button component="a" href={backUrl} variant="outlined">
           Cancel
@@ -19,6 +19,6 @@ export default function FormToolBar() {
           {pending ? 'Saving...' : 'Save'}
         </Button>
       </Stack>
-    </SubAppBar>
+    </NavBarToolbar>
   )
 }
