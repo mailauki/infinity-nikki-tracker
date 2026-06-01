@@ -78,7 +78,7 @@ export default function RootLayout({
               <Suspense>
                 <NavDrawer />
               </Suspense>
-              <Stack sx={{ flex: 1, minWidth: '300px', px: 1 }}>
+              <Stack sx={{ flex: 1, minWidth: '300px', px: 2 }}>
                 <Suspense>
                   <PullToRefresh />
                 </Suspense>

@@ -1,7 +1,6 @@
 'use client'
 
 import {
-  AppBar,
   Divider,
   Drawer as MuiDrawer,
   IconButton,
@@ -19,6 +18,11 @@ import React from 'react'
 const drawerWidth = 240
 
 const openedMixin = (theme: Theme): CSSObject => ({
+  height: 'calc(100vh - 40px)',
+  borderColor: 'transparent',
+  borderRadius: '30px',
+  margin: 20,
+  marginRight: 0,
   width: drawerWidth,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -28,6 +32,11 @@ const openedMixin = (theme: Theme): CSSObject => ({
 })
 
 const closedMixin = (theme: Theme): CSSObject => ({
+  height: 'calc(100vh - 40px)',
+  borderColor: 'transparent',
+  borderRadius: '30px',
+  margin: 20,
+  marginRight: 0,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -36,6 +45,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   width: `calc(${theme.spacing(10)} + 1px)`,
   [theme.breakpoints.down('sm')]: {
     width: 0,
+    margin: 0,
   },
 })
 
@@ -61,43 +71,31 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     },
   ],
 }))
+
 export default function NavDrawer() {
   const [open, setOpen] = React.useState(false)
 
   return (
-    <>
-      <AppBar
-        color="transparent"
-        position="fixed"
-        sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 10,
-          borderColor: 'transparent',
-          width: (theme) => (open ? drawerWidth : `calc(${theme.spacing(10)} + 1px)`),
-          top: 0,
-          left: 0,
-        }}
-        variant='outlined'
-      >
-        <Toolbar disableGutters sx={{ px: 2.4 }}>
-          <IconButton onClick={() => setOpen(!open)}>{open ? <MenuOpen /> : <Menu />}</IconButton>
-        </Toolbar>
-      </AppBar>
+    <Drawer anchor="left" open={open} variant="permanent">
+      <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
+        <IconButton onClick={() => setOpen(!open)}>{open ? <MenuOpen /> : <Menu />}</IconButton>
+      </Toolbar>
+      <Toolbar />
+      <Stack component="nav" sx={{ flex: 1, mx: 1.5, pb: 3 }}>
+        <NavSection items={navLinksData.navMain} open={open} onClose={() => setOpen(false)} />
 
-      <Drawer anchor="left" open={open} variant="permanent">
-        <Toolbar />
-        <Toolbar />
-        <Stack component="nav" sx={{ flex: 1, mx: 1.5 }}>
-          <NavSection items={navLinksData.navMain} open={open} onClose={() => setOpen(false)} />
+        <Divider sx={{ my: 0.5 }} />
 
-          <Divider sx={{ my: 0.5 }} />
+        <NavSection
+          items={navLinksData.navSecondary}
+          open={open}
+          onClose={() => setOpen(false)}
+        />
 
-          <NavSection
-            items={navLinksData.navSecondary}
-            open={open}
-            onClose={() => setOpen(false)}
-          />
+        <Stack sx={{ flex: 1, justifyContent: 'flex-end' }}>
+          <NavSection items={navLinksData.navExtra} open={open} onClose={() => setOpen(false)} />
         </Stack>
-      </Drawer>
-    </>
+      </Stack>
+    </Drawer>
   )
 }
