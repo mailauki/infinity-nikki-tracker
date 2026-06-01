@@ -12,22 +12,23 @@
 
 ## File Map
 
-| File | Action | Responsibility |
-|------|--------|----------------|
-| `supabase/migrations/20260601000001_add_theme_preference.sql` | **Create** | Add `theme` column with CHECK constraint |
-| `lib/types/supabase.ts` | **Regenerate** | Reflect new column in generated types |
-| `lib/types/eureka.ts` | **Modify** | Add `'theme'` to `UserPreferences` Pick |
-| `lib/preferences.ts` | **Modify** | Add `theme: 'system'` to `DEFAULT_PREFERENCES` |
-| `hooks/data/preferences.ts` | **Modify** | Add `theme` to select string |
-| `app/api/preferences/route.ts` | **Modify** | Add `theme` to select string |
-| `app/actions/preferences.ts` | **Modify** | Add `updateTheme()` action |
-| `components/settings/appearance-settings.tsx` | **Modify** | Load saved theme on mount, persist on change |
+| File                                                          | Action         | Responsibility                                 |
+| ------------------------------------------------------------- | -------------- | ---------------------------------------------- |
+| `supabase/migrations/20260601000001_add_theme_preference.sql` | **Create**     | Add `theme` column with CHECK constraint       |
+| `lib/types/supabase.ts`                                       | **Regenerate** | Reflect new column in generated types          |
+| `lib/types/eureka.ts`                                         | **Modify**     | Add `'theme'` to `UserPreferences` Pick        |
+| `lib/preferences.ts`                                          | **Modify**     | Add `theme: 'system'` to `DEFAULT_PREFERENCES` |
+| `hooks/data/preferences.ts`                                   | **Modify**     | Add `theme` to select string                   |
+| `app/api/preferences/route.ts`                                | **Modify**     | Add `theme` to select string                   |
+| `app/actions/preferences.ts`                                  | **Modify**     | Add `updateTheme()` action                     |
+| `components/settings/appearance-settings.tsx`                 | **Modify**     | Load saved theme on mount, persist on change   |
 
 ---
 
 ## Task 1: Database Migration
 
 **Files:**
+
 - Create: `supabase/migrations/20260601000001_add_theme_preference.sql`
 
 - [ ] **Step 1: Create the migration file**
@@ -67,6 +68,7 @@ git commit -m "feat: add theme column to user_preferences"
 ## Task 2: Update Types and Defaults
 
 **Files:**
+
 - Modify: `lib/types/eureka.ts`
 - Modify: `lib/preferences.ts`
 
@@ -166,6 +168,7 @@ git commit -m "feat: add theme to UserPreferences type and default preferences"
 ## Task 3: Update Data Access (Select Strings)
 
 **Files:**
+
 - Modify: `hooks/data/preferences.ts`
 - Modify: `app/api/preferences/route.ts`
 
@@ -176,13 +179,13 @@ Both files have a `.select(...)` call that lists every `user_preferences` column
 Current select string (line 12):
 
 ```ts
-      'group_by_set, show_by_color, dashboard_view, dashboard_tab, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity'
+'group_by_set, show_by_color, dashboard_view, dashboard_tab, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity'
 ```
 
 Change to:
 
 ```ts
-      'group_by_set, show_by_color, dashboard_view, dashboard_tab, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity, theme'
+'group_by_set, show_by_color, dashboard_view, dashboard_tab, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity, theme'
 ```
 
 - [ ] **Step 2: Update `app/api/preferences/route.ts`**
@@ -190,13 +193,13 @@ Change to:
 Current select string (around line 26):
 
 ```ts
-      'group_by_set, show_by_color, dashboard_view, dashboard_tab, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity'
+'group_by_set, show_by_color, dashboard_view, dashboard_tab, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity'
 ```
 
 Change to:
 
 ```ts
-      'group_by_set, show_by_color, dashboard_view, dashboard_tab, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity, theme'
+'group_by_set, show_by_color, dashboard_view, dashboard_tab, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity, theme'
 ```
 
 - [ ] **Step 3: Verify type-check passes**
@@ -219,6 +222,7 @@ git commit -m "feat: include theme in user_preferences select queries"
 ## Task 4: Add `updateTheme` Server Action
 
 **Files:**
+
 - Modify: `app/actions/preferences.ts`
 
 - [ ] **Step 1: Add `updateTheme` to the actions file**
@@ -303,6 +307,7 @@ git commit -m "feat: add updateTheme server action"
 ## Task 5: Update `AppearanceSettings` Component
 
 **Files:**
+
 - Modify: `components/settings/appearance-settings.tsx`
 
 Replace the entire file with the version that loads the saved theme on mount and persists on change:
@@ -367,6 +372,7 @@ export default function AppearanceSettings() {
 ```
 
 **Important notes:**
+
 - `useEffect` dependency array is intentionally `[]` — load saved preference once on mount only
 - `prefs.theme !== mode` guard prevents a no-op `setMode` call when they already match
 - `updateTheme(value)` is a Server Action imported directly — it's a no-op for guests (returns early if `getUserID()` returns null)

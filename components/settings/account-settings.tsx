@@ -4,6 +4,7 @@ import { useState } from 'react'
 import {
   Alert,
   Button,
+  Container,
   Dialog,
   DialogActions,
   DialogContent,
@@ -154,7 +155,11 @@ function DangerZoneSection() {
           <DialogContentText>
             This will permanently delete your account and all your data. This cannot be undone.
           </DialogContentText>
-          {error && <Alert severity="error" sx={{ mt: 1 }}>{error}</Alert>}
+          {error && (
+            <Alert severity="error" sx={{ mt: 1 }}>
+              {error}
+            </Alert>
+          )}
         </DialogContent>
         <DialogActions>
           <Button disabled={loading} onClick={() => setOpen(false)}>
@@ -171,12 +176,13 @@ function DangerZoneSection() {
 
 export default function AccountSettings() {
   return (
-    <Stack spacing={3}>
-      <ChangeEmailSection />
-      <Divider />
-      <ChangePasswordSection />
-      <Divider />
-      <DangerZoneSection />
-    </Stack>
+	<Container maxWidth='sm' sx={{ mx: 0 }}>
+		<Stack spacing={3}>
+			<ChangeEmailSection />
+			<ChangePasswordSection />
+			<Divider />
+			<DangerZoneSection />
+		</Stack>
+		</Container>
   )
 }

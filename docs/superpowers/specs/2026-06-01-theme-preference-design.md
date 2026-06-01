@@ -188,16 +188,16 @@ export default function AppearanceSettings() {
 
 ## Files Changed
 
-| File | Change |
-|------|--------|
-| `supabase/migrations/<timestamp>_add_theme_preference.sql` | New migration |
-| `lib/types/supabase.ts` | Regenerated after migration |
-| `lib/types/eureka.ts` | Add `'theme'` to `UserPreferences` Pick |
-| `lib/preferences.ts` | Add `theme: 'system'` to `DEFAULT_PREFERENCES` |
-| `hooks/data/preferences.ts` | Add `theme` to select string |
-| `app/api/preferences/route.ts` | Add `theme` to select string |
-| `app/actions/preferences.ts` | Add `updateTheme()` action |
-| `components/settings/appearance-settings.tsx` | Load saved theme on mount, persist on change |
+| File                                                       | Change                                         |
+| ---------------------------------------------------------- | ---------------------------------------------- |
+| `supabase/migrations/<timestamp>_add_theme_preference.sql` | New migration                                  |
+| `lib/types/supabase.ts`                                    | Regenerated after migration                    |
+| `lib/types/eureka.ts`                                      | Add `'theme'` to `UserPreferences` Pick        |
+| `lib/preferences.ts`                                       | Add `theme: 'system'` to `DEFAULT_PREFERENCES` |
+| `hooks/data/preferences.ts`                                | Add `theme` to select string                   |
+| `app/api/preferences/route.ts`                             | Add `theme` to select string                   |
+| `app/actions/preferences.ts`                               | Add `updateTheme()` action                     |
+| `components/settings/appearance-settings.tsx`              | Load saved theme on mount, persist on change   |
 
 ---
 
