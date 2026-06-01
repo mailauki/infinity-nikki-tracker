@@ -75,7 +75,7 @@ export default function ProfileForm({
         updated_at: new Date().toISOString(),
       })
       if (error) throw error
-      profileEdit!.setIsEditing(false)
+      if (!alwaysEdit) profileEdit?.setIsEditing(false)
     } catch (error) {
       console.error('Error updating profile:', error)
       setSaveError(true)

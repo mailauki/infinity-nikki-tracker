@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Tab, Tabs } from '@mui/material'
 import { type User } from '@supabase/supabase-js'
 import LoginAlert from '@/components/login-alert'
@@ -18,6 +18,10 @@ export default function SettingsTabs({
   user: User | null
 }) {
   const [tab, setTab] = useState<TabValue>(isLoggedIn ? 'profile' : 'appearance')
+
+  useEffect(() => {
+    if (!isLoggedIn) setTab('appearance')
+  }, [isLoggedIn])
 
   return (
     <Box>

@@ -124,12 +124,15 @@ function ChangePasswordSection() {
 function DangerZoneSection() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function handleDelete() {
     setLoading(true)
+    setError(null)
     try {
       await deleteAccount()
-    } catch {
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete account')
       setLoading(false)
     }
   }
@@ -151,6 +154,7 @@ function DangerZoneSection() {
           <DialogContentText>
             This will permanently delete your account and all your data. This cannot be undone.
           </DialogContentText>
+          {error && <Alert severity="error" sx={{ mt: 1 }}>{error}</Alert>}
         </DialogContent>
         <DialogActions>
           <Button disabled={loading} onClick={() => setOpen(false)}>
