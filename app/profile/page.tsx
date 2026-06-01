@@ -1,6 +1,6 @@
-import ProfileForm from '@/components/forms/auth/profile-form'
 import CollectionStats from './collection-stats'
 import RecentUpdates from './recent-updates'
+import ProfileView from './profile-view'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { redirect } from 'next/navigation'
@@ -29,12 +29,12 @@ export default function ProfilePage() {
 
 async function UserDetails() {
   const supabase = await createClient()
-  const { data, error } = await supabase.auth.getClaims()
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser()
 
-  if (error || !data?.claims) {
+  if (authError || !user) {
     redirect('/auth/login')
   }
 
@@ -46,9 +46,22 @@ async function UserDetails() {
   const trials = await getTrials()
   const recentObtained = user_id ? await getRecentObtained(user_id) : []
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name, username, avatar_url')
+    .eq('id', user.id)
+    .single()
+
   return (
     <>
-      <ProfileForm isAdmin={role === 'admin'} user={user} />
+      <ProfileView
+        avatar_url={profile?.avatar_url ?? null}
+        fullname={profile?.full_name ?? null}
+        isAdmin={role === 'admin'}
+        loadError={false}
+        user={user}
+        username={profile?.username ?? null}
+      />
       {user_id && (
         <CollectionStats
           categories={categories || []}
