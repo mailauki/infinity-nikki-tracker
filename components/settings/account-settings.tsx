@@ -109,7 +109,7 @@ function ChangePasswordSection() {
         />
         {success && <Alert severity="success">Password updated</Alert>}
         {error && <Alert severity="error">{error}</Alert>}
-        <Button disabled={loading || !password || mismatch} type="submit" variant="outlined">
+        <Button disabled={loading || !password || !confirm || mismatch} type="submit" variant="outlined">
           {loading ? 'Saving…' : 'Update password'}
         </Button>
       </Stack>
@@ -123,7 +123,11 @@ function DangerZoneSection() {
 
   async function handleDelete() {
     setLoading(true)
-    await deleteAccount()
+    try {
+      await deleteAccount()
+    } catch {
+      setLoading(false)
+    }
   }
 
   return (
