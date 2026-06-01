@@ -26,6 +26,8 @@ import { useSortOrder } from '@/components/sort-context'
 import { EurekaSet, Total } from '@/lib/types/eureka'
 import { Edit } from '@mui/icons-material'
 import { navLinksData } from '@/lib/nav-links'
+import ProgressChip from '@/components/progress-chip'
+import { countObtained, percent } from '@/hooks/count-obtained'
 
 export default function TrialsContent() {
   const { eurekaSets, trials, isLoggedIn, isAdmin, isLoading, isError } = useEurekaData()
@@ -94,17 +96,14 @@ function TrialCard({
   isLoggedIn: boolean
   isAdmin: boolean
 }) {
+  const obtained = countObtained(trial.eurekaSets!.flatMap((set) => set.eureka_variants))
   return (
     <Card>
       <CardHeader
         disableTypography
         action={
-          isAdmin && (
-            <Tooltip title={`Edit ${trial.title}`}>
-              <IconButton href={`${navLinksData.dashboard.eureka.trials.edit}/${trial.slug}`}>
-                <Edit />
-              </IconButton>
-            </Tooltip>
+          isLoggedIn && (
+            <ProgressChip percentage={percent(obtained.obtained, obtained.total)} size="xs" />
           )
         }
         title={

@@ -2,7 +2,13 @@ import { CardSize } from '@/lib/types/props'
 import { Check, MoreHoriz } from '@mui/icons-material'
 import { Chip } from '@mui/material'
 
-export default function ProgressChip({ percentage, size }: { percentage: number; size: CardSize }) {
+export default function ProgressChip({
+  percentage,
+  size = 'sm',
+}: {
+  percentage: number
+  size?: CardSize
+}) {
   const isComplete = percentage === 100
   const completeLabel = size === 'sm' ? <Check /> : 'Complete'
   const unfinishedLabel = size === 'sm' ? `${percentage}%` : 'Unfinished'
@@ -13,7 +19,7 @@ export default function ProgressChip({ percentage, size }: { percentage: number;
         color={isComplete ? 'success' : 'default'}
         label={isComplete ? <Check /> : <MoreHoriz />}
         size="small"
-        sx={{ bgcolor: isComplete ? 'success' : 'surface.main' }}
+        sx={{ bgcolor: isComplete ? 'success' : 'surface.container' }}
       />
     )
 
@@ -25,7 +31,7 @@ export default function ProgressChip({ percentage, size }: { percentage: number;
       sx={{
         fontWeight: 'bold',
         textTransform: 'uppercase',
-        bgcolor: isComplete ? 'success' : 'surface.main',
+        bgcolor: isComplete ? 'success' : 'surface.container',
       }}
     />
   )

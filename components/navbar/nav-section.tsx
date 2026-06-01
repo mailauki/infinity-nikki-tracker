@@ -38,7 +38,7 @@ export default function NavSection({
           <ExpandNavLink items={item.items!} open={open} onClose={onClose}>
             <Tooltip placement="right" title={open ? '' : item.title}>
               <ListItemButton
-                component='a'
+                component="a"
                 href={item.url}
                 selected={item.url === `/${pathname.split('/')[1]}`}
                 sx={{

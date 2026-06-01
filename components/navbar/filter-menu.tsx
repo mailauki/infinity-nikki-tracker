@@ -8,6 +8,7 @@ import {
   IconButton,
   List,
   ListItem,
+  Menu,
   SelectChangeEvent,
   Stack,
   Toolbar,
@@ -29,7 +30,15 @@ const FILTER_PAGES = ['/eureka']
 
 export default function FilterMenu() {
   const pathname = usePathname()
-  const [open, setOpen] = React.useState(false)
+  // const [open, setOpen] = React.useState(false)
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget)
+  }
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
 
   const {
     eurekaSets,
@@ -97,19 +106,24 @@ export default function FilterMenu() {
 
   return (
     <>
-      <IconButton onClick={() => setOpen(true)}>
+      <IconButton
+        aria-controls={open ? 'filter-menu' : undefined}
+        aria-haspopup="true"
+        onClick={handleClick}
+      >
         <FilterList />
       </IconButton>
 
-      <Drawer
-        anchor="right"
+      <Menu
+        anchorEl={anchorEl}
+        id="filter-menu"
         open={open}
-        sx={{ '& .MuiDrawer-paper': { width: 350 } }}
-        onClose={() => setOpen(false)}
+        onClick={handleClose}
+        onClose={handleClose}
       >
         <Toolbar>
           <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
-            <IconButton onClick={() => setOpen(false)}>
+            <IconButton onClick={handleClose}>
               <Close />
             </IconButton>
           </Stack>
@@ -163,13 +177,13 @@ export default function FilterMenu() {
                   Clear all
                 </Button>
               )}
-              <Button variant="contained" onClick={() => setOpen(false)}>
+              <Button variant="contained" onClick={handleClose}>
                 Apply
               </Button>
             </Stack>
           </ListItem>
         </List>
-      </Drawer>
+      </Menu>
     </>
   )
 }

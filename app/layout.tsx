@@ -67,29 +67,29 @@ export default function RootLayout({
           <ThemeProvider defaultMode="system" theme={theme}>
             <CssBaseline />
             <NavBarToolbarProvider>
-            <Stack
-              alignItems="flex-start"
-              direction="row"
-              sx={{
-                minHeight: '100vh',
-                backgroundColor: 'surface.containerLowest',
-              }}
-            >
-              <Suspense>
-                <NavDrawer />
-              </Suspense>
-              <Stack justifyContent='flex-start' sx={{ flex: 1, minWidth: '300px' }}>
+              <Stack
+                alignItems="flex-start"
+                direction="row"
+                sx={{
+                  minHeight: '100vh',
+                  backgroundColor: 'surface.containerLowest',
+                }}
+              >
                 <Suspense>
-                  <NavBar />
+                  <NavDrawer />
                 </Suspense>
-                <Suspense>
-                  <PullToRefresh />
-                </Suspense>
-                <Stack sx={{ px: 2 }}>{children}</Stack>
-								<Footer />
+                <Stack justifyContent="flex-start" sx={{ flex: 1, minWidth: '300px' }}>
+                  <Suspense>
+                    <NavBar />
+                  </Suspense>
+                  <Suspense>
+                    <PullToRefresh />
+                  </Suspense>
+                  <Stack sx={{ px: 2 }}>{children}</Stack>
+                  <Footer />
+                </Stack>
               </Stack>
-            </Stack>
-            <Analytics />
+              <Analytics />
             </NavBarToolbarProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>
