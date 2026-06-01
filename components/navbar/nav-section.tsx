@@ -36,8 +36,8 @@ export default function NavSection({
   return (
     <List>
       {items.map((item) => (
-        <ListItem key={item.title} disablePadding sx={{ display: 'block', py: 0.5 }}>
-          <ExpandNavLink items={item.items!} open={open} onClose={onClose}>
+        <ExpandNavLink key={item.title} items={item.items!} open={open} onClose={onClose}>
+          <ListItem disablePadding sx={{ display: 'block' }}>
             <Tooltip placement="right" title={open ? '' : item.title}>
               <ListItemButton
                 component="a"
@@ -77,8 +77,8 @@ export default function NavSection({
                 {open && <ListItemText primary={item.title} />}
               </ListItemButton>
             </Tooltip>
-          </ExpandNavLink>
-        </ListItem>
+          </ListItem>
+        </ExpandNavLink>
       ))}
     </List>
   )
