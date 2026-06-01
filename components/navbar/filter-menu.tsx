@@ -4,7 +4,6 @@ import * as React from 'react'
 import {
   Button,
   Divider,
-  Drawer,
   IconButton,
   List,
   ListItem,

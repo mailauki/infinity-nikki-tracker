@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Chip, Stack } from '@mui/material'
-import { Done } from '@mui/icons-material'
+import { Box, Stack } from '@mui/material'
 import { GRID_COLUMNS } from '@/lib/types/props'
 import type { Color, EurekaVariant } from '@/lib/types/eureka'
 import EurekaVariantCard from './eureka-variant-card'
-import LazyAvatar from './lazy-avatar'
 import ColorChip from '../color-chip'
 
 export default function EurekaVariantColorFilter({
