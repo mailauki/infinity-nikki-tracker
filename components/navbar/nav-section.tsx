@@ -1,47 +1,17 @@
-import { navLinksData } from '@/lib/nav-links'
 import { NavLink } from '@/lib/types/props'
 import {
   Avatar,
-  Divider,
   List,
   ListItem,
   ListItemAvatar,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Stack,
-  Toolbar,
   Tooltip,
   useColorScheme,
 } from '@mui/material'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-
-// export default function NavTabs({
-// 	open = false,
-// 	onClose,
-// }: {
-// 	open?: boolean
-// 	onClose?: () => void
-// }) {
-
-// 	return (
-// 	<Stack component="nav" sx={{ flex: 1, mx: 1.5 }}>
-
-// 			<NavSection items={navLinksData.navMain} />
-
-// 			<Divider sx={{ mx: 2, my: 0.5 }} />
-
-// 			<NavSection items={navLinksData.navSecondary} />
-
-//     <Stack sx={{ flex: 1 }}>
-// 			<Stack sx={{ flex: 1 }} />
-// 			<NavSection items={navLinksData.navExtra} />
-//       <Toolbar sx={{ mb: 2 }} />
-// 			</Stack>
-// 		</Stack>
-// 	)
-// }
 
 export default function NavSection({
   items,

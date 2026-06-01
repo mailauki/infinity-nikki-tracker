@@ -2,13 +2,9 @@
 import { Menu, MenuOpen } from '@mui/icons-material'
 import { AppBar, Divider, Drawer, IconButton, Stack, Toolbar } from '@mui/material'
 import React from 'react'
-import { NavMain } from './nav-main'
 import { navLinksData } from '@/lib/nav-links'
-import { NavSecondary } from './nav-secondary'
-import { NavExtra } from './nav-extra'
 import PageTitle from './page-title'
 import { NavUser } from './nav-user'
-import NavTabs from './nav-section'
 import NavSection from './nav-section'
 
 export const DRAWER_WIDTH = 350
@@ -63,8 +59,7 @@ export default function NavBar() {
             onClose={() => setOpenNav(false)}
           />
 
-          <Stack sx={{ flex: 1 }}>
-            <Stack sx={{ flex: 1 }} />
+          <Stack sx={{ flex: 1, justifyContent: 'flex-end' }}>
             <NavSection
               items={navLinksData.navExtra}
               open={openNav}

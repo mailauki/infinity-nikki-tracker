@@ -4,6 +4,12 @@ import { AvatarSize } from './types/props'
 import { blueGrey } from '@mui/material/colors'
 import { toggleButtonGroupClasses } from '@mui/material'
 
+const toggleButtonEdgeStyle = {
+  borderColor: 'transparent',
+  borderRadius: '6px',
+  '&.Mui-disabled': { borderColor: 'transparent' },
+} as const
+
 declare module '@mui/material/Avatar' {
   interface AvatarOwnProps {
     size?: AvatarSize
@@ -371,29 +377,15 @@ const theme = createTheme({
               props: { orientation: 'horizontal' },
               style: {
                 [`& .${toggleButtonGroupClasses.firstButton}`]: {
-                  borderColor: 'transparent',
-                  borderRadius: '6px',
+                  ...toggleButtonEdgeStyle,
                   borderTopLeftRadius: '40px',
                   borderBottomLeftRadius: '40px',
-                  '&.Mui-disabled': {
-                    borderColor: 'transparent',
-                  },
                 },
-                [`& .${toggleButtonGroupClasses.middleButton}`]: {
-                  borderColor: 'transparent',
-                  borderRadius: '6px',
-                  '&.Mui-disabled': {
-                    borderColor: 'transparent',
-                  },
-                },
+                [`& .${toggleButtonGroupClasses.middleButton}`]: toggleButtonEdgeStyle,
                 [`& .${toggleButtonGroupClasses.lastButton}`]: {
-                  borderColor: 'transparent',
-                  borderRadius: '6px',
+                  ...toggleButtonEdgeStyle,
                   borderTopRightRadius: '40px',
                   borderBottomRightRadius: '40px',
-                  '&.Mui-disabled': {
-                    borderColor: 'transparent',
-                  },
                 },
               },
             },
@@ -401,29 +393,15 @@ const theme = createTheme({
               props: { orientation: 'vertical' },
               style: {
                 [`& .${toggleButtonGroupClasses.firstButton}`]: {
-                  borderColor: 'transparent',
-                  borderRadius: '6px',
+                  ...toggleButtonEdgeStyle,
                   borderTopLeftRadius: '40px',
                   borderTopRightRadius: '40px',
-                  '&.Mui-disabled': {
-                    borderColor: 'transparent',
-                  },
                 },
-                [`& .${toggleButtonGroupClasses.middleButton}`]: {
-                  borderColor: 'transparent',
-                  borderRadius: '6px',
-                  '&.Mui-disabled': {
-                    borderColor: 'transparent',
-                  },
-                },
+                [`& .${toggleButtonGroupClasses.middleButton}`]: toggleButtonEdgeStyle,
                 [`& .${toggleButtonGroupClasses.lastButton}`]: {
-                  borderColor: 'transparent',
-                  borderRadius: '6px',
+                  ...toggleButtonEdgeStyle,
                   borderBottomRightRadius: '40px',
                   borderBottomLeftRadius: '40px',
-                  '&.Mui-disabled': {
-                    borderColor: 'transparent',
-                  },
                 },
               },
             },

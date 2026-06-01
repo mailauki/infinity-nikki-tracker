@@ -7,8 +7,6 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
-  Tab,
-  Tabs,
   Tooltip,
   useColorScheme,
 } from '@mui/material'
@@ -27,9 +25,8 @@ export function NavMain({
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
 
   return (
-    <>
-      <List component="nav">
-        {items.map((item) => (
+    <List component="nav">
+      {items.map((item) => (
           <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
             <Tooltip placement="right" title={open ? '' : item.title}>
               <ListItemButton
@@ -114,6 +111,5 @@ export function NavMain({
           </ListItem>
         ))}
       </List>
-    </>
   )
 }
