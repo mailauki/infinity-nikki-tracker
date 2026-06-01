@@ -1,7 +1,7 @@
 'use client'
 
 import { IconButton, Stack } from '@mui/material'
-import SubAppBar from '@/components/sub-appbar'
+import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { useParams, usePathname } from 'next/navigation'
 import { ChevronLeft, Edit } from '@mui/icons-material'
 
@@ -20,7 +20,7 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
   if (!isAdmin) return null
 
   return (
-    <SubAppBar>
+    <NavBarToolbar>
       <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
         <IconButton component="a" href={`/${backUrl}`}>
           <ChevronLeft />
@@ -29,6 +29,6 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
           <Edit />
         </IconButton>
       </Stack>
-    </SubAppBar>
+    </NavBarToolbar>
   )
 }

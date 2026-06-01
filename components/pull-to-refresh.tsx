@@ -80,11 +80,8 @@ export default function PullToRefresh() {
 
   return (
     <>
-      {/* AppBar offset spacer */}
-      <Toolbar />
-
       {/* Pull indicator */}
-      <Slide direction="down" in={pullDistance > 0 || isRefreshing}>
+      <Slide unmountOnExit direction="down" in={pullDistance > 0 || isRefreshing}>
         <Box
           sx={{
             display: 'flex',

@@ -25,7 +25,6 @@ import SortEurekaToggle from '../eureka/filter/sort-eureka-toggle'
 import EurekaSelect from '../eureka/filter/eureka-select'
 import RarityToggle from '../eureka/filter/rarity-toggle'
 
-
 const FILTER_PAGES = ['/eureka']
 
 export default function FilterMenu() {

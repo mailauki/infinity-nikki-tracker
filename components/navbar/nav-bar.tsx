@@ -1,22 +1,25 @@
 'use client'
 
-import { AppBar, Box, Toolbar } from '@mui/material'
+import { AppBar, Toolbar } from '@mui/material'
 import PageTitle from './page-title'
-import { NavUser } from './nav-user'
+import { useNavBarToolbar } from './navbar-toolbar-context'
 
 export default function NavBar() {
+  const { toolbarContent } = useNavBarToolbar()
+
   return (
     <AppBar
       color="transparent"
       position="sticky"
-      sx={{ borderColor: 'transparent' }}
+      sx={{ borderColor: 'transparent', backdropFilter: 'blur(8px)',
+				'mask-image': 'linear-gradient(to bottom, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%)'
+			}}
       variant="outlined"
     >
-      <Toolbar sx={{ justifyContent: 'space-between', py: 3 }}>
-        <Box sx={{ width: 40 }} />
+      <Toolbar sx={{ justifyContent: 'center', pr: 4, pt: 3, pb: toolbarContent ? 0 : 3 }}>
         <PageTitle />
-        <NavUser />
       </Toolbar>
+      {toolbarContent && <Toolbar>{toolbarContent}</Toolbar>}
     </AppBar>
   )
 }

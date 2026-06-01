@@ -1,7 +1,7 @@
 'use client'
 
 import { Stack, Typography } from '@mui/material'
-import SubAppBar from '@/components/sub-appbar'
+import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import FilterMenu from '@/components/navbar/filter-menu'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { SortButton } from '@/components/navbar/appbar-actions'
@@ -37,7 +37,7 @@ export default function EurekaToolBar() {
     : filtered.reduce((sum, set) => sum + set.eureka_variants.length, 0)
 
   return (
-    <SubAppBar>
+    <NavBarToolbar>
       <Stack alignItems="center" direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
         <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
           Showing: {resultsCount} results
@@ -47,6 +47,6 @@ export default function EurekaToolBar() {
           <FilterMenu />
         </Stack>
       </Stack>
-    </SubAppBar>
+    </NavBarToolbar>
   )
 }
