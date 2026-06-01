@@ -70,14 +70,13 @@ export default function RootLayout({
             </Suspense>
             <Stack
               direction="row"
-              spacing={2}
               sx={{
                 minHeight: '100vh',
                 backgroundColor: 'surface.containerLowest',
               }}
             >
               <NavDrawer />
-              <Stack sx={{ flex: 1, minWidth: '300px' }}>
+              <Stack sx={{ flex: 1, minWidth: '300px', px: 1 }}>
                 <Suspense>
                   <PullToRefresh />
                 </Suspense>
