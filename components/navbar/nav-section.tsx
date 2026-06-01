@@ -38,14 +38,14 @@ export default function NavSection({
               sx={{
                 minHeight: 48,
                 borderRadius: 2,
-                justifyContent: open ? 'initial' : 'center',
+								justifyContent: 'initial',
               }}
               onClick={onClose}
             >
               {item.image ? (
                 <ListItemAvatar
                   sx={{
-                    ml: open ? -1 : 2,
+                    ml: -1,
                     mr: open ? 0.5 : 0,
                   }}
                 >
