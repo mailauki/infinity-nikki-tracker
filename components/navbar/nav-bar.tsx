@@ -6,14 +6,26 @@ import PageTitle from './page-title'
 import { useNavBarToolbar } from './navbar-toolbar-context'
 
 export default function NavBar() {
-  const { toolbarContent } = useNavBarToolbar()
-  const [mounted, setMounted] = React.useState(false)
+  const { setToolbarSlot } = useNavBarToolbar()
+  const [hasContent, setHasContent] = React.useState(false)
+  const slotRef = React.useRef<HTMLDivElement | null>(null)
 
+  const refCallback = React.useCallback(
+    (el: HTMLDivElement | null) => {
+      slotRef.current = el
+      setToolbarSlot(el)
+    },
+    [setToolbarSlot]
+  )
+
+  // Track whether the slot has any children so we can adjust padding
   React.useEffect(() => {
-    setMounted(true)
+    const el = slotRef.current
+    if (!el) return
+    const observer = new MutationObserver(() => setHasContent(el.childElementCount > 0))
+    observer.observe(el, { childList: true })
+    return () => observer.disconnect()
   }, [])
-
-  const content = mounted ? toolbarContent : null
 
   return (
     <AppBar
@@ -26,10 +38,10 @@ export default function NavBar() {
       }}
       variant="outlined"
     >
-      <Toolbar sx={{ justifyContent: 'center', pr: 4, pt: 3, pb: content ? 0 : 3 }}>
+      <Toolbar sx={{ justifyContent: 'center', pr: 4, pt: 3, pb: hasContent ? 0 : 3 }}>
         <PageTitle />
       </Toolbar>
-      {content && <Toolbar>{content}</Toolbar>}
+      <Toolbar ref={refCallback} sx={{ display: hasContent ? undefined : 'none' }} />
     </AppBar>
   )
 }

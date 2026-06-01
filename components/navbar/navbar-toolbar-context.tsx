@@ -3,17 +3,17 @@
 import * as React from 'react'
 
 type NavBarToolbarContextType = {
-  toolbarContent: React.ReactNode
-  setToolbarContent: (content: React.ReactNode) => void
+  toolbarSlot: HTMLDivElement | null
+  setToolbarSlot: (el: HTMLDivElement | null) => void
 }
 
 export const NavBarToolbarContext = React.createContext<NavBarToolbarContextType | null>(null)
 
 export function NavBarToolbarProvider({ children }: { children: React.ReactNode }) {
-  const [toolbarContent, setToolbarContent] = React.useState<React.ReactNode>(null)
+  const [toolbarSlot, setToolbarSlot] = React.useState<HTMLDivElement | null>(null)
 
   return (
-    <NavBarToolbarContext.Provider value={{ toolbarContent, setToolbarContent }}>
+    <NavBarToolbarContext.Provider value={{ toolbarSlot, setToolbarSlot }}>
       {children}
     </NavBarToolbarContext.Provider>
   )
