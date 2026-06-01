@@ -76,7 +76,7 @@ export default function RootLayout({
                 backgroundColor: 'surface.containerLowest',
               }}
             >
-							<NavDrawer />
+              <NavDrawer />
               <Stack sx={{ flex: 1, minWidth: '300px' }}>
                 <Suspense>
                   <PullToRefresh />

@@ -27,89 +27,89 @@ export function NavMain({
   return (
     <List component="nav">
       {items.map((item) => (
-          <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
-            <Tooltip placement="right" title={open ? '' : item.title}>
-              <ListItemButton
-                component={Link}
-                href={item.url}
+        <ListItem key={item.title} disablePadding sx={{ display: 'block' }}>
+          <Tooltip placement="right" title={open ? '' : item.title}>
+            <ListItemButton
+              component={Link}
+              href={item.url}
+              sx={{
+                minHeight: 48,
+                borderRadius: 2,
+                justifyContent: 'initial',
+              }}
+              onClick={onClose}
+            >
+              <ListItemAvatar
                 sx={{
-                  minHeight: 48,
-                  borderRadius: 2,
-                  justifyContent: 'initial',
+                  mr: 0.5,
+                  ml: -0.5,
                 }}
-                onClick={onClose}
               >
-                <ListItemAvatar
-                  sx={{
-                    mr: 0.5,
-                    ml: -0.5,
-                  }}
-                >
-                  <Avatar
-                    alt={item.title}
-                    src={item.image}
-                    sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
-                  />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={item.title}
-                  sx={[
-                    open
-                      ? {
-                          opacity: 1,
-                        }
-                      : {
-                          opacity: 0,
-                        },
-                  ]}
+                <Avatar
+                  alt={item.title}
+                  src={item.image}
+                  sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
                 />
-              </ListItemButton>
-            </Tooltip>
-            {item.items?.length && open ? (
-              <List disablePadding>
-                {item.items?.map((subItem) => (
-                  <ListItem key={subItem.title} disablePadding sx={{ display: 'block' }}>
-                    <ListItemButton
-                      component={Link}
-                      href={subItem.url}
-                      sx={{ borderRadius: 2 }}
-                      onClick={onClose}
+              </ListItemAvatar>
+              <ListItemText
+                primary={item.title}
+                sx={[
+                  open
+                    ? {
+                        opacity: 1,
+                      }
+                    : {
+                        opacity: 0,
+                      },
+                ]}
+              />
+            </ListItemButton>
+          </Tooltip>
+          {item.items?.length && open ? (
+            <List disablePadding>
+              {item.items?.map((subItem) => (
+                <ListItem key={subItem.title} disablePadding sx={{ display: 'block' }}>
+                  <ListItemButton
+                    component={Link}
+                    href={subItem.url}
+                    sx={{ borderRadius: 2 }}
+                    onClick={onClose}
+                  >
+                    <ListItemAvatar
+                      sx={{
+                        mr: 0.5,
+                        ml: -0.5,
+                      }}
                     >
-                      <ListItemAvatar
+                      <Avatar
+                        alt={subItem.title}
+                        src={subItem.image}
                         sx={{
-                          mr: 0.5,
-                          ml: -0.5,
+                          filter: isDarkMode
+                            ? 'none'
+                            : 'grayscale(100%) brightness(80%) invert(80%)',
                         }}
-                      >
-                        <Avatar
-                          alt={subItem.title}
-                          src={subItem.image}
-                          sx={{
-                            filter: isDarkMode
-                              ? 'none'
-                              : 'grayscale(100%) brightness(80%) invert(80%)',
-                          }}
-                        />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={subItem.title}
-                        sx={[
-                          open
-                            ? {
-                                opacity: 1,
-                              }
-                            : {
-                                opacity: 0,
-                              },
-                        ]}
                       />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
-              </List>
-            ) : null}
-          </ListItem>
-        ))}
-      </List>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={subItem.title}
+                      sx={[
+                        open
+                          ? {
+                              opacity: 1,
+                            }
+                          : {
+                              opacity: 0,
+                            },
+                      ]}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          ) : null}
+        </ListItem>
+      ))}
+    </List>
   )
 }

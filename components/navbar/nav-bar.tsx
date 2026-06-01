@@ -5,12 +5,15 @@ import React from 'react'
 import PageTitle from './page-title'
 import { NavUser } from './nav-user'
 
-export const DRAWER_WIDTH = 350
-
 export default function NavBar() {
   return (
     <>
-      <AppBar color="inherit" position="fixed" variant='outlined' sx={{ zIndex: (theme) => theme.zIndex.appBar + 10 }}>
+      <AppBar
+        color="inherit"
+        position="fixed"
+        sx={{ zIndex: (theme) => theme.zIndex.appBar + 10, borderColor: 'transparent' }}
+        variant="outlined"
+      >
         <Toolbar>
           <Stack
             alignItems="center"
@@ -18,7 +21,7 @@ export default function NavBar() {
             justifyContent="space-between"
             sx={{ flex: 1 }}
           >
-						<Stack sx={{ width: (theme) => `calc(${theme.spacing(10)} + 40px)`, }} />
+            <Stack sx={{ width: (theme) => `calc(${theme.spacing(10)} + 40px)` }} />
             <PageTitle />
             <NavUser />
           </Stack>

@@ -2,7 +2,7 @@
 
 import { ReactNode, useState } from 'react'
 import { Add } from '@mui/icons-material'
-import { Alert, Box, Button, Card, Chip, Stack, TablePagination } from '@mui/material'
+import { Alert, Box, Button, Card, Stack, TablePagination } from '@mui/material'
 
 interface PaginationContainerProps<T> {
   title: string

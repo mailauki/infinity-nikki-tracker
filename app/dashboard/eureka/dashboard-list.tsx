@@ -1,5 +1,5 @@
 import LazyAvatar from '@/components/eureka/lazy-avatar'
-import { EurekaSet, EurekaVariant, EurekaVariantRaw, Trial } from '@/lib/types/eureka'
+import { EurekaSet, EurekaVariantRaw, Trial } from '@/lib/types/eureka'
 import { formatDate, toTitle } from '@/lib/utils'
 import { Category, Edit } from '@mui/icons-material'
 import {

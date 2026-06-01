@@ -44,7 +44,16 @@ async function EurekaSet({ slug }: { slug: string }) {
   const isLoggedIn = !!user_id
   const isAdmin = role === 'admin'
 
-  const { image_url, eureka_set_trials, eureka_variants, rarity, label, style, colors, description } = eurekaSet
+  const {
+    image_url,
+    eureka_set_trials,
+    eureka_variants,
+    rarity,
+    label,
+    style,
+    colors,
+    description,
+  } = eurekaSet
 
   const { obtained, total } = countObtained(eureka_variants)
 
@@ -68,7 +77,12 @@ async function EurekaSet({ slug }: { slug: string }) {
             <Chip label={toTitle(label ?? '')} variant="outlined" />
           </Stack>
 
-          <Stack direction="row" alignItems='center' justifyContent="space-between" sx={{ flex: 1 }}>
+          <Stack
+            alignItems="center"
+            direction="row"
+            justifyContent="space-between"
+            sx={{ flex: 1 }}
+          >
             <Typography color="textSecondary" variant="subtitle2">
               <RarityStars rarity={rarity!} />
             </Typography>
