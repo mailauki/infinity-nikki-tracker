@@ -12,23 +12,24 @@
 
 ## File Map
 
-| File | Action | Responsibility |
-|------|--------|----------------|
-| `lib/supabase/admin.ts` | **Create** | Supabase admin client with service role key |
-| `app/settings/actions.ts` | **Create** | `deleteAccount()` Server Action |
-| `app/settings/page.tsx` | **Create** | Server Component — fetch auth, render `SettingsTabs` |
-| `components/settings/settings-tabs.tsx` | **Create** | `'use client'` tab container with `useState` |
-| `components/settings/appearance-settings.tsx` | **Create** | Inline `ToggleButtonGroup` theme picker |
-| `components/settings/account-settings.tsx` | **Create** | Change email, change password, delete account |
-| `components/settings/profile-settings.tsx` | **Create** | Wraps `ProfileForm` with `alwaysEdit={true}` |
-| `components/forms/auth/profile-form.tsx` | **Modify** | Add `alwaysEdit?: boolean` prop |
-| `app/profile/page.tsx` | **Modify** | Strip to read-only view with server-fetched profile data |
+| File                                          | Action     | Responsibility                                           |
+| --------------------------------------------- | ---------- | -------------------------------------------------------- |
+| `lib/supabase/admin.ts`                       | **Create** | Supabase admin client with service role key              |
+| `app/settings/actions.ts`                     | **Create** | `deleteAccount()` Server Action                          |
+| `app/settings/page.tsx`                       | **Create** | Server Component — fetch auth, render `SettingsTabs`     |
+| `components/settings/settings-tabs.tsx`       | **Create** | `'use client'` tab container with `useState`             |
+| `components/settings/appearance-settings.tsx` | **Create** | Inline `ToggleButtonGroup` theme picker                  |
+| `components/settings/account-settings.tsx`    | **Create** | Change email, change password, delete account            |
+| `components/settings/profile-settings.tsx`    | **Create** | Wraps `ProfileForm` with `alwaysEdit={true}`             |
+| `components/forms/auth/profile-form.tsx`      | **Modify** | Add `alwaysEdit?: boolean` prop                          |
+| `app/profile/page.tsx`                        | **Modify** | Strip to read-only view with server-fetched profile data |
 
 ---
 
 ## Task 1: Supabase Admin Client
 
 **Files:**
+
 - Create: `lib/supabase/admin.ts`
 
 - [ ] **Step 1: Create the admin client**
@@ -62,6 +63,7 @@ git commit -m "feat: add supabase admin client for service-role operations"
 ## Task 2: Delete Account Server Action
 
 **Files:**
+
 - Create: `app/settings/actions.ts`
 
 The Server Action uses the admin client (service role) to delete the user, then signs them out and redirects to `/`.
@@ -114,6 +116,7 @@ git commit -m "feat: add deleteAccount server action"
 ## Task 3: Add `alwaysEdit` Prop to `ProfileForm`
 
 **Files:**
+
 - Modify: `components/forms/auth/profile-form.tsx`
 
 Currently `ProfileForm` branches on `profileEdit?.isEditing` to show either `ProfileView` or the edit form. Adding `alwaysEdit` skips that check.
@@ -202,6 +205,7 @@ git commit -m "feat: add alwaysEdit prop to ProfileForm"
 ## Task 4: Profile Settings Component
 
 **Files:**
+
 - Create: `components/settings/profile-settings.tsx`
 
 This is a thin wrapper. It does NOT need `ProfileEditProvider` — `alwaysEdit={true}` bypasses the context check entirely.
@@ -240,6 +244,7 @@ git commit -m "feat: add ProfileSettings component"
 ## Task 5: Appearance Settings Component
 
 **Files:**
+
 - Create: `components/settings/appearance-settings.tsx`
 
 Renders a `ToggleButtonGroup` with System / Light / Dark options. Uses `useColorScheme()` from MUI — NOT `useTheme().palette.mode`, which doesn't re-render in CSS variables mode.
@@ -308,6 +313,7 @@ git commit -m "feat: add AppearanceSettings component with inline theme toggle"
 ## Task 6: Account Settings Component
 
 **Files:**
+
 - Create: `components/settings/account-settings.tsx`
 
 Three sections: change email, change password, danger zone. Each uses `supabase.auth.updateUser()` from the browser client, except delete which calls the `deleteAccount` Server Action.
@@ -447,7 +453,12 @@ function DangerZoneSection() {
   return (
     <Stack spacing={2}>
       <Typography variant="subtitle1">Danger zone</Typography>
-      <Button color="error" sx={{ alignSelf: 'flex-start' }} variant="outlined" onClick={() => setOpen(true)}>
+      <Button
+        color="error"
+        sx={{ alignSelf: 'flex-start' }}
+        variant="outlined"
+        onClick={() => setOpen(true)}
+      >
         Delete account
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
@@ -503,6 +514,7 @@ git commit -m "feat: add AccountSettings component (email, password, delete)"
 ## Task 7: Settings Tabs Component
 
 **Files:**
+
 - Create: `components/settings/settings-tabs.tsx`
 
 `'use client'` tab container. Manages active tab with `useState`. Profile and Account tabs are hidden from guests. Guests who reach those tabs (impossible via UI, but defensive) see `<LoginAlert />`.
@@ -573,6 +585,7 @@ git commit -m "feat: add SettingsTabs component"
 ## Task 8: Settings Page
 
 **Files:**
+
 - Create: `app/settings/page.tsx`
 
 Server Component — fetches auth, passes props to `SettingsTabs`.
@@ -622,12 +635,14 @@ yarn dev
 ```
 
 Open `http://localhost:3000/settings` — verify:
+
 - Guest: only Appearance tab is visible, `ToggleButtonGroup` shows System/Light/Dark
 - Clicking a mode option updates the theme immediately
 
 - [ ] **Step 3: Sign in and verify logged-in tabs**
 
 Sign in, navigate to `/settings` — verify:
+
 - Profile, Appearance, Account tabs all visible
 - Default tab is Profile
 - Profile tab shows the edit form (avatar upload, full name, username)
@@ -645,6 +660,7 @@ git commit -m "feat: add /settings page"
 ## Task 9: Update `/profile` to Read-Only
 
 **Files:**
+
 - Modify: `app/profile/page.tsx`
 
 Remove `ProfileForm`. Fetch profile data server-side and pass directly to `ProfileView`.
@@ -742,6 +758,7 @@ Expected: no errors. In particular, confirm `ProfileView` props match exactly (`
 - [ ] **Step 3: Open `/profile` in the browser**
 
 Navigate to `http://localhost:3000/profile` — verify:
+
 - Shows avatar, full name, username, email (read-only)
 - Collection stats grid visible
 - Recently updated list visible (if any items obtained)

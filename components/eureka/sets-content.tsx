@@ -19,7 +19,9 @@ function SetSkeleton() {
         <Skeleton height={24} variant="rounded" width={60} />
       </Stack>
       <Divider sx={{ mb: 2 }} />
-      <Box sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1, sm: 1.5, md: 2 } }}>
+      <Box
+        sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1, sm: 1.5, md: 2 } }}
+      >
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton
             key={i}
@@ -65,7 +67,12 @@ export default function SetsContent() {
         const { obtained, total } = countObtained(set.eureka_variants)
         return (
           <Box key={set.slug}>
-            <Stack alignItems="flex-end" direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+            <Stack
+              alignItems="flex-end"
+              direction="row"
+              justifyContent="space-between"
+              sx={{ mb: 0.5 }}
+            >
               <Button
                 color="inherit"
                 endIcon={<ChevronRight />}

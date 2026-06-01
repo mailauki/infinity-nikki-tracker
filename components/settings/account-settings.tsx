@@ -109,7 +109,11 @@ function ChangePasswordSection() {
         />
         {success && <Alert severity="success">Password updated</Alert>}
         {error && <Alert severity="error">{error}</Alert>}
-        <Button disabled={loading || !password || !confirm || mismatch} type="submit" variant="outlined">
+        <Button
+          disabled={loading || !password || !confirm || mismatch}
+          type="submit"
+          variant="outlined"
+        >
           {loading ? 'Saving…' : 'Update password'}
         </Button>
       </Stack>
@@ -133,7 +137,12 @@ function DangerZoneSection() {
   return (
     <Stack spacing={2}>
       <Typography variant="subtitle1">Danger zone</Typography>
-      <Button color="error" sx={{ alignSelf: 'flex-start' }} variant="outlined" onClick={() => setOpen(true)}>
+      <Button
+        color="error"
+        sx={{ alignSelf: 'flex-start' }}
+        variant="outlined"
+        onClick={() => setOpen(true)}
+      >
         Delete account
       </Button>
       <Dialog open={open} onClose={() => setOpen(false)}>

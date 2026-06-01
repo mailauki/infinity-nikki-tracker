@@ -11,10 +11,10 @@ Add a `/settings` page as a tabbed hub with three tabs: **Profile** (edit form),
 
 ## Routes
 
-| Route | Change |
-|-------|--------|
-| `app/settings/page.tsx` | **New** — tabbed settings hub |
-| `app/profile/page.tsx` | **Modified** — stripped to read-only view |
+| Route                   | Change                                    |
+| ----------------------- | ----------------------------------------- |
+| `app/settings/page.tsx` | **New** — tabbed settings hub             |
+| `app/profile/page.tsx`  | **Modified** — stripped to read-only view |
 
 ### `/settings`
 
@@ -37,6 +37,7 @@ Add a `/settings` page as a tabbed hub with three tabs: **Profile** (edit form),
 ### `app/settings/page.tsx`
 
 Server Component. Fetches:
+
 - `getUserID()` → `user_id`
 - `supabase.auth.getUser()` → `user`
 
@@ -49,6 +50,7 @@ Renders `<SettingsTabs isLoggedIn={!!user_id} user={user} />`.
 **Default tab:** `'appearance'` for guests, `'profile'` for logged-in users.
 
 **Tab visibility:**
+
 - `appearance` — always shown
 - `profile` — hidden if `!isLoggedIn`
 - `account` — hidden if `!isLoggedIn`
@@ -86,12 +88,14 @@ Component: `components/settings/account-settings.tsx`
 Three sections separated by `<Divider>`:
 
 **1. Change email**
+
 - `TextField` (type `email`) + submit `Button`
 - Calls `supabase.auth.updateUser({ email })` from browser client (`lib/supabase/client.ts`)
 - Success state: `Alert` — "Confirmation sent to your new email"
 - Error state: inline `Alert` with error message
 
 **2. Change password**
+
 - Two `TextField`s: new password + confirm password
 - Client-side validation: passwords must match before submit
 - Calls `supabase.auth.updateUser({ password })`
@@ -99,6 +103,7 @@ Three sections separated by `<Divider>`:
 - Success state: `Alert` — "Password updated"
 
 **3. Danger zone**
+
 - "Delete account" `Button` with `color="error"` variant `outlined`
 - Opens MUI `Dialog` asking for confirmation: "This will permanently delete your account and all your data. This cannot be undone."
 - On confirm: calls a Server Action in `app/settings/actions.ts` that:
@@ -112,38 +117,38 @@ Three sections separated by `<Divider>`:
 
 ### New Files
 
-| File | Type | Purpose |
-|------|------|---------|
-| `app/settings/page.tsx` | Server Component | Auth fetch + render `SettingsTabs` |
-| `app/settings/actions.ts` | Server Action | `deleteAccount()` action |
-| `components/settings/settings-tabs.tsx` | Client Component | Tab container with `useState` |
-| `components/settings/profile-settings.tsx` | Client Component | Wraps `ProfileForm` in always-edit mode |
-| `components/settings/appearance-settings.tsx` | Client Component | Inline theme toggle |
-| `components/settings/account-settings.tsx` | Client Component | Email, password, delete account |
+| File                                          | Type             | Purpose                                 |
+| --------------------------------------------- | ---------------- | --------------------------------------- |
+| `app/settings/page.tsx`                       | Server Component | Auth fetch + render `SettingsTabs`      |
+| `app/settings/actions.ts`                     | Server Action    | `deleteAccount()` action                |
+| `components/settings/settings-tabs.tsx`       | Client Component | Tab container with `useState`           |
+| `components/settings/profile-settings.tsx`    | Client Component | Wraps `ProfileForm` in always-edit mode |
+| `components/settings/appearance-settings.tsx` | Client Component | Inline theme toggle                     |
+| `components/settings/account-settings.tsx`    | Client Component | Email, password, delete account         |
 
 ### Modified Files
 
-| File | Change |
-|------|--------|
-| `app/profile/page.tsx` | Remove `ProfileForm`; render `ProfileView` directly with fetched profile data |
-| `components/forms/auth/profile-form.tsx` | Add `alwaysEdit?: boolean` prop |
+| File                                     | Change                                                                        |
+| ---------------------------------------- | ----------------------------------------------------------------------------- |
+| `app/profile/page.tsx`                   | Remove `ProfileForm`; render `ProfileView` directly with fetched profile data |
+| `components/forms/auth/profile-form.tsx` | Add `alwaysEdit?: boolean` prop                                               |
 
 ### Unchanged Files
 
-| File | Reason |
-|------|--------|
-| `components/navbar/theme-switcher.tsx` | Nav footer compact switcher stays as-is |
-| `lib/nav-links.tsx` | `Settings` link already points to `/settings` |
-| `app/auth/update-password/` | Existing reset-password flow via email link unchanged |
+| File                                   | Reason                                                |
+| -------------------------------------- | ----------------------------------------------------- |
+| `components/navbar/theme-switcher.tsx` | Nav footer compact switcher stays as-is               |
+| `lib/nav-links.tsx`                    | `Settings` link already points to `/settings`         |
+| `app/auth/update-password/`            | Existing reset-password flow via email link unchanged |
 
 ---
 
 ## Auth & Access
 
-| State | Tabs shown | Default tab |
-|-------|-----------|-------------|
-| Guest | Appearance only | appearance |
-| Logged in | Profile, Appearance, Account | profile |
+| State     | Tabs shown                   | Default tab |
+| --------- | ---------------------------- | ----------- |
+| Guest     | Appearance only              | appearance  |
+| Logged in | Profile, Appearance, Account | profile     |
 
 No redirect at the page level for guests — handled within `SettingsTabs`.
 
