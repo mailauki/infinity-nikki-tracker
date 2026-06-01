@@ -9,8 +9,9 @@ import { CssBaseline, Stack, Toolbar } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
 import { Suspense } from 'react'
 import Footer from '@/components/navbar/nav-footer'
-import NavBar from '@/components/navbar/nav-bar-drawer'
+import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
+import NavDrawer from '@/components/navbar/nav-drawer'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -72,10 +73,10 @@ export default function RootLayout({
               spacing={2}
               sx={{
                 minHeight: '100vh',
-                p: 2,
                 backgroundColor: 'surface.containerLowest',
               }}
             >
+							<NavDrawer />
               <Stack sx={{ flex: 1, minWidth: '300px' }}>
                 <Suspense>
                   <PullToRefresh />

@@ -37,17 +37,16 @@ export default function NavSection({
               selected={item.url === pathname}
               sx={{
                 minHeight: 48,
-                px: 2.5,
                 borderRadius: 2,
-                justifyContent: 'initial',
+                justifyContent: open ? 'initial' :'center',
               }}
               onClick={onClose}
             >
               {item.image ? (
                 <ListItemAvatar
                   sx={{
-                    mr: 0.5,
-                    ml: -0.5,
+										ml: open ? -1 : 2,
+										mr: open ? 0.5 : 0,
                   }}
                 >
                   <Avatar
@@ -61,13 +60,13 @@ export default function NavSection({
                   sx={{
                     minWidth: 0,
                     justifyContent: 'center',
-                    mr: 3.5,
+                    mr: open ? 3.5 : 0,
                   }}
                 >
                   {item.icon}
                 </ListItemIcon>
               )}
-              <ListItemText primary={item.title} />
+              {open && <ListItemText primary={item.title} />}
             </ListItemButton>
           </Tooltip>
         </ListItem>
