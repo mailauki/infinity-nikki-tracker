@@ -7,7 +7,7 @@ import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import theme from '@/lib/theme'
 import { CssBaseline, Stack, Toolbar } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
-import { Suspense } from 'react'
+
 import Footer from '@/components/navbar/nav-footer'
 import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
@@ -65,9 +65,7 @@ export default function RootLayout({
         <AppRouterCacheProvider options={{ key: 'css' }}>
           <ThemeProvider defaultMode="system" theme={theme}>
             <CssBaseline />
-            <Suspense>
-              <NavBar />
-            </Suspense>
+            <NavBar />
             <Stack
               direction="row"
               sx={{
@@ -77,9 +75,7 @@ export default function RootLayout({
             >
               <NavDrawer />
               <Stack sx={{ flex: 1, minWidth: '300px', px: 1 }}>
-                <Suspense>
-                  <PullToRefresh />
-                </Suspense>
+                <PullToRefresh />
                 {children}
                 <Toolbar sx={{ pb: 2 }} />
               </Stack>
