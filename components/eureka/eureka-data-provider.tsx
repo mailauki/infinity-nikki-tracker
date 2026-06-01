@@ -14,6 +14,7 @@ import {
 } from '@/lib/types/eureka'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
 import { updateEurekaFilters, updateGroupBySet, updateShowByColor } from '@/app/actions/preferences'
+import { handleObtained } from '@/app/eureka/actions'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 
 import { DEFAULT_FILTERS, EurekaDataContext, FilterState } from './eureka-context'
@@ -114,6 +115,22 @@ export default function EurekaDataProvider({
     setFilters(DEFAULT_FILTERS)
   }
 
+  const handleToggleObtained = (eureka_set: string, category: string, color: string) => {
+    const isObtained = obtainedEureka.some(
+      (o) => o.eureka_set === eureka_set && o.category === category && o.color === color
+    )
+    if (isObtained) {
+      setObtainedEureka((prev) =>
+        prev.filter(
+          (o) => !(o.eureka_set === eureka_set && o.category === category && o.color === color)
+        )
+      )
+    } else {
+      setObtainedEureka((prev) => [...prev, { id: -1, eureka_set, category, color }])
+    }
+    handleObtained(eureka_set, category, color)
+  }
+
   useEffect(() => {
     if (!isLoggedIn || !prefsLoaded.current) return
     startTransition(() =>
@@ -139,7 +156,7 @@ export default function EurekaDataProvider({
       })
 
     const obtainedChannel = supabase
-      .channel('obtained-filter-channel')
+      .channel(`obtained-filter-channel:${userId}`)
       .on(
         'postgres_changes',
         {
@@ -198,6 +215,7 @@ export default function EurekaDataProvider({
         filters,
         onFiltersChange: handleFiltersChange,
         onClearFilters: handleClearFilters,
+        onToggleObtained: handleToggleObtained,
       }}
     >
       {children}

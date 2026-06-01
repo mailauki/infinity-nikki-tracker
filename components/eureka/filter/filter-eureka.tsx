@@ -200,6 +200,7 @@ export default function FilterEureka() {
                         key={variant.id}
                         eurekaVariant={variant}
                         isLoggedIn={isLoggedIn}
+                        isMissingFilter={selectedObtainedFilter === 'missing'}
                       />
                     ))}
               </React.Fragment>
