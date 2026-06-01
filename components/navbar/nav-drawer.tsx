@@ -76,9 +76,9 @@ export default function NavDrawer() {
           top: 0,
           left: 0,
         }}
-        variant="outlined"
+        variant='outlined'
       >
-        <Toolbar>
+        <Toolbar disableGutters sx={{ px: 2.4 }}>
           <IconButton onClick={() => setOpen(!open)}>{open ? <MenuOpen /> : <Menu />}</IconButton>
         </Toolbar>
       </AppBar>

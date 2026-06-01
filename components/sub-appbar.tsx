@@ -3,13 +3,12 @@ import { AppBar, Toolbar } from '@mui/material'
 export default function SubAppBar({ children }: { children: React.ReactNode }) {
   return (
     <AppBar
+      color="default"
       position="fixed"
       sx={{
         top: 0,
         left: 0,
-        backdropFilter: 'blur(8px)',
-        bgcolor: 'surface.containerLowest',
-        border: 'transparent',
+        borderColor: 'transparent',
         borderRadius: 0,
       }}
       variant="outlined"

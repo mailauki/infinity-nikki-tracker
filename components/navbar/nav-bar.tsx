@@ -9,9 +9,12 @@ export default function NavBar() {
   return (
     <>
       <AppBar
-        color="inherit"
+        color='transparent'
         position="fixed"
-        sx={{ zIndex: (theme) => theme.zIndex.appBar + 10, borderColor: 'transparent' }}
+        sx={{
+					zIndex: (theme) => theme.zIndex.appBar + 10,
+					borderColor: 'transparent',
+				}}
         variant="outlined"
       >
         <Toolbar>
