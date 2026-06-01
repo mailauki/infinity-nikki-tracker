@@ -1,11 +1,19 @@
 'use client'
 
+import * as React from 'react'
 import { AppBar, Toolbar } from '@mui/material'
 import PageTitle from './page-title'
 import { useNavBarToolbar } from './navbar-toolbar-context'
 
 export default function NavBar() {
   const { toolbarContent } = useNavBarToolbar()
+  const [mounted, setMounted] = React.useState(false)
+
+  React.useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const content = mounted ? toolbarContent : null
 
   return (
     <AppBar
@@ -18,10 +26,10 @@ export default function NavBar() {
       }}
       variant="outlined"
     >
-      <Toolbar sx={{ justifyContent: 'center', pr: 4, pt: 3, pb: toolbarContent ? 0 : 3 }}>
+      <Toolbar sx={{ justifyContent: 'center', pr: 4, pt: 3, pb: content ? 0 : 3 }}>
         <PageTitle />
       </Toolbar>
-      {toolbarContent && <Toolbar>{toolbarContent}</Toolbar>}
+      {content && <Toolbar>{content}</Toolbar>}
     </AppBar>
   )
 }
