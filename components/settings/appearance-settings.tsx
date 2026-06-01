@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, startTransition } from 'react'
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import BrightnessMediumIcon from '@mui/icons-material/BrightnessMedium'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
@@ -21,8 +21,14 @@ export default function AppearanceSettings() {
     fetch('/api/preferences')
       .then((res) => res.json())
       .then((prefs) => {
-        if (prefs.theme && prefs.theme !== mode) {
-          setMode(prefs.theme)
+        const validThemes = ['system', 'light', 'dark'] as const
+        const saved = prefs.theme
+        if (
+          saved &&
+          (validThemes as readonly string[]).includes(saved) &&
+          saved !== (mode ?? 'system')
+        ) {
+          setMode(saved as 'system' | 'light' | 'dark')
         }
       })
       .catch(() => {})
@@ -39,7 +45,7 @@ export default function AppearanceSettings() {
         onChange={(_, value) => {
           if (!value) return
           setMode(value)
-          updateTheme(value)
+          startTransition(() => updateTheme(value))
         }}
       >
         {modes.map(({ value, label, icon }) => (
