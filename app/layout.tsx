@@ -65,10 +65,8 @@ export default function RootLayout({
         <AppRouterCacheProvider options={{ key: 'css' }}>
           <ThemeProvider defaultMode="system" theme={theme}>
             <CssBaseline />
-            <Suspense>
-              <NavBar />
-            </Suspense>
             <Stack
+              alignItems="flex-start"
               direction="row"
               sx={{
                 minHeight: '100vh',
@@ -79,6 +77,9 @@ export default function RootLayout({
                 <NavDrawer />
               </Suspense>
               <Stack sx={{ flex: 1, minWidth: '300px', px: 2 }}>
+                <Suspense>
+                  <NavBar />
+                </Suspense>
                 <Suspense>
                   <PullToRefresh />
                 </Suspense>

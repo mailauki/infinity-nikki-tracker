@@ -4,18 +4,18 @@ export default function SubAppBar({ children }: { children: React.ReactNode }) {
   return (
     <AppBar
       color="inherit"
-      position="fixed"
+      position="sticky"
       sx={{
-        top: 0,
-        left: 0,
         borderColor: 'transparent',
         backgroundColor: 'surface.containerLowest',
         borderRadius: 0,
+        zIndex: (theme) => theme.zIndex.appBar - 1,
+        marginTop: '-190px',
       }}
       variant="outlined"
     >
-      <Toolbar />
-      <Toolbar sx={{ ml: (theme) => `calc(${theme.spacing(10)} + 21px)` }}>{children}</Toolbar>
+      <Toolbar sx={{ mb: 1 }} />
+      <Toolbar>{children}</Toolbar>
     </AppBar>
   )
 }

@@ -9,6 +9,8 @@ import {
   Theme,
   CSSObject,
   styled,
+  useMediaQuery,
+  useTheme,
 } from '@mui/material'
 import NavSection from './nav-section'
 import { navLinksData } from '@/lib/nav-links'
@@ -43,10 +45,6 @@ const closedMixin = (theme: Theme): CSSObject => ({
   }),
   overflowX: 'hidden',
   width: `calc(${theme.spacing(10)} + 1px)`,
-  [theme.breakpoints.down('sm')]: {
-    width: 0,
-    margin: 0,
-  },
 })
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(({ theme }) => ({
@@ -72,8 +70,53 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   ],
 }))
 
+const navContent = (open: boolean, onClose: () => void) => (
+  <Stack component="nav" sx={{ flex: 1, mx: 1.5, pb: 3 }}>
+    <NavSection items={navLinksData.navMain} open={open} onClose={onClose} />
+
+    <Divider sx={{ my: 0.5 }} />
+
+    <NavSection items={navLinksData.navSecondary} open={open} onClose={onClose} />
+
+    <Stack sx={{ flex: 1, justifyContent: 'flex-end' }}>
+      <NavSection items={navLinksData.navExtra} open={open} onClose={onClose} />
+    </Stack>
+  </Stack>
+)
+
 export default function NavDrawer() {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const [open, setOpen] = React.useState(false)
+
+  if (isMobile) {
+    return (
+      <>
+        {!open && <IconButton
+          sx={{ position: 'fixed', top: 24, left: 18, zIndex: theme.zIndex.drawer + 1 }}
+          onClick={() => setOpen(true)}
+        >
+          <Menu />
+        </IconButton>}
+
+        <MuiDrawer
+          anchor="left"
+          open={open}
+          sx={{ '& .MuiDrawer-paper': { width: '100%' } }}
+          variant="temporary"
+          onClose={() => setOpen(false)}
+        >
+          <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
+            <IconButton onClick={() => setOpen(false)}>
+              <MenuOpen />
+            </IconButton>
+          </Toolbar>
+          <Toolbar />
+          {navContent(true, () => setOpen(false))}
+        </MuiDrawer>
+      </>
+    )
+  }
 
   return (
     <Drawer anchor="left" open={open} variant="permanent">
@@ -81,21 +124,7 @@ export default function NavDrawer() {
         <IconButton onClick={() => setOpen(!open)}>{open ? <MenuOpen /> : <Menu />}</IconButton>
       </Toolbar>
       <Toolbar />
-      <Stack component="nav" sx={{ flex: 1, mx: 1.5, pb: 3 }}>
-        <NavSection items={navLinksData.navMain} open={open} onClose={() => setOpen(false)} />
-
-        <Divider sx={{ my: 0.5 }} />
-
-        <NavSection
-          items={navLinksData.navSecondary}
-          open={open}
-          onClose={() => setOpen(false)}
-        />
-
-        <Stack sx={{ flex: 1, justifyContent: 'flex-end' }}>
-          <NavSection items={navLinksData.navExtra} open={open} onClose={() => setOpen(false)} />
-        </Stack>
-      </Stack>
+      {navContent(open, () => setOpen(false))}
     </Drawer>
   )
 }
