@@ -31,6 +31,7 @@ interface EurekaDataContextValue {
   filters: FilterState
   onFiltersChange: (updates: Partial<FilterState>) => void
   onClearFilters: () => void
+  onToggleObtained: (eureka_set: string, category: string, color: string) => void
 }
 
 const DEFAULT_FILTERS: FilterState = {
@@ -59,6 +60,7 @@ export const EurekaDataContext = createContext<EurekaDataContextValue>({
   filters: DEFAULT_FILTERS,
   onFiltersChange: () => {},
   onClearFilters: () => {},
+  onToggleObtained: () => {},
 })
 
 export { DEFAULT_FILTERS }
