@@ -32,10 +32,12 @@ export default function OutfitVariantList({
           list="outfits/variants"
           slug={row.slug ?? undefined}
           subheader={
-            [toTitle(row.outfit_category!), toTitle(row.evolution!)].filter(Boolean).join(' • ') ||
-            undefined
+            [row.outfit_category, row.evolution]
+              .filter(Boolean)
+              .map((v) => toTitle(v!))
+              .join(' • ') || undefined
           }
-          title={toTitle(row.outfit_set!) ?? '—'}
+          title={row.outfit_set ? toTitle(row.outfit_set) : '—'}
           updated_at={row.updated_at}
         />
       )}
