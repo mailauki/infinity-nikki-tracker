@@ -36,27 +36,27 @@ export default function AppearanceSettings() {
   }, [])
 
   return (
-	<Container maxWidth='sm' sx={{ mx: 0 }}>
-    <Stack spacing={2}>
-      <Typography variant="subtitle1">Theme</Typography>
-      <ToggleButtonGroup
-        exclusive
-        aria-label="theme"
-        value={mode ?? 'system'}
-        onChange={(_, value) => {
-          if (!value) return
-          setMode(value)
-          startTransition(() => updateTheme(value))
-        }}
-      >
-        {modes.map(({ value, label, icon }) => (
-          <ToggleButton key={value} aria-label={label} sx={{ gap: 1, px: 2 }} value={value}>
-            {icon}
-            {label}
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
-    </Stack>
-		</Container>
+    <Container maxWidth="sm" sx={{ mx: 0 }}>
+      <Stack spacing={2}>
+        <Typography variant="subtitle1">Theme</Typography>
+        <ToggleButtonGroup
+          exclusive
+          aria-label="theme"
+          value={mode ?? 'system'}
+          onChange={(_, value) => {
+            if (!value) return
+            setMode(value)
+            startTransition(() => updateTheme(value))
+          }}
+        >
+          {modes.map(({ value, label, icon }) => (
+            <ToggleButton key={value} aria-label={label} sx={{ gap: 1, px: 2 }} value={value}>
+              {icon}
+              {label}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Stack>
+    </Container>
   )
 }

@@ -28,10 +28,7 @@ function SetRowSkeleton() {
 function TrialCardSkeleton() {
   return (
     <Card>
-      <CardHeader
-        disableTypography
-        title={<Skeleton height={28} variant="text" width="50%" />}
-      />
+      <CardHeader disableTypography title={<Skeleton height={28} variant="text" width="50%" />} />
       <Skeleton height={160} variant="rectangular" />
       <CardContent sx={{ p: 0 }}>
         <List disablePadding>

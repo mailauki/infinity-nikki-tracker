@@ -9,8 +9,8 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import ProfileLoading from './loading'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
-import { getColors } from '@/hooks/data/colors'
-import { getCategories } from '@/hooks/data/categories'
+import { getEurekaColors } from '@/hooks/data/eureka-colors'
+import { getEurekaCategories } from '@/hooks/data/eureka-categories'
 import { getTrials } from '@/hooks/data/trials'
 import { getRecentObtained } from '@/hooks/data/obtained-eureka'
 
@@ -42,8 +42,8 @@ async function UserDetails() {
   const role = await getUserRole()
   const user_id = await getUserID()
   const sets = await getEurekaSets()
-  const categories = await getCategories()
-  const colors = await getColors()
+  const categories = await getEurekaCategories()
+  const colors = await getEurekaColors()
   const trials = await getTrials()
   const recentObtained = user_id ? await getRecentObtained(user_id) : []
 
