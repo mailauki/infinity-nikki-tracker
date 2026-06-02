@@ -17,6 +17,7 @@ import {
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 
 export default function NavSection({
   items,
@@ -29,13 +30,29 @@ export default function NavSection({
 }) {
   const { mode, systemMode } = useColorScheme()
   const [mounted, setMounted] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
   useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(async ({ data }) => {
+      const id = data.user?.id
+      if (!id) return
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', id)
+        .single()
+      if (profile?.role === 'admin') setIsAdmin(true)
+    })
+  }, [])
   const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
   const pathname = usePathname()
 
+  const visibleItems = items.filter((item) => !item.adminOnly || isAdmin)
+
   return (
     <List>
-      {items.map((item) => (
+      {visibleItems.map((item) => (
         <ExpandNavLink key={item.title} items={item.items!} open={open} onClose={onClose}>
           <ListItem disablePadding sx={{ display: 'block' }}>
             <Tooltip placement="right" title={open ? '' : item.title}>
@@ -96,9 +113,11 @@ function ExpandNavLink({
   onClose?: () => void
 }>) {
   const [expandOpen, setExpandOpen] = useState(false)
+  const visibleItems = items?.filter((item) => !item.adminOnly)
+
   return (
     <>
-      {open && items ? (
+      {open && visibleItems?.length ? (
         <>
           <Stack direction="row">
             {children}
@@ -108,7 +127,7 @@ function ExpandNavLink({
           </Stack>
           <Collapse unmountOnExit in={expandOpen} timeout="auto">
             <List disablePadding component="div">
-              {items.map((item) => (
+              {visibleItems.map((item) => (
                 <ListItem key={item.title} disablePadding sx={{ display: 'block', py: 0.5 }}>
                   <ListItemButton
                     component={Link}

@@ -64,6 +64,11 @@ export const navLinksData: {
       url: '/profile',
       icon: <AccountCircle />,
     },
+    {
+      title: 'Settings',
+      url: '/settings',
+      icon: <Settings />,
+    },
   ],
   navExtra: [
     {
@@ -75,11 +80,6 @@ export const navLinksData: {
       title: 'Help',
       url: '/help',
       icon: <Help />,
-    },
-    {
-      title: 'Settings',
-      url: '/settings',
-      icon: <Settings />,
     },
   ],
   dashboard: {
