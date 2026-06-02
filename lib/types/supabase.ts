@@ -1,13 +1,37 @@
-export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: '14.1'
+    PostgrestVersion: "14.1"
   }
   public: {
     Tables: {
+      abilities: {
+        Row: {
+          id: number
+          slug: string
+          title: string
+        }
+        Insert: {
+          id?: number
+          slug: string
+          title: string
+        }
+        Update: {
+          id?: number
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -71,18 +95,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'eureka_set_trials_eureka_set_fkey'
-            columns: ['eureka_set']
+            foreignKeyName: "eureka_set_trials_eureka_set_fkey"
+            columns: ["eureka_set"]
             isOneToOne: false
-            referencedRelation: 'eureka_sets'
-            referencedColumns: ['slug']
+            referencedRelation: "eureka_sets"
+            referencedColumns: ["slug"]
           },
           {
-            foreignKeyName: 'eureka_set_trials_trial_fkey'
-            columns: ['trial']
+            foreignKeyName: "eureka_set_trials_trial_fkey"
+            columns: ["trial"]
             isOneToOne: false
-            referencedRelation: 'trials'
-            referencedColumns: ['slug']
+            referencedRelation: "trials"
+            referencedColumns: ["slug"]
           },
         ]
       }
@@ -122,18 +146,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'eureka_sets_label_fkey'
-            columns: ['label']
+            foreignKeyName: "eureka_sets_label_fkey"
+            columns: ["label"]
             isOneToOne: false
-            referencedRelation: 'labels'
-            referencedColumns: ['slug']
+            referencedRelation: "labels"
+            referencedColumns: ["slug"]
           },
           {
-            foreignKeyName: 'eureka_sets_style_fkey'
-            columns: ['style']
+            foreignKeyName: "eureka_sets_style_fkey"
+            columns: ["style"]
             isOneToOne: false
-            referencedRelation: 'styles'
-            referencedColumns: ['slug']
+            referencedRelation: "styles"
+            referencedColumns: ["slug"]
           },
         ]
       }
@@ -173,27 +197,54 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'eureka_variants_category_fkey'
-            columns: ['category']
+            foreignKeyName: "eureka_variants_category_fkey"
+            columns: ["category"]
             isOneToOne: false
-            referencedRelation: 'categories'
-            referencedColumns: ['slug']
+            referencedRelation: "categories"
+            referencedColumns: ["slug"]
           },
           {
-            foreignKeyName: 'eureka_variants_color_fkey'
-            columns: ['color']
+            foreignKeyName: "eureka_variants_color_fkey"
+            columns: ["color"]
             isOneToOne: false
-            referencedRelation: 'colors'
-            referencedColumns: ['slug']
+            referencedRelation: "colors"
+            referencedColumns: ["slug"]
           },
           {
-            foreignKeyName: 'eureka_variants_eureka_set_fkey'
-            columns: ['eureka_set']
+            foreignKeyName: "eureka_variants_eureka_set_fkey"
+            columns: ["eureka_set"]
             isOneToOne: false
-            referencedRelation: 'eureka_sets'
-            referencedColumns: ['slug']
+            referencedRelation: "eureka_sets"
+            referencedColumns: ["slug"]
           },
         ]
+      }
+      evolutions: {
+        Row: {
+          description: string | null
+          id: number
+          order: number
+          slug: string
+          subtitle: string | null
+          title: string
+        }
+        Insert: {
+          description?: string | null
+          id?: number
+          order: number
+          slug: string
+          subtitle?: string | null
+          title: string
+        }
+        Update: {
+          description?: string | null
+          id?: number
+          order?: number
+          slug?: string
+          subtitle?: string | null
+          title?: string
+        }
+        Relationships: []
       }
       labels: {
         Row: {
@@ -243,25 +294,217 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'obtained_eureka_category_fkey'
-            columns: ['category']
+            foreignKeyName: "obtained_eureka_category_fkey"
+            columns: ["category"]
             isOneToOne: false
-            referencedRelation: 'categories'
-            referencedColumns: ['slug']
+            referencedRelation: "categories"
+            referencedColumns: ["slug"]
           },
           {
-            foreignKeyName: 'obtained_eureka_color_fkey'
-            columns: ['color']
+            foreignKeyName: "obtained_eureka_color_fkey"
+            columns: ["color"]
             isOneToOne: false
-            referencedRelation: 'colors'
-            referencedColumns: ['slug']
+            referencedRelation: "colors"
+            referencedColumns: ["slug"]
           },
           {
-            foreignKeyName: 'obtained_eureka_eureka_set_fkey'
-            columns: ['eureka_set']
+            foreignKeyName: "obtained_eureka_eureka_set_fkey"
+            columns: ["eureka_set"]
             isOneToOne: false
-            referencedRelation: 'eureka_sets'
-            referencedColumns: ['slug']
+            referencedRelation: "eureka_sets"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      obtained_outfit: {
+        Row: {
+          created_at: string
+          evolution: string
+          id: number
+          outfit_category: string
+          outfit_set: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          evolution: string
+          id?: number
+          outfit_category: string
+          outfit_set: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          evolution?: string
+          id?: number
+          outfit_category?: string
+          outfit_set?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "obtained_outfit_category_fkey"
+            columns: ["outfit_category"]
+            isOneToOne: false
+            referencedRelation: "outfit_categories"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "obtained_outfit_evolution_fkey"
+            columns: ["evolution"]
+            isOneToOne: false
+            referencedRelation: "evolutions"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "obtained_outfit_set_fkey"
+            columns: ["outfit_set"]
+            isOneToOne: false
+            referencedRelation: "outfit_sets"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      outfit_categories: {
+        Row: {
+          id: number
+          part: string
+          slug: string
+          title: string
+          type: string
+        }
+        Insert: {
+          id?: number
+          part: string
+          slug: string
+          title: string
+          type: string
+        }
+        Update: {
+          id?: number
+          part?: string
+          slug?: string
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      outfit_sets: {
+        Row: {
+          ability: string | null
+          created_at: string | null
+          description: string | null
+          id: number
+          label: string | null
+          rarity: number
+          slug: string
+          style: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          ability?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          label?: string | null
+          rarity: number
+          slug: string
+          style?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          ability?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          label?: string | null
+          rarity?: number
+          slug?: string
+          style?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outfit_sets_ability_fkey"
+            columns: ["ability"]
+            isOneToOne: false
+            referencedRelation: "abilities"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outfit_sets_label_fkey"
+            columns: ["label"]
+            isOneToOne: false
+            referencedRelation: "labels"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outfit_sets_style_fkey"
+            columns: ["style"]
+            isOneToOne: false
+            referencedRelation: "styles"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      outfit_variants: {
+        Row: {
+          created_at: string | null
+          default: boolean
+          evolution: string | null
+          id: number
+          image_url: string | null
+          outfit_category: string | null
+          outfit_set: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          default?: boolean
+          evolution?: string | null
+          id?: number
+          image_url?: string | null
+          outfit_category?: string | null
+          outfit_set: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          default?: boolean
+          evolution?: string | null
+          id?: number
+          image_url?: string | null
+          outfit_category?: string | null
+          outfit_set?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outfit_variants_evolution_fkey"
+            columns: ["evolution"]
+            isOneToOne: false
+            referencedRelation: "evolutions"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outfit_variants_outfit_category_fkey"
+            columns: ["outfit_category"]
+            isOneToOne: false
+            referencedRelation: "outfit_categories"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outfit_variants_outfit_set_fkey"
+            columns: ["outfit_set"]
+            isOneToOne: false
+            referencedRelation: "outfit_sets"
+            referencedColumns: ["slug"]
           },
         ]
       }
@@ -400,11 +643,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'user_preferences_user_id_fkey'
-            columns: ['user_id']
+            foreignKeyName: "user_preferences_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -418,6 +661,14 @@ export type Database = {
         Args: { p_category: string; p_color: string; p_eureka_set: string }
         Returns: undefined
       }
+      toggle_obtained_outfit: {
+        Args: {
+          p_evolution: string
+          p_outfit_category: string
+          p_outfit_set: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
@@ -428,31 +679,33 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables'] & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
       ? R
@@ -461,23 +714,23 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Insert: infer I
       }
       ? I
@@ -486,23 +739,23 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
         Update: infer U
       }
       ? U
@@ -511,36 +764,36 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
