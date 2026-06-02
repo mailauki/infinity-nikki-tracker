@@ -145,3 +145,5 @@ create policy outfit_variants_admin_write on public.outfit_variants
 
 create index outfit_variants_slug_idx on public.outfit_variants (slug);
 create index outfit_variants_outfit_set_idx on public.outfit_variants (outfit_set);
+create index outfit_variants_outfit_category_idx on public.outfit_variants (outfit_category);
+create index outfit_variants_evolution_idx on public.outfit_variants (evolution);
