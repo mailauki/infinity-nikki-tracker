@@ -1,6 +1,6 @@
 'use client'
 
-import { Color } from '@/lib/types/eureka'
+import { EurekaColor } from '@/lib/types/eureka'
 import { ColorLens } from '@mui/icons-material'
 import {
   FormControl,
@@ -20,7 +20,7 @@ export default function ColorSelect({
   onColorChange,
   disabled,
 }: {
-  colors: Color[]
+  colors: EurekaColor[]
   selectedColor: string | null
   onColorChange: (event: SelectChangeEvent) => void
   disabled: boolean

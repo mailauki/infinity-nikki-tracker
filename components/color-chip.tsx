@@ -1,4 +1,4 @@
-import { Color } from '@/lib/types/eureka'
+import { EurekaColor } from '@/lib/types/eureka'
 import { Chip } from '@mui/material'
 import LazyAvatar from './eureka/lazy-avatar'
 import { Done } from '@mui/icons-material'
@@ -8,7 +8,7 @@ export default function ColorChip({
   selectedColor,
   toggleColor,
 }: {
-  color: Color
+  color: EurekaColor
   selectedColor?: string
   toggleColor?: (value: string) => void
 }) {

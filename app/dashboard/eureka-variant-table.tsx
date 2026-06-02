@@ -18,7 +18,7 @@ import {
 } from '@mui/x-data-grid'
 import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
-import { Category as CategoryType, Color, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
+import { EurekaCategory, EurekaColor, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { updateEurekaVariant } from '@/app/dashboard/actions'
 
@@ -27,8 +27,8 @@ type Row = EurekaVariantRaw
 interface EurekaVariantTableProps {
   rows: Row[]
   eurekaSets: EurekaSet[]
-  categories: CategoryType[]
-  colors: Color[]
+  categories: EurekaCategory[]
+  colors: EurekaColor[]
 }
 
 const LOCKED_FIELDS = ['slug', 'image_url', 'updated_at']

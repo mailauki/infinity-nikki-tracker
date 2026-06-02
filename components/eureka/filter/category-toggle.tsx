@@ -1,6 +1,6 @@
 'use client'
 
-import { Category } from '@/lib/types/eureka'
+import { EurekaCategory } from '@/lib/types/eureka'
 import { CategoryFilter } from '@/lib/types/props'
 import CategoryIcon from '@mui/icons-material/Category'
 import {
@@ -20,7 +20,7 @@ export default function CategoryToggle({
   onCategoryChange,
   disabled,
 }: {
-  categories: Category[]
+  categories: EurekaCategory[]
   selectedCategory: CategoryFilter | null
   onCategoryChange: (
     event: React.MouseEvent<HTMLElement>,

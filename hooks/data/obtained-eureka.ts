@@ -34,8 +34,8 @@ export const getRecentObtained = cache(async (user_id: UUID | string) => {
 			color,
 			created_at,
 			eureka_sets ( title, eureka_variants ( image_url, category, color ) ),
-			categories ( title ),
-			colors ( title )
+			eureka_categories ( title ),
+			eureka_colors ( title )
 		`
     )
     .eq('user_id', user_id)

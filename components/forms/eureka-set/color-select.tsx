@@ -1,4 +1,4 @@
-import { Color } from '@/lib/types/eureka'
+import { EurekaColor } from '@/lib/types/eureka'
 import { CheckBox, CheckBoxOutlineBlank, ColorLens } from '@mui/icons-material'
 import {
   Box,
@@ -42,7 +42,7 @@ export default function ColorSelect({
   handleChange,
   maxColors,
 }: {
-  colors: Color[]
+  colors: EurekaColor[]
   colorSelect: string[]
   handleChange: (event: SelectChangeEvent<typeof colorSelect>) => void
   maxColors: number

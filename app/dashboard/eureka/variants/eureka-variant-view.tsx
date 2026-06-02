@@ -1,7 +1,7 @@
 'use client'
 
 import { useDashboardView } from '../../dashboard-view-context'
-import { Category, Color, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
+import { EurekaCategory, EurekaColor, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
 import { EurekaVariantTable } from '../../eureka-variant-table'
 import EurekaVariantList from '../../eureka-variant-list'
 import TableContainer from '../../table-container'
@@ -14,8 +14,8 @@ export default function EurekaVariantView({
 }: {
   eurekaVariants: EurekaVariantRaw[]
   eurekaSets: EurekaSet[]
-  categories: Category[]
-  colors: Color[]
+  categories: EurekaCategory[]
+  colors: EurekaColor[]
 }) {
   const { view } = useDashboardView()
 

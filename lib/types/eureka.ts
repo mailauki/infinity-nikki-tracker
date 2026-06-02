@@ -6,8 +6,8 @@ export type EurekaSet = Tables<'eureka_sets'> & {
   image_url: string
   eureka_variants: EurekaVariant[]
   eureka_set_trials: EurekaSetTrial[]
-  categories: Category[]
-  colors: Color[]
+  categories: EurekaCategory[]
+  colors: EurekaColor[]
 }
 
 export type EurekaSetRaw = Pick<
@@ -22,8 +22,8 @@ export type EurekaVariantRaw = Pick<
   'id' | 'slug' | 'eureka_set' | 'color' | 'category' | 'image_url' | 'default' | 'updated_at'
 > & {
   eureka_sets: { title: string } | null
-  categories: { title: string } | null
-  colors: { title: string | null } | null
+  eureka_categories: { title: string } | null
+  eureka_colors: { title: string | null } | null
 }
 
 export type EurekaVariant = Pick<
@@ -44,8 +44,8 @@ export type RecentObtained = Pick<
     title: string
     eureka_variants: { image_url: string | null; category: string | null; color: string | null }[]
   } | null
-  categories: { title: string } | null
-  colors: { title: string | null } | null
+  eureka_categories: { title: string } | null
+  eureka_colors: { title: string | null } | null
 }
 
 export interface ObtainedCount {
@@ -60,9 +60,9 @@ export interface Total {
   eurekaSets?: EurekaSet[]
 }
 
-export type Category = Pick<Tables<'categories'>, 'slug' | 'title' | 'image_url'>
+export type EurekaCategory = Pick<Tables<'eureka_categories'>, 'slug' | 'title' | 'image_url'>
 
-export type Color = Pick<Tables<'colors'>, 'slug' | 'title' | 'image_url'>
+export type EurekaColor = Pick<Tables<'eureka_colors'>, 'slug' | 'title' | 'image_url'>
 
 export type Style = Pick<Tables<'styles'>, 'slug' | 'title'>
 

@@ -46,7 +46,7 @@ export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
                 </ListItemAvatar>
                 <ListItemText
                   primary={item.eureka_sets?.title ?? toTitle(item.eureka_set ?? '')}
-                  secondary={[item.categories?.title, item.colors?.title]
+                  secondary={[item.eureka_categories?.title, item.eureka_colors?.title]
                     .filter(Boolean)
                     .join(' • ')}
                   slotProps={{

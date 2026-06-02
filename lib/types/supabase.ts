@@ -26,7 +26,7 @@ export type Database = {
         }
         Relationships: []
       }
-      categories: {
+      eureka_categories: {
         Row: {
           created_at: string
           id: number
@@ -50,7 +50,7 @@ export type Database = {
         }
         Relationships: []
       }
-      colors: {
+      eureka_colors: {
         Row: {
           created_at: string
           id: number
@@ -194,14 +194,14 @@ export type Database = {
             foreignKeyName: 'eureka_variants_category_fkey'
             columns: ['category']
             isOneToOne: false
-            referencedRelation: 'categories'
+            referencedRelation: 'eureka_categories'
             referencedColumns: ['slug']
           },
           {
             foreignKeyName: 'eureka_variants_color_fkey'
             columns: ['color']
             isOneToOne: false
-            referencedRelation: 'colors'
+            referencedRelation: 'eureka_colors'
             referencedColumns: ['slug']
           },
           {
@@ -291,14 +291,14 @@ export type Database = {
             foreignKeyName: 'obtained_eureka_category_fkey'
             columns: ['category']
             isOneToOne: false
-            referencedRelation: 'categories'
+            referencedRelation: 'eureka_categories'
             referencedColumns: ['slug']
           },
           {
             foreignKeyName: 'obtained_eureka_color_fkey'
             columns: ['color']
             isOneToOne: false
-            referencedRelation: 'colors'
+            referencedRelation: 'eureka_colors'
             referencedColumns: ['slug']
           },
           {

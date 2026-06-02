@@ -25,8 +25,8 @@ import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { toSlug, toTitle } from '@/lib/utils'
 import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
 import {
-  Category,
-  Color,
+  EurekaCategory,
+  EurekaColor,
   EurekaSetRaw,
   EurekaVariant,
   Label,
@@ -57,8 +57,8 @@ export default function EditEurekaSetForm({
   trials: Trial[]
   styles: Style[]
   labels: Label[]
-  colors: Color[]
-  categories: Category[]
+  colors: EurekaColor[]
+  categories: EurekaCategory[]
   initialColors: string[]
   initialDefaultColor?: string
   initialVariants?: EurekaVariant[]

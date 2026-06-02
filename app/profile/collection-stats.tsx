@@ -23,7 +23,7 @@ import {
 import { TransitionProps } from '@mui/material/transitions'
 import { Close } from '@mui/icons-material'
 import { countObtained, percent } from '@/hooks/count-obtained'
-import { Category, Color, EurekaSet, Trial } from '@/lib/types/eureka'
+import { EurekaCategory, EurekaColor, EurekaSet, Trial } from '@/lib/types/eureka'
 import EurekaCardProgress from '@/components/eureka/eureka-card-progress'
 import LazyAvatar from '@/components/eureka/lazy-avatar'
 import { toTitle } from '@/lib/utils'
@@ -139,8 +139,8 @@ export default function CollectionStats({
   trials,
 }: {
   sets: EurekaSet[]
-  colors: Color[]
-  categories: Category[]
+  colors: EurekaColor[]
+  categories: EurekaCategory[]
   trials: Trial[]
 }) {
   const allVariants = sets.flatMap((set) => set.eureka_variants)

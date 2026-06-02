@@ -18,8 +18,8 @@ export const getEurekaVariantsRaw = cache(async () => {
 			default,
 			updated_at,
 			eureka_sets ( title ),
-			categories ( title ),
-			colors ( title )
+			eureka_categories ( title ),
+			eureka_colors ( title )
 			`
     )
     .order('id', { ascending: false })
@@ -43,8 +43,8 @@ export const getEurekaVariantRaw = cache(async (slug: string) => {
 			default,
 			updated_at,
 			eureka_sets ( title ),
-			categories ( title ),
-			colors ( title )
+			eureka_categories ( title ),
+			eureka_colors ( title )
 			`
     )
     .eq('slug', slug)
