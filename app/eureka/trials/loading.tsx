@@ -4,21 +4,23 @@ import {
   CardActions,
   CardContent,
   CardHeader,
-  Grid,
   List,
   ListItem,
+  ListSubheader,
   Skeleton,
+  Stack,
 } from '@mui/material'
 
-function NestedSetSkeleton() {
+function SetRowSkeleton() {
   return (
-    <ListItem disablePadding>
-      <CardHeader
-        avatar={<Skeleton height={40} variant="circular" width={40} />}
-        subheader={<Skeleton width="40%" />}
-        sx={{ width: '100%' }}
-        title={<Skeleton width="60%" />}
-      />
+    <ListItem disablePadding sx={{ px: 2, py: 1 }}>
+      <Stack alignItems="center" direction="row" spacing={2} sx={{ width: '100%' }}>
+        <Skeleton height={40} variant="circular" width={40} />
+        <Stack flex={1} spacing={0.5}>
+          <Skeleton height={20} variant="text" width="60%" />
+          <Skeleton height={16} variant="text" width="40%" />
+        </Stack>
+      </Stack>
     </ListItem>
   )
 }
@@ -27,15 +29,14 @@ function TrialCardSkeleton() {
   return (
     <Card>
       <CardHeader
-        action={<Skeleton height={24} variant="rounded" width={60} />}
-        subheader={<Skeleton width="20%" />}
-        title={<Skeleton width="50%" />}
+        disableTypography
+        title={<Skeleton height={28} variant="text" width="50%" />}
       />
       <Skeleton height={160} variant="rectangular" />
       <CardContent sx={{ p: 0 }}>
-        <List sx={{ width: '100%' }}>
-          <NestedSetSkeleton />
-          <NestedSetSkeleton />
+        <List disablePadding>
+          <SetRowSkeleton />
+          <SetRowSkeleton />
         </List>
       </CardContent>
       <CardActions>
@@ -45,16 +46,27 @@ function TrialCardSkeleton() {
   )
 }
 
+function RealmGroupSkeleton() {
+  return (
+    <Box>
+      <ListSubheader sx={{ bgcolor: 'surface.containerLowest' }}>
+        <Skeleton height={20} variant="text" width={120} />
+      </ListSubheader>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+        <TrialCardSkeleton />
+        <TrialCardSkeleton />
+      </Box>
+    </Box>
+  )
+}
+
 export default function TrialsLoading() {
   return (
-    <Box sx={{ flexGrow: 1, py: 3 }}>
-      <Grid container spacing={2}>
-        {Array.from({ length: 4 }).map((_, i) => (
-          <Grid key={i} size={{ xs: 12, md: 6 }}>
-            <TrialCardSkeleton />
-          </Grid>
-        ))}
-      </Grid>
+    <Box sx={{ flexGrow: 1, pb: 3 }}>
+      <Stack spacing={4}>
+        <RealmGroupSkeleton />
+        <RealmGroupSkeleton />
+      </Stack>
     </Box>
   )
 }

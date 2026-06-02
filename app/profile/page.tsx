@@ -7,6 +7,7 @@ import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
+import ProfileLoading from './loading'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getColors } from '@/hooks/data/colors'
 import { getCategories } from '@/hooks/data/categories'
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
 
 export default function ProfilePage() {
   return (
-    <Suspense>
+    <Suspense fallback={<ProfileLoading />}>
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <UserDetails />
       </Stack>
