@@ -70,18 +70,7 @@ export const getOutfitSets = cache(async () => {
 
   const obtainedOutfit = await getObtainedOutfit(user_id)
 
-  return outfits.map((outfitSet) => ({
-    ...outfitSet,
-    outfit_variants: outfitSet.outfit_variants.map((variant) => ({
-      ...variant,
-      obtained: !!obtainedOutfit.find(
-        (o) =>
-          variant.outfit_set === o.outfit_set &&
-          variant.outfit_category === o.outfit_category &&
-          variant.evolution === o.evolution
-      ),
-    })) as OutfitVariant[],
-  })) as OutfitSet[]
+  return outfits.map((outfitSet) => updateOutfitSet({ outfitSet, obtainedOutfit }))
 })
 
 export const getOutfitSet = cache(async (slug: string) => {
