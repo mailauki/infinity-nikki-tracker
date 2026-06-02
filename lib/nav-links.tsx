@@ -76,11 +76,12 @@ export const navLinksData: {
       icon: <Dashboard />,
       adminOnly: true,
       items: [
-        { title: 'Sets', url: '/dashboard/eureka/sets' },
-        { title: 'Variants', url: '/dashboard/eureka/variants' },
+        { title: 'Eureka Sets', url: '/dashboard/eureka/sets' },
+        { title: 'Eureka Variants', url: '/dashboard/eureka/variants' },
         { title: 'Trials', url: '/dashboard/eureka/trials' },
         { title: 'Outfit Sets', url: '/dashboard/outfits/sets' },
         { title: 'Outfit Variants', url: '/dashboard/outfits/variants' },
+				{ title: 'Evolutions', url: '/dashboard/outfits/evolutions'}
       ],
     },
   ],

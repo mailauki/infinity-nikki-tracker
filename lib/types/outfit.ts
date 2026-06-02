@@ -2,10 +2,7 @@ import { Tables } from './supabase'
 
 export type Ability = Pick<Tables<'abilities'>, 'slug' | 'title'>
 
-export type OutfitCategory = Pick<
-  Tables<'outfit_categories'>,
-  'slug' | 'title' | 'type' | 'part'
->
+export type OutfitCategory = Pick<Tables<'outfit_categories'>, 'slug' | 'title' | 'type' | 'part'>
 
 export type Evolution = Pick<
   Tables<'evolutions'>,
