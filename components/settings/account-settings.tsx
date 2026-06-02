@@ -46,14 +46,13 @@ function ChangeEmailSection() {
       <Stack component="form" spacing={1} onSubmit={handleSubmit}>
         <TextField
           label="New email"
-          size="small"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         {success && <Alert severity="success">Confirmation sent to your new email</Alert>}
         {error && <Alert severity="error">{error}</Alert>}
-        <Button disabled={loading || !email} type="submit" variant="outlined">
+        <Button size='large' disabled={loading || !email} type="submit" variant="outlined">
           {loading ? 'Saving…' : 'Update email'}
         </Button>
       </Stack>
@@ -94,7 +93,6 @@ function ChangePasswordSection() {
       <Stack component="form" spacing={1} onSubmit={handleSubmit}>
         <TextField
           label="New password"
-          size="small"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -103,7 +101,6 @@ function ChangePasswordSection() {
           error={mismatch}
           helperText={mismatch ? 'Passwords do not match' : undefined}
           label="Confirm password"
-          size="small"
           type="password"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
@@ -111,6 +108,7 @@ function ChangePasswordSection() {
         {success && <Alert severity="success">Password updated</Alert>}
         {error && <Alert severity="error">{error}</Alert>}
         <Button
+					size='large'
           disabled={loading || !password || !confirm || mismatch}
           type="submit"
           variant="outlined"
@@ -140,6 +138,7 @@ function DangerZoneSection() {
 
   return (
     <Stack spacing={2}>
+			<Divider />
       <Typography variant="subtitle1">Danger zone</Typography>
       <Button
         color="error"
@@ -177,6 +176,7 @@ function DangerZoneSection() {
 function AdminAccessSection() {
   return (
     <Stack spacing={2}>
+			<Divider />
       <Typography variant="subtitle1">Admin access</Typography>
       <Typography color="textSecondary" variant="body2">
         Admin access lets you manage Eureka sets, variants, and trials from the dashboard.
@@ -199,9 +199,7 @@ export default function AccountSettings({ isAdmin }: { isAdmin: boolean }) {
       <Stack spacing={3}>
         <ChangeEmailSection />
         <ChangePasswordSection />
-        <Divider />
         {!isAdmin && <AdminAccessSection />}
-        {!isAdmin && <Divider />}
         <DangerZoneSection />
       </Stack>
     </Container>
