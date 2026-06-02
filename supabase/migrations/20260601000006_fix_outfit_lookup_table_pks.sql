@@ -60,9 +60,9 @@ alter table public.outfit_variants
   add constraint outfit_variants_evolution_fkey
     foreign key (evolution) references public.evolutions (slug) on update cascade;
 
--- Relax the order check to allow any positive integer (not just 1–5)
+-- Ensure order check uses open-ended lower bound (>= 1, no upper cap)
 alter table public.evolutions
-  drop constraint evolutions_order_check;
+  drop constraint if exists evolutions_order_check;
 
 alter table public.evolutions
   add constraint evolutions_order_check check ("order" >= 1);

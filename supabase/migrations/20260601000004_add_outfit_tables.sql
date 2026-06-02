@@ -6,7 +6,6 @@ create table public.abilities (
   slug  text      not null,
   title text      not null,
   constraint abilities_pkey primary key (id, slug),
-  constraint abilities_slug_key unique (slug),
   constraint abilities_title_key unique (title)
 );
 
@@ -30,7 +29,6 @@ create table public.outfit_categories (
   type  text      not null,
   part  text      not null,
   constraint outfit_categories_pkey primary key (id, slug),
-  constraint outfit_categories_slug_key unique (slug),
   constraint outfit_categories_title_key unique (title)
 );
 
@@ -55,7 +53,6 @@ create table public.evolutions (
   description text,
   "order"     smallint  not null,
   constraint evolutions_pkey primary key (id, slug),
-  constraint evolutions_slug_key unique (slug),
   constraint evolutions_title_key unique (title),
   constraint evolutions_order_check check ("order" >= 1)
 );
