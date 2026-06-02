@@ -22,11 +22,6 @@ async function DashboardView() {
   ])
 
   return (
-    <OutfitSetView
-      abilities={abilities}
-      labels={labels}
-      outfitSets={outfitSets}
-      styles={styles}
-    />
+    <OutfitSetView abilities={abilities} labels={labels} outfitSets={outfitSets} styles={styles} />
   )
 }

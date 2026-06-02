@@ -22,12 +22,7 @@ export default function OutfitSetView({
 
   return view === 'table' ? (
     <TableContainer>
-      <OutfitSetTable
-        abilities={abilities}
-        labels={labels}
-        rows={outfitSets}
-        styles={styles}
-      />
+      <OutfitSetTable abilities={abilities} labels={labels} rows={outfitSets} styles={styles} />
     </TableContainer>
   ) : (
     <OutfitSetList rows={outfitSets} />

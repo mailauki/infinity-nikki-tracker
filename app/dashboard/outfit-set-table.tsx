@@ -45,7 +45,12 @@ function LockedCell({ children, href }: { children: React.ReactNode; href: strin
   )
 }
 
-export function OutfitSetTable({ rows: initialRows, styles, labels, abilities }: OutfitSetTableProps) {
+export function OutfitSetTable({
+  rows: initialRows,
+  styles,
+  labels,
+  abilities,
+}: OutfitSetTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
