@@ -174,15 +174,36 @@ function DangerZoneSection() {
   )
 }
 
-export default function AccountSettings() {
+function AdminAccessSection() {
   return (
-	<Container maxWidth='sm' sx={{ mx: 0 }}>
-		<Stack spacing={3}>
-			<ChangeEmailSection />
-			<ChangePasswordSection />
-			<Divider />
-			<DangerZoneSection />
-		</Stack>
-		</Container>
+    <Stack spacing={2}>
+      <Typography variant="subtitle1">Admin access</Typography>
+      <Typography color="textSecondary" variant="body2">
+        Admin access lets you manage Eureka sets, variants, and trials from the dashboard.
+      </Typography>
+      <Button
+        component="a"
+        href="mailto:julie.ux.dev@gmail.com?subject=Admin%20Access%20Request&body=Hi%2C%20I%27d%20like%20to%20request%20admin%20access%20for%20the%20Infinity%20Nikki%20Tracker."
+        sx={{ alignSelf: 'flex-start' }}
+        variant="outlined"
+      >
+        Request admin access
+      </Button>
+    </Stack>
+  )
+}
+
+export default function AccountSettings({ isAdmin }: { isAdmin: boolean }) {
+  return (
+    <Container maxWidth="sm" sx={{ mx: 0 }}>
+      <Stack spacing={3}>
+        <ChangeEmailSection />
+        <ChangePasswordSection />
+        <Divider />
+        {!isAdmin && <AdminAccessSection />}
+        {!isAdmin && <Divider />}
+        <DangerZoneSection />
+      </Stack>
+    </Container>
   )
 }

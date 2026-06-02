@@ -2,7 +2,7 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 import SettingsTabs from '@/components/settings/settings-tabs'
-import { getUserID } from '@/hooks/user'
+import { getUserID, getUserRole } from '@/hooks/user'
 import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
@@ -19,6 +19,7 @@ export default function SettingsPage() {
 
 async function SettingsContent() {
   const user_id = await getUserID()
+  const role = user_id ? await getUserRole() : null
   const supabase = await createClient()
   const {
     data: { user },
@@ -26,7 +27,7 @@ async function SettingsContent() {
 
   return (
     <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-      <SettingsTabs isLoggedIn={!!user_id} user={user} />
+      <SettingsTabs isAdmin={role === 'admin'} isLoggedIn={!!user_id} user={user} />
     </Stack>
   )
 }
