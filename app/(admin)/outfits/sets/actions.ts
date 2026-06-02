@@ -138,10 +138,11 @@ export async function editOutfitSet(
   )
   for (const [key, value] of variantImageEntries) {
     const variantSlug = key.replace('variant_image_', '')
-    await supabase
+    const { error: imgError } = await supabase
       .from('outfit_variants')
       .update({ image_url: (value as string) || null })
       .eq('slug', variantSlug)
+    if (imgError) return { error: imgError.message }
   }
 
   redirect(backUrl)
