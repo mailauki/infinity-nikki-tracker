@@ -4,8 +4,12 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { toSlugVariant } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
+import { getUserRole } from '@/hooks/user'
 
 export async function addOutfitVariant(_: unknown, formData: FormData) {
+  const role = await getUserRole()
+  if (role !== 'admin') return { error: 'Forbidden' }
+
   const supabase = await createClient()
 
   const outfit_set = (formData.get('outfit_set') as string | null) || ''
@@ -32,6 +36,9 @@ export async function editOutfitVariant(
   _: unknown,
   formData: FormData
 ) {
+  const role = await getUserRole()
+  if (role !== 'admin') return { error: 'Forbidden' }
+
   const supabase = await createClient()
 
   const outfit_set = (formData.get('outfit_set') as string | null) || ''

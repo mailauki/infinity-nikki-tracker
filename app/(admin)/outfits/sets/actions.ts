@@ -4,8 +4,12 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { toSlugVariant } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
+import { getUserRole } from '@/hooks/user'
 
 export async function addOutfitSet(_: unknown, formData: FormData) {
+  const role = await getUserRole()
+  if (role !== 'admin') return { error: 'Forbidden' }
+
   const supabase = await createClient()
 
   const title = (formData.get('title') as string | null)?.trim() ?? ''
@@ -20,9 +24,9 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
     (formData.get('evolution_select') as string) || '[]'
   ) as string[]
   const defaultEvolution = (formData.get('default_evolution') as string | null) || ''
-  const outfitCategories = JSON.parse(
-    (formData.get('outfit_categories') as string) || '[]'
-  ) as { slug: string }[]
+  const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
+    slug: string
+  }[]
 
   if (!rarity) return { error: 'Rarity is required.' }
 
@@ -63,6 +67,9 @@ export async function editOutfitSet(
   _: unknown,
   formData: FormData
 ) {
+  const role = await getUserRole()
+  if (role !== 'admin') return { error: 'Forbidden' }
+
   const supabase = await createClient()
 
   const title = (formData.get('title') as string | null)?.trim() ?? ''
@@ -77,15 +84,24 @@ export async function editOutfitSet(
     (formData.get('evolution_select') as string) || '[]'
   ) as string[]
   const defaultEvolution = (formData.get('default_evolution') as string | null) || ''
-  const outfitCategories = JSON.parse(
-    (formData.get('outfit_categories') as string) || '[]'
-  ) as { slug: string }[]
+  const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
+    slug: string
+  }[]
 
   if (!rarity) return { error: 'Rarity is required.' }
 
   const { error } = await supabase
     .from('outfit_sets')
-    .update({ title, slug, description, rarity, style, label, ability, updated_at: new Date().toISOString() })
+    .update({
+      title,
+      slug,
+      description,
+      rarity,
+      style,
+      label,
+      ability,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', id)
 
   if (error) return { error: error.message }

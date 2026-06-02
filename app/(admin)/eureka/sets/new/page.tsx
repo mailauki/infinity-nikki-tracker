@@ -3,8 +3,8 @@ import AddEurekaSetForm from './add-eureka-set-form'
 import { getTrials } from '@/hooks/data/trials'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
-import { getColors } from '@/hooks/data/colors'
-import { getCategories } from '@/hooks/data/categories'
+import { getEurekaColors } from '@/hooks/data/eureka-colors'
+import { getEurekaCategories } from '@/hooks/data/eureka-categories'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -27,8 +27,8 @@ async function NewEurekaSet() {
     getTrials(),
     getStyles(),
     getLabels(),
-    getColors(),
-    getCategories(),
+    getEurekaColors(),
+    getEurekaCategories(),
   ])
 
   return (

@@ -84,7 +84,7 @@ export default function EditOutfitVariantForm({
   const autoSlug =
     outfitSet && outfitCategory && evolution
       ? toSlugVariant(outfitSet, outfitCategory, evolution)
-      : ''
+      : (variant.slug ?? '')
   const currentSlug = editSlug ? slug : autoSlug
 
   return (
