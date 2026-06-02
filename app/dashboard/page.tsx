@@ -1,6 +1,8 @@
 import { Suspense } from 'react'
 import { getAdminData } from '@/hooks/data/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
+import { getOutfitSets } from '@/hooks/data/outfit-sets'
+import { getOutfitVariantsRaw } from '@/hooks/data/admin/outfit-variants'
 import { getUserRole } from '@/hooks/user'
 import { Metadata } from 'next'
 import { Box } from '@mui/material'
@@ -21,11 +23,14 @@ export default function DashboardPage() {
 }
 
 async function DashboardContent() {
-  const [eurekaSets, { eurekaVariants, trials }, role] = await Promise.all([
-    getEurekaSets(),
-    getAdminData(),
-    getUserRole(),
-  ])
+  const [eurekaSets, { eurekaVariants, trials }, outfitSets, outfitVariants, role] =
+    await Promise.all([
+      getEurekaSets(),
+      getAdminData(),
+      getOutfitSets(),
+      getOutfitVariantsRaw(),
+      getUserRole(),
+    ])
 
   const isAdmin = role === 'admin'
 
@@ -54,6 +59,16 @@ async function DashboardContent() {
           addHref={isAdmin ? navLinksData.dashboard.eureka.trials.add : undefined}
           count={trials?.length ?? 0}
           title="Trials"
+        />
+        <StatCard
+          addHref={isAdmin ? navLinksData.dashboard.outfits.sets.add : undefined}
+          count={outfitSets?.length ?? 0}
+          title="Outfit Sets"
+        />
+        <StatCard
+          addHref={isAdmin ? navLinksData.dashboard.outfits.variants.add : undefined}
+          count={outfitVariants?.length ?? 0}
+          title="Outfit Variants"
         />
       </Box>
     </>
