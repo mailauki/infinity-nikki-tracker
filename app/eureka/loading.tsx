@@ -9,7 +9,9 @@ function GroupSkeleton() {
         <Skeleton height={24} variant="rounded" width={60} />
       </Stack>
       <Divider sx={{ mb: 2 }} />
-      <Box sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1, sm: 1.5, md: 2 } }}>
+      <Box
+        sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1, sm: 1.5, md: 2 } }}
+      >
         {Array.from({ length: 5 }).map((_, i) => (
           <Skeleton
             key={i}

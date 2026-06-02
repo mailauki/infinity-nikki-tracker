@@ -106,7 +106,7 @@ export default function ProfileForm({
         </Stack>
       )}
 
-      <Stack alignItems='flex-start' direction="row" spacing={2}>
+      <Stack alignItems="flex-start" direction="row" spacing={2}>
         <AvatarUpload inputRef={fileInputRef} uploading={uploading} url={avatar_url} />
         <input
           ref={fileInputRef}

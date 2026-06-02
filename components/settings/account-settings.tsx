@@ -52,7 +52,7 @@ function ChangeEmailSection() {
         />
         {success && <Alert severity="success">Confirmation sent to your new email</Alert>}
         {error && <Alert severity="error">{error}</Alert>}
-        <Button size='large' disabled={loading || !email} type="submit" variant="outlined">
+        <Button disabled={loading || !email} size="large" type="submit" variant="outlined">
           {loading ? 'Saving…' : 'Update email'}
         </Button>
       </Stack>
@@ -108,8 +108,8 @@ function ChangePasswordSection() {
         {success && <Alert severity="success">Password updated</Alert>}
         {error && <Alert severity="error">{error}</Alert>}
         <Button
-					size='large'
           disabled={loading || !password || !confirm || mismatch}
+          size="large"
           type="submit"
           variant="outlined"
         >
@@ -138,7 +138,7 @@ function DangerZoneSection() {
 
   return (
     <Stack spacing={2}>
-			<Divider />
+      <Divider />
       <Typography variant="subtitle1">Danger zone</Typography>
       <Button
         color="error"
@@ -176,7 +176,7 @@ function DangerZoneSection() {
 function AdminAccessSection() {
   return (
     <Stack spacing={2}>
-			<Divider />
+      <Divider />
       <Typography variant="subtitle1">Admin access</Typography>
       <Typography color="textSecondary" variant="body2">
         Admin access lets you manage Eureka sets, variants, and trials from the dashboard.

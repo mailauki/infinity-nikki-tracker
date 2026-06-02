@@ -3,7 +3,7 @@ import { cache } from 'react'
 import { Color } from '@/lib/types/eureka'
 import { createClient } from '@/lib/supabase/server'
 
-export const getColors = cache(async () => {
+export const getEurekaColors = cache(async () => {
   const supabase = await createClient()
 
   const { data: colors } = await supabase

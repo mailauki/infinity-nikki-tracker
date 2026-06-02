@@ -29,36 +29,37 @@ export const navLinksData: {
         },
       ],
     },
-    // {
-    //   title: 'Outfits',
-    //   url: '/outfits',
-    //   image: '/icons/outfits.png',
-    // 	items: [
-    // 		{
-    // 			title: 'Glow Up',
-    // 			url: '/outfits/glowup',
-    // 			image: '/icons/glowup.png',
-    // 		},
-    // 		{
-    // 			title: 'Evolution',
-    // 			url: '/outfits/evolution',
-    // 			image: '/icons/evolution.png',
-    // 		},
-    // 	],
-    // },
-  ],
-  navSecondary: [
     {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: <Dashboard />,
-      adminOnly: true,
+      title: 'Outfits',
+      url: '/outfits',
+      image: '/icons/outfits.png',
       items: [
-        { title: 'Sets', url: '/dashboard/eureka/sets' },
-        { title: 'Variants', url: '/dashboard/eureka/variants' },
-        { title: 'Trials', url: '/dashboard/eureka/trials' },
+        {
+          title: 'Sets',
+          url: '/outfits/sets',
+        },
+        {
+          title: 'Pieces',
+          url: '/outfits/pieces',
+        },
+        {
+          title: 'Accessories',
+          url: '/outfits/accessories',
+        },
+        // {
+        // 	title: 'Glow Up',
+        // 	url: '/outfits/glowup',
+        // 	image: '/icons/glowup.png',
+        // },
+        // {
+        // 	title: 'Evolution',
+        // 	url: '/outfits/evolution',
+        // 	image: '/icons/evolution.png',
+        // },
       ],
     },
+  ],
+  navSecondary: [
     {
       title: 'Profile',
       url: '/profile',
@@ -68,6 +69,20 @@ export const navLinksData: {
       title: 'Settings',
       url: '/settings',
       icon: <Settings />,
+    },
+    {
+      title: 'Dashboard',
+      url: '/dashboard',
+      icon: <Dashboard />,
+      adminOnly: true,
+      items: [
+        { title: 'Eureka Sets', url: '/dashboard/eureka/sets' },
+        { title: 'Eureka Variants', url: '/dashboard/eureka/variants' },
+        { title: 'Trials', url: '/dashboard/eureka/trials' },
+        { title: 'Outfit Sets', url: '/dashboard/outfits/sets' },
+        { title: 'Outfit Variants', url: '/dashboard/outfits/variants' },
+				{ title: 'Evolutions', url: '/dashboard/outfits/evolutions'},
+      ],
     },
   ],
   navExtra: [
@@ -95,6 +110,16 @@ export const navLinksData: {
       trials: {
         add: '/eureka/trials/new',
         edit: '/eureka/trials/edit',
+      },
+    },
+    outfits: {
+      sets: {
+        add: '/outfits/sets/new',
+        edit: '/outfits/sets/edit',
+      },
+      variants: {
+        add: '/outfits/variants/new',
+        edit: '/outfits/variants/edit',
       },
     },
   },

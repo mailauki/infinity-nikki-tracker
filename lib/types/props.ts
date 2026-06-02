@@ -16,6 +16,7 @@ type DashboardLink = { add: string; edit: string }
 
 export type DashboardLinks = {
   eureka: { sets: DashboardLink; variants: DashboardLink; trials: DashboardLink }
+  outfits: { sets: DashboardLink; variants: DashboardLink }
 }
 
 export interface NavLink {

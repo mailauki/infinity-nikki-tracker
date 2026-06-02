@@ -6,8 +6,8 @@ import { Container } from '@mui/material'
 
 export default function ProfileSettings({ user }: { user: User | null }) {
   return (
-	<Container maxWidth='sm' sx={{ mx: 0 }}>
-		<ProfileForm user={user} />
-	</Container>
-)
+    <Container maxWidth="sm" sx={{ mx: 0 }}>
+      <ProfileForm user={user} />
+    </Container>
+  )
 }

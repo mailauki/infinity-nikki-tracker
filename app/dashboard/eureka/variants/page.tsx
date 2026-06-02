@@ -1,5 +1,5 @@
-import { getCategories } from '@/hooks/data/categories'
-import { getColors } from '@/hooks/data/colors'
+import { getEurekaCategories } from '@/hooks/data/eureka-categories'
+import { getEurekaColors } from '@/hooks/data/eureka-colors'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getEurekaVariantsRaw } from '@/hooks/data/admin/eureka-variants'
 import { Suspense } from 'react'
@@ -17,8 +17,8 @@ async function DashboardView() {
   const [eurekaVariants, eurekaSets, categories, colors] = await Promise.all([
     getEurekaVariantsRaw(),
     getEurekaSets(),
-    getCategories(),
-    getColors(),
+    getEurekaCategories(),
+    getEurekaColors(),
   ])
 
   return (

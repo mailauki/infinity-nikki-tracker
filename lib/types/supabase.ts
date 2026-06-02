@@ -8,6 +8,24 @@ export type Database = {
   }
   public: {
     Tables: {
+      abilities: {
+        Row: {
+          id: number
+          slug: string
+          title: string
+        }
+        Insert: {
+          id?: number
+          slug: string
+          title: string
+        }
+        Update: {
+          id?: number
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
@@ -195,6 +213,33 @@ export type Database = {
           },
         ]
       }
+      evolutions: {
+        Row: {
+          description: string | null
+          id: number
+          order: number
+          slug: string
+          subtitle: string | null
+          title: string
+        }
+        Insert: {
+          description?: string | null
+          id?: number
+          order: number
+          slug: string
+          subtitle?: string | null
+          title: string
+        }
+        Update: {
+          description?: string | null
+          id?: number
+          order?: number
+          slug?: string
+          subtitle?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       labels: {
         Row: {
           created_at: string
@@ -261,6 +306,198 @@ export type Database = {
             columns: ['eureka_set']
             isOneToOne: false
             referencedRelation: 'eureka_sets'
+            referencedColumns: ['slug']
+          },
+        ]
+      }
+      obtained_outfit: {
+        Row: {
+          created_at: string
+          evolution: string
+          id: number
+          outfit_category: string
+          outfit_set: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          evolution: string
+          id?: number
+          outfit_category: string
+          outfit_set: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          evolution?: string
+          id?: number
+          outfit_category?: string
+          outfit_set?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'obtained_outfit_category_fkey'
+            columns: ['outfit_category']
+            isOneToOne: false
+            referencedRelation: 'outfit_categories'
+            referencedColumns: ['slug']
+          },
+          {
+            foreignKeyName: 'obtained_outfit_evolution_fkey'
+            columns: ['evolution']
+            isOneToOne: false
+            referencedRelation: 'evolutions'
+            referencedColumns: ['slug']
+          },
+          {
+            foreignKeyName: 'obtained_outfit_set_fkey'
+            columns: ['outfit_set']
+            isOneToOne: false
+            referencedRelation: 'outfit_sets'
+            referencedColumns: ['slug']
+          },
+        ]
+      }
+      outfit_categories: {
+        Row: {
+          id: number
+          part: string
+          slug: string
+          title: string
+          type: string
+        }
+        Insert: {
+          id?: number
+          part: string
+          slug: string
+          title: string
+          type: string
+        }
+        Update: {
+          id?: number
+          part?: string
+          slug?: string
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      outfit_sets: {
+        Row: {
+          ability: string | null
+          created_at: string | null
+          description: string | null
+          id: number
+          label: string | null
+          rarity: number
+          slug: string
+          style: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          ability?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          label?: string | null
+          rarity: number
+          slug: string
+          style?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          ability?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          label?: string | null
+          rarity?: number
+          slug?: string
+          style?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'outfit_sets_ability_fkey'
+            columns: ['ability']
+            isOneToOne: false
+            referencedRelation: 'abilities'
+            referencedColumns: ['slug']
+          },
+          {
+            foreignKeyName: 'outfit_sets_label_fkey'
+            columns: ['label']
+            isOneToOne: false
+            referencedRelation: 'labels'
+            referencedColumns: ['slug']
+          },
+          {
+            foreignKeyName: 'outfit_sets_style_fkey'
+            columns: ['style']
+            isOneToOne: false
+            referencedRelation: 'styles'
+            referencedColumns: ['slug']
+          },
+        ]
+      }
+      outfit_variants: {
+        Row: {
+          created_at: string | null
+          default: boolean
+          evolution: string | null
+          id: number
+          image_url: string | null
+          outfit_category: string | null
+          outfit_set: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          default?: boolean
+          evolution?: string | null
+          id?: number
+          image_url?: string | null
+          outfit_category?: string | null
+          outfit_set: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          default?: boolean
+          evolution?: string | null
+          id?: number
+          image_url?: string | null
+          outfit_category?: string | null
+          outfit_set?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'outfit_variants_evolution_fkey'
+            columns: ['evolution']
+            isOneToOne: false
+            referencedRelation: 'evolutions'
+            referencedColumns: ['slug']
+          },
+          {
+            foreignKeyName: 'outfit_variants_outfit_category_fkey'
+            columns: ['outfit_category']
+            isOneToOne: false
+            referencedRelation: 'outfit_categories'
+            referencedColumns: ['slug']
+          },
+          {
+            foreignKeyName: 'outfit_variants_outfit_set_fkey'
+            columns: ['outfit_set']
+            isOneToOne: false
+            referencedRelation: 'outfit_sets'
             referencedColumns: ['slug']
           },
         ]
@@ -416,6 +653,14 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       toggle_obtained: {
         Args: { p_category: string; p_color: string; p_eureka_set: string }
+        Returns: undefined
+      }
+      toggle_obtained_outfit: {
+        Args: {
+          p_evolution: string
+          p_outfit_category: string
+          p_outfit_set: string
+        }
         Returns: undefined
       }
     }

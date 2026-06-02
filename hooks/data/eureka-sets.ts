@@ -3,8 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { EurekaSet, EurekaVariant } from '@/lib/types/eureka'
 import { cache } from 'react'
 import { getUserID } from '../user'
-import { getColors } from './colors'
-import { getCategories } from './categories'
+import { getEurekaColors } from './eureka-colors'
+import { getEurekaCategories } from './eureka-categories'
 import { createEurekaSet, sortVariants, updateEurekaSet } from '../eureka'
 import { getObtainedEureka } from './obtained-eureka'
 
@@ -37,8 +37,8 @@ export const getEurekaSets = cache(async () => {
     )
     .order('id', { ascending: true })
     .order('id', { referencedTable: 'eureka_variants', ascending: true })
-  const categories = await getCategories()
-  const colors = await getColors()
+  const categories = await getEurekaCategories()
+  const colors = await getEurekaColors()
 
   const categoryOrder = (categories ?? []).map((c) => c.slug)
   const eureka = eurekaSets?.map((eurekaSet) => {
@@ -124,8 +124,8 @@ export const getEurekaSet = cache(async (slug: string) => {
     .single()
   if (!eurekaSet) notFound()
 
-  const categories = await getCategories()
-  const colors = await getColors()
+  const categories = await getEurekaCategories()
+  const colors = await getEurekaColors()
 
   const eureka = createEurekaSet({ eurekaSet, categories, colors })
 

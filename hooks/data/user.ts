@@ -1,15 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { UUID } from 'crypto'
 import { cache } from 'react'
-import { getCategories } from './categories'
-import { getColors } from './colors'
+import { getEurekaCategories } from './eureka-categories'
+import { getEurekaColors } from './eureka-colors'
 import { getEurekaSetsRaw } from './admin/eureka-sets'
 import { getEurekaVariantsRaw } from './admin/eureka-variants'
 import { getTrials } from './trials'
 
 export const getAdminData = cache(async () => {
-  const categories = await getCategories()
-  const colors = await getColors()
+  const categories = await getEurekaCategories()
+  const colors = await getEurekaColors()
   const eurekaSets = await getEurekaSetsRaw()
   const eurekaVariants = await getEurekaVariantsRaw()
   const trials = await getTrials()

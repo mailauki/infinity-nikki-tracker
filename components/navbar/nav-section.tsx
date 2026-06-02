@@ -37,11 +37,7 @@ export default function NavSection({
     supabase.auth.getUser().then(async ({ data }) => {
       const id = data.user?.id
       if (!id) return
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', id)
-        .single()
+      const { data: profile } = await supabase.from('profiles').select('role').eq('id', id).single()
       if (profile?.role === 'admin') setIsAdmin(true)
     })
   }, [])
