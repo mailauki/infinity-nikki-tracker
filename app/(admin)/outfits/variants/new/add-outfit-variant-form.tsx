@@ -50,12 +50,6 @@ export default function AddOutfitVariantForm({
     (v) => v.outfit_set === outfitSet && v.outfit_category === outfitCategory && v.default
   )
 
-  useEffect(() => {
-    if (!editSlug && outfitSet && outfitCategory && evolution) {
-      setSlug(toSlugVariant(outfitSet, outfitCategory, evolution))
-    }
-  }, [outfitSet, outfitCategory, evolution, editSlug])
-
   const [state, action, pending] = useActionState(addOutfitVariant, null)
 
   useEffect(() => {
@@ -75,6 +69,12 @@ export default function AddOutfitVariantForm({
     },
     {}
   )
+
+  const autoSlug =
+    outfitSet && outfitCategory && evolution
+      ? toSlugVariant(outfitSet, outfitCategory, evolution)
+      : ''
+  const currentSlug = editSlug ? slug : autoSlug
 
   return (
     <form action={action} id={FORM_ID}>
@@ -135,7 +135,7 @@ export default function AddOutfitVariantForm({
           </Select>
         </FormControl>
 
-        <input name="slug" type="hidden" value={slug} />
+        <input name="slug" type="hidden" value={currentSlug} />
         <TextField
           required
           disabled={!editSlug}
@@ -153,13 +153,13 @@ export default function AddOutfitVariantForm({
               ),
             },
           }}
-          value={slug}
+          value={currentSlug}
           onChange={(e) => setSlug(e.target.value)}
         />
 
         <input name="image_url" type="hidden" value={imageUrl ?? ''} />
         <ImageUpload
-          slug={slug || undefined}
+          slug={currentSlug || undefined}
           table="outfit_variants"
           url={imageUrl}
           onUpload={(url) => setImageUrl(url)}

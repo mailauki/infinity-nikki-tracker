@@ -64,12 +64,6 @@ export default function EditOutfitVariantForm({
       v.default
   )
 
-  useEffect(() => {
-    if (!editSlug && outfitSet && outfitCategory && evolution) {
-      setSlug(toSlugVariant(outfitSet, outfitCategory, evolution))
-    }
-  }, [outfitSet, outfitCategory, evolution, editSlug])
-
   const boundAction = editOutfitVariant.bind(null, variant.id, back)
   const [state, action, pending] = useActionState(boundAction, null)
 
@@ -86,6 +80,12 @@ export default function EditOutfitVariantForm({
     },
     {}
   )
+
+  const autoSlug =
+    outfitSet && outfitCategory && evolution
+      ? toSlugVariant(outfitSet, outfitCategory, evolution)
+      : ''
+  const currentSlug = editSlug ? slug : autoSlug
 
   return (
     <form action={action} id={FORM_ID}>
@@ -146,7 +146,7 @@ export default function EditOutfitVariantForm({
           </Select>
         </FormControl>
 
-        <input name="slug" type="hidden" value={slug} />
+        <input name="slug" type="hidden" value={currentSlug} />
         <TextField
           required
           disabled={!editSlug}
@@ -164,19 +164,19 @@ export default function EditOutfitVariantForm({
               ),
             },
           }}
-          value={slug}
+          value={currentSlug}
           onChange={(e) => setSlug(e.target.value)}
         />
 
         <input name="image_url" type="hidden" value={imageUrl ?? ''} />
         <ImageUpload
-          slug={slug || undefined}
+          slug={currentSlug || undefined}
           table="outfit_variants"
           url={imageUrl}
           onUpload={(url) => setImageUrl(url)}
         />
 
-        <input name="default" type="hidden" value={String(isDefault)} />
+        <input name="default" type="hidden" value={String(hasDefault ? false : isDefault)} />
         <FormControl>
           <FormControlLabel
             control={
