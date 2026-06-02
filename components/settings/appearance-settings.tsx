@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, startTransition } from 'react'
-import { Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { Container, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import BrightnessMediumIcon from '@mui/icons-material/BrightnessMedium'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
@@ -36,6 +36,7 @@ export default function AppearanceSettings() {
   }, [])
 
   return (
+	<Container maxWidth='sm' sx={{ mx: 0 }}>
     <Stack spacing={2}>
       <Typography variant="subtitle1">Theme</Typography>
       <ToggleButtonGroup
@@ -56,5 +57,6 @@ export default function AppearanceSettings() {
         ))}
       </ToggleButtonGroup>
     </Stack>
+		</Container>
   )
 }

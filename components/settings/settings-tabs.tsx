@@ -12,9 +12,11 @@ type TabValue = 'profile' | 'appearance' | 'account'
 
 export default function SettingsTabs({
   isLoggedIn,
+  isAdmin,
   user,
 }: {
   isLoggedIn: boolean
+  isAdmin: boolean
   user: User | null
 }) {
   const [tab, setTab] = useState<TabValue>(isLoggedIn ? 'profile' : 'appearance')
@@ -38,7 +40,7 @@ export default function SettingsTabs({
 
       {tab === 'profile' && (isLoggedIn ? <ProfileSettings user={user} /> : <LoginAlert />)}
       {tab === 'appearance' && <AppearanceSettings />}
-      {tab === 'account' && (isLoggedIn ? <AccountSettings /> : <LoginAlert />)}
+      {tab === 'account' && (isLoggedIn ? <AccountSettings isAdmin={isAdmin} /> : <LoginAlert />)}
     </Box>
   )
 }

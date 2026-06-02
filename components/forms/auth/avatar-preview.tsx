@@ -12,7 +12,7 @@ export default function AvatarPreview({
   url: string | null
 }) {
   const supabase = useMemo(() => createClient(), [])
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(url)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
     let objectUrl: string | null = null
