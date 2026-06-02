@@ -12,36 +12,37 @@
 
 ## File Map
 
-| Action | Path | Purpose |
-|--------|------|---------|
-| Modify | `lib/types/props.ts` | Add `outfits` to `DashboardLinks` type |
-| Modify | `lib/nav-links.tsx` | Add `dashboard.outfits.*` links + dashboard nav sub-items |
-| Modify | `app/dashboard/actions.ts` | Add `updateOutfitSet`, `updateOutfitVariant` |
-| Modify | `app/dashboard/page.tsx` | Add Outfit Sets + Outfit Variants stat cards |
-| Create | `app/dashboard/outfit-set-table.tsx` | DataGrid for outfit sets (inline edit) |
-| Create | `app/dashboard/outfit-set-list.tsx` | List view for outfit sets |
-| Create | `app/dashboard/outfit-variant-table.tsx` | DataGrid for outfit variants (inline edit) |
-| Create | `app/dashboard/outfit-variant-list.tsx` | List view for outfit variants |
-| Create | `app/dashboard/outfits/sets/page.tsx` | Server Component — fetches and renders outfit sets view |
-| Create | `app/dashboard/outfits/sets/outfit-set-view.tsx` | Client toggle (table / list) |
-| Create | `app/dashboard/outfits/variants/page.tsx` | Server Component — fetches and renders outfit variants view |
-| Create | `app/dashboard/outfits/variants/outfit-variant-view.tsx` | Client toggle (table / list) |
-| Create | `app/(admin)/outfits/sets/actions.ts` | `addOutfitSet`, `editOutfitSet` server actions |
-| Create | `app/(admin)/outfits/sets/new/page.tsx` | Server Component — fetches lookup data |
-| Create | `app/(admin)/outfits/sets/new/add-outfit-set-form.tsx` | Add outfit set form |
-| Create | `app/(admin)/outfits/sets/edit/[slug]/page.tsx` | Server Component — fetches set + lookup data |
-| Create | `app/(admin)/outfits/sets/edit/[slug]/edit-outfit-set-form.tsx` | Edit outfit set form |
-| Create | `app/(admin)/outfits/variants/actions.ts` | `addOutfitVariant`, `editOutfitVariant` server actions |
-| Create | `app/(admin)/outfits/variants/new/page.tsx` | Server Component — fetches lookup data |
-| Create | `app/(admin)/outfits/variants/new/add-outfit-variant-form.tsx` | Add outfit variant form |
-| Create | `app/(admin)/outfits/variants/edit/[slug]/page.tsx` | Server Component — fetches variant + lookup data |
-| Create | `app/(admin)/outfits/variants/edit/[slug]/edit-outfit-variant-form.tsx` | Edit outfit variant form |
+| Action | Path                                                                    | Purpose                                                     |
+| ------ | ----------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Modify | `lib/types/props.ts`                                                    | Add `outfits` to `DashboardLinks` type                      |
+| Modify | `lib/nav-links.tsx`                                                     | Add `dashboard.outfits.*` links + dashboard nav sub-items   |
+| Modify | `app/dashboard/actions.ts`                                              | Add `updateOutfitSet`, `updateOutfitVariant`                |
+| Modify | `app/dashboard/page.tsx`                                                | Add Outfit Sets + Outfit Variants stat cards                |
+| Create | `app/dashboard/outfit-set-table.tsx`                                    | DataGrid for outfit sets (inline edit)                      |
+| Create | `app/dashboard/outfit-set-list.tsx`                                     | List view for outfit sets                                   |
+| Create | `app/dashboard/outfit-variant-table.tsx`                                | DataGrid for outfit variants (inline edit)                  |
+| Create | `app/dashboard/outfit-variant-list.tsx`                                 | List view for outfit variants                               |
+| Create | `app/dashboard/outfits/sets/page.tsx`                                   | Server Component — fetches and renders outfit sets view     |
+| Create | `app/dashboard/outfits/sets/outfit-set-view.tsx`                        | Client toggle (table / list)                                |
+| Create | `app/dashboard/outfits/variants/page.tsx`                               | Server Component — fetches and renders outfit variants view |
+| Create | `app/dashboard/outfits/variants/outfit-variant-view.tsx`                | Client toggle (table / list)                                |
+| Create | `app/(admin)/outfits/sets/actions.ts`                                   | `addOutfitSet`, `editOutfitSet` server actions              |
+| Create | `app/(admin)/outfits/sets/new/page.tsx`                                 | Server Component — fetches lookup data                      |
+| Create | `app/(admin)/outfits/sets/new/add-outfit-set-form.tsx`                  | Add outfit set form                                         |
+| Create | `app/(admin)/outfits/sets/edit/[slug]/page.tsx`                         | Server Component — fetches set + lookup data                |
+| Create | `app/(admin)/outfits/sets/edit/[slug]/edit-outfit-set-form.tsx`         | Edit outfit set form                                        |
+| Create | `app/(admin)/outfits/variants/actions.ts`                               | `addOutfitVariant`, `editOutfitVariant` server actions      |
+| Create | `app/(admin)/outfits/variants/new/page.tsx`                             | Server Component — fetches lookup data                      |
+| Create | `app/(admin)/outfits/variants/new/add-outfit-variant-form.tsx`          | Add outfit variant form                                     |
+| Create | `app/(admin)/outfits/variants/edit/[slug]/page.tsx`                     | Server Component — fetches variant + lookup data            |
+| Create | `app/(admin)/outfits/variants/edit/[slug]/edit-outfit-variant-form.tsx` | Edit outfit variant form                                    |
 
 ---
 
 ## Task 1: Types and nav links
 
 **Files:**
+
 - Modify: `lib/types/props.ts`
 - Modify: `lib/nav-links.tsx`
 
@@ -100,6 +101,7 @@ git commit -m "feat: extend DashboardLinks type and nav links for outfit admin/d
 ## Task 2: Dashboard server actions for inline editing
 
 **Files:**
+
 - Modify: `app/dashboard/actions.ts`
 
 - [ ] **Step 1: Add `updateOutfitSet` and `updateOutfitVariant` to `app/dashboard/actions.ts`**
@@ -174,6 +176,7 @@ git commit -m "feat: add updateOutfitSet and updateOutfitVariant dashboard serve
 ## Task 3: Dashboard stat cards
 
 **Files:**
+
 - Modify: `app/dashboard/page.tsx`
 
 - [ ] **Step 1: Update `app/dashboard/page.tsx`**
@@ -279,6 +282,7 @@ git commit -m "feat: add Outfit Sets and Outfit Variants stat cards to dashboard
 ## Task 4: Outfit set dashboard table and list
 
 **Files:**
+
 - Create: `app/dashboard/outfit-set-table.tsx`
 - Create: `app/dashboard/outfit-set-list.tsx`
 
@@ -653,6 +657,7 @@ git commit -m "feat: add OutfitSetTable and OutfitSetList dashboard components"
 ## Task 5: Outfit variant dashboard table and list
 
 **Files:**
+
 - Create: `app/dashboard/outfit-variant-table.tsx`
 - Create: `app/dashboard/outfit-variant-list.tsx`
 
@@ -983,6 +988,7 @@ git commit -m "feat: add OutfitVariantTable and OutfitVariantList dashboard comp
 ## Task 6: Dashboard outfit pages (sets and variants)
 
 **Files:**
+
 - Create: `app/dashboard/outfits/sets/page.tsx`
 - Create: `app/dashboard/outfits/sets/outfit-set-view.tsx`
 - Create: `app/dashboard/outfits/variants/page.tsx`
@@ -1161,6 +1167,7 @@ git commit -m "feat: add outfit sets and variants dashboard pages"
 ## Task 7: Outfit set server actions
 
 **Files:**
+
 - Create: `app/(admin)/outfits/sets/actions.ts`
 
 - [ ] **Step 1: Create `app/(admin)/outfits/sets/actions.ts`**
@@ -1188,9 +1195,9 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
     (formData.get('evolution_select') as string) || '[]'
   ) as string[]
   const defaultEvolution = (formData.get('default_evolution') as string | null) || ''
-  const outfitCategories = JSON.parse(
-    (formData.get('outfit_categories') as string) || '[]'
-  ) as { slug: string }[]
+  const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
+    slug: string
+  }[]
 
   const { error } = await supabase
     .from('outfit_sets')
@@ -1243,13 +1250,22 @@ export async function editOutfitSet(
     (formData.get('evolution_select') as string) || '[]'
   ) as string[]
   const defaultEvolution = (formData.get('default_evolution') as string | null) || ''
-  const outfitCategories = JSON.parse(
-    (formData.get('outfit_categories') as string) || '[]'
-  ) as { slug: string }[]
+  const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
+    slug: string
+  }[]
 
   const { error } = await supabase
     .from('outfit_sets')
-    .update({ title, slug, description, rarity, style, label, ability, updated_at: new Date().toISOString() })
+    .update({
+      title,
+      slug,
+      description,
+      rarity,
+      style,
+      label,
+      ability,
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', id)
 
   if (error) return { error: error.message }
@@ -1332,6 +1348,7 @@ git commit -m "feat: add addOutfitSet and editOutfitSet server actions"
 ## Task 8: Add outfit set form and page
 
 **Files:**
+
 - Create: `app/(admin)/outfits/sets/new/page.tsx`
 - Create: `app/(admin)/outfits/sets/new/add-outfit-set-form.tsx`
 
@@ -1670,6 +1687,7 @@ git commit -m "feat: add outfit set add form and page"
 ## Task 9: Edit outfit set form and page
 
 **Files:**
+
 - Create: `app/(admin)/outfits/sets/edit/[slug]/page.tsx`
 - Create: `app/(admin)/outfits/sets/edit/[slug]/edit-outfit-set-form.tsx`
 
@@ -2071,6 +2089,7 @@ git commit -m "feat: add outfit set edit form and page"
 ## Task 10: Outfit variant server actions
 
 **Files:**
+
 - Create: `app/(admin)/outfits/variants/actions.ts`
 
 - [ ] **Step 1: Create `app/(admin)/outfits/variants/actions.ts`**
@@ -2160,6 +2179,7 @@ git commit -m "feat: add addOutfitVariant and editOutfitVariant server actions"
 ## Task 11: Add outfit variant form and page
 
 **Files:**
+
 - Create: `app/(admin)/outfits/variants/new/page.tsx`
 - Create: `app/(admin)/outfits/variants/new/add-outfit-variant-form.tsx`
 
@@ -2423,6 +2443,7 @@ git commit -m "feat: add outfit variant add form and page"
 ## Task 12: Edit outfit variant form and page
 
 **Files:**
+
 - Create: `app/(admin)/outfits/variants/edit/[slug]/page.tsx`
 - Create: `app/(admin)/outfits/variants/edit/[slug]/edit-outfit-variant-form.tsx`
 
@@ -2715,9 +2736,11 @@ git commit -m "feat: add outfit variant edit form and page"
 After all tasks complete:
 
 1. **Type-check clean:**
+
    ```bash
    yarn tsc --noEmit
    ```
+
    Expected: No errors.
 
 2. **Add outfit set:** Navigate to `/outfits/sets/new` as admin. Fill all fields, pick 1+ evolutions, set a default evolution. Submit. Confirm a row appears in `outfit_sets` and `outfit_variants` rows are created in Supabase Studio.

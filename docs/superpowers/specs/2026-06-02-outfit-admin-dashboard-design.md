@@ -58,12 +58,12 @@ app/dashboard/
 
 ### Modified files
 
-| File | Change |
-|------|--------|
-| `app/dashboard/page.tsx` | Add Outfit Sets + Outfit Variants stat cards |
-| `app/dashboard/actions.ts` | Add `updateOutfitSet`, `updateOutfitVariant` |
-| `lib/nav-links.tsx` | Add `dashboard.outfits.sets` + `dashboard.outfits.variants`; add dashboard nav sub-items for outfits |
-| `lib/types/props.ts` | Extend `DashboardLinks` with `outfits` section |
+| File                       | Change                                                                                               |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `app/dashboard/page.tsx`   | Add Outfit Sets + Outfit Variants stat cards                                                         |
+| `app/dashboard/actions.ts` | Add `updateOutfitSet`, `updateOutfitVariant`                                                         |
+| `lib/nav-links.tsx`        | Add `dashboard.outfits.sets` + `dashboard.outfits.variants`; add dashboard nav sub-items for outfits |
+| `lib/types/props.ts`       | Extend `DashboardLinks` with `outfits` section                                                       |
 
 ---
 
@@ -76,6 +76,7 @@ Each admin/dashboard page follows the established pattern:
 3. Forms call server actions (`'use server'`) which write to Supabase and redirect
 
 No new hooks are needed — all required hooks already exist:
+
 - `getOutfitSetsRaw()`, `getOutfitSetRaw(slug)` — `hooks/data/admin/outfit-sets.ts`
 - `getOutfitVariantsRaw()`, `getOutfitVariantRaw(slug)` — `hooks/data/admin/outfit-variants.ts`
 - `getOutfitSets()` — `hooks/data/outfit-sets.ts`
@@ -91,6 +92,7 @@ No new hooks are needed — all required hooks already exist:
 ### Add Outfit Set (`add-outfit-set-form.tsx`)
 
 Fields:
+
 - **Title** — text, required; drives slug auto-generation
 - **Slug** — read-only by default, unlocked via edit icon; hidden input passes value to server action
 - **Description** — multiline text, optional
@@ -102,6 +104,7 @@ Fields:
 - **Default Evolution** — single select from chosen evolutions; disabled if none selected
 
 On save (`addOutfitSet` server action):
+
 1. Insert row into `outfit_sets`
 2. Auto-create `outfit_variants` for every `outfit_category × evolution` combination using `toSlugVariant(outfit_set_slug, category_slug, evolution_slug)`; set `default = true` for variants whose evolution matches the default evolution
 
@@ -116,6 +119,7 @@ Same metadata fields as add form, pre-populated. Additionally:
 ### Add Outfit Variant (`add-outfit-variant-form.tsx`)
 
 Fields:
+
 - **Outfit Set** — single select from `getOutfitSetsRaw()`
 - **Outfit Category** — single select, grouped by `type` using `ListSubheader` (`Piece` then `Accessory`), showing `part` as the item label
 - **Evolution** — single select from `getEvolutions()`, ordered by `order` ASC
@@ -134,6 +138,7 @@ Same fields as add, pre-populated from `getOutfitVariantRaw(slug)`.
 ### `app/(admin)/outfits/sets/actions.ts`
 
 **`addOutfitSet(_: unknown, formData: FormData)`**
+
 - Parses: title, slug, description, rarity, style, label, ability, `evolution_select` (JSON array of slugs), `default_evolution` (slug string), `outfit_categories` (JSON array of `{slug}` objects)
 - Inserts into `outfit_sets`
 - Inserts `outfit_variants` for every `outfit_category × evolution` pair; `default = (evolution === defaultEvolution)`
@@ -141,6 +146,7 @@ Same fields as add, pre-populated from `getOutfitVariantRaw(slug)`.
 - Redirects to `navLinksData.dashboard.outfits.sets.add.replace('/new', '')`
 
 **`editOutfitSet(id: number, initialEvolutions: string[], backUrl: string, _: unknown, formData: FormData)`**
+
 - Parses same fields as add, plus `original_evolutions` (JSON)
 - Updates `outfit_sets` row
 - Diffs added/removed evolutions; inserts new variants, deletes removed variants
@@ -150,11 +156,13 @@ Same fields as add, pre-populated from `getOutfitVariantRaw(slug)`.
 ### `app/(admin)/outfits/variants/actions.ts`
 
 **`addOutfitVariant(_: unknown, formData: FormData)`**
+
 - Parses: outfit_set, outfit_category, evolution, image_url, slug, default (boolean)
 - Inserts into `outfit_variants`
 - Redirects to variants dashboard page
 
 **`editOutfitVariant(id: number, backUrl: string, _: unknown, formData: FormData)`**
+
 - Parses same fields
 - Updates `outfit_variants` row
 - Redirects to `backUrl`
@@ -209,6 +217,7 @@ Columns:
 ### `app/dashboard/page.tsx`
 
 Add two new `StatCard` entries to the existing grid (making 5 total):
+
 - **Outfit Sets** — `count={outfitSets?.length ?? 0}`, `addHref={isAdmin ? navLinksData.dashboard.outfits.sets.add : undefined}`
 - **Outfit Variants** — `count={outfitVariants?.length ?? 0}`, `addHref={isAdmin ? navLinksData.dashboard.outfits.variants.add : undefined}`
 
@@ -217,6 +226,7 @@ Fetch `outfitSets` via `getOutfitSets()` and `outfitVariants` via `getOutfitVari
 ### `lib/nav-links.tsx`
 
 Add to `dashboard`:
+
 ```ts
 outfits: {
   sets:     { add: '/outfits/sets/new',     edit: '/outfits/sets/edit' },
@@ -225,6 +235,7 @@ outfits: {
 ```
 
 Add outfit sub-items to the Dashboard nav link's `items` array:
+
 ```ts
 { title: 'Outfit Sets',      url: '/dashboard/outfits/sets' },
 { title: 'Outfit Variants',  url: '/dashboard/outfits/variants' },
@@ -233,9 +244,10 @@ Add outfit sub-items to the Dashboard nav link's `items` array:
 ### `lib/types/props.ts`
 
 Extend `DashboardLinks`:
+
 ```ts
 export type DashboardLinks = {
-  eureka:  { sets: DashboardLink; variants: DashboardLink; trials: DashboardLink }
+  eureka: { sets: DashboardLink; variants: DashboardLink; trials: DashboardLink }
   outfits: { sets: DashboardLink; variants: DashboardLink }
 }
 ```
