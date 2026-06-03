@@ -41,10 +41,11 @@ export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps)
       {!loaded && src && (
         <Skeleton
           sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-          variant="circular"
+          variant='rounded'
         />
       )}
       <Avatar
+			variant='rounded'
         slotProps={{
           img: {
             ref: imgRef,
