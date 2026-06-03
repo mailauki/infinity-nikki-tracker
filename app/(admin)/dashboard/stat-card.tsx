@@ -26,7 +26,7 @@ export function StatCard({
         }
       />
       {addHref && (
-        <CardContent component={Stack} justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
+        <CardContent component={Stack} spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
           <Divider />
           <Button
             href={addHref}
