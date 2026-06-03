@@ -21,7 +21,7 @@ export default function EurekaCardProgress({
 }) {
   if (size === 'xs')
     return (
-      <CardContent component={Stack} spacing={1} sx={{ pt: 0, alignItem: 'center' }}>
+      <CardContent component={Stack} spacing={1} sx={{ pt: 0, alignItems: 'center' }}>
         <Box sx={{ position: 'relative' }}>
           <CircularProgress
             color={percentage === 100 ? 'primary' : 'inherit'}
