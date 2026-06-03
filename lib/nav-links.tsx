@@ -30,15 +30,15 @@ export const navLinksData: {
           title: 'Accessories',
           url: '/outfits/accessories',
         },
+        {
+        	title: 'Evolution',
+        	url: '/outfits/evolution',
+        	image: '/icons/evolution.png',
+        },
         // {
         // 	title: 'Glow Up',
         // 	url: '/outfits/glowup',
         // 	image: '/icons/glowup.png',
-        // },
-        // {
-        // 	title: 'Evolution',
-        // 	url: '/outfits/evolution',
-        // 	image: '/icons/evolution.png',
         // },
       ],
     },

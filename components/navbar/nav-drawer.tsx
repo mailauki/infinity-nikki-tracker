@@ -11,6 +11,7 @@ import {
   styled,
   useMediaQuery,
   useTheme,
+	Box,
 } from '@mui/material'
 import NavSection from './nav-section'
 import { navLinksData } from '@/lib/nav-links'
@@ -86,29 +87,35 @@ const navContent = (open: boolean, onClose: () => void) => (
 
 export default function NavDrawer() {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const [open, setOpen] = React.useState(false) // TODO: store in user_preferences so that drawer can stay open if preferred (ignored for temporary drawer)
 
-  if (isMobile) {
-    return (
-      <>
+  return (
+	<>
         {!open && (
           <IconButton
-            sx={{ position: 'fixed', top: 24, left: 18, zIndex: theme.zIndex.drawer + 1 }}
+            sx={{ position: 'fixed', top: 24, left: 18, zIndex: theme.zIndex.drawer + 1, display: { xs: 'flex', sm: 'none' } }}
             onClick={() => setOpen(true)}
           >
             <Menu />
           </IconButton>
         )}
-
-        <MuiDrawer
+				<MuiDrawer
+          variant="temporary"
           anchor="left"
           open={open}
-          sx={{ '& .MuiDrawer-paper': { width: '100%' } }}
-          variant="temporary"
           onClose={() => setOpen(false)}
+          sx={{
+            display: { xs: 'block', sm: 'none' },
+						'& .MuiDrawer-paper': { width: '100%' }
+          }}
+          slotProps={{
+            root: {
+              keepMounted: true, // Better open performance on mobile.
+            },
+          }}
         >
-          <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
+      
+      <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
             <IconButton onClick={() => setOpen(false)}>
               <MenuOpen />
             </IconButton>
@@ -116,17 +123,16 @@ export default function NavDrawer() {
           <Toolbar />
           {navContent(true, () => setOpen(false))}
         </MuiDrawer>
-      </>
-    )
-  }
-
-  return (
-    <Drawer anchor="left" open={open} variant="permanent">
+    <Drawer anchor="left" open={open} variant="permanent"
+          sx={{
+            display: { xs: 'none', sm: 'block' },
+          }}>
       <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
         <IconButton onClick={() => setOpen(!open)}>{open ? <MenuOpen /> : <Menu />}</IconButton>
       </Toolbar>
       <Toolbar />
       {navContent(open, () => setOpen(false))}
     </Drawer>
+		</>
   )
 }
