@@ -249,7 +249,7 @@ export function OutfitSetTable({
               <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
                 {row.evolutions?.length
                   ? row.evolutions.map((e: Evolution) => (
-                      <Chip key={e.slug} label={e.title} size="small" />
+                      <Chip key={e.slug} label={e.subtitle} size="small" />
                     ))
                   : '—'}
               </Box>
@@ -258,7 +258,7 @@ export function OutfitSetTable({
             <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
               {row.evolutions?.length
                 ? row.evolutions.map((e: Evolution) => (
-                    <Chip key={e.slug} label={e.title} size="small" />
+                    <Chip key={e.slug} label={e.subtitle} size="small" />
                   ))
                 : '—'}
             </Box>

@@ -7,7 +7,7 @@ import PaginationContainer from './pagination-container'
 interface AdminListProps<T> {
   title: string
   rows: T[] | null | undefined
-  addHref: string
+  addHref?: string
   getKey: (row: T) => string | number
   renderRow: (row: T) => ReactNode
   page?: number

@@ -6,7 +6,7 @@ import { Alert, Box, Button, Card, Stack, TablePagination } from '@mui/material'
 
 interface PaginationContainerProps<T> {
   title: string
-  addHref: string
+  addHref?: string
   rows: T[] | null | undefined
   children: (visibleRows: T[]) => ReactNode
   noPagination?: boolean
@@ -67,17 +67,19 @@ export default function PaginationContainer<T>({
       >
         <Alert severity="info">Some items are automatically generated — edit with caution</Alert>
 
-        <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
-          <Button
-            href={addHref}
-            size="small"
-            startIcon={<Add />}
-            sx={{ '&.MuiButton-root': { textWrap: 'nowrap' } }}
-            variant="outlined"
-          >
-            Add {title}
-          </Button>
-        </Stack>
+        {addHref && (
+          <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
+            <Button
+              href={addHref}
+              size="small"
+              startIcon={<Add />}
+              sx={{ '&.MuiButton-root': { textWrap: 'nowrap' } }}
+              variant="outlined"
+            >
+              Add {title}
+            </Button>
+          </Stack>
+        )}
       </Stack>
       <Card sx={{ borderColor: 'transparent' }}>
         <Box

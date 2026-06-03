@@ -289,7 +289,7 @@ export async function editOutfitSet(
     }
   }
 
-  // Update variant images passed as hidden inputs
+  // Update variant images from hidden inputs
   const variantImageEntries = [...formData.entries()].filter(([key]) =>
     key.startsWith('variant_image_')
   )

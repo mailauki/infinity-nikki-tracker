@@ -54,11 +54,11 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
     getOutfitCategories(),
   ])
 
-  const { data: variantRows, error: variantRowsError } = await supabase
+  const { data: variantRows } = await supabase
     .from('outfit_variants')
-    .select('id, outfit_set, evolution, outfit_category, slug, image_url, default, updated_at')
+    .select('id, slug, outfit_set, outfit_category, evolution, image_url, default, updated_at')
     .eq('outfit_set', outfitSet.slug)
-  if (variantRowsError) throw variantRowsError
+    .order('id', { ascending: true })
 
   const initialDrafts: EvolutionDraft[] = evolutions.map((e) => ({
     subtitle: e.subtitle ?? '',
@@ -66,17 +66,13 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
     existingSlug: e.slug,
   }))
 
-  const defaultEvoSlug = variantRows.find((v) => v.default)?.evolution ?? null
+  const defaultEvoSlug = (variantRows ?? []).find((v) => v.default)?.evolution ?? null
   const initialDefaultEvolutionOrder =
     evolutions.find((e) => e.slug === defaultEvoSlug)?.order ?? ''
 
   const initialCategorySelect = [
-    ...new Set(variantRows.map((v) => v.outfit_category).filter(Boolean)),
+    ...new Set((variantRows ?? []).map((v) => v.outfit_category).filter(Boolean)),
   ] as string[]
-
-  const initialEvolutionImages = Object.fromEntries(
-    evolutions.map((e) => [e.slug, e.image_url ?? null])
-  )
 
   return (
     <EditOutfitSetForm
@@ -85,8 +81,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
       initialCategorySelect={initialCategorySelect}
       initialDefaultEvolutionOrder={initialDefaultEvolutionOrder}
       initialDrafts={initialDrafts}
-      initialEvolutionImages={initialEvolutionImages}
-      initialVariants={variantRows}
+      initialVariants={variantRows ?? []}
       labels={labels}
       outfitCategories={outfitCategories}
       outfitSet={outfitSet}

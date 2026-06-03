@@ -12,7 +12,7 @@ export default function Footer() {
       sx={{
         borderColor: 'transparent',
         backgroundColor: 'surface.containerLowest',
-        pb: 2,
+        py: 2,
       }}
       variant="outlined"
     >

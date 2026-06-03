@@ -23,23 +23,16 @@ import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-materi
 import { Ability, EvolutionDraft, OutfitCategory, OutfitSetRaw } from '@/lib/types/outfit'
 import { Tables } from '@/lib/types/supabase'
 import { Label, Style } from '@/lib/types/eureka'
+
+type OutfitVariantRow = Pick<
+  Tables<'outfit_variants'>,
+  'id' | 'slug' | 'outfit_set' | 'outfit_category' | 'evolution' | 'image_url' | 'default' | 'updated_at'
+>
 import { SparkleIcon } from '@/components/rarity-stars'
 import ImageUpload from '@/components/forms/image-upload'
 import { useFormConfig } from '@/app/(admin)/form-context'
 import { editOutfitSet } from '../../actions'
 import EvolutionEditor from '../../evolution-editor'
-
-type OutfitVariantRow = Pick<
-  Tables<'outfit_variants'>,
-  | 'id'
-  | 'slug'
-  | 'outfit_set'
-  | 'evolution'
-  | 'outfit_category'
-  | 'image_url'
-  | 'default'
-  | 'updated_at'
->
 
 const FORM_ID = 'edit-outfit-set'
 
@@ -53,7 +46,6 @@ export default function EditOutfitSetForm({
   initialDefaultEvolutionOrder = '',
   initialCategorySelect = [],
   initialVariants = [],
-  initialEvolutionImages = {},
   back,
 }: {
   outfitSet: OutfitSetRaw
@@ -65,7 +57,6 @@ export default function EditOutfitSetForm({
   initialDefaultEvolutionOrder?: number | ''
   initialCategorySelect?: string[]
   initialVariants?: OutfitVariantRow[]
-  initialEvolutionImages?: Record<string, string | null>
   back: string
 }) {
   const { setFormConfig } = useFormConfig()
@@ -84,8 +75,6 @@ export default function EditOutfitSetForm({
   )
   const [categorySelect, setCategorySelect] = useState<string[]>(initialCategorySelect)
   const [setImage, setSetImage] = useState<string | null>(outfitSet.image_url ?? null)
-  const [evolutionImages, setEvolutionImages] =
-    useState<Record<string, string | null>>(initialEvolutionImages)
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
     Object.fromEntries(initialVariants.filter((v) => v.slug).map((v) => [v.slug, v.image_url]))
   )
@@ -302,42 +291,14 @@ export default function EditOutfitSetForm({
           />
         </Stack>
 
-        {initialDrafts.filter((d) => d.existingSlug).length > 0 && (
-          <Stack spacing={1}>
-            <Typography variant="subtitle2">Evolution Images</Typography>
-            <Box
-              sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
-            >
-              {initialDrafts
-                .filter((d) => d.existingSlug)
-                .map((d) => (
-                  <Stack key={d.existingSlug} spacing={0.5}>
-                    <Typography sx={{ fontFamily: 'monospace' }} variant="caption">
-                      {d.existingSlug}
-                    </Typography>
-                    <ImageUpload
-                      caption={d.subtitle}
-                      slug={d.existingSlug}
-                      table="evolutions"
-                      url={evolutionImages[d.existingSlug!] ?? null}
-                      onUpload={(url) =>
-                        setEvolutionImages((prev) => ({ ...prev, [d.existingSlug!]: url }))
-                      }
-                    />
-                  </Stack>
-                ))}
-            </Box>
-          </Stack>
-        )}
-
-        {initialVariants.length > 0 && (
+        {initialVariants.some((v) => v.evolution === null) && (
           <Stack spacing={1}>
             <Typography variant="subtitle2">Variant Images</Typography>
             <Box
               sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
             >
               {initialVariants
-                .filter((v) => v.slug)
+                .filter((v) => v.slug && v.evolution === null)
                 .map((v) => (
                   <Stack key={v.slug} spacing={0.5}>
                     <Typography sx={{ fontFamily: 'monospace' }} variant="caption">

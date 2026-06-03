@@ -81,7 +81,7 @@ export const navLinksData: {
         { title: 'Trials', url: '/dashboard/eureka/trials' },
         { title: 'Outfit Sets', url: '/dashboard/outfits/sets' },
         { title: 'Outfit Variants', url: '/dashboard/outfits/variants' },
-				// { title: 'Evolutions', url: '/dashboard/outfits/evolutions'},
+        { title: 'Evolutions', url: '/dashboard/outfits/evolutions' },
       ],
     },
   ],
@@ -120,6 +120,9 @@ export const navLinksData: {
       variants: {
         add: '/outfits/variants/new',
         edit: '/outfits/variants/edit',
+      },
+      evolutions: {
+        edit: '/outfits/evolutions/edit',
       },
     },
   },
