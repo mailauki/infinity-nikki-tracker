@@ -33,9 +33,9 @@ export default function SettingsTabs({
         value={tab}
         onChange={(_, value: TabValue) => setTab(value)}
       >
-        {isLoggedIn && <Tab label="Profile" value="profile" />}
-        <Tab label="Appearance" value="appearance" />
-        {isLoggedIn && <Tab label="Account" value="account" />}
+        {isLoggedIn && <Tab sx={{ flexGrow: { xs: 1, sm: 0 } }} label="Profile" value="profile" />}
+        <Tab sx={{ flexGrow: { xs: 1, sm: 0 } }} label="Appearance" value="appearance" />
+        {isLoggedIn && <Tab sx={{ flexGrow: { xs: 1, sm: 0 } }} label="Account" value="account" />}
       </Tabs>
 
       {tab === 'profile' && (isLoggedIn ? <ProfileSettings user={user} /> : <LoginAlert />)}
