@@ -87,9 +87,9 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                 <Anchor
                   color="textSecondary"
                   component={Link}
-                  fontWeight="medium"
                   href="/auth/login"
                   underline="hover"
+									sx={{ fontWeight: 'medium' }}
                 >
                   Login
                 </Anchor>

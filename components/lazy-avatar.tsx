@@ -45,7 +45,6 @@ export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps)
         />
       )}
       <Avatar
-			variant='rounded'
         slotProps={{
           img: {
             ref: imgRef,
@@ -55,6 +54,7 @@ export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps)
         }}
         src={retrySrc}
         sx={{ ...sx, opacity: loaded || !src ? 1 : 0 }}
+				variant='rounded'
         {...props}
       >
         {children}

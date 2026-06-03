@@ -75,10 +75,10 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
             <Anchor
               color="textSecondary"
               component={Link}
-              fontWeight="medium"
               href="/auth/forgot-password"
               underline="hover"
               variant="body1"
+							sx={{ fontWeight: 'medium' }}
             >
               Forgot your password?
             </Anchor>
@@ -99,9 +99,9 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               <Anchor
                 color="textSecondary"
                 component={Link}
-                fontWeight="medium"
                 href="/auth/sign-up"
                 underline="hover"
+								sx={{ fontWeight: 'medium' }}
               >
                 Sign up
               </Anchor>

@@ -7,7 +7,7 @@ import { SortButton } from '@/components/navbar/appbar-actions'
 export default function TrialsToolBar() {
   return (
     <NavBarToolbar>
-      <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
+      <Stack direction="row"  sx={{ flex: 1, justifyContent: "flex-end" }}>
         <SortButton />
       </Stack>
     </NavBarToolbar>

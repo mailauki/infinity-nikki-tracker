@@ -11,7 +11,7 @@ export default function FormToolBar() {
 
   return (
     <NavBarToolbar>
-      <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
+      <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: "flex-end" }}>
         <Button component="a" href={backUrl} variant="outlined">
           Cancel
         </Button>

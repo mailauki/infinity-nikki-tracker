@@ -44,7 +44,7 @@ function StatItemRow({ item, size }: { item: StatItem; size: AvatarSize }) {
   return (
     <ListItem disableGutters alignItems="center" sx={{ gap: 1.5 }}>
       <LazyAvatar size={size} src={item.imageUrl ?? undefined} />
-      <Stack flex={1} spacing={0.5}>
+      <Stack spacing={0.5} sx={{ flex: 1 }}>
         <Typography variant="body2">{item.title}</Typography>
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <LinearProgress

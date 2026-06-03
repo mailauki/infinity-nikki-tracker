@@ -21,7 +21,7 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
 
   return (
     <NavBarToolbar>
-      <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
+      <Stack direction="row" sx={{ flex: 1, justifyContent: 'space-between' }}>
         <IconButton component="a" href={`/${backUrl}`}>
           <ChevronLeft />
         </IconButton>

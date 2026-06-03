@@ -55,7 +55,7 @@ export default function ColorSelect({
       <InputLabel id="color-multiple-chip-label">Colors</InputLabel>
       <Select
         multiple
-        MenuProps={MenuProps}
+        // MenuProps={MenuProps}
         id="color-multiple-chip"
         input={<OutlinedInput id="select-multiple-chip" label="Colors" />}
         labelId="color-multiple-chip-label"

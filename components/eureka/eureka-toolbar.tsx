@@ -38,7 +38,7 @@ export default function EurekaToolBar() {
 
   return (
     <NavBarToolbar>
-      <Stack alignItems="center" direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
+      <Stack direction="row"  sx={{ flex: 1, alignItems: "center", justifyContent: "space-between" }}>
         <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
           Showing: {resultsCount} results
         </Typography>

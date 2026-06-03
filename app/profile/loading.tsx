@@ -42,7 +42,7 @@ function RecentUpdatesSkeleton() {
           {Array.from({ length: 3 }).map((_, i) => (
             <Stack key={i} direction="row" spacing={2} sx={{ alignItems: 'center' }}>
               <Skeleton height={48} variant="rounded" width={48} />
-              <Stack flex={1} spacing={0.5}>
+              <Stack spacing={0.5} sx={{ flex: 1 }}>
                 <Skeleton height={18} variant="text" width="60%" />
                 <Skeleton height={14} variant="text" width="40%" />
               </Stack>
