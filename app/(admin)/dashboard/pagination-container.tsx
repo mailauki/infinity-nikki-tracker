@@ -59,14 +59,13 @@ export default function PaginationContainer<T>({
       <Stack
         useFlexGap
         direction="row"
-        flexWrap="wrap"
         spacing={1}
-        sx={{ mb: 2, alignItems: 'flex-end', justifyContent: 'space-between' }}
+        sx={{ mb: 2, alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap' }}
       >
         <Alert severity="info">Some items are automatically generated — edit with caution</Alert>
 
         {addHref && (
-          <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
+          <Stack direction="row" sx={{ flex: 1, justifyContent: 'flex-end' }}>
             <Button
               href={addHref}
               size="small"
