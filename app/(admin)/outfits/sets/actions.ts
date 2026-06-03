@@ -2,9 +2,10 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { toSlugVariant } from '@/lib/utils'
+import { toSlug, toSlugVariant } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { getUserRole } from '@/hooks/user'
+import { EvolutionDraft } from '@/lib/types/outfit'
 
 export async function addOutfitSet(_: unknown, formData: FormData) {
   const role = await getUserRole()
@@ -19,11 +20,13 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
   const rarity = rarityRaw ? parseInt(rarityRaw, 10) : null
   const style = (formData.get('style') as string | null) || null
   const label = (formData.get('label') as string | null) || null
+  const label_2 = (formData.get('label_2') as string | null) || null
   const ability = (formData.get('ability') as string | null) || null
-  const evolutionSelect = JSON.parse(
-    (formData.get('evolution_select') as string) || '[]'
-  ) as string[]
-  const defaultEvolution = (formData.get('default_evolution') as string | null) || ''
+  const evolutionDrafts = JSON.parse(
+    (formData.get('evolution_drafts') as string) || '[]'
+  ) as EvolutionDraft[]
+  const defaultEvolutionOrderRaw = (formData.get('default_evolution_order') as string | null) || ''
+  const defaultEvolutionOrder = defaultEvolutionOrderRaw ? parseInt(defaultEvolutionOrderRaw, 10) : null
   const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
     slug: string
   }[]
@@ -32,7 +35,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
 
   const { error } = await supabase
     .from('outfit_sets')
-    .insert([{ title, slug, description, rarity, style, label, ability }])
+    .insert([{ title, slug, description, rarity, style, label, label_2, ability }])
 
   if (error) return { error: error.message }
 
@@ -40,16 +43,45 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
     await supabase.from('outfit_sets').delete().eq('slug', slug)
   }
 
-  if (evolutionSelect.length > 0 && outfitCategories.length > 0) {
-    const variants = evolutionSelect.flatMap((evolution) =>
-      outfitCategories.map((cat) => ({
-        outfit_set: slug,
-        outfit_category: cat.slug,
-        evolution,
-        slug: toSlugVariant(slug, cat.slug, evolution),
-        default: defaultEvolution ? evolution === defaultEvolution : false,
-      }))
-    )
+  if (evolutionDrafts.length > 0) {
+    const evolutionRows = evolutionDrafts.map((draft) => ({
+      slug: `${slug}-${toSlug(draft.subtitle)}`,
+      title,
+      subtitle: draft.subtitle,
+      order: draft.order,
+      outfit_set: slug,
+    }))
+    const { error: evoError } = await supabase.from('evolutions').insert(evolutionRows)
+    if (evoError) {
+      await rollback()
+      return { error: 'Failed to save evolutions. The set was not created — please try again.' }
+    }
+
+    if (outfitCategories.length > 0) {
+      const variants = evolutionRows.flatMap((evo) =>
+        outfitCategories.map((cat) => ({
+          outfit_set: slug,
+          outfit_category: cat.slug,
+          evolution: evo.slug,
+          slug: toSlugVariant(slug, cat.slug, evo.slug),
+          default: defaultEvolutionOrder ? evo.order === defaultEvolutionOrder : false,
+        }))
+      )
+      const { error: variantError } = await supabase.from('outfit_variants').insert(variants)
+      if (variantError) {
+        await rollback()
+        return { error: 'Failed to save variants. The set was not created — please try again.' }
+      }
+    }
+  } else if (outfitCategories.length > 0) {
+    // No evolutions (e.g. 2-star sets) — create null-evolution variants
+    const variants = outfitCategories.map((cat) => ({
+      outfit_set: slug,
+      outfit_category: cat.slug,
+      evolution: null,
+      slug: `${slug}-${cat.slug}`,
+      default: true,
+    }))
     const { error: variantError } = await supabase.from('outfit_variants').insert(variants)
     if (variantError) {
       await rollback()
@@ -62,7 +94,6 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
 
 export async function editOutfitSet(
   id: number,
-  initialEvolutions: string[],
   backUrl: string,
   _: unknown,
   formData: FormData
@@ -79,11 +110,13 @@ export async function editOutfitSet(
   const rarity = rarityRaw ? parseInt(rarityRaw, 10) : null
   const style = (formData.get('style') as string | null) || null
   const label = (formData.get('label') as string | null) || null
+  const label_2 = (formData.get('label_2') as string | null) || null
   const ability = (formData.get('ability') as string | null) || null
-  const evolutionSelect = JSON.parse(
-    (formData.get('evolution_select') as string) || '[]'
-  ) as string[]
-  const defaultEvolution = (formData.get('default_evolution') as string | null) || ''
+  const evolutionDrafts = JSON.parse(
+    (formData.get('evolution_drafts') as string) || '[]'
+  ) as EvolutionDraft[]
+  const defaultEvolutionOrderRaw = (formData.get('default_evolution_order') as string | null) || ''
+  const defaultEvolutionOrder = defaultEvolutionOrderRaw ? parseInt(defaultEvolutionOrderRaw, 10) : null
   const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
     slug: string
   }[]
@@ -99,6 +132,7 @@ export async function editOutfitSet(
       rarity,
       style,
       label,
+      label_2,
       ability,
       updated_at: new Date().toISOString(),
     })
@@ -106,46 +140,153 @@ export async function editOutfitSet(
 
   if (error) return { error: error.message }
 
-  const addedEvolutions = evolutionSelect.filter((e) => !initialEvolutions.includes(e))
-  const removedEvolutions = initialEvolutions.filter((e) => !evolutionSelect.includes(e))
+  // Load current DB evolutions for this set (using the new slug post-cascade)
+  const { data: currentEvolutions } = await supabase
+    .from('evolutions')
+    .select('slug, order')
+    .eq('outfit_set', slug)
 
-  if (addedEvolutions.length > 0) {
-    const newVariants = addedEvolutions.flatMap((evolution) =>
-      outfitCategories.map((cat) => ({
-        outfit_set: slug,
-        outfit_category: cat.slug,
-        evolution,
-        slug: toSlugVariant(slug, cat.slug, evolution),
-        default: defaultEvolution ? evolution === defaultEvolution : false,
-      }))
-    )
-    const { error: insertError } = await supabase.from('outfit_variants').insert(newVariants)
-    if (insertError) return { error: insertError.message }
-  }
+  const currentSlugs = (currentEvolutions ?? []).map((e) => e.slug)
+  const submittedExistingSlugs = evolutionDrafts
+    .filter((d) => d.existingSlug)
+    .map((d) => d.existingSlug as string)
 
-  if (removedEvolutions.length > 0) {
+  // Delete removed evolutions (cascade removes their variants; obtained SET NULL)
+  const deletedSlugs = currentSlugs.filter((s) => !submittedExistingSlugs.includes(s))
+  if (deletedSlugs.length > 0) {
     const { error: deleteError } = await supabase
-      .from('outfit_variants')
+      .from('evolutions')
       .delete()
-      .eq('outfit_set', slug)
-      .in('evolution', removedEvolutions)
+      .in('slug', deletedSlugs)
     if (deleteError) return { error: deleteError.message }
   }
 
-  // Sync default flag
+  // Update existing evolutions
+  const updatedDrafts = evolutionDrafts.filter((d) => d.existingSlug)
+  for (const draft of updatedDrafts) {
+    const newEvoSlug = `${slug}-${toSlug(draft.subtitle)}`
+    const { error: updateError } = await supabase
+      .from('evolutions')
+      .update({
+        slug: newEvoSlug,
+        title,
+        subtitle: draft.subtitle,
+        order: draft.order,
+        outfit_set: slug,
+      })
+      .eq('slug', draft.existingSlug as string)
+    if (updateError) return { error: updateError.message }
+  }
+
+  // Insert new evolutions and their variants
+  const newDrafts = evolutionDrafts.filter((d) => !d.existingSlug)
+  if (newDrafts.length > 0) {
+    const newEvoRows = newDrafts.map((draft) => ({
+      slug: `${slug}-${toSlug(draft.subtitle)}`,
+      title,
+      subtitle: draft.subtitle,
+      order: draft.order,
+      outfit_set: slug,
+    }))
+    const { error: evoError } = await supabase.from('evolutions').insert(newEvoRows)
+    if (evoError) return { error: evoError.message }
+
+    if (outfitCategories.length > 0) {
+      const newVariants = newEvoRows.flatMap((evo) =>
+        outfitCategories.map((cat) => ({
+          outfit_set: slug,
+          outfit_category: cat.slug,
+          evolution: evo.slug,
+          slug: toSlugVariant(slug, cat.slug, evo.slug),
+          default: false,
+        }))
+      )
+      const { error: variantError } = await supabase.from('outfit_variants').insert(newVariants)
+      if (variantError) return { error: variantError.message }
+    }
+  }
+
+  // Sync categories: add variants for newly selected categories, delete for removed ones
+  const { data: currentVariantCats } = await supabase
+    .from('outfit_variants')
+    .select('outfit_category')
+    .eq('outfit_set', slug)
+  const currentCategorySlugs = [
+    ...new Set((currentVariantCats ?? []).map((v) => v.outfit_category).filter(Boolean)),
+  ] as string[]
+  const submittedCategorySlugs = outfitCategories.map((c) => c.slug)
+
+  const removedCategories = currentCategorySlugs.filter(
+    (s) => !submittedCategorySlugs.includes(s)
+  )
+  const addedCategories = submittedCategorySlugs.filter(
+    (s) => !currentCategorySlugs.includes(s)
+  )
+
+  if (removedCategories.length > 0) {
+    const { error: removeCatError } = await supabase
+      .from('outfit_variants')
+      .delete()
+      .eq('outfit_set', slug)
+      .in('outfit_category', removedCategories)
+    if (removeCatError) return { error: removeCatError.message }
+  }
+
+  if (addedCategories.length > 0) {
+    const { data: finalEvolutions } = await supabase
+      .from('evolutions')
+      .select('slug, order')
+      .eq('outfit_set', slug)
+
+    const newCatVariants: {
+      outfit_set: string
+      outfit_category: string
+      evolution: string | null
+      slug: string
+      default: boolean
+    }[] =
+      finalEvolutions && finalEvolutions.length > 0
+        ? finalEvolutions.flatMap((evo) =>
+            addedCategories.map((catSlug) => ({
+              outfit_set: slug,
+              outfit_category: catSlug,
+              evolution: evo.slug,
+              slug: toSlugVariant(slug, catSlug, evo.slug),
+              default: false,
+            }))
+          )
+        : addedCategories.map((catSlug) => ({
+            outfit_set: slug,
+            outfit_category: catSlug,
+            evolution: null,
+            slug: `${slug}-${catSlug}`,
+            default: false,
+          }))
+    const { error: addCatError } = await supabase.from('outfit_variants').insert(newCatVariants)
+    if (addCatError) return { error: addCatError.message }
+  }
+
+  // Sync default flag across all variants
   const { error: clearDefaultError } = await supabase
     .from('outfit_variants')
     .update({ default: false })
     .eq('outfit_set', slug)
   if (clearDefaultError) return { error: clearDefaultError.message }
 
-  if (defaultEvolution) {
-    const { error: setDefaultError } = await supabase
-      .from('outfit_variants')
-      .update({ default: true })
-      .eq('outfit_set', slug)
-      .eq('evolution', defaultEvolution)
-    if (setDefaultError) return { error: setDefaultError.message }
+  if (defaultEvolutionOrder) {
+    // Find the evolution slug with the matching order
+    const defaultEvoSlug = evolutionDrafts.find((d) => d.order === defaultEvolutionOrder)
+    if (defaultEvoSlug) {
+      const resolvedSlug = defaultEvoSlug.existingSlug
+        ? `${slug}-${toSlug(defaultEvoSlug.subtitle)}`
+        : `${slug}-${toSlug(defaultEvoSlug.subtitle)}`
+      const { error: setDefaultError } = await supabase
+        .from('outfit_variants')
+        .update({ default: true })
+        .eq('outfit_set', slug)
+        .eq('evolution', resolvedSlug)
+      if (setDefaultError) return { error: setDefaultError.message }
+    }
   }
 
   // Update variant images passed as hidden inputs

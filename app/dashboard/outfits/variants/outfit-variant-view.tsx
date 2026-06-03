@@ -2,8 +2,8 @@
 
 import { useDashboardView } from '../../dashboard-view-context'
 import { Evolution, OutfitCategory, OutfitSet, OutfitVariantRaw } from '@/lib/types/outfit'
-import { OutfitVariantTable } from '../../outfit-variant-table'
-import OutfitVariantList from '../../outfit-variant-list'
+import { OutfitVariantTable } from './outfit-variant-table'
+import OutfitVariantList from './outfit-variant-list'
 import TableContainer from '../../table-container'
 
 export default function OutfitVariantView({

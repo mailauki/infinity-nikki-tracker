@@ -2,7 +2,7 @@ import { countObtained, percent } from '@/hooks/count-obtained'
 import { EurekaColor, EurekaSet } from '@/lib/types/eureka'
 import { Box, Card, LinearProgress, Stack, Typography } from '@mui/material'
 import { Category } from '@mui/icons-material'
-import LazyAvatar from './lazy-avatar'
+import LazyAvatar from '../lazy-avatar'
 import RarityStars from '../rarity-stars'
 
 export default function EurekaColorSetCard({

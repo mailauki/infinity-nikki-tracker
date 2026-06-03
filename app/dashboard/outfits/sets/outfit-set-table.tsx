@@ -20,7 +20,7 @@ import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { Ability, Evolution, OutfitSet } from '@/lib/types/outfit'
 import { Style, Label } from '@/lib/types/eureka'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 import RarityStars from '@/components/rarity-stars'
 import { updateOutfitSet } from '@/app/dashboard/actions'
 

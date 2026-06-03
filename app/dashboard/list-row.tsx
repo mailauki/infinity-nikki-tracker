@@ -7,7 +7,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 import { formatDate } from '@/lib/utils'
 
 export default function ListRow({

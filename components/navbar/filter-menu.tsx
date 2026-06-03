@@ -17,13 +17,13 @@ import { usePathname } from 'next/navigation'
 
 import { useEurekaData } from '../eureka/eureka-context'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
-import ObtainedToggle from '../eureka/filter/obtained-toggle'
-import ColorSelect from '../eureka/filter/color-select'
-import CategoryToggle from '../eureka/filter/category-toggle'
-import SortColorToggle from '../eureka/filter/sort-color-toggle'
-import SortEurekaToggle from '../eureka/filter/sort-eureka-toggle'
-import EurekaSelect from '../eureka/filter/eureka-select'
-import RarityToggle from '../eureka/filter/rarity-toggle'
+import SortEurekaToggle from '../filter/sort-eureka-toggle'
+import EurekaSelect from '../filter/eureka-select'
+import SortColorToggle from '../filter/sort-color-toggle'
+import ColorSelect from '../filter/color-select'
+import ObtainedToggle from '../filter/obtained-toggle'
+import CategoryToggle from '../filter/category-toggle'
+import RarityToggle from '../filter/rarity-toggle'
 
 const FILTER_PAGES = ['/eureka']
 

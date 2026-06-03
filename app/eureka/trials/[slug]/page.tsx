@@ -7,7 +7,7 @@ import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrial } from '@/hooks/data/trials'
 import { getUserRole } from '@/hooks/user'
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
-import LazyCardMedia from '@/components/eureka/lazy-card-media'
+import LazyCardMedia from '@/components/lazy-card-media'
 import { GRID_COLUMNS } from '@/lib/types/props'
 import SlugToolBar from '@/components/slug-toolbar'
 

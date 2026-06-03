@@ -27,7 +27,7 @@ export function createOutfitSet({
   outfitCategories,
   evolutions,
 }: {
-  outfitSet: Omit<OutfitSet, 'created_at' | 'image_url' | 'outfit_categories' | 'evolutions'>
+  outfitSet: Omit<OutfitSet, 'created_at' | 'outfit_categories' | 'evolutions'>
   outfitCategories: OutfitCategory[] | null
   evolutions: Evolution[] | null
 }): OutfitSet {
@@ -40,10 +40,12 @@ export function createOutfitSet({
 
   return {
     ...outfitSet,
-    image_url: (
-      outfitSet.outfit_variants.find((v) => v.default && v.outfit_category === 'hair') ??
-      outfitSet.outfit_variants.find((v) => v.default)
-    )?.image_url,
+    image_url:
+      outfitSet.image_url ??
+      (
+        outfitSet.outfit_variants.find((v) => v.default && v.outfit_category === 'hair') ??
+        outfitSet.outfit_variants.find((v) => v.default)
+      )?.image_url,
     outfit_categories: outfitCategories ?? [],
     evolutions: resolvedEvolutions,
     outfit_variants: sortOutfitVariants(
@@ -69,7 +71,7 @@ export function updateOutfitSet({
         (o) =>
           variant.outfit_set === o.outfit_set &&
           variant.outfit_category === o.outfit_category &&
-          variant.evolution === o.evolution
+          (variant.evolution === null ? o.evolution === null : variant.evolution === o.evolution)
       ),
     })) as OutfitVariant[],
   } as OutfitSet
@@ -88,7 +90,7 @@ export function updateOutfitVariants({
       (o) =>
         variant.outfit_set === o.outfit_set &&
         variant.outfit_category === o.outfit_category &&
-        variant.evolution === o.evolution
+        (variant.evolution === null ? o.evolution === null : variant.evolution === o.evolution)
     ),
   })) as OutfitVariant[]
 }

@@ -12,7 +12,7 @@ import {
   Typography,
   useColorScheme,
 } from '@mui/material'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 
 export default function CategoryToggle({
   categories,

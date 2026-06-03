@@ -6,8 +6,9 @@ import EditOutfitSetForm from './edit-outfit-set-form'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getAbilities } from '@/hooks/data/abilities'
-import { getEvolutions } from '@/hooks/data/evolutions'
+import { getEvolutionsBySet } from '@/hooks/data/evolutions'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
+import { EvolutionDraft } from '@/lib/types/outfit'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -39,7 +40,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
-    .select('id, slug, title, description, rarity, style, label, ability, updated_at')
+    .select('id, slug, title, description, rarity, style, label, label_2, ability, image_url, updated_at')
     .eq('slug', slug)
     .single()
 
@@ -49,7 +50,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
     getStyles(),
     getLabels(),
     getAbilities(),
-    getEvolutions(),
+    getEvolutionsBySet(outfitSet.slug),
     getOutfitCategories(),
   ])
 
@@ -59,20 +60,33 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
     .eq('outfit_set', outfitSet.slug)
   if (variantRowsError) throw variantRowsError
 
-  const initialEvolutions = [
-    ...new Set(variantRows.map((v) => v.evolution as string).filter(Boolean)),
-  ]
-  const initialDefaultEvolution = variantRows.find((v) => v.default)?.evolution ?? ''
-  const initialVariants = variantRows
+  const initialDrafts: EvolutionDraft[] = evolutions.map((e) => ({
+    subtitle: e.subtitle ?? '',
+    order: e.order,
+    existingSlug: e.slug,
+  }))
+
+  const defaultEvoSlug = variantRows.find((v) => v.default)?.evolution ?? null
+  const initialDefaultEvolutionOrder =
+    evolutions.find((e) => e.slug === defaultEvoSlug)?.order ?? ''
+
+  const initialCategorySelect = [
+    ...new Set(variantRows.map((v) => v.outfit_category).filter(Boolean)),
+  ] as string[]
+
+  const initialEvolutionImages = Object.fromEntries(
+    evolutions.map((e) => [e.slug, e.image_url ?? null])
+  )
 
   return (
     <EditOutfitSetForm
       abilities={abilities}
       back={back}
-      evolutions={evolutions}
-      initialDefaultEvolution={initialDefaultEvolution}
-      initialEvolutions={initialEvolutions}
-      initialVariants={initialVariants}
+      initialCategorySelect={initialCategorySelect}
+      initialDefaultEvolutionOrder={initialDefaultEvolutionOrder}
+      initialDrafts={initialDrafts}
+      initialEvolutionImages={initialEvolutionImages}
+      initialVariants={variantRows}
       labels={labels}
       outfitCategories={outfitCategories}
       outfitSet={outfitSet}

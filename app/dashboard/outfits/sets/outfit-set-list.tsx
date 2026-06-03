@@ -1,8 +1,8 @@
 'use client'
 
 import { OutfitSet } from '@/lib/types/outfit'
-import { AdminList } from './admin-list'
-import ListRow from './list-row'
+import { AdminList } from '../../admin-list'
+import ListRow from '../../list-row'
 import { navLinksData } from '@/lib/nav-links'
 
 interface OutfitSetListProps {
@@ -30,7 +30,7 @@ export default function OutfitSetList({
           image_url={row.image_url ?? undefined}
           list="outfits/sets"
           slug={row.slug ?? undefined}
-          subheader={row.evolutions?.map((e) => e.title).join(', ') || '—'}
+          subheader={row.evolutions?.map((e) => e.subtitle).join(', ') || '—'}
           title={row.title}
           updated_at={row.updated_at}
         />

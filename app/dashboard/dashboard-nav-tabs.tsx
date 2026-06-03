@@ -15,21 +15,5 @@ export default function DashboardNavTabs() {
         <Tab key={t.url} href={t.url} label={t.title} />
       ))}
     </Tabs>
-    // <ToggleButtonGroup
-    //       exclusive
-    //       sx={{ whiteSpace: 'nowrap', height: 'fit-content', pt: 1 }}
-    //       value={tab}
-    //       onChange={handleTabChange}
-    //     >
-    //       <ToggleButton aria-label="Eureka Sets" sx={{ py: 0.75 }} value="eureka-sets">
-    //         Eureka Sets
-    //       </ToggleButton>
-    //       <ToggleButton aria-label="Eureka Variants" sx={{ py: 0.75 }} value="eureka-variants">
-    //         Eureka Variants
-    //       </ToggleButton>
-    //       <ToggleButton aria-label="Trials" sx={{ py: 0.75 }} value="trials">
-    //         Trials
-    //       </ToggleButton>
-    //     </ToggleButtonGroup>
   )
 }

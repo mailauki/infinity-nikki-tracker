@@ -10,7 +10,9 @@ export function toSlug(name: string) {
 }
 
 export function toTitle(slug: string) {
-  return slug.replace(/_/g, ' ').replace(/(^|\s)\w/g, (c) => c.toUpperCase())
+  return decodeURIComponent(slug)
+    .replace(/_/g, ' ')
+    .replace(/(^|\s)\w/g, (c) => c.toUpperCase())
 }
 
 export function toSlugVariant(eurekaSet: string, category: string, color: string) {

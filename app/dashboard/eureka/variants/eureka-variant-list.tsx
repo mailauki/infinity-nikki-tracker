@@ -1,8 +1,8 @@
 'use client'
 
 import { EurekaVariantRaw } from '@/lib/types/eureka'
-import { AdminList } from './admin-list'
-import ListRow from './list-row'
+import { AdminList } from '../../admin-list'
+import ListRow from '../../list-row'
 import { toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 

@@ -10,7 +10,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 import { RecentObtained } from '@/lib/types/eureka'
 import { toTitle, formatDate, toSlug } from '@/lib/utils'
 

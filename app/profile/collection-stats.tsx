@@ -25,7 +25,7 @@ import { Close } from '@mui/icons-material'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { EurekaCategory, EurekaColor, EurekaSet, Trial } from '@/lib/types/eureka'
 import EurekaCardProgress from '@/components/eureka/eureka-card-progress'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 import { toTitle } from '@/lib/utils'
 import { AvatarSize } from '@/lib/types/props'
 

@@ -2,8 +2,8 @@
 
 import { useDashboardView } from '../../dashboard-view-context'
 import { EurekaCategory, EurekaColor, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
-import { EurekaVariantTable } from '../../eureka-variant-table'
-import EurekaVariantList from '../../eureka-variant-list'
+import { EurekaVariantTable } from './eureka-variant-table'
+import EurekaVariantList from './eureka-variant-list'
 import TableContainer from '../../table-container'
 
 export default function EurekaVariantView({

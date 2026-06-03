@@ -2,12 +2,18 @@ import { Tables } from './supabase'
 
 export type Ability = Pick<Tables<'abilities'>, 'slug' | 'title'>
 
-export type OutfitCategory = Pick<Tables<'outfit_categories'>, 'slug' | 'title' | 'type' | 'part'>
+export type OutfitCategory = Pick<Tables<'outfit_categories'>, 'slug' | 'title' | 'part'>
 
 export type Evolution = Pick<
   Tables<'evolutions'>,
-  'slug' | 'title' | 'subtitle' | 'description' | 'order'
+  'slug' | 'title' | 'subtitle' | 'description' | 'order' | 'outfit_set' | 'image_url'
 >
+
+export type EvolutionDraft = {
+  subtitle: string
+  order: number
+  existingSlug?: string
+}
 
 export type OutfitSet = Tables<'outfit_sets'> & {
   image_url: string | null | undefined
@@ -18,7 +24,7 @@ export type OutfitSet = Tables<'outfit_sets'> & {
 
 export type OutfitSetRaw = Pick<
   Tables<'outfit_sets'>,
-  'id' | 'slug' | 'title' | 'description' | 'rarity' | 'style' | 'label' | 'ability' | 'updated_at'
+  'id' | 'slug' | 'title' | 'description' | 'rarity' | 'style' | 'label' | 'label_2' | 'ability' | 'image_url' | 'updated_at'
 >
 
 export type OutfitVariant = Pick<

@@ -41,7 +41,7 @@ export default function NavBar() {
       <Toolbar sx={{ justifyContent: 'center', pr: 4, pt: 3, pb: hasContent ? 0 : 3 }}>
         <PageTitle />
       </Toolbar>
-      <Toolbar ref={refCallback} sx={{ display: hasContent ? undefined : 'none' }} />
+      <Toolbar ref={refCallback} sx={{ display: hasContent ? undefined : 'none', mb: 2 }} />
     </AppBar>
   )
 }

@@ -15,7 +15,7 @@ import {
   Theme,
   useTheme,
 } from '@mui/material'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 
 const ITEM_HEIGHT = 48
 const ITEM_PADDING_TOP = 8

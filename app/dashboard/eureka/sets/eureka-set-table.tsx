@@ -1,12 +1,12 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { IconButton, Stack, Tooltip } from '@mui/material'
+import { Box, Chip, IconButton, Stack, Tooltip } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Cancel'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import { Category, CheckBox } from '@mui/icons-material'
+import { Category } from '@mui/icons-material'
 import {
   DataGrid,
   GridActionsCellItem,
@@ -16,22 +16,22 @@ import {
   GridRowModes,
   GridRowModesModel,
 } from '@mui/x-data-grid'
-import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
+import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
-import { Evolution, OutfitCategory, OutfitSet, OutfitVariantRaw } from '@/lib/types/outfit'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
-import { updateOutfitVariant } from '@/app/dashboard/actions'
+import { EurekaSet, Label, Style } from '@/lib/types/eureka'
+import LazyAvatar from '@/components/lazy-avatar'
+import RarityStars from '@/components/rarity-stars'
+import { updateEurekaSet } from '@/app/dashboard/actions'
 
-type Row = OutfitVariantRaw
+type Row = EurekaSet
 
-interface OutfitVariantTableProps {
+interface EurekaSetTableProps {
   rows: Row[]
-  outfitSets: OutfitSet[]
-  outfitCategories: OutfitCategory[]
-  evolutions: Evolution[]
+  styles: Style[]
+  labels: Label[]
 }
 
-const LOCKED_FIELDS = ['slug', 'image_url', 'updated_at']
+const LOCKED_FIELDS = ['slug', 'image_url', 'colors', 'eureka_set_trials', 'updated_at']
 
 function LockedCell({ children, href }: { children: React.ReactNode; href: string }) {
   return (
@@ -43,17 +43,12 @@ function LockedCell({ children, href }: { children: React.ReactNode; href: strin
   )
 }
 
-export function OutfitVariantTable({
-  rows: initialRows,
-  outfitSets,
-  outfitCategories,
-  evolutions,
-}: OutfitVariantTableProps) {
+export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
   const editHref = (row: Row) =>
-    `${navLinksData.dashboard.outfits.variants.edit}/${row.slug ?? toSlugVariant(row.outfit_set ?? '', row.outfit_category ?? '', row.evolution ?? '')}`
+    `${navLinksData.dashboard.eureka.sets.edit}/${row.slug ?? toSlug(row.title)}`
 
   const isEditing = (id: GridRowId) => rowModesModel[id]?.mode === GridRowModes.Edit
 
@@ -78,11 +73,12 @@ export function OutfitVariantTable({
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {
-      await updateOutfitVariant(newRow.id, {
-        outfit_set: newRow.outfit_set ?? undefined,
-        outfit_category: newRow.outfit_category,
-        evolution: newRow.evolution,
-        default: newRow.default ?? undefined,
+      await updateEurekaSet(newRow.id, {
+        title: newRow.title,
+        description: newRow.description,
+        rarity: newRow.rarity,
+        style: newRow.style,
+        label: newRow.label,
       })
       setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)))
       return newRow
@@ -128,7 +124,7 @@ export function OutfitVariantTable({
                 icon={<OpenInNewIcon color="secondary" />}
                 label="View page"
                 title="View page"
-                onClick={() => (window.location.href = `/outfits/${row.outfit_set}`)}
+                onClick={() => (window.location.href = `/eureka/${row.slug}`)}
               />,
             ],
     },
@@ -142,10 +138,10 @@ export function OutfitVariantTable({
           {isEditing(row.id) ? (
             <LockedCell href={editHref(row)}>
               <LazyAvatar
-                alt={row.outfit_set || 'Image'}
+                alt={row.title || 'Image'}
                 color="transparent"
                 size="sm"
-                src={row.image_url ?? ''}
+                src={row.image_url!}
                 sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
               >
                 <Category fontSize="inherit" />
@@ -153,10 +149,10 @@ export function OutfitVariantTable({
             </LockedCell>
           ) : (
             <LazyAvatar
-              alt={row.outfit_set || 'Image'}
+              alt={row.title || 'Image'}
               color="transparent"
               size="sm"
-              src={row.image_url ?? ''}
+              src={row.image_url!}
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <Category fontSize="inherit" />
@@ -166,21 +162,18 @@ export function OutfitVariantTable({
       ),
     },
     {
-      field: 'outfit_set',
-      headerName: 'Outfit Set',
+      field: 'title',
+      headerName: 'Title',
       width: 200,
       editable: true,
-      type: 'singleSelect',
-      valueOptions: outfitSets.map((s) => ({ value: s.slug, label: s.title })),
-      valueGetter: (_value: unknown, row: Row) => row.outfit_set ?? '',
-      renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <span style={{ fontWeight: 500 }}>{row.outfit_sets?.title ?? '—'}</span>
+      renderCell: ({ value }: GridRenderCellParams<Row>) => (
+        <span style={{ fontWeight: 500 }}>{value}</span>
       ),
     },
     {
       field: 'slug',
       headerName: 'Slug',
-      width: 240,
+      width: 200,
       renderCell: ({ row, value }: GridRenderCellParams<Row>) =>
         isEditing(row.id) ? (
           <LockedCell href={editHref(row)}>
@@ -191,35 +184,94 @@ export function OutfitVariantTable({
         ),
     },
     {
-      field: 'outfit_category',
-      headerName: 'Category',
-      width: 140,
+      field: 'rarity',
+      headerName: 'Rarity',
+      width: 120,
       editable: true,
       type: 'singleSelect',
-      valueOptions: outfitCategories.map((c) => ({ value: c.slug, label: toTitle(c.title ?? '') })),
-      valueGetter: (_value: unknown, row: Row) => row.outfit_category ?? '',
-      valueFormatter: (value: string | null) =>
-        outfitCategories.find((c) => c.slug === value)?.title ?? toTitle(value || '—'),
-    },
-    {
-      field: 'evolution',
-      headerName: 'Evolution',
-      width: 140,
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: evolutions.map((e) => ({ value: e.slug, label: toTitle(e.title ?? '') })),
-      valueGetter: (_value: unknown, row: Row) => row.evolution ?? '',
-      valueFormatter: (value: string | null) =>
-        evolutions.find((e) => e.slug === value)?.title ?? toTitle(value || '—'),
-    },
-    {
-      field: 'default',
-      headerName: 'Default',
-      width: 100,
-      editable: true,
-      type: 'boolean',
+      valueOptions: [2, 3, 4, 5],
       renderCell: ({ value }: GridRenderCellParams<Row>) =>
-        value ? <CheckBox color="secondary" fontSize="small" /> : null,
+        value ? (
+          <Stack justifyContent="center" sx={{ flex: 1, height: 52, color: 'text.secondary' }}>
+            <RarityStars rarity={value} />
+          </Stack>
+        ) : (
+          '—'
+        ),
+    },
+    {
+      field: 'style',
+      headerName: 'Style',
+      width: 120,
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: styles.map((s) => ({ value: s.slug, label: toTitle(s.title ?? '') })),
+      valueFormatter: (value: string | null) => toTitle(value || '—'),
+    },
+    {
+      field: 'label',
+      headerName: 'Label',
+      width: 120,
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: labels.map((l) => ({ value: l.slug, label: toTitle(l.title ?? '') })),
+      valueFormatter: (value: string | null) => toTitle(value || '—'),
+    },
+    {
+      field: 'colors',
+      headerName: 'Colors',
+      width: 340,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+          {isEditing(row.id) ? (
+            <LockedCell href={editHref(row)}>
+              <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
+                {row.colors
+                  ? row.colors.map((color) => (
+                      <Chip key={color.slug} label={color.title} size="small" />
+                    ))
+                  : '—'}
+              </Box>
+            </LockedCell>
+          ) : (
+            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
+              {row.colors
+                ? row.colors.map((color) => (
+                    <Chip key={color.slug} label={color.title} size="small" />
+                  ))
+                : '—'}
+            </Box>
+          )}
+        </Stack>
+      ),
+    },
+    {
+      field: 'description',
+      headerName: 'Description',
+      width: 280,
+      sortable: false,
+      editable: true,
+      valueFormatter: (value: string | null) => value || '—',
+    },
+    {
+      field: 'eureka_set_trials',
+      headerName: 'Trial',
+      width: 160,
+      sortable: false,
+      valueGetter: (_value: unknown, row: Row) => {
+        if (!row.eureka_set_trials?.length) return '—'
+        if (row.eureka_set_trials.length > 1) return `${row.eureka_set_trials.length} trials`
+        return toTitle(row.eureka_set_trials[0].trial)
+      },
+      renderCell: ({ row, value }: GridRenderCellParams<Row>) =>
+        isEditing(row.id) ? (
+          <LockedCell href={editHref(row)}>
+            <span>{value}</span>
+          </LockedCell>
+        ) : (
+          <span>{value}</span>
+        ),
     },
     {
       field: 'updated_at',
@@ -241,7 +293,7 @@ export function OutfitVariantTable({
       processRowUpdate={processRowUpdate}
       rowModesModel={rowModesModel}
       rows={rows}
-      sx={{ border: 0 }}
+      sx={{ border: 0, bgcolor: 'transparent' }}
       onRowModesModelChange={setRowModesModel}
     />
   )

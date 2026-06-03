@@ -20,7 +20,7 @@ import {
   TextField,
 } from '@mui/material'
 import { ColorLens } from '@mui/icons-material'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 import { EurekaCategory, EurekaColor, Label, Style, Trial } from '@/lib/types/eureka'

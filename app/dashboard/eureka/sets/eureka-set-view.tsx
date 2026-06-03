@@ -2,8 +2,8 @@
 
 import { useDashboardView } from '../../dashboard-view-context'
 import { EurekaSet, Label, Style } from '@/lib/types/eureka'
-import { EurekaSetTable } from '../../eureka-set-table'
-import EurekaSetList from '../../eureka-set-list'
+import { EurekaSetTable } from './eureka-set-table'
+import EurekaSetList from './eureka-set-list'
 import TableContainer from '../../table-container'
 
 export default function EurekaSetView({

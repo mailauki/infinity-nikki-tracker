@@ -1,7 +1,7 @@
 import { CardHeader, Typography } from '@mui/material'
 import { CardSize } from '@/lib/types/props'
 import { Category } from '@mui/icons-material'
-import LazyAvatar from './lazy-avatar'
+import LazyAvatar from '../lazy-avatar'
 
 export default function EurekaSetImage({
   imageUrl,

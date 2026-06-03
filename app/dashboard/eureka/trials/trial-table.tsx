@@ -1,7 +1,7 @@
 'use client'
 
-import { useCallback, useState } from 'react'
-import { Box, Chip, IconButton, Stack, Tooltip } from '@mui/material'
+import { useCallback } from 'react'
+import { IconButton, Stack, Tooltip } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Cancel'
@@ -16,22 +16,18 @@ import {
   GridRowModes,
   GridRowModesModel,
 } from '@mui/x-data-grid'
-import { formatDate, toSlug, toTitle } from '@/lib/utils'
+import { formatDate, toSlug } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
-import { EurekaSet, Label, Style } from '@/lib/types/eureka'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
-import RarityStars from '@/components/rarity-stars'
-import { updateEurekaSet } from '@/app/dashboard/actions'
+import { Trial } from '@/lib/types/eureka'
+import LazyAvatar from '@/components/lazy-avatar'
+import { updateTrial } from '@/app/dashboard/actions'
+import { useState } from 'react'
 
-type Row = EurekaSet
+type Row = Trial
 
-interface EurekaSetTableProps {
+interface TrialTableProps {
   rows: Row[]
-  styles: Style[]
-  labels: Label[]
 }
-
-const LOCKED_FIELDS = ['slug', 'image_url', 'colors', 'eureka_set_trials', 'updated_at']
 
 function LockedCell({ children, href }: { children: React.ReactNode; href: string }) {
   return (
@@ -43,42 +39,44 @@ function LockedCell({ children, href }: { children: React.ReactNode; href: strin
   )
 }
 
-export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetTableProps) {
+export function TrialTable({ rows: initialRows }: TrialTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
   const editHref = (row: Row) =>
-    `${navLinksData.dashboard.eureka.sets.edit}/${row.slug ?? toSlug(row.title)}`
-
-  const isEditing = (id: GridRowId) => rowModesModel[id]?.mode === GridRowModes.Edit
+    `${navLinksData.dashboard.eureka.trials.edit}/${row.slug ?? toSlug(row.title)}`
 
   const handleEditClick = useCallback(
-    (id: GridRowId) => () => setRowModesModel((m) => ({ ...m, [id]: { mode: GridRowModes.Edit } })),
+    (id: GridRowId) => () => {
+      setRowModesModel((m) => ({ ...m, [id]: { mode: GridRowModes.Edit } }))
+    },
     []
   )
 
   const handleSaveClick = useCallback(
-    (id: GridRowId) => () => setRowModesModel((m) => ({ ...m, [id]: { mode: GridRowModes.View } })),
+    (id: GridRowId) => () => {
+      setRowModesModel((m) => ({ ...m, [id]: { mode: GridRowModes.View } }))
+    },
     []
   )
 
   const handleCancelClick = useCallback(
-    (id: GridRowId) => () =>
+    (id: GridRowId) => () => {
       setRowModesModel((m) => ({
         ...m,
         [id]: { mode: GridRowModes.View, ignoreModifications: true },
-      })),
+      }))
+    },
     []
   )
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {
-      await updateEurekaSet(newRow.id, {
+      await updateTrial(newRow.id, {
         title: newRow.title,
+        realm: newRow.realm,
+        location: newRow.location,
         description: newRow.description,
-        rarity: newRow.rarity,
-        style: newRow.style,
-        label: newRow.label,
       })
       setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)))
       return newRow
@@ -87,13 +85,15 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
     }
   }, [])
 
+  const isEditing = (id: GridRowId) => rowModesModel[id]?.mode === GridRowModes.Edit
+
   const columns: GridColDef<Row>[] = [
     {
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
       width: 96,
-      getActions: ({ id, row }) =>
+      getActions: ({ id }) =>
         isEditing(id)
           ? [
               <GridActionsCellItem
@@ -122,9 +122,9 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
               <GridActionsCellItem
                 key="open"
                 icon={<OpenInNewIcon color="secondary" />}
-                label="View page"
-                title="View page"
-                onClick={() => (window.location.href = `/eureka/${row.slug}`)}
+                label="View trials"
+                title="View trials"
+                onClick={() => (window.location.href = '/eureka/trials')}
               />,
             ],
     },
@@ -139,10 +139,10 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
             <LockedCell href={editHref(row)}>
               <LazyAvatar
                 alt={row.title || 'Image'}
-                color="transparent"
                 size="sm"
                 src={row.image_url!}
                 sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+                variant="rounded"
               >
                 <Category fontSize="inherit" />
               </LazyAvatar>
@@ -150,10 +150,10 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
           ) : (
             <LazyAvatar
               alt={row.title || 'Image'}
-              color="transparent"
               size="sm"
               src={row.image_url!}
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+              variant="rounded"
             >
               <Category fontSize="inherit" />
             </LazyAvatar>
@@ -164,7 +164,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
     {
       field: 'title',
       headerName: 'Title',
-      width: 200,
+      width: 240,
       editable: true,
       renderCell: ({ value }: GridRenderCellParams<Row>) => (
         <span style={{ fontWeight: 500 }}>{value}</span>
@@ -184,67 +184,19 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
         ),
     },
     {
-      field: 'rarity',
-      headerName: 'Rarity',
+      field: 'realm',
+      headerName: 'Realm',
+      width: 140,
+      editable: true,
+      valueFormatter: (value: string | null) => value ?? '—',
+    },
+    {
+      field: 'location',
+      headerName: 'Location',
       width: 120,
       editable: true,
       type: 'singleSelect',
-      valueOptions: [2, 3, 4, 5],
-      renderCell: ({ value }: GridRenderCellParams<Row>) =>
-        value ? (
-          <Stack justifyContent="center" sx={{ flex: 1, height: 52, color: 'text.secondary' }}>
-            <RarityStars rarity={value} />
-          </Stack>
-        ) : (
-          '—'
-        ),
-    },
-    {
-      field: 'style',
-      headerName: 'Style',
-      width: 120,
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: styles.map((s) => ({ value: s.slug, label: toTitle(s.title ?? '') })),
-      valueFormatter: (value: string | null) => toTitle(value || '—'),
-    },
-    {
-      field: 'label',
-      headerName: 'Label',
-      width: 120,
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: labels.map((l) => ({ value: l.slug, label: toTitle(l.title ?? '') })),
-      valueFormatter: (value: string | null) => toTitle(value || '—'),
-    },
-    {
-      field: 'colors',
-      headerName: 'Colors',
-      width: 340,
-      sortable: false,
-      renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
-          {isEditing(row.id) ? (
-            <LockedCell href={editHref(row)}>
-              <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
-                {row.colors
-                  ? row.colors.map((color) => (
-                      <Chip key={color.slug} label={color.title} size="small" />
-                    ))
-                  : '—'}
-              </Box>
-            </LockedCell>
-          ) : (
-            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
-              {row.colors
-                ? row.colors.map((color) => (
-                    <Chip key={color.slug} label={color.title} size="small" />
-                  ))
-                : '—'}
-            </Box>
-          )}
-        </Stack>
-      ),
+      valueOptions: ['Wishfield', 'Itzaland'],
     },
     {
       field: 'description',
@@ -252,26 +204,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       width: 280,
       sortable: false,
       editable: true,
-      valueFormatter: (value: string | null) => value || '—',
-    },
-    {
-      field: 'eureka_set_trials',
-      headerName: 'Trial',
-      width: 160,
-      sortable: false,
-      valueGetter: (_value: unknown, row: Row) => {
-        if (!row.eureka_set_trials?.length) return '—'
-        if (row.eureka_set_trials.length > 1) return `${row.eureka_set_trials.length} trials`
-        return toTitle(row.eureka_set_trials[0].trial)
-      },
-      renderCell: ({ row, value }: GridRenderCellParams<Row>) =>
-        isEditing(row.id) ? (
-          <LockedCell href={editHref(row)}>
-            <span>{value}</span>
-          </LockedCell>
-        ) : (
-          <span>{value}</span>
-        ),
+      valueFormatter: (value: string | null) => value ?? '—',
     },
     {
       field: 'updated_at',
@@ -288,12 +221,12 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       editMode="row"
       getRowId={(row) => row.id}
       initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
-      isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
+      isCellEditable={({ field }) => !['slug', 'image_url', 'updated_at'].includes(field)}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       processRowUpdate={processRowUpdate}
       rowModesModel={rowModesModel}
       rows={rows}
-      sx={{ border: 0, bgcolor: 'transparent' }}
+      sx={{ border: 0 }}
       onRowModesModelChange={setRowModesModel}
     />
   )

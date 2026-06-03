@@ -1,8 +1,8 @@
 'use client'
 
 import { Trial } from '@/lib/types/eureka'
-import { AdminList } from './admin-list'
-import ListRow from './list-row'
+import { AdminList } from '../../admin-list'
+import ListRow from '../../list-row'
 import { navLinksData } from '@/lib/nav-links'
 
 interface TrialListProps {
