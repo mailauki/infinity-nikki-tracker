@@ -85,9 +85,19 @@ const navContent = (open: boolean, onClose: () => void) => (
   </Stack>
 )
 
+const DRAWER_STORAGE_KEY = 'nav-drawer-open'
+
 export default function NavDrawer() {
   const theme = useTheme()
-  const [open, setOpen] = React.useState(false) // TODO: store in user_preferences so that drawer can stay open if preferred (ignored for temporary drawer)
+  const [open, setOpen] = React.useState(() => {
+    if (typeof window === 'undefined') return false
+    return localStorage.getItem(DRAWER_STORAGE_KEY) === 'true'
+  })
+
+  function toggleDrawer(value: boolean) {
+    setOpen(value)
+    localStorage.setItem(DRAWER_STORAGE_KEY, String(value))
+  }
 
   return (
 	<>
@@ -128,7 +138,7 @@ export default function NavDrawer() {
             display: { xs: 'none', sm: 'block' },
           }}>
       <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
-        <IconButton onClick={() => setOpen(!open)}>{open ? <MenuOpen /> : <Menu />}</IconButton>
+        <IconButton onClick={() => toggleDrawer(!open)}>{open ? <MenuOpen /> : <Menu />}</IconButton>
       </Toolbar>
       <Toolbar />
       {navContent(open, () => setOpen(false))}
