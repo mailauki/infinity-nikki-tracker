@@ -2,7 +2,7 @@
 
 import { EurekaSet } from '@/lib/types/eureka'
 import { Box, Card, CardActionArea, Stack, Typography } from '@mui/material'
-import LazyAvatar from './lazy-avatar'
+import LazyAvatar from '../lazy-avatar'
 import { Category } from '@mui/icons-material'
 import RarityStars from '../rarity-stars'
 

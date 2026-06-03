@@ -1,6 +1,6 @@
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { AvatarSize, CategoryType } from '@/lib/types/props'
-import { Category, Color, EurekaVariant } from '@/lib/types/eureka'
+import { EurekaCategory, EurekaColor, EurekaVariant } from '@/lib/types/eureka'
 import { Chip } from '@mui/material'
 import EurekaCardProgress from './eureka-card-progress'
 import CategoryImage from './category-image'
@@ -11,7 +11,7 @@ export function CategoryItem({
   categoryType = 'categories',
   size = 'sm',
 }: {
-  item: Category | Color
+  item: EurekaCategory | EurekaColor
   eurekaVariants: EurekaVariant[]
   categoryType?: CategoryType
   size?: AvatarSize

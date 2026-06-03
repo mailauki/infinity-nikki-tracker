@@ -18,7 +18,7 @@ import {
 import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 import ImageUpload from '@/components/forms/image-upload'
-import { Category, Color, EurekaSetRaw, EurekaVariantRaw } from '@/lib/types/eureka'
+import { EurekaCategory, EurekaColor, EurekaSetRaw, EurekaVariantRaw } from '@/lib/types/eureka'
 import { useFormConfig } from '@/app/(admin)/form-context'
 import { addEurekaVariant } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
@@ -32,8 +32,8 @@ export default function AddEurekaVariantForm({
   variants,
 }: {
   eurekaSets: EurekaSetRaw[]
-  categories: Category[]
-  colors: Color[]
+  categories: EurekaCategory[]
+  colors: EurekaColor[]
   variants: EurekaVariantRaw[]
 }) {
   const { setFormConfig } = useFormConfig()

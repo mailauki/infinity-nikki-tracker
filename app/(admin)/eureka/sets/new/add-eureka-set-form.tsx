@@ -20,10 +20,10 @@ import {
   TextField,
 } from '@mui/material'
 import { ColorLens } from '@mui/icons-material'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import { Category, Color, Label, Style, Trial } from '@/lib/types/eureka'
+import { EurekaCategory, EurekaColor, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from '@/components/forms/eureka-set/color-select'
 import { SparkleIcon } from '@/components/rarity-stars'
 import { useFormConfig } from '@/app/(admin)/form-context'
@@ -43,8 +43,8 @@ export default function AddEurekaSetForm({
   trials: Trial[]
   styles: Style[]
   labels: Label[]
-  colors: Color[]
-  categories: Category[]
+  colors: EurekaColor[]
+  categories: EurekaCategory[]
 }) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')

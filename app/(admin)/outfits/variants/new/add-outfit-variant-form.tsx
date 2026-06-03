@@ -9,7 +9,6 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
-  ListSubheader,
   MenuItem,
   Select,
   Stack,
@@ -61,15 +60,6 @@ export default function AddOutfitVariantForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
 
-  const groupedCategories = outfitCategories.reduce<Record<string, OutfitCategory[]>>(
-    (groups, cat) => {
-      const type = cat.type ?? 'Other'
-      ;(groups[type] ??= []).push(cat)
-      return groups
-    },
-    {}
-  )
-
   const autoSlug =
     outfitSet && outfitCategory && evolution
       ? toSlugVariant(outfitSet, outfitCategory, evolution)
@@ -107,14 +97,11 @@ export default function AddOutfitVariantForm({
             onChange={(e) => setOutfitCategory(e.target.value)}
           >
             <MenuItem value="">—</MenuItem>
-            {Object.entries(groupedCategories).flatMap(([type, cats]) => [
-              <ListSubheader key={type}>{type}</ListSubheader>,
-              ...cats.map((c) => (
-                <MenuItem key={c.slug} value={c.slug}>
-                  {c.part}
-                </MenuItem>
-              )),
-            ])}
+            {outfitCategories.map((c) => (
+              <MenuItem key={c.slug} value={c.slug}>
+                {c.part}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 

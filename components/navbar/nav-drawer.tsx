@@ -87,7 +87,7 @@ const navContent = (open: boolean, onClose: () => void) => (
 export default function NavDrawer() {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false) // TODO: store in user_preferences so that drawer can stay open if preferred (ignored for temporary drawer)
 
   if (isMobile) {
     return (

@@ -5,8 +5,8 @@ import { useEffect, useRef, useState, useTransition } from 'react'
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
 import {
-  Category,
-  Color,
+  EurekaCategory,
+  EurekaColor,
   EurekaSet,
   ObtainedEureka,
   Trial,
@@ -39,8 +39,8 @@ export default function EurekaDataProvider({
   children: React.ReactNode
 }) {
   const [eurekaSets, setEurekaSets] = useState<EurekaSet[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
-  const [colors, setColors] = useState<Color[]>([])
+  const [categories, setCategories] = useState<EurekaCategory[]>([])
+  const [colors, setColors] = useState<EurekaColor[]>([])
   const [trials, setTrials] = useState<Trial[]>([])
   const [obtainedEureka, setObtainedEureka] = useState<ObtainedEureka[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -55,8 +55,8 @@ export default function EurekaDataProvider({
   useEffect(() => {
     Promise.all([
       fetchJson<EurekaSet[]>('/api/eureka'),
-      fetchJson<Category[]>('/api/categories'),
-      fetchJson<Color[]>('/api/colors'),
+      fetchJson<EurekaCategory[]>('/api/categories'),
+      fetchJson<EurekaColor[]>('/api/colors'),
       fetchJson<Trial[]>('/api/trials'),
     ])
       .then(([sets, cats, cols, trls]) => {

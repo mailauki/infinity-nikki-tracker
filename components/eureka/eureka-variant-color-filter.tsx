@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { Box, Stack } from '@mui/material'
 import { GRID_COLUMNS } from '@/lib/types/props'
-import type { Color, EurekaVariant } from '@/lib/types/eureka'
+import type { EurekaColor, EurekaVariant } from '@/lib/types/eureka'
 import EurekaVariantCard from './eureka-variant-card'
 import ColorChip from '../color-chip'
 
@@ -12,7 +12,7 @@ export default function EurekaVariantColorFilter({
   eureka_variants,
   isLoggedIn,
 }: {
-  colors: Color[]
+  colors: EurekaColor[]
   eureka_variants: EurekaVariant[]
   isLoggedIn: boolean
 }) {

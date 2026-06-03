@@ -22,7 +22,9 @@ export const getOutfitSets = cache(async () => {
       rarity,
       style,
       label,
+      label_2,
       ability,
+      image_url,
       updated_at,
       outfit_variants (
         id,
@@ -51,10 +53,12 @@ export const getOutfitSets = cache(async () => {
 
     return {
       ...outfitSet,
-      image_url: (
-        outfitSet.outfit_variants.find((v) => v.default && v.outfit_category === 'hair') ??
-        outfitSet.outfit_variants.find((v) => v.default)
-      )?.image_url,
+      image_url:
+        outfitSet.image_url ??
+        (
+          outfitSet.outfit_variants.find((v) => v.default && v.outfit_category === 'hair') ??
+          outfitSet.outfit_variants.find((v) => v.default)
+        )?.image_url,
       outfit_categories: outfitCategories,
       evolutions: resolvedEvolutions,
       outfit_variants: sortOutfitVariants(
@@ -87,7 +91,9 @@ export const getOutfitSet = cache(async (slug: string) => {
       rarity,
       style,
       label,
+      label_2,
       ability,
+      image_url,
       updated_at,
       outfit_variants (
         id,

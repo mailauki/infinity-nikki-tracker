@@ -14,22 +14,6 @@ export const navLinksData: {
   },
   navMain: [
     {
-      title: 'Eureka',
-      url: '/eureka',
-      image: '/icons/eureka.png',
-      items: [
-        {
-          title: 'Sets',
-          url: '/eureka/sets',
-        },
-        {
-          title: 'Trials',
-          url: '/eureka/trials',
-          image: '/icons/realm-of-breakthrough.png',
-        },
-      ],
-    },
-    {
       title: 'Outfits',
       url: '/outfits',
       image: '/icons/outfits.png',
@@ -58,6 +42,22 @@ export const navLinksData: {
         // },
       ],
     },
+    {
+      title: 'Eureka',
+      url: '/eureka',
+      image: '/icons/eureka.png',
+      items: [
+        {
+          title: 'Sets',
+          url: '/eureka/sets',
+        },
+        {
+          title: 'Trials',
+          url: '/eureka/trials',
+          image: '/icons/realm-of-breakthrough.png',
+        },
+      ],
+    },
   ],
   navSecondary: [
     {
@@ -81,7 +81,7 @@ export const navLinksData: {
         { title: 'Trials', url: '/dashboard/eureka/trials' },
         { title: 'Outfit Sets', url: '/dashboard/outfits/sets' },
         { title: 'Outfit Variants', url: '/dashboard/outfits/variants' },
-				{ title: 'Evolutions', url: '/dashboard/outfits/evolutions'},
+        { title: 'Evolutions', url: '/dashboard/outfits/evolutions' },
       ],
     },
   ],
@@ -120,6 +120,9 @@ export const navLinksData: {
       variants: {
         add: '/outfits/variants/new',
         edit: '/outfits/variants/edit',
+      },
+      evolutions: {
+        edit: '/outfits/evolutions/edit',
       },
     },
   },

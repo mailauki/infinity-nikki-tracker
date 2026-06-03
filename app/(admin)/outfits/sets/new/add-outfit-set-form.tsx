@@ -9,6 +9,7 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  ListSubheader,
   MenuItem,
   OutlinedInput,
   Select,
@@ -17,13 +18,14 @@ import {
   TextField,
 } from '@mui/material'
 import { toSlug } from '@/lib/utils'
-import { Edit, EditOff } from '@mui/icons-material'
-import { Ability, Evolution, OutfitCategory } from '@/lib/types/outfit'
+import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
+import { Ability, EvolutionDraft, OutfitCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import { SparkleIcon } from '@/components/rarity-stars'
 import { useFormConfig } from '@/app/(admin)/form-context'
 import { addOutfitSet } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
+import EvolutionEditor from '../evolution-editor'
 
 const FORM_ID = 'add-outfit-set'
 
@@ -31,13 +33,11 @@ export default function AddOutfitSetForm({
   styles,
   labels,
   abilities,
-  evolutions,
   outfitCategories,
 }: {
   styles: Style[]
   labels: Label[]
   abilities: Ability[]
-  evolutions: Evolution[]
   outfitCategories: OutfitCategory[]
 }) {
   const { setFormConfig } = useFormConfig()
@@ -46,31 +46,21 @@ export default function AddOutfitSetForm({
   const [rarity, setRarity] = useState<number | ''>('')
   const [style, setStyle] = useState('')
   const [label, setLabel] = useState('')
+  const [label2, setLabel2] = useState('')
   const [ability, setAbility] = useState('')
   const [description, setDescription] = useState('')
-  const [evolutionSelect, setEvolutionSelect] = useState<string[]>([])
-  const [defaultEvolution, setDefaultEvolution] = useState('')
+  const [evolutionDrafts, setEvolutionDrafts] = useState<EvolutionDraft[]>([])
+  const [defaultEvolutionOrder, setDefaultEvolutionOrder] = useState<number | ''>('')
+  const [categorySelect, setCategorySelect] = useState<string[]>([])
   const [editSlug, setEditSlug] = useState(false)
+
+  function handleCategoryChange(e: SelectChangeEvent<string[]>) {
+    const { value } = e.target
+    setCategorySelect(typeof value === 'string' ? value.split(',') : value)
+  }
 
   const maxEvolutionsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
   const maxEvolutions = typeof rarity === 'number' ? (maxEvolutionsByRarity[rarity] ?? 5) : 5
-
-  useEffect(() => {
-    setEvolutionSelect((prev) =>
-      prev.length > maxEvolutions ? prev.slice(0, maxEvolutions) : prev
-    )
-  }, [maxEvolutions])
-
-  useEffect(() => {
-    if (defaultEvolution && !evolutionSelect.includes(defaultEvolution)) setDefaultEvolution('')
-  }, [evolutionSelect, defaultEvolution])
-
-  const handleEvolutionChange = (event: SelectChangeEvent<typeof evolutionSelect>) => {
-    const {
-      target: { value },
-    } = event
-    setEvolutionSelect(typeof value === 'string' ? value.split(',') : value)
-  }
 
   function handleTitleChange(value: string) {
     setTitle(value)
@@ -189,6 +179,25 @@ export default function AddOutfitSetForm({
         </FormControl>
 
         <FormControl>
+          <InputLabel>Label 2</InputLabel>
+          <Select
+            label="Label 2"
+            name="label_2"
+            value={label2}
+            onChange={(e) => setLabel2(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {labels
+              .filter((l) => l.slug !== label)
+              .map((l) => (
+                <MenuItem key={l.slug} value={l.slug}>
+                  {l.title}
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
+
+        <FormControl>
           <InputLabel>Ability</InputLabel>
           <Select
             label="Ability"
@@ -205,63 +214,75 @@ export default function AddOutfitSetForm({
           </Select>
         </FormControl>
 
-        <FormControl sx={{ m: 1, minWidth: 300 }}>
-          <InputLabel>Evolutions</InputLabel>
+        <FormControl>
+          <InputLabel>Categories</InputLabel>
           <Select
             multiple
-            input={<OutlinedInput label="Evolutions" />}
+            input={<OutlinedInput label="Categories" />}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((slug) => {
-                  const evo = evolutions.find((e) => e.slug === slug)
-                  return <Chip key={slug} label={evo?.title ?? slug} size="small" />
+                {selected.map((s) => {
+                  const cat = outfitCategories.find((c) => c.slug === s)
+                  return <Chip key={s} label={cat?.title ?? s} size="small" />
                 })}
               </Box>
             )}
-            value={evolutionSelect}
-            onChange={handleEvolutionChange}
+            value={categorySelect}
+            onChange={handleCategoryChange}
           >
-            {evolutions.map((e) => (
-              <MenuItem
-                key={e.slug}
-                disabled={
-                  evolutionSelect.length >= maxEvolutions && !evolutionSelect.includes(e.slug)
-                }
-                value={e.slug}
-              >
-                {e.title}
-              </MenuItem>
-            ))}
+            {Object.entries(
+              outfitCategories.reduce<Record<string, typeof outfitCategories>>(
+                (groups, cat) => ({ ...groups, [cat.part]: [...(groups[cat.part] ?? []), cat] }),
+                {}
+              )
+            ).flatMap(([part, cats]) => [
+              <ListSubheader key={part} sx={{ textTransform: 'capitalize' }}>
+                {part}
+              </ListSubheader>,
+              ...cats.map((c) => {
+                const selected = categorySelect.includes(c.slug)
+                return (
+                  <MenuItem key={c.slug} value={c.slug}>
+                    {selected ? (
+                      <CheckBox fontSize="small" sx={{ mr: 1 }} />
+                    ) : (
+                      <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
+                    )}
+                    {c.title}
+                  </MenuItem>
+                )
+              }),
+            ])}
           </Select>
         </FormControl>
 
-        <FormControl disabled={evolutionSelect.length === 0}>
-          <InputLabel>Default Evolution</InputLabel>
-          <Select
-            input={<OutlinedInput label="Default Evolution" />}
-            value={defaultEvolution}
-            onChange={(e) => setDefaultEvolution(e.target.value)}
-          >
-            <MenuItem value="">—</MenuItem>
-            {evolutionSelect.map((slug) => {
-              const evo = evolutions.find((e) => e.slug === slug)
-              return (
-                <MenuItem key={slug} value={slug}>
-                  {evo?.title ?? slug}
-                </MenuItem>
-              )
-            })}
-          </Select>
-        </FormControl>
+        <EvolutionEditor
+          defaultEvolutionOrder={defaultEvolutionOrder}
+          maxEvolutions={maxEvolutions}
+          onChange={setEvolutionDrafts}
+          onDefaultChange={setDefaultEvolutionOrder}
+        />
 
         <Alert severity="info">
           Images can be added after saving — use the outfit set edit form, or edit each variant
           individually via its outfit variant form.
         </Alert>
 
-        <input name="evolution_select" type="hidden" value={JSON.stringify(evolutionSelect)} />
-        <input name="default_evolution" type="hidden" value={defaultEvolution} />
-        <input name="outfit_categories" type="hidden" value={JSON.stringify(outfitCategories)} />
+        <input
+          name="evolution_drafts"
+          type="hidden"
+          value={JSON.stringify(evolutionDrafts)}
+        />
+        <input
+          name="default_evolution_order"
+          type="hidden"
+          value={defaultEvolutionOrder}
+        />
+        <input
+          name="outfit_categories"
+          type="hidden"
+          value={JSON.stringify(categorySelect.map((s) => ({ slug: s })))}
+        />
       </Stack>
     </form>
   )
