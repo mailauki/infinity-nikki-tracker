@@ -26,7 +26,14 @@ import { Label, Style } from '@/lib/types/eureka'
 
 type OutfitVariantRow = Pick<
   Tables<'outfit_variants'>,
-  'id' | 'slug' | 'outfit_set' | 'outfit_category' | 'evolution' | 'image_url' | 'default' | 'updated_at'
+  | 'id'
+  | 'slug'
+  | 'outfit_set'
+  | 'outfit_category'
+  | 'evolution'
+  | 'image_url'
+  | 'default'
+  | 'updated_at'
 >
 import { SparkleIcon } from '@/components/rarity-stars'
 import ImageUpload from '@/components/forms/image-upload'
@@ -313,9 +320,7 @@ export default function EditOutfitSetForm({
                       slug={v.slug ?? undefined}
                       table="outfit_variants"
                       url={variantImages[v.slug!] ?? null}
-                      onUpload={(url) =>
-                        setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))
-                      }
+                      onUpload={(url) => setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))}
                     />
                   </Stack>
                 ))}
@@ -323,16 +328,8 @@ export default function EditOutfitSetForm({
           </Stack>
         )}
 
-        <input
-          name="evolution_drafts"
-          type="hidden"
-          value={JSON.stringify(evolutionDrafts)}
-        />
-        <input
-          name="default_evolution_order"
-          type="hidden"
-          value={defaultEvolutionOrder}
-        />
+        <input name="evolution_drafts" type="hidden" value={JSON.stringify(evolutionDrafts)} />
+        <input name="default_evolution_order" type="hidden" value={defaultEvolutionOrder} />
         <input
           name="outfit_categories"
           type="hidden"

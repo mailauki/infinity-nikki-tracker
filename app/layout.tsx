@@ -79,7 +79,12 @@ export default function RootLayout({
                   <NavDrawer />
                 </Suspense>
                 <Stack
-                  sx={{ flex: 1, minHeight: '100vh', minWidth: '300px', justifyContent: 'flex-start' }}
+                  sx={{
+                    flex: 1,
+                    minHeight: '100vh',
+                    minWidth: '300px',
+                    justifyContent: 'flex-start',
+                  }}
                 >
                   <Suspense>
                     <NavBar />

@@ -57,7 +57,13 @@ export default function EurekaVariantCard({
           </Stack>
           <Stack
             direction="row"
-            sx={{ py: 0.75, px: 1.25, my: 0, alignItems: 'center', justifyContent: 'space-between' }}
+            sx={{
+              py: 0.75,
+              px: 1.25,
+              my: 0,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
           >
             <Typography color="textSecondary" variant="caption">
               {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}

@@ -32,7 +32,13 @@ export function Hero() {
         }}
       >
         <Stack
-          sx={{ flex: 1, color: 'white', textAlign: 'center', alignItems: 'center', justifyContent: 'flex-end' }}
+          sx={{
+            flex: 1,
+            color: 'white',
+            textAlign: 'center',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
         >
           <Typography noWrap component="h1" variant="h3">
             Infinity Nikki Tracker

@@ -25,7 +25,9 @@ export default function EurekaSetLoading() {
         <Divider />
       </Stack>
 
-      <Box sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1, sm: 1.5, md: 2 } }}>
+      <Box
+        sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1, sm: 1.5, md: 2 } }}
+      >
         {Array.from({ length: 6 }).map((_, i) => (
           <Skeleton
             key={i}

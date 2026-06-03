@@ -2,12 +2,7 @@
 
 import { Stack } from '@mui/material'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridColDef,
-  GridRenderCellParams,
-} from '@mui/x-data-grid'
+import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { navLinksData } from '@/lib/nav-links'
 import { Evolution } from '@/lib/types/outfit'
 import LazyAvatar from '@/components/lazy-avatar'
@@ -20,8 +15,7 @@ interface OutfitEvolutionTableProps {
 }
 
 export function OutfitEvolutionTable({ rows }: OutfitEvolutionTableProps) {
-  const editHref = (row: Row) =>
-    `${navLinksData.dashboard.outfits.evolutions.edit}/${row.slug}`
+  const editHref = (row: Row) => `${navLinksData.dashboard.outfits.evolutions.edit}/${row.slug}`
 
   const columns: GridColDef<Row>[] = [
     {

@@ -31,9 +31,9 @@ export const navLinksData: {
           url: '/outfits/accessories',
         },
         {
-        	title: 'Evolution',
-        	url: '/outfits/evolution',
-        	image: '/icons/evolution.png',
+          title: 'Evolution',
+          url: '/outfits/evolution',
+          image: '/icons/evolution.png',
         },
         // {
         // 	title: 'Glow Up',

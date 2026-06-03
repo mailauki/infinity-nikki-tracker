@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server'
 
 import { createClient } from '@/lib/supabase/server'
-import { EurekaCategory, EurekaColor, EurekaSet, EurekaVariant, ObtainedEureka } from '@/lib/types/eureka'
+import {
+  EurekaCategory,
+  EurekaColor,
+  EurekaSet,
+  EurekaVariant,
+  ObtainedEureka,
+} from '@/lib/types/eureka'
 
 export async function GET() {
   const supabase = await createClient()

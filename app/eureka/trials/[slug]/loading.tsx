@@ -6,7 +6,9 @@ export default function TrialLoading() {
     <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
       <Skeleton height={360} variant="rectangular" width="100%" />
       <Skeleton height={20} variant="text" width="70%" />
-      <Box sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1, sm: 1.5, md: 2 } }}>
+      <Box
+        sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1, sm: 1.5, md: 2 } }}
+      >
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton
             key={i}

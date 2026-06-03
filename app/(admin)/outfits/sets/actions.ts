@@ -26,7 +26,9 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
     (formData.get('evolution_drafts') as string) || '[]'
   ) as EvolutionDraft[]
   const defaultEvolutionOrderRaw = (formData.get('default_evolution_order') as string | null) || ''
-  const defaultEvolutionOrder = defaultEvolutionOrderRaw ? parseInt(defaultEvolutionOrderRaw, 10) : null
+  const defaultEvolutionOrder = defaultEvolutionOrderRaw
+    ? parseInt(defaultEvolutionOrderRaw, 10)
+    : null
   const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
     slug: string
   }[]
@@ -92,12 +94,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
   redirect(navLinksData.dashboard.outfits.sets.add.replace('/new', ''))
 }
 
-export async function editOutfitSet(
-  id: number,
-  backUrl: string,
-  _: unknown,
-  formData: FormData
-) {
+export async function editOutfitSet(id: number, backUrl: string, _: unknown, formData: FormData) {
   const role = await getUserRole()
   if (role !== 'admin') return { error: 'Forbidden' }
 
@@ -116,7 +113,9 @@ export async function editOutfitSet(
     (formData.get('evolution_drafts') as string) || '[]'
   ) as EvolutionDraft[]
   const defaultEvolutionOrderRaw = (formData.get('default_evolution_order') as string | null) || ''
-  const defaultEvolutionOrder = defaultEvolutionOrderRaw ? parseInt(defaultEvolutionOrderRaw, 10) : null
+  const defaultEvolutionOrder = defaultEvolutionOrderRaw
+    ? parseInt(defaultEvolutionOrderRaw, 10)
+    : null
   const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
     slug: string
   }[]
@@ -216,12 +215,8 @@ export async function editOutfitSet(
   ] as string[]
   const submittedCategorySlugs = outfitCategories.map((c) => c.slug)
 
-  const removedCategories = currentCategorySlugs.filter(
-    (s) => !submittedCategorySlugs.includes(s)
-  )
-  const addedCategories = submittedCategorySlugs.filter(
-    (s) => !currentCategorySlugs.includes(s)
-  )
+  const removedCategories = currentCategorySlugs.filter((s) => !submittedCategorySlugs.includes(s))
+  const addedCategories = submittedCategorySlugs.filter((s) => !currentCategorySlugs.includes(s))
 
   if (removedCategories.length > 0) {
     const { error: removeCatError } = await supabase
