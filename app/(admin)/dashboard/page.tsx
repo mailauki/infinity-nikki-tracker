@@ -7,7 +7,6 @@ import { getUserRole } from '@/hooks/user'
 import { Metadata } from 'next'
 import { Box } from '@mui/material'
 import { StatCard } from './stat-card'
-import DashboardToolBar from './dashboard-toolbar'
 import { navLinksData } from '@/lib/nav-links'
 
 export const metadata: Metadata = {
@@ -35,9 +34,7 @@ async function DashboardContent() {
   const isAdmin = role === 'admin'
 
   return (
-    <>
-      {isAdmin && <DashboardToolBar />}
-      <Box
+    <Box
         sx={{
           display: 'grid',
           gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
@@ -70,7 +67,6 @@ async function DashboardContent() {
           count={outfitVariants?.length ?? 0}
           title="Outfit Variants"
         />
-      </Box>
-    </>
+    </Box>
   )
 }
