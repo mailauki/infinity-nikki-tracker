@@ -53,9 +53,7 @@ export default function EvolutionEditor({
   }
 
   function handleRemove(index: number) {
-    const next = drafts
-      .filter((_, i) => i !== index)
-      .map((d, i) => ({ ...d, order: i + 1 }))
+    const next = drafts.filter((_, i) => i !== index).map((d, i) => ({ ...d, order: i + 1 }))
     setDrafts(next)
     onChange(next)
   }
@@ -68,7 +66,7 @@ export default function EvolutionEditor({
 
   if (maxEvolutions === 0) {
     return (
-      <Typography variant="body2" color="text.secondary">
+      <Typography color="text.secondary" variant="body2">
         2-star sets have no evolutions.
       </Typography>
     )
@@ -76,27 +74,27 @@ export default function EvolutionEditor({
 
   return (
     <Stack spacing={1.5}>
-      <Typography variant="subtitle2" color="text.secondary">
+      <Typography color="text.secondary" variant="subtitle2">
         Evolutions ({drafts.length}/{maxEvolutions})
       </Typography>
 
       {drafts.map((draft, index) => (
-        <Stack key={index} direction="row" alignItems="center" spacing={1}>
-          <Typography variant="caption" sx={{ minWidth: 20, color: 'text.secondary' }}>
+        <Stack key={index} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <Typography sx={{ minWidth: 20, color: 'text.secondary' }} variant="caption">
             {index + 1}.
           </Typography>
           <TextField
             label="Subtitle"
             size="small"
+            slotProps={{ htmlInput: { maxLength: 100 } }}
+            sx={{ flex: 1 }}
             value={draft.subtitle}
             onChange={(e) => handleSubtitleChange(index, e.target.value)}
-            sx={{ flex: 1 }}
-            slotProps={{ htmlInput: { maxLength: 100 } }}
           />
           <IconButton
+            aria-label="Remove evolution"
             size="small"
             onClick={() => handleRemove(index)}
-            aria-label="Remove evolution"
           >
             <RemoveCircleOutline fontSize="small" />
           </IconButton>
@@ -105,12 +103,7 @@ export default function EvolutionEditor({
 
       {drafts.length < maxEvolutions && (
         <Box>
-          <Button
-            startIcon={<AddCircleOutline />}
-            size="small"
-            variant="text"
-            onClick={handleAdd}
-          >
+          <Button size="small" startIcon={<AddCircleOutline />} variant="text" onClick={handleAdd}>
             Add evolution
           </Button>
         </Box>

@@ -31,7 +31,7 @@ export default function EurekaColorSetCard({
       }}
     >
       <Box sx={{ position: 'relative' }}>
-        <Stack alignItems="center" sx={{ pt: 1 }}>
+        <Stack sx={{ pt: 1, alignItems: 'center' }}>
           <LazyAvatar
             alt={slug}
             color="transparent"
@@ -43,10 +43,8 @@ export default function EurekaColorSetCard({
           </LazyAvatar>
         </Stack>
         <Stack
-          alignItems="center"
           direction="row"
-          justifyContent="space-between"
-          sx={{ py: 0.75, px: 1.25, my: 0 }}
+          sx={{ py: 0.75, px: 1.25, my: 0, alignItems: 'center', justifyContent: 'space-between' }}
         >
           <Typography variant="overline">{color.title}</Typography>
           {isLoggedIn && (

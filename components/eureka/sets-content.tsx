@@ -14,7 +14,7 @@ import { countObtained, percent } from '@/hooks/count-obtained'
 function SetSkeleton() {
   return (
     <Box>
-      <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+      <Stack direction="row" sx={{ mb: 0.5, justifyContent: 'space-between' }}>
         <Skeleton height={28} variant="text" width={140} />
         <Skeleton height={24} variant="rounded" width={60} />
       </Stack>
@@ -68,10 +68,8 @@ export default function SetsContent() {
         return (
           <Box key={set.slug}>
             <Stack
-              alignItems="flex-end"
               direction="row"
-              justifyContent="space-between"
-              sx={{ mb: 0.5 }}
+              sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
             >
               <Button
                 color="inherit"

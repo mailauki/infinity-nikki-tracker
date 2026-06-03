@@ -134,7 +134,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       width: 64,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+        <Stack sx={{ flex: 1, height: 52, justifyContent: 'center' }}>
           {isEditing(row.id) ? (
             <LockedCell href={editHref(row)}>
               <LazyAvatar
@@ -192,7 +192,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       valueOptions: [2, 3, 4, 5],
       renderCell: ({ value }: GridRenderCellParams<Row>) =>
         value ? (
-          <Stack justifyContent="center" sx={{ flex: 1, height: 52, color: 'text.secondary' }}>
+          <Stack sx={{ flex: 1, height: 52, justifyContent: 'center', color: 'text.secondary' }}>
             <RarityStars rarity={value} />
           </Stack>
         ) : (
@@ -223,7 +223,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       width: 340,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+        <Stack sx={{ flex: 1, height: 52, justifyContent: 'center' }}>
           {isEditing(row.id) ? (
             <LockedCell href={editHref(row)}>
               <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>

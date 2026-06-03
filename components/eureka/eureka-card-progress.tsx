@@ -21,7 +21,7 @@ export default function EurekaCardProgress({
 }) {
   if (size === 'xs')
     return (
-      <CardContent alignItems="center" component={Stack} spacing={1} sx={{ pt: 0 }}>
+      <CardContent component={Stack} spacing={1} sx={{ pt: 0, alignItems: 'center' }}>
         <Box sx={{ position: 'relative' }}>
           <CircularProgress
             color={percentage === 100 ? 'primary' : 'inherit'}
@@ -44,8 +44,7 @@ export default function EurekaCardProgress({
               <Typography
                 color={percentage === 100 ? 'primary' : 'textPrimary'}
                 component="p"
-                fontWeight="medium"
-                sx={{ pb: 0.5 }}
+                sx={{ pb: 0.5, fontWeight: 'medium' }}
                 variant="subtitle1"
               >
                 {percentage === 100 ? <Check fontSize="large" /> : `${percentage}`}
@@ -65,7 +64,7 @@ export default function EurekaCardProgress({
   return (
     <CardContent component={Stack} spacing={1} sx={{ pt: 0 }}>
       {size !== 'sm' && (
-        <Stack alignItems="center" direction="row" justifyContent="space-between">
+        <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography component="p" variant="h6">
             {percentage}%
           </Typography>

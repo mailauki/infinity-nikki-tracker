@@ -1,7 +1,7 @@
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import SettingsTabs from '@/components/settings/settings-tabs'
+import SettingsTabs from '@/app/settings/settings-tabs'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { createClient } from '@/lib/supabase/server'
 

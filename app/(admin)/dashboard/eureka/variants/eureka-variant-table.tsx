@@ -138,7 +138,7 @@ export function EurekaVariantTable({
       width: 64,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack justifyContent="center" sx={{ flex: 1, height: 52 }}>
+        <Stack sx={{ flex: 1, height: 52, justifyContent: 'center' }}>
           {isEditing(row.id) ? (
             <LockedCell href={editHref(row)}>
               <LazyAvatar

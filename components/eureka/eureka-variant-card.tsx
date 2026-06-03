@@ -44,7 +44,7 @@ export default function EurekaVariantCard({
         }}
       >
         <Box sx={{ position: 'relative', height: '100%' }}>
-          <Stack alignItems="center" sx={{ pt: 1 }}>
+          <Stack sx={{ pt: 1, alignItems: "center" }}>
             <LazyAvatar
               alt={eurekaVariant.slug || 'Eureka Variant'}
               color="transparent"
@@ -56,10 +56,14 @@ export default function EurekaVariantCard({
             </LazyAvatar>
           </Stack>
           <Stack
-            alignItems="center"
             direction="row"
-            justifyContent="space-between"
-            sx={{ py: 0.75, px: 1.25, my: 0 }}
+            sx={{
+              py: 0.75,
+              px: 1.25,
+              my: 0,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
           >
             <Typography color="textSecondary" variant="caption">
               {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}

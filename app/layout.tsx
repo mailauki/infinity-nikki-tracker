@@ -68,19 +68,23 @@ export default function RootLayout({
             <CssBaseline />
             <NavBarToolbarProvider>
               <Stack
-                alignItems="flex-start"
                 direction="row"
                 sx={{
                   minHeight: '100vh',
                   backgroundColor: 'surface.containerLowest',
+                  alignItems: 'flex-start',
                 }}
               >
                 <Suspense>
                   <NavDrawer />
                 </Suspense>
                 <Stack
-                  justifyContent="flex-start"
-                  sx={{ flex: 1, minHeight: '100vh', minWidth: '300px' }}
+                  sx={{
+                    flex: 1,
+                    minHeight: '100vh',
+                    minWidth: '300px',
+                    justifyContent: 'flex-start',
+                  }}
                 >
                   <Suspense>
                     <NavBar />

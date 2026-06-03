@@ -11,6 +11,7 @@ import {
   styled,
   useMediaQuery,
   useTheme,
+  Box,
 } from '@mui/material'
 import NavSection from './nav-section'
 import { navLinksData } from '@/lib/nav-links'
@@ -84,49 +85,76 @@ const navContent = (open: boolean, onClose: () => void) => (
   </Stack>
 )
 
+const DRAWER_STORAGE_KEY = 'nav-drawer-open'
+
 export default function NavDrawer() {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  const [open, setOpen] = React.useState(false) // TODO: store in user_preferences so that drawer can stay open if preferred (ignored for temporary drawer)
+  const [open, setOpen] = React.useState(false)
 
-  if (isMobile) {
-    return (
-      <>
-        {!open && (
-          <IconButton
-            sx={{ position: 'fixed', top: 24, left: 18, zIndex: theme.zIndex.drawer + 1 }}
-            onClick={() => setOpen(true)}
-          >
-            <Menu />
-          </IconButton>
-        )}
+  React.useEffect(() => {
+    setOpen(localStorage.getItem(DRAWER_STORAGE_KEY) === 'true')
+  }, [])
 
-        <MuiDrawer
-          anchor="left"
-          open={open}
-          sx={{ '& .MuiDrawer-paper': { width: '100%' } }}
-          variant="temporary"
-          onClose={() => setOpen(false)}
-        >
-          <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
-            <IconButton onClick={() => setOpen(false)}>
-              <MenuOpen />
-            </IconButton>
-          </Toolbar>
-          <Toolbar />
-          {navContent(true, () => setOpen(false))}
-        </MuiDrawer>
-      </>
-    )
+  function toggleDrawer(value: boolean) {
+    setOpen(value)
+    localStorage.setItem(DRAWER_STORAGE_KEY, String(value))
   }
 
   return (
-    <Drawer anchor="left" open={open} variant="permanent">
-      <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
-        <IconButton onClick={() => setOpen(!open)}>{open ? <MenuOpen /> : <Menu />}</IconButton>
-      </Toolbar>
-      <Toolbar />
-      {navContent(open, () => setOpen(false))}
-    </Drawer>
+    <>
+      {!open && (
+        <IconButton
+          sx={{
+            position: 'fixed',
+            top: 24,
+            left: 18,
+            zIndex: theme.zIndex.drawer + 1,
+            display: { xs: 'flex', sm: 'none' },
+          }}
+          onClick={() => setOpen(true)}
+        >
+          <Menu />
+        </IconButton>
+      )}
+      <MuiDrawer
+        anchor="left"
+        open={open}
+        slotProps={{
+          root: {
+            keepMounted: true, // Better open performance on mobile.
+          },
+        }}
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          '& .MuiDrawer-paper': { width: '100%' },
+        }}
+        variant="temporary"
+        onClose={() => setOpen(false)}
+      >
+        <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
+          <IconButton onClick={() => setOpen(false)}>
+            <MenuOpen />
+          </IconButton>
+        </Toolbar>
+        <Toolbar />
+        {navContent(true, () => setOpen(false))}
+      </MuiDrawer>
+      <Drawer
+        anchor="left"
+        open={open}
+        sx={{
+          display: { xs: 'none', sm: 'block' },
+        }}
+        variant="permanent"
+      >
+        <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
+          <IconButton onClick={() => toggleDrawer(!open)}>
+            {open ? <MenuOpen /> : <Menu />}
+          </IconButton>
+        </Toolbar>
+        <Toolbar />
+        {navContent(open, () => setOpen(false))}
+      </Drawer>
+    </>
   )
 }

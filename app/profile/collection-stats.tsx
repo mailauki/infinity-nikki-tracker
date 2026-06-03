@@ -44,9 +44,9 @@ function StatItemRow({ item, size }: { item: StatItem; size: AvatarSize }) {
   return (
     <ListItem disableGutters alignItems="center" sx={{ gap: 1.5 }}>
       <LazyAvatar size={size} src={item.imageUrl ?? undefined} />
-      <Stack flex={1} spacing={0.5}>
+      <Stack spacing={0.5} sx={{ flex: 1 }}>
         <Typography variant="body2">{item.title}</Typography>
-        <Stack alignItems="center" direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <LinearProgress
             color="inherit"
             sx={{ flex: 1 }}
@@ -113,7 +113,7 @@ function CollectionStatCard({
         onClose={() => setOpen(false)}
       >
         <DialogTitle>
-          <Stack alignItems="center" direction="row" justifyContent="space-between">
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography variant="h6">{title}</Typography>
             <IconButton aria-label="close" size="small" onClick={() => setOpen(false)}>
               <Close />

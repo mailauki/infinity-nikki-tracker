@@ -10,11 +10,7 @@ export const metadata: Metadata = {
   title: 'Edit Evolution',
 }
 
-export default async function EditEvolutionPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function EditEvolutionPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <Suspense>
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
@@ -46,11 +42,5 @@ async function EditEvolution({ params }: { params: Promise<{ slug: string }> }) 
     .eq('evolution', slug)
     .order('id', { ascending: true })
 
-  return (
-    <EditEvolutionForm
-      back={back}
-      evolution={evolution}
-      variants={variantRows ?? []}
-    />
-  )
+  return <EditEvolutionForm back={back} evolution={evolution} variants={variantRows ?? []} />
 }

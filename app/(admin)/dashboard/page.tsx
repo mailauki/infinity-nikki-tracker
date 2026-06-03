@@ -35,38 +35,38 @@ async function DashboardContent() {
 
   return (
     <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-          gap: 2,
-          pt: 4,
-        }}
-      >
-        <StatCard
-          addHref={isAdmin ? navLinksData.dashboard.eureka.sets.add : undefined}
-          count={eurekaSets?.length ?? 0}
-          title="Eureka Sets"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.dashboard.eureka.variants.add : undefined}
-          count={eurekaVariants?.length ?? 0}
-          title="Eureka Variants"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.dashboard.eureka.trials.add : undefined}
-          count={trials?.length ?? 0}
-          title="Trials"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.dashboard.outfits.sets.add : undefined}
-          count={outfitSets?.length ?? 0}
-          title="Outfit Sets"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.dashboard.outfits.variants.add : undefined}
-          count={outfitVariants?.length ?? 0}
-          title="Outfit Variants"
-        />
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+        gap: 2,
+        pt: 4,
+      }}
+    >
+      <StatCard
+        addHref={isAdmin ? navLinksData.dashboard.eureka.sets.add : undefined}
+        count={eurekaSets?.length ?? 0}
+        title="Eureka Sets"
+      />
+      <StatCard
+        addHref={isAdmin ? navLinksData.dashboard.eureka.variants.add : undefined}
+        count={eurekaVariants?.length ?? 0}
+        title="Eureka Variants"
+      />
+      <StatCard
+        addHref={isAdmin ? navLinksData.dashboard.eureka.trials.add : undefined}
+        count={trials?.length ?? 0}
+        title="Trials"
+      />
+      <StatCard
+        addHref={isAdmin ? navLinksData.dashboard.outfits.sets.add : undefined}
+        count={outfitSets?.length ?? 0}
+        title="Outfit Sets"
+      />
+      <StatCard
+        addHref={isAdmin ? navLinksData.dashboard.outfits.variants.add : undefined}
+        count={outfitVariants?.length ?? 0}
+        title="Outfit Variants"
+      />
     </Box>
   )
 }

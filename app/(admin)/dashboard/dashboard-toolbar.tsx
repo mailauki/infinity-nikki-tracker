@@ -12,7 +12,10 @@ export default function DashboardToolBar() {
   return (
     <NavBarToolbar>
       <Stack sx={{ flex: 1, borderBottom: 1, borderColor: 'divider' }}>
-        <Stack alignItems="center" direction="row" justifyContent="space-between">
+        <Stack
+          direction="row"
+          sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
+        >
           <DashboardNavTabs />
           {!isDashboardMainPage && <DashboardViewToggle />}
         </Stack>

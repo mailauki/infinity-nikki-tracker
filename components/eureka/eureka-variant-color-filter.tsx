@@ -29,7 +29,7 @@ export default function EurekaVariantColorFilter({
 
   return (
     <Stack spacing={3}>
-      <Stack useFlexGap direction="row" flexWrap="wrap" spacing={0.5}>
+      <Stack useFlexGap direction="row" spacing={0.5} sx={{ flexWrap: 'wrap' }}>
         {colors.map((color) => (
           <ColorChip
             key={color.slug}

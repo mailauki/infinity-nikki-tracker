@@ -268,16 +268,8 @@ export default function AddOutfitSetForm({
           individually via its outfit variant form.
         </Alert>
 
-        <input
-          name="evolution_drafts"
-          type="hidden"
-          value={JSON.stringify(evolutionDrafts)}
-        />
-        <input
-          name="default_evolution_order"
-          type="hidden"
-          value={defaultEvolutionOrder}
-        />
+        <input name="evolution_drafts" type="hidden" value={JSON.stringify(evolutionDrafts)} />
+        <input name="default_evolution_order" type="hidden" value={defaultEvolutionOrder} />
         <input
           name="outfit_categories"
           type="hidden"

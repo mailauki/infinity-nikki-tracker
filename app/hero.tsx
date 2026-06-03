@@ -32,15 +32,19 @@ export function Hero() {
         }}
       >
         <Stack
-          alignItems="center"
-          justifyContent="flex-end"
-          sx={{ flex: 1, color: 'white', textAlign: 'center' }}
+          sx={{
+            flex: 1,
+            color: 'white',
+            textAlign: 'center',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
         >
           <Typography noWrap component="h1" variant="h3">
             Infinity Nikki Tracker
           </Typography>
           <Container fixed maxWidth="xs">
-            <Typography fontSize={20} variant="subtitle1">
+            <Typography variant="subtitle1" sx={{ fontSize: 20 }}>
               Track your collection from your favorite cozy open-world game Infinity Nikki
             </Typography>
           </Container>

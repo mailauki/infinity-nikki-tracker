@@ -24,7 +24,17 @@ export type OutfitSet = Tables<'outfit_sets'> & {
 
 export type OutfitSetRaw = Pick<
   Tables<'outfit_sets'>,
-  'id' | 'slug' | 'title' | 'description' | 'rarity' | 'style' | 'label' | 'label_2' | 'ability' | 'image_url' | 'updated_at'
+  | 'id'
+  | 'slug'
+  | 'title'
+  | 'description'
+  | 'rarity'
+  | 'style'
+  | 'label'
+  | 'label_2'
+  | 'ability'
+  | 'image_url'
+  | 'updated_at'
 >
 
 export type OutfitVariant = Pick<

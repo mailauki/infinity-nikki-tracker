@@ -41,7 +41,7 @@ export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps)
       {!loaded && src && (
         <Skeleton
           sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-          variant="circular"
+          variant='rounded'
         />
       )}
       <Avatar
@@ -54,6 +54,7 @@ export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps)
         }}
         src={retrySrc}
         sx={{ ...sx, opacity: loaded || !src ? 1 : 0 }}
+				variant='rounded'
         {...props}
       >
         {children}

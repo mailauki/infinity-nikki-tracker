@@ -1,4 +1,10 @@
-import { EurekaCategory, EurekaColor, EurekaVariant, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
+import {
+  EurekaCategory,
+  EurekaColor,
+  EurekaVariant,
+  EurekaSet,
+  ObtainedEureka,
+} from '@/lib/types/eureka'
 
 function colorRank(slug: string | null, defaultColorSlug: string | null | undefined): number {
   if (slug === defaultColorSlug) return -1

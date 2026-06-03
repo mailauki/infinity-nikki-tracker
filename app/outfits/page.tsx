@@ -1,9 +1,17 @@
-import { Stack, Typography } from "@mui/material";
+import { Stack, Typography } from '@mui/material'
 
 export default function OutfitsPage() {
-	return (
-		<Stack alignItems='center' justifyContent='center' sx={{ flex: 1 }}>
-		<Typography variant='h1' component='p'>Coming Soon</Typography>
-		</Stack>
-	)
+  return (
+    <Stack
+      sx={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Typography component="p" variant="h1">
+        Coming Soon
+      </Typography>
+    </Stack>
+  )
 }

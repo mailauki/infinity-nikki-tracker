@@ -16,11 +16,7 @@ export const metadata: Metadata = {
   title: 'Edit Outfit Set',
 }
 
-export default async function EditOutfitSetPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) {
+export default async function EditOutfitSetPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <Suspense>
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
@@ -40,7 +36,9 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
-    .select('id, slug, title, description, rarity, style, label, label_2, ability, image_url, updated_at')
+    .select(
+      'id, slug, title, description, rarity, style, label, label_2, ability, image_url, updated_at'
+    )
     .eq('slug', slug)
     .single()
 

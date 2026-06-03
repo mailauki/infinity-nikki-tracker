@@ -62,8 +62,8 @@ async function EurekaSet({ slug }: { slug: string }) {
       <SlugToolBar isAdmin={isAdmin} />
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <Stack spacing={1}>
-          <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
-            <Stack alignItems="center" sx={{ pt: 1 }}>
+          <Stack direction="row" sx={{ flex: 1, justifyContent: "space-between" }}>
+            <Stack sx={{ pt: 1, alignItems: "center" }}>
               <LazyAvatar
                 alt={slug || 'Eureka Variant'}
                 size="xl"
@@ -78,10 +78,8 @@ async function EurekaSet({ slug }: { slug: string }) {
           </Stack>
 
           <Stack
-            alignItems="center"
             direction="row"
-            justifyContent="space-between"
-            sx={{ flex: 1 }}
+            sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
           >
             <Typography color="textSecondary" variant="subtitle2">
               <RarityStars rarity={rarity!} />
@@ -97,10 +95,8 @@ async function EurekaSet({ slug }: { slug: string }) {
         {eureka_set_trials.length > 0 && (
           <Stack>
             <Stack
-              alignItems="flex-end"
               direction="row"
-              justifyContent="space-between"
-              sx={{ mb: 0.5 }}
+              sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
             >
               <Button
                 color="inherit"

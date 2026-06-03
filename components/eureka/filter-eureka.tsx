@@ -16,7 +16,7 @@ import { countObtained, percent } from '@/hooks/count-obtained'
 function GroupHeaderSkeleton() {
   return (
     <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' }, mt: 2 }}>
-      <Stack alignItems="flex-end" direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+      <Stack direction="row" sx={{ mb: 0.5, alignItems: "flex-end", justifyContent: "space-between" }}>
         <Skeleton height={28} variant="text" width={120} />
         <Skeleton height={24} variant="rounded" width={60} />
       </Stack>
@@ -134,7 +134,7 @@ export default function FilterEureka() {
       )}
 
       {filteredSets.length === 0 ? (
-        <Stack alignItems="center" justifyContent="center" sx={{ py: 8 }}>
+        <Stack sx={{ py: 8, alignItems: "center", justifyContent: "center" }}>
           <Typography color="textSecondary" variant="h6">
             No results
           </Typography>
@@ -165,10 +165,8 @@ export default function FilterEureka() {
                     }}
                   >
                     <Stack
-                      alignItems="flex-end"
                       direction="row"
-                      justifyContent="space-between"
-                      sx={{ mb: 0.5 }}
+                      sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
                     >
                       <Button
                         color="inherit"

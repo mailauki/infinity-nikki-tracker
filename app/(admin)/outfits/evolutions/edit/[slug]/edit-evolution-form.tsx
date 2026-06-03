@@ -1,13 +1,7 @@
 'use client'
 
 import { useActionState, useEffect, useState } from 'react'
-import {
-  Alert,
-  Box,
-  Stack,
-  TextField,
-  Typography,
-} from '@mui/material'
+import { Alert, Box, Stack, TextField, Typography } from '@mui/material'
 import ImageUpload from '@/components/forms/image-upload'
 import { useFormConfig } from '@/app/(admin)/form-context'
 import { editEvolution } from './actions'
@@ -59,11 +53,7 @@ export default function EditEvolutionForm({
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
         {state?.error && <Alert severity="error">{state.error}</Alert>}
 
-        <TextField
-          disabled
-          label="Set Title"
-          value={evolution.title}
-        />
+        <TextField disabled label="Set Title" value={evolution.title} />
 
         <TextField
           required
@@ -115,9 +105,7 @@ export default function EditEvolutionForm({
                       slug={v.slug ?? undefined}
                       table="outfit_variants"
                       url={variantImages[v.slug!] ?? null}
-                      onUpload={(url) =>
-                        setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))
-                      }
+                      onUpload={(url) => setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))}
                     />
                   </Stack>
                 ))}
