@@ -96,7 +96,7 @@ export default function ProfileForm({
   return (
     <Stack spacing={2}>
       {isAdmin && (
-        <Stack alignItems="flex-end">
+        <Stack sx={{ alignItems: 'flex-end' }}>
           <Chip
             color="secondary"
             icon={<AdminPanelSettingsIcon />}
@@ -106,7 +106,7 @@ export default function ProfileForm({
         </Stack>
       )}
 
-      <Stack alignItems="flex-start" direction="row" spacing={2}>
+      <Stack direction="row" spacing={2} sx={{ alignItems: 'flex-start' }}>
         <AvatarUpload inputRef={fileInputRef} uploading={uploading} url={avatar_url} />
         <input
           ref={fileInputRef}

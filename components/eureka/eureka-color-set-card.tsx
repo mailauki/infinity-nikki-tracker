@@ -43,10 +43,8 @@ export default function EurekaColorSetCard({
           </LazyAvatar>
         </Stack>
         <Stack
-          alignItems="center"
           direction="row"
-          justifyContent="space-between"
-          sx={{ py: 0.75, px: 1.25, my: 0 }}
+          sx={{ py: 0.75, px: 1.25, my: 0, alignItems: 'center', justifyContent: 'space-between' }}
         >
           <Typography variant="overline">{color.title}</Typography>
           {isLoggedIn && (

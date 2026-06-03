@@ -58,12 +58,10 @@ export default function PaginationContainer<T>({
     <>
       <Stack
         useFlexGap
-        alignItems="flex-end"
         direction="row"
         flexWrap="wrap"
-        justifyContent="space-between"
         spacing={1}
-        sx={{ mb: 2 }}
+        sx={{ mb: 2, alignItems: 'flex-end', justifyContent: 'space-between' }}
       >
         <Alert severity="info">Some items are automatically generated — edit with caution</Alert>
 

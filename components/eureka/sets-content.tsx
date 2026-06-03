@@ -68,10 +68,8 @@ export default function SetsContent() {
         return (
           <Box key={set.slug}>
             <Stack
-              alignItems="flex-end"
               direction="row"
-              justifyContent="space-between"
-              sx={{ mb: 0.5 }}
+              sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
             >
               <Button
                 color="inherit"

@@ -18,17 +18,14 @@ export default function Footer() {
     >
       <Toolbar>
         <Stack
-          alignItems="center"
           direction="row"
-          flex={1}
-          justifyContent="center"
           spacing={3}
-          sx={{ mx: 1 }}
+          sx={{ flex: 1, mx: 1, alignItems: 'center', justifyContent: 'center' }}
         >
           <Typography color="textDisabled" variant="caption">
             &copy; 2026 mailauki
           </Typography>
-          <Stack alignItems="center" direction="row" gap={0.5}>
+          <Stack direction="row" sx={{ gap: 0.5, alignItems: 'center' }}>
             <CoffeeButton />
             <ThemeSwitcher />
           </Stack>

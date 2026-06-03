@@ -193,7 +193,7 @@ export default function AddEurekaSetForm({
         </FormControl>
 
         <Stack spacing={0.5}>
-          <Stack alignItems="center" direction="row" justifyContent="flex-end">
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
             <Button
               size="small"
               onClick={() =>

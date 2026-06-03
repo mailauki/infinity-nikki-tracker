@@ -1,6 +1,6 @@
 'use client'
 
-import { Tab, Tabs } from '@mui/material'
+import { Box, Tab, Tabs } from '@mui/material'
 import { usePathname } from 'next/navigation'
 import { navLinksData } from '@/lib/nav-links'
 
@@ -10,10 +10,17 @@ export default function DashboardNavTabs() {
   const tab = dashboardTabs?.findIndex((t) => t.url === pathname)
 
   return (
-    <Tabs value={tab === -1 ? false : tab}>
+		<Box sx={{ width: '68vw' }}>
+    <Tabs
+		value={tab === -1 ? false : tab}
+		variant="scrollable"
+  scrollButtons='auto'
+  allowScrollButtonsMobile
+	>
       {dashboardTabs?.map((t) => (
         <Tab key={t.url} href={t.url} label={t.title} />
       ))}
     </Tabs>
+		</Box>
   )
 }

@@ -81,7 +81,7 @@ export default function EvolutionEditor({
       </Typography>
 
       {drafts.map((draft, index) => (
-        <Stack key={index} direction="row" alignItems="center" spacing={1}>
+        <Stack key={index} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <Typography variant="caption" sx={{ minWidth: 20, color: 'text.secondary' }}>
             {index + 1}.
           </Typography>

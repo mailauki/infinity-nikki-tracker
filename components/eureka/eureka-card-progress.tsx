@@ -65,7 +65,7 @@ export default function EurekaCardProgress({
   return (
     <CardContent component={Stack} spacing={1} sx={{ pt: 0 }}>
       {size !== 'sm' && (
-        <Stack alignItems="center" direction="row" justifyContent="space-between">
+        <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography component="p" variant="h6">
             {percentage}%
           </Typography>

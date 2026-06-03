@@ -2,7 +2,7 @@ import { Box, Card, CardContent, CardHeader, Skeleton, Stack } from '@mui/materi
 
 function ProfileHeaderSkeleton() {
   return (
-    <Stack alignItems="center" direction="row" spacing={2}>
+    <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
       <Skeleton height={140} variant="circular" width={140} />
       <Stack spacing={0.5}>
         <Skeleton height={28} variant="text" width={160} />
@@ -40,7 +40,7 @@ function RecentUpdatesSkeleton() {
       <CardContent>
         <Stack spacing={1}>
           {Array.from({ length: 3 }).map((_, i) => (
-            <Stack key={i} alignItems="center" direction="row" spacing={2}>
+            <Stack key={i} direction="row" spacing={2} sx={{ alignItems: 'center' }}>
               <Skeleton height={48} variant="rounded" width={48} />
               <Stack flex={1} spacing={0.5}>
                 <Skeleton height={18} variant="text" width="60%" />
