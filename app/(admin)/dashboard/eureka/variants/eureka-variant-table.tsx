@@ -20,7 +20,7 @@ import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { EurekaCategory, EurekaColor, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/lazy-avatar'
-import { updateEurekaVariant } from '@/app/dashboard/actions'
+import { updateEurekaVariant } from '@/app/(admin)/dashboard/actions'
 
 type Row = EurekaVariantRaw
 

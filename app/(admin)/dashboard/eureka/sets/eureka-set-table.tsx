@@ -21,7 +21,7 @@ import { navLinksData } from '@/lib/nav-links'
 import { EurekaSet, Label, Style } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/lazy-avatar'
 import RarityStars from '@/components/rarity-stars'
-import { updateEurekaSet } from '@/app/dashboard/actions'
+import { updateEurekaSet } from '@/app/(admin)/dashboard/actions'
 
 type Row = EurekaSet
 

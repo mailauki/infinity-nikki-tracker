@@ -22,7 +22,7 @@ import { Ability, Evolution, OutfitSet } from '@/lib/types/outfit'
 import { Style, Label } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/lazy-avatar'
 import RarityStars from '@/components/rarity-stars'
-import { updateOutfitSet } from '@/app/dashboard/actions'
+import { updateOutfitSet } from '@/app/(admin)/dashboard/actions'
 
 type Row = OutfitSet
 
