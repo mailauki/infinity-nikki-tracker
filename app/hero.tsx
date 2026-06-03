@@ -44,7 +44,7 @@ export function Hero() {
             Infinity Nikki Tracker
           </Typography>
           <Container fixed maxWidth="xs">
-            <Typography fontSize={20} variant="subtitle1">
+            <Typography variant="subtitle1" sx={{ fontSize: 20 }}>
               Track your collection from your favorite cozy open-world game Infinity Nikki
             </Typography>
           </Container>
