@@ -89,10 +89,11 @@ const DRAWER_STORAGE_KEY = 'nav-drawer-open'
 
 export default function NavDrawer() {
   const theme = useTheme()
-  const [open, setOpen] = React.useState(() => {
-    if (typeof window === 'undefined') return false
-    return localStorage.getItem(DRAWER_STORAGE_KEY) === 'true'
-  })
+  const [open, setOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    setOpen(localStorage.getItem(DRAWER_STORAGE_KEY) === 'true')
+  }, [])
 
   function toggleDrawer(value: boolean) {
     setOpen(value)
