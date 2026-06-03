@@ -31,7 +31,7 @@ export const navLinksData: {
           url: '/outfits/accessories',
         },
         {
-          title: 'Evolution',
+          title: 'Evolutions',
           url: '/outfits/evolution',
           image: '/icons/evolution.png',
         },
