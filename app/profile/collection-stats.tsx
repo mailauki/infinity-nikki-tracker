@@ -68,7 +68,7 @@ function StatItemRow({ item, size }: { item: StatItem; size: AvatarSize }) {
 }
 
 const RINGS_CHART_SIZE = 240
-const SETS_CHART_SIZE = 200
+const COLOR_SETS_CHART_SIZE = 220
 
 function CollectionRingsChart({
   setsObtained,
@@ -233,33 +233,43 @@ function CollectionRingsChart({
   )
 }
 
-function getSetColor(pct: number, isDarkMode: boolean): string {
-  if (pct === 0) return isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
-  if (pct === 100) return isDarkMode ? lime[500] : lime[900]
-  if (pct >= 67) return isDarkMode ? lime[400] : lime[700]
-  if (pct >= 34) return isDarkMode ? lime[300] : lime[500]
-  return isDarkMode ? lime[200] : lime[300]
-}
-
-function CollectionSetsChart({ sets }: { sets: EurekaSet[] }) {
+function CollectionColorSetsChart({
+  variantsObtained,
+  variantsTotal,
+  colorSetsObtained,
+  colorSetsTotal,
+  sets,
+}: {
+  variantsObtained: number
+  variantsTotal: number
+  colorSetsObtained: number
+  colorSetsTotal: number
+  sets: EurekaSet[]
+}) {
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+  const theme = useTheme()
 
-  const data = sets
-    .filter((set) => set.eureka_variants.length > 0)
-    .map((set) => {
-      const { obtained, total } = countObtained(set.eureka_variants)
-      const pct = percent(obtained, total)
-      return {
-        id: set.slug,
-        value: total,
-        label: set.title,
-        color: getSetColor(pct, isDarkMode),
-        pct,
-      }
-    })
+  const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
+  const primary = theme.palette.primary.main
+  const overallPct = percent(variantsObtained, variantsTotal)
 
-  if (data.length === 0) return null
+  const colorSetSegments = sets
+    .flatMap((set) =>
+      set.colors.map((color) => {
+        const variants = set.eureka_variants.filter((v) => v.color === color.slug)
+        const { obtained, total } = countObtained(variants)
+        return {
+          id: `${set.slug}-${color.slug}`,
+          value: total,
+          label: `${set.title} — ${color.title}`,
+          color: total > 0 && obtained === total ? primary : muted,
+        }
+      })
+    )
+    .filter((s) => s.value > 0)
+
+  if (variantsTotal === 0) return null
 
   return (
     <Card sx={{ gridColumn: '1 / -1' }} variant="outlined">
@@ -268,7 +278,7 @@ function CollectionSetsChart({ sets }: { sets: EurekaSet[] }) {
         sx={{ mt: -1 }}
         title={
           <Typography color="text.secondary" variant="overline">
-            Progress by Set
+            Color Set Progress
           </Typography>
         }
       />
@@ -277,57 +287,114 @@ function CollectionSetsChart({ sets }: { sets: EurekaSet[] }) {
           <Box
             sx={{
               position: 'relative',
-              width: SETS_CHART_SIZE,
-              height: SETS_CHART_SIZE,
+              width: COLOR_SETS_CHART_SIZE,
+              height: COLOR_SETS_CHART_SIZE,
               flexShrink: 0,
             }}
           >
             <PieChart
-              height={SETS_CHART_SIZE}
+              height={COLOR_SETS_CHART_SIZE}
               margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
               series={[
                 {
-                  data,
-                  innerRadius: 60,
-                  outerRadius: 92,
+                  data: [
+                    { id: 'obtained', value: variantsObtained, color: primary },
+                    { id: 'remaining', value: variantsTotal - variantsObtained, color: muted },
+                  ],
+                  innerRadius: 40,
+                  outerRadius: 62,
+                  paddingAngle: variantsObtained > 0 && variantsObtained < variantsTotal ? 2 : 0,
+                  cornerRadius: 4,
+                },
+                {
+                  data: colorSetSegments,
+                  innerRadius: 67,
+                  outerRadius: 100,
                   paddingAngle: 1.5,
                   cornerRadius: 3,
                 },
               ]}
               slots={{ legend: () => null }}
-              width={SETS_CHART_SIZE}
+              width={COLOR_SETS_CHART_SIZE}
             />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              {overallPct === 100 ? (
+                <Check color="primary" sx={{ fontSize: 32 }} />
+              ) : (
+                <Typography sx={{ fontWeight: 'medium' }} variant="h6">
+                  {overallPct}%
+                </Typography>
+              )}
+            </Box>
           </Box>
 
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))',
-              gap: 0.75,
-              flex: 1,
-              width: { xs: '100%', sm: 'auto' },
-            }}
-          >
-            {data.map((item) => (
-              <Stack key={item.id} direction="row" spacing={0.75} sx={{ alignItems: 'center' }}>
+          <Stack spacing={2} sx={{ flex: 1, width: { xs: '100%', sm: 'auto' } }}>
+            <Stack spacing={0.75}>
+              <Typography color="text.secondary" variant="caption">
+                Variants
+              </Typography>
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
                 <Box
                   sx={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: '2px',
-                    bgcolor: item.color,
+                    width: 12,
+                    height: 12,
+                    borderRadius: '3px',
+                    bgcolor: primary,
                     flexShrink: 0,
                   }}
                 />
-                <Typography noWrap sx={{ flex: 1 }} variant="caption">
-                  {item.label}
+                <Typography sx={{ flex: 1 }} variant="body2">
+                  Obtained
                 </Typography>
-                <Typography color="text.secondary" variant="caption">
-                  {item.pct}%
+                <Typography color="text.secondary" variant="body2">
+                  {variantsObtained} / {variantsTotal}
                 </Typography>
               </Stack>
-            ))}
-          </Box>
+            </Stack>
+
+            <Stack spacing={0.75}>
+              <Typography color="text.secondary" variant="caption">
+                Color Sets
+              </Typography>
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                <Box
+                  sx={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '3px',
+                    bgcolor: primary,
+                    flexShrink: 0,
+                  }}
+                />
+                <Typography sx={{ flex: 1 }} variant="body2">
+                  Complete
+                </Typography>
+                <Typography color="text.secondary" variant="body2">
+                  {colorSetsObtained} / {colorSetsTotal}
+                </Typography>
+              </Stack>
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                <Box
+                  sx={{ width: 12, height: 12, borderRadius: '3px', bgcolor: muted, flexShrink: 0 }}
+                />
+                <Typography sx={{ flex: 1 }} variant="body2">
+                  Incomplete
+                </Typography>
+                <Typography color="text.secondary" variant="body2">
+                  {colorSetsTotal - colorSetsObtained}
+                </Typography>
+              </Stack>
+            </Stack>
+          </Stack>
         </Stack>
       </CardContent>
     </Card>
@@ -508,7 +575,13 @@ export default function CollectionStats({
         variantsObtained={variantsObtained}
         variantsTotal={variantsTotal}
       />
-      <CollectionSetsChart sets={sets} />
+      <CollectionColorSetsChart
+        colorSetsObtained={colorSetsObtained}
+        colorSetsTotal={colorSetsTotal}
+        sets={sets}
+        variantsObtained={variantsObtained}
+        variantsTotal={variantsTotal}
+      />
       <CollectionStatCard
         items={setItems}
         obtained={setsObtained}
