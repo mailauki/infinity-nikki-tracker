@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, useState } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 import {
   Box,
   Card,
@@ -92,7 +92,9 @@ function CollectionRingsChart({
   variantsTotal: number
 }) {
   const { mode, systemMode } = useColorScheme()
-  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
 
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
   const ringColors = isDarkMode
@@ -242,7 +244,9 @@ function CollectionSetsChart({
 	sets: EurekaSet[]
 }) {
   const { mode, systemMode } = useColorScheme()
-  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
   const theme = useTheme()
 
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
