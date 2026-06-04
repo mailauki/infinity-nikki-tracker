@@ -6,7 +6,7 @@ import PageTitle from './page-title'
 import { useNavBarToolbar } from './navbar-toolbar-context'
 
 export default function NavBar() {
-  const { setToolbarSlot } = useNavBarToolbar()
+  const { setToolbarSlot, drawerOpen } = useNavBarToolbar()
   const [hasContent, setHasContent] = React.useState(false)
   const slotRef = React.useRef<HTMLDivElement | null>(null)
 
@@ -35,13 +35,17 @@ export default function NavBar() {
         borderColor: 'transparent',
         backdropFilter: 'blur(8px)',
         maskImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%)',
+        ml: { xs: 0, sm: drawerOpen ? '260px' : 'calc(var(--mui-spacing) * 10 + 21px)' },
+        width: { xs: '100%', sm: drawerOpen ? 'calc(100% - 260px)' : 'calc(100% - (var(--mui-spacing) * 10 + 21px))' },
+        transition: (theme) => theme.transitions.create(['margin-left', 'width'], {
+          easing: theme.transitions.easing.sharp,
+          duration: drawerOpen
+            ? theme.transitions.duration.enteringScreen
+            : theme.transitions.duration.leavingScreen,
+        }),
       }}
       variant="outlined"
     >
-      {/* <Toolbar sx={{ justifyContent: 'center', pr: 4, pt: 3, pb: hasContent ? 0 : 3 }}>
-        <PageTitle />
-      </Toolbar>
-      <Toolbar ref={refCallback} sx={{ display: hasContent ? undefined : 'none', mb: 2 }} /> */}
       <Toolbar sx={{ alignItems: 'flex-end', justifyContent: 'center', pb: 0.15 }}>
         <PageTitle />
       </Toolbar>
