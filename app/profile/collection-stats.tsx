@@ -25,7 +25,7 @@ import {
 import { PieChart } from '@mui/x-charts/PieChart'
 import { lime } from '@mui/material/colors'
 import { TransitionProps } from '@mui/material/transitions'
-import { Check, Close } from '@mui/icons-material'
+import { Close } from '@mui/icons-material'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { EurekaCategory, EurekaColor, EurekaSet, Trial } from '@/lib/types/eureka'
 import EurekaCardProgress from '@/components/eureka/eureka-card-progress'
@@ -33,6 +33,7 @@ import LazyAvatar from '@/components/lazy-avatar'
 import { toTitle } from '@/lib/utils'
 import { AvatarSize } from '@/lib/types/props'
 import PercentLabel from '@/components/percent-label'
+import { SparkleIcon } from '@/components/rarity-stars'
 
 const SlideUp = forwardRef(function SlideUp(
   props: TransitionProps & { children: React.ReactElement },
@@ -78,6 +79,8 @@ function CollectionRingsChart({
   colorSetsTotal,
   categoriesObtained,
   categoriesTotal,
+	trialsObtained,
+	trialsTotal,
   variantsObtained,
   variantsTotal,
 }: {
@@ -87,6 +90,8 @@ function CollectionRingsChart({
   colorSetsTotal: number
   categoriesObtained: number
   categoriesTotal: number
+	trialsObtained: number
+	trialsTotal: number
   variantsObtained: number
   variantsTotal: number
 }) {
@@ -115,10 +120,18 @@ function CollectionRingsChart({
       innerRadius: 56,
       outerRadius: 72,
     },
+    // {
+    //   label: 'Categories',
+    //   obtained: categoriesObtained,
+    //   total: categoriesTotal,
+    //   color: ringColors[2],
+    //   innerRadius: 76,
+    //   outerRadius: 90,
+    // },
     {
-      label: 'Categories',
-      obtained: categoriesObtained,
-      total: categoriesTotal,
+      label: 'Trials',
+      obtained: trialsObtained,
+      total: trialsTotal,
       color: ringColors[2],
       innerRadius: 76,
       outerRadius: 90,
@@ -161,10 +174,16 @@ function CollectionRingsChart({
               margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
               series={rings.map((ring) => ({
                 data: [
-                  { id: `${ring.label}-obtained`, value: ring.obtained, color: ring.color },
+                  {
+                    id: `${ring.label}-obtained`,
+                    value: ring.obtained,
+                    label: ring.label,
+                    color: ring.color,
+                  },
                   {
                     id: `${ring.label}-remaining`,
                     value: ring.total - ring.obtained,
+                    label: `${ring.label} remaining`,
                     color: muted,
                   },
                 ],
@@ -172,6 +191,7 @@ function CollectionRingsChart({
                 outerRadius: ring.outerRadius,
                 paddingAngle: ring.obtained > 0 && ring.obtained < ring.total ? 2 : 0,
                 cornerRadius: 3,
+                valueFormatter: (item) => `${percent(item.value, ring.total)}%`,
               }))}
               slots={{ legend: () => null }}
               width={RINGS_CHART_SIZE}
@@ -228,18 +248,10 @@ function CollectionRingsChart({
   )
 }
 
-function CollectionColorSetsChart({
-  variantsObtained,
-  variantsTotal,
-  colorSetsObtained,
-  colorSetsTotal,
-  sets,
+function CollectionSetsChart({
+	sets,
 }: {
-  variantsObtained: number
-  variantsTotal: number
-  colorSetsObtained: number
-  colorSetsTotal: number
-  sets: EurekaSet[]
+	sets: EurekaSet[]
 }) {
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
@@ -247,24 +259,39 @@ function CollectionColorSetsChart({
 
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
   const primary = theme.palette.primary.main
-  const overallPct = percent(variantsObtained, variantsTotal)
+  const secondary = theme.palette.secondary.main
 
-  const colorSetSegments = sets
-    .flatMap((set) =>
-      set.colors.map((color) => {
-        const variants = set.eureka_variants.filter((v) => v.color === color.slug)
-        const { obtained, total } = countObtained(variants)
-        return {
-          id: `${set.slug}-${color.slug}`,
-          value: total,
-          label: `${set.title} — ${color.title}`,
-          color: total > 0 && obtained === total ? primary : muted,
-        }
-      })
-    )
+  const fiveStar = sets.filter((s) => s.rarity === 5)
+
+  const fiveStarTotal = fiveStar.reduce((acc, set) => acc + countObtained(set.eureka_variants).total, 0)
+  const fiveStarSetsTotal = fiveStar.length
+  const fiveStarSetsObtained = fiveStar.filter((set) =>
+    set.eureka_variants.length > 0 && set.eureka_variants.every((v) => v.obtained),
+  ).length
+
+  const setSegments = fiveStar
+    .map((set) => {
+      const { obtained, total } = countObtained(set.eureka_variants)
+      return {
+        id: set.slug,
+        value: total,
+        label: set.title,
+        color: total > 0 && obtained === total ? secondary : muted,
+        formattedValue: `${percent(obtained, total)}% (${obtained}/${total})`,
+        obtained,
+        total,
+      }
+    })
     .filter((s) => s.value > 0)
 
-  if (variantsTotal === 0) return null
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
+  const selected = selectedSlug ? setSegments.find((s) => s.id === selectedSlug) ?? null : null
+
+  const innerObtained = selected ? selected.obtained : fiveStarSetsObtained
+  const innerTotal = selected ? selected.total : fiveStarSetsTotal
+  const innerPct = percent(innerObtained, innerTotal)
+
+  if (fiveStarTotal === 0) return null
 
   return (
     <Card sx={{ gridColumn: '1 / -1' }} variant="outlined">
@@ -273,7 +300,7 @@ function CollectionColorSetsChart({
         sx={{ mt: -1 }}
         title={
           <Typography color="text.secondary" variant="overline">
-            Color Set Progress
+            5 <SparkleIcon color="inherit" fontSize="inherit" sx={{ rotate: '15deg', ml: 0, mr: 0.5, mb: 0.25 }} aria-label='star' /> Set Progress
           </Typography>
         }
       />
@@ -293,24 +320,44 @@ function CollectionColorSetsChart({
               series={[
                 {
                   data: [
-                    { id: 'obtained', value: variantsObtained, color: primary },
-                    { id: 'remaining', value: variantsTotal - variantsObtained, color: muted },
+                    {
+                      id: 'obtained',
+                      value: innerObtained,
+                      label: 'Obtained',
+                      color: primary,
+                    },
+                    {
+                      id: 'remaining',
+                      value: innerTotal - innerObtained,
+                      label: 'Remaining',
+                      color: muted,
+                    },
                   ],
                   innerRadius: 40,
                   outerRadius: 62,
-                  paddingAngle: variantsObtained > 0 && variantsObtained < variantsTotal ? 2 : 0,
+                  paddingAngle: innerObtained > 0 && innerObtained < innerTotal ? 2 : 0,
                   cornerRadius: 4,
+                  valueFormatter: (item) => `${percent(item.value, innerTotal)}%`,
                 },
                 {
-                  data: colorSetSegments,
-                  innerRadius: 67,
+                  id: 'sets',
+                  data: setSegments,
+                  innerRadius: 76,
                   outerRadius: 100,
                   paddingAngle: 1.5,
                   cornerRadius: 3,
+                  valueFormatter: (item) =>
+                    (item as (typeof setSegments)[number]).formattedValue ??
+                    `${percent(item.value, fiveStarTotal)}%`,
                 },
               ]}
               slots={{ legend: () => null }}
               width={COLOR_SETS_CHART_SIZE}
+              onItemClick={(_, { seriesId, dataIndex }) => {
+                if (seriesId !== 'sets') return
+                const slug = setSegments[dataIndex]?.id ?? null
+                setSelectedSlug((prev) => (prev === slug ? null : slug))
+              }}
             />
             <Box
               sx={{
@@ -322,67 +369,44 @@ function CollectionColorSetsChart({
                 pointerEvents: 'none',
               }}
             >
-							<PercentLabel percentage={overallPct} />
+              <PercentLabel percentage={innerPct} />
             </Box>
           </Box>
 
           <Stack spacing={2} sx={{ flex: 1, width: { xs: '100%', sm: 'auto' } }}>
-            <Stack spacing={0.75}>
-              <Typography color="text.secondary" variant="caption">
-                Variants
-              </Typography>
-              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                <Box
-                  sx={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '3px',
-                    bgcolor: primary,
-                    flexShrink: 0,
-                  }}
-                />
-                <Typography sx={{ flex: 1 }} variant="body2">
-                  Obtained
+            {[
+              {
+                label: selected ? selected.label : 'Overall',
+                rows: [
+                  { color: primary, text: 'Obtained', value: `${innerObtained} / ${innerTotal}` },
+                  // { color: muted, text: 'Remaining', value: `${innerTotal - innerObtained}` },
+                ],
+              },
+              {
+                label: 'Sets',
+                rows: [
+                  { color: secondary, text: 'Complete', value: `${fiveStarSetsObtained} / ${fiveStarSetsTotal}` },
+                  { color: muted, text: 'Unfinished', value: `${fiveStarSetsTotal - fiveStarSetsObtained}` },
+                ],
+              },
+            ].map(({ label, rows }) => (
+              <Stack key={label} spacing={0.75}>
+                <Typography color="text.secondary" variant="caption">
+                  {label}
                 </Typography>
-                <Typography color="text.secondary" variant="body2">
-                  {variantsObtained} / {variantsTotal}
-                </Typography>
+                {rows.map(({ color, text, value }) => (
+                  <Stack key={text} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                    <Box sx={{ width: 12, height: 12, borderRadius: '3px', bgcolor: color, flexShrink: 0 }} />
+                    <Typography sx={{ flex: 1 }} variant="body2">
+                      {text}
+                    </Typography>
+                    <Typography color="text.secondary" variant="body2">
+                      {value}
+                    </Typography>
+                  </Stack>
+                ))}
               </Stack>
-            </Stack>
-
-            <Stack spacing={0.75}>
-              <Typography color="text.secondary" variant="caption">
-                Color Sets
-              </Typography>
-              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                <Box
-                  sx={{
-                    width: 12,
-                    height: 12,
-                    borderRadius: '3px',
-                    bgcolor: primary,
-                    flexShrink: 0,
-                  }}
-                />
-                <Typography sx={{ flex: 1 }} variant="body2">
-                  Complete
-                </Typography>
-                <Typography color="text.secondary" variant="body2">
-                  {colorSetsObtained} / {colorSetsTotal}
-                </Typography>
-              </Stack>
-              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                <Box
-                  sx={{ width: 12, height: 12, borderRadius: '3px', bgcolor: muted, flexShrink: 0 }}
-                />
-                <Typography sx={{ flex: 1 }} variant="body2">
-                  Incomplete
-                </Typography>
-                <Typography color="text.secondary" variant="body2">
-                  {colorSetsTotal - colorSetsObtained}
-                </Typography>
-              </Stack>
-            </Stack>
+            ))}
           </Stack>
         </Stack>
       </CardContent>
@@ -557,6 +581,8 @@ export default function CollectionStats({
       <CollectionRingsChart
         categoriesObtained={categoriesObtained}
         categoriesTotal={categories.length}
+        trialsObtained={trialsObtained}
+        trialsTotal={trials.length}
         colorSetsObtained={colorSetsObtained}
         colorSetsTotal={colorSetsTotal}
         setsObtained={setsObtained}
@@ -564,14 +590,11 @@ export default function CollectionStats({
         variantsObtained={variantsObtained}
         variantsTotal={variantsTotal}
       />
-      <CollectionColorSetsChart
-        colorSetsObtained={colorSetsObtained}
-        colorSetsTotal={colorSetsTotal}
-        sets={sets}
-        variantsObtained={variantsObtained}
-        variantsTotal={variantsTotal}
-      />
-      <CollectionStatCard
+      <CollectionSetsChart
+				sets={sets}
+			/>
+			
+      {/* <CollectionStatCard
         items={setItems}
         obtained={setsObtained}
         title="Sets"
@@ -606,7 +629,7 @@ export default function CollectionStats({
         obtained={trialsObtained}
         title="Trials"
         total={trials.length}
-      />
+      /> */}
     </Box>
   )
 }
