@@ -51,5 +51,16 @@
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3"
   },
+  "dependenciesMeta": {
+    "core-js": {
+      "built": true
+    },
+    "sharp": {
+      "built": true
+    },
+    "unrs-resolver": {
+      "built": true
+    }
+  },
   "packageManager": "yarn@4.16.0"
 }

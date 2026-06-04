@@ -5288,6 +5288,13 @@ __metadata:
     tailwind-merge: "npm:^3.6.0"
     tailwindcss: "npm:^3.4.1"
     typescript: "npm:^5"
+  dependenciesMeta:
+    core-js:
+      built: true
+    sharp:
+      built: true
+    unrs-resolver:
+      built: true
   languageName: unknown
   linkType: soft
 
