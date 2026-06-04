@@ -5,6 +5,7 @@ import {
   Box,
   Card,
   CardActionArea,
+  CardContent,
   CardHeader,
   Chip,
   Dialog,
@@ -17,11 +18,13 @@ import {
   Slide,
   Stack,
   Typography,
+  useColorScheme,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
+import { PieChart } from '@mui/x-charts/PieChart'
 import { TransitionProps } from '@mui/material/transitions'
-import { Close } from '@mui/icons-material'
+import { Check, Close } from '@mui/icons-material'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { EurekaCategory, EurekaColor, EurekaSet, Trial } from '@/lib/types/eureka'
 import EurekaCardProgress from '@/components/eureka/eureka-card-progress'
@@ -60,6 +63,124 @@ function StatItemRow({ item, size }: { item: StatItem; size: AvatarSize }) {
       </Stack>
       <Chip label={`${item.obtained} / ${item.total}`} size="small" variant="outlined" />
     </ListItem>
+  )
+}
+
+const CHART_SIZE = 180
+
+function CollectionDonutChart({ obtained, total }: { obtained: number; total: number }) {
+  const remaining = total - obtained
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+  const theme = useTheme()
+  const percentage = percent(obtained, total)
+
+  if (total === 0) return null
+
+  return (
+    <Card sx={{ gridColumn: '1 / -1' }} variant="outlined">
+      <CardHeader
+        disableTypography
+        action={
+          <Chip label={`${obtained} / ${total}`} size="small" sx={{ mt: 1 }} variant="outlined" />
+        }
+        sx={{ mt: -1 }}
+        title={
+          <Typography color="text.secondary" variant="overline">
+            Overall Progress
+          </Typography>
+        }
+      />
+      <CardContent sx={{ pt: 0 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
+          <Box sx={{ position: 'relative', width: CHART_SIZE, height: CHART_SIZE, flexShrink: 0 }}>
+            <PieChart
+              height={CHART_SIZE}
+              margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
+              series={[
+                {
+                  data: [
+                    {
+                      id: 'obtained',
+                      value: obtained,
+                      label: 'Obtained',
+                      color: theme.palette.primary.main,
+                    },
+                    {
+                      id: 'remaining',
+                      value: remaining,
+                      label: 'Remaining',
+                      color: isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+                    },
+                  ],
+                  innerRadius: 55,
+                  outerRadius: 84,
+                  paddingAngle: obtained > 0 && remaining > 0 ? 2 : 0,
+                  cornerRadius: 4,
+                },
+              ]}
+              slots={{ legend: () => null }}
+              width={CHART_SIZE}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              {percentage === 100 ? (
+                <Check color="primary" sx={{ fontSize: 36 }} />
+              ) : (
+                <Typography sx={{ fontWeight: 'medium' }} variant="h5">
+                  {percentage}%
+                </Typography>
+              )}
+            </Box>
+          </Box>
+
+          <Stack spacing={1.5} sx={{ flex: 1, width: { xs: '100%', sm: 'auto' } }}>
+            <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+              <Box
+                sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '3px',
+                  bgcolor: 'primary.main',
+                  flexShrink: 0,
+                }}
+              />
+              <Typography sx={{ flex: 1 }} variant="body2">
+                Obtained
+              </Typography>
+              <Typography color="text.secondary" variant="body2">
+                {obtained}
+              </Typography>
+            </Stack>
+            <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+              <Box
+                sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '3px',
+                  bgcolor: isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
+                  flexShrink: 0,
+                }}
+              />
+              <Typography sx={{ flex: 1 }} variant="body2">
+                Remaining
+              </Typography>
+              <Typography color="text.secondary" variant="body2">
+                {remaining}
+              </Typography>
+            </Stack>
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -227,6 +348,7 @@ export default function CollectionStats({
         gap: 2,
       }}
     >
+      <CollectionDonutChart obtained={variantsObtained} total={variantsTotal} />
       <CollectionStatCard
         items={setItems}
         obtained={setsObtained}
