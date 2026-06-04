@@ -1,4 +1,5 @@
 import { EurekaVariant, ObtainedCount } from '@/lib/types/eureka'
+import { Percentage } from '@/lib/types/props'
 
 export function countObtained(array: EurekaVariant[]) {
   return {
@@ -8,5 +9,5 @@ export function countObtained(array: EurekaVariant[]) {
 }
 
 export function percent(obtained: number, total: number) {
-  return Number(((obtained / total) * 100).toPrecision(2))
+  return Number(((obtained / total) * 100).toPrecision(2)) as Percentage
 }

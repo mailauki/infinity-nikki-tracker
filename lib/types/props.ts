@@ -10,7 +10,15 @@ export type CategoryFilter = 'head' | 'hands' | 'feet'
 
 export type ObtainedFilter = 'missing' | 'obtained'
 
-export type RarityFilter = 2 | 3 | 4 | 5
+type Enumerate<N extends number, Acc extends number[] = []> = Acc['length'] extends N
+  ? Acc[number]
+  : Enumerate<N, [...Acc, Acc['length']]>
+
+type Range<F extends number, T extends number> = Exclude<Enumerate<T>, Enumerate<F>>
+
+export type RarityFilter = Range<2, 6>
+
+export type Percentage = Range<0, 101>
 
 type DashboardLink = { list: string; add: string; edit: string }
 type DashboardLinkReadOnly = { list: string; edit: string }

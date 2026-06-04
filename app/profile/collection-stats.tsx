@@ -32,6 +32,7 @@ import EurekaCardProgress from '@/components/eureka/eureka-card-progress'
 import LazyAvatar from '@/components/lazy-avatar'
 import { toTitle } from '@/lib/utils'
 import { AvatarSize } from '@/lib/types/props'
+import PercentLabel from '@/components/percent-label'
 
 const SlideUp = forwardRef(function SlideUp(
   props: TransitionProps & { children: React.ReactElement },
@@ -185,13 +186,7 @@ function CollectionRingsChart({
                 pointerEvents: 'none',
               }}
             >
-              {overallPct === 100 ? (
-                <Check color="primary" sx={{ fontSize: 28 }} />
-              ) : (
-                <Typography color="text.secondary" variant="caption">
-                  {overallPct}%
-                </Typography>
-              )}
+							<PercentLabel percentage={overallPct} />
             </Box>
           </Box>
 
@@ -327,13 +322,7 @@ function CollectionColorSetsChart({
                 pointerEvents: 'none',
               }}
             >
-              {overallPct === 100 ? (
-                <Check color="primary" sx={{ fontSize: 32 }} />
-              ) : (
-                <Typography sx={{ fontWeight: 'medium' }} variant="h6">
-                  {overallPct}%
-                </Typography>
-              )}
+							<PercentLabel percentage={overallPct} />
             </Box>
           </Box>
 

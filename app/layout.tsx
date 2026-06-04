@@ -51,14 +51,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const role = await getUserRole()
-  const isAdmin = role === 'admin'
-
   return (
     <html
       suppressHydrationWarning
@@ -80,7 +77,7 @@ export default async function RootLayout({
                 }}
               >
                 <Suspense>
-                  <NavDrawer isAdmin={isAdmin} />
+                  <NavDrawerWrapper />
                 </Suspense>
                 <Stack
                   sx={{
@@ -107,4 +104,9 @@ export default async function RootLayout({
       </body>
     </html>
   )
+}
+
+async function NavDrawerWrapper() {
+  const role = await getUserRole()
+  return <NavDrawer isAdmin={role === 'admin'} />
 }
