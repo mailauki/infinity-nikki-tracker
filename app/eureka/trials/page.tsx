@@ -14,7 +14,7 @@ export default function TrialsPage() {
     <>
       <TrialsToolBar />
       <Suspense>
-        <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+        <Stack spacing={3} sx={{ flexGrow: 1, pb: 3 }}>
           <TrialsContent />
         </Stack>
       </Suspense>

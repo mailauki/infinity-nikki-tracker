@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from 'react'
 
-import { Category, Color, EurekaSet, Trial } from '@/lib/types/eureka'
+import { EurekaCategory, EurekaColor, EurekaSet, Trial } from '@/lib/types/eureka'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
 
 interface FilterState {
@@ -15,8 +15,8 @@ interface FilterState {
 
 interface EurekaDataContextValue {
   eurekaSets: EurekaSet[]
-  categories: Category[]
-  colors: Color[]
+  categories: EurekaCategory[]
+  colors: EurekaColor[]
   trials: Trial[]
   isLoggedIn: boolean
   isAdmin: boolean
@@ -31,6 +31,7 @@ interface EurekaDataContextValue {
   filters: FilterState
   onFiltersChange: (updates: Partial<FilterState>) => void
   onClearFilters: () => void
+  onToggleObtained: (eureka_set: string, category: string, color: string) => void
 }
 
 const DEFAULT_FILTERS: FilterState = {
@@ -59,6 +60,7 @@ export const EurekaDataContext = createContext<EurekaDataContextValue>({
   filters: DEFAULT_FILTERS,
   onFiltersChange: () => {},
   onClearFilters: () => {},
+  onToggleObtained: () => {},
 })
 
 export { DEFAULT_FILTERS }

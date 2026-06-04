@@ -5,13 +5,14 @@ import { Noto_Sans_JP, Roboto } from 'next/font/google'
 import { ThemeProvider } from '@mui/material/styles'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import theme from '@/lib/theme'
-import { CssBaseline, Stack, Toolbar } from '@mui/material'
+import { CssBaseline, Stack } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
 import { Suspense } from 'react'
 import Footer from '@/components/navbar/nav-footer'
 import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
 import NavDrawer from '@/components/navbar/nav-drawer'
+import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -65,28 +66,38 @@ export default function RootLayout({
         <AppRouterCacheProvider options={{ key: 'css' }}>
           <ThemeProvider defaultMode="system" theme={theme}>
             <CssBaseline />
-            <Suspense>
-              <NavBar />
-            </Suspense>
-            <Stack
-              direction="row"
-              spacing={2}
-              sx={{
-                minHeight: '100vh',
-                backgroundColor: 'surface.containerLowest',
-              }}
-            >
-							<NavDrawer />
-              <Stack sx={{ flex: 1, minWidth: '300px' }}>
+            <NavBarToolbarProvider>
+              <Stack
+                direction="row"
+                sx={{
+                  minHeight: '100vh',
+                  backgroundColor: 'surface.containerLowest',
+                  alignItems: 'flex-start',
+                }}
+              >
                 <Suspense>
-                  <PullToRefresh />
+                  <NavDrawer />
                 </Suspense>
-                {children}
-                <Toolbar sx={{ pb: 2 }} />
+                <Stack
+                  sx={{
+                    flex: 1,
+                    minHeight: '100vh',
+                    minWidth: '300px',
+                    justifyContent: 'flex-start',
+                  }}
+                >
+                  <Suspense>
+                    <NavBar />
+                  </Suspense>
+                  <Suspense>
+                    <PullToRefresh />
+                  </Suspense>
+                  <Stack sx={{ flex: 1, px: 2 }}>{children}</Stack>
+                  <Footer />
+                </Stack>
               </Stack>
-            </Stack>
-            <Footer />
-            <Analytics />
+              <Analytics />
+            </NavBarToolbarProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>
       </body>

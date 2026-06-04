@@ -6,6 +6,8 @@ interface FormConfig {
   formId: string
   backUrl: string
   pending: boolean
+  showAddAnother?: boolean
+  savedTitle?: string
 }
 
 interface FormContextValue extends FormConfig {
@@ -16,11 +18,19 @@ const FormContext = createContext<FormContextValue>({
   formId: '',
   backUrl: '',
   pending: false,
+  showAddAnother: false,
+  savedTitle: undefined,
   setFormConfig: () => {},
 })
 
 export function FormProvider({ children }: { children: React.ReactNode }) {
-  const [config, setConfig] = useState<FormConfig>({ formId: '', backUrl: '', pending: false })
+  const [config, setConfig] = useState<FormConfig>({
+    formId: '',
+    backUrl: '',
+    pending: false,
+    showAddAnother: false,
+    savedTitle: undefined,
+  })
 
   const setFormConfig = useCallback((updates: Partial<FormConfig>) => {
     setConfig((prev) => ({ ...prev, ...updates }))

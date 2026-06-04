@@ -27,7 +27,7 @@ export default function ProfileView({
   return (
     <Stack>
       {isAdmin && (
-        <Stack alignItems="flex-end" justifyContent="flex-start">
+        <Stack sx={{ alignItems: 'flex-end', justifyContent: 'flex-start' }}>
           <Chip
             color="secondary"
             icon={<AdminPanelSettingsIcon />}
@@ -37,7 +37,7 @@ export default function ProfileView({
         </Stack>
       )}
 
-      <Stack alignItems="center" direction="row" spacing={2}>
+      <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
         <AvatarPreview size="xl" url={avatar_url} />
 
         <Stack spacing={0.5}>

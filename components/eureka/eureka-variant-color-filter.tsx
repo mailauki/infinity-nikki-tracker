@@ -1,19 +1,18 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Chip, Stack } from '@mui/material'
-import { Done } from '@mui/icons-material'
+import { Box, Stack } from '@mui/material'
 import { GRID_COLUMNS } from '@/lib/types/props'
-import type { Color, EurekaVariant } from '@/lib/types/eureka'
+import type { EurekaColor, EurekaVariant } from '@/lib/types/eureka'
 import EurekaVariantCard from './eureka-variant-card'
-import LazyAvatar from './lazy-avatar'
+import ColorChip from '../color-chip'
 
 export default function EurekaVariantColorFilter({
   colors,
   eureka_variants,
   isLoggedIn,
 }: {
-  colors: Color[]
+  colors: EurekaColor[]
   eureka_variants: EurekaVariant[]
   isLoggedIn: boolean
 }) {
@@ -30,24 +29,15 @@ export default function EurekaVariantColorFilter({
 
   return (
     <Stack spacing={3}>
-      <Stack useFlexGap direction="row" flexWrap="wrap" spacing={0.5}>
-        {colors.map((color) => {
-          const active = selectedColor === color.slug
-          return (
-            <Chip
-              key={color.slug}
-              clickable
-              avatar={
-                <LazyAvatar alt={color.title || color.slug} size="xs" src={color.image_url!} />
-              }
-              color={active ? 'primary' : 'default'}
-              deleteIcon={<Done />}
-              label={color.title}
-              onClick={() => toggleColor(color.slug)}
-              onDelete={active ? () => toggleColor(color.slug) : undefined}
-            />
-          )
-        })}
+      <Stack useFlexGap direction="row" spacing={0.5} sx={{ flexWrap: 'wrap' }}>
+        {colors.map((color) => (
+          <ColorChip
+            key={color.slug}
+            color={color}
+            selectedColor={selectedColor!}
+            toggleColor={toggleColor}
+          />
+        ))}
       </Stack>
 
       <Box

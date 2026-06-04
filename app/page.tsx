@@ -1,10 +1,25 @@
-import { Hero } from './hero'
-import { Container } from '@mui/material'
+import { Stack } from '@mui/material'
+import { Suspense } from 'react'
 
-export default function Home() {
+import { QuickAccess } from '@/components/quick-access'
+import { Hero } from '../components/hero'
+import { HeroCTAs } from '@/components/hero-ctas'
+import { getUserID } from '@/hooks/user'
+
+export default function HomePage() {
   return (
-    <Container disableGutters sx={{ overflow: 'hidden', flex: 1, height: '100%' }}>
+    <Stack>
       <Hero />
-    </Container>
+      <Suspense>
+        <HomeCTAs />
+      </Suspense>
+      <QuickAccess />
+    </Stack>
   )
+}
+
+async function HomeCTAs() {
+  const user_id = await getUserID()
+  const isLoggedIn = !!user_id
+  return <HeroCTAs isLoggedIn={isLoggedIn} />
 }

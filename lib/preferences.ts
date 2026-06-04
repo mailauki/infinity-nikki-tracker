@@ -10,4 +10,5 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   eureka_obtained_filter: null,
   eureka_color: null,
   eureka_rarity: null,
+  theme: 'system',
 }

@@ -1,0 +1,32 @@
+import { getEurekaCategories } from '@/hooks/data/eureka-categories'
+import { getEurekaColors } from '@/hooks/data/eureka-colors'
+import { getEurekaSets } from '@/hooks/data/eureka-sets'
+import { getEurekaVariantsRaw } from '@/hooks/data/admin/eureka-variants'
+import { Suspense } from 'react'
+import EurekaVariantView from './eureka-variant-view'
+
+export default function EurekaVariantsDashboard() {
+  return (
+    <Suspense>
+      <DashboardView />
+    </Suspense>
+  )
+}
+
+async function DashboardView() {
+  const [eurekaVariants, eurekaSets, categories, colors] = await Promise.all([
+    getEurekaVariantsRaw(),
+    getEurekaSets(),
+    getEurekaCategories(),
+    getEurekaColors(),
+  ])
+
+  return (
+    <EurekaVariantView
+      categories={categories}
+      colors={colors}
+      eurekaSets={eurekaSets}
+      eurekaVariants={eurekaVariants}
+    />
+  )
+}

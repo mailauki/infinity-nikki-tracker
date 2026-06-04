@@ -12,10 +12,12 @@ export type ObtainedFilter = 'missing' | 'obtained'
 
 export type RarityFilter = 2 | 3 | 4 | 5
 
-type DashboardLink = { add: string; edit: string }
+type DashboardLink = { list: string; add: string; edit: string }
+type DashboardLinkReadOnly = { list: string; edit: string }
 
 export type DashboardLinks = {
   eureka: { sets: DashboardLink; variants: DashboardLink; trials: DashboardLink }
+  outfits: { sets: DashboardLink; variants: DashboardLink; evolutions: DashboardLinkReadOnly }
 }
 
 export interface NavLink {

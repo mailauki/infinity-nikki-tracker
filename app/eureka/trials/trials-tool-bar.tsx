@@ -1,15 +1,15 @@
 'use client'
 
 import { Stack } from '@mui/material'
-import SubAppBar from '@/components/sub-appbar'
+import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { SortButton } from '@/components/navbar/appbar-actions'
 
 export default function TrialsToolBar() {
   return (
-    <SubAppBar>
-      <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
+    <NavBarToolbar>
+      <Stack direction="row" sx={{ flex: 1, justifyContent: 'flex-end' }}>
         <SortButton />
       </Stack>
-    </SubAppBar>
+    </NavBarToolbar>
   )
 }

@@ -6,8 +6,8 @@ import EditEurekaSetForm from './edit-eureka-set-form'
 import { getTrials } from '@/hooks/data/trials'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
-import { getColors } from '@/hooks/data/colors'
-import { getCategories } from '@/hooks/data/categories'
+import { getEurekaColors } from '@/hooks/data/eureka-colors'
+import { getEurekaCategories } from '@/hooks/data/eureka-categories'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -50,8 +50,8 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
     getTrials(),
     getStyles(),
     getLabels(),
-    getColors(),
-    getCategories(),
+    getEurekaColors(),
+    getEurekaCategories(),
   ])
 
   const { data: variantRows, error: variantRowsError } = await supabase

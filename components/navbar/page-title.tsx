@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation'
 export default function PageTitle() {
   const pathname = usePathname()
   const allLinks = [
-    navLinksData.home,
+    ...navLinksData.home,
     ...navLinksData.navMain.flatMap((item) => [item, ...(item.items ?? [])]),
     ...navLinksData.navSecondary.flatMap((item) => [
       item,

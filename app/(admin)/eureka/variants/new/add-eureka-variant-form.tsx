@@ -18,7 +18,7 @@ import {
 import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
 import ImageUpload from '@/components/forms/image-upload'
-import { Category, Color, EurekaSetRaw, EurekaVariantRaw } from '@/lib/types/eureka'
+import { EurekaCategory, EurekaColor, EurekaSetRaw, EurekaVariantRaw } from '@/lib/types/eureka'
 import { useFormConfig } from '@/app/(admin)/form-context'
 import { addEurekaVariant } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
@@ -32,8 +32,8 @@ export default function AddEurekaVariantForm({
   variants,
 }: {
   eurekaSets: EurekaSetRaw[]
-  categories: Category[]
-  colors: Color[]
+  categories: EurekaCategory[]
+  colors: EurekaColor[]
   variants: EurekaVariantRaw[]
 }) {
   const { setFormConfig } = useFormConfig()
@@ -60,11 +60,25 @@ export default function AddEurekaVariantForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.eureka.variants.add.replace('/new', ''),
+      backUrl: navLinksData.dashboard.eureka.variants.list,
       pending,
+      showAddAnother: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
+
+  useEffect(() => {
+    if (state && 'addAnother' in state) {
+      setFormConfig({ savedTitle: state.savedTitle })
+      setEurekaSet('')
+      setCategory('')
+      setColor('')
+      setImageUrl(null)
+      setIsDefault(false)
+      setSlug('')
+      setEditSlug(false)
+    }
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <form action={action} id={FORM_ID}>

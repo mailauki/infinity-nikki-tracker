@@ -1,4 +1,10 @@
-import { Category, Color, EurekaVariant, EurekaSet, ObtainedEureka } from '@/lib/types/eureka'
+import {
+  EurekaCategory,
+  EurekaColor,
+  EurekaVariant,
+  EurekaSet,
+  ObtainedEureka,
+} from '@/lib/types/eureka'
 
 function colorRank(slug: string | null, defaultColorSlug: string | null | undefined): number {
   if (slug === defaultColorSlug) return -1
@@ -25,8 +31,8 @@ export function createEurekaSet({
   colors,
 }: {
   eurekaSet: Omit<EurekaSet, 'created_at' | 'image_url' | 'categories' | 'colors'>
-  categories: Category[] | null
-  colors: Color[] | null
+  categories: EurekaCategory[] | null
+  colors: EurekaColor[] | null
 }) {
   const defaultColorSlug = eurekaSet.eureka_variants.find((v) => v.default)?.color
   const categoryOrder = (categories ?? []).map((c) => c.slug)

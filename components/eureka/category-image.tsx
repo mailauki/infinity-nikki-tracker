@@ -1,7 +1,7 @@
 'use client'
 import { CardHeader, useColorScheme } from '@mui/material'
 import { AvatarSize } from '@/lib/types/props'
-import LazyAvatar from './lazy-avatar'
+import LazyAvatar from '../lazy-avatar'
 
 export default function CategoryImage({
   imageUrl,

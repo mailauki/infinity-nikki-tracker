@@ -41,7 +41,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/protected`,
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
         },
       })
       if (error) throw error
@@ -106,8 +106,8 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
               <Anchor
                 color="textSecondary"
                 component={Link}
-                fontWeight="medium"
                 href="/auth/login"
+                sx={{ fontWeight: 'medium' }}
                 underline="hover"
               >
                 Login

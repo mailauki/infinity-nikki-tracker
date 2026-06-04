@@ -22,7 +22,7 @@ export default function EurekaCardContent({
     <CardContent sx={{ pt: 0 }}>
       {size === 'lg' ? (
         <Stack spacing={0.5}>
-          <Stack alignItems="center" direction="row" justifyContent="space-between">
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography component="p" variant="h5">
               {title}
             </Typography>
@@ -30,7 +30,7 @@ export default function EurekaCardContent({
               <RarityStars rarity={rarity!} />
             </Typography>
           </Stack>
-          <Stack alignItems="center" direction="row" justifyContent="space-between">
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography variant="overline">{trial}</Typography>
             <Typography variant="body2">{style}</Typography>
           </Stack>

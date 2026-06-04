@@ -5,6 +5,7 @@ import {
   Box,
   Card,
   CardActionArea,
+  CardContent,
   CardHeader,
   Chip,
   Dialog,
@@ -17,15 +18,18 @@ import {
   Slide,
   Stack,
   Typography,
+  useColorScheme,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
+import { PieChart } from '@mui/x-charts/PieChart'
+import { lime } from '@mui/material/colors'
 import { TransitionProps } from '@mui/material/transitions'
-import { Close } from '@mui/icons-material'
+import { Check, Close } from '@mui/icons-material'
 import { countObtained, percent } from '@/hooks/count-obtained'
-import { Category, Color, EurekaSet, Trial } from '@/lib/types/eureka'
+import { EurekaCategory, EurekaColor, EurekaSet, Trial } from '@/lib/types/eureka'
 import EurekaCardProgress from '@/components/eureka/eureka-card-progress'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 import { toTitle } from '@/lib/utils'
 import { AvatarSize } from '@/lib/types/props'
 
@@ -44,9 +48,9 @@ function StatItemRow({ item, size }: { item: StatItem; size: AvatarSize }) {
   return (
     <ListItem disableGutters alignItems="center" sx={{ gap: 1.5 }}>
       <LazyAvatar size={size} src={item.imageUrl ?? undefined} />
-      <Stack flex={1} spacing={0.5}>
+      <Stack spacing={0.5} sx={{ flex: 1 }}>
         <Typography variant="body2">{item.title}</Typography>
-        <Stack alignItems="center" direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
           <LinearProgress
             color="inherit"
             sx={{ flex: 1 }}
@@ -60,6 +64,340 @@ function StatItemRow({ item, size }: { item: StatItem; size: AvatarSize }) {
       </Stack>
       <Chip label={`${item.obtained} / ${item.total}`} size="small" variant="outlined" />
     </ListItem>
+  )
+}
+
+const RINGS_CHART_SIZE = 240
+const COLOR_SETS_CHART_SIZE = 220
+
+function CollectionRingsChart({
+  setsObtained,
+  setsTotal,
+  colorSetsObtained,
+  colorSetsTotal,
+  categoriesObtained,
+  categoriesTotal,
+  variantsObtained,
+  variantsTotal,
+}: {
+  setsObtained: number
+  setsTotal: number
+  colorSetsObtained: number
+  colorSetsTotal: number
+  categoriesObtained: number
+  categoriesTotal: number
+  variantsObtained: number
+  variantsTotal: number
+}) {
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+
+  const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
+  const ringColors = isDarkMode
+    ? [lime[500], lime[400], lime[300], lime[200]]
+    : [lime[900], lime[700], lime[500], lime[300]]
+
+  const rings = [
+    {
+      label: 'Sets',
+      obtained: setsObtained,
+      total: setsTotal,
+      color: ringColors[0],
+      innerRadius: 35,
+      outerRadius: 52,
+    },
+    {
+      label: 'Color Sets',
+      obtained: colorSetsObtained,
+      total: colorSetsTotal,
+      color: ringColors[1],
+      innerRadius: 56,
+      outerRadius: 72,
+    },
+    {
+      label: 'Categories',
+      obtained: categoriesObtained,
+      total: categoriesTotal,
+      color: ringColors[2],
+      innerRadius: 76,
+      outerRadius: 90,
+    },
+    {
+      label: 'Variants',
+      obtained: variantsObtained,
+      total: variantsTotal,
+      color: ringColors[3],
+      innerRadius: 94,
+      outerRadius: 108,
+    },
+  ]
+
+  const overallPct = percent(variantsObtained, variantsTotal)
+
+  return (
+    <Card sx={{ gridColumn: '1 / -1' }} variant="outlined">
+      <CardHeader
+        disableTypography
+        sx={{ mt: -1 }}
+        title={
+          <Typography color="text.secondary" variant="overline">
+            Hierarchy Progress
+          </Typography>
+        }
+      />
+      <CardContent sx={{ pt: 0 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
+          <Box
+            sx={{
+              position: 'relative',
+              width: RINGS_CHART_SIZE,
+              height: RINGS_CHART_SIZE,
+              flexShrink: 0,
+            }}
+          >
+            <PieChart
+              height={RINGS_CHART_SIZE}
+              margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
+              series={rings.map((ring) => ({
+                data: [
+                  { id: `${ring.label}-obtained`, value: ring.obtained, color: ring.color },
+                  {
+                    id: `${ring.label}-remaining`,
+                    value: ring.total - ring.obtained,
+                    color: muted,
+                  },
+                ],
+                innerRadius: ring.innerRadius,
+                outerRadius: ring.outerRadius,
+                paddingAngle: ring.obtained > 0 && ring.obtained < ring.total ? 2 : 0,
+                cornerRadius: 3,
+              }))}
+              slots={{ legend: () => null }}
+              width={RINGS_CHART_SIZE}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              {overallPct === 100 ? (
+                <Check color="primary" sx={{ fontSize: 28 }} />
+              ) : (
+                <Typography color="text.secondary" variant="caption">
+                  {overallPct}%
+                </Typography>
+              )}
+            </Box>
+          </Box>
+
+          <Stack spacing={1.5} sx={{ flex: 1, width: { xs: '100%', sm: 'auto' } }}>
+            {rings.map((ring) => (
+              <Stack key={ring.label} spacing={0.5}>
+                <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                  <Box
+                    sx={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '3px',
+                      bgcolor: ring.color,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <Typography sx={{ flex: 1 }} variant="body2">
+                    {ring.label}
+                  </Typography>
+                  <Chip
+                    label={`${ring.obtained} / ${ring.total}`}
+                    size="small"
+                    variant="outlined"
+                  />
+                </Stack>
+                <Box sx={{ ml: 3, color: ring.color }}>
+                  <LinearProgress
+                    color="inherit"
+                    value={percent(ring.obtained, ring.total)}
+                    variant="determinate"
+                  />
+                </Box>
+              </Stack>
+            ))}
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
+  )
+}
+
+function CollectionColorSetsChart({
+  variantsObtained,
+  variantsTotal,
+  colorSetsObtained,
+  colorSetsTotal,
+  sets,
+}: {
+  variantsObtained: number
+  variantsTotal: number
+  colorSetsObtained: number
+  colorSetsTotal: number
+  sets: EurekaSet[]
+}) {
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+  const theme = useTheme()
+
+  const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
+  const primary = theme.palette.primary.main
+  const overallPct = percent(variantsObtained, variantsTotal)
+
+  const colorSetSegments = sets
+    .flatMap((set) =>
+      set.colors.map((color) => {
+        const variants = set.eureka_variants.filter((v) => v.color === color.slug)
+        const { obtained, total } = countObtained(variants)
+        return {
+          id: `${set.slug}-${color.slug}`,
+          value: total,
+          label: `${set.title} — ${color.title}`,
+          color: total > 0 && obtained === total ? primary : muted,
+        }
+      })
+    )
+    .filter((s) => s.value > 0)
+
+  if (variantsTotal === 0) return null
+
+  return (
+    <Card sx={{ gridColumn: '1 / -1' }} variant="outlined">
+      <CardHeader
+        disableTypography
+        sx={{ mt: -1 }}
+        title={
+          <Typography color="text.secondary" variant="overline">
+            Color Set Progress
+          </Typography>
+        }
+      />
+      <CardContent sx={{ pt: 0 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
+          <Box
+            sx={{
+              position: 'relative',
+              width: COLOR_SETS_CHART_SIZE,
+              height: COLOR_SETS_CHART_SIZE,
+              flexShrink: 0,
+            }}
+          >
+            <PieChart
+              height={COLOR_SETS_CHART_SIZE}
+              margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
+              series={[
+                {
+                  data: [
+                    { id: 'obtained', value: variantsObtained, color: primary },
+                    { id: 'remaining', value: variantsTotal - variantsObtained, color: muted },
+                  ],
+                  innerRadius: 40,
+                  outerRadius: 62,
+                  paddingAngle: variantsObtained > 0 && variantsObtained < variantsTotal ? 2 : 0,
+                  cornerRadius: 4,
+                },
+                {
+                  data: colorSetSegments,
+                  innerRadius: 67,
+                  outerRadius: 100,
+                  paddingAngle: 1.5,
+                  cornerRadius: 3,
+                },
+              ]}
+              slots={{ legend: () => null }}
+              width={COLOR_SETS_CHART_SIZE}
+            />
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                textAlign: 'center',
+                pointerEvents: 'none',
+              }}
+            >
+              {overallPct === 100 ? (
+                <Check color="primary" sx={{ fontSize: 32 }} />
+              ) : (
+                <Typography sx={{ fontWeight: 'medium' }} variant="h6">
+                  {overallPct}%
+                </Typography>
+              )}
+            </Box>
+          </Box>
+
+          <Stack spacing={2} sx={{ flex: 1, width: { xs: '100%', sm: 'auto' } }}>
+            <Stack spacing={0.75}>
+              <Typography color="text.secondary" variant="caption">
+                Variants
+              </Typography>
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                <Box
+                  sx={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '3px',
+                    bgcolor: primary,
+                    flexShrink: 0,
+                  }}
+                />
+                <Typography sx={{ flex: 1 }} variant="body2">
+                  Obtained
+                </Typography>
+                <Typography color="text.secondary" variant="body2">
+                  {variantsObtained} / {variantsTotal}
+                </Typography>
+              </Stack>
+            </Stack>
+
+            <Stack spacing={0.75}>
+              <Typography color="text.secondary" variant="caption">
+                Color Sets
+              </Typography>
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                <Box
+                  sx={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: '3px',
+                    bgcolor: primary,
+                    flexShrink: 0,
+                  }}
+                />
+                <Typography sx={{ flex: 1 }} variant="body2">
+                  Complete
+                </Typography>
+                <Typography color="text.secondary" variant="body2">
+                  {colorSetsObtained} / {colorSetsTotal}
+                </Typography>
+              </Stack>
+              <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                <Box
+                  sx={{ width: 12, height: 12, borderRadius: '3px', bgcolor: muted, flexShrink: 0 }}
+                />
+                <Typography sx={{ flex: 1 }} variant="body2">
+                  Incomplete
+                </Typography>
+                <Typography color="text.secondary" variant="body2">
+                  {colorSetsTotal - colorSetsObtained}
+                </Typography>
+              </Stack>
+            </Stack>
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -113,7 +451,7 @@ function CollectionStatCard({
         onClose={() => setOpen(false)}
       >
         <DialogTitle>
-          <Stack alignItems="center" direction="row" justifyContent="space-between">
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography variant="h6">{title}</Typography>
             <IconButton aria-label="close" size="small" onClick={() => setOpen(false)}>
               <Close />
@@ -139,8 +477,8 @@ export default function CollectionStats({
   trials,
 }: {
   sets: EurekaSet[]
-  colors: Color[]
-  categories: Category[]
+  colors: EurekaColor[]
+  categories: EurekaCategory[]
   trials: Trial[]
 }) {
   const allVariants = sets.flatMap((set) => set.eureka_variants)
@@ -227,6 +565,23 @@ export default function CollectionStats({
         gap: 2,
       }}
     >
+      <CollectionRingsChart
+        categoriesObtained={categoriesObtained}
+        categoriesTotal={categories.length}
+        colorSetsObtained={colorSetsObtained}
+        colorSetsTotal={colorSetsTotal}
+        setsObtained={setsObtained}
+        setsTotal={sets.length}
+        variantsObtained={variantsObtained}
+        variantsTotal={variantsTotal}
+      />
+      <CollectionColorSetsChart
+        colorSetsObtained={colorSetsObtained}
+        colorSetsTotal={colorSetsTotal}
+        sets={sets}
+        variantsObtained={variantsObtained}
+        variantsTotal={variantsTotal}
+      />
       <CollectionStatCard
         items={setItems}
         obtained={setsObtained}

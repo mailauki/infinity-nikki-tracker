@@ -21,12 +21,12 @@ import {
   TextField,
 } from '@mui/material'
 import { ColorLens } from '@mui/icons-material'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 import { toSlug, toTitle } from '@/lib/utils'
 import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
 import {
-  Category,
-  Color,
+  EurekaCategory,
+  EurekaColor,
   EurekaSetRaw,
   EurekaVariant,
   Label,
@@ -57,8 +57,8 @@ export default function EditEurekaSetForm({
   trials: Trial[]
   styles: Style[]
   labels: Label[]
-  colors: Color[]
-  categories: Category[]
+  colors: EurekaColor[]
+  categories: EurekaCategory[]
   initialColors: string[]
   initialDefaultColor?: string
   initialVariants?: EurekaVariant[]
@@ -209,7 +209,7 @@ export default function EditEurekaSetForm({
         </FormControl>
 
         <Stack spacing={0.5}>
-          <Stack alignItems="center" direction="row" justifyContent="flex-end">
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
             <Button
               size="small"
               onClick={() =>

@@ -5,7 +5,7 @@ import { getEurekaSet } from '@/hooks/data/eureka-sets'
 import { Stack, Button, Divider, Typography, Chip } from '@mui/material'
 import type { Metadata } from 'next'
 import { Category, ChevronRight } from '@mui/icons-material'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 import EurekaVariantColorFilter from '@/components/eureka/eureka-variant-color-filter'
 import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
@@ -44,7 +44,16 @@ async function EurekaSet({ slug }: { slug: string }) {
   const isLoggedIn = !!user_id
   const isAdmin = role === 'admin'
 
-  const { image_url, eureka_set_trials, eureka_variants, rarity, label, style, colors, description } = eurekaSet
+  const {
+    image_url,
+    eureka_set_trials,
+    eureka_variants,
+    rarity,
+    label,
+    style,
+    colors,
+    description,
+  } = eurekaSet
 
   const { obtained, total } = countObtained(eureka_variants)
 
@@ -53,8 +62,8 @@ async function EurekaSet({ slug }: { slug: string }) {
       <SlugToolBar isAdmin={isAdmin} />
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <Stack spacing={1}>
-          <Stack direction="row" justifyContent="space-between" sx={{ flex: 1 }}>
-            <Stack alignItems="center" sx={{ pt: 1 }}>
+          <Stack direction="row" sx={{ flex: 1, justifyContent: 'space-between' }}>
+            <Stack sx={{ pt: 1, alignItems: 'center' }}>
               <LazyAvatar
                 alt={slug || 'Eureka Variant'}
                 size="xl"
@@ -68,7 +77,10 @@ async function EurekaSet({ slug }: { slug: string }) {
             <Chip label={toTitle(label ?? '')} variant="outlined" />
           </Stack>
 
-          <Stack direction="row" alignItems='center' justifyContent="space-between" sx={{ flex: 1 }}>
+          <Stack
+            direction="row"
+            sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
+          >
             <Typography color="textSecondary" variant="subtitle2">
               <RarityStars rarity={rarity!} />
             </Typography>
@@ -83,10 +95,8 @@ async function EurekaSet({ slug }: { slug: string }) {
         {eureka_set_trials.length > 0 && (
           <Stack>
             <Stack
-              alignItems="flex-end"
               direction="row"
-              justifyContent="space-between"
-              sx={{ mb: 0.5 }}
+              sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
             >
               <Button
                 color="inherit"

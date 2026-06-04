@@ -14,7 +14,7 @@ export function EurekaSetEditButton({ slug, isAdmin }: { slug: string; isAdmin: 
   const back = `?back=${encodeURIComponent(pathname)}`
   return (
     <Tooltip title={`Edit ${toTitle(slug) || 'Eureka'} Set`}>
-      <IconButton aria-label="Edit Eureka Set" href={`/eureka-set/edit/${slug}${back}`}>
+      <IconButton aria-label="Edit Eureka Set" href={`/eureka/sets/edit/${slug}${back}`}>
         <Edit />
       </IconButton>
     </Tooltip>
@@ -27,7 +27,7 @@ export function TrialEditButton({ slug, isAdmin }: { slug: string; isAdmin: bool
   const back = `?back=${encodeURIComponent(pathname)}`
   return (
     <Tooltip title={`Edit ${toTitle(slug) || 'Trial'}`}>
-      <IconButton aria-label="Edit Trial" href={`/trial/edit/${slug}${back}`}>
+      <IconButton aria-label="Edit Trial" href={`/eureka/trials/edit/${slug}${back}`}>
         <Edit />
       </IconButton>
     </Tooltip>

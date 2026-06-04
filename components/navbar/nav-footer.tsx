@@ -8,28 +8,24 @@ export default function Footer() {
     <AppBar
       color="inherit"
       component="footer"
-      position="fixed"
+      position="relative"
       sx={{
-        top: 'auto',
-        bottom: 0,
-        zIndex: (theme) => theme.zIndex.drawer + 1,
         borderColor: 'transparent',
-        pb: 2,
+        backgroundColor: 'surface.containerLowest',
+        py: 2,
       }}
       variant="outlined"
     >
       <Toolbar>
         <Stack
-          alignItems="center"
           direction="row"
-          flex={1}
-          justifyContent="space-between"
-          sx={{ mx: 1 }}
+          spacing={3}
+          sx={{ flex: 1, mx: 1, alignItems: 'center', justifyContent: 'center' }}
         >
           <Typography color="textDisabled" variant="caption">
             &copy; 2026 mailauki
           </Typography>
-          <Stack alignItems="center" direction="row" gap={0.5}>
+          <Stack direction="row" sx={{ gap: 0.5, alignItems: 'center' }}>
             <CoffeeButton />
             <ThemeSwitcher />
           </Stack>

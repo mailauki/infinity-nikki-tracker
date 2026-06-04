@@ -41,3 +41,7 @@ export async function updateEurekaFilters(filters: {
 }) {
   await upsertPreference(filters as Record<string, string | null>)
 }
+
+export async function updateTheme(value: 'system' | 'light' | 'dark') {
+  await upsertPreference({ theme: value })
+}

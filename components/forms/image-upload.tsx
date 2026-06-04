@@ -24,7 +24,7 @@ export default function ImageUpload({
   caption,
 }: {
   url: string | null
-  table: 'eureka_variants' | 'trials'
+  table: 'eureka_variants' | 'outfit_variants' | 'trials' | 'outfit_sets' | 'evolutions'
   slug: string | undefined
   onUpload: (url: string) => void
   caption?: string
@@ -85,7 +85,7 @@ export default function ImageUpload({
           '&:hover .upload-overlay': { opacity: 1 },
         }}
       >
-        <Stack alignItems="center">
+        <Stack sx={{ alignItems: 'center' }}>
           <Avatar
             alt="Image preview"
             src={url ?? undefined}
@@ -114,10 +114,8 @@ export default function ImageUpload({
         </Stack>
         {caption && (
           <Stack
-            alignItems="center"
             direction="row"
-            justifyContent="space-between"
-            sx={{ py: 0.75, px: 1.25 }}
+            sx={{ py: 0.75, px: 1.25, alignItems: 'center', justifyContent: 'space-between' }}
           >
             <Typography color="textSecondary" variant="caption">
               {caption}

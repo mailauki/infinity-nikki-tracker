@@ -3,69 +3,81 @@
 import { useState } from 'react'
 import { toTitle } from '@/lib/utils'
 import { EurekaVariant } from '@/lib/types/eureka'
-import { Box, Card, IconButton, Stack, Typography } from '@mui/material'
+import { Box, Card, Grow, IconButton, Stack, Typography } from '@mui/material'
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
-import { handleObtained } from '@/app/eureka/actions'
-import { useRouter } from 'next/navigation'
-import LazyAvatar from './lazy-avatar'
+import { useEurekaData } from './eureka-context'
+import LazyAvatar from '../lazy-avatar'
 
 export default function EurekaVariantCard({
   eurekaVariant,
   isLoggedIn,
+  isMissingFilter = false,
 }: {
   eurekaVariant: EurekaVariant
   isLoggedIn: boolean
+  isMissingFilter?: boolean
 }) {
-  const [pending, setPending] = useState(false)
-  const router = useRouter()
+  const { onToggleObtained } = useEurekaData()
+  const [exiting, setExiting] = useState(false)
 
-  async function onToggle() {
-    setPending(true)
-    await handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
-    router.refresh()
-    setPending(false)
+  function onToggle() {
+    if (isMissingFilter) {
+      setExiting(true)
+    } else {
+      onToggleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
+    }
+  }
+
+  function onExited() {
+    onToggleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
   }
 
   return (
-    <Card
-      data-active={eurekaVariant.obtained ? '' : undefined}
-      sx={{
-        minWidth: 'fit-content',
-        '&[data-active]': {
-          backgroundColor: 'surface.lowest',
-        },
-      }}
-    >
-      <Box sx={{ position: 'relative', height: '100%' }}>
-        <Stack alignItems="center" sx={{ pt: 1 }}>
-          <LazyAvatar
-            alt={eurekaVariant.slug || 'Eureka Variant'}
-            color="transparent"
-            size="lg"
-            src={eurekaVariant.image_url!}
-            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+    <Grow in={!exiting} timeout={300} onExited={onExited}>
+      <Card
+        data-active={eurekaVariant.obtained ? '' : undefined}
+        sx={{
+          minWidth: 'fit-content',
+          '&[data-active]': {
+            backgroundColor: 'surface.lowest',
+          },
+        }}
+      >
+        <Box sx={{ position: 'relative', height: '100%' }}>
+          <Stack sx={{ pt: 1, alignItems: 'center' }}>
+            <LazyAvatar
+              alt={eurekaVariant.slug || 'Eureka Variant'}
+              color="transparent"
+              size="lg"
+              src={eurekaVariant.image_url!}
+              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+            >
+              <Category fontSize="inherit" />
+            </LazyAvatar>
+          </Stack>
+          <Stack
+            direction="row"
+            sx={{
+              py: 0.75,
+              px: 1.25,
+              my: 0,
+              alignItems: 'center',
+              justifyContent: 'space-between',
+            }}
           >
-            <Category fontSize="inherit" />
-          </LazyAvatar>
-        </Stack>
-        <Stack
-          alignItems="center"
-          direction="row"
-          justifyContent="space-between"
-          sx={{ py: 0.75, px: 1.25, my: 0 }}
-        >
-          <Typography color="textSecondary" variant="caption">
-            {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}
-          </Typography>
-        </Stack>
-        <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
-          {isLoggedIn && (
-            <IconButton disabled={pending} onClick={onToggle}>
-              {eurekaVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
-            </IconButton>
-          )}
+            <Typography color="textSecondary" variant="caption">
+              {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}
+            </Typography>
+          </Stack>
+          <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
+            {isLoggedIn && (
+              <IconButton onClick={onToggle}>
+                {eurekaVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
+              </IconButton>
+            )}
+          </Box>
         </Box>
-      </Box>
-    </Card>
+      </Card>
+    </Grow>
   )
 }

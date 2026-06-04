@@ -1,0 +1,74 @@
+'use client'
+
+import { EurekaCategory } from '@/lib/types/eureka'
+import { CategoryFilter } from '@/lib/types/props'
+import CategoryIcon from '@mui/icons-material/Category'
+import {
+  FormControl,
+  FormLabel,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+  Typography,
+  useColorScheme,
+} from '@mui/material'
+import LazyAvatar from '@/components/lazy-avatar'
+
+export default function CategoryToggle({
+  categories,
+  selectedCategory,
+  onCategoryChange,
+  disabled,
+}: {
+  categories: EurekaCategory[]
+  selectedCategory: CategoryFilter | null
+  onCategoryChange: (
+    event: React.MouseEvent<HTMLElement>,
+    newCategory: CategoryFilter | null
+  ) => void
+  disabled?: boolean
+}) {
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+
+  return (
+    <FormControl>
+      <Typography component={FormLabel} id="category-buttons-group-label" variant="overline">
+        Category
+      </Typography>
+      <ToggleButtonGroup
+        exclusive
+        aria-labelledby="category-buttons-group-label"
+        disabled={disabled}
+        value={selectedCategory}
+        onChange={onCategoryChange}
+      >
+        {categories.map((category) => {
+          const isSelected = selectedCategory === category.slug
+          const brightness = isDarkMode || isSelected ? null : 'brightness(40%)'
+          const opacity = disabled ? 'opacity(0.3)' : null
+          const filter = [brightness, opacity].filter(Boolean).join(' ') || 'none'
+
+          return (
+            <Tooltip key={category.slug} title={category.title}>
+              <ToggleButton sx={{ py: 0.75 }} value={category.slug}>
+                <LazyAvatar
+                  alt={category.title}
+                  src={category.image_url!}
+                  sx={{
+                    backgroundColor: 'transparent',
+                    filter,
+                    '&:hover': { filter: isDarkMode || isSelected ? 'none' : 'brightness(40%)' },
+                  }}
+                  variant="rounded"
+                >
+                  <CategoryIcon sx={{ color: 'divider' }} />
+                </LazyAvatar>
+              </ToggleButton>
+            </Tooltip>
+          )
+        })}
+      </ToggleButtonGroup>
+    </FormControl>
+  )
+}

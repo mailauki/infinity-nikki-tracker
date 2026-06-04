@@ -20,10 +20,10 @@ import {
   TextField,
 } from '@mui/material'
 import { ColorLens } from '@mui/icons-material'
-import LazyAvatar from '@/components/eureka/lazy-avatar'
+import LazyAvatar from '@/components/lazy-avatar'
 import { toSlug } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import { Category, Color, Label, Style, Trial } from '@/lib/types/eureka'
+import { EurekaCategory, EurekaColor, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from '@/components/forms/eureka-set/color-select'
 import { SparkleIcon } from '@/components/rarity-stars'
 import { useFormConfig } from '@/app/(admin)/form-context'
@@ -43,8 +43,8 @@ export default function AddEurekaSetForm({
   trials: Trial[]
   styles: Style[]
   labels: Label[]
-  colors: Color[]
-  categories: Category[]
+  colors: EurekaColor[]
+  categories: EurekaCategory[]
 }) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')
@@ -86,11 +86,28 @@ export default function AddEurekaSetForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.eureka.sets.add.replace('/new', ''),
+      backUrl: navLinksData.dashboard.eureka.sets.list,
       pending,
+      showAddAnother: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
+
+  useEffect(() => {
+    if (state && 'addAnother' in state) {
+      setFormConfig({ savedTitle: state.savedTitle })
+      setTitle('')
+      setSlug('')
+      setRarity('')
+      setStyle('')
+      setLabel('')
+      setDescription('')
+      setSelectedTrials([])
+      setEditSlug(false)
+      setColorSelect([])
+      setDefaultColor('')
+    }
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <form action={action} id={FORM_ID}>
@@ -193,7 +210,7 @@ export default function AddEurekaSetForm({
         </FormControl>
 
         <Stack spacing={0.5}>
-          <Stack alignItems="center" direction="row" justifyContent="flex-end">
+          <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
             <Button
               size="small"
               onClick={() =>

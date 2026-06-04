@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server'
 
 import { createClient } from '@/lib/supabase/server'
-import { Category, Color, EurekaSet, EurekaVariant, ObtainedEureka } from '@/lib/types/eureka'
+import {
+  EurekaCategory,
+  EurekaColor,
+  EurekaSet,
+  EurekaVariant,
+  ObtainedEureka,
+} from '@/lib/types/eureka'
 
 export async function GET() {
   const supabase = await createClient()
@@ -38,7 +44,7 @@ export async function GET() {
   }
 
   const { data: categories, error: categoriesError } = await supabase
-    .from('categories')
+    .from('eureka_categories')
     .select('slug, title, image_url')
     .order('id', { ascending: true })
 
@@ -48,7 +54,7 @@ export async function GET() {
   }
 
   const { data: colors, error: colorsError } = await supabase
-    .from('colors')
+    .from('eureka_colors')
     .select('slug, title, image_url')
     .order('id', { ascending: true })
 
@@ -57,8 +63,8 @@ export async function GET() {
     return NextResponse.json({ error: colorsError.message }, { status: 500 })
   }
 
-  const typedCategories = (categories ?? []) as Category[]
-  const typedColors = (colors ?? []) as Color[]
+  const typedCategories = (categories ?? []) as EurekaCategory[]
+  const typedColors = (colors ?? []) as EurekaColor[]
 
   const eureka = (eurekaSets ?? []).map((eurekaSet) => ({
     ...eurekaSet,
