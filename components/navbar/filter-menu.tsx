@@ -4,10 +4,10 @@ import * as React from 'react'
 import {
   Button,
   Divider,
+  Drawer,
   IconButton,
   List,
   ListItem,
-  Menu,
   SelectChangeEvent,
   Stack,
   Toolbar,
@@ -17,26 +17,19 @@ import { usePathname } from 'next/navigation'
 
 import { useEurekaData } from '../eureka/eureka-context'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
+import ObtainedToggle from '../filter/obtained-toggle'
+import ColorSelect from '../filter/color-select'
+import CategoryToggle from '../filter/category-toggle'
+import SortColorToggle from '../filter/sort-color-toggle'
 import SortEurekaToggle from '../filter/sort-eureka-toggle'
 import EurekaSelect from '../filter/eureka-select'
-import SortColorToggle from '../filter/sort-color-toggle'
-import ColorSelect from '../filter/color-select'
-import ObtainedToggle from '../filter/obtained-toggle'
-import CategoryToggle from '../filter/category-toggle'
 import RarityToggle from '../filter/rarity-toggle'
 
 const FILTER_PAGES = ['/eureka']
 
 export default function FilterMenu() {
   const pathname = usePathname()
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
+  const [open, setOpen] = React.useState(false)
 
   const {
     eurekaSets,
@@ -104,24 +97,19 @@ export default function FilterMenu() {
 
   return (
     <>
-      <IconButton
-        aria-controls={open ? 'filter-menu' : undefined}
-        aria-haspopup="true"
-        onClick={handleClick}
-      >
+      <IconButton onClick={() => setOpen(true)}>
         <FilterList />
       </IconButton>
 
-      <Menu
-        anchorEl={anchorEl}
-        id="filter-menu"
+      <Drawer
+        anchor="right"
         open={open}
-        onClick={handleClose}
-        onClose={handleClose}
+        sx={{ '& .MuiDrawer-paper': { width: 350 } }}
+        onClose={() => setOpen(false)}
       >
         <Toolbar>
-          <Stack direction="row" sx={{ flex: 1, justifyContent: 'flex-end' }}>
-            <IconButton onClick={handleClose}>
+          <Stack direction="row" justifyContent="flex-end" sx={{ flex: 1 }}>
+            <IconButton onClick={() => setOpen(false)}>
               <Close />
             </IconButton>
           </Stack>
@@ -169,19 +157,19 @@ export default function FilterMenu() {
           </ListItem>
           <Divider sx={{ mx: 2, mt: 2 }} />
           <ListItem>
-            <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
+            <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ flex: 1 }}>
               {hasActiveFilters && (
                 <Button color="secondary" variant="outlined" onClick={onClearFilters}>
                   Clear all
                 </Button>
               )}
-              <Button variant="contained" onClick={handleClose}>
+              <Button variant="contained" onClick={() => setOpen(false)}>
                 Apply
               </Button>
             </Stack>
           </ListItem>
         </List>
-      </Menu>
+      </Drawer>
     </>
   )
 }
