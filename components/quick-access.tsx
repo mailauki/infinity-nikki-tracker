@@ -16,7 +16,7 @@ const cards = [
 
 export function QuickAccess() {
   return (
-    <Box sx={{ py: 3, px: { xs: 2, sm: 3 } }}>
+    <Box sx={{ py: 3 }}>
       <Typography
         variant="overline"
         sx={{ display: 'block', textAlign: 'center', mb: 2 }}
