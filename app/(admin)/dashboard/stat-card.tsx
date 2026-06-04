@@ -28,11 +28,11 @@ export function StatCard({
           </Typography>
         }
       />
-      {addHref && (
+      {(addHref || tabHref) && (
         <CardContent component={Stack} spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
           <Divider />
           <Stack direction="row" spacing={1}>
-            <Button
+            {addHref && (<Button
               href={addHref}
               size="small"
               startIcon={<AddIcon />}
@@ -40,8 +40,8 @@ export function StatCard({
               variant="outlined"
             >
               Add
-            </Button>
-            <Button
+            </Button>)}
+            {tabHref && (<Button
               endIcon={<ArrowForward />}
               href={tabHref}
               size="small"
@@ -49,7 +49,7 @@ export function StatCard({
               variant="outlined"
             >
               View all
-            </Button>
+            </Button>)}
           </Stack>
         </CardContent>
       )}
