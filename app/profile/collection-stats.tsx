@@ -23,6 +23,7 @@ import {
   useTheme,
 } from '@mui/material'
 import { PieChart } from '@mui/x-charts/PieChart'
+import { lime } from '@mui/material/colors'
 import { TransitionProps } from '@mui/material/transitions'
 import { Check, Close } from '@mui/icons-material'
 import { countObtained, percent } from '@/hooks/count-obtained'
@@ -66,61 +67,113 @@ function StatItemRow({ item, size }: { item: StatItem; size: AvatarSize }) {
   )
 }
 
-const CHART_SIZE = 180
+const RINGS_CHART_SIZE = 240
+const SETS_CHART_SIZE = 200
 
-function CollectionDonutChart({ obtained, total }: { obtained: number; total: number }) {
-  const remaining = total - obtained
+function CollectionRingsChart({
+  setsObtained,
+  setsTotal,
+  colorSetsObtained,
+  colorSetsTotal,
+  categoriesObtained,
+  categoriesTotal,
+  variantsObtained,
+  variantsTotal,
+}: {
+  setsObtained: number
+  setsTotal: number
+  colorSetsObtained: number
+  colorSetsTotal: number
+  categoriesObtained: number
+  categoriesTotal: number
+  variantsObtained: number
+  variantsTotal: number
+}) {
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
-  const theme = useTheme()
-  const percentage = percent(obtained, total)
 
-  if (total === 0) return null
+  const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
+  const ringColors = isDarkMode
+    ? [lime[500], lime[400], lime[300], lime[200]]
+    : [lime[900], lime[700], lime[500], lime[300]]
+
+  const rings = [
+    {
+      label: 'Sets',
+      obtained: setsObtained,
+      total: setsTotal,
+      color: ringColors[0],
+      innerRadius: 35,
+      outerRadius: 52,
+    },
+    {
+      label: 'Color Sets',
+      obtained: colorSetsObtained,
+      total: colorSetsTotal,
+      color: ringColors[1],
+      innerRadius: 56,
+      outerRadius: 72,
+    },
+    {
+      label: 'Categories',
+      obtained: categoriesObtained,
+      total: categoriesTotal,
+      color: ringColors[2],
+      innerRadius: 76,
+      outerRadius: 90,
+    },
+    {
+      label: 'Variants',
+      obtained: variantsObtained,
+      total: variantsTotal,
+      color: ringColors[3],
+      innerRadius: 94,
+      outerRadius: 108,
+    },
+  ]
+
+  const overallPct = percent(variantsObtained, variantsTotal)
 
   return (
     <Card sx={{ gridColumn: '1 / -1' }} variant="outlined">
       <CardHeader
         disableTypography
-        action={
-          <Chip label={`${obtained} / ${total}`} size="small" sx={{ mt: 1 }} variant="outlined" />
-        }
         sx={{ mt: -1 }}
         title={
           <Typography color="text.secondary" variant="overline">
-            Overall Progress
+            Hierarchy Progress
           </Typography>
         }
       />
       <CardContent sx={{ pt: 0 }}>
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
-          <Box sx={{ position: 'relative', width: CHART_SIZE, height: CHART_SIZE, flexShrink: 0 }}>
+          <Box
+            sx={{
+              position: 'relative',
+              width: RINGS_CHART_SIZE,
+              height: RINGS_CHART_SIZE,
+              flexShrink: 0,
+            }}
+          >
             <PieChart
-              height={CHART_SIZE}
+              height={RINGS_CHART_SIZE}
               margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
-              series={[
-                {
-                  data: [
-                    {
-                      id: 'obtained',
-                      value: obtained,
-                      label: 'Obtained',
-                      color: theme.palette.primary.main,
-                    },
-                    {
-                      id: 'remaining',
-                      value: remaining,
-                      label: 'Remaining',
-                      color: isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
-                    },
-                  ],
-                  innerRadius: 55,
-                  outerRadius: 84,
-                  paddingAngle: obtained > 0 && remaining > 0 ? 2 : 0,
-                  cornerRadius: 4,
-                },
-              ]}
+              series={rings.map((ring) => ({
+                data: [
+                  { id: `${ring.label}-obtained`, value: ring.obtained, color: ring.color },
+                  {
+                    id: `${ring.label}-remaining`,
+                    value: ring.total - ring.obtained,
+                    color: muted,
+                  },
+                ],
+                innerRadius: ring.innerRadius,
+                outerRadius: ring.outerRadius,
+                paddingAngle: ring.obtained > 0 && ring.obtained < ring.total ? 2 : 0,
+                cornerRadius: 3,
+              }))}
               slots={{ legend: () => null }}
-              width={CHART_SIZE}
+              width={RINGS_CHART_SIZE}
             />
             <Box
               sx={{
@@ -132,52 +185,149 @@ function CollectionDonutChart({ obtained, total }: { obtained: number; total: nu
                 pointerEvents: 'none',
               }}
             >
-              {percentage === 100 ? (
-                <Check color="primary" sx={{ fontSize: 36 }} />
+              {overallPct === 100 ? (
+                <Check color="primary" sx={{ fontSize: 28 }} />
               ) : (
-                <Typography sx={{ fontWeight: 'medium' }} variant="h5">
-                  {percentage}%
+                <Typography color="text.secondary" variant="caption">
+                  {overallPct}%
                 </Typography>
               )}
             </Box>
           </Box>
 
           <Stack spacing={1.5} sx={{ flex: 1, width: { xs: '100%', sm: 'auto' } }}>
-            <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-              <Box
-                sx={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: '3px',
-                  bgcolor: 'primary.main',
-                  flexShrink: 0,
-                }}
-              />
-              <Typography sx={{ flex: 1 }} variant="body2">
-                Obtained
-              </Typography>
-              <Typography color="text.secondary" variant="body2">
-                {obtained}
-              </Typography>
-            </Stack>
-            <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-              <Box
-                sx={{
-                  width: 12,
-                  height: 12,
-                  borderRadius: '3px',
-                  bgcolor: isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)',
-                  flexShrink: 0,
-                }}
-              />
-              <Typography sx={{ flex: 1 }} variant="body2">
-                Remaining
-              </Typography>
-              <Typography color="text.secondary" variant="body2">
-                {remaining}
-              </Typography>
-            </Stack>
+            {rings.map((ring) => (
+              <Stack key={ring.label} spacing={0.5}>
+                <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                  <Box
+                    sx={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '3px',
+                      bgcolor: ring.color,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <Typography sx={{ flex: 1 }} variant="body2">
+                    {ring.label}
+                  </Typography>
+                  <Chip
+                    label={`${ring.obtained} / ${ring.total}`}
+                    size="small"
+                    variant="outlined"
+                  />
+                </Stack>
+                <Box sx={{ ml: 3, color: ring.color }}>
+                  <LinearProgress
+                    color="inherit"
+                    value={percent(ring.obtained, ring.total)}
+                    variant="determinate"
+                  />
+                </Box>
+              </Stack>
+            ))}
           </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
+  )
+}
+
+function getSetColor(pct: number, isDarkMode: boolean): string {
+  if (pct === 0) return isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
+  if (pct === 100) return isDarkMode ? lime[500] : lime[900]
+  if (pct >= 67) return isDarkMode ? lime[400] : lime[700]
+  if (pct >= 34) return isDarkMode ? lime[300] : lime[500]
+  return isDarkMode ? lime[200] : lime[300]
+}
+
+function CollectionSetsChart({ sets }: { sets: EurekaSet[] }) {
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+
+  const data = sets
+    .filter((set) => set.eureka_variants.length > 0)
+    .map((set) => {
+      const { obtained, total } = countObtained(set.eureka_variants)
+      const pct = percent(obtained, total)
+      return {
+        id: set.slug,
+        value: total,
+        label: set.title,
+        color: getSetColor(pct, isDarkMode),
+        pct,
+      }
+    })
+
+  if (data.length === 0) return null
+
+  return (
+    <Card sx={{ gridColumn: '1 / -1' }} variant="outlined">
+      <CardHeader
+        disableTypography
+        sx={{ mt: -1 }}
+        title={
+          <Typography color="text.secondary" variant="overline">
+            Progress by Set
+          </Typography>
+        }
+      />
+      <CardContent sx={{ pt: 0 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
+          <Box
+            sx={{
+              position: 'relative',
+              width: SETS_CHART_SIZE,
+              height: SETS_CHART_SIZE,
+              flexShrink: 0,
+            }}
+          >
+            <PieChart
+              height={SETS_CHART_SIZE}
+              margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
+              series={[
+                {
+                  data,
+                  innerRadius: 60,
+                  outerRadius: 92,
+                  paddingAngle: 1.5,
+                  cornerRadius: 3,
+                },
+              ]}
+              slots={{ legend: () => null }}
+              width={SETS_CHART_SIZE}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(148px, 1fr))',
+              gap: 0.75,
+              flex: 1,
+              width: { xs: '100%', sm: 'auto' },
+            }}
+          >
+            {data.map((item) => (
+              <Stack key={item.id} direction="row" spacing={0.75} sx={{ alignItems: 'center' }}>
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '2px',
+                    bgcolor: item.color,
+                    flexShrink: 0,
+                  }}
+                />
+                <Typography noWrap sx={{ flex: 1 }} variant="caption">
+                  {item.label}
+                </Typography>
+                <Typography color="text.secondary" variant="caption">
+                  {item.pct}%
+                </Typography>
+              </Stack>
+            ))}
+          </Box>
         </Stack>
       </CardContent>
     </Card>
@@ -348,7 +498,17 @@ export default function CollectionStats({
         gap: 2,
       }}
     >
-      <CollectionDonutChart obtained={variantsObtained} total={variantsTotal} />
+      <CollectionRingsChart
+        categoriesObtained={categoriesObtained}
+        categoriesTotal={categories.length}
+        colorSetsObtained={colorSetsObtained}
+        colorSetsTotal={colorSetsTotal}
+        setsObtained={setsObtained}
+        setsTotal={sets.length}
+        variantsObtained={variantsObtained}
+        variantsTotal={variantsTotal}
+      />
+      <CollectionSetsChart sets={sets} />
       <CollectionStatCard
         items={setItems}
         obtained={setsObtained}
