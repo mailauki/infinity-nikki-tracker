@@ -12,6 +12,7 @@ export async function Hero() {
     <Box
       sx={{
         position: 'relative',
+        mx: -2,
         height: {
           xs: `calc(100vh - ${56 * 3 + 6}px)`,
           sm: `calc(100vh - ${64 * 3 + 6}px)`,
