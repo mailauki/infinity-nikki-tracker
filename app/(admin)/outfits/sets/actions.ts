@@ -91,7 +91,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
     }
   }
 
-  redirect(navLinksData.dashboard.outfits.sets.add.replace('/new', ''))
+  redirect(navLinksData.dashboard.outfits.sets.list)
 }
 
 export async function editOutfitSet(id: number, backUrl: string, _: unknown, formData: FormData) {

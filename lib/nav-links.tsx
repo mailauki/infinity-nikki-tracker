@@ -100,28 +100,34 @@ export const navLinksData: {
   dashboard: {
     eureka: {
       sets: {
+        list: '/dashboard/eureka/sets',
         add: '/eureka/sets/new',
         edit: '/eureka/sets/edit',
       },
       variants: {
+        list: '/dashboard/eureka/variants',
         add: '/eureka/variants/new',
         edit: '/eureka/variants/edit',
       },
       trials: {
+        list: '/dashboard/eureka/trials',
         add: '/eureka/trials/new',
         edit: '/eureka/trials/edit',
       },
     },
     outfits: {
       sets: {
+        list: '/dashboard/outfits/sets',
         add: '/outfits/sets/new',
         edit: '/outfits/sets/edit',
       },
       variants: {
+        list: '/dashboard/outfits/variants',
         add: '/outfits/variants/new',
         edit: '/outfits/variants/edit',
       },
       evolutions: {
+        list: '/dashboard/outfits/evolutions',
         edit: '/outfits/evolutions/edit',
       },
     },

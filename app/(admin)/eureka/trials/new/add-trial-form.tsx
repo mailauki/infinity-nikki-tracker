@@ -33,7 +33,7 @@ export default function AddTrialForm() {
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.eureka.trials.add.replace('/new', ''),
+      backUrl: navLinksData.dashboard.eureka.trials.list,
       pending,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -27,7 +27,7 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
 
   if (error) return { error: error.message }
 
-  redirect(navLinksData.dashboard.outfits.variants.add.replace('/new', ''))
+  redirect(navLinksData.dashboard.outfits.variants.list)
 }
 
 export async function editOutfitVariant(

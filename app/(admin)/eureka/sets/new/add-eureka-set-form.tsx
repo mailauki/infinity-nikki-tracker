@@ -86,7 +86,7 @@ export default function AddEurekaSetForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.eureka.sets.add.replace('/new', ''),
+      backUrl: navLinksData.dashboard.eureka.sets.list,
       pending,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -54,7 +54,7 @@ export default function AddOutfitVariantForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.outfits.variants.add.replace('/new', ''),
+      backUrl: navLinksData.dashboard.outfits.variants.list,
       pending,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps

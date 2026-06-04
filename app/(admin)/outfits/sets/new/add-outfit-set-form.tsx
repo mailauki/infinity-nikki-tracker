@@ -72,7 +72,7 @@ export default function AddOutfitSetForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.outfits.sets.add.replace('/new', ''),
+      backUrl: navLinksData.dashboard.outfits.sets.list,
       pending,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps

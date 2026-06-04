@@ -59,7 +59,7 @@ export async function addEurekaSet(_: unknown, formData: FormData) {
     }
   }
 
-  redirect(navLinksData.dashboard.eureka.sets.add.replace('/new', ''))
+  redirect(navLinksData.dashboard.eureka.sets.list)
 }
 
 export async function editEurekaSet(
