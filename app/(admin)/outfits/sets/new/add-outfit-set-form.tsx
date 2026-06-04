@@ -72,11 +72,30 @@ export default function AddOutfitSetForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.outfits.sets.add.replace('/new', ''),
+      backUrl: navLinksData.dashboard.outfits.sets.list,
       pending,
+      showAddAnother: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
+
+  useEffect(() => {
+    if (state && 'addAnother' in state) {
+      setFormConfig({ savedTitle: state.savedTitle })
+      setTitle('')
+      setSlug('')
+      setRarity('')
+      setStyle('')
+      setLabel('')
+      setLabel2('')
+      setAbility('')
+      setDescription('')
+      setEvolutionDrafts([])
+      setDefaultEvolutionOrder('')
+      setCategorySelect([])
+      setEditSlug(false)
+    }
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <form action={action} id={FORM_ID}>

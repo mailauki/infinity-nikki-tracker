@@ -23,7 +23,8 @@ export async function addEurekaVariant(_: unknown, formData: FormData) {
 
   if (error) return { error: error.message }
 
-  redirect(navLinksData.dashboard.eureka.variants.add.replace('/new', ''))
+  if (formData.get('add_another') === 'true') return { addAnother: true as const, savedTitle: slug }
+  redirect(navLinksData.dashboard.eureka.variants.list)
 }
 
 export async function editEurekaVariant(

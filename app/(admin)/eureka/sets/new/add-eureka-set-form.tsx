@@ -86,11 +86,28 @@ export default function AddEurekaSetForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.eureka.sets.add.replace('/new', ''),
+      backUrl: navLinksData.dashboard.eureka.sets.list,
       pending,
+      showAddAnother: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
+
+  useEffect(() => {
+    if (state && 'addAnother' in state) {
+      setFormConfig({ savedTitle: state.savedTitle })
+      setTitle('')
+      setSlug('')
+      setRarity('')
+      setStyle('')
+      setLabel('')
+      setDescription('')
+      setSelectedTrials([])
+      setEditSlug(false)
+      setColorSelect([])
+      setDefaultColor('')
+    }
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <form action={action} id={FORM_ID}>

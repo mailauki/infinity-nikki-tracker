@@ -20,7 +20,8 @@ export async function addTrial(_: unknown, formData: FormData) {
 
   if (error) return { error: error.message }
 
-  redirect(navLinksData.dashboard.eureka.trials.add.replace('/new', ''))
+  if (formData.get('add_another') === 'true') return { addAnother: true as const, savedTitle: title }
+  redirect(navLinksData.dashboard.eureka.trials.list)
 }
 
 export async function editTrial(id: number, backUrl: string, _: unknown, formData: FormData) {

@@ -68,12 +68,14 @@ export default function PaginationContainer<T>({
           <Stack direction="row" sx={{ flex: 1, justifyContent: 'flex-end' }}>
             <Button
               href={addHref}
-              size="small"
+              size='small'
               startIcon={<Add />}
               sx={{ '&.MuiButton-root': { textWrap: 'nowrap' } }}
-              variant="outlined"
+              variant='outlined'
+							aria-label={`Add ${title}`}
+							component='a'
             >
-              Add {title}
+							Add {title}
             </Button>
           </Stack>
         )}

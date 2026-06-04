@@ -54,11 +54,25 @@ export default function AddOutfitVariantForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.outfits.variants.add.replace('/new', ''),
+      backUrl: navLinksData.dashboard.outfits.variants.list,
       pending,
+      showAddAnother: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
+
+  useEffect(() => {
+    if (state && 'addAnother' in state) {
+      setFormConfig({ savedTitle: state.savedTitle })
+      setOutfitSet('')
+      setOutfitCategory('')
+      setEvolution('')
+      setImageUrl(null)
+      setIsDefault(false)
+      setSlug('')
+      setEditSlug(false)
+    }
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const autoSlug =
     outfitSet && outfitCategory && evolution
