@@ -23,12 +23,9 @@ const cards = [
 export function QuickAccess() {
   const { mode, systemMode } = useColorScheme()
   const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+
   return (
-    <Stack sx={{ py: 3 }} spacing={2}>
-			<Stack direction='row' sx={{ alignItems: 'center', justifyContent: 'center' }}>
-			<HeroCTAs isLoggedIn={false} />
-			</Stack>
-			<Divider />
+    <Box sx={{ py: 3 }}>
       {/* <Typography
         variant="overline"
         sx={{ display: 'block', textAlign: 'center', mb: 2 }}
@@ -66,6 +63,6 @@ export function QuickAccess() {
           </Card>
         ))}
       </Box>
-    </Stack>
+    </Box>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Stack } from '@mui/material'
+import { Button, Divider, Stack } from '@mui/material'
 import Link from 'next/link'
 
 const buttonSx = {
@@ -22,13 +22,14 @@ const buttonSx = {
 
 export function HeroCTAs({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
-    <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
+		<Stack spacing={1.5} sx={{ mt: 3 }}>
+    <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
       {isLoggedIn ? (
         <>
-          <Button component={Link} href="/profile" variant="contained" sx={buttonSx.contained}>
+          <Button component={Link} href="/profile" variant="contained" sx={{ bgcolor: 'text.primary', borderRadius: 4 }}>
             My Collection
           </Button>
-          <Button component={Link} href="/eureka" variant="outlined" sx={buttonSx.outlined}>
+          <Button component={Link} href="/eureka" variant="outlined" sx={{ color: 'text.primary', borderColor: 'text.primary', borderRadius: 4 }}>
             Browse Sets
           </Button>
         </>
@@ -38,15 +39,17 @@ export function HeroCTAs({ isLoggedIn }: { isLoggedIn: boolean }) {
             component={Link}
             href="/auth/sign-up"
             variant="contained"
-            sx={buttonSx.contained}
+						sx={{ bgcolor: 'text.primary', borderRadius: 4 }}
           >
             Sign Up Free
           </Button>
-          <Button component={Link} href="/eureka" variant="outlined" sx={buttonSx.outlined}>
+          <Button component={Link} href="/eureka" variant="outlined" sx={{ color: 'text.primary', borderColor: 'text.primary', borderRadius: 4 }}>
             Browse Sets
           </Button>
         </>
       )}
     </Stack>
+		<Divider />
+		</Stack>
   )
 }
