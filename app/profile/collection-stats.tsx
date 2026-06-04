@@ -15,6 +15,7 @@ import {
   LinearProgress,
   List,
   ListItem,
+  Skeleton,
   Slide,
   Stack,
   Typography,
@@ -96,7 +97,14 @@ function CollectionRingsChart({
   useEffect(() => setMounted(true), [])
   const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
 
-  if (!mounted) return null
+  if (!mounted)
+    return (
+      <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
+        <CardContent>
+          <Skeleton height={RINGS_CHART_SIZE} variant="rounded" />
+        </CardContent>
+      </Card>
+    )
 
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
   const ringColors = isDarkMode
@@ -253,7 +261,14 @@ function CollectionSetsChart({
 
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
 
-  if (!mounted) return null
+  if (!mounted)
+    return (
+      <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
+        <CardContent>
+          <Skeleton height={COLOR_SETS_CHART_SIZE} variant="rounded" />
+        </CardContent>
+      </Card>
+    )
 
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
   const primary = theme.palette.primary.main
