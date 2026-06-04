@@ -1,10 +1,13 @@
-import { Hero } from './hero'
-import { Container } from '@mui/material'
+import { Stack } from '@mui/material'
 
-export default function Home() {
+import { QuickAccess } from '@/components/quick-access'
+import { Hero } from './hero'
+
+export default function HomePage() {
   return (
-    <Container disableGutters sx={{ overflow: 'hidden', flex: 1, height: '100%' }}>
+    <Stack>
       <Hero />
-    </Container>
+      <QuickAccess />
+    </Stack>
   )
 }
