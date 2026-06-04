@@ -5,7 +5,7 @@ import { Noto_Sans_JP, Roboto } from 'next/font/google'
 import { ThemeProvider } from '@mui/material/styles'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import theme from '@/lib/theme'
-import { CssBaseline, Stack } from '@mui/material'
+import { CssBaseline, Stack, Toolbar } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
 import { Suspense } from 'react'
 import Footer from '@/components/navbar/nav-footer'
@@ -90,6 +90,7 @@ export default function RootLayout({
                   <Suspense>
                     <NavBar />
                   </Suspense>
+										<Toolbar sx={{ my: 3 }} />
                   <Suspense>
                     <PullToRefresh />
                   </Suspense>

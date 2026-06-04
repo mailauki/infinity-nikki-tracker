@@ -30,7 +30,7 @@ export default function NavBar() {
   return (
     <AppBar
       color="transparent"
-      position="sticky"
+      position='fixed'
       sx={{
         borderColor: 'transparent',
         backdropFilter: 'blur(8px)',
@@ -38,10 +38,14 @@ export default function NavBar() {
       }}
       variant="outlined"
     >
-      <Toolbar sx={{ justifyContent: 'center', pr: 4, pt: 3, pb: hasContent ? 0 : 3 }}>
+      {/* <Toolbar sx={{ justifyContent: 'center', pr: 4, pt: 3, pb: hasContent ? 0 : 3 }}>
         <PageTitle />
       </Toolbar>
-      <Toolbar ref={refCallback} sx={{ display: hasContent ? undefined : 'none', mb: 2 }} />
+      <Toolbar ref={refCallback} sx={{ display: hasContent ? undefined : 'none', mb: 2 }} /> */}
+      <Toolbar sx={{ alignItems: 'flex-end', justifyContent: 'center', pb: 0.15 }}>
+        <PageTitle />
+      </Toolbar>
+      <Toolbar ref={refCallback} sx={{ mb: 2 }} />
     </AppBar>
   )
 }

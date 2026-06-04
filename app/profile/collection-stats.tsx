@@ -77,8 +77,6 @@ function CollectionRingsChart({
   setsTotal,
   colorSetsObtained,
   colorSetsTotal,
-  categoriesObtained,
-  categoriesTotal,
 	trialsObtained,
 	trialsTotal,
   variantsObtained,
@@ -88,8 +86,6 @@ function CollectionRingsChart({
   setsTotal: number
   colorSetsObtained: number
   colorSetsTotal: number
-  categoriesObtained: number
-  categoriesTotal: number
 	trialsObtained: number
 	trialsTotal: number
   variantsObtained: number
@@ -120,14 +116,6 @@ function CollectionRingsChart({
       innerRadius: 56,
       outerRadius: 72,
     },
-    // {
-    //   label: 'Categories',
-    //   obtained: categoriesObtained,
-    //   total: categoriesTotal,
-    //   color: ringColors[2],
-    //   innerRadius: 76,
-    //   outerRadius: 90,
-    // },
     {
       label: 'Trials',
       obtained: trialsObtained,
@@ -149,7 +137,7 @@ function CollectionRingsChart({
   const overallPct = percent(variantsObtained, variantsTotal)
 
   return (
-    <Card sx={{ gridColumn: '1 / -1' }} variant="outlined">
+    <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
       <CardHeader
         disableTypography
         sx={{ mt: -1 }}
@@ -160,7 +148,7 @@ function CollectionRingsChart({
         }
       />
       <CardContent sx={{ pt: 0 }}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
+        <Stack direction={{ xs: 'column', sm: 'row', md: 'column', lg: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
           <Box
             sx={{
               position: 'relative',
@@ -210,7 +198,7 @@ function CollectionRingsChart({
             </Box>
           </Box>
 
-          <Stack spacing={1.5} sx={{ flex: 1, width: { xs: '100%', sm: 'auto' } }}>
+          <Stack spacing={1.5} sx={{ flex: 1, width: { xs: '100%', sm: 'auto', md: '100%', lg: 'auto' } }}>
             {rings.map((ring) => (
               <Stack key={ring.label} spacing={0.5}>
                 <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
@@ -294,18 +282,18 @@ function CollectionSetsChart({
   if (fiveStarTotal === 0) return null
 
   return (
-    <Card sx={{ gridColumn: '1 / -1' }} variant="outlined">
+    <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
       <CardHeader
         disableTypography
         sx={{ mt: -1 }}
         title={
           <Typography color="text.secondary" variant="overline">
-            5 <SparkleIcon color="inherit" fontSize="inherit" sx={{ rotate: '15deg', ml: 0, mr: 0.5, mb: 0.25 }} aria-label='star' /> Set Progress
+            5 <SparkleIcon aria-label='star' color="inherit" fontSize="inherit" sx={{ rotate: '15deg', ml: 0, mr: 0.5, mb: 0.25 }} /> Set Progress
           </Typography>
         }
       />
       <CardContent sx={{ pt: 0 }}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
+        <Stack direction={{ xs: 'column', sm: 'row', md: 'column', lg: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
           <Box
             sx={{
               position: 'relative',
@@ -373,13 +361,12 @@ function CollectionSetsChart({
             </Box>
           </Box>
 
-          <Stack spacing={2} sx={{ flex: 1, width: { xs: '100%', sm: 'auto' } }}>
+          <Stack spacing={2} sx={{ flex: 1, width: { xs: '100%', sm: 'auto', md: '100%', lg: 'auto' } }}>
             {[
               {
                 label: selected ? selected.label : 'Overall',
                 rows: [
                   { color: primary, text: 'Obtained', value: `${innerObtained} / ${innerTotal}` },
-                  // { color: muted, text: 'Remaining', value: `${innerTotal - innerObtained}` },
                 ],
               },
               {
@@ -574,19 +561,17 @@ export default function CollectionStats({
     <Box
       sx={{
         display: 'grid',
-        gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr 1fr' },
+        gridTemplateColumns: { sm: '1fr', md: '1fr 1fr' },
         gap: 2,
       }}
     >
       <CollectionRingsChart
-        categoriesObtained={categoriesObtained}
-        categoriesTotal={categories.length}
-        trialsObtained={trialsObtained}
-        trialsTotal={trials.length}
         colorSetsObtained={colorSetsObtained}
         colorSetsTotal={colorSetsTotal}
         setsObtained={setsObtained}
         setsTotal={sets.length}
+        trialsObtained={trialsObtained}
+        trialsTotal={trials.length}
         variantsObtained={variantsObtained}
         variantsTotal={variantsTotal}
       />
