@@ -74,25 +74,30 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   ],
 }))
 
-const navContent = (open: boolean, onClose: () => void) => (
+const navContent = (open: boolean, isAdmin: boolean, onClose: () => void) => (
   <Stack component="nav" sx={{ flex: 1, mx: 1.5, pb: 3 }}>
-    <NavSection items={navLinksData.home} open={open} onClose={onClose} />
+    <NavSection isAdmin={isAdmin} items={navLinksData.home} open={open} onClose={onClose} />
 
-    <NavSection items={navLinksData.navMain} open={open} onClose={onClose} />
+    <NavSection isAdmin={isAdmin} items={navLinksData.navMain} open={open} onClose={onClose} />
 
     <Divider sx={{ my: 0.5 }} />
 
-    <NavSection items={navLinksData.navSecondary} open={open} onClose={onClose} />
+    <NavSection
+      isAdmin={isAdmin}
+      items={navLinksData.navSecondary}
+      open={open}
+      onClose={onClose}
+    />
 
     <Stack sx={{ flex: 1, justifyContent: 'flex-end' }}>
-      <NavSection items={navLinksData.navExtra} open={open} onClose={onClose} />
+      <NavSection isAdmin={isAdmin} items={navLinksData.navExtra} open={open} onClose={onClose} />
     </Stack>
   </Stack>
 )
 
 const DRAWER_STORAGE_KEY = 'nav-drawer-open'
 
-export default function NavDrawer() {
+export default function NavDrawer({ isAdmin }: { isAdmin: boolean }) {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
 
@@ -142,7 +147,7 @@ export default function NavDrawer() {
           </IconButton>
         </Toolbar>
         <Toolbar />
-        {navContent(true, () => setOpen(false))}
+        {navContent(true, isAdmin, () => setOpen(false))}
       </MuiDrawer>
       <Drawer
         anchor="left"
@@ -158,7 +163,7 @@ export default function NavDrawer() {
           </IconButton>
         </Toolbar>
         <Toolbar />
-        {navContent(open, () => setOpen(false))}
+        {navContent(open, isAdmin, () => setOpen(false))}
       </Drawer>
     </>
   )

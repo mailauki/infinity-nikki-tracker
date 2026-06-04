@@ -17,32 +17,23 @@ import {
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import Image from 'next/image'
 import { SparkleIcon } from '../rarity-stars'
 
 export default function NavSection({
   items,
+  isAdmin = false,
   open = false,
   onClose,
 }: {
   items: NavLink[]
+  isAdmin?: boolean
   open?: boolean
   onClose?: () => void
 }) {
   const { mode, systemMode } = useColorScheme()
   const [mounted, setMounted] = useState(false)
-  const [isAdmin, setIsAdmin] = useState(false)
   useEffect(() => setMounted(true), [])
-  useEffect(() => {
-    const supabase = createClient()
-    supabase.auth.getUser().then(async ({ data }) => {
-      const id = data.user?.id
-      if (!id) return
-      const { data: profile } = await supabase.from('profiles').select('role').eq('id', id).single()
-      if (profile?.role === 'admin') setIsAdmin(true)
-    })
-  }, [])
   const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
   const pathname = usePathname()
 
