@@ -12,7 +12,7 @@ import {
   useMediaQuery,
   useTheme,
   Box,
-	useColorScheme,
+  useColorScheme,
 } from '@mui/material'
 import NavSection from './nav-section'
 import { navLinksData } from '@/lib/nav-links'
@@ -76,7 +76,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const navContent = (open: boolean, onClose: () => void) => (
   <Stack component="nav" sx={{ flex: 1, mx: 1.5, pb: 3 }}>
-		<NavSection items={navLinksData.home} open={open} onClose={onClose} />
+    <NavSection items={navLinksData.home} open={open} onClose={onClose} />
 
     <NavSection items={navLinksData.navMain} open={open} onClose={onClose} />
 

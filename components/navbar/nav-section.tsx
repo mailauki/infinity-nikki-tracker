@@ -48,38 +48,41 @@ export default function NavSection({
 
   const visibleItems = items.filter((item) => !item.adminOnly || isAdmin)
 
-	if (items.length === 1) return (
-		<List>
-          <ListItem disablePadding sx={{ display: 'block' }}>
-            <Tooltip placement="right" title={open ? '' : items[0].title}>
-							<ListItemButton
-                component="a"
-                href={items[0].url}
-                selected={items[0].url === `/${pathname.split('/')[1]}`}
-                sx={{
-                  minHeight: 55,
-                  borderRadius: 2,
-                  justifyContent: 'initial',
+  if (items.length === 1)
+    return (
+      <List>
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          <Tooltip placement="right" title={open ? '' : items[0].title}>
+            <ListItemButton
+              component="a"
+              href={items[0].url}
+              selected={items[0].url === `/${pathname.split('/')[1]}`}
+              sx={{
+                minHeight: 55,
+                borderRadius: 2,
+                justifyContent: 'initial',
+              }}
+              onClick={onClose}
+            >
+              <ListItemIcon>
+                <SparkleIcon />
+              </ListItemIcon>
+              <Image
+                alt="Infinity Nikki Logo"
+                height={40}
+                src="/infinity-nikki-logo.png"
+                style={{
+                  display: open ? 'block' : 'none',
+                  marginLeft: 16,
+                  filter: isDarkMode ? 'none' : 'brightness(40%)',
                 }}
-                onClick={onClose}
-              >
-									<ListItemIcon><SparkleIcon /></ListItemIcon>
-							  <Image
-							    alt="Infinity Nikki Logo"
-							    height={40}
-							    src="/infinity-nikki-logo.png"
-							    style={{
-										display: open ? 'block' : 'none',
-										marginLeft: 16,
-							      filter: isDarkMode ? 'none' : 'brightness(40%)',
-							    }}
-							    width={90}
-							  />
-							</ListItemButton>
-							</Tooltip>
-							</ListItem>
-							</List>
-	)
+                width={90}
+              />
+            </ListItemButton>
+          </Tooltip>
+        </ListItem>
+      </List>
+    )
 
   return (
     <List>

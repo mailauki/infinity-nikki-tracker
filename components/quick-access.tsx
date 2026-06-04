@@ -1,6 +1,17 @@
 'use client'
 
-import { Avatar, Box, Card, CardActionArea, CardContent, CardHeader, Divider, Stack, Typography, useColorScheme } from '@mui/material'
+import {
+  Avatar,
+  Box,
+  Card,
+  CardActionArea,
+  CardContent,
+  CardHeader,
+  Divider,
+  Stack,
+  Typography,
+  useColorScheme,
+} from '@mui/material'
 import Link from 'next/link'
 import { Hero } from './hero'
 import { HeroCTAs } from './hero-ctas'
@@ -50,15 +61,17 @@ export function QuickAccess() {
                     `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                 }}
               />
-							<CardHeader
-							title={title}
-							subheader={subtitle}
-							avatar={<Avatar
-                      alt={title}
-                      src={image}
-                      sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
-                    />}
-							/>
+              <CardHeader
+                avatar={
+                  <Avatar
+                    alt={title}
+                    src={image}
+                    sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
+                  />
+                }
+                subheader={subtitle}
+                title={title}
+              />
             </CardActionArea>
           </Card>
         ))}

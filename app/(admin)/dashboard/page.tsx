@@ -29,7 +29,7 @@ async function DashboardContent() {
       getAdminData(),
       getOutfitSets(),
       getOutfitVariantsRaw(),
-			getEvolutions(),
+      getEvolutions(),
       getUserRole(),
     ])
 
