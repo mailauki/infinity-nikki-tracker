@@ -120,7 +120,7 @@ export default function FilterMenu() {
         onClose={handleClose}
       >
         <Toolbar>
-          <Stack direction="row" sx={{ flex: 1, justifyContent: "flex-end" }}>
+          <Stack direction="row" sx={{ flex: 1, justifyContent: 'flex-end' }}>
             <IconButton onClick={handleClose}>
               <Close />
             </IconButton>
@@ -169,7 +169,7 @@ export default function FilterMenu() {
           </ListItem>
           <Divider sx={{ mx: 2, mt: 2 }} />
           <ListItem>
-            <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: "flex-end" }}>
+            <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
               {hasActiveFilters && (
                 <Button color="secondary" variant="outlined" onClick={onClearFilters}>
                   Clear all

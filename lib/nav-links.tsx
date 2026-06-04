@@ -32,7 +32,7 @@ export const navLinksData: {
       //   },
       //   {
       //     title: 'Evolutions',
-      //     url: '/outfits/evolution',
+      //     url: '/outfits/evolutions',
       //     image: '/icons/evolution.png',
       //   },
       //   // {
@@ -64,6 +64,20 @@ export const navLinksData: {
       title: 'Profile',
       url: '/profile',
       icon: <AccountCircle />,
+			// items: [
+        // {
+        //   title: 'My Collection',
+        //   url: '/profile/collection',
+        // },
+        // {
+        //   title: 'Missing',
+        //   url: '/profile/missing',
+        // },
+        // {
+        //   title: 'Custom Looks',
+        //   url: '/profile/custom-looks',
+        // },
+			// ],
     },
     {
       title: 'Settings',

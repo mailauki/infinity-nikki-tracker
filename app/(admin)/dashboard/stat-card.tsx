@@ -1,14 +1,17 @@
 import { Button, Card, CardContent, CardHeader, Divider, Stack, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
+import { ArrowForward } from '@mui/icons-material'
 
 export function StatCard({
   title,
   count,
   addHref,
+  tabHref,
 }: {
   title: string
   count: number
   addHref?: string
+  tabHref?: string
 }) {
   return (
     <Card variant="outlined">
@@ -28,15 +31,26 @@ export function StatCard({
       {addHref && (
         <CardContent component={Stack} spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
           <Divider />
-          <Button
-            href={addHref}
-            size="small"
-            startIcon={<AddIcon />}
-            sx={{ width: 'fit-content' }}
-            variant="outlined"
-          >
-            Add
-          </Button>
+          <Stack direction="row" spacing={1}>
+            <Button
+              href={addHref}
+              size="small"
+              startIcon={<AddIcon />}
+              sx={{ width: 'fit-content' }}
+              variant="outlined"
+            >
+              Add
+            </Button>
+            <Button
+              endIcon={<ArrowForward />}
+              href={tabHref}
+              size="small"
+              sx={{ width: 'fit-content' }}
+              variant="outlined"
+            >
+              View all
+            </Button>
+          </Stack>
         </CardContent>
       )}
     </Card>

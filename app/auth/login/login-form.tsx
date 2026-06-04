@@ -76,9 +76,9 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               color="textSecondary"
               component={Link}
               href="/auth/forgot-password"
+              sx={{ fontWeight: 'medium' }}
               underline="hover"
               variant="body1"
-							sx={{ fontWeight: 'medium' }}
             >
               Forgot your password?
             </Anchor>
@@ -100,8 +100,8 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
                 color="textSecondary"
                 component={Link}
                 href="/auth/sign-up"
+                sx={{ fontWeight: 'medium' }}
                 underline="hover"
-								sx={{ fontWeight: 'medium' }}
               >
                 Sign up
               </Anchor>

@@ -2,7 +2,7 @@ import { Stack } from '@mui/material'
 import { Suspense } from 'react'
 
 import { QuickAccess } from '@/components/quick-access'
-import { Hero } from './hero'
+import { Hero } from '../components/hero'
 
 export default function HomePage() {
   return (

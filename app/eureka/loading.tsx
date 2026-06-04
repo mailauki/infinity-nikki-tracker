@@ -4,7 +4,10 @@ import { GRID_COLUMNS } from '@/lib/types/props'
 function GroupSkeleton() {
   return (
     <Box>
-      <Stack direction="row" sx={{ mb: 0.5, alignItems: "flex-end", justifyContent: "space-between" }}>
+      <Stack
+        direction="row"
+        sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
+      >
         <Skeleton height={28} variant="text" width={120} />
         <Skeleton height={24} variant="rounded" width={60} />
       </Stack>

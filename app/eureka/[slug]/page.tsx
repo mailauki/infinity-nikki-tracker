@@ -62,8 +62,8 @@ async function EurekaSet({ slug }: { slug: string }) {
       <SlugToolBar isAdmin={isAdmin} />
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <Stack spacing={1}>
-          <Stack direction="row" sx={{ flex: 1, justifyContent: "space-between" }}>
-            <Stack sx={{ pt: 1, alignItems: "center" }}>
+          <Stack direction="row" sx={{ flex: 1, justifyContent: 'space-between' }}>
+            <Stack sx={{ pt: 1, alignItems: 'center' }}>
               <LazyAvatar
                 alt={slug || 'Eureka Variant'}
                 size="xl"
