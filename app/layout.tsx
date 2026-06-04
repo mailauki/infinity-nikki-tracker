@@ -13,6 +13,7 @@ import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
 import NavDrawer from '@/components/navbar/nav-drawer'
 import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
+import { getUserRole } from '@/hooks/user'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -50,11 +51,14 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const role = await getUserRole()
+  const isAdmin = role === 'admin'
+
   return (
     <html
       suppressHydrationWarning
@@ -76,7 +80,7 @@ export default function RootLayout({
                 }}
               >
                 <Suspense>
-                  <NavDrawer />
+                  <NavDrawer isAdmin={isAdmin} />
                 </Suspense>
                 <Stack
                   sx={{
