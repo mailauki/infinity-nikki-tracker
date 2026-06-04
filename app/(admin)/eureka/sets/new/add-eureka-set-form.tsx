@@ -88,9 +88,25 @@ export default function AddEurekaSetForm({
       formId: FORM_ID,
       backUrl: navLinksData.dashboard.eureka.sets.list,
       pending,
+      showAddAnother: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
+
+  useEffect(() => {
+    if (state && 'addAnother' in state) {
+      setTitle('')
+      setSlug('')
+      setRarity('')
+      setStyle('')
+      setLabel('')
+      setDescription('')
+      setSelectedTrials([])
+      setEditSlug(false)
+      setColorSelect([])
+      setDefaultColor('')
+    }
+  }, [state])
 
   return (
     <form action={action} id={FORM_ID}>

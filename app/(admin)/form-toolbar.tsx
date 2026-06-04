@@ -5,16 +5,28 @@ import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { useFormConfig } from './form-context'
 
 export default function FormToolBar() {
-  const { formId, backUrl, pending } = useFormConfig()
+  const { formId, backUrl, pending, showAddAnother } = useFormConfig()
 
   if (!formId) return null
 
   return (
     <NavBarToolbar>
-      <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: "flex-end" }}>
+      <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
         <Button component="a" href={backUrl} variant="outlined">
           Cancel
         </Button>
+        {showAddAnother && (
+          <Button
+            disabled={pending}
+            form={formId}
+            name="add_another"
+            type="submit"
+            value="true"
+            variant="outlined"
+          >
+            {pending ? 'Saving...' : 'Save & add another'}
+          </Button>
+        )}
         <Button disabled={pending} form={formId} type="submit" variant="contained">
           {pending ? 'Saving...' : 'Save'}
         </Button>

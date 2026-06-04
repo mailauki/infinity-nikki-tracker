@@ -35,9 +35,19 @@ export default function AddTrialForm() {
       formId: FORM_ID,
       backUrl: navLinksData.dashboard.eureka.trials.list,
       pending,
+      showAddAnother: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
+
+  useEffect(() => {
+    if (state && 'addAnother' in state) {
+      setTitle('')
+      setSlug('')
+      setEditSlug(false)
+      setImageUrl(null)
+    }
+  }, [state])
 
   function handleTitleChange(value: string) {
     setTitle(value)

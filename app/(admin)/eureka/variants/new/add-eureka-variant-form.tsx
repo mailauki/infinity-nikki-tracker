@@ -62,9 +62,22 @@ export default function AddEurekaVariantForm({
       formId: FORM_ID,
       backUrl: navLinksData.dashboard.eureka.variants.list,
       pending,
+      showAddAnother: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
+
+  useEffect(() => {
+    if (state && 'addAnother' in state) {
+      setEurekaSet('')
+      setCategory('')
+      setColor('')
+      setImageUrl(null)
+      setIsDefault(false)
+      setSlug('')
+      setEditSlug(false)
+    }
+  }, [state])
 
   return (
     <form action={action} id={FORM_ID}>

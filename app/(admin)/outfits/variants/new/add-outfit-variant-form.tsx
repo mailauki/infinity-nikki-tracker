@@ -56,9 +56,22 @@ export default function AddOutfitVariantForm({
       formId: FORM_ID,
       backUrl: navLinksData.dashboard.outfits.variants.list,
       pending,
+      showAddAnother: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
+
+  useEffect(() => {
+    if (state && 'addAnother' in state) {
+      setOutfitSet('')
+      setOutfitCategory('')
+      setEvolution('')
+      setImageUrl(null)
+      setIsDefault(false)
+      setSlug('')
+      setEditSlug(false)
+    }
+  }, [state])
 
   const autoSlug =
     outfitSet && outfitCategory && evolution
