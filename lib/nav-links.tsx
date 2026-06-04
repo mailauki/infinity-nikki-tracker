@@ -2,16 +2,17 @@ import { DashboardLinks, NavLink } from '@/lib/types/props'
 import { Help, Info, Dashboard, AccountCircle, Settings } from '@mui/icons-material'
 
 export const navLinksData: {
-  home: NavLink
+  home: NavLink[]
   navMain: NavLink[]
   navSecondary: NavLink[]
   navExtra: NavLink[]
   dashboard: DashboardLinks
 } = {
-  home: {
+  home: [{
     title: 'Home',
     url: '/',
-  },
+		image: '/infinity-nikki-logo.png'
+  }],
   navMain: [
     {
       title: 'Outfits',

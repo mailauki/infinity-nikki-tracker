@@ -18,6 +18,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import Image from 'next/image'
+import { SparkleIcon } from '../rarity-stars'
 
 export default function NavSection({
   items,
@@ -45,6 +47,39 @@ export default function NavSection({
   const pathname = usePathname()
 
   const visibleItems = items.filter((item) => !item.adminOnly || isAdmin)
+
+	if (items.length === 1) return (
+		<List>
+          <ListItem disablePadding sx={{ display: 'block' }}>
+            <Tooltip placement="right" title={open ? '' : items[0].title}>
+							<ListItemButton
+                component="a"
+                href={items[0].url}
+                selected={items[0].url === `/${pathname.split('/')[1]}`}
+                sx={{
+                  minHeight: 55,
+                  borderRadius: 2,
+                  justifyContent: 'initial',
+                }}
+                onClick={onClose}
+              >
+									<ListItemIcon><SparkleIcon /></ListItemIcon>
+							  <Image
+							    alt="Infinity Nikki Logo"
+							    height={40}
+							    src="/infinity-nikki-logo.png"
+							    style={{
+										display: open ? 'block' : 'none',
+										marginLeft: 16,
+							      filter: isDarkMode ? 'none' : 'brightness(40%)',
+							    }}
+							    width={90}
+							  />
+							</ListItemButton>
+							</Tooltip>
+							</ListItem>
+							</List>
+	)
 
   return (
     <List>
@@ -87,7 +122,7 @@ export default function NavSection({
                     {item.icon}
                   </ListItemIcon>
                 )}
-                {open && <ListItemText primary={item.title} />}
+                <ListItemText primary={item.title} sx={{ display: open ? 'block' : 'none' }} />
               </ListItemButton>
             </Tooltip>
           </ListItem>
