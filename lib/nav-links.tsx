@@ -87,20 +87,20 @@ export const navLinksData: {
       url: '/settings',
       icon: <Settings />,
     },
-    {
-      title: 'Dashboard',
-      url: '/dashboard',
-      icon: <Dashboard />,
-      adminOnly: true,
-      items: [
-        { title: 'Eureka Sets', url: '/dashboard/eureka/sets' },
-        { title: 'Eureka Variants', url: '/dashboard/eureka/variants' },
-        { title: 'Trials', url: '/dashboard/eureka/trials' },
-        { title: 'Outfit Sets', url: '/dashboard/outfits/sets' },
-        { title: 'Outfit Variants', url: '/dashboard/outfits/variants' },
-        { title: 'Evolutions', url: '/dashboard/outfits/evolutions' },
-      ],
-    },
+    // {
+    //   title: 'Dashboard',
+    //   url: '/dashboard',
+    //   icon: <Dashboard />,
+    //   adminOnly: true,
+    //   items: [
+    //     { title: 'Eureka Sets', url: '/dashboard/eureka/sets' },
+    //     { title: 'Eureka Variants', url: '/dashboard/eureka/variants' },
+    //     { title: 'Trials', url: '/dashboard/eureka/trials' },
+    //     { title: 'Outfit Sets', url: '/dashboard/outfits/sets' },
+    //     { title: 'Outfit Variants', url: '/dashboard/outfits/variants' },
+    //     { title: 'Evolutions', url: '/dashboard/outfits/evolutions' },
+    //   ],
+    // },
   ],
   navExtra: [
     {
@@ -115,6 +115,14 @@ export const navLinksData: {
     },
   ],
   dashboard: {
+		tabs: [
+        { title: 'Eureka Sets', url: '/dashboard/eureka/sets' },
+        { title: 'Eureka Variants', url: '/dashboard/eureka/variants' },
+        { title: 'Trials', url: '/dashboard/eureka/trials' },
+        { title: 'Outfit Sets', url: '/dashboard/outfits/sets' },
+        { title: 'Outfit Variants', url: '/dashboard/outfits/variants' },
+        { title: 'Evolutions', url: '/dashboard/outfits/evolutions' },
+		],
     eureka: {
       sets: {
         list: '/dashboard/eureka/sets',

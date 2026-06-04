@@ -11,7 +11,7 @@ import { Suspense } from 'react'
 import Footer from '@/components/navbar/nav-footer'
 import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
-import NavDrawer from '@/components/navbar/nav-drawer'
+import NavDrawer, { NavAdminInit } from '@/components/navbar/nav-drawer'
 import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
 import { getUserRole } from '@/hooks/user'
 
@@ -76,6 +76,7 @@ export default function RootLayout({
                   alignItems: 'flex-start',
                 }}
               >
+                <NavDrawer />
                 <Suspense>
                   <NavDrawerWrapper />
                 </Suspense>
@@ -111,5 +112,5 @@ export default function RootLayout({
 
 async function NavDrawerWrapper() {
   const role = await getUserRole()
-  return <NavDrawer isAdmin={role === 'admin'} />
+  return <NavAdminInit isAdmin={role === 'admin'} />
 }

@@ -6,7 +6,7 @@ import { navLinksData } from '@/lib/nav-links'
 
 export default function DashboardNavTabs() {
   const pathname = usePathname()
-  const dashboardTabs = navLinksData.navSecondary.find((item) => item.url === '/dashboard')?.items
+  const dashboardTabs = navLinksData.dashboard.tabs
   const tab = dashboardTabs?.findIndex((t) => t.url === pathname)
 
   return (

@@ -24,6 +24,7 @@ type DashboardLink = { list: string; add: string; edit: string }
 type DashboardLinkReadOnly = { list: string; edit: string }
 
 export type DashboardLinks = {
+	tabs: NavLink[],
   eureka: { sets: DashboardLink; variants: DashboardLink; trials: DashboardLink }
   outfits: { sets: DashboardLink; variants: DashboardLink; evolutions: DashboardLinkReadOnly }
 }
