@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 export async function Hero() {
   return (
-    <ImageList cols={1} rowHeight={450}>
+    <ImageList cols={1} rowHeight={450} sx={{ borderRadius: 2 }}>
       <ImageListItem rows={1} sx={{ overflow: 'clip' }}>
         <Image
           fill
