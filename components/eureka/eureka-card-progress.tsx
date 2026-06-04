@@ -8,15 +8,15 @@ import {
   Typography,
 } from '@mui/material'
 
-import { CardSize } from '@/lib/types/props'
+import { CardSize, Percentage } from '@/lib/types/props'
 import ProgressChip from '../progress-chip'
-import { Check } from '@mui/icons-material'
+import PercentLabel from '../percent-label'
 
 export default function EurekaCardProgress({
   percentage,
   size = 'md',
 }: {
-  percentage: number
+  percentage: Percentage
   size?: CardSize
 }) {
   if (size === 'xs')
@@ -41,20 +41,7 @@ export default function EurekaCardProgress({
             }}
           >
             <Avatar size="md" sx={{ backgroundColor: 'background.paper' }}>
-              <Typography
-                color={percentage === 100 ? 'primary' : 'textPrimary'}
-                component="p"
-                sx={{ pb: 0.5, fontWeight: 'medium' }}
-                variant="subtitle1"
-              >
-                {percentage === 100 ? <Check fontSize="large" /> : `${percentage}`}
-                {percentage !== 100 && (
-                  <Typography component="span" variant="caption">
-                    {' '}
-                    %
-                  </Typography>
-                )}
-              </Typography>
+              <PercentLabel percentage={percentage} />
             </Avatar>
           </Box>
         </Box>

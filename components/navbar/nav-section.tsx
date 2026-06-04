@@ -110,13 +110,22 @@ export default function NavSection({
                     sx={{
                       minWidth: 0,
                       justifyContent: 'center',
-                      mr: open ? 3.5 : 0,
+											mr: 3.5,
                     }}
                   >
                     {item.icon}
                   </ListItemIcon>
                 )}
-                <ListItemText primary={item.title} sx={{ display: open ? 'block' : 'none' }} />
+                <ListItemText
+                  primary={item.title}
+                  sx={{
+                    opacity: open ? 1 : 0,
+                    maxWidth: open ? 200 : 0,
+                    overflow: 'hidden',
+                    whiteSpace: 'nowrap',
+                    transition: 'opacity 0.2s ease, max-width 0.2s ease',
+                  }}
+                />
               </ListItemButton>
             </Tooltip>
           </ListItem>

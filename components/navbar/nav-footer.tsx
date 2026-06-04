@@ -13,6 +13,7 @@ export default function Footer() {
         borderColor: 'transparent',
         backgroundColor: 'surface.containerLowest',
         py: 2,
+				my: 3,
       }}
       variant="outlined"
     >

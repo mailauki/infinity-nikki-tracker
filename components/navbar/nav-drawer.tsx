@@ -18,6 +18,7 @@ import NavSection from './nav-section'
 import { navLinksData } from '@/lib/nav-links'
 import { MenuOpen, Menu } from '@mui/icons-material'
 import React from 'react'
+import { useNavBarToolbar } from './navbar-toolbar-context'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -100,13 +101,17 @@ const DRAWER_STORAGE_KEY = 'nav-drawer-open'
 export default function NavDrawer({ isAdmin }: { isAdmin: boolean }) {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
+  const { setDrawerOpen } = useNavBarToolbar()
 
   React.useEffect(() => {
-    setOpen(localStorage.getItem(DRAWER_STORAGE_KEY) === 'true')
-  }, [])
+    const stored = localStorage.getItem(DRAWER_STORAGE_KEY) === 'true'
+    setOpen(stored)
+    setDrawerOpen(stored)
+  }, [setDrawerOpen])
 
   function toggleDrawer(value: boolean) {
     setOpen(value)
+    setDrawerOpen(value)
     localStorage.setItem(DRAWER_STORAGE_KEY, String(value))
   }
 

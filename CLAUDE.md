@@ -12,6 +12,8 @@ yarn lint         # Run ESLint
 yarn lint:fix     # Run ESLint with auto-fix
 yarn format       # Format with Prettier
 yarn tsc --noEmit # Type-check without emitting
+npx npm-check-updates --format group        # Check outdated deps (Yarn 4 has no yarn outdated)
+npx npm-check-updates --format group -u     # Write updates to package.json
 ```
 
 Package manager: **Yarn** (not npm or pnpm).
@@ -244,3 +246,11 @@ Avoid `useState` + `useEffect` for derived data — compute directly during rend
 Prefer CSS grid `Box` over MUI `Grid` for responsive layouts: `<Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }, gap: 2 }}>`. Avoids the `Grid size` API.
 
 `GridContainer`'s `sideContent` prop accepts falsy values — pass `isLoggedIn && <Component />` to conditionally hide the sidebar.
+
+MUI `Stack` does not accept layout shorthands (`justifyContent`, `alignItems`, etc.) as direct props in MUI v7 — always put them in `sx`. Causes a TypeScript build error otherwise.
+
+Hardcoded color strings derived from `useColorScheme()` (e.g. chart segment colors) need a `mounted` guard to avoid SSR/client hydration mismatches: `const [mounted, setMounted] = useState(false); useEffect(() => setMounted(true), []); const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'`.
+
+MUI X Charts `PieChart.onItemClick` receives `{ seriesId, dataIndex }` — add an `id` to each series object and match on `seriesId` to distinguish between series. `seriesIndex` does not exist on the event params.
+
+`NavBarToolbarContext` (`components/navbar/navbar-toolbar-context.tsx`) carries `toolbarSlot`, `drawerOpen`, and `setDrawerOpen`. `NavDrawer` writes `drawerOpen` on mount and on toggle; `NavBar` reads it to apply `ml`/`width` that match the drawer's open/closed widths with matching transition easing.
