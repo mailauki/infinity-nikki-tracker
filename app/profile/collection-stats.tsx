@@ -96,6 +96,8 @@ function CollectionRingsChart({
   useEffect(() => setMounted(true), [])
   const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
 
+  if (!mounted) return null
+
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
   const ringColors = isDarkMode
     ? [lime[500], lime[400], lime[300], lime[200]]
@@ -249,6 +251,10 @@ function CollectionSetsChart({
   const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
   const theme = useTheme()
 
+  const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
+
+  if (!mounted) return null
+
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
   const primary = theme.palette.primary.main
   const secondary = theme.palette.secondary.main
@@ -276,7 +282,6 @@ function CollectionSetsChart({
     })
     .filter((s) => s.value > 0)
 
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
   const selected = selectedSlug ? setSegments.find((s) => s.id === selectedSlug) ?? null : null
 
   const innerObtained = selected ? selected.obtained : fiveStarSetsObtained
