@@ -94,7 +94,7 @@ export async function Hero() {
                   }}
                   variant="outlined"
                 >
-                  Missing Items
+                  Browse Sets
                 </Button>
               </>
             ) : (
