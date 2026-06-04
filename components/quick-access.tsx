@@ -1,12 +1,4 @@
-import {
-  Box,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
-  Container,
-  Typography,
-} from '@mui/material'
+import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material'
 import Link from 'next/link'
 
 const cards = [
@@ -14,22 +6,20 @@ const cards = [
     title: 'Outfits',
     subtitle: 'Browse all outfit sets in the game',
     href: '/outfits',
-    image: null,
   },
   {
     title: 'Eureka Sets',
     subtitle: 'Track your collection progress',
     href: '/eureka',
-    image: '/screenshots/screenshot-eureka-set-dark.png',
   },
 ]
 
 export function QuickAccess() {
   return (
-    <Container sx={{ py: 3 }}>
+    <Box sx={{ py: 3, px: { xs: 2, sm: 3 } }}>
       <Typography
         variant="overline"
-        sx={{ display: 'block', textAlign: 'center', mb: 2, letterSpacing: 2 }}
+        sx={{ display: 'block', textAlign: 'center', mb: 2 }}
       >
         Quick Access
       </Typography>
@@ -40,26 +30,17 @@ export function QuickAccess() {
           gap: 2,
         }}
       >
-        {cards.map(({ title, subtitle, href, image }) => (
+        {cards.map(({ title, subtitle, href }) => (
           <Card key={href}>
             <CardActionArea component={Link} href={href} sx={{ height: '100%' }}>
-              {image ? (
-                <CardMedia
-                  component="img"
-                  height={160}
-                  image={image}
-                  alt={title}
-                  sx={{ objectPosition: 'top' }}
-                />
-              ) : (
-                <Box
-                  sx={{
-                    height: 160,
-                    background: (theme) =>
-                      `linear-gradient(135deg, ${theme.palette.primary.dark ?? theme.palette.primary.main}, ${theme.palette.secondary.dark ?? theme.palette.secondary.main})`,
-                  }}
-                />
-              )}
+              <Box
+                aria-hidden="true"
+                sx={{
+                  height: 160,
+                  background: (theme) =>
+                    `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                }}
+              />
               <CardContent>
                 <Typography variant="h6" component="h2" gutterBottom>
                   {title}
@@ -72,6 +53,6 @@ export function QuickAccess() {
           </Card>
         ))}
       </Box>
-    </Container>
+    </Box>
   )
 }
