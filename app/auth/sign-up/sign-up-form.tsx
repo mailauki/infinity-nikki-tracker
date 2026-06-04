@@ -107,8 +107,8 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
                 color="textSecondary"
                 component={Link}
                 href="/auth/login"
+                sx={{ fontWeight: 'medium' }}
                 underline="hover"
-									sx={{ fontWeight: 'medium' }}
               >
                 Login
               </Anchor>

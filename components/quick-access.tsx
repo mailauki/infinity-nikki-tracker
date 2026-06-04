@@ -1,30 +1,37 @@
 'use client'
 
-import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material'
+import { Avatar, Box, Card, CardActionArea, CardContent, CardHeader, Divider, Stack, Typography, useColorScheme } from '@mui/material'
 import Link from 'next/link'
+import { Hero } from './hero'
+import { HeroCTAs } from './hero-ctas'
 
 const cards = [
   {
     title: 'Outfits',
     subtitle: 'Browse all outfit sets in the game',
     href: '/outfits',
+    image: '/icons/outfits.png',
   },
   {
     title: 'Eureka Sets',
     subtitle: 'Track your collection progress',
     href: '/eureka',
+    image: '/icons/eureka.png',
   },
 ]
 
 export function QuickAccess() {
+  const { mode, systemMode } = useColorScheme()
+  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+
   return (
     <Box sx={{ py: 3 }}>
-      <Typography
+      {/* <Typography
         variant="overline"
         sx={{ display: 'block', textAlign: 'center', mb: 2 }}
       >
         Quick Access
-      </Typography>
+      </Typography> */}
       <Box
         sx={{
           display: 'grid',
@@ -32,7 +39,7 @@ export function QuickAccess() {
           gap: 2,
         }}
       >
-        {cards.map(({ title, subtitle, href }) => (
+        {cards.map(({ title, subtitle, href, image }) => (
           <Card key={href}>
             <CardActionArea component={Link} href={href} sx={{ height: '100%' }}>
               <Box
@@ -43,14 +50,15 @@ export function QuickAccess() {
                     `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                 }}
               />
-              <CardContent>
-                <Typography variant="h6" component="h2" gutterBottom>
-                  {title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {subtitle}
-                </Typography>
-              </CardContent>
+							<CardHeader
+							title={title}
+							subheader={subtitle}
+							avatar={<Avatar
+                      alt={title}
+                      src={image}
+                      sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
+                    />}
+							/>
             </CardActionArea>
           </Card>
         ))}

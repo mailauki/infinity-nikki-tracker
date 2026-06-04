@@ -14,7 +14,7 @@ import {
 function SetRowSkeleton() {
   return (
     <ListItem disablePadding sx={{ px: 2, py: 1 }}>
-      <Stack direction="row" spacing={2} sx={{ width: '100%', alignItems: "center" }}>
+      <Stack direction="row" spacing={2} sx={{ width: '100%', alignItems: 'center' }}>
         <Skeleton height={40} variant="circular" width={40} />
         <Stack spacing={0.5} sx={{ flex: 1 }}>
           <Skeleton height={20} variant="text" width="60%" />

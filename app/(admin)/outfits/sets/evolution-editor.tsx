@@ -109,7 +109,7 @@ export default function EvolutionEditor({
         </Box>
       )}
 
-      {drafts.length > 0 && (
+      {/* {drafts.length > 0 && (
         <FormControl size="small">
           <InputLabel>Default Evolution</InputLabel>
           <Select
@@ -126,7 +126,7 @@ export default function EvolutionEditor({
           </Select>
           <FormHelperText>Shown first on the outfit set page</FormHelperText>
         </FormControl>
-      )}
+      )} */}
     </Stack>
   )
 }

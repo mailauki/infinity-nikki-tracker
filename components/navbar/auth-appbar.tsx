@@ -11,7 +11,7 @@ export default function AuthAppBar() {
   return (
     <AppBar color="transparent" elevation={0} position="absolute">
       <Toolbar>
-        <Stack direction="row" sx={{ flex: 1, alignItems: "flex-end", justifyContent: 'center' }}>
+        <Stack direction="row" sx={{ flex: 1, alignItems: 'flex-end', justifyContent: 'center' }}>
           <Link href="/" style={{ cursor: 'pointer' }}>
             <Image
               alt="Infinity Nikki Logo"
