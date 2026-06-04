@@ -49,8 +49,8 @@ export async function Hero() {
         >
           {!isLoggedIn && (
             <Typography
-              variant="overline"
               sx={{ color: 'rgba(255,255,255,0.7)', letterSpacing: 3 }}
+              variant="overline"
             >
               Welcome to
             </Typography>
@@ -59,7 +59,7 @@ export async function Hero() {
             Infinity Nikki Tracker
           </Typography>
           <Container fixed maxWidth="xs">
-            <Typography variant="subtitle1" sx={{ fontSize: 20 }}>
+            <Typography sx={{ fontSize: 20 }} variant="subtitle1">
               {isLoggedIn
                 ? 'Welcome back — pick up where you left off'
                 : 'Track your Eureka outfit collection from your favorite cozy open-world game'}
@@ -71,16 +71,28 @@ export async function Hero() {
                 <Button
                   component={Link}
                   href="/profile"
+                  sx={{
+                    borderRadius: 6,
+                    px: 3,
+                    bgcolor: 'white',
+                    color: 'black',
+                    '&:hover': { bgcolor: 'grey.100' },
+                  }}
                   variant="contained"
-                  sx={{ borderRadius: 6, px: 3, bgcolor: 'white', color: 'black', '&:hover': { bgcolor: 'grey.100' } }}
                 >
                   My Collection
                 </Button>
                 <Button
                   component={Link}
-                  href="/eureka/missing"
+                  href="/eureka"
+                  sx={{
+                    borderRadius: 6,
+                    px: 3,
+                    borderColor: 'rgba(255,255,255,0.7)',
+                    color: 'white',
+                    '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.08)' },
+                  }}
                   variant="outlined"
-                  sx={{ borderRadius: 6, px: 3, borderColor: 'rgba(255,255,255,0.7)', color: 'white', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.08)' } }}
                 >
                   Missing Items
                 </Button>
@@ -90,16 +102,28 @@ export async function Hero() {
                 <Button
                   component={Link}
                   href="/auth/sign-up"
+                  sx={{
+                    borderRadius: 6,
+                    px: 3,
+                    bgcolor: 'white',
+                    color: 'black',
+                    '&:hover': { bgcolor: 'grey.100' },
+                  }}
                   variant="contained"
-                  sx={{ borderRadius: 6, px: 3, bgcolor: 'white', color: 'black', '&:hover': { bgcolor: 'grey.100' } }}
                 >
                   Sign Up Free
                 </Button>
                 <Button
                   component={Link}
                   href="/eureka"
+                  sx={{
+                    borderRadius: 6,
+                    px: 3,
+                    borderColor: 'rgba(255,255,255,0.7)',
+                    color: 'white',
+                    '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.08)' },
+                  }}
                   variant="outlined"
-                  sx={{ borderRadius: 6, px: 3, borderColor: 'rgba(255,255,255,0.7)', color: 'white', '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.08)' } }}
                 >
                   Browse Sets
                 </Button>
