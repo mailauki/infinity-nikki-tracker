@@ -81,6 +81,7 @@ export default function AddOutfitSetForm({
 
   useEffect(() => {
     if (state && 'addAnother' in state) {
+      setFormConfig({ savedTitle: state.savedTitle })
       setTitle('')
       setSlug('')
       setRarity('')
@@ -94,7 +95,7 @@ export default function AddOutfitSetForm({
       setCategorySelect([])
       setEditSlug(false)
     }
-  }, [state])
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <form action={action} id={FORM_ID}>

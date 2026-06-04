@@ -27,7 +27,7 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
 
   if (error) return { error: error.message }
 
-  if (formData.get('add_another') === 'true') return { addAnother: true as const }
+  if (formData.get('add_another') === 'true') return { addAnother: true as const, savedTitle: slug }
   redirect(navLinksData.dashboard.outfits.variants.list)
 }
 

@@ -63,6 +63,7 @@ export default function AddOutfitVariantForm({
 
   useEffect(() => {
     if (state && 'addAnother' in state) {
+      setFormConfig({ savedTitle: state.savedTitle })
       setOutfitSet('')
       setOutfitCategory('')
       setEvolution('')
@@ -71,7 +72,7 @@ export default function AddOutfitVariantForm({
       setSlug('')
       setEditSlug(false)
     }
-  }, [state])
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const autoSlug =
     outfitSet && outfitCategory && evolution

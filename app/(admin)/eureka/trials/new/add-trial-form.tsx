@@ -42,12 +42,13 @@ export default function AddTrialForm() {
 
   useEffect(() => {
     if (state && 'addAnother' in state) {
+      setFormConfig({ savedTitle: state.savedTitle })
       setTitle('')
       setSlug('')
       setEditSlug(false)
       setImageUrl(null)
     }
-  }, [state])
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleTitleChange(value: string) {
     setTitle(value)

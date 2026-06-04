@@ -95,6 +95,7 @@ export default function AddEurekaSetForm({
 
   useEffect(() => {
     if (state && 'addAnother' in state) {
+      setFormConfig({ savedTitle: state.savedTitle })
       setTitle('')
       setSlug('')
       setRarity('')
@@ -106,7 +107,7 @@ export default function AddEurekaSetForm({
       setColorSelect([])
       setDefaultColor('')
     }
-  }, [state])
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <form action={action} id={FORM_ID}>
