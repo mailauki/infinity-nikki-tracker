@@ -8,11 +8,13 @@ export const navLinksData: {
   navExtra: NavLink[]
   dashboard: DashboardLinks
 } = {
-  home: [{
-    title: 'Home',
-    url: '/',
-		image: '/infinity-nikki-logo.png'
-  }],
+  home: [
+    {
+      title: 'Home',
+      url: '/',
+      image: '/infinity-nikki-logo.png',
+    },
+  ],
   navMain: [
     {
       title: 'Outfits',
@@ -65,20 +67,20 @@ export const navLinksData: {
       title: 'Profile',
       url: '/profile',
       icon: <AccountCircle />,
-			// items: [
-        // {
-        //   title: 'My Collection',
-        //   url: '/profile/collection',
-        // },
-        // {
-        //   title: 'Missing',
-        //   url: '/profile/missing',
-        // },
-        // {
-        //   title: 'Custom Looks',
-        //   url: '/profile/custom-looks',
-        // },
-			// ],
+      // items: [
+      // {
+      //   title: 'My Collection',
+      //   url: '/profile/collection',
+      // },
+      // {
+      //   title: 'Missing',
+      //   url: '/profile/missing',
+      // },
+      // {
+      //   title: 'Custom Looks',
+      //   url: '/profile/custom-looks',
+      // },
+      // ],
     },
     {
       title: 'Settings',

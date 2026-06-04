@@ -11,7 +11,7 @@ export default function HomePage() {
     <Stack>
       <Hero />
       <Suspense>
-				<HomeCTAs />
+        <HomeCTAs />
       </Suspense>
       <QuickAccess />
     </Stack>
@@ -19,7 +19,7 @@ export default function HomePage() {
 }
 
 async function HomeCTAs() {
-	const user_id = await getUserID()
-	const isLoggedIn = !!user_id
-	return <HeroCTAs isLoggedIn={isLoggedIn} />
+  const user_id = await getUserID()
+  const isLoggedIn = !!user_id
+  return <HeroCTAs isLoggedIn={isLoggedIn} />
 }
