@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarUpload from './avatar-upload'
-import { Alert, Button, Chip, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Button, Chip, Snackbar, Stack, TextField, Typography } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 
 export default function ProfileForm({
@@ -19,6 +19,7 @@ export default function ProfileForm({
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [saveError, setSaveError] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
   const [fullname, setFullname] = useState<string | null>(null)
   const [username, setUsername] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
@@ -61,6 +62,7 @@ export default function ProfileForm({
         })
         .eq('id', user.id)
       if (error) throw error
+      setSaveSuccess(true)
     } catch (err) {
       console.error('saveProfile error:', err)
       setSaveError(true)
@@ -182,6 +184,19 @@ export default function ProfileForm({
           {loading ? 'Loading…' : 'Update'}
         </Button>
       </Stack>
+      <Snackbar
+        autoHideDuration={6000}
+        open={saveSuccess}
+        onClose={() => setSaveSuccess(false)}
+      >
+				<Alert
+					severity="success"
+					variant="filled"
+					sx={{ width: '100%' }}
+				>
+					Profile saved successfully!
+				</Alert>
+			</Snackbar>
     </Stack>
   )
 }
