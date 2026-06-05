@@ -11,9 +11,8 @@ import { Suspense } from 'react'
 import Footer from '@/components/navbar/nav-footer'
 import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
-import NavDrawer, { NavAdminInit } from '@/components/navbar/nav-drawer'
+import NavDrawer from '@/components/navbar/nav-drawer'
 import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
-import { getUserRole } from '@/hooks/user'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -79,9 +78,6 @@ export default function RootLayout({
                 <Suspense fallback={null}>
                   <NavDrawer />
                 </Suspense>
-                <Suspense fallback={null}>
-                  <NavDrawerWrapper />
-                </Suspense>
                 <Stack
                   sx={{
                     flex: 1,
@@ -93,9 +89,9 @@ export default function RootLayout({
                   <Suspense>
                     <NavBar />
                   </Suspense>
-										<Toolbar /> 
-										<Toolbar sx={{ mb: 2 }} />
-										{/* ^ Toolbar spacers for NavBar and NavBarToolbar */}
+                  <Toolbar />
+                  <Toolbar sx={{ mb: 2 }} />
+                  {/* ^ Toolbar spacers for NavBar and NavBarToolbar */}
                   <Suspense>
                     <PullToRefresh />
                   </Suspense>
@@ -110,9 +106,4 @@ export default function RootLayout({
       </body>
     </html>
   )
-}
-
-async function NavDrawerWrapper() {
-  const role = await getUserRole()
-  return <NavAdminInit isAdmin={role === 'admin'} />
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Box,
   Card,
@@ -8,7 +8,6 @@ import {
   CardHeader,
   Chip,
   LinearProgress,
-  ListItem,
   Skeleton,
   Stack,
   Typography,
@@ -18,7 +17,7 @@ import {
 import { PieChart } from '@mui/x-charts/PieChart'
 import { lime } from '@mui/material/colors'
 import { countObtained, percent } from '@/hooks/count-obtained'
-import { EurekaCategory, EurekaColor, EurekaSet, Trial } from '@/lib/types/eureka'
+import { EurekaSet, Trial } from '@/lib/types/eureka'
 import PercentLabel from '@/components/percent-label'
 import { SparkleIcon } from '@/components/rarity-stars'
 
@@ -30,8 +29,8 @@ function CollectionRingsChart({
   setsTotal,
   colorSetsObtained,
   colorSetsTotal,
-	trialsObtained,
-	trialsTotal,
+  trialsObtained,
+  trialsTotal,
   variantsObtained,
   variantsTotal,
 }: {
@@ -39,8 +38,8 @@ function CollectionRingsChart({
   setsTotal: number
   colorSetsObtained: number
   colorSetsTotal: number
-	trialsObtained: number
-	trialsTotal: number
+  trialsObtained: number
+  trialsTotal: number
   variantsObtained: number
   variantsTotal: number
 }) {
@@ -112,7 +111,11 @@ function CollectionRingsChart({
         }
       />
       <CardContent sx={{ pt: 0 }}>
-        <Stack direction={{ xs: 'column', sm: 'row', md: 'column', lg: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row', md: 'column', lg: 'row' }}
+          spacing={2}
+          sx={{ alignItems: 'center' }}
+        >
           <Box
             sx={{
               position: 'relative',
@@ -158,11 +161,14 @@ function CollectionRingsChart({
                 pointerEvents: 'none',
               }}
             >
-							<PercentLabel percentage={overallPct} />
+              <PercentLabel percentage={overallPct} />
             </Box>
           </Box>
 
-          <Stack spacing={1.5} sx={{ flex: 1, width: { xs: '100%', sm: 'auto', md: '100%', lg: 'auto' } }}>
+          <Stack
+            spacing={1.5}
+            sx={{ flex: 1, width: { xs: '100%', sm: 'auto', md: '100%', lg: 'auto' } }}
+          >
             {rings.map((ring) => (
               <Stack key={ring.label} spacing={0.5}>
                 <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
@@ -200,11 +206,7 @@ function CollectionRingsChart({
   )
 }
 
-function CollectionSetsChart({
-	sets,
-}: {
-	sets: EurekaSet[]
-}) {
+function CollectionSetsChart({ sets }: { sets: EurekaSet[] }) {
   const { mode, systemMode } = useColorScheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -228,10 +230,13 @@ function CollectionSetsChart({
 
   const fiveStar = sets.filter((s) => s.rarity === 5)
 
-  const fiveStarTotal = fiveStar.reduce((acc, set) => acc + countObtained(set.eureka_variants).total, 0)
+  const fiveStarTotal = fiveStar.reduce(
+    (acc, set) => acc + countObtained(set.eureka_variants).total,
+    0
+  )
   const fiveStarSetsTotal = fiveStar.length
-  const fiveStarSetsObtained = fiveStar.filter((set) =>
-    set.eureka_variants.length > 0 && set.eureka_variants.every((v) => v.obtained),
+  const fiveStarSetsObtained = fiveStar.filter(
+    (set) => set.eureka_variants.length > 0 && set.eureka_variants.every((v) => v.obtained)
   ).length
 
   const setSegments = fiveStar
@@ -249,7 +254,7 @@ function CollectionSetsChart({
     })
     .filter((s) => s.value > 0)
 
-  const selected = selectedSlug ? setSegments.find((s) => s.id === selectedSlug) ?? null : null
+  const selected = selectedSlug ? (setSegments.find((s) => s.id === selectedSlug) ?? null) : null
 
   const innerObtained = selected ? selected.obtained : fiveStarSetsObtained
   const innerTotal = selected ? selected.total : fiveStarSetsTotal
@@ -264,12 +269,23 @@ function CollectionSetsChart({
         sx={{ mt: -1 }}
         title={
           <Typography color="text.secondary" variant="overline">
-            5 <SparkleIcon aria-label='star' color="inherit" fontSize="inherit" sx={{ rotate: '15deg', ml: 0, mr: 0.5, mb: 0.25 }} /> Set Progress
+            5{' '}
+            <SparkleIcon
+              aria-label="star"
+              color="inherit"
+              fontSize="inherit"
+              sx={{ rotate: '15deg', ml: 0, mr: 0.5, mb: 0.25 }}
+            />{' '}
+            Set Progress
           </Typography>
         }
       />
       <CardContent sx={{ pt: 0 }}>
-        <Stack direction={{ xs: 'column', sm: 'row', md: 'column', lg: 'row' }} spacing={2} sx={{ alignItems: 'center' }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row', md: 'column', lg: 'row' }}
+          spacing={2}
+          sx={{ alignItems: 'center' }}
+        >
           <Box
             sx={{
               position: 'relative',
@@ -337,19 +353,35 @@ function CollectionSetsChart({
             </Box>
           </Box>
 
-          <Stack spacing={2} sx={{ flex: 1, width: { xs: '100%', sm: 'auto', md: '100%', lg: 'auto' } }}>
+          <Stack
+            spacing={2}
+            sx={{ flex: 1, width: { xs: '100%', sm: 'auto', md: '100%', lg: 'auto' } }}
+          >
             {[
               {
                 label: selected ? selected.label : 'Overall',
                 rows: [
                   { color: primary, text: 'Obtained', value: `${innerObtained} / ${innerTotal}` },
+                  {
+                    color: muted,
+                    text: 'Missing',
+                    value: `${innerTotal - innerObtained} / ${innerTotal}`,
+                  },
                 ],
               },
               {
                 label: 'Sets',
                 rows: [
-                  { color: secondary, text: 'Complete', value: `${fiveStarSetsObtained} / ${fiveStarSetsTotal}` },
-                  { color: muted, text: 'Unfinished', value: `${fiveStarSetsTotal - fiveStarSetsObtained}` },
+                  {
+                    color: secondary,
+                    text: 'Complete',
+                    value: `${fiveStarSetsObtained} / ${fiveStarSetsTotal}`,
+                  },
+                  {
+                    color: muted,
+                    text: 'Unfinished',
+                    value: `${fiveStarSetsTotal - fiveStarSetsObtained} / ${fiveStarSetsTotal}`,
+                  },
                 ],
               },
             ].map(({ label, rows }) => (
@@ -359,13 +391,19 @@ function CollectionSetsChart({
                 </Typography>
                 {rows.map(({ color, text, value }) => (
                   <Stack key={text} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                    <Box sx={{ width: 12, height: 12, borderRadius: '3px', bgcolor: color, flexShrink: 0 }} />
+                    <Box
+                      sx={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: '3px',
+                        bgcolor: color,
+                        flexShrink: 0,
+                      }}
+                    />
                     <Typography sx={{ flex: 1 }} variant="body2">
                       {text}
                     </Typography>
-                    <Typography color="text.secondary" variant="body2">
-                      {value}
-                    </Typography>
+                    <Chip label={`${value}`} size="small" variant="outlined" />
                   </Stack>
                 ))}
               </Stack>
@@ -377,15 +415,7 @@ function CollectionSetsChart({
   )
 }
 
-export default function CollectionStats({
-  sets,
-  trials,
-}: {
-  sets: EurekaSet[]
-  colors: EurekaColor[]
-  categories: EurekaCategory[]
-  trials: Trial[]
-}) {
+export default function CollectionStats({ sets, trials }: { sets: EurekaSet[]; trials: Trial[] }) {
   const allVariants = sets.flatMap((set) => set.eureka_variants)
 
   const setsObtained = sets.filter((set) =>
@@ -430,9 +460,7 @@ export default function CollectionStats({
         variantsObtained={variantsObtained}
         variantsTotal={variantsTotal}
       />
-      <CollectionSetsChart
-				sets={sets}
-			/>
+      <CollectionSetsChart sets={sets} />
     </Box>
   )
 }

@@ -16,15 +16,9 @@ import {
 } from '@mui/material'
 import React from 'react'
 import { navLinksData } from '@/lib/nav-links'
-import { AccountCircle, Dashboard, ViewList } from '@mui/icons-material'
+import { List } from '@mui/icons-material'
 import { LogoutButton } from '../logout-button'
 import AvatarPreview from '../forms/auth/avatar-preview'
-
-function navIcon(url: string) {
-  if (url === '/dashboard') return <Dashboard fontSize="small" />
-  if (url === '/profile') return <AccountCircle fontSize="small" />
-  return <ViewList fontSize="small" />
-}
 
 export function NavUser() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
@@ -67,9 +61,23 @@ export function NavUser() {
   }
 
   return (
-    <Box sx={{ flexGrow: 0 }}>
+    <Box
+      sx={{
+        flexGrow: 0,
+        position: 'fixed',
+        top: 24,
+        right: 18,
+      }}
+    >
       <Tooltip placement="bottom-end" title="Open menu">
-        <IconButton sx={{ p: 0 }} onClick={(e) => setAnchorElUser(e.currentTarget)}>
+        <IconButton
+          aria-controls={Boolean(anchorElUser) ? 'fixed-menu' : undefined}
+          aria-expanded={Boolean(anchorElUser) ? 'true' : undefined}
+          aria-haspopup="true"
+          id="menu-button"
+          sx={{ p: 0 }}
+          onClick={(e) => setAnchorElUser(e.currentTarget)}
+        >
           <AvatarPreview url={avatarUrl} />
         </IconButton>
       </Tooltip>
@@ -77,7 +85,8 @@ export function NavUser() {
         keepMounted
         anchorEl={anchorElUser}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        id="menu-appbar"
+        disableScrollLock={true}
+        id="fixed-menu"
         open={Boolean(anchorElUser)}
         sx={{ mt: '45px' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -92,7 +101,7 @@ export function NavUser() {
               href={link.url}
               onClick={() => setAnchorElUser(null)}
             >
-              <ListItemIcon>{navIcon(link.url)}</ListItemIcon>
+              <ListItemIcon>{link.icon || <List />}</ListItemIcon>
               {link.title}
             </MenuItem>
           ))}

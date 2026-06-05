@@ -5,16 +5,11 @@ import {
   Box,
   Card,
   CardActionArea,
-  CardContent,
   CardHeader,
-  Divider,
-  Stack,
   Typography,
   useColorScheme,
 } from '@mui/material'
 import Link from 'next/link'
-import { Hero } from './hero'
-import { HeroCTAs } from './hero-ctas'
 
 const cards = [
   {
@@ -37,12 +32,12 @@ export function QuickAccess() {
 
   return (
     <Box sx={{ py: 3 }}>
-      {/* <Typography
+      <Typography
         variant="overline"
         sx={{ display: 'block', textAlign: 'center', mb: 2 }}
       >
         Quick Access
-      </Typography> */}
+      </Typography>
       <Box
         sx={{
           display: 'grid',

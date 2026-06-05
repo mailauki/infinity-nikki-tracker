@@ -26,7 +26,7 @@ export const getProfile = cache(async (user_id: UUID | string) => {
     status,
   } = await supabase
     .from('profiles')
-    .select(`full_name, username, avatar_url`)
+    .select(`display_name, username, avatar_url`)
     .eq('id', user_id)
     .single()
 

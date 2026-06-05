@@ -32,7 +32,10 @@ export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
         <List disablePadding>
           {items.map((item) => (
             <ListItem key={item.id} disablePadding>
-              <ListItemButton component="a" href={`/eureka/${toSlug(item.eureka_sets!.title!)}`} sx={{ borderRadius: 2 }}>
+              <ListItemButton
+                component="a"
+                href={`/eureka/${toSlug(item.eureka_sets!.title!)}`}
+              >
                 <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
                   <LazyAvatar
                     alt={item.eureka_sets?.title}

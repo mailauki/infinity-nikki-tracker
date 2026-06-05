@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material'
+import { Box, Container, Stack, Typography } from '@mui/material'
 import { Suspense } from 'react'
 
 import { QuickAccess } from '@/components/quick-access'
@@ -15,7 +15,17 @@ export default function HomePage() {
         <HomeCTAs />
       </Suspense>
       <QuickAccess />
-			<HelpActions />
+			<Box sx={{ py: 3 }}>
+				<Typography
+					variant="overline"
+					sx={{ display: 'block', textAlign: 'center', mb: 2 }}
+				>
+					Helpful Links
+				</Typography>
+				<Container maxWidth='sm'>
+				<HelpActions />
+				</Container>
+			</Box>
     </Stack>
   )
 }

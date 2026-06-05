@@ -20,11 +20,11 @@ export type RarityFilter = Range<2, 6>
 
 export type Percentage = Range<0, 101>
 
-type DashboardLink = { title: string, list: string; add?: string; edit: string }
+type DashboardLink = { title: string; list: string; add?: string; edit: string }
 type DashboardLinkReadOnly = { list: string; edit: string }
 
 export type DashboardLinks = {
-	tabs: NavLink[]
+  tabs: NavLink[]
   eureka: { sets: DashboardLink; variants: DashboardLink; trials: DashboardLink }
   outfits: { sets: DashboardLink; variants: DashboardLink; evolutions: DashboardLink }
 }

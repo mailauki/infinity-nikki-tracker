@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Snackbar, Stack } from '@mui/material'
+import { Alert, Button, Snackbar, Stack } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { useFormConfig } from './form-context'
 
@@ -34,11 +34,19 @@ export default function FormToolBar() {
         </Stack>
       </NavBarToolbar>
       <Snackbar
-        autoHideDuration={5000}
+        autoHideDuration={6000}
         message={savedTitle ? `"${savedTitle}" saved successfully` : 'Saved successfully'}
         open={!!savedTitle}
         onClose={() => setFormConfig({ savedTitle: undefined })}
-      />
+      >
+				<Alert
+					severity="success"
+					variant="filled"
+					sx={{ width: '100%' }}
+				>
+					{savedTitle ? `"${savedTitle}" saved successfully!` : 'Saved successfully!'}
+				</Alert>
+			</Snackbar>
     </>
   )
 }

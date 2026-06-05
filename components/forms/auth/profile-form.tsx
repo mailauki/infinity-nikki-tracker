@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarUpload from './avatar-upload'
-import { Alert, Button, Chip, Stack, TextField, Typography } from '@mui/material'
+import { Alert, Button, Chip, Snackbar, Stack, TextField, Typography } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 
 export default function ProfileForm({
@@ -19,6 +19,7 @@ export default function ProfileForm({
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
   const [saveError, setSaveError] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
   const [fullname, setFullname] = useState<string | null>(null)
   const [username, setUsername] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
@@ -28,14 +29,14 @@ export default function ProfileForm({
     setLoading(true)
     supabase
       .from('profiles')
-      .select('full_name, username, avatar_url')
+      .select('display_name, username, avatar_url')
       .eq('id', user.id)
       .single()
       .then(({ data, error, status }) => {
         if (error && status !== 406) {
           setLoadError(true)
         } else if (data) {
-          setFullname(data.full_name)
+          setFullname(data.display_name)
           setUsername(data.username)
           setAvatarUrl(data.avatar_url)
         }
@@ -54,13 +55,14 @@ export default function ProfileForm({
       const { error } = await supabase
         .from('profiles')
         .update({
-          full_name: updates.fullname,
+          display_name: updates.fullname,
           username: updates.username,
           avatar_url: updates.avatar_url,
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id)
       if (error) throw error
+      setSaveSuccess(true)
     } catch (err) {
       console.error('saveProfile error:', err)
       setSaveError(true)
@@ -151,8 +153,8 @@ export default function ProfileForm({
           value={user?.email ?? ''}
         />
         <TextField
-          id="fullName"
-          label="Full Name"
+          id="displayName"
+          label="Display Name"
           margin="normal"
           type="text"
           value={fullname ?? ''}
@@ -182,6 +184,19 @@ export default function ProfileForm({
           {loading ? 'Loading…' : 'Update'}
         </Button>
       </Stack>
+      <Snackbar
+        autoHideDuration={6000}
+        open={saveSuccess}
+        onClose={() => setSaveSuccess(false)}
+      >
+				<Alert
+					severity="success"
+					variant="filled"
+					sx={{ width: '100%' }}
+				>
+					Profile saved successfully!
+				</Alert>
+			</Snackbar>
     </Stack>
   )
 }
