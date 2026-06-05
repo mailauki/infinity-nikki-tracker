@@ -10,8 +10,6 @@ type NavBarToolbarContextType = {
 type NavDrawerContextType = {
   drawerOpen: boolean
   setDrawerOpen: (open: boolean) => void
-  isAdmin: boolean
-  setIsAdmin: (value: boolean) => void
 }
 
 export const NavBarToolbarContext = React.createContext<NavBarToolbarContextType | null>(null)
@@ -20,10 +18,9 @@ export const NavDrawerContext = React.createContext<NavDrawerContextType | null>
 export function NavBarToolbarProvider({ children }: { children: React.ReactNode }) {
   const [toolbarSlot, setToolbarSlot] = React.useState<HTMLDivElement | null>(null)
   const [drawerOpen, setDrawerOpen] = React.useState(false)
-  const [isAdmin, setIsAdmin] = React.useState(false)
 
   return (
-    <NavDrawerContext.Provider value={{ drawerOpen, setDrawerOpen, isAdmin, setIsAdmin }}>
+    <NavDrawerContext.Provider value={{ drawerOpen, setDrawerOpen }}>
       <NavBarToolbarContext.Provider value={{ toolbarSlot, setToolbarSlot }}>
         {children}
       </NavBarToolbarContext.Provider>

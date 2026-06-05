@@ -22,12 +22,10 @@ import { SparkleIcon } from '../rarity-stars'
 
 export default function NavSection({
   items,
-  isAdmin = false,
   open = false,
   onClose,
 }: {
   items: NavLink[]
-  isAdmin?: boolean
   open?: boolean
   onClose?: () => void
 }) {
@@ -37,7 +35,7 @@ export default function NavSection({
   const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
   const pathname = usePathname()
 
-  const visibleItems = items.filter((item) => !item.adminOnly || isAdmin)
+  const visibleItems = items.filter((item) => !item.adminOnly)
 
   if (items.length === 1)
     return (

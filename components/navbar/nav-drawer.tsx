@@ -71,18 +71,18 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   ],
 }))
 
-const navContent = (open: boolean, isAdmin: boolean, onClose: () => void) => (
+const navContent = (open: boolean, onClose: () => void) => (
   <Stack component="nav" sx={{ flex: 1, mx: 1.5, pb: 3 }}>
-    <NavSection isAdmin={isAdmin} items={navLinksData.home} open={open} onClose={onClose} />
+    <NavSection items={navLinksData.home} open={open} onClose={onClose} />
 
-    <NavSection isAdmin={isAdmin} items={navLinksData.navMain} open={open} onClose={onClose} />
+    <NavSection items={navLinksData.navMain} open={open} onClose={onClose} />
 
     <Divider sx={{ my: 0.5 }} />
 
-    <NavSection isAdmin={isAdmin} items={navLinksData.navSecondary} open={open} onClose={onClose} />
+    <NavSection items={navLinksData.navSecondary} open={open} onClose={onClose} />
 
     <Stack sx={{ flex: 1, justifyContent: 'flex-end' }}>
-      <NavSection isAdmin={isAdmin} items={navLinksData.navExtra} open={open} onClose={onClose} />
+      <NavSection items={navLinksData.navExtra} open={open} onClose={onClose} />
     </Stack>
   </Stack>
 )
@@ -92,7 +92,7 @@ const DRAWER_STORAGE_KEY = 'nav-drawer-open'
 function NavDrawer() {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
-  const { setDrawerOpen, isAdmin } = useNavDrawer()
+  const { setDrawerOpen } = useNavDrawer()
 
   React.useEffect(() => {
     const stored = localStorage.getItem(DRAWER_STORAGE_KEY) === 'true'
@@ -143,7 +143,7 @@ function NavDrawer() {
           </IconButton>
         </Toolbar>
         <Toolbar />
-        {navContent(true, isAdmin, () => setOpen(false))}
+        {navContent(true, () => setOpen(false))}
       </MuiDrawer>
       <Drawer
         anchor="left"
@@ -159,16 +159,10 @@ function NavDrawer() {
           </IconButton>
         </Toolbar>
         <Toolbar />
-        {navContent(open, isAdmin, () => setOpen(false))}
+        {navContent(open, () => setOpen(false))}
       </Drawer>
     </>
   )
 }
 
 export default memo(NavDrawer)
-
-export function NavAdminInit({ isAdmin }: { isAdmin: boolean }) {
-  const { setIsAdmin } = useNavDrawer()
-  React.useLayoutEffect(() => setIsAdmin(isAdmin), [isAdmin, setIsAdmin])
-  return null
-}
