@@ -343,13 +343,14 @@ function CollectionSetsChart({
                 label: selected ? selected.label : 'Overall',
                 rows: [
                   { color: primary, text: 'Obtained', value: `${innerObtained} / ${innerTotal}` },
+                  { color: muted, text: 'Missing', value: `${innerTotal - innerObtained} / ${innerTotal}` },
                 ],
               },
               {
                 label: 'Sets',
                 rows: [
                   { color: secondary, text: 'Complete', value: `${fiveStarSetsObtained} / ${fiveStarSetsTotal}` },
-                  { color: muted, text: 'Unfinished', value: `${fiveStarSetsTotal - fiveStarSetsObtained}` },
+                  { color: muted, text: 'Unfinished', value: `${fiveStarSetsTotal - fiveStarSetsObtained} / ${fiveStarSetsTotal}` },
                 ],
               },
             ].map(({ label, rows }) => (
@@ -363,9 +364,11 @@ function CollectionSetsChart({
                     <Typography sx={{ flex: 1 }} variant="body2">
                       {text}
                     </Typography>
-                    <Typography color="text.secondary" variant="body2">
-                      {value}
-                    </Typography>
+										<Chip
+                    label={`${value}`}
+                    size="small"
+                    variant="outlined"
+                  />
                   </Stack>
                 ))}
               </Stack>
@@ -382,8 +385,6 @@ export default function CollectionStats({
   trials,
 }: {
   sets: EurekaSet[]
-  colors: EurekaColor[]
-  categories: EurekaCategory[]
   trials: Trial[]
 }) {
   const allVariants = sets.flatMap((set) => set.eureka_variants)
