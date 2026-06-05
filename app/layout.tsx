@@ -93,9 +93,9 @@ export default function RootLayout({
                   <Suspense>
                     <NavBar />
                   </Suspense>
-										<Toolbar /> 
-										<Toolbar sx={{ mb: 2 }} />
-										{/* ^ Toolbar spacers for NavBar and NavBarToolbar */}
+                  <Toolbar />
+                  <Toolbar sx={{ mb: 2 }} />
+                  {/* ^ Toolbar spacers for NavBar and NavBarToolbar */}
                   <Suspense>
                     <PullToRefresh />
                   </Suspense>

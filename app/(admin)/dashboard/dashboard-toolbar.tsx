@@ -12,14 +12,24 @@ export default function DashboardToolBar() {
   const isDashboardMainPage = pathname === '/dashboard'
   return (
     <NavBarToolbar>
-				<Stack
-          direction="row"
-          sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', borderBottom: 1, borderColor: 'divider' }}
-        >
-					{!isDashboardMainPage && <IconButton component='a' href='/dashboard'><ChevronLeft /></IconButton>}
-				<DashboardNavTabs />
-				{!isDashboardMainPage && <DashboardViewToggle />}
-				</Stack>
+      <Stack
+        direction="row"
+        sx={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          borderBottom: 1,
+          borderColor: 'divider',
+        }}
+      >
+        {!isDashboardMainPage && (
+          <IconButton component="a" href="/dashboard">
+            <ChevronLeft />
+          </IconButton>
+        )}
+        <DashboardNavTabs />
+        {!isDashboardMainPage && <DashboardViewToggle />}
+      </Stack>
     </NavBarToolbar>
   )
 }

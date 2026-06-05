@@ -29,7 +29,11 @@ export default function ProfileView({
   return (
     <Stack>
       {isAdmin && (
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ alignItems: 'center', justifyContent: 'flex-end' }}
+        >
           <Chip
             color="secondary"
             icon={<AdminPanelSettingsIcon />}

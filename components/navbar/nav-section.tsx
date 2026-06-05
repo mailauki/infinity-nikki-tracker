@@ -110,7 +110,7 @@ export default function NavSection({
                     sx={{
                       minWidth: 0,
                       justifyContent: 'center',
-											mr: 3.5,
+                      mr: 3.5,
                     }}
                   >
                     {item.icon}

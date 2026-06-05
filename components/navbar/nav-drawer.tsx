@@ -85,12 +85,7 @@ const navContent = (open: boolean, isAdmin: boolean, onClose: () => void) => (
 
     <Divider sx={{ my: 0.5 }} />
 
-    <NavSection
-      isAdmin={isAdmin}
-      items={navLinksData.navSecondary}
-      open={open}
-      onClose={onClose}
-    />
+    <NavSection isAdmin={isAdmin} items={navLinksData.navSecondary} open={open} onClose={onClose} />
 
     <Stack sx={{ flex: 1, justifyContent: 'flex-end' }}>
       <NavSection isAdmin={isAdmin} items={navLinksData.navExtra} open={open} onClose={onClose} />

@@ -15,7 +15,7 @@ export default function HomePage() {
         <HomeCTAs />
       </Suspense>
       <QuickAccess />
-			<HelpActions />
+      <HelpActions />
     </Stack>
   )
 }
