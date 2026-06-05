@@ -48,7 +48,6 @@ export default function NavSection({
               selected={items[0].url === `/${pathname.split('/')[1]}`}
               sx={{
                 minHeight: 55,
-                borderRadius: 2,
                 justifyContent: 'initial',
               }}
               onClick={onClose}

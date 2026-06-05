@@ -35,7 +35,6 @@ export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
               <ListItemButton
                 component="a"
                 href={`/eureka/${toSlug(item.eureka_sets!.title!)}`}
-                sx={{ borderRadius: 2 }}
               >
                 <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
                   <LazyAvatar
