@@ -45,7 +45,7 @@ async function UserDetails() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, username, avatar_url')
+    .select('display_name, username, avatar_url')
     .eq('id', user.id)
     .single()
 
@@ -53,7 +53,7 @@ async function UserDetails() {
     <>
       <ProfileView
         avatar_url={profile?.avatar_url ?? null}
-        fullname={profile?.full_name ?? null}
+        fullname={profile?.display_name ?? null}
         isAdmin={role === 'admin'}
         loadError={false}
         user={user}

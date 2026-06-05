@@ -28,14 +28,14 @@ export default function ProfileForm({
     setLoading(true)
     supabase
       .from('profiles')
-      .select('full_name, username, avatar_url')
+      .select('display_name, username, avatar_url')
       .eq('id', user.id)
       .single()
       .then(({ data, error, status }) => {
         if (error && status !== 406) {
           setLoadError(true)
         } else if (data) {
-          setFullname(data.full_name)
+          setFullname(data.display_name)
           setUsername(data.username)
           setAvatarUrl(data.avatar_url)
         }
@@ -54,7 +54,7 @@ export default function ProfileForm({
       const { error } = await supabase
         .from('profiles')
         .update({
-          full_name: updates.fullname,
+          display_name: updates.fullname,
           username: updates.username,
           avatar_url: updates.avatar_url,
           updated_at: new Date().toISOString(),
@@ -151,8 +151,8 @@ export default function ProfileForm({
           value={user?.email ?? ''}
         />
         <TextField
-          id="fullName"
-          label="Full Name"
+          id="displayName"
+          label="Display Name"
           margin="normal"
           type="text"
           value={fullname ?? ''}
