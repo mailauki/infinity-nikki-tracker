@@ -116,25 +116,42 @@ export const navLinksData: {
   ],
   dashboard: {
 		tabs: [
-        { title: 'Eureka Sets', url: '/dashboard/eureka/sets' },
-        { title: 'Eureka Variants', url: '/dashboard/eureka/variants' },
-        { title: 'Trials', url: '/dashboard/eureka/trials' },
-        { title: 'Outfit Sets', url: '/dashboard/outfits/sets' },
-        { title: 'Outfit Variants', url: '/dashboard/outfits/variants' },
+		{
+      title: 'Outfits',
+      url: '/dashboard/outfits/sets',
+      image: '/icons/outfits.png',
+      items: [
+        { title: 'Sets', url: '/dashboard/outfits/sets' },
+        { title: 'Variants', url: '/dashboard/outfits/variants' },
         { title: 'Evolutions', url: '/dashboard/outfits/evolutions' },
-		],
+      ],
+		},
+			{
+      title: 'Eureka',
+      url: '/dashboard/eureka/sets',
+      image: '/icons/eureka.png',
+      items: [
+        { title: 'Sets', url: '/dashboard/eureka/sets' },
+        { title: 'Variants', url: '/dashboard/eureka/variants' },
+        { title: 'Trials', url: '/dashboard/eureka/trials' },
+      ],
+		},
+	],
     eureka: {
       sets: {
+				title: 'Eureka Sets',
         list: '/dashboard/eureka/sets',
         add: '/eureka/sets/new',
         edit: '/eureka/sets/edit',
       },
       variants: {
+				title: 'Eureka Variants',
         list: '/dashboard/eureka/variants',
         add: '/eureka/variants/new',
         edit: '/eureka/variants/edit',
       },
       trials: {
+				title: 'Trials',
         list: '/dashboard/eureka/trials',
         add: '/eureka/trials/new',
         edit: '/eureka/trials/edit',
@@ -142,16 +159,19 @@ export const navLinksData: {
     },
     outfits: {
       sets: {
+				title: 'Outfit Sets',
         list: '/dashboard/outfits/sets',
         add: '/outfits/sets/new',
         edit: '/outfits/sets/edit',
       },
       variants: {
+				title: 'Outfit Variants',
         list: '/dashboard/outfits/variants',
         add: '/outfits/variants/new',
         edit: '/outfits/variants/edit',
       },
       evolutions: {
+				title: 'Evolutions',
         list: '/dashboard/outfits/evolutions',
         edit: '/outfits/evolutions/edit',
       },

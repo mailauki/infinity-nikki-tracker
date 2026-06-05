@@ -5,6 +5,7 @@ import { QuickAccess } from '@/components/quick-access'
 import { Hero } from '../components/hero'
 import { HeroCTAs } from '@/components/hero-ctas'
 import { getUserID } from '@/hooks/user'
+import HelpActions from './help/help-actions'
 
 export default function HomePage() {
   return (
@@ -14,6 +15,7 @@ export default function HomePage() {
         <HomeCTAs />
       </Suspense>
       <QuickAccess />
+			<HelpActions />
     </Stack>
   )
 }
