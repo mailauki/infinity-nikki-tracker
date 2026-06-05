@@ -3,10 +3,11 @@
 import * as React from 'react'
 import { AppBar, Toolbar } from '@mui/material'
 import PageTitle from './page-title'
-import { useNavBarToolbar } from './navbar-toolbar-context'
+import { useNavBarToolbar, useNavDrawer } from './navbar-toolbar-context'
 
 export default function NavBar() {
-  const { setToolbarSlot, drawerOpen } = useNavBarToolbar()
+  const { setToolbarSlot } = useNavBarToolbar()
+  const { drawerOpen } = useNavDrawer()
   const [hasContent, setHasContent] = React.useState(false)
   const slotRef = React.useRef<HTMLDivElement | null>(null)
 

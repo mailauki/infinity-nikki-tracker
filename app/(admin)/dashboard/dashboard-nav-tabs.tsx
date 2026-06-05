@@ -1,26 +1,35 @@
 'use client'
 
-import { Box, Tab, Tabs } from '@mui/material'
+import { Tab, Tabs } from '@mui/material'
 import { usePathname } from 'next/navigation'
 import { navLinksData } from '@/lib/nav-links'
+import Link from 'next/link'
 
 export default function DashboardNavTabs() {
   const pathname = usePathname()
-  const dashboardTabs = navLinksData.navSecondary.find((item) => item.url === '/dashboard')?.items
-  const tab = dashboardTabs?.findIndex((t) => t.url === pathname)
+  const dashboardTabs = navLinksData.dashboard.tabs
+  const outfitsTabs = dashboardTabs.find((tab) => tab.title === 'Outfits')?.items ?? []
+  const eurekaTabs = dashboardTabs.find((tab) => tab.title === 'Eureka')?.items ?? []
+  const isOutfitsPath = pathname.split('/')[2] === 'outfits'
+  const isEurekaPath = pathname.split('/')[2] === 'eureka'
+
+  let activeTabs = dashboardTabs
+  if (isOutfitsPath) activeTabs = outfitsTabs
+  else if (isEurekaPath) activeTabs = eurekaTabs
+  const activeIndex = activeTabs.findIndex((t) => t.url === pathname)
+  const value = activeIndex === -1 ? false : activeIndex
 
   return (
-    <Box sx={{ width: '68vw' }}>
-      <Tabs
-        allowScrollButtonsMobile
-        scrollButtons="auto"
-        value={tab === -1 ? false : tab}
-        variant="scrollable"
-      >
-        {dashboardTabs?.map((t) => (
-          <Tab key={t.url} href={t.url} label={t.title} />
-        ))}
-      </Tabs>
-    </Box>
+    <Tabs sx={{ flexGrow: 1 }} value={value}>
+      {activeTabs.map((t) => (
+        <Tab
+          key={t.url}
+          component={Link}
+          href={t.url}
+          label={t.title}
+          sx={{ flexGrow: { xs: 1, md: 0 } }}
+        />
+      ))}
+    </Tabs>
   )
 }

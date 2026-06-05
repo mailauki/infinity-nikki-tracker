@@ -2,8 +2,10 @@
 
 import { type User } from '@supabase/supabase-js'
 import AvatarPreview from '@/components/forms/auth/avatar-preview'
-import { Alert, Chip, Stack, Typography } from '@mui/material'
+import { Alert, Button, Chip, Stack, Typography } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
+import { Dashboard } from '@mui/icons-material'
+import Link from 'next/link'
 
 export default function ProfileView({
   user,
@@ -27,13 +29,22 @@ export default function ProfileView({
   return (
     <Stack>
       {isAdmin && (
-        <Stack sx={{ alignItems: 'flex-end', justifyContent: 'flex-start' }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'flex-end' }}>
           <Chip
             color="secondary"
             icon={<AdminPanelSettingsIcon />}
             label="Admin access"
             variant="outlined"
           />
+          <Button
+            component={Link}
+            href="/dashboard"
+            size="small"
+            startIcon={<Dashboard />}
+            variant="outlined"
+          >
+            Dashboard
+          </Button>
         </Stack>
       )}
 

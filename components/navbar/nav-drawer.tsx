@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import {
   Divider,
   Drawer as MuiDrawer,
@@ -18,7 +19,8 @@ import NavSection from './nav-section'
 import { navLinksData } from '@/lib/nav-links'
 import { MenuOpen, Menu } from '@mui/icons-material'
 import React from 'react'
-import { useNavBarToolbar } from './navbar-toolbar-context'
+import { useNavDrawer } from './navbar-toolbar-context'
+
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -98,10 +100,10 @@ const navContent = (open: boolean, isAdmin: boolean, onClose: () => void) => (
 
 const DRAWER_STORAGE_KEY = 'nav-drawer-open'
 
-export default function NavDrawer({ isAdmin }: { isAdmin: boolean }) {
+function NavDrawer() {
   const theme = useTheme()
   const [open, setOpen] = React.useState(false)
-  const { setDrawerOpen } = useNavBarToolbar()
+  const { setDrawerOpen, isAdmin } = useNavDrawer()
 
   React.useEffect(() => {
     const stored = localStorage.getItem(DRAWER_STORAGE_KEY) === 'true'
@@ -172,4 +174,12 @@ export default function NavDrawer({ isAdmin }: { isAdmin: boolean }) {
       </Drawer>
     </>
   )
+}
+
+export default memo(NavDrawer)
+
+export function NavAdminInit({ isAdmin }: { isAdmin: boolean }) {
+  const { setIsAdmin } = useNavDrawer()
+  React.useLayoutEffect(() => setIsAdmin(isAdmin), [isAdmin, setIsAdmin])
+  return null
 }

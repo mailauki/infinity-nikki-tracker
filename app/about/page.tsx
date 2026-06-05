@@ -221,7 +221,7 @@ export default function AboutPage() {
             <ListItemText
               primary={
                 <Typography color="textSecondary" variant="body1">
-                  Outfits (Glow-up) — tracking support for Glow-up outfit variants
+                  Outfits — tracking support for outfit sets and evolutions
                 </Typography>
               }
             />
@@ -230,7 +230,7 @@ export default function AboutPage() {
             <ListItemText
               primary={
                 <Typography color="textSecondary" variant="body1">
-                  Outfits (Evolution) — tracking support for Evolution outfit variants
+                  Custom Looks — support for creating custom outfit sets
                 </Typography>
               }
             />
