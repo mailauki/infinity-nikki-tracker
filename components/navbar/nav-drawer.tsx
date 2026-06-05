@@ -10,19 +10,13 @@ import {
   Theme,
   CSSObject,
   styled,
-  useMediaQuery,
   useTheme,
-  Box,
-  useColorScheme,
 } from '@mui/material'
 import NavSection from './nav-section'
 import { navLinksData } from '@/lib/nav-links'
 import { MenuOpen, Menu } from '@mui/icons-material'
 import React from 'react'
 import { useNavDrawer } from './navbar-toolbar-context'
-
-import Link from 'next/link'
-import Image from 'next/image'
 
 const drawerWidth = 240
 

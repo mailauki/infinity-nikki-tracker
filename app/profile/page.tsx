@@ -9,8 +9,6 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import ProfileLoading from './loading'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
-import { getEurekaColors } from '@/hooks/data/eureka-colors'
-import { getEurekaCategories } from '@/hooks/data/eureka-categories'
 import { getTrials } from '@/hooks/data/trials'
 import { getRecentObtained } from '@/hooks/data/obtained-eureka'
 
@@ -42,8 +40,6 @@ async function UserDetails() {
   const role = await getUserRole()
   const user_id = await getUserID()
   const sets = await getEurekaSets()
-  const categories = await getEurekaCategories()
-  const colors = await getEurekaColors()
   const trials = await getTrials()
   const recentObtained = user_id ? await getRecentObtained(user_id) : []
 
@@ -64,12 +60,7 @@ async function UserDetails() {
         username={profile?.username ?? null}
       />
       {user_id && (
-        <CollectionStats
-          categories={categories || []}
-          colors={colors || []}
-          sets={sets || []}
-          trials={trials || []}
-        />
+        <CollectionStats sets={sets || []} trials={trials || []} />
       )}
       {user_id && <RecentUpdates items={recentObtained || []} />}
     </>

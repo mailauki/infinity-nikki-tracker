@@ -9,25 +9,12 @@ import { NavUser } from './nav-user'
 export default function NavBar() {
   const { setToolbarSlot } = useNavBarToolbar()
   const { drawerOpen } = useNavDrawer()
-  const [hasContent, setHasContent] = React.useState(false)
-  const slotRef = React.useRef<HTMLDivElement | null>(null)
-
   const refCallback = React.useCallback(
     (el: HTMLDivElement | null) => {
-      slotRef.current = el
       setToolbarSlot(el)
     },
     [setToolbarSlot]
   )
-
-  // Track whether the slot has any children so we can adjust padding
-  React.useEffect(() => {
-    const el = slotRef.current
-    if (!el) return
-    const observer = new MutationObserver(() => setHasContent(el.childElementCount > 0))
-    observer.observe(el, { childList: true })
-    return () => observer.disconnect()
-  }, [])
 
   return (
     <AppBar

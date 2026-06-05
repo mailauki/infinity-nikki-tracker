@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Box,
   Card,
@@ -8,7 +8,6 @@ import {
   CardHeader,
   Chip,
   LinearProgress,
-  ListItem,
   Skeleton,
   Stack,
   Typography,
@@ -18,7 +17,7 @@ import {
 import { PieChart } from '@mui/x-charts/PieChart'
 import { lime } from '@mui/material/colors'
 import { countObtained, percent } from '@/hooks/count-obtained'
-import { EurekaCategory, EurekaColor, EurekaSet, Trial } from '@/lib/types/eureka'
+import { EurekaSet, Trial } from '@/lib/types/eureka'
 import PercentLabel from '@/components/percent-label'
 import { SparkleIcon } from '@/components/rarity-stars'
 

@@ -12,20 +12,13 @@ import {
   Menu,
   MenuItem,
   Skeleton,
-  Stack,
   Tooltip,
 } from '@mui/material'
 import React from 'react'
 import { navLinksData } from '@/lib/nav-links'
-import { AccountCircle, Dashboard, List, ViewList } from '@mui/icons-material'
+import { List } from '@mui/icons-material'
 import { LogoutButton } from '../logout-button'
 import AvatarPreview from '../forms/auth/avatar-preview'
-
-function navIcon(url: string) {
-  if (url === '/dashboard') return <Dashboard fontSize="small" />
-  if (url === '/profile') return <AccountCircle fontSize="small" />
-  return <ViewList fontSize="small" />
-}
 
 export function NavUser() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
@@ -78,12 +71,12 @@ export function NavUser() {
     >
       <Tooltip placement="bottom-end" title="Open menu">
         <IconButton
+          aria-controls={Boolean(anchorElUser) ? 'fixed-menu' : undefined}
+          aria-expanded={Boolean(anchorElUser) ? 'true' : undefined}
+          aria-haspopup="true"
+          id="menu-button"
           sx={{ p: 0 }}
           onClick={(e) => setAnchorElUser(e.currentTarget)}
-          id="menu-button"
-          aria-controls={Boolean(anchorElUser) ? 'fixed-menu' : undefined}
-          aria-haspopup="true"
-          aria-expanded={Boolean(anchorElUser) ? 'true' : undefined}
         >
           <AvatarPreview url={avatarUrl} />
         </IconButton>
@@ -92,12 +85,12 @@ export function NavUser() {
         keepMounted
         anchorEl={anchorElUser}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        disableScrollLock={true}
         id="fixed-menu"
         open={Boolean(anchorElUser)}
         sx={{ mt: '45px' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         onClose={() => setAnchorElUser(null)}
-        disableScrollLock={true}
       >
         {navLinksData.navSecondary
           .filter((link) => !link.adminOnly || isAdmin)
