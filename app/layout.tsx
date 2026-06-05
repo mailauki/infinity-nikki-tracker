@@ -76,8 +76,10 @@ export default function RootLayout({
                   alignItems: 'flex-start',
                 }}
               >
-                <NavDrawer />
-                <Suspense>
+                <Suspense fallback={null}>
+                  <NavDrawer />
+                </Suspense>
+                <Suspense fallback={null}>
                   <NavDrawerWrapper />
                 </Suspense>
                 <Stack
