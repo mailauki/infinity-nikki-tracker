@@ -44,6 +44,7 @@ export default function EditOutfitVariantForm({
   const [outfitCategory, setOutfitCategory] = useState(variant.outfit_category ?? '')
   const [evolution, setEvolution] = useState(variant.evolution ?? '')
   const [imageUrl, setImageUrl] = useState<string | null>(variant.image_url)
+  const [altImageUrl, setAltImageUrl] = useState<string | null>(variant.alt_image_url ?? null)
   const [isDefault, setIsDefault] = useState(variant.default)
   const [slug, setSlug] = useState(
     variant.slug ??
@@ -155,13 +156,23 @@ export default function EditOutfitVariantForm({
           onChange={(e) => setSlug(e.target.value)}
         />
 
-        <input name="image_url" type="hidden" value={imageUrl ?? ''} />
-        <ImageUpload
-          slug={currentSlug || undefined}
-          table="outfit_variants"
-          url={imageUrl}
-          onUpload={(url) => setImageUrl(url)}
-        />
+				<Stack spacing={1} direction='row' sx={{ justifyContent: 'space-between' }}>
+					<input name="image_url" type="hidden" value={imageUrl ?? ''} />
+					<ImageUpload
+						slug={currentSlug || undefined}
+						table="outfit_variants"
+						url={imageUrl}
+						onUpload={(url) => setImageUrl(url)}
+					/>
+
+					<ImageUpload
+						column="alt_image_url"
+						slug={currentSlug || undefined}
+						table="outfit_variants"
+						url={altImageUrl}
+						onUpload={(url) => setAltImageUrl(url)}
+					/>
+				</Stack>
 
         <input name="default" type="hidden" value={String(hasDefault ? false : isDefault)} />
         <FormControl>

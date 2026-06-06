@@ -7,10 +7,11 @@ import { useFormConfig } from '@/app/(admin)/form-context'
 import { editEvolution } from './actions'
 import { navLinksData } from '@/lib/nav-links'
 import { Tables } from '@/lib/types/supabase'
+import { toTitle } from '@/lib/utils'
 
 type EvolutionRow = Pick<
   Tables<'evolutions'>,
-  'slug' | 'title' | 'subtitle' | 'description' | 'order' | 'outfit_set' | 'image_url'
+  'slug' | 'title' | 'subtitle' | 'description' | 'order' | 'outfit_set' | 'image_url' | 'alt_image_url'
 >
 
 type VariantRow = Pick<
@@ -32,6 +33,8 @@ export default function EditEvolutionForm({
   const { setFormConfig } = useFormConfig()
   const [subtitle, setSubtitle] = useState(evolution.subtitle ?? '')
   const [description, setDescription] = useState(evolution.description ?? '')
+  const [imageUrl, setImageUrl] = useState<string | null>(evolution.image_url ?? null)
+  const [altImageUrl, setAltImageUrl] = useState<string | null>(evolution.alt_image_url ?? null)
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
     Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.image_url]))
   )
@@ -74,13 +77,24 @@ export default function EditEvolutionForm({
         />
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Evolution Set Image</Typography>
+          <Typography variant="subtitle2">Evolution Set Images</Typography>
+					<Stack spacing={1} direction='row' sx={{ justifyContent: 'space-between' }}>
           <ImageUpload
             slug={evolution.slug}
             table="evolutions"
-            url={evolution.image_url ?? null}
-            onUpload={() => {}}
+            url={imageUrl}
+            onUpload={(url) => setImageUrl(url)}
+						caption='Default'
           />
+          <ImageUpload
+            column="alt_image_url"
+            slug={evolution.slug}
+            table="evolutions"
+            url={altImageUrl}
+            onUpload={(url) => setAltImageUrl(url)}
+						caption='Alternative'
+          />
+					</Stack>
         </Stack>
 
         {variants.length > 0 && (
@@ -92,10 +106,7 @@ export default function EditEvolutionForm({
               {variants
                 .filter((v) => v.slug)
                 .map((v) => (
-                  <Stack key={v.slug} spacing={0.5}>
-                    <Typography sx={{ fontFamily: 'monospace' }} variant="caption">
-                      {v.slug}
-                    </Typography>
+                  <Stack key={v.slug} spacing={1} direction='row' sx={{ justifyContent: 'space-between' }}>
                     <input
                       name={`variant_image_${v.slug}`}
                       type="hidden"
@@ -106,6 +117,7 @@ export default function EditEvolutionForm({
                       table="outfit_variants"
                       url={variantImages[v.slug!] ?? null}
                       onUpload={(url) => setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))}
+											caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
                     />
                   </Stack>
                 ))}

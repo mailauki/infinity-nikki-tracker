@@ -6,7 +6,7 @@ export type OutfitCategory = Pick<Tables<'outfit_categories'>, 'slug' | 'title' 
 
 export type Evolution = Pick<
   Tables<'evolutions'>,
-  'slug' | 'title' | 'subtitle' | 'description' | 'order' | 'outfit_set' | 'image_url'
+  'slug' | 'title' | 'subtitle' | 'description' | 'order' | 'outfit_set' | 'image_url' | 'alt_image_url'
 >
 
 export type EvolutionDraft = {
@@ -34,13 +34,14 @@ export type OutfitSetRaw = Pick<
   | 'label_2'
   | 'ability'
   | 'image_url'
+  | 'alt_image_url'
   | 'glowup_evolution'
   | 'updated_at'
 >
 
 export type OutfitVariant = Pick<
   Tables<'outfit_variants'>,
-  'id' | 'slug' | 'outfit_set' | 'evolution' | 'outfit_category' | 'image_url' | 'default'
+  'id' | 'slug' | 'outfit_set' | 'evolution' | 'outfit_category' | 'image_url' | 'alt_image_url' | 'default'
 > & { obtained?: boolean }
 
 export type OutfitVariantRaw = Pick<
@@ -51,6 +52,7 @@ export type OutfitVariantRaw = Pick<
   | 'evolution'
   | 'outfit_category'
   | 'image_url'
+  | 'alt_image_url'
   | 'default'
   | 'updated_at'
 > & {

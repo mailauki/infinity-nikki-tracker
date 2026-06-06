@@ -35,12 +35,9 @@ export default function EurekaVariantCard({
   return (
     <Grow in={!exiting} timeout={300} onExited={onExited}>
       <Card
-        data-active={eurekaVariant.obtained ? '' : undefined}
         sx={{
           minWidth: 'fit-content',
-          '&[data-active]': {
-            backgroundColor: 'surface.lowest',
-          },
+					bgcolor: eurekaVariant.obtained ? 'surface.containerLow' : 'surface.containerHighest'
         }}
       >
         <Box sx={{ position: 'relative', height: '100%' }}>

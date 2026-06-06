@@ -2,7 +2,7 @@
 
 import IconButton from '@mui/material/IconButton'
 import { Tooltip } from '@mui/material'
-import { Edit, EditOff, SwapVert } from '@mui/icons-material'
+import { Edit, EditOff, SwapVert, SwitchLeft, SwitchRight } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
 import { toTitle } from '@/lib/utils'
 import { useProfileEdit } from '@/app/profile/profile-context'
@@ -55,7 +55,7 @@ export function SortButton() {
   return (
     <Tooltip title={`Sort: ${label}`}>
       <IconButton aria-label={`Sort ${label}`} onClick={toggleSort}>
-        <SwapVert />
+        {sortOrder === 'new' ? <SwitchRight sx={{ rotate: '90deg' }} /> : <SwitchLeft sx={{ rotate: '90deg' }} />}
       </IconButton>
     </Tooltip>
   )

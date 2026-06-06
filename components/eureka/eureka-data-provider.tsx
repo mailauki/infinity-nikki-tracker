@@ -199,6 +199,7 @@ export default function EurekaDataProvider({
     <EurekaDataContext.Provider
       value={{
         eurekaSets: eurekaSetsWithObtained,
+        obtainedEureka,
         categories,
         colors,
         trials,

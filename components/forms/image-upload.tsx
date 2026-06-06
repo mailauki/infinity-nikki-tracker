@@ -22,12 +22,14 @@ export default function ImageUpload({
   slug,
   onUpload,
   caption,
+  column = 'image_url',
 }: {
   url: string | null
   table: 'eureka_variants' | 'outfit_variants' | 'trials' | 'outfit_sets' | 'evolutions'
   slug: string | undefined
   onUpload: (url: string) => void
   caption?: string
+  column?: string
 }) {
   const supabase = createClient()
   const [uploading, setUploading] = useState(false)
@@ -59,7 +61,8 @@ export default function ImageUpload({
 
       const { error: dbError } = await supabase
         .from(table)
-        .update({ image_url: data.publicUrl })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .update({ [column]: data.publicUrl } as any)
         .eq('slug', slug)
       if (dbError) throw dbError
 
@@ -73,7 +76,7 @@ export default function ImageUpload({
   }
 
   return (
-    <Card sx={{ minWidth: 'fit-content' }}>
+    <Card sx={{ minWidth: 'fit-content', flexGrow: 1 }}>
       <CardActionArea
         component="label"
         sx={{

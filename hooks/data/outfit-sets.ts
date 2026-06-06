@@ -25,6 +25,7 @@ export const getOutfitSets = cache(async () => {
       label_2,
       ability,
       image_url,
+      alt_image_url,
       glowup_evolution,
       updated_at,
       outfit_variants (
@@ -34,6 +35,7 @@ export const getOutfitSets = cache(async () => {
         evolution,
         outfit_category,
         image_url,
+        alt_image_url,
         default
       )
     `
@@ -94,6 +96,7 @@ export const getOutfitSet = cache(async (slug: string) => {
       label_2,
       ability,
       image_url,
+      alt_image_url,
       glowup_evolution,
       updated_at,
       outfit_variants (
@@ -103,6 +106,7 @@ export const getOutfitSet = cache(async (slug: string) => {
         evolution,
         outfit_category,
         image_url,
+        alt_image_url,
         default
       )
     `
