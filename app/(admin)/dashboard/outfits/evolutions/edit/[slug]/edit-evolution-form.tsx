@@ -32,6 +32,8 @@ export default function EditEvolutionForm({
   const { setFormConfig } = useFormConfig()
   const [subtitle, setSubtitle] = useState(evolution.subtitle ?? '')
   const [description, setDescription] = useState(evolution.description ?? '')
+  const [imageUrl, setImageUrl] = useState<string | null>(evolution.image_url ?? null)
+  const [altImageUrl, setAltImageUrl] = useState<string | null>(evolution.alt_image_url ?? null)
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
     Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.image_url]))
   )
@@ -78,8 +80,8 @@ export default function EditEvolutionForm({
           <ImageUpload
             slug={evolution.slug}
             table="evolutions"
-            url={evolution.image_url ?? null}
-            onUpload={() => {}}
+            url={imageUrl}
+            onUpload={(url) => setImageUrl(url)}
           />
         </Stack>
 
@@ -89,8 +91,8 @@ export default function EditEvolutionForm({
             column="alt_image_url"
             slug={evolution.slug}
             table="evolutions"
-            url={evolution.alt_image_url ?? null}
-            onUpload={() => {}}
+            url={altImageUrl}
+            onUpload={(url) => setAltImageUrl(url)}
           />
         </Stack>
 

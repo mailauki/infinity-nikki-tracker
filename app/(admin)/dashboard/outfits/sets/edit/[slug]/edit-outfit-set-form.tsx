@@ -32,6 +32,7 @@ type OutfitVariantRow = Pick<
   | 'outfit_category'
   | 'evolution'
   | 'image_url'
+  | 'alt_image_url'
   | 'default'
   | 'updated_at'
 >
@@ -85,6 +86,9 @@ export default function EditOutfitSetForm({
   const [altSetImage, setAltSetImage] = useState<string | null>(outfitSet.alt_image_url ?? null)
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
     Object.fromEntries(initialVariants.filter((v) => v.slug && v.evolution === null).map((v) => [v.slug, v.image_url]))
+  )
+  const [variantAltImages, setVariantAltImages] = useState<Record<string, string | null>>(
+    Object.fromEntries(initialVariants.filter((v) => v.slug && v.evolution === null).map((v) => [v.slug, v.alt_image_url]))
   )
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {
@@ -333,6 +337,13 @@ export default function EditOutfitSetForm({
                       table="outfit_variants"
                       url={variantImages[v.slug!] ?? null}
                       onUpload={(url) => setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))}
+                    />
+                    <ImageUpload
+                      column="alt_image_url"
+                      slug={v.slug ?? undefined}
+                      table="outfit_variants"
+                      url={variantAltImages[v.slug!] ?? null}
+                      onUpload={(url) => setVariantAltImages((prev) => ({ ...prev, [v.slug!]: url }))}
                     />
                   </Stack>
                 ))}
