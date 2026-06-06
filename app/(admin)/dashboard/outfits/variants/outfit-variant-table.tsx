@@ -207,10 +207,10 @@ export function OutfitVariantTable({
       width: 140,
       editable: true,
       type: 'singleSelect',
-      valueOptions: evolutions.map((e) => ({ value: e.slug, label: toTitle(e.title ?? '') })),
+      valueOptions: evolutions.map((e) => ({ value: e.slug, label: e.subtitle ?? toTitle(e.title ?? '') })),
       valueGetter: (_value: unknown, row: Row) => row.evolution ?? '',
       valueFormatter: (value: string | null) =>
-        evolutions.find((e) => e.slug === value)?.title ?? toTitle(value || '—'),
+        evolutions.find((e) => e.slug === value)?.subtitle ?? toTitle(value || '—'),
     },
     {
       field: 'default',

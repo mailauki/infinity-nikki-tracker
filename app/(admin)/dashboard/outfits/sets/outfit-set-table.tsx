@@ -33,7 +33,7 @@ interface OutfitSetTableProps {
   abilities: Ability[]
 }
 
-const LOCKED_FIELDS = ['slug', 'image_url', 'evolutions', 'updated_at']
+const LOCKED_FIELDS = ['slug', 'image_url', 'evolutions', 'glowup_evolution', 'updated_at']
 
 function LockedCell({ children, href }: { children: React.ReactNode; href: string }) {
   return (
@@ -86,6 +86,7 @@ export function OutfitSetTable({
         rarity: newRow.rarity ?? undefined,
         style: newRow.style,
         label: newRow.label,
+        label_2: newRow.label_2,
         ability: newRow.ability,
       })
       setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)))
@@ -226,6 +227,18 @@ export function OutfitSetTable({
       valueFormatter: (value: string | null) => toTitle(value || '—'),
     },
     {
+      field: 'label_2',
+      headerName: 'Label 2',
+      width: 120,
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: [
+        { value: '', label: '—' },
+        ...labels.map((l) => ({ value: l.slug, label: toTitle(l.title ?? '') })),
+      ],
+      valueFormatter: (value: string | null) => toTitle(value || '—'),
+    },
+    {
       field: 'ability',
       headerName: 'Ability',
       width: 140,
@@ -265,6 +278,22 @@ export function OutfitSetTable({
           )}
         </Stack>
       ),
+    },
+    {
+      field: 'glowup_evolution',
+      headerName: 'Glow-Up',
+      width: 160,
+      sortable: false,
+      renderCell: ({ row, value }: GridRenderCellParams<Row>) => {
+        const evo = row.evolutions?.find((e: Evolution) => e.slug === value)
+        return isEditing(row.id) ? (
+          <LockedCell href={editHref(row)}>
+            <span>{evo ? evo.subtitle : '—'}</span>
+          </LockedCell>
+        ) : (
+          <span>{evo ? evo.subtitle : '—'}</span>
+        )
+      },
     },
     {
       field: 'description',

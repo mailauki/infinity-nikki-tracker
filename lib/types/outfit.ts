@@ -34,6 +34,7 @@ export type OutfitSetRaw = Pick<
   | 'label_2'
   | 'ability'
   | 'image_url'
+  | 'glowup_evolution'
   | 'updated_at'
 >
 

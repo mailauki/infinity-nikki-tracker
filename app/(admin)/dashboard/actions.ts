@@ -83,6 +83,7 @@ export async function updateOutfitSet(
     rarity?: number
     style?: string | null
     label?: string | null
+    label_2?: string | null
     ability?: string | null
   }
 ) {
