@@ -15,6 +15,9 @@ export default function PageTitle() {
       ...(item.items ?? []).map((sub) => ({ ...sub, url: item.url + sub.url })),
     ]),
     ...navLinksData.navExtra,
+    ...navLinksData.dashboard.tabs.flatMap((tab) =>
+      (tab.items ?? []).map((item) => ({ ...item, title: `${tab.title} ${item.title}` }))
+    ),
   ]
   const bestMatch = allLinks
     .filter(
@@ -22,8 +25,15 @@ export default function PageTitle() {
     )
     .sort((a, b) => b.url.length - a.url.length)[0]
 
+  const segments = pathname.split('/')
+  const lastSegment = segments.at(-1) ?? ''
   const hasParams = bestMatch && pathname !== bestMatch.url
-  const pageTitle = hasParams ? toTitle(pathname.split('/').at(-1) ?? '') : (bestMatch?.title ?? '')
+  const baseTitle = hasParams ? toTitle(lastSegment) : (bestMatch?.title ?? '')
+
+  let prefix: string | null = null
+  if (pathname.includes('/new')) prefix = 'Add'
+  else if (pathname.includes('/edit')) prefix = 'Edit'
+  const pageTitle = prefix ? `${prefix} ${bestMatch?.title ?? baseTitle}` : baseTitle
 
   return (
     <Typography component="h1" sx={{ fontSize: 'subtitle2.fontSize' }} variant="overline">
