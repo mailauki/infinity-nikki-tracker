@@ -34,7 +34,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
     .select(
-      'id, slug, title, description, rarity, style, label, label_2, ability, image_url, updated_at'
+      'id, slug, title, description, rarity, style, label, label_2, ability, image_url, glowup_evolution, updated_at'
     )
     .eq('slug', slug)
     .single()
@@ -61,20 +61,21 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
     existingSlug: e.slug,
   }))
 
-  const defaultEvoSlug = (variantRows ?? []).find((v) => v.default)?.evolution ?? null
-  const initialDefaultEvolutionOrder =
-    evolutions.find((e) => e.slug === defaultEvoSlug)?.order ?? ''
+  const initialGlowupEvolutionOrder =
+    evolutions.find((e) => e.slug === outfitSet.glowup_evolution)?.order ?? ''
 
-  const initialCategorySelect = [
+  const derivedCategories = [
     ...new Set((variantRows ?? []).map((v) => v.outfit_category).filter(Boolean)),
   ] as string[]
+  const initialCategorySelect =
+    derivedCategories.length > 0 ? derivedCategories : outfitCategories.map((c) => c.slug)
 
   return (
     <EditOutfitSetForm
       abilities={abilities}
       back={back}
       initialCategorySelect={initialCategorySelect}
-      initialDefaultEvolutionOrder={initialDefaultEvolutionOrder}
+      initialGlowupEvolutionOrder={initialGlowupEvolutionOrder}
       initialDrafts={initialDrafts}
       initialVariants={variantRows ?? []}
       labels={labels}

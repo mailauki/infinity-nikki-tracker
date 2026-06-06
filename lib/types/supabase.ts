@@ -411,6 +411,7 @@ export type Database = {
           ability: string | null
           created_at: string | null
           description: string | null
+          glowup_evolution: string | null
           id: number
           image_url: string | null
           label: string | null
@@ -425,6 +426,7 @@ export type Database = {
           ability?: string | null
           created_at?: string | null
           description?: string | null
+          glowup_evolution?: string | null
           id?: number
           image_url?: string | null
           label?: string | null
@@ -439,6 +441,7 @@ export type Database = {
           ability?: string | null
           created_at?: string | null
           description?: string | null
+          glowup_evolution?: string | null
           id?: number
           image_url?: string | null
           label?: string | null
@@ -455,6 +458,13 @@ export type Database = {
             columns: ["ability"]
             isOneToOne: false
             referencedRelation: "abilities"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outfit_sets_glowup_evolution_fkey"
+            columns: ["glowup_evolution"]
+            isOneToOne: false
+            referencedRelation: "evolutions"
             referencedColumns: ["slug"]
           },
           {

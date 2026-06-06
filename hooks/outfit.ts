@@ -31,7 +31,7 @@ export function createOutfitSet({
   outfitCategories: OutfitCategory[] | null
   evolutions: Evolution[] | null
 }): OutfitSet {
-  const defaultEvolutionSlug = outfitSet.outfit_variants.find((v) => v.default)?.evolution
+  const glowupEvolutionSlug = outfitSet.glowup_evolution ?? null
   const categoryOrder = (outfitCategories ?? []).map((c) => c.slug)
   const evolutionSlugs = [...new Set(outfitSet.outfit_variants.map((v) => v.evolution))]
   const resolvedEvolutions = evolutionSlugs
@@ -42,15 +42,14 @@ export function createOutfitSet({
     ...outfitSet,
     image_url:
       outfitSet.image_url ??
-      (
-        outfitSet.outfit_variants.find((v) => v.default && v.outfit_category === 'hair') ??
-        outfitSet.outfit_variants.find((v) => v.default)
-      )?.image_url,
+      outfitSet.outfit_variants.find((v) => v.evolution === null && v.outfit_category === 'hair')
+        ?.image_url ??
+      outfitSet.outfit_variants.find((v) => v.evolution === null)?.image_url,
     outfit_categories: outfitCategories ?? [],
     evolutions: resolvedEvolutions,
     outfit_variants: sortOutfitVariants(
       outfitSet.outfit_variants as OutfitVariant[],
-      defaultEvolutionSlug,
+      glowupEvolutionSlug,
       categoryOrder
     ),
   } as OutfitSet

@@ -25,6 +25,7 @@ export const getOutfitSets = cache(async () => {
       label_2,
       ability,
       image_url,
+      glowup_evolution,
       updated_at,
       outfit_variants (
         id,
@@ -45,7 +46,7 @@ export const getOutfitSets = cache(async () => {
   const categoryOrder = outfitCategories.map((c) => c.slug)
 
   const outfits = (outfitSets ?? []).map((outfitSet) => {
-    const defaultEvolutionSlug = outfitSet.outfit_variants.find((v) => v.default)?.evolution
+    const glowupEvolutionSlug = outfitSet.glowup_evolution ?? null
     const evolutionSlugs = [...new Set(outfitSet.outfit_variants.map((v) => v.evolution))]
     const resolvedEvolutions = evolutionSlugs
       .flatMap((slug) => evolutions.filter((e) => e.slug === slug))
@@ -55,15 +56,14 @@ export const getOutfitSets = cache(async () => {
       ...outfitSet,
       image_url:
         outfitSet.image_url ??
-        (
-          outfitSet.outfit_variants.find((v) => v.default && v.outfit_category === 'hair') ??
-          outfitSet.outfit_variants.find((v) => v.default)
-        )?.image_url,
+        outfitSet.outfit_variants.find((v) => v.evolution === null && v.outfit_category === 'hair')
+          ?.image_url ??
+        outfitSet.outfit_variants.find((v) => v.evolution === null)?.image_url,
       outfit_categories: outfitCategories,
       evolutions: resolvedEvolutions,
       outfit_variants: sortOutfitVariants(
         outfitSet.outfit_variants as OutfitVariant[],
-        defaultEvolutionSlug,
+        glowupEvolutionSlug,
         categoryOrder
       ),
     }
@@ -94,6 +94,7 @@ export const getOutfitSet = cache(async (slug: string) => {
       label_2,
       ability,
       image_url,
+      glowup_evolution,
       updated_at,
       outfit_variants (
         id,

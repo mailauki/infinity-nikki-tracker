@@ -50,7 +50,7 @@ export default function AddOutfitSetForm({
   const [ability, setAbility] = useState('')
   const [description, setDescription] = useState('')
   const [evolutionDrafts, setEvolutionDrafts] = useState<EvolutionDraft[]>([])
-  const [defaultEvolutionOrder, setDefaultEvolutionOrder] = useState<number | ''>('')
+  const [glowupEvolutionOrder, setGlowupEvolutionOrder] = useState<number | ''>('')
   const [categorySelect, setCategorySelect] = useState<string[]>([])
   const [editSlug, setEditSlug] = useState(false)
 
@@ -91,7 +91,7 @@ export default function AddOutfitSetForm({
       setAbility('')
       setDescription('')
       setEvolutionDrafts([])
-      setDefaultEvolutionOrder('')
+      setGlowupEvolutionOrder('')
       setCategorySelect([])
       setEditSlug(false)
     }
@@ -276,10 +276,10 @@ export default function AddOutfitSetForm({
         </FormControl>
 
         <EvolutionEditor
-          defaultEvolutionOrder={defaultEvolutionOrder}
+          glowupEvolutionOrder={glowupEvolutionOrder}
           maxEvolutions={maxEvolutions}
           onChange={setEvolutionDrafts}
-          onDefaultChange={setDefaultEvolutionOrder}
+          onGlowupChange={setGlowupEvolutionOrder}
         />
 
         <Alert severity="info">
@@ -288,7 +288,7 @@ export default function AddOutfitSetForm({
         </Alert>
 
         <input name="evolution_drafts" type="hidden" value={JSON.stringify(evolutionDrafts)} />
-        <input name="default_evolution_order" type="hidden" value={defaultEvolutionOrder} />
+        <input name="glowup_evolution_order" type="hidden" value={glowupEvolutionOrder} />
         <input
           name="outfit_categories"
           type="hidden"

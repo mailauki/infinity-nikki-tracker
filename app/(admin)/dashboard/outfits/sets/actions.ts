@@ -25,9 +25,9 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
   const evolutionDrafts = JSON.parse(
     (formData.get('evolution_drafts') as string) || '[]'
   ) as EvolutionDraft[]
-  const defaultEvolutionOrderRaw = (formData.get('default_evolution_order') as string | null) || ''
-  const defaultEvolutionOrder = defaultEvolutionOrderRaw
-    ? parseInt(defaultEvolutionOrderRaw, 10)
+  const glowupEvolutionOrderRaw = (formData.get('glowup_evolution_order') as string | null) || ''
+  const glowupEvolutionOrder = glowupEvolutionOrderRaw
+    ? parseInt(glowupEvolutionOrderRaw, 10)
     : null
   const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
     slug: string
@@ -60,19 +60,35 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
     }
 
     if (outfitCategories.length > 0) {
-      const variants = evolutionRows.flatMap((evo) =>
+      const nullEvoVariants = outfitCategories.map((cat) => ({
+        outfit_set: slug,
+        outfit_category: cat.slug,
+        evolution: null,
+        slug: `${slug}-${cat.slug}`,
+        default: false,
+      }))
+      const evoVariants = evolutionRows.flatMap((evo) =>
         outfitCategories.map((cat) => ({
           outfit_set: slug,
           outfit_category: cat.slug,
           evolution: evo.slug,
           slug: toSlugVariant(slug, cat.slug, evo.slug),
-          default: defaultEvolutionOrder ? evo.order === defaultEvolutionOrder : false,
+          default: false,
         }))
       )
-      const { error: variantError } = await supabase.from('outfit_variants').insert(variants)
+      const { error: variantError } = await supabase
+        .from('outfit_variants')
+        .insert([...nullEvoVariants, ...evoVariants])
       if (variantError) {
         await rollback()
         return { error: 'Failed to save variants. The set was not created — please try again.' }
+      }
+
+      if (glowupEvolutionOrder) {
+        const glowupSlug = evolutionRows.find((e) => e.order === glowupEvolutionOrder)?.slug ?? null
+        if (glowupSlug) {
+          await supabase.from('outfit_sets').update({ glowup_evolution: glowupSlug }).eq('slug', slug)
+        }
       }
     }
   } else if (outfitCategories.length > 0) {
@@ -114,9 +130,9 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
   const evolutionDrafts = JSON.parse(
     (formData.get('evolution_drafts') as string) || '[]'
   ) as EvolutionDraft[]
-  const defaultEvolutionOrderRaw = (formData.get('default_evolution_order') as string | null) || ''
-  const defaultEvolutionOrder = defaultEvolutionOrderRaw
-    ? parseInt(defaultEvolutionOrderRaw, 10)
+  const glowupEvolutionOrderRaw = (formData.get('glowup_evolution_order') as string | null) || ''
+  const glowupEvolutionOrder = glowupEvolutionOrderRaw
+    ? parseInt(glowupEvolutionOrderRaw, 10)
     : null
   const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
     slug: string
@@ -235,56 +251,41 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
       .select('slug, order')
       .eq('outfit_set', slug)
 
-    const newCatVariants: {
-      outfit_set: string
-      outfit_category: string
-      evolution: string | null
-      slug: string
-      default: boolean
-    }[] =
+    const nullEvoRows = addedCategories.map((catSlug) => ({
+      outfit_set: slug,
+      outfit_category: catSlug,
+      evolution: null as string | null,
+      slug: `${slug}-${catSlug}`,
+      default: false,
+    }))
+    const newCatVariants =
       finalEvolutions && finalEvolutions.length > 0
-        ? finalEvolutions.flatMap((evo) =>
-            addedCategories.map((catSlug) => ({
-              outfit_set: slug,
-              outfit_category: catSlug,
-              evolution: evo.slug,
-              slug: toSlugVariant(slug, catSlug, evo.slug),
-              default: false,
-            }))
-          )
-        : addedCategories.map((catSlug) => ({
-            outfit_set: slug,
-            outfit_category: catSlug,
-            evolution: null,
-            slug: `${slug}-${catSlug}`,
-            default: false,
-          }))
+        ? [
+            ...nullEvoRows,
+            ...finalEvolutions.flatMap((evo) =>
+              addedCategories.map((catSlug) => ({
+                outfit_set: slug,
+                outfit_category: catSlug,
+                evolution: evo.slug,
+                slug: toSlugVariant(slug, catSlug, evo.slug),
+                default: false,
+              }))
+            ),
+          ]
+        : nullEvoRows
     const { error: addCatError } = await supabase.from('outfit_variants').insert(newCatVariants)
     if (addCatError) return { error: addCatError.message }
   }
 
-  // Sync default flag across all variants
-  const { error: clearDefaultError } = await supabase
-    .from('outfit_variants')
-    .update({ default: false })
-    .eq('outfit_set', slug)
-  if (clearDefaultError) return { error: clearDefaultError.message }
-
-  if (defaultEvolutionOrder) {
-    // Find the evolution slug with the matching order
-    const defaultEvoSlug = evolutionDrafts.find((d) => d.order === defaultEvolutionOrder)
-    if (defaultEvoSlug) {
-      const resolvedSlug = defaultEvoSlug.existingSlug
-        ? `${slug}-${toSlug(defaultEvoSlug.subtitle)}`
-        : `${slug}-${toSlug(defaultEvoSlug.subtitle)}`
-      const { error: setDefaultError } = await supabase
-        .from('outfit_variants')
-        .update({ default: true })
-        .eq('outfit_set', slug)
-        .eq('evolution', resolvedSlug)
-      if (setDefaultError) return { error: setDefaultError.message }
-    }
-  }
+  // Update glowup_evolution on the set
+  const glowupSlug = glowupEvolutionOrder
+    ? (`${slug}-${toSlug(evolutionDrafts.find((d) => d.order === glowupEvolutionOrder)?.subtitle ?? '')}` || null)
+    : null
+  const { error: glowupError } = await supabase
+    .from('outfit_sets')
+    .update({ glowup_evolution: glowupSlug })
+    .eq('id', id)
+  if (glowupError) return { error: glowupError.message }
 
   // Update variant images from hidden inputs
   const variantImageEntries = [...formData.entries()].filter(([key]) =>

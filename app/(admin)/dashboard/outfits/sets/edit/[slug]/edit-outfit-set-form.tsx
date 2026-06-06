@@ -50,7 +50,7 @@ export default function EditOutfitSetForm({
   abilities,
   outfitCategories,
   initialDrafts = [],
-  initialDefaultEvolutionOrder = '',
+  initialGlowupEvolutionOrder = '',
   initialCategorySelect = [],
   initialVariants = [],
   back,
@@ -61,7 +61,7 @@ export default function EditOutfitSetForm({
   abilities: Ability[]
   outfitCategories: OutfitCategory[]
   initialDrafts?: EvolutionDraft[]
-  initialDefaultEvolutionOrder?: number | ''
+  initialGlowupEvolutionOrder?: number | ''
   initialCategorySelect?: string[]
   initialVariants?: OutfitVariantRow[]
   back: string
@@ -77,8 +77,8 @@ export default function EditOutfitSetForm({
   const [ability, setAbility] = useState(outfitSet.ability ?? '')
   const [editSlug, setEditSlug] = useState(false)
   const [evolutionDrafts, setEvolutionDrafts] = useState<EvolutionDraft[]>(initialDrafts)
-  const [defaultEvolutionOrder, setDefaultEvolutionOrder] = useState<number | ''>(
-    initialDefaultEvolutionOrder
+  const [glowupEvolutionOrder, setGlowupEvolutionOrder] = useState<number | ''>(
+    initialGlowupEvolutionOrder
   )
   const [categorySelect, setCategorySelect] = useState<string[]>(initialCategorySelect)
   const [setImage, setSetImage] = useState<string | null>(outfitSet.image_url ?? null)
@@ -281,11 +281,11 @@ export default function EditOutfitSetForm({
         </FormControl>
 
         <EvolutionEditor
-          defaultEvolutionOrder={defaultEvolutionOrder}
+          glowupEvolutionOrder={glowupEvolutionOrder}
           initialDrafts={initialDrafts}
           maxEvolutions={maxEvolutions}
           onChange={setEvolutionDrafts}
-          onDefaultChange={setDefaultEvolutionOrder}
+          onGlowupChange={setGlowupEvolutionOrder}
         />
 
         <Stack spacing={1}>
@@ -329,7 +329,7 @@ export default function EditOutfitSetForm({
         )}
 
         <input name="evolution_drafts" type="hidden" value={JSON.stringify(evolutionDrafts)} />
-        <input name="default_evolution_order" type="hidden" value={defaultEvolutionOrder} />
+        <input name="glowup_evolution_order" type="hidden" value={glowupEvolutionOrder} />
         <input
           name="outfit_categories"
           type="hidden"

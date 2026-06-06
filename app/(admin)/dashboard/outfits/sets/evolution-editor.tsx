@@ -21,14 +21,14 @@ export default function EvolutionEditor({
   maxEvolutions,
   initialDrafts = [],
   onChange,
-  defaultEvolutionOrder,
-  onDefaultChange,
+  glowupEvolutionOrder,
+  onGlowupChange,
 }: {
   maxEvolutions: number
   initialDrafts?: EvolutionDraft[]
   onChange: (drafts: EvolutionDraft[]) => void
-  defaultEvolutionOrder: number | ''
-  onDefaultChange: (order: number | '') => void
+  glowupEvolutionOrder: number | ''
+  onGlowupChange: (order: number | '') => void
 }) {
   const [drafts, setDrafts] = useState<EvolutionDraft[]>(initialDrafts)
 
@@ -41,10 +41,10 @@ export default function EvolutionEditor({
   }, [maxEvolutions])
 
   useEffect(() => {
-    if (defaultEvolutionOrder !== '' && defaultEvolutionOrder > drafts.length) {
-      onDefaultChange('')
+    if (glowupEvolutionOrder !== '' && glowupEvolutionOrder > drafts.length) {
+      onGlowupChange('')
     }
-  }, [drafts.length, defaultEvolutionOrder])
+  }, [drafts.length, glowupEvolutionOrder])
 
   function handleAdd() {
     const next = [...drafts, { subtitle: '', order: drafts.length + 1 }]
@@ -111,11 +111,11 @@ export default function EvolutionEditor({
 
       {drafts.length > 0 && (
         <FormControl size="small">
-          <InputLabel>Default Evolution</InputLabel>
+          <InputLabel>Glow-Up Evolution</InputLabel>
           <Select
-            label="Default Evolution"
-            value={defaultEvolutionOrder}
-            onChange={(e) => onDefaultChange(e.target.value as number | '')}
+            label="Glow-Up Evolution"
+            value={glowupEvolutionOrder}
+            onChange={(e) => onGlowupChange(e.target.value as number | '')}
           >
             <MenuItem value="">—</MenuItem>
             {drafts.map((d, i) => (
