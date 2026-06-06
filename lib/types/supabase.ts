@@ -221,6 +221,7 @@ export type Database = {
       }
       evolutions: {
         Row: {
+          alt_image_url: string | null
           description: string | null
           id: number
           image_url: string | null
@@ -231,6 +232,7 @@ export type Database = {
           title: string
         }
         Insert: {
+          alt_image_url?: string | null
           description?: string | null
           id?: number
           image_url?: string | null
@@ -241,6 +243,7 @@ export type Database = {
           title: string
         }
         Update: {
+          alt_image_url?: string | null
           description?: string | null
           id?: number
           image_url?: string | null
@@ -409,6 +412,7 @@ export type Database = {
       outfit_sets: {
         Row: {
           ability: string | null
+          alt_image_url: string | null
           created_at: string | null
           description: string | null
           glowup_evolution: string | null
@@ -424,6 +428,7 @@ export type Database = {
         }
         Insert: {
           ability?: string | null
+          alt_image_url?: string | null
           created_at?: string | null
           description?: string | null
           glowup_evolution?: string | null
@@ -439,6 +444,7 @@ export type Database = {
         }
         Update: {
           ability?: string | null
+          alt_image_url?: string | null
           created_at?: string | null
           description?: string | null
           glowup_evolution?: string | null
@@ -492,6 +498,7 @@ export type Database = {
       }
       outfit_variants: {
         Row: {
+          alt_image_url: string | null
           created_at: string | null
           default: boolean
           evolution: string | null
@@ -503,6 +510,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          alt_image_url?: string | null
           created_at?: string | null
           default?: boolean
           evolution?: string | null
@@ -514,6 +522,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          alt_image_url?: string | null
           created_at?: string | null
           default?: boolean
           evolution?: string | null
@@ -841,3 +850,5 @@ export const Constants = {
     Enums: {},
   },
 } as const
+A new version of Supabase CLI is available: v2.105.0 (currently installed v2.103.0)
+We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
