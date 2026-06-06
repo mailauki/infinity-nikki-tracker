@@ -307,7 +307,7 @@ export default function HelpPage() {
         </Typography>
         <Typography color="textSecondary" variant="body1">
           Use the{' '}
-          <Anchor color="textSecondary" href="/dashboard">
+          <Anchor color="textSecondary" href="/admin">
             Dashboard
           </Anchor>{' '}
           to manage Eureka sets, variants, and trials — add, edit, and track counts and recent

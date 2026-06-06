@@ -42,7 +42,7 @@ export default function ProfileView({
           />
           <Button
             component={Link}
-            href="/dashboard"
+            href="/admin"
             size="small"
             startIcon={<Dashboard />}
             variant="outlined"
