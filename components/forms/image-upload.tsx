@@ -61,7 +61,8 @@ export default function ImageUpload({
 
       const { error: dbError } = await supabase
         .from(table)
-        .update({ [column]: data.publicUrl })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .update({ [column]: data.publicUrl } as any)
         .eq('slug', slug)
       if (dbError) throw dbError
 
