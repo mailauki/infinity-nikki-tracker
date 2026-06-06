@@ -1,12 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import { Stack } from '@mui/material'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { navLinksData } from '@/lib/nav-links'
 import { Evolution } from '@/lib/types/outfit'
-import LazyAvatar from '@/components/lazy-avatar'
-import { ImageNotSupported } from '@mui/icons-material'
+import ImageUpload from '@/components/forms/image-upload'
 
 type Row = Evolution
 
@@ -14,7 +14,8 @@ interface OutfitEvolutionTableProps {
   rows: Row[]
 }
 
-export function OutfitEvolutionTable({ rows }: OutfitEvolutionTableProps) {
+export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTableProps) {
+  const [rows, setRows] = useState<Row[]>(initialRows)
   const editHref = (row: Row) => `${navLinksData.dashboard.outfits.evolutions.edit}/${row.slug}`
 
   const columns: GridColDef<Row>[] = [
@@ -36,19 +37,34 @@ export function OutfitEvolutionTable({ rows }: OutfitEvolutionTableProps) {
     {
       field: 'image_url',
       headerName: 'Image',
-      width: 64,
+      width: 100,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 52, justifyContent: 'center' }}>
-          <LazyAvatar
-            alt={row.subtitle ?? row.title}
-            color="transparent"
-            size="sm"
-            src={row.image_url ?? ''}
-            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-          >
-            <ImageNotSupported fontSize="inherit" />
-          </LazyAvatar>
+        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+          <ImageUpload
+            column="image_url"
+            slug={row.slug}
+            table="evolutions"
+            url={row.image_url ?? null}
+            onUpload={(url) => setRows((prev) => prev.map((r) => (r.slug === row.slug ? { ...r, image_url: url } : r)))}
+          />
+        </Stack>
+      ),
+    },
+    {
+      field: 'alt_image_url',
+      headerName: 'Alt Image',
+      width: 100,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+          <ImageUpload
+            column="alt_image_url"
+            slug={row.slug}
+            table="evolutions"
+            url={row.alt_image_url ?? null}
+            onUpload={(url) => setRows((prev) => prev.map((r) => (r.slug === row.slug ? { ...r, alt_image_url: url } : r)))}
+          />
         </Stack>
       ),
     },
@@ -104,6 +120,7 @@ export function OutfitEvolutionTable({ rows }: OutfitEvolutionTableProps) {
       getRowId={(row) => row.slug}
       initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
+      rowHeight={100}
       rows={rows}
       sx={{ border: 0, bgcolor: 'transparent' }}
     />
