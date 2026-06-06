@@ -22,12 +22,14 @@ export default function ImageUpload({
   slug,
   onUpload,
   caption,
+  column = 'image_url',
 }: {
   url: string | null
   table: 'eureka_variants' | 'outfit_variants' | 'trials' | 'outfit_sets' | 'evolutions'
   slug: string | undefined
   onUpload: (url: string) => void
   caption?: string
+  column?: string
 }) {
   const supabase = createClient()
   const [uploading, setUploading] = useState(false)
@@ -59,7 +61,7 @@ export default function ImageUpload({
 
       const { error: dbError } = await supabase
         .from(table)
-        .update({ image_url: data.publicUrl })
+        .update({ [column]: data.publicUrl })
         .eq('slug', slug)
       if (dbError) throw dbError
 
