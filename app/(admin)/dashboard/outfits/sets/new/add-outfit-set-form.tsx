@@ -45,8 +45,7 @@ export default function AddOutfitSetForm({
   const [slug, setSlug] = useState('')
   const [rarity, setRarity] = useState<number | ''>('')
   const [style, setStyle] = useState('')
-  const [label, setLabel] = useState('')
-  const [label2, setLabel2] = useState('')
+  const [labelSelect, setLabelSelect] = useState<string[]>([])
   const [ability, setAbility] = useState('')
   const [description, setDescription] = useState('')
   const [evolutionDrafts, setEvolutionDrafts] = useState<EvolutionDraft[]>([])
@@ -86,8 +85,7 @@ export default function AddOutfitSetForm({
       setSlug('')
       setRarity('')
       setStyle('')
-      setLabel('')
-      setLabel2('')
+      setLabelSelect([])
       setAbility('')
       setDescription('')
       setEvolutionDrafts([])
@@ -180,39 +178,41 @@ export default function AddOutfitSetForm({
           </Select>
         </FormControl>
 
+        <input name="label" type="hidden" value={labelSelect[0] ?? ''} />
+        <input name="label_2" type="hidden" value={labelSelect[1] ?? ''} />
         <FormControl>
-          <InputLabel>Label</InputLabel>
+          <InputLabel>Labels</InputLabel>
           <Select
-            label="Label"
-            name="label"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
+            multiple
+            input={<OutlinedInput label="Labels" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((s) => {
+                  const lbl = labels.find((l) => l.slug === s)
+                  return <Chip key={s} label={lbl?.title ?? s} size="small" />
+                })}
+              </Box>
+            )}
+            value={labelSelect}
+            onChange={(e) => {
+              const { value } = e.target
+              const next = typeof value === 'string' ? value.split(',') : value
+              if (next.length <= 2) setLabelSelect(next)
+            }}
           >
-            <MenuItem value="">—</MenuItem>
-            {labels.map((l) => (
-              <MenuItem key={l.slug} value={l.slug}>
-                {l.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl>
-          <InputLabel>Label 2</InputLabel>
-          <Select
-            label="Label 2"
-            name="label_2"
-            value={label2}
-            onChange={(e) => setLabel2(e.target.value)}
-          >
-            <MenuItem value="">—</MenuItem>
-            {labels
-              .filter((l) => l.slug !== label)
-              .map((l) => (
+            {labels.map((l) => {
+              const selected = labelSelect.includes(l.slug)
+              return (
                 <MenuItem key={l.slug} value={l.slug}>
+                  {selected ? (
+                    <CheckBox fontSize="small" sx={{ mr: 1 }} />
+                  ) : (
+                    <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
+                  )}
                   {l.title}
                 </MenuItem>
-              ))}
+              )
+            })}
           </Select>
         </FormControl>
 
