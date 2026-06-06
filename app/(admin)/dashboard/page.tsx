@@ -45,24 +45,6 @@ async function DashboardContent() {
       }}
     >
       <StatCard
-        addHref={isAdmin ? navLinksData.dashboard.eureka.sets.add : undefined}
-        count={eurekaSets?.length ?? 0}
-        tabHref={navLinksData.dashboard.eureka.sets.list}
-        title="Eureka Sets"
-      />
-      <StatCard
-        addHref={isAdmin ? navLinksData.dashboard.eureka.variants.add : undefined}
-        count={eurekaVariants?.length ?? 0}
-        tabHref={navLinksData.dashboard.eureka.variants.list}
-        title="Eureka Variants"
-      />
-      <StatCard
-        addHref={isAdmin ? navLinksData.dashboard.eureka.trials.add : undefined}
-        count={trials?.length ?? 0}
-        tabHref={navLinksData.dashboard.eureka.trials.list}
-        title="Trials"
-      />
-      <StatCard
         addHref={isAdmin ? navLinksData.dashboard.outfits.sets.add : undefined}
         count={outfitSets?.length ?? 0}
         tabHref={navLinksData.dashboard.outfits.sets.list}
@@ -79,6 +61,24 @@ async function DashboardContent() {
         count={evolutions?.length ?? 0}
         tabHref={navLinksData.dashboard.outfits.evolutions.list}
         title="Evolutions"
+      />
+      <StatCard
+        addHref={isAdmin ? navLinksData.dashboard.eureka.sets.add : undefined}
+        count={eurekaSets?.length ?? 0}
+        tabHref={navLinksData.dashboard.eureka.sets.list}
+        title="Eureka Sets"
+      />
+      <StatCard
+        addHref={isAdmin ? navLinksData.dashboard.eureka.variants.add : undefined}
+        count={eurekaVariants?.length ?? 0}
+        tabHref={navLinksData.dashboard.eureka.variants.list}
+        title="Eureka Variants"
+      />
+      <StatCard
+        addHref={isAdmin ? navLinksData.dashboard.eureka.trials.add : undefined}
+        count={trials?.length ?? 0}
+        tabHref={navLinksData.dashboard.eureka.trials.list}
+        title="Trials"
       />
     </Box>
   )
