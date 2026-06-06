@@ -126,9 +126,9 @@ export function OutfitVariantTable({
               <GridActionsCellItem
                 key="open"
                 icon={<OpenInNewIcon color="secondary" />}
-                label="View page"
-                title="View page"
-                onClick={() => (window.location.href = `/outfits/${row.outfit_set}`)}
+                label="View form"
+                title="View form"
+                onClick={() => (window.location.href = editHref(row))}
               />,
             ],
     },

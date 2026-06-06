@@ -122,9 +122,9 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
               <GridActionsCellItem
                 key="open"
                 icon={<OpenInNewIcon color="secondary" />}
-                label="View page"
-                title="View page"
-                onClick={() => (window.location.href = `/eureka/${row.slug}`)}
+                label="View form"
+                title="View form"
+                onClick={() => (window.location.href = editHref(row))}
               />,
             ],
     },

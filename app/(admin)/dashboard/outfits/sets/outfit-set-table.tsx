@@ -131,9 +131,9 @@ export function OutfitSetTable({
               <GridActionsCellItem
                 key="open"
                 icon={<OpenInNewIcon color="secondary" />}
-                label="View page"
-                title="View page"
-                onClick={() => (window.location.href = `/outfits/${row.slug}`)}
+                label="View form"
+                title="View form"
+                onClick={() => (window.location.href = editHref(row))}
               />,
             ],
     },

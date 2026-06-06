@@ -126,9 +126,9 @@ export function EurekaVariantTable({
               <GridActionsCellItem
                 key="open"
                 icon={<OpenInNewIcon color="secondary" />}
-                label="View page"
-                title="View page"
-                onClick={() => (window.location.href = `/eureka/${row.eureka_set}`)}
+                label="View form"
+                title="View form"
+                onClick={() => (window.location.href = editHref(row))}
               />,
             ],
     },
