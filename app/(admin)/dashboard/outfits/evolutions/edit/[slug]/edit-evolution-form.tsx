@@ -7,6 +7,7 @@ import { useFormConfig } from '@/app/(admin)/form-context'
 import { editEvolution } from './actions'
 import { navLinksData } from '@/lib/nav-links'
 import { Tables } from '@/lib/types/supabase'
+import { toTitle } from '@/lib/utils'
 
 type EvolutionRow = Pick<
   Tables<'evolutions'>,
@@ -76,24 +77,24 @@ export default function EditEvolutionForm({
         />
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Evolution Set Image</Typography>
+          <Typography variant="subtitle2">Evolution Set Images</Typography>
+					<Stack spacing={1} direction='row' sx={{ justifyContent: 'space-between' }}>
           <ImageUpload
             slug={evolution.slug}
             table="evolutions"
             url={imageUrl}
             onUpload={(url) => setImageUrl(url)}
+						caption='Default'
           />
-        </Stack>
-
-        <Stack spacing={1}>
-          <Typography variant="subtitle2">Alt Image</Typography>
           <ImageUpload
             column="alt_image_url"
             slug={evolution.slug}
             table="evolutions"
             url={altImageUrl}
             onUpload={(url) => setAltImageUrl(url)}
+						caption='Alternative'
           />
+					</Stack>
         </Stack>
 
         {variants.length > 0 && (
@@ -105,10 +106,7 @@ export default function EditEvolutionForm({
               {variants
                 .filter((v) => v.slug)
                 .map((v) => (
-                  <Stack key={v.slug} spacing={0.5}>
-                    <Typography sx={{ fontFamily: 'monospace' }} variant="caption">
-                      {v.slug}
-                    </Typography>
+                  <Stack key={v.slug} spacing={1} direction='row' sx={{ justifyContent: 'space-between' }}>
                     <input
                       name={`variant_image_${v.slug}`}
                       type="hidden"
@@ -119,6 +117,7 @@ export default function EditEvolutionForm({
                       table="outfit_variants"
                       url={variantImages[v.slug!] ?? null}
                       onUpload={(url) => setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))}
+											caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
                     />
                   </Stack>
                 ))}

@@ -76,7 +76,7 @@ export default function ImageUpload({
   }
 
   return (
-    <Card sx={{ minWidth: 'fit-content' }}>
+    <Card sx={{ minWidth: 'fit-content', flexGrow: 1 }}>
       <CardActionArea
         component="label"
         sx={{
