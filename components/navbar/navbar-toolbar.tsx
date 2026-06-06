@@ -1,16 +1,11 @@
 'use client'
 
 import * as React from 'react'
-import { createPortal } from 'react-dom'
-import { useNavBarToolbar, useNavDrawer } from './navbar-toolbar-context'
+import { useNavDrawer } from './navbar-toolbar-context'
 import { AppBar, Toolbar } from '@mui/material'
 
 export default function NavBarToolbar({ children }: { children: React.ReactNode }) {
-  // const { toolbarSlot } = useNavBarToolbar()
   const { drawerOpen } = useNavDrawer()
-
-  // if (!toolbarSlot) return null
-  // return createPortal(children, toolbarSlot)
   return (
     <AppBar
       color="transparent"

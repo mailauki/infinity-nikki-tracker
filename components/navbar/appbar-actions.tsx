@@ -2,7 +2,7 @@
 
 import IconButton from '@mui/material/IconButton'
 import { Tooltip } from '@mui/material'
-import { Edit, EditOff, SwapVert, SwitchLeft, SwitchRight } from '@mui/icons-material'
+import { Edit, EditOff, SwitchLeft, SwitchRight } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
 import { toTitle } from '@/lib/utils'
 import { useProfileEdit } from '@/app/profile/profile-context'

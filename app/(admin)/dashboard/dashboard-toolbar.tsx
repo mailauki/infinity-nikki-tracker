@@ -1,7 +1,7 @@
 'use client'
 
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
-import { AppBar, IconButton, Stack, Toolbar } from '@mui/material'
+import { IconButton, Stack } from '@mui/material'
 import DashboardNavTabs from './dashboard-nav-tabs'
 import DashboardViewToggle from './dashboard-view-toggle'
 import { usePathname } from 'next/navigation'

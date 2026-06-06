@@ -63,7 +63,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
       handleEditClick,
       handleSaveClick,
       handleCancelClick,
-      onViewClick: (row) => (window.location.href = editHref(row)),
+      onViewClick: (row) => window.location.assign(editHref(row)),
     }),
     {
       field: 'image_url',

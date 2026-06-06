@@ -59,7 +59,7 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
       handleEditClick,
       handleSaveClick,
       handleCancelClick,
-      onViewClick: () => (window.location.href = '/eureka/trials'),
+      onViewClick: () => window.location.assign('/eureka/trials'),
       viewLabel: 'View trials',
     }),
     {
