@@ -29,7 +29,7 @@ export default function OutfitVariantList({
       renderRow={(row) => (
         <ListRow
           image_url={row.image_url ?? undefined}
-          list="outfits/variants"
+          list="dashboard/outfits/variants"
           slug={row.slug ?? undefined}
           subheader={
             [row.outfit_category, row.evolution]

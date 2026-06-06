@@ -28,7 +28,7 @@ export default function TrialList({
       renderRow={(trial) => (
         <ListRow
           image_url={trial.image_url ?? undefined}
-          list="eureka/trials"
+          list="dashboard/eureka/trials"
           slug={trial.slug ?? undefined}
           subheader={trial.location ?? ''}
           title={trial.title}

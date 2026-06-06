@@ -26,7 +26,7 @@ export default function OutfitEvolutionList({
       renderRow={(row) => (
         <ListRow
           image_url={row.image_url ?? undefined}
-          list="outfits/evolutions"
+          list="dashboard/outfits/evolutions"
           slug={row.slug}
           subheader={row.order.toString() ?? undefined}
           title={row.subtitle ? `${row.title}: ${row.subtitle}` : row.title}

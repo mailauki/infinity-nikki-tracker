@@ -83,7 +83,7 @@ export default function EditOutfitSetForm({
   const [categorySelect, setCategorySelect] = useState<string[]>(initialCategorySelect)
   const [setImage, setSetImage] = useState<string | null>(outfitSet.image_url ?? null)
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
-    Object.fromEntries(initialVariants.filter((v) => v.slug).map((v) => [v.slug, v.image_url]))
+    Object.fromEntries(initialVariants.filter((v) => v.slug && v.evolution === null).map((v) => [v.slug, v.image_url]))
   )
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {

@@ -29,7 +29,7 @@ export default function EurekaSetList({
       renderRow={(row) => (
         <ListRow
           image_url={row.image_url}
-          list="eureka/sets"
+          list="dashboard/eureka/sets"
           slug={row.slug ?? undefined}
           subheader={(() => {
             if (!row.eureka_set_trials?.length) return '—'
