@@ -255,29 +255,26 @@ export function OutfitSetTable({
       headerName: 'Evolutions',
       width: 260,
       sortable: false,
-      renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 52, justifyContent: 'center' }}>
-          {isEditing(row.id) ? (
-            <LockedCell href={editHref(row)}>
-              <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
-                {row.evolutions?.length
-                  ? row.evolutions.map((e: Evolution) => (
-                      <Chip key={e.slug} label={e.subtitle} size="small" />
-                    ))
-                  : '—'}
-              </Box>
-            </LockedCell>
-          ) : (
-            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
-              {row.evolutions?.length
-                ? row.evolutions.map((e: Evolution) => (
-                    <Chip key={e.slug} label={e.subtitle} size="small" />
-                  ))
-                : '—'}
-            </Box>
-          )}
-        </Stack>
-      ),
+      renderCell: ({ row }: GridRenderCellParams<Row>) => {
+        const content = (
+          <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
+            {row.evolutions?.length
+              ? row.evolutions.map((e: Evolution) => (
+                  <Chip key={e.slug} label={e.subtitle} size="small" />
+                ))
+              : '—'}
+          </Box>
+        )
+        return (
+          <Stack sx={{ flex: 1, height: 52, justifyContent: 'center' }}>
+            {isEditing(row.id) ? (
+              <LockedCell href={editHref(row)}>{content}</LockedCell>
+            ) : (
+              content
+            )}
+          </Stack>
+        )
+      },
     },
     {
       field: 'glowup_evolution',
@@ -286,13 +283,8 @@ export function OutfitSetTable({
       sortable: false,
       renderCell: ({ row, value }: GridRenderCellParams<Row>) => {
         const evo = row.evolutions?.find((e: Evolution) => e.slug === value)
-        return isEditing(row.id) ? (
-          <LockedCell href={editHref(row)}>
-            <span>{evo ? evo.subtitle : '—'}</span>
-          </LockedCell>
-        ) : (
-          <span>{evo ? evo.subtitle : '—'}</span>
-        )
+        const content = <span>{evo ? evo.subtitle : '—'}</span>
+        return isEditing(row.id) ? <LockedCell href={editHref(row)}>{content}</LockedCell> : content
       },
     },
     {

@@ -17,13 +17,10 @@ export default function DashboardToolBar() {
   const mounted = useRef(false)
 
   useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true
-      return
-    }
-    if (!isFormRoute && formId) {
+    if (mounted.current && !isFormRoute && formId) {
       setFormConfig({ formId: '', backUrl: '', pending: false, showAddAnother: false })
     }
+    mounted.current = true
   }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isFormRoute) return null
