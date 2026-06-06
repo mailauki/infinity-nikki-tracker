@@ -6,14 +6,12 @@ import DashboardNavTabs from './dashboard-nav-tabs'
 import DashboardViewToggle from './dashboard-view-toggle'
 import { usePathname } from 'next/navigation'
 import { ChevronLeft } from '@mui/icons-material'
-import { useFormConfig } from '@/app/(admin)/form-context'
-
 export default function DashboardToolBar() {
   const pathname = usePathname()
-  const { formId } = useFormConfig()
   const isDashboardMainPage = pathname === '/dashboard'
+  const isFormRoute = pathname.endsWith('/new') || pathname.includes('/edit/')
 
-  if (formId) return null
+  if (isFormRoute) return null
   return (
     <NavBarToolbar>
       <Stack
