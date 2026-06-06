@@ -34,7 +34,7 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
   const { data: variant } = await supabase
     .from('outfit_variants')
     .select(
-      'id, outfit_set, outfit_category, evolution, image_url, default, slug, updated_at, outfit_sets ( title ), outfit_categories ( title ), evolutions ( title )'
+      'id, outfit_set, outfit_category, evolution, image_url, alt_image_url, default, slug, updated_at, outfit_sets ( title ), outfit_categories ( title ), evolutions ( title )'
     )
     .eq('slug', slug)
     .single()
