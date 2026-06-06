@@ -2,11 +2,11 @@ import { SparkleIcon } from '@/components/rarity-stars'
 import { FormControl, FormLabel, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 
 export default function RarityToggle({
-  selectedRarities,
+  selectedRarity,
   onRarityChange,
 }: {
-  selectedRarities: number[]
-  onRarityChange: (event: React.MouseEvent<HTMLElement>, value: number[]) => void
+  selectedRarity: number | null
+  onRarityChange: (event: React.MouseEvent<HTMLElement>, value: number | null) => void
 }) {
   return (
     <FormControl>
@@ -14,8 +14,9 @@ export default function RarityToggle({
         Rating
       </Typography>
       <ToggleButtonGroup
+        exclusive
         aria-labelledby="rating-buttons-group-label"
-        value={selectedRarities}
+        value={selectedRarity}
         onChange={onRarityChange}
       >
         {([2, 3, 4, 5] as const).map((rarity) => (

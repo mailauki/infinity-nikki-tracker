@@ -36,13 +36,17 @@ type OutfitVariantRow = Pick<
   | 'default'
   | 'updated_at'
 >
-import { SparkleIcon } from '@/components/rarity-stars'
 import ImageUpload from '@/components/forms/image-upload'
 import { useFormConfig } from '@/app/(admin)/form-context'
 import { editOutfitSet } from '../../actions'
 import EvolutionEditor from '../../evolution-editor'
+import RarityToggle from '@/components/filter/rarity-toggle'
 
 const FORM_ID = 'edit-outfit-set'
+
+const MENU_PROPS = {
+  slotProps: { paper: { style: { maxHeight: 36 * 6 } } },
+}
 
 export default function EditOutfitSetForm({
   outfitSet,
@@ -73,8 +77,9 @@ export default function EditOutfitSetForm({
   const [rarity, setRarity] = useState<number | ''>(outfitSet.rarity ?? '')
   const [description, setDescription] = useState(outfitSet.description ?? '')
   const [style, setStyle] = useState(outfitSet.style ?? '')
-  const [label, setLabel] = useState(outfitSet.label ?? '')
-  const [label2, setLabel2] = useState(outfitSet.label_2 ?? '')
+  const [labelSelect, setLabelSelect] = useState<string[]>(
+    [outfitSet.label, outfitSet.label_2].filter(Boolean) as string[]
+  )
   const [ability, setAbility] = useState(outfitSet.ability ?? '')
   const [editSlug, setEditSlug] = useState(false)
   const [evolutionDrafts, setEvolutionDrafts] = useState<EvolutionDraft[]>(initialDrafts)
@@ -159,31 +164,16 @@ export default function EditOutfitSetForm({
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <FormControl>
-          <InputLabel>Rarity</InputLabel>
-          <Select
-            label="Rarity"
-            name="rarity"
-            value={rarity}
-            onChange={(e) => setRarity(e.target.value as number | '')}
-          >
-            <MenuItem value="">—</MenuItem>
-            {[2, 3, 4, 5].map((n) => (
-              <MenuItem key={n} value={n}>
-                {n}
-                <SparkleIcon
-                  color="inherit"
-                  fontSize="inherit"
-                  sx={{ rotate: '15deg', ml: 0.5, mt: -0.3 }}
-                />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <input name="rarity" type="hidden" value={rarity} />
+        <RarityToggle
+          selectedRarity={typeof rarity === 'number' ? rarity : null}
+          onRarityChange={(_e, value) => setRarity(value ?? '')}
+        />
 
         <FormControl>
           <InputLabel>Style</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Style"
             name="style"
             value={style}
@@ -198,45 +188,49 @@ export default function EditOutfitSetForm({
           </Select>
         </FormControl>
 
+        <input name="label" type="hidden" value={labelSelect[0] ?? ''} />
+        <input name="label_2" type="hidden" value={labelSelect[1] ?? ''} />
         <FormControl>
-          <InputLabel>Label</InputLabel>
+          <InputLabel>Labels</InputLabel>
           <Select
-            label="Label"
-            name="label"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
+            multiple
+            MenuProps={MENU_PROPS}
+            input={<OutlinedInput label="Labels" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((s) => {
+                  const lbl = labels.find((l) => l.slug === s)
+                  return <Chip key={s} label={lbl?.title ?? s} size="small" />
+                })}
+              </Box>
+            )}
+            value={labelSelect}
+            onChange={(e) => {
+              const { value } = e.target
+              const next = typeof value === 'string' ? value.split(',') : value
+              if (next.length <= 2) setLabelSelect(next)
+            }}
           >
-            <MenuItem value="">—</MenuItem>
-            {labels.map((l) => (
-              <MenuItem key={l.slug} value={l.slug}>
-                {l.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl>
-          <InputLabel>Label 2</InputLabel>
-          <Select
-            label="Label 2"
-            name="label_2"
-            value={label2}
-            onChange={(e) => setLabel2(e.target.value)}
-          >
-            <MenuItem value="">—</MenuItem>
-            {labels
-              .filter((l) => l.slug !== label)
-              .map((l) => (
+            {labels.map((l) => {
+              const selected = labelSelect.includes(l.slug)
+              return (
                 <MenuItem key={l.slug} value={l.slug}>
+                  {selected ? (
+                    <CheckBox fontSize="small" sx={{ mr: 1 }} />
+                  ) : (
+                    <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
+                  )}
                   {l.title}
                 </MenuItem>
-              ))}
+              )
+            })}
           </Select>
         </FormControl>
 
         <FormControl>
           <InputLabel>Ability</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Ability"
             name="ability"
             value={ability}
@@ -255,6 +249,7 @@ export default function EditOutfitSetForm({
           <InputLabel>Categories</InputLabel>
           <Select
             multiple
+            MenuProps={MENU_PROPS}
             input={<OutlinedInput label="Categories" />}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>

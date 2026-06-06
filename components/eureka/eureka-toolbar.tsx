@@ -14,12 +14,12 @@ export default function EurekaToolBar() {
     selectedColor,
     selectedCategory,
     selectedObtainedFilter,
-    selectedRarities,
+    selectedRarity,
   } = filters
 
   const filtered = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
-    .filter((set) => selectedRarities.length === 0 || selectedRarities.includes(set.rarity ?? 0))
+    .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => ({
       colors: set.colors.filter((c) => !selectedColor || c.slug === selectedColor),
       eureka_variants: set.eureka_variants

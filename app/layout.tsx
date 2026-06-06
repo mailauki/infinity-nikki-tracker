@@ -42,7 +42,6 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/icon.png' },
-      new URL('/icon.png', defaultUrl),
       { url: '/icon-dark.png', media: '(prefers-color-scheme: dark)' },
     ],
     shortcut: ['/shortcut-icon.png'],

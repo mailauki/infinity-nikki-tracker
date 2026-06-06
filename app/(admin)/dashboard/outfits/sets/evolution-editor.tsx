@@ -80,7 +80,7 @@ export default function EvolutionEditor({
 
       {drafts.map((draft, index) => (
         <Stack key={index} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-          <Typography sx={{ minWidth: 20, color: 'text.secondary' }} variant="caption">
+          <Typography sx={{ minWidth: 20, color: 'text.secondary' }} variant='body2'>
             {index + 1}.
           </Typography>
           <TextField
@@ -102,15 +102,15 @@ export default function EvolutionEditor({
       ))}
 
       {drafts.length < maxEvolutions && (
-        <Box>
-          <Button size="small" startIcon={<AddCircleOutline />} variant="text" onClick={handleAdd}>
+        <Box sx={{ pb: 1 }}>
+          <Button startIcon={<AddCircleOutline />} variant="text" onClick={handleAdd}>
             Add evolution
           </Button>
         </Box>
       )}
 
       {drafts.length > 0 && (
-        <FormControl size="small">
+        <FormControl>
           <InputLabel>Glow-Up Evolution</InputLabel>
           <Select
             label="Glow-Up Evolution"
@@ -124,7 +124,6 @@ export default function EvolutionEditor({
               </MenuItem>
             ))}
           </Select>
-          <FormHelperText>Shown first on the outfit set page</FormHelperText>
         </FormControl>
       )}
     </Stack>

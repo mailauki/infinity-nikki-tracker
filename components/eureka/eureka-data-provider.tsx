@@ -84,9 +84,7 @@ export default function EurekaDataProvider({
           selectedCategory: (prefs.eureka_category as CategoryFilter) ?? null,
           selectedObtainedFilter: (prefs.eureka_obtained_filter as ObtainedFilter) ?? null,
           selectedColor: prefs.eureka_color ?? null,
-          selectedRarities: prefs.eureka_rarity
-            ? prefs.eureka_rarity.split(',').map(Number).filter(Boolean)
-            : [],
+          selectedRarity: prefs.eureka_rarity ? Number(prefs.eureka_rarity) || null : null,
         })
         prefsLoaded.current = true
       })
@@ -139,7 +137,7 @@ export default function EurekaDataProvider({
         eureka_category: filters.selectedCategory,
         eureka_obtained_filter: filters.selectedObtainedFilter,
         eureka_color: filters.selectedColor,
-        eureka_rarity: filters.selectedRarities.length ? filters.selectedRarities.join(',') : null,
+        eureka_rarity: filters.selectedRarity ? String(filters.selectedRarity) : null,
       })
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
