@@ -17,50 +17,42 @@ import {
 } from '@mui/material'
 import { toSlugVariant } from '@/lib/utils'
 import { Edit, EditOff } from '@mui/icons-material'
-import ImageUpload from '@/components/forms/image-upload'
-import { EurekaCategory, EurekaColor, EurekaSetRaw, EurekaVariantRaw } from '@/lib/types/eureka'
+import { Evolution, OutfitCategory, OutfitSetRaw, OutfitVariantRaw } from '@/lib/types/outfit'
 import { useFormConfig } from '@/app/(admin)/form-context'
-import { addEurekaVariant } from '../actions'
+import { addOutfitVariant } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
 
-const FORM_ID = 'add-eureka-variant'
+const FORM_ID = 'add-outfit-variant'
 
-export default function AddEurekaVariantForm({
-  eurekaSets,
-  categories,
-  colors,
+export default function AddOutfitVariantForm({
+  outfitSets,
+  outfitCategories,
+  evolutions,
   variants,
 }: {
-  eurekaSets: EurekaSetRaw[]
-  categories: EurekaCategory[]
-  colors: EurekaColor[]
-  variants: EurekaVariantRaw[]
+  outfitSets: OutfitSetRaw[]
+  outfitCategories: OutfitCategory[]
+  evolutions: Evolution[]
+  variants: OutfitVariantRaw[]
 }) {
   const { setFormConfig } = useFormConfig()
-  const [eurekaSet, setEurekaSet] = useState('')
-  const [category, setCategory] = useState('')
-  const [color, setColor] = useState('')
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
+  const [outfitSet, setOutfitSet] = useState('')
+  const [outfitCategory, setOutfitCategory] = useState('')
+  const [evolution, setEvolution] = useState('')
   const [isDefault, setIsDefault] = useState(false)
   const [slug, setSlug] = useState('')
   const [editSlug, setEditSlug] = useState(false)
 
   const hasDefault = variants.some(
-    (v) => v.eureka_set === eurekaSet && v.category === category && v.default
+    (v) => v.outfit_set === outfitSet && v.outfit_category === outfitCategory && v.default
   )
 
-  useEffect(() => {
-    if (!editSlug && eurekaSet && category && color) {
-      setSlug(toSlugVariant(eurekaSet, category, color))
-    }
-  }, [eurekaSet, category, color, editSlug])
-
-  const [state, action, pending] = useActionState(addEurekaVariant, null)
+  const [state, action, pending] = useActionState(addOutfitVariant, null)
 
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.eureka.variants.list,
+      backUrl: navLinksData.dashboard.outfits.variants.list,
       pending,
       showAddAnother: true,
     })
@@ -70,15 +62,20 @@ export default function AddEurekaVariantForm({
   useEffect(() => {
     if (state && 'addAnother' in state) {
       setFormConfig({ savedTitle: state.savedTitle })
-      setEurekaSet('')
-      setCategory('')
-      setColor('')
-      setImageUrl(null)
+      setOutfitSet('')
+      setOutfitCategory('')
+      setEvolution('')
       setIsDefault(false)
       setSlug('')
       setEditSlug(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const autoSlug =
+    outfitSet && outfitCategory && evolution
+      ? toSlugVariant(outfitSet, outfitCategory, evolution)
+      : ''
+  const currentSlug = editSlug ? slug : autoSlug
 
   return (
     <form action={action} id={FORM_ID}>
@@ -86,15 +83,15 @@ export default function AddEurekaVariantForm({
         {state?.error && <Alert severity="error">{state.error}</Alert>}
 
         <FormControl required>
-          <InputLabel>Eureka Set</InputLabel>
+          <InputLabel>Outfit Set</InputLabel>
           <Select
-            label="Eureka Set"
-            name="eureka_set"
-            value={eurekaSet}
-            onChange={(e) => setEurekaSet(e.target.value)}
+            label="Outfit Set"
+            name="outfit_set"
+            value={outfitSet}
+            onChange={(e) => setOutfitSet(e.target.value)}
           >
             <MenuItem value="">—</MenuItem>
-            {eurekaSets.map((set) => (
+            {outfitSets.map((set) => (
               <MenuItem key={set.id} value={set.slug ?? ''}>
                 {set.title}
               </MenuItem>
@@ -106,47 +103,41 @@ export default function AddEurekaVariantForm({
           <InputLabel>Category</InputLabel>
           <Select
             label="Category"
-            name="category"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            name="outfit_category"
+            value={outfitCategory}
+            onChange={(e) => setOutfitCategory(e.target.value)}
           >
             <MenuItem value="">—</MenuItem>
-            {categories.map((c) => (
+            {outfitCategories.map((c) => (
               <MenuItem key={c.slug} value={c.slug}>
-                {c.title}
+                {c.part}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
 
         <FormControl>
-          <InputLabel>Color</InputLabel>
+          <InputLabel>Evolution</InputLabel>
           <Select
-            label="Color"
-            name="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
+            label="Evolution"
+            name="evolution"
+            value={evolution}
+            onChange={(e) => setEvolution(e.target.value)}
           >
             <MenuItem value="">—</MenuItem>
-            {[...colors]
-              .sort((a, b) => {
-                if (a.slug === 'iridescent') return 1
-                if (b.slug === 'iridescent') return -1
-                return 0
-              })
-              .map((c) => (
-                <MenuItem key={c.slug} value={c.slug}>
-                  {c.title}
-                </MenuItem>
-              ))}
+            {evolutions.map((e) => (
+              <MenuItem key={e.slug} value={e.slug}>
+                {e.title}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 
-        <input name="slug" type="hidden" value={slug} />
+        <input name="slug" type="hidden" value={currentSlug} />
         <TextField
           required
           disabled={!editSlug}
-          helperText="Auto-generated from name, category, and color — edit if needed"
+          helperText="Auto-generated from set, category, and evolution — edit if needed"
           label="Slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
@@ -160,17 +151,10 @@ export default function AddEurekaVariantForm({
               ),
             },
           }}
-          value={slug}
+          value={currentSlug}
           onChange={(e) => setSlug(e.target.value)}
         />
 
-        <input name="image_url" type="hidden" value={imageUrl ?? ''} />
-        <ImageUpload
-          slug={slug}
-          table="eureka_variants"
-          url={imageUrl}
-          onUpload={(url) => setImageUrl(url)}
-        />
 
         <input name="default" type="hidden" value={String(isDefault)} />
         <FormControl>
@@ -187,7 +171,7 @@ export default function AddEurekaVariantForm({
           <FormHelperText>
             {hasDefault
               ? 'This category already has a default variant for this set'
-              : 'Used to determine the Eureka set thumbnail image — limit one per category'}
+              : 'Used to determine the outfit set thumbnail image — limit one per category'}
           </FormHelperText>
         </FormControl>
       </Stack>

@@ -28,7 +28,7 @@ export default function OutfitSetList({
       renderRow={(row) => (
         <ListRow
           image_url={row.image_url ?? undefined}
-          list="outfits/sets"
+          list="dashboard/outfits/sets"
           slug={row.slug ?? undefined}
           subheader={row.evolutions?.map((e) => e.subtitle).join(', ') || '—'}
           title={row.title}

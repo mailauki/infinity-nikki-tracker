@@ -29,7 +29,7 @@ export default function EurekaVariantList({
       renderRow={(row) => (
         <ListRow
           image_url={row.image_url ?? undefined}
-          list="eureka/variants"
+          list="dashboard/eureka/variants"
           slug={row.slug ?? undefined}
           subheader={
             [toTitle(row.category!), toTitle(row.color!)].filter(Boolean).join(' • ') || undefined

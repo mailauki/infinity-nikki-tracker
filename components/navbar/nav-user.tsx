@@ -49,14 +49,20 @@ export function NavUser() {
   }, [])
 
   if (userId === undefined) {
-    return <Skeleton height={40} sx={{ flexShrink: 0 }} variant="circular" width={40} />
+    return (
+      <Box sx={{ position: 'absolute', top: 24, right: 18 }}>
+        <Skeleton height={40} variant="circular" width={40} />
+      </Box>
+    )
   }
 
   if (!userId) {
     return (
-      <Button color="inherit" href="/auth/login">
-        Login
-      </Button>
+      <Box sx={{ position: 'absolute', top: 16, right: 12 }}>
+        <Button color="inherit" href="/auth/login">
+          Login
+        </Button>
+      </Box>
     )
   }
 
@@ -64,7 +70,7 @@ export function NavUser() {
     <Box
       sx={{
         flexGrow: 0,
-        position: 'fixed',
+        position: 'absolute',
         top: 24,
         right: 18,
       }}

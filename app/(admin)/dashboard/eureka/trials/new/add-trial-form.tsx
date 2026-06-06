@@ -14,7 +14,6 @@ import {
 } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
 import { toSlug } from '@/lib/utils'
-import ImageUpload from '@/components/forms/image-upload'
 import { useFormConfig } from '@/app/(admin)/form-context'
 import { addTrial } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
@@ -26,7 +25,6 @@ export default function AddTrialForm() {
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [editSlug, setEditSlug] = useState(false)
-  const [imageUrl, setImageUrl] = useState<string | null>(null)
 
   const [state, action, pending] = useActionState(addTrial, null)
 
@@ -46,7 +44,6 @@ export default function AddTrialForm() {
       setTitle('')
       setSlug('')
       setEditSlug(false)
-      setImageUrl(null)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -103,13 +100,6 @@ export default function AddTrialForm() {
           </Select>
         </FormControl>
 
-        <input name="image_url" type="hidden" value={imageUrl ?? ''} />
-        <ImageUpload
-          slug={slug}
-          table="trials"
-          url={imageUrl}
-          onUpload={(url) => setImageUrl(url)}
-        />
       </Stack>
     </form>
   )

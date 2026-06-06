@@ -41,7 +41,7 @@ export default function NavBar() {
     >
       <Toolbar sx={{ alignItems: 'flex-end', justifyContent: 'center', pb: 0.15 }}>
         <PageTitle />
-        <NavUser />
+				<NavUser />
       </Toolbar>
       <Toolbar ref={refCallback} sx={{ mb: 2 }} />
     </AppBar>

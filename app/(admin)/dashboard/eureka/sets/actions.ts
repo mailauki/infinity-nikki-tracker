@@ -4,8 +4,12 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { toSlugVariant } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
+import { getUserRole } from '@/hooks/user'
 
 export async function addEurekaSet(_: unknown, formData: FormData) {
+  const role = await getUserRole()
+  if (role !== 'admin') return { error: 'Forbidden' }
+
   const supabase = await createClient()
 
   const title = (formData.get('title') as string | null)?.trim() ?? ''
@@ -71,6 +75,9 @@ export async function editEurekaSet(
   _: unknown,
   formData: FormData
 ) {
+  const role = await getUserRole()
+  if (role !== 'admin') return { error: 'Forbidden' }
+
   const supabase = await createClient()
 
   const title = (formData.get('title') as string | null)?.trim() ?? ''

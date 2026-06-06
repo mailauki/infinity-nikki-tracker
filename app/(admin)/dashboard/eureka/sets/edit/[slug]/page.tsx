@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import EditEurekaSetForm from './edit-eureka-set-form'
 import { getTrials } from '@/hooks/data/trials'
@@ -27,12 +26,7 @@ export default async function EditEurekaSetPage({ params }: { params: Promise<{ 
 
 async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const referer = (await headers()).get('referer') ?? ''
-  const refererPath = new URL(referer, 'http://localhost').pathname
-  const back =
-    refererPath.startsWith('/eureka/') && !refererPath.startsWith('/eureka/trials')
-      ? refererPath
-      : '/dashboard/eureka/sets'
+  const back = '/dashboard/eureka/sets'
 
   const supabase = await createClient()
 

@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import EditOutfitSetForm from './edit-outfit-set-form'
 import { getStyles } from '@/hooks/data/styles'
@@ -28,9 +27,7 @@ export default async function EditOutfitSetPage({ params }: { params: Promise<{ 
 
 async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const referer = (await headers()).get('referer') ?? ''
-  const refererPath = new URL(referer, 'http://localhost').pathname
-  const back = refererPath.startsWith('/outfits/') ? refererPath : '/dashboard/outfits/sets'
+  const back = '/dashboard/outfits/sets'
 
   const supabase = await createClient()
 
