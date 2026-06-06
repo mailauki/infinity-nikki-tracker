@@ -6,6 +6,7 @@ import { GRID_COLUMNS } from '@/lib/types/props'
 import type { EurekaColor, EurekaVariant } from '@/lib/types/eureka'
 import EurekaVariantCard from './eureka-variant-card'
 import ColorChip from '../color-chip'
+import { useEurekaData } from './eureka-context'
 
 export default function EurekaVariantColorFilter({
   colors,
@@ -16,12 +17,20 @@ export default function EurekaVariantColorFilter({
   eureka_variants: EurekaVariant[]
   isLoggedIn: boolean
 }) {
+  const { obtainedEureka } = useEurekaData()
   const [selectedColor, setSelectedColor] = useState<string | null>(null)
+
+  const variantsWithObtained = eureka_variants.map((v) => ({
+    ...v,
+    obtained: obtainedEureka.some(
+      (o) => o.eureka_set === v.eureka_set && o.category === v.category && o.color === v.color
+    ),
+  }))
 
   const filteredVariants =
     selectedColor === null
-      ? eureka_variants
-      : eureka_variants.filter((v) => v.color === selectedColor)
+      ? variantsWithObtained
+      : variantsWithObtained.filter((v) => v.color === selectedColor)
 
   function toggleColor(slug: string) {
     setSelectedColor((prev) => (prev === slug ? null : slug))
