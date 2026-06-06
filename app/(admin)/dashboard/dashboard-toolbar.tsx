@@ -5,7 +5,7 @@ import { IconButton, Stack } from '@mui/material'
 import DashboardNavTabs from './dashboard-nav-tabs'
 import DashboardViewToggle from './dashboard-view-toggle'
 import { usePathname } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { ChevronLeft } from '@mui/icons-material'
 import { useFormConfig } from '@/app/(admin)/form-context'
 
@@ -14,8 +14,13 @@ export default function DashboardToolBar() {
   const { formId, setFormConfig } = useFormConfig()
   const isDashboardMainPage = pathname === '/dashboard'
   const isFormRoute = pathname.endsWith('/new') || pathname.includes('/edit/')
+  const mounted = useRef(false)
 
   useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true
+      return
+    }
     if (!isFormRoute && formId) {
       setFormConfig({ formId: '', backUrl: '', pending: false, showAddAnother: false })
     }
