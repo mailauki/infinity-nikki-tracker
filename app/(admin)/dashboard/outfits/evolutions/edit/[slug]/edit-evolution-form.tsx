@@ -11,7 +11,14 @@ import { toTitle } from '@/lib/utils'
 
 type EvolutionRow = Pick<
   Tables<'evolutions'>,
-  'slug' | 'title' | 'subtitle' | 'description' | 'order' | 'outfit_set' | 'image_url' | 'alt_image_url'
+  | 'slug'
+  | 'title'
+  | 'subtitle'
+  | 'description'
+  | 'order'
+  | 'outfit_set'
+  | 'image_url'
+  | 'alt_image_url'
 >
 
 type VariantRow = Pick<
@@ -78,23 +85,23 @@ export default function EditEvolutionForm({
 
         <Stack spacing={1}>
           <Typography variant="subtitle2">Evolution Set Images</Typography>
-					<Stack spacing={1} direction='row' sx={{ justifyContent: 'space-between' }}>
-          <ImageUpload
-            slug={evolution.slug}
-            table="evolutions"
-            url={imageUrl}
-            onUpload={(url) => setImageUrl(url)}
-						caption='Default'
-          />
-          <ImageUpload
-            column="alt_image_url"
-            slug={evolution.slug}
-            table="evolutions"
-            url={altImageUrl}
-            onUpload={(url) => setAltImageUrl(url)}
-						caption='Alternative'
-          />
-					</Stack>
+          <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between' }}>
+            <ImageUpload
+              caption="Default"
+              slug={evolution.slug}
+              table="evolutions"
+              url={imageUrl}
+              onUpload={(url) => setImageUrl(url)}
+            />
+            <ImageUpload
+              caption="Alternative"
+              column="alt_image_url"
+              slug={evolution.slug}
+              table="evolutions"
+              url={altImageUrl}
+              onUpload={(url) => setAltImageUrl(url)}
+            />
+          </Stack>
         </Stack>
 
         {variants.length > 0 && (
@@ -106,18 +113,23 @@ export default function EditEvolutionForm({
               {variants
                 .filter((v) => v.slug)
                 .map((v) => (
-                  <Stack key={v.slug} spacing={1} direction='row' sx={{ justifyContent: 'space-between' }}>
+                  <Stack
+                    key={v.slug}
+                    direction="row"
+                    spacing={1}
+                    sx={{ justifyContent: 'space-between' }}
+                  >
                     <input
                       name={`variant_image_${v.slug}`}
                       type="hidden"
                       value={variantImages[v.slug!] ?? ''}
                     />
                     <ImageUpload
+                      caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
                       slug={v.slug ?? undefined}
                       table="outfit_variants"
                       url={variantImages[v.slug!] ?? null}
                       onUpload={(url) => setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))}
-											caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
                     />
                   </Stack>
                 ))}

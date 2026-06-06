@@ -470,13 +470,13 @@ const theme = createTheme({
         },
       },
     },
-		MuiListItemButton: {
-			defaultProps: {
-				style: {
-					borderRadius: 8,
-				}
-			}
-		}
+    MuiListItemButton: {
+      defaultProps: {
+        style: {
+          borderRadius: 8,
+        },
+      },
+    },
   },
 })
 

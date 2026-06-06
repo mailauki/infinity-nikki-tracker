@@ -51,7 +51,9 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
 
   const { data: variantRows } = await supabase
     .from('outfit_variants')
-    .select('id, slug, outfit_set, outfit_category, evolution, image_url, alt_image_url, default, updated_at')
+    .select(
+      'id, slug, outfit_set, outfit_category, evolution, image_url, alt_image_url, default, updated_at'
+    )
     .eq('outfit_set', outfitSet.slug)
     .order('id', { ascending: true })
 
@@ -75,8 +77,8 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
       abilities={abilities}
       back={back}
       initialCategorySelect={initialCategorySelect}
-      initialGlowupEvolutionOrder={initialGlowupEvolutionOrder}
       initialDrafts={initialDrafts}
+      initialGlowupEvolutionOrder={initialGlowupEvolutionOrder}
       initialVariants={variantRows ?? []}
       labels={labels}
       outfitCategories={outfitCategories}

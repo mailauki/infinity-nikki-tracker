@@ -144,7 +144,9 @@ export function OutfitVariantTable({
             slug={row.slug ?? undefined}
             table="outfit_variants"
             url={row.image_url ?? null}
-            onUpload={(url) => setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, image_url: url } : r)))}
+            onUpload={(url) =>
+              setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, image_url: url } : r)))
+            }
           />
         </Stack>
       ),
@@ -161,7 +163,11 @@ export function OutfitVariantTable({
             slug={row.slug ?? undefined}
             table="outfit_variants"
             url={row.alt_image_url ?? null}
-            onUpload={(url) => setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, alt_image_url: url } : r)))}
+            onUpload={(url) =>
+              setRows((prev) =>
+                prev.map((r) => (r.id === row.id ? { ...r, alt_image_url: url } : r))
+              )
+            }
           />
         </Stack>
       ),
@@ -208,7 +214,10 @@ export function OutfitVariantTable({
       width: 140,
       editable: true,
       type: 'singleSelect',
-      valueOptions: evolutions.map((e) => ({ value: e.slug, label: e.subtitle ?? toTitle(e.title ?? '') })),
+      valueOptions: evolutions.map((e) => ({
+        value: e.slug,
+        label: e.subtitle ?? toTitle(e.title ?? ''),
+      })),
       valueGetter: (_value: unknown, row: Row) => row.evolution ?? '',
       valueFormatter: (value: string | null) =>
         evolutions.find((e) => e.slug === value)?.subtitle ?? toTitle(value || '—'),

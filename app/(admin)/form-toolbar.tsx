@@ -39,14 +39,10 @@ export default function FormToolBar() {
         open={!!savedTitle}
         onClose={() => setFormConfig({ savedTitle: undefined })}
       >
-				<Alert
-					severity="success"
-					variant="filled"
-					sx={{ width: '100%' }}
-				>
-					{savedTitle ? `"${savedTitle}" saved successfully!` : 'Saved successfully!'}
-				</Alert>
-			</Snackbar>
+        <Alert severity="success" sx={{ width: '100%' }} variant="filled">
+          {savedTitle ? `"${savedTitle}" saved successfully!` : 'Saved successfully!'}
+        </Alert>
+      </Snackbar>
     </>
   )
 }

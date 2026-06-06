@@ -46,7 +46,11 @@ export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTable
             slug={row.slug}
             table="evolutions"
             url={row.image_url ?? null}
-            onUpload={(url) => setRows((prev) => prev.map((r) => (r.slug === row.slug ? { ...r, image_url: url } : r)))}
+            onUpload={(url) =>
+              setRows((prev) =>
+                prev.map((r) => (r.slug === row.slug ? { ...r, image_url: url } : r))
+              )
+            }
           />
         </Stack>
       ),
@@ -63,7 +67,11 @@ export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTable
             slug={row.slug}
             table="evolutions"
             url={row.alt_image_url ?? null}
-            onUpload={(url) => setRows((prev) => prev.map((r) => (r.slug === row.slug ? { ...r, alt_image_url: url } : r)))}
+            onUpload={(url) =>
+              setRows((prev) =>
+                prev.map((r) => (r.slug === row.slug ? { ...r, alt_image_url: url } : r))
+              )
+            }
           />
         </Stack>
       ),

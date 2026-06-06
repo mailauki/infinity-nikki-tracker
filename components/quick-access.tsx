@@ -32,10 +32,7 @@ export function QuickAccess() {
 
   return (
     <Box sx={{ py: 3 }}>
-      <Typography
-        variant="overline"
-        sx={{ display: 'block', textAlign: 'center', mb: 2 }}
-      >
+      <Typography sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="overline">
         Quick Access
       </Typography>
       <Box

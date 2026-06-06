@@ -85,10 +85,18 @@ export default function EditOutfitSetForm({
   const [setImage, setSetImage] = useState<string | null>(outfitSet.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(outfitSet.alt_image_url ?? null)
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
-    Object.fromEntries(initialVariants.filter((v) => v.slug && v.evolution === null).map((v) => [v.slug, v.image_url]))
+    Object.fromEntries(
+      initialVariants
+        .filter((v) => v.slug && v.evolution === null)
+        .map((v) => [v.slug, v.image_url])
+    )
   )
   const [variantAltImages, setVariantAltImages] = useState<Record<string, string | null>>(
-    Object.fromEntries(initialVariants.filter((v) => v.slug && v.evolution === null).map((v) => [v.slug, v.alt_image_url]))
+    Object.fromEntries(
+      initialVariants
+        .filter((v) => v.slug && v.evolution === null)
+        .map((v) => [v.slug, v.alt_image_url])
+    )
   )
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {
@@ -293,26 +301,26 @@ export default function EditOutfitSetForm({
           onGlowupChange={setGlowupEvolutionOrder}
         />
 
-				<Stack spacing={1}>
+        <Stack spacing={1}>
           <Typography variant="subtitle2">Set Images</Typography>
-					<Stack spacing={1} direction='row' sx={{ justifyContent: 'space-between' }}>
-						<ImageUpload
-							slug={outfitSet.slug}
-							table="outfit_sets"
-							url={setImage}
-							onUpload={(url) => setSetImage(url)}
-							caption='Default'
-						/>
-						<ImageUpload
-							column="alt_image_url"
-							slug={outfitSet.slug}
-							table="outfit_sets"
-							url={altSetImage}
-							onUpload={(url) => setAltSetImage(url)}
-							caption='Alternative'
-						/>
-					</Stack>
-				</Stack>
+          <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between' }}>
+            <ImageUpload
+              caption="Default"
+              slug={outfitSet.slug}
+              table="outfit_sets"
+              url={setImage}
+              onUpload={(url) => setSetImage(url)}
+            />
+            <ImageUpload
+              caption="Alternative"
+              column="alt_image_url"
+              slug={outfitSet.slug}
+              table="outfit_sets"
+              url={altSetImage}
+              onUpload={(url) => setAltSetImage(url)}
+            />
+          </Stack>
+        </Stack>
 
         {initialVariants.some((v) => v.evolution === null) && (
           <Stack spacing={1}>
@@ -323,26 +331,35 @@ export default function EditOutfitSetForm({
               {initialVariants
                 .filter((v) => v.slug && v.evolution === null)
                 .map((v) => (
-                  <Stack key={v.slug} spacing={1} direction='row' sx={{ justifyContent: 'space-between' }}>
+                  <Stack
+                    key={v.slug}
+                    direction="row"
+                    spacing={1}
+                    sx={{ justifyContent: 'space-between' }}
+                  >
                     <input
                       name={`variant_image_${v.slug}`}
                       type="hidden"
                       value={variantImages[v.slug!] ?? ''}
                     />
                     <ImageUpload
+                      caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
                       slug={v.slug ?? undefined}
                       table="outfit_variants"
                       url={variantImages[v.slug!] ?? null}
                       onUpload={(url) => setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))}
-											caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
                     />
                     <ImageUpload
+                      caption={
+                        (v.outfit_category && `Alt ${toTitle(v.outfit_category)}`) ?? undefined
+                      }
                       column="alt_image_url"
                       slug={v.slug ?? undefined}
                       table="outfit_variants"
                       url={variantAltImages[v.slug!] ?? null}
-                      onUpload={(url) => setVariantAltImages((prev) => ({ ...prev, [v.slug!]: url }))}
-											caption={(v.outfit_category && `Alt ${toTitle(v.outfit_category)}`) ?? undefined}
+                      onUpload={(url) =>
+                        setVariantAltImages((prev) => ({ ...prev, [v.slug!]: url }))
+                      }
                     />
                   </Stack>
                 ))}

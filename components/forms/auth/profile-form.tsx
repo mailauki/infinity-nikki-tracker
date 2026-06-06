@@ -184,19 +184,11 @@ export default function ProfileForm({
           {loading ? 'Loading…' : 'Update'}
         </Button>
       </Stack>
-      <Snackbar
-        autoHideDuration={6000}
-        open={saveSuccess}
-        onClose={() => setSaveSuccess(false)}
-      >
-				<Alert
-					severity="success"
-					variant="filled"
-					sx={{ width: '100%' }}
-				>
-					Profile saved successfully!
-				</Alert>
-			</Snackbar>
+      <Snackbar autoHideDuration={6000} open={saveSuccess} onClose={() => setSaveSuccess(false)}>
+        <Alert severity="success" sx={{ width: '100%' }} variant="filled">
+          Profile saved successfully!
+        </Alert>
+      </Snackbar>
     </Stack>
   )
 }

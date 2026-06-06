@@ -55,7 +55,11 @@ export function SortButton() {
   return (
     <Tooltip title={`Sort: ${label}`}>
       <IconButton aria-label={`Sort ${label}`} onClick={toggleSort}>
-        {sortOrder === 'new' ? <SwitchRight sx={{ rotate: '90deg' }} /> : <SwitchLeft sx={{ rotate: '90deg' }} />}
+        {sortOrder === 'new' ? (
+          <SwitchRight sx={{ rotate: '90deg' }} />
+        ) : (
+          <SwitchLeft sx={{ rotate: '90deg' }} />
+        )}
       </IconButton>
     </Tooltip>
   )

@@ -87,7 +87,10 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
       if (glowupEvolutionOrder) {
         const glowupSlug = evolutionRows.find((e) => e.order === glowupEvolutionOrder)?.slug ?? null
         if (glowupSlug) {
-          await supabase.from('outfit_sets').update({ glowup_evolution: glowupSlug }).eq('slug', slug)
+          await supabase
+            .from('outfit_sets')
+            .update({ glowup_evolution: glowupSlug })
+            .eq('slug', slug)
         }
       }
     }
@@ -279,7 +282,8 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
 
   // Update glowup_evolution on the set
   const glowupSlug = glowupEvolutionOrder
-    ? (`${slug}-${toSlug(evolutionDrafts.find((d) => d.order === glowupEvolutionOrder)?.subtitle ?? '')}` || null)
+    ? `${slug}-${toSlug(evolutionDrafts.find((d) => d.order === glowupEvolutionOrder)?.subtitle ?? '')}` ||
+      null
     : null
   const { error: glowupError } = await supabase
     .from('outfit_sets')

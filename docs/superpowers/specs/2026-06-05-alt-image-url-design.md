@@ -13,11 +13,13 @@ Add an `alt_image_url` column to `outfit_sets`, `outfit_variants`, and `evolutio
 Three migrations, one per table. All columns are `text`, nullable, no default.
 
 - `20260605000002_add_alt_image_url_to_outfit_sets.sql`
+
   ```sql
   ALTER TABLE outfit_sets ADD COLUMN alt_image_url text;
   ```
 
 - `20260605000003_add_alt_image_url_to_outfit_variants.sql`
+
   ```sql
   ALTER TABLE outfit_variants ADD COLUMN alt_image_url text;
   ```
@@ -63,6 +65,7 @@ Add `alt_image_url` to these `Pick` types:
 **Files:** `hooks/data/admin/outfit-sets.ts`, `hooks/data/admin/outfit-variants.ts`
 
 Add `alt_image_url` to the `.select()` strings in all four functions:
+
 - `getOutfitSetsRaw`, `getOutfitSetRaw`
 - `getOutfitVariantsRaw`, `getOutfitVariantRaw`
 
@@ -88,6 +91,7 @@ Same pattern: remove `image_url` from locked fields, replace renderCell with `Im
 ### `outfit-evolution-table.tsx`
 
 The evolutions table is currently read-only (no inline editing, no `processRowUpdate`). To support image uploads:
+
 - Replace the `image_url` `LazyAvatar` renderCell with `ImageUpload` (no `setRows` needed — upload writes directly to Supabase; local state update via a `useState` rows copy initialized from props)
 - Add `alt_image_url` column with the same pattern
 - No row edit mode needed; uploads are self-contained
@@ -103,6 +107,7 @@ Each form gets an "Alt Image" `ImageUpload` section below the existing image sec
 ### `edit-outfit-set-form.tsx`
 
 Below the "Set Image" `ImageUpload`:
+
 ```tsx
 const [altSetImage, setAltSetImage] = useState<string | null>(outfitSet.alt_image_url ?? null)
 // ...
@@ -123,6 +128,7 @@ No hidden input needed — `ImageUpload` writes directly to Supabase on upload. 
 ### `edit-outfit-variant-form.tsx`
 
 Below the existing `ImageUpload`:
+
 ```tsx
 const [altImageUrl, setAltImageUrl] = useState<string | null>(variant.alt_image_url ?? null)
 // ...
@@ -140,6 +146,7 @@ Same pattern — no hidden input, server action unchanged.
 ### `edit-evolution-form.tsx`
 
 Below the "Evolution Set Image" `ImageUpload`:
+
 ```tsx
 <Stack spacing={1}>
   <Typography variant="subtitle2">Alt Image</Typography>

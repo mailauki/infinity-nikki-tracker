@@ -37,7 +37,7 @@ export default function EurekaVariantCard({
       <Card
         sx={{
           minWidth: 'fit-content',
-					bgcolor: eurekaVariant.obtained ? 'surface.containerLow' : 'surface.containerHighest'
+          bgcolor: eurekaVariant.obtained ? 'surface.containerLow' : 'surface.containerHighest',
         }}
       >
         <Box sx={{ position: 'relative', height: '100%' }}>
