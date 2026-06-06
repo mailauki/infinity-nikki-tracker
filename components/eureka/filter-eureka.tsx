@@ -58,7 +58,7 @@ export default function FilterEureka() {
     selectedCategory,
     selectedObtainedFilter,
     selectedColor,
-    selectedRarities,
+    selectedRarity,
   } = filters
 
   if (isError) {
@@ -99,7 +99,7 @@ export default function FilterEureka() {
 
   const filteredSets = eurekaSets
     .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
-    .filter((set) => selectedRarities.length === 0 || selectedRarities.includes(set.rarity ?? 0))
+    .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => {
       const filteredColors = set.colors.filter(
         (color) => !selectedColor || color.slug === selectedColor

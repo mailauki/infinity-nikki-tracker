@@ -50,7 +50,7 @@ export default function FilterMenu() {
     selectedCategory,
     selectedObtainedFilter,
     selectedColor,
-    selectedRarities,
+    selectedRarity,
   } = filters
 
   if (!FILTER_PAGES.includes(pathname)) return null
@@ -84,8 +84,8 @@ export default function FilterMenu() {
     onFiltersChange({ selectedColor: event.target.value || null })
   }
 
-  const handleRarityChange = (_event: React.MouseEvent<HTMLElement>, value: number[]) => {
-    onFiltersChange({ selectedRarities: value })
+  const handleRarityChange = (_event: React.MouseEvent<HTMLElement>, value: number | null) => {
+    onFiltersChange({ selectedRarity: value })
   }
 
   const hasActiveFilters =
@@ -93,7 +93,7 @@ export default function FilterMenu() {
     selectedCategory ||
     selectedObtainedFilter ||
     selectedColor ||
-    selectedRarities.length > 0
+    selectedRarity
 
   return (
     <>
@@ -153,7 +153,7 @@ export default function FilterMenu() {
             />
           </ListItem>
           <ListItem>
-            <RarityToggle selectedRarities={selectedRarities} onRarityChange={handleRarityChange} />
+            <RarityToggle selectedRarity={selectedRarity} onRarityChange={handleRarityChange} />
           </ListItem>
           <Divider sx={{ mx: 2, mt: 2 }} />
           <ListItem>

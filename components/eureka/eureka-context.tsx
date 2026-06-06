@@ -10,7 +10,7 @@ interface FilterState {
   selectedCategory: CategoryFilter | null
   selectedObtainedFilter: ObtainedFilter | null
   selectedColor: string | null
-  selectedRarities: number[]
+  selectedRarity: number | null
 }
 
 interface EurekaDataContextValue {
@@ -40,7 +40,7 @@ const DEFAULT_FILTERS: FilterState = {
   selectedCategory: null,
   selectedObtainedFilter: null,
   selectedColor: null,
-  selectedRarities: [],
+  selectedRarity: null,
 }
 
 export const EurekaDataContext = createContext<EurekaDataContextValue>({
