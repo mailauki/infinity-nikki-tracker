@@ -57,9 +57,10 @@ export default function NavSection({
               </ListItemIcon>
               <Image
                 alt="Infinity Nikki Logo"
-                height={40}
+                height={0}
                 src="/infinity-nikki-logo.png"
                 style={{
+									height: 'auto',
                   display: open ? 'block' : 'none',
                   marginLeft: 16,
                   filter: isDarkMode ? 'none' : 'brightness(40%)',
