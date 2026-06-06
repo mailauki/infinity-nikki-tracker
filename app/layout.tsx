@@ -40,10 +40,7 @@ export const metadata: Metadata = {
   },
   description: 'Track your collection from your favorite cozy open-world game Infinity Nikki',
   icons: {
-    icon: [
-      { url: '/icon.png' },
-      { url: '/icon-dark.png', media: '(prefers-color-scheme: dark)' },
-    ],
+    icon: [{ url: '/icon.png' }, { url: '/icon-dark.png', media: '(prefers-color-scheme: dark)' }],
     shortcut: ['/shortcut-icon.png'],
     apple: ['/apple-icon.png'],
   },
@@ -88,13 +85,13 @@ export default function RootLayout({
                   <Suspense>
                     <NavBar />
                   </Suspense>
-                  <Toolbar />
+                  <Toolbar sx={{ mb: 2 }} />
                   <Toolbar sx={{ mb: 2 }} />
                   {/* ^ Toolbar spacers for NavBar and NavBarToolbar */}
                   <Suspense>
                     <PullToRefresh />
                   </Suspense>
-                  <Stack sx={{ flex: 1, px: 2 }}>{children}</Stack>
+                  <Stack sx={{ flex: 1, p: 2 }}>{children}</Stack>
                   <Footer />
                 </Stack>
               </Stack>

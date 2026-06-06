@@ -57,7 +57,7 @@ function RecentUpdatesSkeleton() {
 
 export default function ProfileLoading() {
   return (
-    <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+    <Stack spacing={3} sx={{ flexGrow: 1 }}>
       <ProfileHeaderSkeleton />
       <Box
         sx={{

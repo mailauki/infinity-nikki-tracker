@@ -26,7 +26,7 @@ async function SettingsContent() {
   } = await supabase.auth.getUser()
 
   return (
-    <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+    <Stack spacing={3} sx={{ flexGrow: 1 }}>
       <SettingsTabs isAdmin={role === 'admin'} isLoggedIn={!!user_id} user={user} />
     </Stack>
   )

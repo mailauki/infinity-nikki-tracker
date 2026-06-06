@@ -80,7 +80,7 @@ export default function EvolutionEditor({
 
       {drafts.map((draft, index) => (
         <Stack key={index} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-          <Typography sx={{ minWidth: 20, color: 'text.secondary' }} variant='body2'>
+          <Typography sx={{ minWidth: 20, color: 'text.secondary' }} variant="body2">
             {index + 1}.
           </Typography>
           <TextField
