@@ -10,7 +10,7 @@ import { Tables } from '@/lib/types/supabase'
 
 type EvolutionRow = Pick<
   Tables<'evolutions'>,
-  'slug' | 'title' | 'subtitle' | 'description' | 'order' | 'outfit_set' | 'image_url'
+  'slug' | 'title' | 'subtitle' | 'description' | 'order' | 'outfit_set' | 'image_url' | 'alt_image_url'
 >
 
 type VariantRow = Pick<
@@ -79,6 +79,17 @@ export default function EditEvolutionForm({
             slug={evolution.slug}
             table="evolutions"
             url={evolution.image_url ?? null}
+            onUpload={() => {}}
+          />
+        </Stack>
+
+        <Stack spacing={1}>
+          <Typography variant="subtitle2">Alt Image</Typography>
+          <ImageUpload
+            column="alt_image_url"
+            slug={evolution.slug}
+            table="evolutions"
+            url={evolution.alt_image_url ?? null}
             onUpload={() => {}}
           />
         </Stack>

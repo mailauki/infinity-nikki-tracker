@@ -30,7 +30,7 @@ async function EditEvolution({ params }: { params: Promise<{ slug: string }> }) 
 
   const { data: evolution } = await supabase
     .from('evolutions')
-    .select('slug, title, subtitle, description, order, outfit_set, image_url')
+    .select('slug, title, subtitle, description, order, outfit_set, image_url, alt_image_url')
     .eq('slug', slug)
     .single()
 
