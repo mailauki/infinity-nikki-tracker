@@ -8,7 +8,7 @@ export async function Hero() {
         <Image
           fill
           alt="Infinity Nikki Hero Image"
-					loading='eager'
+          loading="eager"
           src="/hero.jpg"
           style={{
             width: '100%',

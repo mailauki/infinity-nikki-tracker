@@ -148,7 +148,9 @@ export function OutfitSetTable({
             slug={row.slug ?? undefined}
             table="outfit_sets"
             url={row.image_url ?? null}
-            onUpload={(url) => setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, image_url: url } : r)))}
+            onUpload={(url) =>
+              setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, image_url: url } : r)))
+            }
           />
         </Stack>
       ),
@@ -165,7 +167,11 @@ export function OutfitSetTable({
             slug={row.slug ?? undefined}
             table="outfit_sets"
             url={row.alt_image_url ?? null}
-            onUpload={(url) => setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, alt_image_url: url } : r)))}
+            onUpload={(url) =>
+              setRows((prev) =>
+                prev.map((r) => (r.id === row.id ? { ...r, alt_image_url: url } : r))
+              )
+            }
           />
         </Stack>
       ),
@@ -267,11 +273,7 @@ export function OutfitSetTable({
         )
         return (
           <Stack sx={{ flex: 1, height: 52, justifyContent: 'center' }}>
-            {isEditing(row.id) ? (
-              <LockedCell href={editHref(row)}>{content}</LockedCell>
-            ) : (
-              content
-            )}
+            {isEditing(row.id) ? <LockedCell href={editHref(row)}>{content}</LockedCell> : content}
           </Stack>
         )
       },

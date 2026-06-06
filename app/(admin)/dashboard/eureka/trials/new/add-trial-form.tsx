@@ -99,7 +99,6 @@ export default function AddTrialForm() {
             <MenuItem value="Itzaland">Itzaland</MenuItem>
           </Select>
         </FormControl>
-
       </Stack>
     </form>
   )

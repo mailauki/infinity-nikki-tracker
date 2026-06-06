@@ -155,7 +155,6 @@ export default function AddOutfitVariantForm({
           onChange={(e) => setSlug(e.target.value)}
         />
 
-
         <input name="default" type="hidden" value={String(isDefault)} />
         <FormControl>
           <FormControlLabel

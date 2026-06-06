@@ -7,7 +7,9 @@ export const getOutfitSetsRaw = cache(async () => {
 
   const { data: outfitSets } = await supabase
     .from('outfit_sets')
-    .select('id, slug, title, description, rarity, style, label, label_2, ability, glowup_evolution, image_url, alt_image_url, updated_at')
+    .select(
+      'id, slug, title, description, rarity, style, label, label_2, ability, glowup_evolution, image_url, alt_image_url, updated_at'
+    )
     .order('updated_at', { ascending: false, nullsFirst: false })
 
   return (outfitSets ?? []) as OutfitSetRaw[]
@@ -18,7 +20,9 @@ export const getOutfitSetRaw = cache(async (slug: string) => {
 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
-    .select('id, slug, title, description, rarity, style, label, label_2, ability, glowup_evolution, image_url, alt_image_url, updated_at')
+    .select(
+      'id, slug, title, description, rarity, style, label, label_2, ability, glowup_evolution, image_url, alt_image_url, updated_at'
+    )
     .eq('slug', slug)
     .maybeSingle()
 

@@ -21,10 +21,10 @@ export type RarityFilter = Range<2, 6>
 export type Percentage = Range<0, 101>
 
 type DashboardLink = {
-	title: string
-	list: string
-	add?: string
-	edit: string
+  title: string
+  list: string
+  add?: string
+  edit: string
 }
 
 export type DashboardLinks = {
@@ -42,11 +42,11 @@ export interface NavLink {
   adminOnly?: boolean
   exclusiveItems?: boolean
   items?: {
-		title: string
-		url: string
-		image?: string
-		icon?: ReactNode
-	}[]
+    title: string
+    url: string
+    image?: string
+    icon?: ReactNode
+  }[]
 }
 
 export const GRID_COLUMNS = {

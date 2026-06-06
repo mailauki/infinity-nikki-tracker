@@ -13,6 +13,7 @@
 ### Task 1: Database migrations
 
 **Files:**
+
 - Create: `supabase/migrations/20260605000002_add_alt_image_url_to_outfit_sets.sql`
 - Create: `supabase/migrations/20260605000003_add_alt_image_url_to_outfit_variants.sql`
 - Create: `supabase/migrations/20260605000004_add_alt_image_url_to_evolutions.sql`
@@ -20,16 +21,19 @@
 - [ ] **Step 1: Create migration files**
 
 `supabase/migrations/20260605000002_add_alt_image_url_to_outfit_sets.sql`:
+
 ```sql
 ALTER TABLE outfit_sets ADD COLUMN alt_image_url text;
 ```
 
 `supabase/migrations/20260605000003_add_alt_image_url_to_outfit_variants.sql`:
+
 ```sql
 ALTER TABLE outfit_variants ADD COLUMN alt_image_url text;
 ```
 
 `supabase/migrations/20260605000004_add_alt_image_url_to_evolutions.sql`:
+
 ```sql
 ALTER TABLE evolutions ADD COLUMN alt_image_url text;
 ```
@@ -65,6 +69,7 @@ git commit -m "feat: add alt_image_url column to outfit_sets, outfit_variants, e
 ### Task 2: Add `column` prop to `ImageUpload`
 
 **Files:**
+
 - Modify: `components/forms/image-upload.tsx`
 
 Currently the component hardcodes `.update({ image_url: data.publicUrl })`. Adding an optional `column` prop (defaulting to `'image_url'`) makes it reusable for `alt_image_url`.
@@ -92,11 +97,12 @@ export default function ImageUpload({
 ```
 
 Then replace line 62's hardcoded update:
+
 ```tsx
-      const { error: dbError } = await supabase
-        .from(table)
-        .update({ [column]: data.publicUrl })
-        .eq('slug', slug)
+const { error: dbError } = await supabase
+  .from(table)
+  .update({ [column]: data.publicUrl })
+  .eq('slug', slug)
 ```
 
 - [ ] **Step 2: Type-check**
@@ -119,6 +125,7 @@ git commit -m "feat: add column prop to ImageUpload, default image_url"
 ### Task 3: Update TypeScript types
 
 **Files:**
+
 - Modify: `lib/types/outfit.ts`
 
 - [ ] **Step 1: Add `alt_image_url` to all four Pick types**
@@ -128,7 +135,14 @@ In `lib/types/outfit.ts`:
 ```ts
 export type Evolution = Pick<
   Tables<'evolutions'>,
-  'slug' | 'title' | 'subtitle' | 'description' | 'order' | 'outfit_set' | 'image_url' | 'alt_image_url'
+  | 'slug'
+  | 'title'
+  | 'subtitle'
+  | 'description'
+  | 'order'
+  | 'outfit_set'
+  | 'image_url'
+  | 'alt_image_url'
 >
 
 export type OutfitSet = Tables<'outfit_sets'> & {
@@ -157,7 +171,14 @@ export type OutfitSetRaw = Pick<
 
 export type OutfitVariant = Pick<
   Tables<'outfit_variants'>,
-  'id' | 'slug' | 'outfit_set' | 'evolution' | 'outfit_category' | 'image_url' | 'alt_image_url' | 'default'
+  | 'id'
+  | 'slug'
+  | 'outfit_set'
+  | 'evolution'
+  | 'outfit_category'
+  | 'image_url'
+  | 'alt_image_url'
+  | 'default'
 > & { obtained?: boolean }
 
 export type OutfitVariantRaw = Pick<
@@ -198,6 +219,7 @@ git commit -m "feat: add alt_image_url to outfit type definitions"
 ### Task 4: Update data hooks
 
 **Files:**
+
 - Modify: `hooks/data/admin/outfit-sets.ts`
 - Modify: `hooks/data/admin/outfit-variants.ts`
 - Modify: `hooks/data/evolutions.ts`
@@ -211,7 +233,9 @@ export const getOutfitSetsRaw = cache(async () => {
   const supabase = await createClient()
   const { data: outfitSets } = await supabase
     .from('outfit_sets')
-    .select('id, slug, title, description, rarity, style, label, label_2, ability, glowup_evolution, image_url, alt_image_url, updated_at')
+    .select(
+      'id, slug, title, description, rarity, style, label, label_2, ability, glowup_evolution, image_url, alt_image_url, updated_at'
+    )
     .order('updated_at', { ascending: false, nullsFirst: false })
   return (outfitSets ?? []) as OutfitSetRaw[]
 })
@@ -220,7 +244,9 @@ export const getOutfitSetRaw = cache(async (slug: string) => {
   const supabase = await createClient()
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
-    .select('id, slug, title, description, rarity, style, label, label_2, ability, glowup_evolution, image_url, alt_image_url, updated_at')
+    .select(
+      'id, slug, title, description, rarity, style, label, label_2, ability, glowup_evolution, image_url, alt_image_url, updated_at'
+    )
     .eq('slug', slug)
     .maybeSingle()
   return outfitSet as OutfitSetRaw | null
@@ -327,16 +353,19 @@ git commit -m "feat: select alt_image_url in outfit data hooks"
 ### Task 5: Update outfit sets DataGrid table
 
 **Files:**
+
 - Modify: `app/(admin)/dashboard/outfits/sets/outfit-set-table.tsx`
 
 - [ ] **Step 1: Add `ImageUpload` import and remove `image_url` from `LOCKED_FIELDS`**
 
 At the top of the file, add the import:
+
 ```tsx
 import ImageUpload from '@/components/forms/image-upload'
 ```
 
 Change `LOCKED_FIELDS`:
+
 ```ts
 const LOCKED_FIELDS = ['slug', 'evolutions', 'glowup_evolution', 'updated_at']
 ```
@@ -433,16 +462,19 @@ git commit -m "feat: add inline image upload columns to outfit sets DataGrid"
 ### Task 6: Update outfit variants DataGrid table
 
 **Files:**
+
 - Modify: `app/(admin)/dashboard/outfits/variants/outfit-variant-table.tsx`
 
 - [ ] **Step 1: Add `ImageUpload` import and remove `image_url` from `LOCKED_FIELDS`**
 
 Add the import:
+
 ```tsx
 import ImageUpload from '@/components/forms/image-upload'
 ```
 
 Change `LOCKED_FIELDS`:
+
 ```ts
 const LOCKED_FIELDS = ['slug', 'updated_at']
 ```
@@ -519,6 +551,7 @@ git commit -m "feat: add inline image upload columns to outfit variants DataGrid
 ### Task 7: Update evolutions DataGrid table
 
 **Files:**
+
 - Modify: `app/(admin)/dashboard/outfits/evolutions/outfit-evolution-table.tsx`
 
 The evolutions table is currently read-only (no row edit mode). Uploads write directly to Supabase, so a local `rows` state is needed to reflect the new URL without a page reload.
@@ -526,12 +559,14 @@ The evolutions table is currently read-only (no row edit mode). Uploads write di
 - [ ] **Step 1: Add state and imports**
 
 Add to imports:
+
 ```tsx
 import { useState } from 'react'
 import ImageUpload from '@/components/forms/image-upload'
 ```
 
 At the top of `OutfitEvolutionTable`, initialize local rows state:
+
 ```tsx
 export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
@@ -587,6 +622,7 @@ Replace the existing `image_url` column definition (the one with `LazyAvatar`) w
 - [ ] **Step 4: Set `rowHeight={100}` and switch to local `rows` state**
 
 Update the `<DataGrid>` to use the local state and set row height:
+
 ```tsx
 <DataGrid
   disableRowSelectionOnClick
@@ -620,6 +656,7 @@ git commit -m "feat: add inline image upload columns to evolutions DataGrid"
 ### Task 8: Update edit forms
 
 **Files:**
+
 - Modify: `app/(admin)/dashboard/outfits/sets/edit/[slug]/edit-outfit-set-form.tsx`
 - Modify: `app/(admin)/dashboard/outfits/variants/edit/[slug]/edit-outfit-variant-form.tsx`
 - Modify: `app/(admin)/dashboard/outfits/evolutions/edit/[slug]/edit-evolution-form.tsx`
@@ -627,11 +664,13 @@ git commit -m "feat: add inline image upload columns to evolutions DataGrid"
 - [ ] **Step 1: Update `edit-outfit-set-form.tsx`**
 
 Add state below the existing `setImage` state:
+
 ```tsx
 const [altSetImage, setAltSetImage] = useState<string | null>(outfitSet.alt_image_url ?? null)
 ```
 
 Add the section below the "Set Image" `<Stack>` block (after the closing `</Stack>` of the Set Image section, before the variant images section):
+
 ```tsx
 <Stack spacing={1}>
   <Typography variant="subtitle2">Alt Image</Typography>
@@ -648,11 +687,13 @@ Add the section below the "Set Image" `<Stack>` block (after the closing `</Stac
 - [ ] **Step 2: Update `edit-outfit-variant-form.tsx`**
 
 Add state below `imageUrl`:
+
 ```tsx
 const [altImageUrl, setAltImageUrl] = useState<string | null>(variant.alt_image_url ?? null)
 ```
 
 Add the `ImageUpload` below the existing image upload (after the `</ImageUpload>` for `image_url`, before the `<input name="default" ...>`):
+
 ```tsx
 <ImageUpload
   column="alt_image_url"
@@ -666,6 +707,7 @@ Add the `ImageUpload` below the existing image upload (after the `</ImageUpload>
 - [ ] **Step 3: Update `edit-evolution-form.tsx`**
 
 Add the section below the "Evolution Set Image" `<Stack>` block:
+
 ```tsx
 <Stack spacing={1}>
   <Typography variant="subtitle2">Alt Image</Typography>
@@ -684,7 +726,14 @@ Note: `evolution.alt_image_url` is available because `EvolutionRow` in this form
 ```ts
 type EvolutionRow = Pick<
   Tables<'evolutions'>,
-  'slug' | 'title' | 'subtitle' | 'description' | 'order' | 'outfit_set' | 'image_url' | 'alt_image_url'
+  | 'slug'
+  | 'title'
+  | 'subtitle'
+  | 'description'
+  | 'order'
+  | 'outfit_set'
+  | 'image_url'
+  | 'alt_image_url'
 >
 ```
 

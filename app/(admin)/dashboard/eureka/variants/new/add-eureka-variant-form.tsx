@@ -161,7 +161,6 @@ export default function AddEurekaVariantForm({
           onChange={(e) => setSlug(e.target.value)}
         />
 
-
         <input name="default" type="hidden" value={String(isDefault)} />
         <FormControl>
           <FormControlLabel

@@ -59,9 +59,7 @@ async function UserDetails() {
         user={user}
         username={profile?.username ?? null}
       />
-      {user_id && (
-        <CollectionStats sets={sets || []} trials={trials || []} />
-      )}
+      {user_id && <CollectionStats sets={sets || []} trials={trials || []} />}
       {user_id && <RecentUpdates items={recentObtained || []} />}
     </>
   )

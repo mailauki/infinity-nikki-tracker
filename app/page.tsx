@@ -15,17 +15,14 @@ export default function HomePage() {
         <HomeCTAs />
       </Suspense>
       <QuickAccess />
-			<Box sx={{ py: 3 }}>
-				<Typography
-					variant="overline"
-					sx={{ display: 'block', textAlign: 'center', mb: 2 }}
-				>
-					Helpful Links
-				</Typography>
-				<Container maxWidth='sm'>
-				<HelpActions />
-				</Container>
-			</Box>
+      <Box sx={{ py: 3 }}>
+        <Typography sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="overline">
+          Helpful Links
+        </Typography>
+        <Container maxWidth="sm">
+          <HelpActions />
+        </Container>
+      </Box>
     </Stack>
   )
 }

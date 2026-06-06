@@ -28,10 +28,10 @@ export default function DashboardNavTabs() {
           href={t.url}
           label={t.title}
           sx={{
-						flexGrow: { xs: 1, md: 0 },
-						fontSize: { xs: 'caption.fontSize', sm: 'button.fontSize' },
-						minWidth: { xs: '80px', sm: '90px' }
-				}}
+            flexGrow: { xs: 1, md: 0 },
+            fontSize: { xs: 'caption.fontSize', sm: 'button.fontSize' },
+            minWidth: { xs: '80px', sm: '90px' },
+          }}
         />
       ))}
     </Tabs>

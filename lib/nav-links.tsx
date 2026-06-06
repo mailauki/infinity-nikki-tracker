@@ -1,5 +1,14 @@
 import { DashboardLinks, NavLink } from '@/lib/types/props'
-import { Help, Info, Dashboard, AccountCircle, Settings, Workspaces, Circle, GroupWork } from '@mui/icons-material'
+import {
+  Help,
+  Info,
+  Dashboard,
+  AccountCircle,
+  Settings,
+  Workspaces,
+  Circle,
+  GroupWork,
+} from '@mui/icons-material'
 
 export const navLinksData: {
   home: NavLink[]
