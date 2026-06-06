@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default function ProfilePage() {
   return (
     <Suspense fallback={<ProfileLoading />}>
-      <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+      <Stack spacing={3} sx={{ flexGrow: 1 }}>
         <UserDetails />
       </Stack>
     </Suspense>

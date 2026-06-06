@@ -20,6 +20,10 @@ export default function NavBar() {
     <AppBar
       color="transparent"
       position="fixed"
+      // sx={{
+      // 	zIndex: (theme) => theme.zIndex.drawer - 1,
+      // 	borderColor: 'transparent',
+      // }}
       sx={{
         borderColor: 'transparent',
         backdropFilter: 'blur(8px)',
@@ -39,11 +43,12 @@ export default function NavBar() {
       }}
       variant="outlined"
     >
-      <Toolbar sx={{ alignItems: 'flex-end', justifyContent: 'center', pb: 0.15 }}>
+      <Toolbar sx={{ alignItems: 'flex-end', justifyContent: 'center', mb: 2 }}>
         <PageTitle />
         <NavUser />
       </Toolbar>
-      <Toolbar ref={refCallback} sx={{ mb: 2 }} />
+      {/* <Toolbar ref={refCallback} sx={{ mb: 2 }} /> */}
+      <Toolbar sx={{ mb: 2 }} />
     </AppBar>
   )
 }

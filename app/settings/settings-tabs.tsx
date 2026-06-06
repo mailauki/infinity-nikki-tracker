@@ -7,6 +7,7 @@ import LoginAlert from '@/components/login-alert'
 import AppearanceSettings from './appearance-settings'
 import AccountSettings from './account-settings'
 import ProfileSettings from './profile-settings'
+import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 
 type TabValue = 'profile' | 'appearance' | 'account'
 
@@ -26,21 +27,27 @@ export default function SettingsTabs({
   }, [isLoggedIn])
 
   return (
-    <Box>
-      <Tabs
-        aria-label="Settings tabs"
-        sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}
-        value={tab}
-        onChange={(_, value: TabValue) => setTab(value)}
-      >
-        {isLoggedIn && <Tab label="Profile" sx={{ flexGrow: { xs: 1, md: 0 } }} value="profile" />}
-        <Tab label="Appearance" sx={{ flexGrow: { xs: 1, md: 0 } }} value="appearance" />
-        {isLoggedIn && <Tab label="Account" sx={{ flexGrow: { xs: 1, md: 0 } }} value="account" />}
-      </Tabs>
+    <>
+      <NavBarToolbar>
+        <Tabs
+          aria-label="Settings tabs"
+          sx={{ borderBottom: 1, borderColor: 'divider', flexGrow: 1 }}
+          value={tab}
+          onChange={(_, value: TabValue) => setTab(value)}
+        >
+          {isLoggedIn && (
+            <Tab label="Profile" sx={{ flexGrow: { xs: 1, md: 0 } }} value="profile" />
+          )}
+          <Tab label="Appearance" sx={{ flexGrow: { xs: 1, md: 0 } }} value="appearance" />
+          {isLoggedIn && (
+            <Tab label="Account" sx={{ flexGrow: { xs: 1, md: 0 } }} value="account" />
+          )}
+        </Tabs>
+      </NavBarToolbar>
 
       {tab === 'profile' && (isLoggedIn ? <ProfileSettings user={user} /> : <LoginAlert />)}
       {tab === 'appearance' && <AppearanceSettings />}
       {tab === 'account' && (isLoggedIn ? <AccountSettings isAdmin={isAdmin} /> : <LoginAlert />)}
-    </Box>
+    </>
   )
 }
