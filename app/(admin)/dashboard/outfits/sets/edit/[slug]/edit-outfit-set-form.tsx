@@ -44,6 +44,10 @@ import RarityToggle from '@/components/filter/rarity-toggle'
 
 const FORM_ID = 'edit-outfit-set'
 
+const MENU_PROPS = {
+  slotProps: { paper: { style: { maxHeight: 36 * 6 } } },
+}
+
 export default function EditOutfitSetForm({
   outfitSet,
   styles,
@@ -169,6 +173,7 @@ export default function EditOutfitSetForm({
         <FormControl>
           <InputLabel>Style</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Style"
             name="style"
             value={style}
@@ -189,6 +194,7 @@ export default function EditOutfitSetForm({
           <InputLabel>Labels</InputLabel>
           <Select
             multiple
+            MenuProps={MENU_PROPS}
             input={<OutlinedInput label="Labels" />}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -224,6 +230,7 @@ export default function EditOutfitSetForm({
         <FormControl>
           <InputLabel>Ability</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Ability"
             name="ability"
             value={ability}
@@ -242,6 +249,7 @@ export default function EditOutfitSetForm({
           <InputLabel>Categories</InputLabel>
           <Select
             multiple
+            MenuProps={MENU_PROPS}
             input={<OutlinedInput label="Categories" />}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>

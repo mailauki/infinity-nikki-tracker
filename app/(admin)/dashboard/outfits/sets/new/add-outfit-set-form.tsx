@@ -29,6 +29,10 @@ import EvolutionEditor from '../evolution-editor'
 
 const FORM_ID = 'add-outfit-set'
 
+const MENU_PROPS = {
+  slotProps: { paper: { style: { maxHeight: 36 * 6 } } },
+}
+
 export default function AddOutfitSetForm({
   styles,
   labels,
@@ -148,6 +152,7 @@ export default function AddOutfitSetForm({
         <FormControl>
           <InputLabel>Style</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Style"
             name="style"
             value={style}
@@ -168,6 +173,7 @@ export default function AddOutfitSetForm({
           <InputLabel>Labels</InputLabel>
           <Select
             multiple
+            MenuProps={MENU_PROPS}
             input={<OutlinedInput label="Labels" />}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
@@ -203,6 +209,7 @@ export default function AddOutfitSetForm({
         <FormControl>
           <InputLabel>Ability</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Ability"
             name="ability"
             value={ability}
@@ -221,6 +228,7 @@ export default function AddOutfitSetForm({
           <InputLabel>Categories</InputLabel>
           <Select
             multiple
+            MenuProps={MENU_PROPS}
             input={<OutlinedInput label="Categories" />}
             renderValue={(selected) => (
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
