@@ -6,7 +6,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Cancel'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import { Category, CheckBox } from '@mui/icons-material'
+import { CheckBox } from '@mui/icons-material'
 import {
   DataGrid,
   GridActionsCellItem,
@@ -19,7 +19,7 @@ import {
 import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { Evolution, OutfitCategory, OutfitSet, OutfitVariantRaw } from '@/lib/types/outfit'
-import LazyAvatar from '@/components/lazy-avatar'
+import ImageUpload from '@/components/forms/image-upload'
 import { updateOutfitVariant } from '@/app/(admin)/dashboard/actions'
 
 type Row = OutfitVariantRaw
@@ -31,7 +31,7 @@ interface OutfitVariantTableProps {
   evolutions: Evolution[]
 }
 
-const LOCKED_FIELDS = ['slug', 'image_url', 'updated_at']
+const LOCKED_FIELDS = ['slug', 'updated_at']
 
 function LockedCell({ children, href }: { children: React.ReactNode; href: string }) {
   return (
@@ -135,33 +135,34 @@ export function OutfitVariantTable({
     {
       field: 'image_url',
       headerName: 'Image',
-      width: 64,
+      width: 100,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 52, justifyContent: 'center' }}>
-          {isEditing(row.id) ? (
-            <LockedCell href={editHref(row)}>
-              <LazyAvatar
-                alt={row.outfit_set || 'Image'}
-                color="transparent"
-                size="sm"
-                src={row.image_url ?? ''}
-                sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-              >
-                <Category fontSize="inherit" />
-              </LazyAvatar>
-            </LockedCell>
-          ) : (
-            <LazyAvatar
-              alt={row.outfit_set || 'Image'}
-              color="transparent"
-              size="sm"
-              src={row.image_url ?? ''}
-              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-            >
-              <Category fontSize="inherit" />
-            </LazyAvatar>
-          )}
+        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+          <ImageUpload
+            column="image_url"
+            slug={row.slug ?? undefined}
+            table="outfit_variants"
+            url={row.image_url ?? null}
+            onUpload={(url) => setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, image_url: url } : r)))}
+          />
+        </Stack>
+      ),
+    },
+    {
+      field: 'alt_image_url',
+      headerName: 'Alt Image',
+      width: 100,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+          <ImageUpload
+            column="alt_image_url"
+            slug={row.slug ?? undefined}
+            table="outfit_variants"
+            url={row.alt_image_url ?? null}
+            onUpload={(url) => setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, alt_image_url: url } : r)))}
+          />
         </Stack>
       ),
     },
@@ -239,6 +240,7 @@ export function OutfitVariantTable({
       isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       processRowUpdate={processRowUpdate}
+      rowHeight={100}
       rowModesModel={rowModesModel}
       rows={rows}
       sx={{ border: 0 }}
