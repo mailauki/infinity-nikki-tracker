@@ -1,5 +1,5 @@
 import { DashboardLinks, NavLink } from '@/lib/types/props'
-import { Help, Info, Dashboard, AccountCircle, Settings } from '@mui/icons-material'
+import { Help, Info, Dashboard, AccountCircle, Settings, Workspaces, Circle, GroupWork } from '@mui/icons-material'
 
 export const navLinksData: {
   home: NavLink[]
@@ -127,9 +127,9 @@ export const navLinksData: {
         url: '/dashboard/outfits/sets',
         image: '/icons/outfits.png',
         items: [
-          { title: 'Sets', url: '/dashboard/outfits/sets' },
-          { title: 'Variants', url: '/dashboard/outfits/variants' },
-          { title: 'Evolutions', url: '/dashboard/outfits/evolutions' },
+          { title: 'Sets', url: '/dashboard/outfits/sets', icon: <Workspaces /> },
+          { title: 'Variants', url: '/dashboard/outfits/variants', icon: <Circle /> },
+          { title: 'Evolutions', url: '/dashboard/outfits/evolutions', icon: <GroupWork /> },
         ],
       },
       {
@@ -137,9 +137,9 @@ export const navLinksData: {
         url: '/dashboard/eureka/sets',
         image: '/icons/eureka.png',
         items: [
-          { title: 'Sets', url: '/dashboard/eureka/sets' },
-          { title: 'Variants', url: '/dashboard/eureka/variants' },
-          { title: 'Trials', url: '/dashboard/eureka/trials' },
+          { title: 'Sets', url: '/dashboard/eureka/sets', icon: <Workspaces /> },
+          { title: 'Variants', url: '/dashboard/eureka/variants', icon: <Circle /> },
+          { title: 'Trials', url: '/dashboard/eureka/trials', icon: <GroupWork /> },
         ],
       },
     ],
