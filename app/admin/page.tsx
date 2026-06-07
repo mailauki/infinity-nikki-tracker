@@ -4,11 +4,11 @@ import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import { getOutfitVariantsRaw } from '@/hooks/data/admin/outfit-variants'
 import { getUserRole } from '@/hooks/user'
-import { getRecentlyAdded, getRecentlyEdited } from '@/hooks/data/admin/recently'
+import { getRecentlyAdded, getRecentlyEdited } from '@/hooks/data/admin/recents'
 import { Metadata } from 'next'
 import { Box, Stack } from '@mui/material'
 import { StatCard } from './stat-card'
-import DashboardList from './dashboard-list'
+import AdminRecentsList from './admin-recents-list'
 import { navLinksData } from '@/lib/nav-links'
 import { getEvolutions } from '@/hooks/data/evolutions'
 
@@ -100,8 +100,8 @@ async function AdminContent() {
           gap: 2,
         }}
       >
-        <DashboardList items={recentlyAdded} title="Recently Added" />
-        <DashboardList items={recentlyEdited} title="Recently Edited" />
+        <AdminRecentsList items={recentlyAdded} title="Recently Added" />
+        <AdminRecentsList items={recentlyEdited} title="Recently Edited" />
       </Box>
     </Stack>
   )
