@@ -2,7 +2,6 @@ import {
   Button,
   Card,
   CardActions,
-  CardContent,
   CardHeader,
   Divider,
   IconButton,
@@ -56,24 +55,6 @@ export function StatCard({
                 </IconButton>
               </Tooltip>
             )}
-            {/* {listHref && (
-							<Tooltip title='View all'>
-								<IconButton component='a' href={listHref} sx={{ ml: 'auto' }} color='primary'>
-									<ArrowForward />
-								</IconButton>
-							</Tooltip>
-						)} */}
-            {/* {addHref && (
-              <Button
-                href={addHref}
-                size="small"
-                startIcon={<AddIcon />}
-                sx={{ width: 'fit-content' }}
-                variant="outlined"
-              >
-                Add
-              </Button>
-            )} */}
             {listHref && (
               <Button
                 endIcon={<ArrowForward />}
@@ -87,49 +68,6 @@ export function StatCard({
           </CardActions>
         </>
       )}
-      {/* {(addHref || listHref) && (
-        <CardContent component={Stack} spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
-          <Divider />
-          <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between' }}>
-						{addHref && (
-							<Tooltip title='Add'>
-								<IconButton component='a' href={addHref}>
-									<AddIcon />
-								</IconButton>
-							</Tooltip>
-						)}
-						{listHref && (
-							<Tooltip title='View all'>
-								<IconButton component='a' href={listHref} sx={{ alignSelf: 'flex-end' }}>
-									<ArrowForward />
-								</IconButton>
-							</Tooltip>
-						)}
-            {addHref && (
-              <Button
-                href={addHref}
-                size="small"
-                startIcon={<AddIcon />}
-                sx={{ width: 'fit-content' }}
-                variant="outlined"
-              >
-                Add
-              </Button>
-            )}
-            {listHref && (
-              <Button
-                endIcon={<ArrowForward />}
-                href={listHref}
-                size="small"
-                sx={{ width: 'fit-content' }}
-                variant="outlined"
-              >
-                View all
-              </Button>
-            )}
-          </Stack>
-        </CardContent>
-       )} */}
     </Card>
   )
 }
