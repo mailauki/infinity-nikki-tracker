@@ -142,8 +142,8 @@ export default function EditEvolutionForm({
                       />
                       <ImageUpload
                         caption={
-                        (v.outfit_category && `Alt ${toTitle(v.outfit_category)}`) ?? undefined
-                      }
+                          (v.outfit_category && `Alt ${toTitle(v.outfit_category)}`) ?? undefined
+                        }
                         column="alt_image_url"
                         slug={v.slug ?? undefined}
                         table="outfit_variants"

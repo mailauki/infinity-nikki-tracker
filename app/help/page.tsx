@@ -310,8 +310,7 @@ export default function HelpPage() {
           <Anchor color="textSecondary" href="/admin">
             Admin Panel
           </Anchor>{' '}
-          to manage database items — add, edit, and track counts and recent
-          activity.
+          to manage database items — add, edit, and track counts and recent activity.
         </Typography>
         <Suspense>
           <AdminButton />

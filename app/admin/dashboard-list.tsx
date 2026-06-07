@@ -72,15 +72,13 @@ export default function DashboardList({
                   disableTypography
                   secondary={
                     <Typography color="text.secondary" variant="caption">
-                      {formatDate(item.date)}
+                      {item.date ? formatDate(item.date) : '—'}
                     </Typography>
                   }
                   sx={{ textAlign: 'right', mr: 2 }}
                 />
               </ListItem>
-              {i < items.length - 1 && (
-                <Divider component="li" sx={{ mr: 2 }} variant="inset" />
-              )}
+              {i < items.length - 1 && <Divider component="li" sx={{ mr: 2 }} variant="inset" />}
             </Fragment>
           ))}
         </List>
