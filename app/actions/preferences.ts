@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getUserID } from '@/hooks/user'
 
-async function upsertPreference(updates: Record<string, boolean | string | null>) {
+async function upsertUserPreference(updates: Record<string, boolean | string | null>) {
   const user_id = await getUserID()
   if (!user_id) return
 
@@ -16,20 +16,28 @@ async function upsertPreference(updates: Record<string, boolean | string | null>
     )
 }
 
+async function upsertAdminPreference(updates: Record<string, string>) {
+  const user_id = await getUserID()
+  if (!user_id) return
+
+  const supabase = await createClient()
+  const { error } = await supabase
+    .from('admin_preferences')
+    .upsert({ user_id, ...updates }, { onConflict: 'user_id' })
+
+  if (error) throw new Error(error.message)
+}
+
 export async function updateGroupBySet(value: boolean) {
-  await upsertPreference({ group_by_set: value })
+  await upsertUserPreference({ group_by_set: value })
 }
 
 export async function updateShowByColor(value: boolean) {
-  await upsertPreference({ show_by_color: value })
+  await upsertUserPreference({ show_by_color: value })
 }
 
-export async function updateDashboardView(value: 'list' | 'table') {
-  await upsertPreference({ dashboard_view: value })
-}
-
-export async function updateDashboardTab(value: 'eureka-sets' | 'eureka-variants' | 'trials') {
-  await upsertPreference({ dashboard_tab: value })
+export async function updateAdminView(value: 'list' | 'table') {
+  await upsertAdminPreference({ admin_view: value })
 }
 
 export async function updateEurekaFilters(filters: {
@@ -39,9 +47,9 @@ export async function updateEurekaFilters(filters: {
   eureka_color?: string | null
   eureka_rarity?: string | null
 }) {
-  await upsertPreference(filters as Record<string, string | null>)
+  await upsertUserPreference(filters as Record<string, string | null>)
 }
 
 export async function updateTheme(value: 'system' | 'light' | 'dark') {
-  await upsertPreference({ theme: value })
+  await upsertUserPreference({ theme: value })
 }

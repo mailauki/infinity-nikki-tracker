@@ -1,29 +1,17 @@
 'use client'
 
-import * as React from 'react'
 import { AppBar, Toolbar } from '@mui/material'
 import PageTitle from './page-title'
-import { useNavBarToolbar, useNavDrawer } from './navbar-toolbar-context'
+import { useNavDrawer } from './navbar-toolbar-context'
 import { NavUser } from './nav-user'
 
 export default function NavBar() {
-  const { setToolbarSlot } = useNavBarToolbar()
   const { drawerOpen } = useNavDrawer()
-  const refCallback = React.useCallback(
-    (el: HTMLDivElement | null) => {
-      setToolbarSlot(el)
-    },
-    [setToolbarSlot]
-  )
 
   return (
     <AppBar
       color="transparent"
       position="fixed"
-      // sx={{
-      // 	zIndex: (theme) => theme.zIndex.drawer - 1,
-      // 	borderColor: 'transparent',
-      // }}
       sx={{
         borderColor: 'transparent',
         backdropFilter: 'blur(8px)',
@@ -47,7 +35,6 @@ export default function NavBar() {
         <PageTitle />
         <NavUser />
       </Toolbar>
-      {/* <Toolbar ref={refCallback} sx={{ mb: 2 }} /> */}
       <Toolbar sx={{ mb: 2 }} />
     </AppBar>
   )

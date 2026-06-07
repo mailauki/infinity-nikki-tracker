@@ -4,7 +4,6 @@ import { type User } from '@supabase/supabase-js'
 import AvatarPreview from '@/components/forms/auth/avatar-preview'
 import { Alert, Button, Chip, Stack, Typography } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
-import { Dashboard } from '@mui/icons-material'
 import Link from 'next/link'
 
 export default function ProfileView({
@@ -42,12 +41,12 @@ export default function ProfileView({
           />
           <Button
             component={Link}
-            href="/dashboard"
+            href="/admin"
             size="small"
-            startIcon={<Dashboard />}
+            startIcon={<AdminPanelSettingsIcon />}
             variant="outlined"
           >
-            Dashboard
+            Admin Panel
           </Button>
         </Stack>
       )}

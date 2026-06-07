@@ -307,10 +307,10 @@ export default function HelpPage() {
         </Typography>
         <Typography color="textSecondary" variant="body1">
           Use the{' '}
-          <Anchor color="textSecondary" href="/dashboard">
-            Dashboard
+          <Anchor color="textSecondary" href="/admin">
+            Admin Panel
           </Anchor>{' '}
-          to manage Eureka sets, variants, and trials — add, edit, and track counts and recent
+          to manage database items — add, edit, and track counts and recent
           activity.
         </Typography>
         <Suspense>

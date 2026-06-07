@@ -230,6 +230,15 @@ export default function AboutPage() {
             <ListItemText
               primary={
                 <Typography color="textSecondary" variant="body1">
+                  Momo's Cloaks — tracking support for Momo's cloaks
+                </Typography>
+              }
+            />
+          </ListItem>
+          <ListItem sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
                   Custom Looks — support for creating custom outfit sets
                 </Typography>
               }

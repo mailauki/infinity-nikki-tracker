@@ -77,8 +77,6 @@ export type UserPreferences = Pick<
   Tables<'user_preferences'>,
   | 'group_by_set'
   | 'show_by_color'
-  | 'dashboard_view'
-  | 'dashboard_tab'
   | 'eureka_set_filter'
   | 'eureka_category'
   | 'eureka_obtained_filter'
@@ -86,3 +84,5 @@ export type UserPreferences = Pick<
   | 'eureka_rarity'
   | 'theme'
 >
+
+export type AdminPreferences = Pick<Tables<'admin_preferences'>, 'admin_view'>

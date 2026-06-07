@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Box, Tab, Tabs } from '@mui/material'
+import { Tab, Tabs } from '@mui/material'
 import { type User } from '@supabase/supabase-js'
 import LoginAlert from '@/components/login-alert'
 import AppearanceSettings from './appearance-settings'
