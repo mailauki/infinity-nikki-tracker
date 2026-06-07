@@ -1,7 +1,7 @@
 'use client'
 
 import { type User } from '@supabase/supabase-js'
-import ProfileForm from '@/components/forms/auth/profile-form'
+import ProfileForm from '@/app/settings/profile-form'
 import { Container } from '@mui/material'
 
 export default function ProfileSettings({ user }: { user: User | null }) {

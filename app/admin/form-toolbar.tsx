@@ -34,6 +34,7 @@ export default function FormToolBar() {
         </Stack>
       </NavBarToolbar>
       <Snackbar
+				anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
         autoHideDuration={6000}
         message={savedTitle ? `"${savedTitle}" saved successfully` : 'Saved successfully'}
         open={!!savedTitle}
