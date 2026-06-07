@@ -1,6 +1,6 @@
 import { Tables } from './supabase'
 
-export type Ability = Pick<Tables<'abilities'>, 'slug' | 'title'>
+export type Ability = Pick<Tables<'abilities'>, 'slug' | 'title' | 'image_url'>
 
 export type OutfitCategory = Pick<Tables<'outfit_categories'>, 'slug' | 'title' | 'part'>
 

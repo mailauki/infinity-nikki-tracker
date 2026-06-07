@@ -7,7 +7,7 @@ export const getAbilities = cache(async () => {
 
   const { data: abilities } = await supabase
     .from('abilities')
-    .select('slug, title')
+    .select('slug, title, image_url')
     .order('title', { ascending: true })
 
   return (abilities ?? []) as Ability[]
