@@ -1,4 +1,13 @@
-import { Button, Card, CardContent, CardHeader, Divider, Stack, Typography } from '@mui/material'
+import {
+  Button,
+  Card,
+  CardActions,
+  CardHeader,
+  Divider,
+  IconButton,
+  Tooltip,
+  Typography,
+} from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { ArrowForward } from '@mui/icons-material'
 
@@ -6,12 +15,12 @@ export function StatCard({
   title,
   count,
   addHref,
-  tabHref,
+  listHref,
 }: {
   title: string
   count: number
   addHref?: string
-  tabHref?: string
+  listHref?: string
 }) {
   return (
     <Card variant="outlined">
@@ -23,39 +32,41 @@ export function StatCard({
           </Typography>
         }
         title={
-          <Typography color="text.secondary" variant="overline">
+          <Typography
+            color="text.secondary"
+            component="p"
+            sx={{ minHeight: 32 }}
+            variant="overline"
+          >
             {title}
           </Typography>
         }
       />
-      {(addHref || tabHref) && (
-        <CardContent component={Stack} spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
-          <Divider />
-          <Stack direction="row" spacing={1}>
+      {(addHref || listHref) && (
+        <>
+          <Divider sx={{ mx: 2 }} />
+          <CardActions
+            sx={{ alignItems: 'center', justifyContent: 'space-between', minHeight: 50 }}
+          >
             {addHref && (
-              <Button
-                href={addHref}
-                size="small"
-                startIcon={<AddIcon />}
-                sx={{ width: 'fit-content' }}
-                variant="outlined"
-              >
-                Add
-              </Button>
+              <Tooltip title="Add">
+                <IconButton color="primary" component="a" href={addHref} size="small">
+                  <AddIcon />
+                </IconButton>
+              </Tooltip>
             )}
-            {tabHref && (
+            {listHref && (
               <Button
                 endIcon={<ArrowForward />}
-                href={tabHref}
+                href={listHref}
                 size="small"
-                sx={{ width: 'fit-content' }}
-                variant="outlined"
+                sx={{ width: 'fit-content', ml: 'auto', textWrap: 'nowrap' }}
               >
                 View all
               </Button>
             )}
-          </Stack>
-        </CardContent>
+          </CardActions>
+        </>
       )}
     </Card>
   )

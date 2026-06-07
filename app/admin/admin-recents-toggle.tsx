@@ -1,5 +1,5 @@
 'use client'
-import LazyAvatar from '@/components/lazy-avatar'
+import ToggleIcon from '@/components/toggle-icon'
 import { navLinksData } from '@/lib/nav-links'
 import { Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
 
@@ -27,8 +27,8 @@ export default function AdminRecentsToggle({ item, tab, onItemChange, onTabChang
         }}
       >
         {navLinksData.admin.tabs.map((t) => (
-          <ToggleButton key={t.title} value={t.title}>
-            <LazyAvatar alt={t.title} size="xs" src={t.image} />
+          <ToggleButton key={t.title} size="small" value={t.title}>
+            <ToggleIcon isSelected={tab === t.title} item={t} size="xs" />
           </ToggleButton>
         ))}
       </ToggleButtonGroup>
@@ -42,7 +42,7 @@ export default function AdminRecentsToggle({ item, tab, onItemChange, onTabChang
         }}
       >
         {currentTab?.items?.map((i) => (
-          <ToggleButton key={i.title} value={i.title}>
+          <ToggleButton key={i.title} size="small" value={i.title}>
             {i.title}
           </ToggleButton>
         ))}

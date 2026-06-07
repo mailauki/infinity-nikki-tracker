@@ -19,6 +19,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { SparkleIcon } from '../rarity-stars'
+import ToggleIcon from '../toggle-icon'
 
 export default function NavSection({
   items,
@@ -102,6 +103,7 @@ export default function NavSection({
                       src={item.image}
                       sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
                     />
+                    {/* <ToggleIcon item={item} /> */}
                   </ListItemAvatar>
                 ) : (
                   <ListItemIcon
