@@ -18,7 +18,7 @@ import React from 'react'
 import { navLinksData } from '@/lib/nav-links'
 import { List } from '@mui/icons-material'
 import { LogoutButton } from '../logout-button'
-import AvatarPreview from '../forms/auth/avatar-preview'
+import AvatarPreview from '../../app/settings/avatar-preview'
 
 export function NavUser() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
