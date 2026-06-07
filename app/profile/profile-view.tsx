@@ -1,7 +1,7 @@
 'use client'
 
 import { type User } from '@supabase/supabase-js'
-import AvatarPreview from '@/components/forms/auth/avatar-preview'
+import AvatarPreview from '@/app/settings/avatar-preview'
 import { Alert, Button, Chip, Stack, Typography } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import Link from 'next/link'

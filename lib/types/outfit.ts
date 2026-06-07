@@ -6,6 +6,7 @@ export type OutfitCategory = Pick<Tables<'outfit_categories'>, 'slug' | 'title' 
 
 export type Evolution = Pick<
   Tables<'evolutions'>,
+  | 'id'
   | 'slug'
   | 'title'
   | 'subtitle'

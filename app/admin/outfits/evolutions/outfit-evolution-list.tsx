@@ -28,7 +28,7 @@ export default function OutfitEvolutionList({
           image_url={row.image_url ?? undefined}
           list="admin/outfits/evolutions"
           slug={row.slug}
-          subheader={row.order.toString() ?? undefined}
+          subheader={row.order ? `Evolution: ${row.order}` : undefined}
           title={row.subtitle ? `${row.title}: ${row.subtitle}` : row.title}
           updated_at={null}
         />
