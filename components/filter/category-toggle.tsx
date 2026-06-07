@@ -13,6 +13,7 @@ import {
   useColorScheme,
 } from '@mui/material'
 import LazyAvatar from '@/components/lazy-avatar'
+import ToggleIcon from '../toggle-icon'
 
 export default function CategoryToggle({
   categories,
@@ -45,14 +46,14 @@ export default function CategoryToggle({
       >
         {categories.map((category) => {
           const isSelected = selectedCategory === category.slug
-          const brightness = isDarkMode || isSelected ? null : 'brightness(40%)'
-          const opacity = disabled ? 'opacity(0.3)' : null
-          const filter = [brightness, opacity].filter(Boolean).join(' ') || 'none'
+          // const brightness = isDarkMode || isSelected ? null : 'brightness(40%)'
+          // const opacity = disabled ? 'opacity(0.3)' : null
+          // const filter = [brightness, opacity].filter(Boolean).join(' ') || 'none'
 
           return (
             <Tooltip key={category.slug} title={category.title}>
               <ToggleButton sx={{ py: 0.75 }} value={category.slug}>
-                <LazyAvatar
+                {/* <LazyAvatar
                   alt={category.title}
                   src={category.image_url!}
                   sx={{
@@ -63,7 +64,8 @@ export default function CategoryToggle({
                   variant="rounded"
                 >
                   <CategoryIcon sx={{ color: 'divider' }} />
-                </LazyAvatar>
+                </LazyAvatar> */}
+                <ToggleIcon disabled={disabled} isSelected={isSelected} item={category} />
               </ToggleButton>
             </Tooltip>
           )

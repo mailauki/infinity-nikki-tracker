@@ -52,44 +52,44 @@ async function AdminContent() {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+          gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
           gap: 2,
         }}
       >
         <StatCard
           addHref={isAdmin ? navLinksData.admin.outfits.sets.add : undefined}
           count={outfitSets?.length ?? 0}
-          tabHref={navLinksData.admin.outfits.sets.list}
+          listHref={navLinksData.admin.outfits.sets.list}
           title="Outfit Sets"
         />
         <StatCard
           addHref={isAdmin ? navLinksData.admin.outfits.variants.add : undefined}
           count={outfitVariants?.length ?? 0}
-          tabHref={navLinksData.admin.outfits.variants.list}
+          listHref={navLinksData.admin.outfits.variants.list}
           title="Outfit Variants"
         />
         <StatCard
           addHref={undefined}
           count={evolutions?.length ?? 0}
-          tabHref={navLinksData.admin.outfits.evolutions.list}
+          listHref={navLinksData.admin.outfits.evolutions.list}
           title="Evolutions"
         />
         <StatCard
           addHref={isAdmin ? navLinksData.admin.eureka.sets.add : undefined}
           count={eurekaSets?.length ?? 0}
-          tabHref={navLinksData.admin.eureka.sets.list}
+          listHref={navLinksData.admin.eureka.sets.list}
           title="Eureka Sets"
         />
         <StatCard
           addHref={isAdmin ? navLinksData.admin.eureka.variants.add : undefined}
           count={eurekaVariants?.length ?? 0}
-          tabHref={navLinksData.admin.eureka.variants.list}
+          listHref={navLinksData.admin.eureka.variants.list}
           title="Eureka Variants"
         />
         <StatCard
           addHref={isAdmin ? navLinksData.admin.eureka.trials.add : undefined}
           count={trials?.length ?? 0}
-          tabHref={navLinksData.admin.eureka.trials.list}
+          listHref={navLinksData.admin.eureka.trials.list}
           title="Trials"
         />
       </Box>
