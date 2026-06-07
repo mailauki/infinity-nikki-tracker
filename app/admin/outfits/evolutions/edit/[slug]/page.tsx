@@ -38,7 +38,7 @@ async function EditEvolution({ params }: { params: Promise<{ slug: string }> }) 
 
   const { data: variantRows } = await supabase
     .from('outfit_variants')
-    .select('id, slug, outfit_category, image_url, default, updated_at')
+    .select('id, slug, outfit_category, image_url, alt_image_url, default, updated_at')
     .eq('evolution', slug)
     .order('id', { ascending: true })
 

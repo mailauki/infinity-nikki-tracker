@@ -30,13 +30,25 @@ export async function editEvolution(
 
   // Update variant images from hidden inputs (ON UPDATE CASCADE already updated variant slugs)
   const variantImageEntries = [...formData.entries()].filter(([key]) =>
-    key.startsWith('variant_image_')
+    key.startsWith('variant_image_') && !key.startsWith('variant_alt_image_')
   )
   for (const [key, value] of variantImageEntries) {
     const variantSlug = key.replace('variant_image_', '')
     const { error: imgError } = await supabase
       .from('outfit_variants')
       .update({ image_url: (value as string) || null })
+      .eq('slug', variantSlug)
+    if (imgError) return { error: imgError.message }
+  }
+
+  const variantAltImageEntries = [...formData.entries()].filter(([key]) =>
+    key.startsWith('variant_alt_image_')
+  )
+  for (const [key, value] of variantAltImageEntries) {
+    const variantSlug = key.replace('variant_alt_image_', '')
+    const { error: imgError } = await supabase
+      .from('outfit_variants')
+      .update({ alt_image_url: (value as string) || null })
       .eq('slug', variantSlug)
     if (imgError) return { error: imgError.message }
   }
