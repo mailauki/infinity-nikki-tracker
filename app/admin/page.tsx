@@ -48,7 +48,7 @@ async function AdminContent() {
   const isAdmin = role === 'admin'
 
   return (
-    <Stack spacing={2} sx={{ pt: 4 }}>
+    <Stack spacing={2}>
       <Box
         sx={{
           display: 'grid',
