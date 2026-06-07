@@ -1,10 +1,15 @@
 'use client'
-import { AvatarSize, NavLink } from '@/lib/types/props'
+import { AvatarSize } from '@/lib/types/props'
 import { useColorScheme } from '@mui/material'
 import { useEffect, useState } from 'react'
 import LazyAvatar from './lazy-avatar'
 import { Category as CategoryIcon } from '@mui/icons-material'
-import { EurekaCategory } from '@/lib/types/eureka'
+
+interface ToggleItem {
+  title: string
+  image?: string
+  image_url?: string | null
+}
 
 export default function ToggleIcon({
   item,
@@ -12,7 +17,7 @@ export default function ToggleIcon({
   disabled,
   size = 'sm',
 }: {
-  item: NavLink | EurekaCategory
+  item: ToggleItem
   isSelected: boolean
   disabled?: boolean
   size?: AvatarSize
@@ -29,7 +34,7 @@ export default function ToggleIcon({
     <LazyAvatar
       alt={item.title}
       size={size}
-      src={item.image_url || item.image}
+      src={item.image ?? item.image_url ?? undefined}
       sx={{
         backgroundColor: 'transparent',
         filter,
