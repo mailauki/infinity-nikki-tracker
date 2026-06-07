@@ -264,6 +264,7 @@ export type Database = {
       evolutions: {
         Row: {
           alt_image_url: string | null
+          created_at: string
           description: string | null
           id: number
           image_url: string | null
@@ -272,9 +273,11 @@ export type Database = {
           slug: string
           subtitle: string | null
           title: string
+          updated_at: string | null
         }
         Insert: {
           alt_image_url?: string | null
+          created_at?: string
           description?: string | null
           id?: number
           image_url?: string | null
@@ -283,9 +286,11 @@ export type Database = {
           slug: string
           subtitle?: string | null
           title: string
+          updated_at?: string | null
         }
         Update: {
           alt_image_url?: string | null
+          created_at?: string
           description?: string | null
           id?: number
           image_url?: string | null
@@ -294,6 +299,7 @@ export type Database = {
           slug?: string
           subtitle?: string | null
           title?: string
+          updated_at?: string | null
         }
         Relationships: [
           {

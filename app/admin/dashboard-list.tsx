@@ -72,7 +72,7 @@ export default function DashboardList({
                   disableTypography
                   secondary={
                     <Typography color="text.secondary" variant="caption">
-                      {formatDate(item.date)}
+                      {item.date ? formatDate(item.date) : '—'}
                     </Typography>
                   }
                   sx={{ textAlign: 'right', mr: 2 }}
