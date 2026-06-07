@@ -13,6 +13,7 @@ export default function NavBarToolbar({ children }: { children: React.ReactNode 
       position="fixed"
       sx={{
         borderColor: 'transparent',
+        pointerEvents: 'none',
         ml: { xs: 0, sm: drawerOpen ? '260px' : 'calc(var(--mui-spacing) * 10 + 21px)' },
         width: {
           xs: '100%',
@@ -29,7 +30,7 @@ export default function NavBarToolbar({ children }: { children: React.ReactNode 
       variant="outlined"
     >
       <Toolbar sx={{ mb: 2 }} />
-      <Toolbar sx={{ mb: 2 }}>{children}</Toolbar>
+      <Toolbar sx={{ mb: 2, pointerEvents: 'auto' }}>{children}</Toolbar>
     </AppBar>
   )
 }
