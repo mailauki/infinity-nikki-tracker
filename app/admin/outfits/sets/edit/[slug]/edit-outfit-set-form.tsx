@@ -155,15 +155,6 @@ export default function EditOutfitSetForm({
           onChange={(e) => setSlug(e.target.value)}
         />
 
-        <TextField
-          multiline
-          label="Description"
-          minRows={3}
-          name="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-
         <input name="rarity" type="hidden" value={rarity} />
         <RarityToggle
           selectedRarity={typeof rarity === 'number' ? rarity : null}
@@ -226,6 +217,15 @@ export default function EditOutfitSetForm({
             })}
           </Select>
         </FormControl>
+
+        <TextField
+          multiline
+          label="Description"
+          minRows={3}
+          name="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
 
         <FormControl>
           <InputLabel>Ability</InputLabel>
