@@ -44,7 +44,7 @@ export default function NavSection({
         <ListItem disablePadding sx={{ display: 'block' }}>
           <Tooltip placement="right" title={open ? '' : items[0].title}>
             <ListItemButton
-              component="a"
+              component={Link}
               href={items[0].url}
               selected={items[0].url === `/${pathname.split('/')[1]}`}
               sx={{
@@ -81,7 +81,7 @@ export default function NavSection({
           <ListItem disablePadding sx={{ display: 'block' }}>
             <Tooltip placement="right" title={open ? '' : item.title}>
               <ListItemButton
-                component="a"
+                component={Link}
                 href={item.url}
                 selected={item.url === `/${pathname.split('/')[1]}`}
                 sx={{

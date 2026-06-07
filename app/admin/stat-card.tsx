@@ -1,3 +1,5 @@
+'use client'
+
 import {
   Button,
   Card,
@@ -10,6 +12,7 @@ import {
 } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { ArrowForward } from '@mui/icons-material'
+import Link from 'next/link'
 
 export function StatCard({
   title,
@@ -50,7 +53,7 @@ export function StatCard({
           >
             {addHref && (
               <Tooltip title="Add">
-                <IconButton color="primary" component="a" href={addHref} size="small">
+                <IconButton color="primary" component={Link} href={addHref} size="small">
                   <AddIcon />
                 </IconButton>
               </Tooltip>
