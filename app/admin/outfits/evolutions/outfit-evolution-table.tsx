@@ -21,6 +21,12 @@ export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTable
 
   const columns: GridColDef<Row>[] = [
     {
+      field: 'id',
+      headerName: 'ID',
+      width: 80,
+      type: 'number',
+    },
+    {
       field: 'actions',
       type: 'actions',
       headerName: 'Actions',
@@ -126,8 +132,11 @@ export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTable
     <DataGrid
       disableRowSelectionOnClick
       columns={columns}
-      getRowId={(row) => row.slug}
-      initialState={{ pagination: { paginationModel: { pageSize: 15 } } }}
+      getRowId={(row) => row.id}
+      initialState={{
+        pagination: { paginationModel: { pageSize: 15 } },
+        sorting: { sortModel: [{ field: 'id', sort: 'asc' }] },
+      }}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       rowHeight={100}
       rows={rows}
