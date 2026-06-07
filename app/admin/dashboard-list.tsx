@@ -78,9 +78,7 @@ export default function DashboardList({
                   sx={{ textAlign: 'right', mr: 2 }}
                 />
               </ListItem>
-              {i < items.length - 1 && (
-                <Divider component="li" sx={{ mr: 2 }} variant="inset" />
-              )}
+              {i < items.length - 1 && <Divider component="li" sx={{ mr: 2 }} variant="inset" />}
             </Fragment>
           ))}
         </List>

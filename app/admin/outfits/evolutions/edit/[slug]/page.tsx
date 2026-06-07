@@ -35,8 +35,9 @@ async function EditEvolution({
 }) {
   const { slug } = await params
   const { back: backParam } = await searchParams
-  const back =
-    backParam?.startsWith('/admin/') ? backParam : navLinksData.admin.outfits.evolutions.list
+  const back = backParam?.startsWith('/admin/')
+    ? backParam
+    : navLinksData.admin.outfits.evolutions.list
 
   const supabase = await createClient()
 

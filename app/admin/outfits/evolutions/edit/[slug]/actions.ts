@@ -29,8 +29,8 @@ export async function editEvolution(
   if (error) return { error: error.message }
 
   // Update variant images from hidden inputs (ON UPDATE CASCADE already updated variant slugs)
-  const variantImageEntries = [...formData.entries()].filter(([key]) =>
-    key.startsWith('variant_image_') && !key.startsWith('variant_alt_image_')
+  const variantImageEntries = [...formData.entries()].filter(
+    ([key]) => key.startsWith('variant_image_') && !key.startsWith('variant_alt_image_')
   )
   for (const [key, value] of variantImageEntries) {
     const variantSlug = key.replace('variant_image_', '')
