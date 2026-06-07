@@ -5,15 +5,15 @@ import { getEvolutions } from '@/hooks/data/evolutions'
 import { Suspense } from 'react'
 import OutfitVariantView from './outfit-variant-view'
 
-export default function OutfitVariantsDashboard() {
+export default function OutfitVariantsAdminPage() {
   return (
     <Suspense>
-      <DashboardView />
+      <AdminView />
     </Suspense>
   )
 }
 
-async function DashboardView() {
+async function AdminView() {
   const [outfitVariants, outfitSets, outfitCategories, evolutions] = await Promise.all([
     getOutfitVariantsRaw(),
     getOutfitSets(),

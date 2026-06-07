@@ -11,18 +11,18 @@ import { navLinksData } from '@/lib/nav-links'
 import { getEvolutions } from '@/hooks/data/evolutions'
 
 export const metadata: Metadata = {
-  title: 'Dashboard',
+  title: 'Admin',
 }
 
-export default function DashboardPage() {
+export default function AdminPage() {
   return (
     <Suspense>
-      <DashboardContent />
+      <AdminContent />
     </Suspense>
   )
 }
 
-async function DashboardContent() {
+async function AdminContent() {
   const [eurekaSets, { eurekaVariants, trials }, outfitSets, outfitVariants, evolutions, role] =
     await Promise.all([
       getEurekaSets(),
@@ -45,39 +45,39 @@ async function DashboardContent() {
       }}
     >
       <StatCard
-        addHref={isAdmin ? navLinksData.dashboard.outfits.sets.add : undefined}
+        addHref={isAdmin ? navLinksData.admin.outfits.sets.add : undefined}
         count={outfitSets?.length ?? 0}
-        tabHref={navLinksData.dashboard.outfits.sets.list}
+        tabHref={navLinksData.admin.outfits.sets.list}
         title="Outfit Sets"
       />
       <StatCard
-        addHref={isAdmin ? navLinksData.dashboard.outfits.variants.add : undefined}
+        addHref={isAdmin ? navLinksData.admin.outfits.variants.add : undefined}
         count={outfitVariants?.length ?? 0}
-        tabHref={navLinksData.dashboard.outfits.variants.list}
+        tabHref={navLinksData.admin.outfits.variants.list}
         title="Outfit Variants"
       />
       <StatCard
         addHref={undefined}
         count={evolutions?.length ?? 0}
-        tabHref={navLinksData.dashboard.outfits.evolutions.list}
+        tabHref={navLinksData.admin.outfits.evolutions.list}
         title="Evolutions"
       />
       <StatCard
-        addHref={isAdmin ? navLinksData.dashboard.eureka.sets.add : undefined}
+        addHref={isAdmin ? navLinksData.admin.eureka.sets.add : undefined}
         count={eurekaSets?.length ?? 0}
-        tabHref={navLinksData.dashboard.eureka.sets.list}
+        tabHref={navLinksData.admin.eureka.sets.list}
         title="Eureka Sets"
       />
       <StatCard
-        addHref={isAdmin ? navLinksData.dashboard.eureka.variants.add : undefined}
+        addHref={isAdmin ? navLinksData.admin.eureka.variants.add : undefined}
         count={eurekaVariants?.length ?? 0}
-        tabHref={navLinksData.dashboard.eureka.variants.list}
+        tabHref={navLinksData.admin.eureka.variants.list}
         title="Eureka Variants"
       />
       <StatCard
-        addHref={isAdmin ? navLinksData.dashboard.eureka.trials.add : undefined}
+        addHref={isAdmin ? navLinksData.admin.eureka.trials.add : undefined}
         count={trials?.length ?? 0}
-        tabHref={navLinksData.dashboard.eureka.trials.list}
+        tabHref={navLinksData.admin.eureka.trials.list}
         title="Trials"
       />
     </Box>

@@ -5,15 +5,15 @@ import { getEurekaVariantsRaw } from '@/hooks/data/admin/eureka-variants'
 import { Suspense } from 'react'
 import EurekaVariantView from './eureka-variant-view'
 
-export default function EurekaVariantsDashboard() {
+export default function EurekaVariantsAdminPage() {
   return (
     <Suspense>
-      <DashboardView />
+      <AdminView />
     </Suspense>
   )
 }
 
-async function DashboardView() {
+async function AdminView() {
   const [eurekaVariants, eurekaSets, categories, colors] = await Promise.all([
     getEurekaVariantsRaw(),
     getEurekaSets(),

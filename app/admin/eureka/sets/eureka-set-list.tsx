@@ -1,10 +1,10 @@
 'use client'
 
 import { EurekaSet } from '@/lib/types/eureka'
-import { AdminList } from '../../admin-list'
 import ListRow from '../../list-row'
 import { toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
+import { AdminList } from '../../admin-list'
 
 interface EurekaSetListProps {
   rows: EurekaSet[]
@@ -23,7 +23,7 @@ export default function EurekaSetList({
 }: EurekaSetListProps) {
   return (
     <AdminList
-      addHref={navLinksData.dashboard.eureka.sets.add}
+      addHref={navLinksData.admin.eureka.sets.add}
       getKey={(set) => set.id}
       page={page}
       renderRow={(row) => (

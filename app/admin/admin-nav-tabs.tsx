@@ -5,15 +5,15 @@ import { usePathname } from 'next/navigation'
 import { navLinksData } from '@/lib/nav-links'
 import Link from 'next/link'
 
-export default function DashboardNavTabs() {
+export default function AdminNavTabs() {
   const pathname = usePathname()
-  const dashboardTabs = navLinksData.dashboard.tabs
-  const outfitsTabs = dashboardTabs.find((tab) => tab.title === 'Outfits')?.items ?? []
-  const eurekaTabs = dashboardTabs.find((tab) => tab.title === 'Eureka')?.items ?? []
+  const adminTabs = navLinksData.admin.tabs
+  const outfitsTabs = adminTabs.find((tab) => tab.title === 'Outfits')?.items ?? []
+  const eurekaTabs = adminTabs.find((tab) => tab.title === 'Eureka')?.items ?? []
   const isOutfitsPath = pathname.split('/')[2] === 'outfits'
   const isEurekaPath = pathname.split('/')[2] === 'eureka'
 
-  let activeTabs = dashboardTabs
+  let activeTabs = adminTabs
   if (isOutfitsPath) activeTabs = outfitsTabs
   else if (isEurekaPath) activeTabs = eurekaTabs
   const activeIndex = activeTabs.findIndex((t) => t.url === pathname)

@@ -58,7 +58,7 @@ export default function AddEurekaVariantForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.eureka.variants.list,
+      backUrl: navLinksData.admin.eureka.variants.list,
       pending,
       showAddAnother: true,
     })

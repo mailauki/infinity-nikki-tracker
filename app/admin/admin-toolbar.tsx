@@ -2,17 +2,17 @@
 
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { IconButton, Stack } from '@mui/material'
-import DashboardNavTabs from './dashboard-nav-tabs'
-import DashboardViewToggle from './dashboard-view-toggle'
+import AdminNavTabs from './admin-nav-tabs'
+import AdminViewToggle from './admin-view-toggle'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import { ChevronLeft } from '@mui/icons-material'
 import { useFormConfig } from '@/app/admin/form-context'
 
-export default function DashboardToolBar() {
+export default function AdminToolBar() {
   const pathname = usePathname()
   const { formId, setFormConfig } = useFormConfig()
-  const isDashboardMainPage = pathname === '/admin'
+  const isAdminMainPage = pathname === '/admin'
   const isFormRoute = pathname.endsWith('/new') || pathname.includes('/edit/')
   const mounted = useRef(false)
 
@@ -36,13 +36,13 @@ export default function DashboardToolBar() {
           borderColor: 'divider',
         }}
       >
-        {!isDashboardMainPage && (
+        {!isAdminMainPage && (
           <IconButton component="a" href="/admin">
             <ChevronLeft />
           </IconButton>
         )}
-        <DashboardNavTabs />
-        {!isDashboardMainPage && <DashboardViewToggle />}
+        <AdminNavTabs />
+        {!isAdminMainPage && <AdminViewToggle />}
       </Stack>
     </NavBarToolbar>
   )

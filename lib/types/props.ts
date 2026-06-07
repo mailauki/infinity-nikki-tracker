@@ -20,17 +20,17 @@ export type RarityFilter = Range<2, 6>
 
 export type Percentage = Range<0, 101>
 
-type DashboardLink = {
+type AdminLink = {
   title: string
   list: string
   add?: string
   edit: string
 }
 
-export type DashboardLinks = {
+export type AdminLinks = {
   tabs: NavLink[]
-  eureka: { sets: DashboardLink; variants: DashboardLink; trials: DashboardLink }
-  outfits: { sets: DashboardLink; variants: DashboardLink; evolutions: DashboardLink }
+  eureka: { sets: AdminLink; variants: AdminLink; trials: AdminLink }
+  outfits: { sets: AdminLink; variants: AdminLink; evolutions: AdminLink }
 }
 
 export interface NavLink {

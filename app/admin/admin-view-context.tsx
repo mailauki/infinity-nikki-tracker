@@ -5,14 +5,14 @@ import { createContext, useContext, useEffect, useState } from 'react'
 
 type View = 'list' | 'table'
 
-const DashboardViewContext = createContext<{ view: View; setView: (v: View) => void }>({
+const AdminViewContext = createContext<{ view: View; setView: (v: View) => void }>({
   view: 'list',
   setView: () => {},
 })
 
 const supabase = createClient()
 
-export function DashboardViewProvider({
+export function AdminViewProvider({
   initialView,
   userId,
   children,
@@ -25,17 +25,17 @@ export function DashboardViewProvider({
 
   useEffect(() => {
     const channel = supabase
-      .channel('dashboard-view-channel')
+      .channel('admin-view-channel')
       .on(
         'postgres_changes',
         {
           event: 'UPDATE',
           schema: 'public',
-          table: 'user_preferences',
+          table: 'admin_preferences',
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          const next = payload.new.dashboard_view as View
+          const next = payload.new.admin_view as View
           if (next) setView(next)
         }
       )
@@ -46,9 +46,9 @@ export function DashboardViewProvider({
     }
   }, [userId])
 
-  return <DashboardViewContext value={{ view, setView }}>{children}</DashboardViewContext>
+  return <AdminViewContext value={{ view, setView }}>{children}</AdminViewContext>
 }
 
-export function useDashboardView() {
-  return useContext(DashboardViewContext)
+export function useAdminView() {
+  return useContext(AdminViewContext)
 }

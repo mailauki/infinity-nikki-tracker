@@ -112,7 +112,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
 
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: title }
-  redirect(navLinksData.dashboard.outfits.sets.list)
+  redirect(navLinksData.admin.outfits.sets.list)
 }
 
 export async function editOutfitSet(id: number, backUrl: string, _: unknown, formData: FormData) {

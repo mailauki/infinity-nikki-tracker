@@ -5,15 +5,15 @@ import { getAbilities } from '@/hooks/data/abilities'
 import { Suspense } from 'react'
 import OutfitSetView from './outfit-set-view'
 
-export default function OutfitSetsDashboard() {
+export default function OutfitSetsAdminPage() {
   return (
     <Suspense>
-      <DashboardView />
+      <AdminView />
     </Suspense>
   )
 }
 
-async function DashboardView() {
+async function AdminView() {
   const [outfitSets, styles, labels, abilities] = await Promise.all([
     getOutfitSets(),
     getStyles(),

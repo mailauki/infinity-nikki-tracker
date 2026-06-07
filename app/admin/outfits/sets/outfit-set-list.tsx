@@ -1,9 +1,9 @@
 'use client'
 
 import { OutfitSet } from '@/lib/types/outfit'
-import { AdminList } from '../../admin-list'
 import ListRow from '../../list-row'
 import { navLinksData } from '@/lib/nav-links'
+import { AdminList } from '../../admin-list'
 
 interface OutfitSetListProps {
   rows: OutfitSet[]
@@ -22,7 +22,7 @@ export default function OutfitSetList({
 }: OutfitSetListProps) {
   return (
     <AdminList
-      addHref={navLinksData.dashboard.outfits.sets.add}
+      addHref={navLinksData.admin.outfits.sets.add}
       getKey={(set) => set.id}
       page={page}
       renderRow={(row) => (

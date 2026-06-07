@@ -1,6 +1,6 @@
 import { Skeleton, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 
-export default function OutfitVariantsDashboardLoading() {
+export default function OutfitVariantsAdminLoading() {
   return (
     <Stack spacing={2} sx={{ pt: 2 }}>
       <Table>

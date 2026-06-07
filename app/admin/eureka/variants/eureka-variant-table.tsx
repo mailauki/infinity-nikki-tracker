@@ -44,7 +44,7 @@ export function EurekaVariantTable({
   } = useRowActions()
 
   const editHref = (row: Row) =>
-    `${navLinksData.dashboard.eureka.variants.edit}/${row.slug ?? toSlugVariant(row.eureka_set ?? '', row.category ?? '', row.color ?? '')}`
+    `${navLinksData.admin.eureka.variants.edit}/${row.slug ?? toSlugVariant(row.eureka_set ?? '', row.category ?? '', row.color ?? '')}`
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {

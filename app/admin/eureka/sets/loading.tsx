@@ -1,6 +1,6 @@
 import { Skeleton, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 
-export default function EurekaSetsDashboardLoading() {
+export default function EurekaSetsAdminLoading() {
   return (
     <Stack spacing={2} sx={{ pt: 2 }}>
       <Table>

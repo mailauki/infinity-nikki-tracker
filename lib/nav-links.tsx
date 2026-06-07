@@ -1,4 +1,4 @@
-import { DashboardLinks, NavLink } from '@/lib/types/props'
+import { AdminLinks, NavLink } from '@/lib/types/props'
 import {
   Help,
   Info,
@@ -15,7 +15,7 @@ export const navLinksData: {
   navMain: NavLink[]
   navSecondary: NavLink[]
   navExtra: NavLink[]
-  dashboard: DashboardLinks
+  admin: AdminLinks
 } = {
   home: [
     {
@@ -115,7 +115,7 @@ export const navLinksData: {
       icon: <Help />,
     },
   ],
-  dashboard: {
+  admin: {
     tabs: [
       {
         title: 'Outfits',

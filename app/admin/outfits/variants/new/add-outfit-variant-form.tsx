@@ -52,7 +52,7 @@ export default function AddOutfitVariantForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.outfits.variants.list,
+      backUrl: navLinksData.admin.outfits.variants.list,
       pending,
       showAddAnother: true,
     })

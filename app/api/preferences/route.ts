@@ -23,7 +23,7 @@ export async function GET() {
   const { data } = await supabase
     .from('user_preferences')
     .select(
-      'group_by_set, show_by_color, dashboard_view, dashboard_tab, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity, theme'
+      'group_by_set, show_by_color, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity, theme'
     )
     .eq('user_id', user.id)
     .single()

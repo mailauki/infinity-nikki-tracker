@@ -1,17 +1,17 @@
 'use client'
 
-import { updateDashboardView } from '@/app/actions/preferences'
-import { useDashboardView } from './dashboard-view-context'
+import { updateAdminView } from '@/app/actions/preferences'
+import { useAdminView } from './admin-view-context'
 import { CalendarViewMonth, ViewList } from '@mui/icons-material'
 import { ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
 
-export default function DashboardViewToggle() {
-  const { view, setView } = useDashboardView()
+export default function AdminViewToggle() {
+  const { view, setView } = useAdminView()
 
   async function handleViewChange(_: unknown, value: 'list' | 'table' | null) {
     if (!value) return
     setView(value)
-    await updateDashboardView(value)
+    await updateAdminView(value)
   }
 
   return (

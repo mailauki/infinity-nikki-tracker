@@ -1,10 +1,10 @@
 'use client'
 
 import { EurekaVariantRaw } from '@/lib/types/eureka'
-import { AdminList } from '../../admin-list'
 import ListRow from '../../list-row'
 import { toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
+import { AdminList } from '../../admin-list'
 
 interface EurekaVariantListProps {
   rows: EurekaVariantRaw[]
@@ -23,7 +23,7 @@ export default function EurekaVariantList({
 }: EurekaVariantListProps) {
   return (
     <AdminList
-      addHref={navLinksData.dashboard.eureka.variants.add}
+      addHref={navLinksData.admin.eureka.variants.add}
       getKey={(variant) => variant.id}
       page={page}
       renderRow={(row) => (

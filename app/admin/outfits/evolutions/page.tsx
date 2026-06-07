@@ -2,15 +2,15 @@ import { getEvolutions } from '@/hooks/data/evolutions'
 import { Suspense } from 'react'
 import OutfitEvolutionView from './outfit-evolution-view'
 
-export default function OutfitEvolutionsDashboard() {
+export default function OutfitEvolutionsAdminPage() {
   return (
     <Suspense>
-      <DashboardView />
+      <AdminView />
     </Suspense>
   )
 }
 
-async function DashboardView() {
+async function AdminView() {
   const evolutions = await getEvolutions()
 
   return <OutfitEvolutionView evolutions={evolutions} />

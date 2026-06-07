@@ -15,7 +15,7 @@ export default function PageTitle() {
       ...(item.items ?? []).map((sub) => ({ ...sub, url: item.url + sub.url })),
     ]),
     ...navLinksData.navExtra,
-    ...navLinksData.dashboard.tabs.flatMap((tab) =>
+    ...navLinksData.admin.tabs.flatMap((tab) =>
       (tab.items ?? []).map((item) => ({ ...item, title: `${tab.title} ${item.title}` }))
     ),
   ]

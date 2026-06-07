@@ -54,7 +54,7 @@ export function OutfitSetTable({
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
   const editHref = (row: Row) =>
-    `${navLinksData.dashboard.outfits.sets.edit}/${row.slug ?? toSlug(row.title)}`
+    `${navLinksData.admin.outfits.sets.edit}/${row.slug ?? toSlug(row.title)}`
 
   const isEditing = (id: GridRowId) => rowModesModel[id]?.mode === GridRowModes.Edit
 

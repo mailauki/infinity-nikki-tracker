@@ -53,7 +53,7 @@ export function OutfitVariantTable({
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
   const editHref = (row: Row) =>
-    `${navLinksData.dashboard.outfits.variants.edit}/${row.slug ?? toSlugVariant(row.outfit_set ?? '', row.outfit_category ?? '', row.evolution ?? '')}`
+    `${navLinksData.admin.outfits.variants.edit}/${row.slug ?? toSlugVariant(row.outfit_set ?? '', row.outfit_category ?? '', row.evolution ?? '')}`
 
   const isEditing = (id: GridRowId) => rowModesModel[id]?.mode === GridRowModes.Edit
 

@@ -1,8 +1,8 @@
 'use client'
 
 import { Evolution } from '@/lib/types/outfit'
-import { AdminList } from '../../admin-list'
 import ListRow from '../../list-row'
+import { AdminList } from '../../admin-list'
 
 interface OutfitEvolutionListProps {
   rows: Evolution[]

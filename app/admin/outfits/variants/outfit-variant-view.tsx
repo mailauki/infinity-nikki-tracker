@@ -1,6 +1,6 @@
 'use client'
 
-import { useDashboardView } from '../../dashboard-view-context'
+import { useAdminView } from '../../admin-view-context'
 import { Evolution, OutfitCategory, OutfitSet, OutfitVariantRaw } from '@/lib/types/outfit'
 import { OutfitVariantTable } from './outfit-variant-table'
 import OutfitVariantList from './outfit-variant-list'
@@ -17,7 +17,7 @@ export default function OutfitVariantView({
   outfitCategories: OutfitCategory[]
   evolutions: Evolution[]
 }) {
-  const { view } = useDashboardView()
+  const { view } = useAdminView()
 
   return view === 'table' ? (
     <TableContainer>

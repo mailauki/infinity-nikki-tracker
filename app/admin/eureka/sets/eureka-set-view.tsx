@@ -1,6 +1,6 @@
 'use client'
 
-import { useDashboardView } from '../../dashboard-view-context'
+import { useAdminView } from '../../admin-view-context'
 import { EurekaSet, Label, Style } from '@/lib/types/eureka'
 import { EurekaSetTable } from './eureka-set-table'
 import EurekaSetList from './eureka-set-list'
@@ -15,7 +15,7 @@ export default function EurekaSetView({
   styles: Style[]
   labels: Label[]
 }) {
-  const { view } = useDashboardView()
+  const { view } = useAdminView()
 
   return view === 'table' ? (
     <TableContainer>

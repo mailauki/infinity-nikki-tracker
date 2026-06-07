@@ -1,6 +1,6 @@
 import { Skeleton, Stack, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 
-export default function TrialsDashboardLoading() {
+export default function TrialsAdminLoading() {
   return (
     <Stack spacing={2} sx={{ pt: 2 }}>
       <Table>

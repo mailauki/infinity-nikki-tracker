@@ -39,7 +39,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
   } = useRowActions()
 
   const editHref = (row: Row) =>
-    `${navLinksData.dashboard.eureka.sets.edit}/${row.slug ?? toSlug(row.title)}`
+    `${navLinksData.admin.eureka.sets.edit}/${row.slug ?? toSlug(row.title)}`
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {

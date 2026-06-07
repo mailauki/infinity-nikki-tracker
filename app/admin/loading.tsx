@@ -1,6 +1,6 @@
 import { Box, Card, CardContent, CardHeader, Skeleton } from '@mui/material'
 
-export default function DashboardLoading() {
+export default function AdminLoading() {
   return (
     <Box
       sx={{

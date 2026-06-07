@@ -36,7 +36,7 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
   } = useRowActions()
 
   const editHref = (row: Row) =>
-    `${navLinksData.dashboard.eureka.trials.edit}/${row.slug ?? toSlug(row.title)}`
+    `${navLinksData.admin.eureka.trials.edit}/${row.slug ?? toSlug(row.title)}`
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {

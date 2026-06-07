@@ -86,7 +86,7 @@ export default function AddEurekaSetForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.eureka.sets.list,
+      backUrl: navLinksData.admin.eureka.sets.list,
       pending,
       showAddAnother: true,
     })

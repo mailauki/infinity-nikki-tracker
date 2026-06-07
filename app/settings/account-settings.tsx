@@ -179,7 +179,7 @@ function AdminAccessSection() {
       <Divider />
       <Typography variant="subtitle1">Admin access</Typography>
       <Typography color="textSecondary" variant="body2">
-        Admin access lets you manage Eureka sets, variants, and trials from the dashboard.
+        Admin access lets you manage Eureka sets, variants, and trials from the admin panel.
       </Typography>
       <Button
         component="a"

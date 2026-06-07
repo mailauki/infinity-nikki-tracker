@@ -4,15 +4,15 @@ import { getStyles } from '@/hooks/data/styles'
 import { Suspense } from 'react'
 import EurekaSetView from './eureka-set-view'
 
-export default function EurekaSetsDashboard() {
+export default function EurekaSetsAdminPage() {
   return (
     <Suspense>
-      <DashboardView />
+      <AdminView />
     </Suspense>
   )
 }
 
-async function DashboardView() {
+async function AdminView() {
   const [eurekaSets, styles, labels] = await Promise.all([
     getEurekaSets(),
     getStyles(),

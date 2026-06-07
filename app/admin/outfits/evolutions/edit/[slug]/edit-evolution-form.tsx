@@ -52,7 +52,7 @@ export default function EditEvolutionForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: back ?? navLinksData.dashboard.outfits.evolutions.edit,
+      backUrl: back ?? navLinksData.admin.outfits.evolutions.edit,
       pending,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps

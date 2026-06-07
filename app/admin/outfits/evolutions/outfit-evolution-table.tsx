@@ -16,7 +16,7 @@ interface OutfitEvolutionTableProps {
 
 export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
-  const editHref = (row: Row) => `${navLinksData.dashboard.outfits.evolutions.edit}/${row.slug}`
+  const editHref = (row: Row) => `${navLinksData.admin.outfits.evolutions.edit}/${row.slug}`
 
   const columns: GridColDef<Row>[] = [
     {

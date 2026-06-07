@@ -31,7 +31,7 @@ export default function AddTrialForm() {
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.dashboard.eureka.trials.list,
+      backUrl: navLinksData.admin.eureka.trials.list,
       pending,
       showAddAnother: true,
     })
