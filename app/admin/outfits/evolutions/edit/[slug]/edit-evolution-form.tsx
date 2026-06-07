@@ -23,7 +23,7 @@ type EvolutionRow = Pick<
 
 type VariantRow = Pick<
   Tables<'outfit_variants'>,
-  'id' | 'slug' | 'outfit_category' | 'image_url' | 'default' | 'updated_at'
+  'id' | 'slug' | 'outfit_category' | 'image_url' | 'alt_image_url' | 'default' | 'updated_at'
 >
 
 const FORM_ID = 'edit-evolution'
@@ -45,6 +45,9 @@ export default function EditEvolutionForm({
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
     Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.image_url]))
   )
+  const [variantAltImages, setVariantAltImages] = useState<Record<string, string | null>>(
+    Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.alt_image_url]))
+  )
 
   const boundAction = editEvolution.bind(null, evolution.slug, evolution.outfit_set, back)
   const [state, action, pending] = useActionState(boundAction, null)
@@ -52,7 +55,7 @@ export default function EditEvolutionForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: back ?? navLinksData.admin.outfits.evolutions.edit,
+      backUrl: back ?? navLinksData.admin.outfits.evolutions.list,
       pending,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -113,24 +116,43 @@ export default function EditEvolutionForm({
               {variants
                 .filter((v) => v.slug)
                 .map((v) => (
-                  <Stack
-                    key={v.slug}
-                    direction="row"
-                    spacing={1}
-                    sx={{ justifyContent: 'space-between' }}
-                  >
-                    <input
-                      name={`variant_image_${v.slug}`}
-                      type="hidden"
-                      value={variantImages[v.slug!] ?? ''}
-                    />
-                    <ImageUpload
-                      caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
-                      slug={v.slug ?? undefined}
-                      table="outfit_variants"
-                      url={variantImages[v.slug!] ?? null}
-                      onUpload={(url) => setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))}
-                    />
+                  <Stack key={v.slug} spacing={0.5}>
+                    <Typography variant="caption">
+                      {(v.outfit_category && toTitle(v.outfit_category)) ?? v.slug}
+                    </Typography>
+                    <Stack direction="row" spacing={1}>
+                      <input
+                        name={`variant_image_${v.slug}`}
+                        type="hidden"
+                        value={variantImages[v.slug!] ?? ''}
+                      />
+                      <ImageUpload
+                        caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
+                        slug={v.slug ?? undefined}
+                        table="outfit_variants"
+                        url={variantImages[v.slug!] ?? null}
+                        onUpload={(url) =>
+                          setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))
+                        }
+                      />
+                      <input
+                        name={`variant_alt_image_${v.slug}`}
+                        type="hidden"
+                        value={variantAltImages[v.slug!] ?? ''}
+                      />
+                      <ImageUpload
+                        caption={
+                        (v.outfit_category && `Alt ${toTitle(v.outfit_category)}`) ?? undefined
+                      }
+                        column="alt_image_url"
+                        slug={v.slug ?? undefined}
+                        table="outfit_variants"
+                        url={variantAltImages[v.slug!] ?? null}
+                        onUpload={(url) =>
+                          setVariantAltImages((prev) => ({ ...prev, [v.slug!]: url }))
+                        }
+                      />
+                    </Stack>
                   </Stack>
                 ))}
             </Box>

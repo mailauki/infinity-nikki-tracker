@@ -25,7 +25,8 @@ export default function ListRow({
   image_url?: string
   updated_at?: string | null
 }) {
-  const editHref = `/${list}/edit/${slug}`
+  const backUrl = list ? `/${list}` : undefined
+  const editHref = `/${list}/edit/${slug}${backUrl ? `?back=${encodeURIComponent(backUrl)}` : ''}`
 
   return (
     <ListItem
