@@ -16,7 +16,7 @@ const backDashboard = `?back=${encodeURIComponent('/admin')}`
 export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem[]> => {
   const supabase = await createClient()
 
-  const [{ data: sets }, { data: trials }] = await Promise.all([
+  const [{ data: eurekaSets }, { data: trials }, { data: outfitSets }] = await Promise.all([
     supabase
       .from('eureka_sets')
       .select('slug, title, created_at')
@@ -27,10 +27,16 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       .select('slug, title, image_url, created_at')
       .order('created_at', { ascending: false })
       .limit(limit),
+    supabase
+      .from('outfit_sets')
+      .select('slug, title, image_url, created_at')
+      .not('created_at', 'is', null)
+      .order('created_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
   ])
 
   const items: RecentAdminItem[] = [
-    ...(sets ?? []).map((s) => ({
+    ...(eurekaSets ?? []).map((s) => ({
       slug: s.slug,
       title: s.title,
       image_url: null,
@@ -46,6 +52,14 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       editHref: `${navLinksData.admin.eureka.trials.edit}/${t.slug}${backDashboard}`,
       date: t.created_at,
     })),
+    ...(outfitSets ?? []).map((o) => ({
+      slug: o.slug,
+      title: o.title,
+      image_url: o.image_url,
+      type: navLinksData.admin.outfits.sets.title,
+      editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}${backDashboard}`,
+      date: o.created_at!,
+    })),
   ]
 
   return items
@@ -56,7 +70,7 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
 export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminItem[]> => {
   const supabase = await createClient()
 
-  const [{ data: sets }, { data: trials }] = await Promise.all([
+  const [{ data: eurekaSets }, { data: trials }, { data: outfitSets }] = await Promise.all([
     supabase
       .from('eureka_sets')
       .select('slug, title, updated_at')
@@ -69,10 +83,16 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       .not('updated_at', 'is', null)
       .order('updated_at', { ascending: false, nullsFirst: false })
       .limit(limit),
+    supabase
+      .from('outfit_sets')
+      .select('slug, title, image_url, updated_at')
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
   ])
 
   const items: RecentAdminItem[] = [
-    ...(sets ?? []).map((s) => ({
+    ...(eurekaSets ?? []).map((s) => ({
       slug: s.slug,
       title: s.title,
       image_url: null,
@@ -87,6 +107,14 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       type: navLinksData.admin.eureka.trials.title,
       editHref: `${navLinksData.admin.eureka.trials.edit}/${t.slug}${backDashboard}`,
       date: t.updated_at!,
+    })),
+    ...(outfitSets ?? []).map((o) => ({
+      slug: o.slug,
+      title: o.title,
+      image_url: o.image_url,
+      type: navLinksData.admin.outfits.sets.title,
+      editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}${backDashboard}`,
+      date: o.updated_at!,
     })),
   ]
 
