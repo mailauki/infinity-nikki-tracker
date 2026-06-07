@@ -16,7 +16,8 @@ interface OutfitEvolutionTableProps {
 
 export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
-  const editHref = (row: Row) => `${navLinksData.admin.outfits.evolutions.edit}/${row.slug}`
+  const editHref = (row: Row) =>
+    `${navLinksData.admin.outfits.evolutions.edit}/${row.slug}?back=${encodeURIComponent(navLinksData.admin.outfits.evolutions.list)}`
 
   const columns: GridColDef<Row>[] = [
     {
@@ -30,7 +31,7 @@ export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTable
           icon={<OpenInNewIcon color="secondary" />}
           label="Edit on set form"
           title="Edit on set form"
-          onClick={() => (window.location.href = editHref(row))}
+          onClick={() => window.location.assign(editHref(row))}
         />,
       ],
     },
