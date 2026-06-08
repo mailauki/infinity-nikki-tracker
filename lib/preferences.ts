@@ -9,6 +9,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   eureka_color: null,
   eureka_rarity: null,
   theme: 'system',
+  color_theme: 'default',
 }
 
 export const DEFAULT_ADMIN_PREFERENCES: AdminPreferences = {

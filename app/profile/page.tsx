@@ -14,6 +14,7 @@ import { getRecentObtained } from '@/hooks/data/obtained-eureka'
 import ProfileToolbar from './profile-toolbar'
 import ProfileStats from './profile-stats'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
+import PremiumUpgrade from './premium-upgrade'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -47,9 +48,11 @@ async function UserDetails() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('display_name, username, avatar_url')
+    .select('display_name, username, avatar_url, is_premium')
     .eq('id', user.id)
     .single()
+
+  const isPremium = profile?.is_premium ?? false
 
   return (
     <>
@@ -58,11 +61,13 @@ async function UserDetails() {
         <ProfileCard
           avatar_url={profile?.avatar_url ?? null}
           fullname={profile?.display_name ?? null}
+          isPremium={isPremium}
           loadError={false}
           user={user}
           username={profile?.username ?? null}
         />
-				<ProfileStats eurekaSets={eurekaSets || []} outfitSets={outfitSets || []} />
+        <ProfileStats eurekaSets={eurekaSets || []} outfitSets={outfitSets || []} />
+        {!isPremium && <PremiumUpgrade />}
         {user_id && <CollectionCharts eurekaSets={eurekaSets || []} trials={trials || []} />}
         {user_id && <RecentUpdates items={recentObtained || []} />}
       </Stack>

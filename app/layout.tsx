@@ -2,9 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Noto_Sans_JP, Roboto } from 'next/font/google'
-import { ThemeProvider } from '@mui/material/styles'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
-import theme from '@/lib/theme'
+import ThemeClientProvider from '@/components/theme-client-provider'
 import { CssBaseline, Stack, Toolbar } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
 import { Suspense } from 'react'
@@ -60,7 +59,7 @@ export default function RootLayout({
       <body>
         <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppRouterCacheProvider options={{ key: 'css' }}>
-          <ThemeProvider defaultMode="system" theme={theme}>
+          <ThemeClientProvider>
             <CssBaseline />
             <NavBarToolbarProvider>
               <Stack
@@ -97,7 +96,7 @@ export default function RootLayout({
               </Stack>
               <Analytics />
             </NavBarToolbarProvider>
-          </ThemeProvider>
+          </ThemeClientProvider>
         </AppRouterCacheProvider>
       </body>
     </html>

@@ -14,10 +14,12 @@ type TabValue = 'profile' | 'appearance' | 'account'
 export default function SettingsTabs({
   isLoggedIn,
   isAdmin,
+  isPremium,
   user,
 }: {
   isLoggedIn: boolean
   isAdmin: boolean
+  isPremium: boolean
   user: User | null
 }) {
   const [tab, setTab] = useState<TabValue>(isLoggedIn ? 'profile' : 'appearance')
@@ -46,7 +48,7 @@ export default function SettingsTabs({
       </NavBarToolbar>
 
       {tab === 'profile' && (isLoggedIn ? <ProfileSettings user={user} /> : <LoginAlert />)}
-      {tab === 'appearance' && <AppearanceSettings />}
+      {tab === 'appearance' && <AppearanceSettings isPremium={isPremium} />}
       {tab === 'account' && (isLoggedIn ? <AccountSettings isAdmin={isAdmin} /> : <LoginAlert />)}
     </>
   )

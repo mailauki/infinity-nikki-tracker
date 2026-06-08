@@ -589,6 +589,8 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          is_premium: boolean
+          premium_purchased_at: string | null
           role: string
           updated_at: string | null
           username: string | null
@@ -598,6 +600,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          is_premium?: boolean
+          premium_purchased_at?: string | null
           role?: string
           updated_at?: string | null
           username?: string | null
@@ -607,6 +611,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          is_premium?: boolean
+          premium_purchased_at?: string | null
           role?: string
           updated_at?: string | null
           username?: string | null
@@ -672,6 +678,7 @@ export type Database = {
       }
       user_preferences: {
         Row: {
+          color_theme: string
           created_at: string
           eureka_category: string | null
           eureka_color: string | null
@@ -685,6 +692,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          color_theme?: string
           created_at?: string
           eureka_category?: string | null
           eureka_color?: string | null
@@ -698,6 +706,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          color_theme?: string
           created_at?: string
           eureka_category?: string | null
           eureka_color?: string | null

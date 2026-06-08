@@ -5285,6 +5285,7 @@ __metadata:
     prettier-plugin-tailwindcss: "npm:^0.7.2"
     react: "npm:^19.2.7"
     react-dom: "npm:^19.2.7"
+    stripe: "npm:^22.2.0"
     tailwind-merge: "npm:^3.6.0"
     tailwindcss: "npm:^3.4.1"
     typescript: "npm:^5"
@@ -5703,6 +5704,18 @@ __metadata:
   version: 3.1.1
   resolution: "strip-json-comments@npm:3.1.1"
   checksum: 10c0/9681a6257b925a7fa0f285851c0e613cc934a50661fa7bb41ca9cbbff89686bb4a0ee366e6ecedc4daafd01e83eee0720111ab294366fe7c185e935475ebcecd
+  languageName: node
+  linkType: hard
+
+"stripe@npm:^22.2.0":
+  version: 22.2.0
+  resolution: "stripe@npm:22.2.0"
+  peerDependencies:
+    "@types/node": ">=18"
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+  checksum: 10c0/4e633c6b2ebfb333fcf99dbea805ed38f92262ab8c94a99a329915aa73cab8fa51a130ac7e19bf744a2564c935e8ecc09fd86238f2db22bb70bfb9529b77b1f1
   languageName: node
   linkType: hard
 

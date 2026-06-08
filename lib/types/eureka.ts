@@ -83,6 +83,9 @@ export type UserPreferences = Pick<
   | 'eureka_color'
   | 'eureka_rarity'
   | 'theme'
+  | 'color_theme'
 >
+
+export type ColorTheme = 'default' | 'moonlight' | 'cherry' | 'forest'
 
 export type AdminPreferences = Pick<Tables<'admin_preferences'>, 'admin_view'>
