@@ -15,7 +15,7 @@ import { countObtained, percent } from '@/hooks/count-obtained'
 
 function GroupHeaderSkeleton() {
   return (
-    <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' }, mt: 2 }}>
+    <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' } }}>
       <Stack
         direction="row"
         sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
@@ -152,8 +152,6 @@ export default function FilterEureka() {
             gridTemplateColumns: GRID_COLUMNS,
             gap: { xs: 1, sm: 1.5, md: 2 },
             py: groupBySet ? 0 : 2,
-            mt: 2,
-            mb: 4,
           }}
         >
           {filteredSets.map((set) => {

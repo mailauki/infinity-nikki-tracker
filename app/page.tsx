@@ -1,4 +1,3 @@
-import { Stack } from '@mui/material'
 import { Suspense } from 'react'
 
 import { QuickAccess } from '@/components/quick-access'

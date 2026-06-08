@@ -11,6 +11,7 @@ import ProfileLoading from './loading'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrials } from '@/hooks/data/trials'
 import { getRecentObtained } from '@/hooks/data/obtained-eureka'
+import ProfileToolbar from './profile-toolbar'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -19,9 +20,7 @@ export const metadata: Metadata = {
 export default function ProfilePage() {
   return (
     <Suspense fallback={<ProfileLoading />}>
-      <Stack spacing={3} sx={{ flexGrow: 1 }}>
-        <UserDetails />
-      </Stack>
+      <UserDetails />
     </Suspense>
   )
 }
@@ -50,17 +49,19 @@ async function UserDetails() {
     .single()
 
   return (
-    <>
+		<>
+		<ProfileToolbar isAdmin={role === 'admin'} />
+    <Stack spacing={2}>
       <ProfileView
         avatar_url={profile?.avatar_url ?? null}
         fullname={profile?.display_name ?? null}
-        isAdmin={role === 'admin'}
         loadError={false}
         user={user}
         username={profile?.username ?? null}
       />
       {user_id && <CollectionStats sets={sets || []} trials={trials || []} />}
       {user_id && <RecentUpdates items={recentObtained || []} />}
-    </>
+    </Stack>
+		</>
   )
 }
