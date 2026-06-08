@@ -13,6 +13,7 @@ import {
 import ImageIcon from '@mui/icons-material/Image'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import { AvatarSize } from '@/lib/types/props'
+import { enqueueSnackbar } from 'notistack'
 
 export default function ImageUpload({
   url,
@@ -72,8 +73,7 @@ export default function ImageUpload({
 
       onUpload(data.publicUrl)
     } catch (error) {
-      alert('Error uploading image!')
-      console.log(error)
+			enqueueSnackbar('Error uploading image!', { variant: 'error' })
     } finally {
       setUploading(false)
     }

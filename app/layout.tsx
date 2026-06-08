@@ -12,6 +12,7 @@ import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
 import NavDrawer from '@/components/navbar/nav-drawer'
 import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
+import SnackbarAlertProvider from '@/components/snackbar-provider'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -62,6 +63,7 @@ export default function RootLayout({
           <ThemeClientProvider>
             <CssBaseline />
             <NavBarToolbarProvider>
+							<SnackbarAlertProvider>
               <Stack
                 direction="row"
                 sx={{
@@ -95,6 +97,7 @@ export default function RootLayout({
                 </Stack>
               </Stack>
               <Analytics />
+							</SnackbarAlertProvider>
             </NavBarToolbarProvider>
           </ThemeClientProvider>
         </AppRouterCacheProvider>
