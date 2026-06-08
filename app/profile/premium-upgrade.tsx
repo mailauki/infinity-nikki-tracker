@@ -21,7 +21,7 @@ const FEATURES = [
   {
     icon: <BrushIcon fontSize="small" />,
     label: 'Custom Looks',
-    description: 'Coming soon — save and share your personal outfit looks',
+    description: 'Mix eureka and outfit pieces into named looks — unlimited for supporters',
   },
 ]
 

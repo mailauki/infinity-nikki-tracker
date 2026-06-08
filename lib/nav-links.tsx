@@ -3,6 +3,7 @@ import {
   Help,
   Info,
   AccountCircle,
+  AutoAwesome,
   Settings,
   AdminPanelSettings,
 } from '@mui/icons-material'
@@ -74,6 +75,12 @@ export const navLinksData: {
       url: '/profile',
       icon: <AccountCircle />,
       // items: [
+      //   {
+      //     title: 'Custom Looks',
+      //     url: '/looks',
+      //   },
+      // ],
+      // items: [
       // {
       //   title: 'My Collection',
       //   url: '/profile/collection',
@@ -87,6 +94,11 @@ export const navLinksData: {
       //   url: '/profile/custom-looks',
       // },
       // ],
+    },
+    {
+      title: 'Custom Looks',
+      url: '/looks',
+      icon: <AutoAwesome />,
     },
     {
       title: 'Settings',

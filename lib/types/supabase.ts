@@ -583,6 +583,47 @@ export type Database = {
           },
         ]
       }
+      custom_looks: {
+        Row: {
+          created_at: string
+          description: string | null
+          eureka_variant_slugs: string[]
+          id: string
+          name: string
+          outfit_variant_slugs: string[]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          eureka_variant_slugs?: string[]
+          id?: string
+          name: string
+          outfit_variant_slugs?: string[]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          eureka_variant_slugs?: string[]
+          id?: string
+          name?: string
+          outfit_variant_slugs?: string[]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'custom_looks_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
