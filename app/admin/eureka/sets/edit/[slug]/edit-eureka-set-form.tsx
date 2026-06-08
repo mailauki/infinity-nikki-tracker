@@ -7,6 +7,7 @@ import {
   Button,
   Chip,
   FormControl,
+  FormLabel,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -19,6 +20,9 @@ import {
   SelectChangeEvent,
   Stack,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from '@mui/material'
 import { ColorLens } from '@mui/icons-material'
 import LazyAvatar from '@/components/lazy-avatar'
@@ -175,20 +179,22 @@ export default function EditEurekaSetForm({
         </FormControl>
 
         <FormControl>
-          <InputLabel>Style</InputLabel>
-          <Select
-            label="Style"
-            name="style"
-            value={style}
-            onChange={(e) => setStyle(e.target.value)}
+          <Typography component={FormLabel} id="style-buttons-group-label" variant="overline">
+            Style
+          </Typography>
+          <input name="style" type="hidden" value={style} />
+          <ToggleButtonGroup
+            exclusive
+            aria-labelledby="style-buttons-group-label"
+            value={style || null}
+            onChange={(_, value) => setStyle(value ?? '')}
           >
-            <MenuItem value="">—</MenuItem>
             {styles.map((s) => (
-              <MenuItem key={s.slug} value={s.slug}>
+              <ToggleButton key={s.slug} sx={{ py: 1.25 }} value={s.slug}>
                 {s.title}
-              </MenuItem>
+              </ToggleButton>
             ))}
-          </Select>
+          </ToggleButtonGroup>
         </FormControl>
 
         <FormControl>
