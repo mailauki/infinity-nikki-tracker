@@ -38,7 +38,7 @@ import {
   Trial,
 } from '@/lib/types/eureka'
 import ColorSelect from '@/components/forms/eureka-set/color-select'
-import { SparkleIcon } from '@/components/rarity-stars'
+import RarityToggle from '@/components/filter/rarity-toggle'
 import ImageUpload from '@/components/forms/image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editEurekaSet } from '../../actions'
@@ -156,27 +156,11 @@ export default function EditEurekaSetForm({
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <FormControl>
-          <InputLabel>Rarity</InputLabel>
-          <Select
-            label="Rarity"
-            name="rarity"
-            value={rarity}
-            onChange={(e) => setRarity(e.target.value as number | '')}
-          >
-            <MenuItem value="">—</MenuItem>
-            {[2, 3, 4, 5].map((n) => (
-              <MenuItem key={n} value={n}>
-                {n}
-                <SparkleIcon
-                  color="inherit"
-                  fontSize="inherit"
-                  sx={{ rotate: '15deg', ml: 0.5, mt: -0.3 }}
-                />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <input name="rarity" type="hidden" value={rarity} />
+        <RarityToggle
+          selectedRarity={typeof rarity === 'number' ? rarity : null}
+          onRarityChange={(_e, value) => setRarity(value ?? '')}
+        />
 
         <FormControl>
           <Typography component={FormLabel} id="style-buttons-group-label" variant="overline">

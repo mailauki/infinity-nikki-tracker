@@ -117,7 +117,7 @@ export default function HelpPage() {
 
       <Stack component="section" spacing={1}>
         <Typography component="h2" variant="h5">
-          Admin access{' '}<AdminPanelSettings color='action' />
+          Admin access <AdminPanelSettings color="action" />
         </Typography>
         <Typography color="textSecondary" sx={{ mb: 1 }} variant="body1">
           As an admin, you can manage the data that powers this tracker:

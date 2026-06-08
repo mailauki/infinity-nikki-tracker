@@ -1,12 +1,12 @@
 'use client'
-import NavBarToolbar from "@/components/navbar/navbar-toolbar";
-import { AdminPanelSettings } from "@mui/icons-material";
-import { Chip, Stack } from "@mui/material";
-import Link from "next/link";
+import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import { AdminPanelSettings } from '@mui/icons-material'
+import { Chip, Stack } from '@mui/material'
+import Link from 'next/link'
 
-export default function ProfileToolbar({isAdmin = false}: {isAdmin?: boolean}) {
-	return (
-			<NavBarToolbar>
+export default function ProfileToolbar({ isAdmin = false }: { isAdmin?: boolean }) {
+  return (
+    <NavBarToolbar>
       {isAdmin && (
         <Stack
           direction="row"
@@ -14,7 +14,7 @@ export default function ProfileToolbar({isAdmin = false}: {isAdmin?: boolean}) {
           sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'flex-end' }}
         >
           <Chip
-						clickable
+            clickable
             color="secondary"
             component={Link}
             href="/admin"
@@ -24,6 +24,6 @@ export default function ProfileToolbar({isAdmin = false}: {isAdmin?: boolean}) {
           />
         </Stack>
       )}
-			</NavBarToolbar>
-	)
+    </NavBarToolbar>
+  )
 }

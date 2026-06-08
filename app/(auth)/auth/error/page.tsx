@@ -15,12 +15,12 @@ async function ErrorContent({ searchParams }: { searchParams: Promise<{ error: s
 export default function ErrorPage({ searchParams }: { searchParams: Promise<{ error: string }> }) {
   return (
     <Card>
-			<CardHeader title="Sorry, something went wrong." />
-			<CardContent>
-				<Suspense>
-					<ErrorContent searchParams={searchParams} />
-				</Suspense>
-			</CardContent>
-		</Card>
+      <CardHeader title="Sorry, something went wrong." />
+      <CardContent>
+        <Suspense>
+          <ErrorContent searchParams={searchParams} />
+        </Suspense>
+      </CardContent>
+    </Card>
   )
 }

@@ -16,13 +16,7 @@ type AbilityRow = {
 
 const FORM_ID = 'edit-ability'
 
-export default function EditAbilityForm({
-  ability,
-  back,
-}: {
-  ability: AbilityRow
-  back: string
-}) {
+export default function EditAbilityForm({ ability, back }: { ability: AbilityRow; back: string }) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState(ability.title)
   const [slug, setSlug] = useState(ability.slug)

@@ -479,7 +479,7 @@ const theme = createTheme({
     },
     MuiAccordion: {
       defaultProps: {
-				elevation: 0,
+        elevation: 0,
       },
     },
   },
