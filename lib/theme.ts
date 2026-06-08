@@ -78,10 +78,14 @@ declare module '@mui/material/styles' {
 
   interface Palette {
     surface: Palette['primary']
+    tertiary: Palette['primary']
+    neutral: Palette['primary']
   }
 
   interface PaletteOptions {
     surface?: SurfacePaletteColorOptions
+    tertiary?: PaletteOptions['primary']
+    neutral?: PaletteOptions['primary']
   }
 }
 
@@ -193,6 +197,12 @@ const theme = createTheme({
         secondary: {
           main: '#77574C',
         },
+        tertiary: {
+          main: '#3D6736',
+        },
+        neutral: {
+          main: '#877371',
+        },
         success: {
           main: '#695E2F',
         },
@@ -242,6 +252,12 @@ const theme = createTheme({
         },
         secondary: {
           main: '#E7BEAF',
+        },
+        tertiary: {
+          main: '#A2CF95',
+        },
+        neutral: {
+          main: '#D5BAB6',
         },
         success: {
           main: '#D5C68E',
