@@ -13,6 +13,7 @@
 ## File Map
 
 **New files:**
+
 - `supabase/migrations/20260607000001_add_image_url_to_abilities.sql`
 - `hooks/data/admin/abilities.ts`
 - `app/admin/outfits/abilities/page.tsx`
@@ -30,6 +31,7 @@
 - `app/admin/outfits/abilities/edit/[slug]/actions.ts`
 
 **Modified files:**
+
 - `lib/types/outfit.ts` — add `image_url` to `Ability` type
 - `hooks/data/abilities.ts` — add `image_url` to select query
 - `lib/types/supabase.ts` — regenerated after migration (via CLI command, not manual edit)
@@ -39,6 +41,7 @@
 ## Task 1: DB migration — add `image_url` to `abilities`
 
 **Files:**
+
 - Create: `supabase/migrations/20260607000001_add_image_url_to_abilities.sql`
 
 - [ ] Write the migration file:
@@ -83,6 +86,7 @@ git commit -m "feat: add image_url column to abilities table"
 ## Task 2: Update `Ability` type and public data hook
 
 **Files:**
+
 - Modify: `lib/types/outfit.ts`
 - Modify: `hooks/data/abilities.ts`
 
@@ -131,6 +135,7 @@ git commit -m "feat: add image_url to Ability type and public abilities hook"
 ## Task 3: Admin data hook
 
 **Files:**
+
 - Create: `hooks/data/admin/abilities.ts`
 
 - [ ] Create the admin hook (no `cache()` — admin reads must not be cached):
@@ -185,6 +190,7 @@ git commit -m "feat: add admin abilities data hook"
 ## Task 4: List page — table component
 
 **Files:**
+
 - Create: `app/admin/outfits/abilities/outfit-ability-table.tsx`
 
 - [ ] Create the DataGrid table component:
@@ -303,6 +309,7 @@ Expected: No errors.
 ## Task 5: List page — list component
 
 **Files:**
+
 - Create: `app/admin/outfits/abilities/outfit-ability-list.tsx`
 
 - [ ] Create the list component:
@@ -357,6 +364,7 @@ export default function OutfitAbilityList({
 ## Task 6: List page — view switcher, page, and loading skeleton
 
 **Files:**
+
 - Create: `app/admin/outfits/abilities/outfit-ability-view.tsx`
 - Create: `app/admin/outfits/abilities/page.tsx`
 - Create: `app/admin/outfits/abilities/loading.tsx`
@@ -462,6 +470,7 @@ git commit -m "feat: add abilities admin list page with table and list views"
 ## Task 7: Add page — server action
 
 **Files:**
+
 - Create: `app/admin/outfits/abilities/new/actions.ts`
 
 - [ ] Create the `addAbility` server action:
@@ -503,6 +512,7 @@ export async function addAbility(_: unknown, formData: FormData) {
 ## Task 8: Add page — form and page
 
 **Files:**
+
 - Create: `app/admin/outfits/abilities/new/add-ability-form.tsx`
 - Create: `app/admin/outfits/abilities/new/page.tsx`
 - Create: `app/admin/outfits/abilities/new/loading.tsx`
@@ -657,6 +667,7 @@ git commit -m "feat: add ability add form and page"
 ## Task 9: Edit page — server action
 
 **Files:**
+
 - Create: `app/admin/outfits/abilities/edit/[slug]/actions.ts`
 
 - [ ] Create the `editAbility` server action:
@@ -686,10 +697,7 @@ export async function editAbility(
   if (!title) return { error: 'Title is required.' }
   if (!slug) return { error: 'Slug is required.' }
 
-  const { error } = await supabase
-    .from('abilities')
-    .update({ title, slug })
-    .eq('slug', currentSlug)
+  const { error } = await supabase.from('abilities').update({ title, slug }).eq('slug', currentSlug)
 
   if (error) return { error: error.message }
 
@@ -702,6 +710,7 @@ export async function editAbility(
 ## Task 10: Edit page — form, page, and loading skeleton
 
 **Files:**
+
 - Create: `app/admin/outfits/abilities/edit/[slug]/edit-ability-form.tsx`
 - Create: `app/admin/outfits/abilities/edit/[slug]/page.tsx`
 - Create: `app/admin/outfits/abilities/edit/[slug]/loading.tsx`
@@ -727,13 +736,7 @@ type AbilityRow = {
 
 const FORM_ID = 'edit-ability'
 
-export default function EditAbilityForm({
-  ability,
-  back,
-}: {
-  ability: AbilityRow
-  back: string
-}) {
+export default function EditAbilityForm({ ability, back }: { ability: AbilityRow; back: string }) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState(ability.title)
   const [slug, setSlug] = useState(ability.slug)

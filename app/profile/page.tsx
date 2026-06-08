@@ -49,19 +49,19 @@ async function UserDetails() {
     .single()
 
   return (
-		<>
-		<ProfileToolbar isAdmin={role === 'admin'} />
-    <Stack spacing={2}>
-      <ProfileView
-        avatar_url={profile?.avatar_url ?? null}
-        fullname={profile?.display_name ?? null}
-        loadError={false}
-        user={user}
-        username={profile?.username ?? null}
-      />
-      {user_id && <CollectionStats sets={sets || []} trials={trials || []} />}
-      {user_id && <RecentUpdates items={recentObtained || []} />}
-    </Stack>
-		</>
+    <>
+      <ProfileToolbar isAdmin={role === 'admin'} />
+      <Stack spacing={2}>
+        <ProfileView
+          avatar_url={profile?.avatar_url ?? null}
+          fullname={profile?.display_name ?? null}
+          loadError={false}
+          user={user}
+          username={profile?.username ?? null}
+        />
+        {user_id && <CollectionStats sets={sets || []} trials={trials || []} />}
+        {user_id && <RecentUpdates items={recentObtained || []} />}
+      </Stack>
+    </>
   )
 }

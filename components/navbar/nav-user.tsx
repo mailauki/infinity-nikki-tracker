@@ -96,7 +96,7 @@ export function NavUser() {
         position: 'absolute',
         top: 24,
         right: 18,
-				zIndex: (theme) => theme.zIndex.drawer + 1
+        zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
       <Tooltip placement="bottom-end" title="Open menu">

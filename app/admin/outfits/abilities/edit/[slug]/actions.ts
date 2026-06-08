@@ -22,10 +22,7 @@ export async function editAbility(
   if (!title) return { error: 'Title is required.' }
   if (!slug) return { error: 'Slug is required.' }
 
-  const { error } = await supabase
-    .from('abilities')
-    .update({ title, slug })
-    .eq('slug', currentSlug)
+  const { error } = await supabase.from('abilities').update({ title, slug }).eq('slug', currentSlug)
 
   if (error) return { error: error.message }
 

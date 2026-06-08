@@ -22,18 +22,18 @@ export default function ProfileView({
   }
 
   return (
-		<Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-			<AvatarPreview size="xl" url={avatar_url} />
+    <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+      <AvatarPreview size="xl" url={avatar_url} />
 
-			<Stack spacing={0.5}>
-				<Typography variant="h6">{fullname ?? '—'}</Typography>
-				<Typography color="textSecondary" variant="body2">
-					@{username ?? '—'}
-				</Typography>
-				<Typography color="textSecondary" variant="body2">
-					{user?.email}
-				</Typography>
-			</Stack>
-		</Stack>
+      <Stack spacing={0.5}>
+        <Typography variant="h6">{fullname ?? '—'}</Typography>
+        <Typography color="textSecondary" variant="body2">
+          @{username ?? '—'}
+        </Typography>
+        <Typography color="textSecondary" variant="body2">
+          {user?.email}
+        </Typography>
+      </Stack>
+    </Stack>
   )
 }
