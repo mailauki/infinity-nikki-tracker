@@ -73,8 +73,10 @@ export default function AddOutfitVariantForm({
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const autoSlug =
-    outfitSet && outfitCategory && evolution
-      ? toSlugVariant(outfitSet, outfitCategory, evolution)
+    outfitSet && outfitCategory
+      ? evolution
+        ? toSlugVariant(outfitSet, outfitCategory, evolution)
+        : `${outfitSet}-${outfitCategory}`
       : ''
   const currentSlug = editSlug ? slug : autoSlug
 
