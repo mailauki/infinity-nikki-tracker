@@ -10,6 +10,7 @@ import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useSortOrder } from '@/components/sort-context'
 import { GRID_COLUMNS } from '@/lib/types/props'
 import { percent } from '@/hooks/count-obtained'
+import { toTitle } from '@/lib/utils'
 import OutfitVariantCard from './outfit-variant-card'
 import OutfitEvolutionSetCard from './outfit-evolution-set-card'
 
@@ -49,6 +50,7 @@ export default function FilterOutfits() {
     isObtainedError,
     groupBySet,
     showByEvolution,
+    hideEvolutions,
     filters,
   } = useOutfitData()
   const { sortOrder } = useSortOrder()
@@ -105,6 +107,7 @@ export default function FilterOutfits() {
         return set
       }
       const filteredVariants = set.outfit_variants
+        .filter((v) => !hideEvolutions || v.evolution === null)
         .filter((v) => !selectedOutfitCategory || v.outfit_category === selectedOutfitCategory)
         .filter((v) => !selectedEvolution || v.evolution === selectedEvolution)
         .filter((v) => {
@@ -116,6 +119,76 @@ export default function FilterOutfits() {
     })
     .filter((set) => (showByEvolution ? set.evolutions.length > 0 : set.outfit_variants.length > 0))
     .sort((a, b) => (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!))
+
+  function renderSetVariants(set: (typeof filteredSets)[number]) {
+    if (showByEvolution) {
+      return [null, ...set.evolutions].map((evolution) => (
+        <OutfitEvolutionSetCard
+          key={evolution?.slug ?? 'base'}
+          evolution={evolution}
+          isLoggedIn={isLoggedIn}
+          outfitSet={set}
+        />
+      ))
+    }
+    if (groupBySet) {
+      return [null, ...set.evolutions]
+        .map((evolution) => {
+          const evolutionKey = evolution?.slug ?? null
+          const variants = set.outfit_variants.filter((v) =>
+            evolutionKey === null ? v.evolution === null : v.evolution === evolutionKey
+          )
+          if (variants.length === 0) return null
+          const evoLabel = evolution
+            ? `${set.title}: ${toTitle(evolution.subtitle ?? evolution.slug)}`
+            : set.title
+          const evoObtained = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
+          return (
+            <React.Fragment key={evolutionKey ?? 'base'}>
+              <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' }, mt: 1 }}>
+                <Stack
+                  direction="row"
+                  sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
+                >
+                  <Button
+                    color="inherit"
+                    endIcon={<ChevronRight />}
+                    href={`/outfits/${evolution?.slug}`}
+                    size="small"
+                  >
+                    {evoLabel}
+                  </Button>
+                  {isLoggedIn && (
+                    <ProgressChip
+                      percentage={percent(evoObtained, variants.length)}
+                      size="lg"
+                    />
+                  )}
+                </Stack>
+                <Divider />
+              </Box>
+              {variants.map((variant) => (
+                <OutfitVariantCard
+                  key={variant.id}
+                  isLoggedIn={isLoggedIn}
+                  isMissingFilter={selectedObtainedFilter === 'missing'}
+                  outfitVariant={variant}
+                />
+              ))}
+            </React.Fragment>
+          )
+        })
+        .filter(Boolean)
+    }
+    return set.outfit_variants.map((variant) => (
+      <OutfitVariantCard
+        key={variant.id}
+        isLoggedIn={isLoggedIn}
+        isMissingFilter={selectedObtainedFilter === 'missing'}
+        outfitVariant={variant}
+      />
+    ))
+  }
 
   return (
     <>
@@ -157,7 +230,7 @@ export default function FilterOutfits() {
             const total = set.outfit_variants.length
             return (
               <React.Fragment key={set.slug}>
-                {groupBySet && (
+                {groupBySet && showByEvolution && (
                   <Box
                     sx={{
                       gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' },
@@ -184,23 +257,7 @@ export default function FilterOutfits() {
                     <Divider />
                   </Box>
                 )}
-                {showByEvolution
-                  ? [null, ...set.evolutions].map((evolution) => (
-                      <OutfitEvolutionSetCard
-                        key={evolution?.slug ?? 'base'}
-                        evolution={evolution}
-                        isLoggedIn={isLoggedIn}
-                        outfitSet={set}
-                      />
-                    ))
-                  : set.outfit_variants.map((variant) => (
-                      <OutfitVariantCard
-                        key={variant.id}
-                        isLoggedIn={isLoggedIn}
-                        isMissingFilter={selectedObtainedFilter === 'missing'}
-                        outfitVariant={variant}
-                      />
-                    ))}
+                {renderSetVariants(set)}
               </React.Fragment>
             )
           })}

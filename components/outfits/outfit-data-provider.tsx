@@ -10,6 +10,7 @@ import {
   updateOutfitFilters,
   updateOutfitGroupBySet,
   updateOutfitShowByEvolution,
+  updateOutfitHideEvolutions,
 } from '@/app/actions/preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
 import { updateOutfitSet } from '@/hooks/outfit'
@@ -46,6 +47,9 @@ export default function OutfitDataProvider({
   const [showByEvolution, setShowByEvolution] = useState<boolean>(
     DEFAULT_PREFERENCES.outfit_show_by_evolution
   )
+  const [hideEvolutions, setHideEvolutions] = useState<boolean>(
+    DEFAULT_PREFERENCES.outfit_hide_evolutions
+  )
   const [filters, setFilters] = useState<OutfitFilterState>(DEFAULT_OUTFIT_FILTERS)
   const [, startTransition] = useTransition()
   const supabase = useMemo(() => createClient(), [])
@@ -73,6 +77,7 @@ export default function OutfitDataProvider({
       .then((prefs) => {
         setGroupBySet(prefs.outfit_group_by_set)
         setShowByEvolution(prefs.outfit_show_by_evolution)
+        setHideEvolutions(prefs.outfit_hide_evolutions)
         setFilters({
           selectedOutfitSet: prefs.outfit_set_filter ?? null,
           selectedOutfitCategory: prefs.outfit_category_filter ?? null,
@@ -97,6 +102,12 @@ export default function OutfitDataProvider({
     const next = !showByEvolution
     setShowByEvolution(next)
     if (isLoggedIn) startTransition(() => updateOutfitShowByEvolution(next))
+  }
+
+  const handleHideEvolutionsChange = () => {
+    const next = !hideEvolutions
+    setHideEvolutions(next)
+    if (isLoggedIn) startTransition(() => updateOutfitHideEvolutions(next))
   }
 
   const handleFiltersChange = (updates: Partial<OutfitFilterState>) => {
@@ -214,8 +225,10 @@ export default function OutfitDataProvider({
         userId,
         groupBySet,
         showByEvolution,
+        hideEvolutions,
         onGroupBySetChange: handleGroupBySetChange,
         onShowByEvolutionChange: handleShowByEvolutionChange,
+        onHideEvolutionsChange: handleHideEvolutionsChange,
         filters,
         onFiltersChange: handleFiltersChange,
         onClearFilters: handleClearFilters,

@@ -17,6 +17,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   outfit_obtained_filter: null,
   outfit_group_by_set: true,
   outfit_show_by_evolution: false,
+  outfit_hide_evolutions: false,
 }
 
 export const DEFAULT_ADMIN_PREFERENCES: AdminPreferences = {

@@ -65,8 +65,10 @@ export default function FilterMenu() {
     isLoggedIn: outfitLoggedIn,
     groupBySet: outfitGroupBySet,
     showByEvolution,
+    hideEvolutions,
     onGroupBySetChange: onOutfitGroupBySetChange,
     onShowByEvolutionChange,
+    onHideEvolutionsChange,
     filters: outfitFilters,
     onFiltersChange: onOutfitFiltersChange,
     onClearFilters: onClearOutfitFilters,
@@ -142,7 +144,9 @@ export default function FilterMenu() {
             </ListItem>
             <ListItem sx={{ gap: 1 }}>
               <SortEvolutionToggle
+                hideEvolutions={hideEvolutions}
                 showByEvolution={showByEvolution}
+                onHideEvolutionsChange={onHideEvolutionsChange}
                 onShowByEvolutionChange={handleShowByEvolutionChange}
               />
               <OutfitEvolutionSelect

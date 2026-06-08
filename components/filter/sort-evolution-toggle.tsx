@@ -1,14 +1,18 @@
 'use client'
 
-import { AutoAwesome } from '@mui/icons-material'
+import { AutoAwesome, AutoAwesomeOutlined } from '@mui/icons-material'
 import { Stack, Tooltip, ToggleButton } from '@mui/material'
 
 export default function SortEvolutionToggle({
   showByEvolution,
+  hideEvolutions,
   onShowByEvolutionChange,
+  onHideEvolutionsChange,
 }: {
   showByEvolution: boolean
+  hideEvolutions: boolean
   onShowByEvolutionChange: () => void
+  onHideEvolutionsChange: () => void
 }) {
   return (
     <Stack direction="row" spacing={0.5}>
@@ -20,6 +24,17 @@ export default function SortEvolutionToggle({
           onChange={onShowByEvolutionChange}
         >
           <AutoAwesome />
+        </ToggleButton>
+      </Tooltip>
+      <Tooltip title="Hide Evolutions">
+        <ToggleButton
+          disabled={showByEvolution}
+          selected={hideEvolutions}
+          sx={{ py: 1.25 }}
+          value="hideEvolutions"
+          onChange={onHideEvolutionsChange}
+        >
+          <AutoAwesomeOutlined />
         </ToggleButton>
       </Tooltip>
     </Stack>

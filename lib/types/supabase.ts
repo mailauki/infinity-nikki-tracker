@@ -736,6 +736,7 @@ export type Database = {
           outfit_category_filter: string | null
           outfit_evolution_filter: string | null
           outfit_group_by_set: boolean
+          outfit_hide_evolutions: boolean
           outfit_obtained_filter: string | null
           outfit_rarity_filter: string | null
           outfit_set_filter: string | null
@@ -757,6 +758,7 @@ export type Database = {
           outfit_category_filter?: string | null
           outfit_evolution_filter?: string | null
           outfit_group_by_set?: boolean
+          outfit_hide_evolutions?: boolean
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
           outfit_set_filter?: string | null
@@ -778,6 +780,7 @@ export type Database = {
           outfit_category_filter?: string | null
           outfit_evolution_filter?: string | null
           outfit_group_by_set?: boolean
+          outfit_hide_evolutions?: boolean
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
           outfit_set_filter?: string | null
