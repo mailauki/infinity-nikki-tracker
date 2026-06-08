@@ -21,6 +21,7 @@ import ImageUpload from '@/components/forms/image-upload'
 import { Evolution, OutfitCategory, OutfitSetRaw, OutfitVariantRaw } from '@/lib/types/outfit'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editOutfitVariant } from '../../actions'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'edit-outfit-variant'
 
@@ -86,6 +87,7 @@ export default function EditOutfitVariantForm({
         <FormControl required>
           <InputLabel>Outfit Set</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Outfit Set"
             name="outfit_set"
             value={outfitSet}
@@ -103,6 +105,7 @@ export default function EditOutfitVariantForm({
         <FormControl>
           <InputLabel>Category</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Category"
             name="outfit_category"
             value={outfitCategory}
@@ -120,6 +123,7 @@ export default function EditOutfitVariantForm({
         <FormControl>
           <InputLabel>Evolution</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Evolution"
             name="evolution"
             value={evolution}

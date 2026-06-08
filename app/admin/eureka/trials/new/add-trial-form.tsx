@@ -17,6 +17,7 @@ import { toSlug } from '@/lib/utils'
 import { useFormConfig } from '@/app/admin/form-context'
 import { addTrial } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'add-trial'
 
@@ -93,7 +94,7 @@ export default function AddTrialForm() {
 
         <FormControl>
           <InputLabel>Location</InputLabel>
-          <Select defaultValue="" label="Location" name="location">
+          <Select defaultValue="" label="Location" name="location" MenuProps={MENU_PROPS}>
             <MenuItem value="">—</MenuItem>
             <MenuItem value="Wishfield">Wishfield</MenuItem>
             <MenuItem value="Itzaland">Itzaland</MenuItem>

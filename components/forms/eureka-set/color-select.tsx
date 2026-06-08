@@ -16,19 +16,7 @@ import {
   useTheme,
 } from '@mui/material'
 import LazyAvatar from '@/components/lazy-avatar'
-
-const ITEM_HEIGHT = 48
-const ITEM_PADDING_TOP = 8
-const MenuProps = {
-  slotProps: {
-    paper: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  },
-}
+import { MENU_PROPS } from '@/lib/types/props'
 
 function getStyles(color: string, colorSelect: readonly string[], theme: Theme) {
   return {
@@ -57,7 +45,7 @@ export default function ColorSelect({
       <InputLabel id="color-multiple-chip-label">Colors</InputLabel>
       <Select
         multiple
-        MenuProps={MenuProps}
+        MenuProps={MENU_PROPS}
         id="color-multiple-chip"
         input={<OutlinedInput id="select-multiple-chip" label="Colors" />}
         labelId="color-multiple-chip-label"

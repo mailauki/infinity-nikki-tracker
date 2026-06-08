@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   Avatar,
@@ -13,9 +13,6 @@ import {
 import ImageIcon from '@mui/icons-material/Image'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import { AvatarSize } from '@/lib/types/props'
-
-const SIZE = 90
-const TRIAL_SIZE = 180
 
 export default function ImageUpload({
   url,
@@ -40,12 +37,10 @@ export default function ImageUpload({
   column?: string
 	size?: AvatarSize
 }) {
-  const supabase = createClient()
+  const supabase = useRef(createClient()).current
   const [uploading, setUploading] = useState(false)
 
   const isTrial = table === 'trials'
-  const w = isTrial ? '100%' : SIZE
-  const h = isTrial ? TRIAL_SIZE : SIZE
 
   const uploadImage: React.ChangeEventHandler<HTMLInputElement> = async (event) => {
     try {
@@ -100,9 +95,9 @@ export default function ImageUpload({
         <Stack sx={{ alignItems: 'center' }}>
           <Avatar
             alt="Image preview"
-						fullWidth={isTrial}
-						size={size}
+            size={size}
             src={url ?? undefined}
+            sx={isTrial ? { width: '100%' } : undefined}
             variant="rounded"
           >
             <ImageIcon fontSize='inherit' />

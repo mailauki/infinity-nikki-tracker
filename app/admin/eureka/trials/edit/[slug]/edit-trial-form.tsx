@@ -18,6 +18,7 @@ import ImageUpload from '@/components/forms/image-upload'
 import { Trial } from '@/lib/types/eureka'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editTrial } from '../../actions'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'edit-trial'
 
@@ -78,6 +79,7 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back: str
         <FormControl>
           <InputLabel>Location</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Location"
             name="location"
             value={location}
@@ -91,6 +93,7 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back: str
 
         <input name="image_url" type="hidden" value={imageUrl ?? ''} />
         <ImageUpload
+          size='xl'
           slug={trial.slug ?? undefined}
           table="trials"
           url={imageUrl}

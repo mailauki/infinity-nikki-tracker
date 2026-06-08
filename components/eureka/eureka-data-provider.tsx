@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
 import { updateEurekaSet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
@@ -18,8 +18,6 @@ import { handleObtained } from '@/app/eureka/actions'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 
 import { DEFAULT_FILTERS, EurekaDataContext, FilterState } from './eureka-context'
-
-const supabase = createClient()
 
 async function fetchJson<T>(url: string): Promise<T> {
   const r = await fetch(url)
@@ -50,6 +48,7 @@ export default function EurekaDataProvider({
   const [showByColor, setShowByColor] = useState<boolean>(DEFAULT_PREFERENCES.show_by_color)
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS)
   const [, startTransition] = useTransition()
+  const supabase = useMemo(() => createClient(), [])
   const prefsLoaded = useRef(false)
 
   useEffect(() => {

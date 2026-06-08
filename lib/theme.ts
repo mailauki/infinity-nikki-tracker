@@ -14,7 +14,6 @@ declare module '@mui/material/Avatar' {
   interface AvatarOwnProps {
     size?: AvatarSize
     color?: 'transparent'
-		fullWidth?: boolean
   }
 }
 declare module '@mui/material/ToggleButton' {
@@ -348,54 +347,33 @@ const theme = createTheme({
     MuiAvatar: {
       defaultProps: {
         size: 'sm',
-				fullWidth: false,
       },
       styleOverrides: {
         root: {
           variants: [
             {
-              props: { size: 'xs', fullWidth: false },
+              props: { size: 'xs' },
               style: { width: 24, height: 24, fontSize: '0.75rem' },
             },
             {
-              props: { size: 'sm', fullWidth: false },
+              props: { size: 'sm' },
               style: { width: 40, height: 40 },
             },
             {
-              props: { size: 'md', fullWidth: false },
+              props: { size: 'md' },
               style: { width: 56, height: 56, fontSize: '1.5rem' },
             },
             {
-              props: { size: 'lg', fullWidth: false },
+              props: { size: 'lg' },
               style: { width: 94, height: 94, fontSize: '2rem' },
             },
             {
-              props: { size: 'xl', fullWidth: false },
+              props: { size: 'xl' },
               style: { width: 140, height: 140, fontSize: '3rem' },
             },
             {
               props: { color: 'transparent' },
               style: { backgroundColor: 'transparent', color: 'inherit' },
-            },
-            {
-              props: { size: 'xs', fullWidth: true },
-              style: { width: '100%', height: 24, fontSize: '0.75rem' },
-            },
-            {
-              props: { size: 'sm', fullWidth: true },
-              style: { width: '100%', height: 40 },
-            },
-            {
-              props: { size: 'md', fullWidth: true },
-              style: { width: '100%', height: 56, fontSize: '1.5rem' },
-            },
-            {
-              props: { size: 'lg', fullWidth: true },
-              style: { width: '100%', height: 94, fontSize: '2rem' },
-            },
-            {
-              props: { size: 'xl', fullWidth: true },
-              style: { width: '100%', height: 140, fontSize: '3rem' },
             },
           ],
         },

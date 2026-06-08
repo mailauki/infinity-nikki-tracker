@@ -34,6 +34,7 @@ export function NavUser() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
 
   useEffect(() => {
+    let mounted = true
     const supabase = createClient()
 
     async function loadProfile(userId: string) {
@@ -43,13 +44,14 @@ export function NavUser() {
         .eq('id', userId)
         .single()
 
-      if (profile) {
+      if (mounted && profile) {
         setAvatarUrl(profile.avatar_url)
         setIsAdmin(profile.role === 'admin')
       }
     }
 
     supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return
       const id = data.user?.id ?? null
       setUserId(id)
       if (id) loadProfile(id)
@@ -58,6 +60,7 @@ export function NavUser() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return
       const id = session?.user?.id ?? null
       setUserId(id)
       if (id) {
@@ -68,7 +71,10 @@ export function NavUser() {
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   if (userId === undefined) {

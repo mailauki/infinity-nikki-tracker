@@ -21,6 +21,7 @@ import ImageUpload from '@/components/forms/image-upload'
 import { EurekaCategory, EurekaColor, EurekaSetRaw, EurekaVariantRaw } from '@/lib/types/eureka'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editEurekaVariant } from '../../actions'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'edit-eureka-variant'
 
@@ -80,6 +81,7 @@ export default function EditEurekaVariantForm({
             label="Eureka Set"
             name="eureka_set"
             value={eurekaSet}
+            MenuProps={MENU_PROPS}
             onChange={(e) => setEurekaSet(e.target.value)}
           >
             <MenuItem value="">—</MenuItem>
@@ -94,6 +96,7 @@ export default function EditEurekaVariantForm({
         <FormControl>
           <InputLabel>Category</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Category"
             name="category"
             value={category}
@@ -111,6 +114,7 @@ export default function EditEurekaVariantForm({
         <FormControl>
           <InputLabel>Color</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Color"
             name="color"
             value={color}

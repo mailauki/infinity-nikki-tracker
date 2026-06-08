@@ -44,12 +44,11 @@ import { useFormConfig } from '@/app/admin/form-context'
 import { editOutfitSet } from '../../actions'
 import EvolutionEditor from '../../evolution-editor'
 import RarityToggle from '@/components/filter/rarity-toggle'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'edit-outfit-set'
 
-const MENU_PROPS = {
-  slotProps: { paper: { style: { maxHeight: 36 * 6 } } },
-}
+
 
 export default function EditOutfitSetForm({
   outfitSet,

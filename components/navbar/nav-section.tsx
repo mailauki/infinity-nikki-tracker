@@ -61,7 +61,6 @@ export default function NavSection({
                 height={60}
                 src="/infinity-nikki-logo.png"
                 style={{
-                  height: 'auto',
                   display: open ? 'block' : 'none',
                   marginLeft: 16,
                   filter: isDarkMode ? 'none' : 'brightness(40%)',
