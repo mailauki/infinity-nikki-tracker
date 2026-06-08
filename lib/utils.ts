@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function toSlug(name: string) {
-  return name.trim().toLowerCase().replace(/\s+/g, '_')
+  return name.trim().toLowerCase().replace(/'/g, '').replace(/\s+/g, '_')
 }
 
 export function toTitle(slug: string) {
