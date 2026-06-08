@@ -1,3 +1,5 @@
+'use client'
+
 import { AutoAwesome, ViewDay } from '@mui/icons-material'
 import { Stack, Tooltip, ToggleButton } from '@mui/material'
 

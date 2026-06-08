@@ -1,3 +1,5 @@
+'use client'
+
 import { OutfitSet } from '@/lib/types/outfit'
 import { Category } from '@mui/icons-material'
 import {

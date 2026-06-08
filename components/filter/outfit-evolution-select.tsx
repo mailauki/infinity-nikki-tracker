@@ -1,3 +1,5 @@
+'use client'
+
 import { Evolution } from '@/lib/types/outfit'
 import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material'
 import { toTitle } from '@/lib/utils'
