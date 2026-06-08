@@ -29,23 +29,40 @@ export function NavUser() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(async ({ data }) => {
-      const user = data.user
-      const id = user?.id ?? null
-      setUserId(id)
-      if (!id) return
 
+    async function loadProfile(userId: string) {
       const { data: profile } = await supabase
         .from('profiles')
         .select('avatar_url, role')
-        .eq('id', id)
+        .eq('id', userId)
         .single()
 
       if (profile) {
         setAvatarUrl(profile.avatar_url)
         setIsAdmin(profile.role === 'admin')
       }
+    }
+
+    supabase.auth.getUser().then(({ data }) => {
+      const id = data.user?.id ?? null
+      setUserId(id)
+      if (id) loadProfile(id)
     })
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const id = session?.user?.id ?? null
+      setUserId(id)
+      if (id) {
+        loadProfile(id)
+      } else {
+        setAvatarUrl(null)
+        setIsAdmin(false)
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   if (userId === undefined) {
