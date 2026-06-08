@@ -31,7 +31,7 @@ export default function HelpActions() {
         sx={{
           display: 'grid',
           gridTemplateColumns: { sm: '1fr', md: '1fr 1fr' },
-          gap: 2,
+          columnGap: 2,
         }}
       >
         <List disablePadding>

@@ -1,9 +1,6 @@
 import HelpActions from './help-actions'
 import { getUserRole } from '@/hooks/user'
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Alert,
   Button,
   Link as Anchor,
@@ -13,9 +10,10 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
+import AddToHomeScreenAccordion from './add-to-accordion'
+import { AdminPanelSettings } from '@mui/icons-material'
 
 export const metadata: Metadata = {
   title: 'Help',
@@ -115,192 +113,11 @@ export default function HelpPage() {
         </List>
       </Stack>
 
-      <Stack component="section" spacing={1}>
-        <Typography component="h2" variant="h5">
-          Add to home screen
-        </Typography>
-        <Typography color="textSecondary" sx={{ mb: 2 }} variant="body1">
-          You can add this app to your home screen or bookmark bar for quick access — no app store
-          required.
-        </Typography>
-
-        <Stack>
-          <Accordion disableGutters>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">iOS / iPadOS (Safari)</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Open the app in <strong>Safari</strong>.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Tap the <strong>Share</strong> button (the box with an arrow pointing up) in
-                        the toolbar.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Scroll down and tap <strong>Add to Home Screen</strong>.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Tap <strong>Add</strong> to confirm.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              </List>
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion disableGutters>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">Android (Chrome)</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Open the app in <strong>Chrome</strong>.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Tap the <strong>three-dot menu</strong> in the top-right corner.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Tap <strong>Add to Home screen</strong> or <strong>Install app</strong> if
-                        shown.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Tap <strong>Add</strong> to confirm.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              </List>
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion disableGutters>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">Desktop (Chrome or Edge)</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Open the app in <strong>Chrome</strong> or <strong>Edge</strong>.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Click the <strong>install icon</strong> (a computer with a down arrow) in
-                        the address bar, or open the <strong>three-dot menu</strong> and select{' '}
-                        <strong>Save and share → Install page as app</strong>.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Click <strong>Install</strong> to confirm.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              </List>
-            </AccordionDetails>
-          </Accordion>
-
-          <Accordion disableGutters>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1">Desktop (Safari on macOS)</Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Open the app in <strong>Safari</strong>.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        From the menu bar, click <strong>File → Add to Dock</strong> (macOS Sonoma
-                        and later).
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <ListItem sx={{ display: 'list-item' }}>
-                  <ListItemText
-                    primary={
-                      <Typography color="textSecondary" variant="body2">
-                        Click <strong>Add</strong> to confirm.
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              </List>
-            </AccordionDetails>
-          </Accordion>
-        </Stack>
-      </Stack>
+      <AddToHomeScreenAccordion />
 
       <Stack component="section" spacing={1}>
         <Typography component="h2" variant="h5">
-          Admin access
+          Admin access{' '}<AdminPanelSettings color='action' />
         </Typography>
         <Typography color="textSecondary" sx={{ mb: 1 }} variant="body1">
           As an admin, you can manage the data that powers this tracker:
