@@ -34,20 +34,14 @@ export default function ProfileView({
           sx={{ alignItems: 'center', justifyContent: 'flex-end' }}
         >
           <Chip
+						clickable
             color="secondary"
             icon={<AdminPanelSettingsIcon />}
             label="Admin access"
             variant="outlined"
-          />
-          <Button
             component={Link}
             href="/admin"
-            size="small"
-            startIcon={<AdminPanelSettingsIcon />}
-            variant="outlined"
-          >
-            Admin Panel
-          </Button>
+          />
         </Stack>
       )}
 
