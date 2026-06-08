@@ -25,8 +25,8 @@ const RINGS_CHART_SIZE = 240
 const COLOR_SETS_CHART_SIZE = 220
 
 function CollectionRingsChart({
-  setsObtained,
-  setsTotal,
+  eurekaSetsObtained,
+  eurekaSetsTotal,
   colorSetsObtained,
   colorSetsTotal,
   trialsObtained,
@@ -34,8 +34,8 @@ function CollectionRingsChart({
   variantsObtained,
   variantsTotal,
 }: {
-  setsObtained: number
-  setsTotal: number
+  eurekaSetsObtained: number
+  eurekaSetsTotal: number
   colorSetsObtained: number
   colorSetsTotal: number
   trialsObtained: number
@@ -65,8 +65,8 @@ function CollectionRingsChart({
   const rings = [
     {
       label: 'Sets',
-      obtained: setsObtained,
-      total: setsTotal,
+      obtained: eurekaSetsObtained,
+      total: eurekaSetsTotal,
       color: ringColors[0],
       innerRadius: 35,
       outerRadius: 52,
@@ -206,7 +206,7 @@ function CollectionRingsChart({
   )
 }
 
-function CollectionSetsChart({ sets }: { sets: EurekaSet[] }) {
+function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
   const { mode, systemMode } = useColorScheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -228,7 +228,7 @@ function CollectionSetsChart({ sets }: { sets: EurekaSet[] }) {
   const primary = theme.palette.primary.main
   const secondary = theme.palette.secondary.main
 
-  const fiveStar = sets.filter((s) => s.rarity === 5)
+  const fiveStar = eurekaSets.filter((s) => s.rarity === 5)
 
   const fiveStarTotal = fiveStar.reduce(
     (acc, set) => acc + countObtained(set.eureka_variants).total,
@@ -415,16 +415,16 @@ function CollectionSetsChart({ sets }: { sets: EurekaSet[] }) {
   )
 }
 
-export default function CollectionStats({ sets, trials }: { sets: EurekaSet[]; trials: Trial[] }) {
-  const allVariants = sets.flatMap((set) => set.eureka_variants)
+export default function CollectionCharts({ eurekaSets, trials }: { eurekaSets: EurekaSet[]; trials: Trial[] }) {
+  const allVariants = eurekaSets.flatMap((set) => set.eureka_variants)
 
-  const setsObtained = sets.filter((set) =>
+  const eurekaSetsObtained = eurekaSets.filter((set) =>
     set.eureka_variants.every((variant) => variant.obtained)
   ).length
 
   const { obtained: variantsObtained, total: variantsTotal } = countObtained(allVariants)
 
-  const colorSetsObtained = sets.reduce(
+  const colorSetsObtained = eurekaSets.reduce(
     (count, set) =>
       count +
       set.colors.filter((color) =>
@@ -434,10 +434,10 @@ export default function CollectionStats({ sets, trials }: { sets: EurekaSet[]; t
       ).length,
     0
   )
-  const colorSetsTotal = sets.reduce((sum, set) => sum + set.colors.length, 0)
+  const colorSetsTotal = eurekaSets.reduce((sum, set) => sum + set.colors.length, 0)
 
   const trialsObtained = trials.filter((trial) =>
-    sets
+    eurekaSets
       .filter((set) => set.eureka_set_trials.some((setTrial) => setTrial.trial === trial.slug))
       .every((set) => set.eureka_variants.every((variant) => variant.obtained))
   ).length
@@ -453,14 +453,14 @@ export default function CollectionStats({ sets, trials }: { sets: EurekaSet[]; t
       <CollectionRingsChart
         colorSetsObtained={colorSetsObtained}
         colorSetsTotal={colorSetsTotal}
-        setsObtained={setsObtained}
-        setsTotal={sets.length}
+        eurekaSetsObtained={eurekaSetsObtained}
+        eurekaSetsTotal={eurekaSets.length}
         trialsObtained={trialsObtained}
         trialsTotal={trials.length}
         variantsObtained={variantsObtained}
         variantsTotal={variantsTotal}
       />
-      <CollectionSetsChart sets={sets} />
+      <CollectionSetsChart eurekaSets={eurekaSets} />
     </Box>
   )
 }

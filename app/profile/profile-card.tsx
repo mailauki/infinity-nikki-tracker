@@ -4,7 +4,7 @@ import { type User } from '@supabase/supabase-js'
 import AvatarPreview from '@/app/settings/avatar-preview'
 import { Alert, Stack, Typography } from '@mui/material'
 
-export default function ProfileView({
+export default function ProfileCard({
   user,
   fullname,
   username,
