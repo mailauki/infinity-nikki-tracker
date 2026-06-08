@@ -34,7 +34,7 @@ async function UserDetails() {
   } = await supabase.auth.getUser()
 
   if (authError || !user) {
-    redirect('/auth/login')
+    redirect('/login')
   }
 
   const role = await getUserRole()

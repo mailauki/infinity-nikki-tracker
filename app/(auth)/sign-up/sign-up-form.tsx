@@ -4,8 +4,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { createClient } from '@/lib/supabase/client'
-import { cn } from '@/lib/utils'
 import {
   Button,
   Card,
@@ -15,28 +13,39 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import { createClient } from '@/lib/supabase/client'
+import { cn } from '@/lib/utils'
 
-export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
+export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutRef<'div'>) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [repeatPassword, setRepeatPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
-  const handleLogin = async (e: React.SyntheticEvent) => {
+  const handleSignUp = async (e: React.SyntheticEvent) => {
     e.preventDefault()
     const supabase = createClient()
     setIsLoading(true)
     setError(null)
 
+    if (password !== repeatPassword) {
+      setError('Passwords do not match')
+      setIsLoading(false)
+      return
+    }
+
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
+        },
       })
       if (error) throw error
-      // Update this route to redirect to an authenticated route. The user already has an active session.
-      router.push('/profile')
+      router.push('/sign-up-success')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
@@ -47,9 +56,9 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
   return (
     <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card>
-        <CardHeader subheader="Enter your email below to login to your account" title="Login" />
+        <CardHeader subheader="Create a new account" title="Sign up" />
         <CardContent>
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleSignUp}>
             <TextField
               fullWidth
               required
@@ -59,9 +68,8 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               placeholder="m@example.com"
               type="email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(e) => setEmail(e.target.value)}
             />
-
             <TextField
               fullWidth
               required
@@ -70,18 +78,18 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               margin="normal"
               type="password"
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
-            <Anchor
-              color="textSecondary"
-              component={Link}
-              href="/auth/forgot-password"
-              sx={{ fontWeight: 'medium' }}
-              underline="hover"
-              variant="body1"
-            >
-              Forgot your password?
-            </Anchor>
+            <TextField
+              fullWidth
+              required
+              id="repeat-password"
+              label="Repeat Password"
+              margin="normal"
+              type="password"
+              value={repeatPassword}
+              onChange={(e) => setRepeatPassword(e.target.value)}
+            />
             {error && <p className="text-sm text-red-500">{error}</p>}
             <Button
               fullWidth
@@ -91,19 +99,18 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               type="submit"
               variant="contained"
             >
-              {isLoading ? 'Logging in...' : 'Login'}
+              {isLoading ? 'Creating an account...' : 'Sign up'}
             </Button>
-
             <Typography color="textSecondary" variant="body1">
-              Don&apos;t have an account?{' '}
+              Already have an account?{' '}
               <Anchor
                 color="textSecondary"
                 component={Link}
-                href="/auth/sign-up"
+                href="/login"
                 sx={{ fontWeight: 'medium' }}
                 underline="hover"
               >
-                Sign up
+                Login
               </Anchor>
             </Typography>
           </form>

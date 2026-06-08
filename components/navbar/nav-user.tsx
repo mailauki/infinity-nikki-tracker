@@ -59,7 +59,7 @@ export function NavUser() {
   if (!userId) {
     return (
       <Box sx={{ position: 'absolute', top: 16, right: 12 }}>
-        <Button color="inherit" href="/auth/login">
+        <Button color="inherit" href="/login">
           Login
         </Button>
       </Box>
