@@ -27,8 +27,9 @@ import EurekaSelect from '../filter/eureka-select'
 import RarityToggle from '../filter/rarity-toggle'
 import OutfitSelect from '../filter/outfit-select'
 import SortEvolutionToggle from '../filter/sort-evolution-toggle'
-import OutfitCategoryToggle from '../filter/outfit-category-toggle'
 import OutfitEvolutionSelect from '../filter/outfit-evolution-select'
+import SortOutfitToggle from '../filter/sort-outfit-toggle'
+import OutfitCategorySelect from '../filter/outfit-category-select'
 
 const FILTER_PAGES = ['/eureka', '/outfits']
 
@@ -127,11 +128,9 @@ export default function FilterMenu() {
           </Toolbar>
           <List>
             <ListItem sx={{ gap: 1 }}>
-              <SortEvolutionToggle
+              <SortOutfitToggle
                 groupBySet={outfitGroupBySet}
-                showByEvolution={showByEvolution}
                 onGroupBySetChange={onOutfitGroupBySetChange}
-                onShowByEvolutionChange={handleShowByEvolutionChange}
               />
               <OutfitSelect
                 outfitSets={outfitSets}
@@ -141,7 +140,11 @@ export default function FilterMenu() {
                 }
               />
             </ListItem>
-            <ListItem>
+            <ListItem sx={{ gap: 1 }}>
+              <SortEvolutionToggle
+                showByEvolution={showByEvolution}
+                onShowByEvolutionChange={handleShowByEvolutionChange}
+              />
               <OutfitEvolutionSelect
                 disabled={showByEvolution}
                 evolutions={allEvolutions}
@@ -163,11 +166,13 @@ export default function FilterMenu() {
               </ListItem>
             )}
             <ListItem>
-              <OutfitCategoryToggle
+              <OutfitCategorySelect
                 categories={outfitCategories}
                 disabled={showByEvolution}
                 selectedCategory={showByEvolution ? null : selectedOutfitCategory}
-                onCategoryChange={(_e, v) => onOutfitFiltersChange({ selectedOutfitCategory: v })}
+                onCategoryChange={(e) =>
+                  onOutfitFiltersChange({ selectedOutfitCategory: e.target.value || null })
+                }
               />
             </ListItem>
             <ListItem>
