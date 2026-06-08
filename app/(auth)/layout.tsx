@@ -9,7 +9,7 @@ export default function AuthLayout({
     <Stack
       sx={{
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         alignItems: 'center',
       }}
     >
