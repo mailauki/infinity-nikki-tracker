@@ -1,3 +1,5 @@
+'use client'
+
 import { EurekaSet } from "@/lib/types/eureka";
 import { OutfitSet } from "@/lib/types/outfit";
 import { Divider, Stack, Typography } from "@mui/material";
