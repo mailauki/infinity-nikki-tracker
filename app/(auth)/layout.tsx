@@ -1,5 +1,4 @@
-import AuthAppBar from '@/components/navbar/auth-appbar'
-import { Stack } from '@mui/material'
+import { Container, Stack } from '@mui/material'
 
 export default function AuthLayout({
   children,
@@ -14,8 +13,7 @@ export default function AuthLayout({
         alignItems: 'center',
       }}
     >
-      {/* <AuthAppBar /> */}
-      {children}
+      <Container maxWidth='sm'>{children}</Container>
     </Stack>
   )
 }
