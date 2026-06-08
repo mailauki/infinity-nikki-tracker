@@ -1,18 +1,15 @@
 'use client'
 
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
-import { IconButton, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import AdminNavTabs from './admin-nav-tabs'
-import AdminViewToggle from './admin-view-toggle'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
-import { ChevronLeft } from '@mui/icons-material'
 import { useFormConfig } from '@/app/admin/form-context'
 
 export default function AdminToolBar() {
   const pathname = usePathname()
   const { formId, setFormConfig } = useFormConfig()
-  const isAdminMainPage = pathname === '/admin'
   const isFormRoute = pathname.endsWith('/new') || pathname.includes('/edit/')
   const mounted = useRef(false)
 
@@ -24,6 +21,7 @@ export default function AdminToolBar() {
   }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isFormRoute) return null
+	
   return (
     <NavBarToolbar>
       <Stack
@@ -36,13 +34,7 @@ export default function AdminToolBar() {
           borderColor: 'divider',
         }}
       >
-        {!isAdminMainPage && (
-          <IconButton component="a" href="/admin">
-            <ChevronLeft />
-          </IconButton>
-        )}
         <AdminNavTabs />
-        {!isAdminMainPage && <AdminViewToggle />}
       </Stack>
     </NavBarToolbar>
   )

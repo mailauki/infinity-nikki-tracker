@@ -21,6 +21,7 @@ import { navLinksData } from '@/lib/nav-links'
 import { Evolution, OutfitCategory, OutfitSet, OutfitVariantRaw } from '@/lib/types/outfit'
 import ImageUpload from '@/components/forms/image-upload'
 import { updateOutfitVariant } from '@/app/admin/actions'
+import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = OutfitVariantRaw
 
@@ -135,12 +136,13 @@ export function OutfitVariantTable({
     {
       field: 'image_url',
       headerName: 'Image',
-      width: 100,
+      width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           <ImageUpload
             column="image_url"
+						size='sm'
             slug={row.slug ?? undefined}
             table="outfit_variants"
             url={row.image_url ?? null}
@@ -154,12 +156,13 @@ export function OutfitVariantTable({
     {
       field: 'alt_image_url',
       headerName: 'Alt Image',
-      width: 100,
+      width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           <ImageUpload
             column="alt_image_url"
+						size='sm'
             slug={row.slug ?? undefined}
             table="outfit_variants"
             url={row.alt_image_url ?? null}
@@ -249,7 +252,7 @@ export function OutfitVariantTable({
       isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       processRowUpdate={processRowUpdate}
-      rowHeight={100}
+      rowHeight={TABLE_ROW_HEIGHT}
       rowModesModel={rowModesModel}
       rows={rows}
       sx={{ border: 0 }}

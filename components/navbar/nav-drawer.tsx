@@ -127,7 +127,7 @@ function NavDrawer() {
         open={open}
         slotProps={{
           root: {
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           },
         }}
         sx={{
@@ -151,7 +151,7 @@ function NavDrawer() {
         sx={{
           display: { xs: 'none', sm: 'block' },
         }}
-        variant="permanent"
+        variant='permanent'
       >
         <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
           <IconButton onClick={() => toggleDrawer(!open)}>

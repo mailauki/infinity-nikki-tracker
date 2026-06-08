@@ -46,7 +46,7 @@ export default function AdminRecentsList({
 
   return (
     <Card variant="outlined">
-      <CardHeader
+      {/* <CardHeader
         disableTypography
         sx={{ pb: 0 }}
         title={
@@ -56,8 +56,15 @@ export default function AdminRecentsList({
         }
       />
       <CardContent>
-        <AdminRecentsToggle item={item} tab={tab} onItemChange={setItem} onTabChange={setTab} />
-      </CardContent>
+        <AdminRecentsToggle title={title} item={item} tab={tab} onItemChange={setItem} onTabChange={setTab} />
+      </CardContent> */}
+      <AdminRecentsToggle
+        item={item}
+        tab={tab}
+        title={title}
+        onItemChange={setItem}
+        onTabChange={setTab}
+      />
       <CardContent>
         {filtered.length === 0 ? (
           <Typography color="text.disabled" sx={{ py: 2, textAlign: 'center' }} variant="body2">

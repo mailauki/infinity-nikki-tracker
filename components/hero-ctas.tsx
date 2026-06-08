@@ -22,7 +22,7 @@ const buttonSx = {
 
 export function HeroCTAs({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
-    <Stack spacing={1.5} sx={{ mt: 3 }}>
+    <Stack spacing={1.5} sx={{ flexGrow: 1 }}>
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
         {isLoggedIn ? (
           <>

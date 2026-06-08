@@ -12,6 +12,7 @@ import {
 } from '@mui/material'
 import ImageIcon from '@mui/icons-material/Image'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
+import { AvatarSize } from '@/lib/types/props'
 
 const SIZE = 90
 const TRIAL_SIZE = 180
@@ -23,6 +24,7 @@ export default function ImageUpload({
   onUpload,
   caption,
   column = 'image_url',
+	size='md',
 }: {
   url: string | null
   table:
@@ -36,6 +38,7 @@ export default function ImageUpload({
   onUpload: (url: string) => void
   caption?: string
   column?: string
+	size?: AvatarSize
 }) {
   const supabase = createClient()
   const [uploading, setUploading] = useState(false)
@@ -97,11 +100,12 @@ export default function ImageUpload({
         <Stack sx={{ alignItems: 'center' }}>
           <Avatar
             alt="Image preview"
+						fullWidth={isTrial}
+						size={size}
             src={url ?? undefined}
-            sx={{ width: w, height: h }}
             variant="rounded"
           >
-            <ImageIcon fontSize="large" />
+            <ImageIcon fontSize='inherit' />
           </Avatar>
           <input
             accept="image/*"
@@ -144,7 +148,7 @@ export default function ImageUpload({
             color: 'surface.containerLowest',
           }}
         >
-          {uploading ? <CircularProgress size={32} /> : <FileUploadIcon fontSize="large" />}
+          {uploading ? <CircularProgress size={32} /> : <FileUploadIcon fontSize={size === 'md' ? 'large' : 'medium'} />}
         </Box>
       </CardActionArea>
     </Card>
