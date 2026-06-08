@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { OutfitSet, OutfitVariant, ObtainedOutfit } from '@/lib/types/outfit'
-import { createOutfitSet } from '@/hooks/outfit'
+import { OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
+import { createOutfitSet, updateOutfitSet } from '@/hooks/outfit'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getEvolutions } from '@/hooks/data/evolutions'
 
@@ -35,7 +35,13 @@ export async function GET() {
 
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser()
+
+  if (authError) {
+    console.error('Auth error in outfits route:', authError)
+    return NextResponse.json({ error: authError.message }, { status: 401 })
+  }
 
   if (!user) {
     return NextResponse.json(outfits)
@@ -52,19 +58,7 @@ export async function GET() {
   }
 
   const obtainedOutfit = (obtained ?? []) as ObtainedOutfit[]
-
-  const outfitsWithObtained = outfits.map((outfitSet) => ({
-    ...outfitSet,
-    outfit_variants: outfitSet.outfit_variants.map((variant) => ({
-      ...variant,
-      obtained: !!obtainedOutfit.find(
-        (o) =>
-          variant.outfit_set === o.outfit_set &&
-          variant.outfit_category === o.outfit_category &&
-          (variant.evolution === null ? o.evolution === null : variant.evolution === o.evolution)
-      ),
-    })) as OutfitVariant[],
-  })) as OutfitSet[]
+  const outfitsWithObtained = outfits.map((outfitSet) => updateOutfitSet({ outfitSet, obtainedOutfit }))
 
   return NextResponse.json(outfitsWithObtained)
 }
