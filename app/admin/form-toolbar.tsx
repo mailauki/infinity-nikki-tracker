@@ -38,7 +38,10 @@ export default function FormToolBar() {
         autoHideDuration={6000}
         message={savedTitle ? `"${savedTitle}" saved successfully` : 'Saved successfully'}
         open={!!savedTitle}
-        onClose={() => setFormConfig({ savedTitle: undefined })}
+        onClose={(_, reason) => {
+          if (reason === 'clickaway') return
+          setFormConfig({ savedTitle: undefined })
+        }}
       >
         <Alert severity="success" sx={{ width: '100%' }} variant="filled">
           {savedTitle ? `"${savedTitle}" saved successfully!` : 'Saved successfully!'}
