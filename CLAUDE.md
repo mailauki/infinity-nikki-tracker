@@ -66,7 +66,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 
 ### Middleware
 
-**`proxy.ts`** (root level, not `middleware.ts`) — exports `proxy()` and `config.matcher`. Calls `updateSession()` from `lib/supabase/proxy.ts` to refresh sessions on every request. Matches all paths except static files, images, and favicon.
+**`middleware.ts`** (root level) — exports `middleware()` and `config.matcher`. Calls `updateSession()` from `lib/supabase/proxy.ts` to refresh sessions on every request. Matches all paths except static files, images, and favicon.
 
 ### Component Organization
 
