@@ -81,7 +81,10 @@ export default function OutfitVariantCard({
           </Stack>
           <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
             {isLoggedIn && (
-              <IconButton onClick={onToggle}>
+              <IconButton
+                aria-label={outfitVariant.obtained ? 'Mark as not obtained' : 'Mark as obtained'}
+                onClick={onToggle}
+              >
                 {outfitVariant.obtained ? (
                   <TaskAlt />
                 ) : (

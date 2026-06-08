@@ -24,7 +24,7 @@ export default function OutfitEvolutionSetCard({
 
   const obtained = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
   const total = variants.length
-  const percentage = percent(obtained, total)
+  const percentage = total > 0 ? percent(obtained, total) : 0
 
   return (
     <Card
