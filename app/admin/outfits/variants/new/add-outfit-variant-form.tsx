@@ -21,6 +21,7 @@ import { Evolution, OutfitCategory, OutfitSetRaw, OutfitVariantRaw } from '@/lib
 import { useFormConfig } from '@/app/admin/form-context'
 import { addOutfitVariant } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'add-outfit-variant'
 
@@ -85,6 +86,7 @@ export default function AddOutfitVariantForm({
         <FormControl required>
           <InputLabel>Outfit Set</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Outfit Set"
             name="outfit_set"
             value={outfitSet}
@@ -102,6 +104,7 @@ export default function AddOutfitVariantForm({
         <FormControl>
           <InputLabel>Category</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Category"
             name="outfit_category"
             value={outfitCategory}
@@ -119,6 +122,7 @@ export default function AddOutfitVariantForm({
         <FormControl>
           <InputLabel>Evolution</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Evolution"
             name="evolution"
             value={evolution}

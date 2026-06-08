@@ -13,6 +13,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material'
 import LazyAvatar from '../lazy-avatar'
+import { MENU_PROPS } from '@/lib/types/props'
 
 export default function ColorSelect({
   colors,
@@ -35,6 +36,7 @@ export default function ColorSelect({
     >
       <InputLabel id="colors-select-label">Color</InputLabel>
       <Select
+				MenuProps={MENU_PROPS}
         aria-label="Color"
         disabled={disabled}
         id="colors-select"

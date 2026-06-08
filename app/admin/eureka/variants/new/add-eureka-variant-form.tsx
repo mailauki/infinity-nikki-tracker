@@ -21,6 +21,7 @@ import { EurekaCategory, EurekaColor, EurekaSetRaw, EurekaVariantRaw } from '@/l
 import { useFormConfig } from '@/app/admin/form-context'
 import { addEurekaVariant } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'add-eureka-variant'
 
@@ -88,6 +89,7 @@ export default function AddEurekaVariantForm({
             label="Eureka Set"
             name="eureka_set"
             value={eurekaSet}
+            MenuProps={MENU_PROPS}
             onChange={(e) => setEurekaSet(e.target.value)}
           >
             <MenuItem value="">—</MenuItem>
@@ -102,6 +104,7 @@ export default function AddEurekaVariantForm({
         <FormControl>
           <InputLabel>Category</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Category"
             name="category"
             value={category}
@@ -119,6 +122,7 @@ export default function AddEurekaVariantForm({
         <FormControl>
           <InputLabel>Color</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Color"
             name="color"
             value={color}

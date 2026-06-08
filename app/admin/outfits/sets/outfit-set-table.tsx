@@ -22,6 +22,7 @@ import { Style, Label } from '@/lib/types/eureka'
 import RarityStars from '@/components/rarity-stars'
 import ImageUpload from '@/components/forms/image-upload'
 import { updateOutfitSet } from '@/app/admin/actions'
+import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = OutfitSet
 
@@ -139,12 +140,13 @@ export function OutfitSetTable({
     {
       field: 'image_url',
       headerName: 'Image',
-      width: 100,
+      width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           <ImageUpload
             column="image_url"
+						size='sm'
             slug={row.slug ?? undefined}
             table="outfit_sets"
             url={row.image_url ?? null}
@@ -158,12 +160,13 @@ export function OutfitSetTable({
     {
       field: 'alt_image_url',
       headerName: 'Alt Image',
-      width: 100,
+      width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           <ImageUpload
             column="alt_image_url"
+						size='sm'
             slug={row.slug ?? undefined}
             table="outfit_sets"
             url={row.alt_image_url ?? null}
@@ -207,7 +210,7 @@ export function OutfitSetTable({
       valueOptions: [2, 3, 4, 5],
       renderCell: ({ value }: GridRenderCellParams<Row>) =>
         value ? (
-          <Stack sx={{ flex: 1, height: 52, justifyContent: 'center', color: 'text.secondary' }}>
+          <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center', color: 'text.secondary' }}>
             <RarityStars rarity={value} />
           </Stack>
         ) : (
@@ -272,7 +275,7 @@ export function OutfitSetTable({
           </Box>
         )
         return (
-          <Stack sx={{ flex: 1, height: 52, justifyContent: 'center' }}>
+          <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
             {isEditing(row.id) ? <LockedCell href={editHref(row)}>{content}</LockedCell> : content}
           </Stack>
         )
@@ -315,7 +318,7 @@ export function OutfitSetTable({
       isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       processRowUpdate={processRowUpdate}
-      rowHeight={100}
+      rowHeight={TABLE_ROW_HEIGHT}
       rowModesModel={rowModesModel}
       rows={rows}
       sx={{ border: 0, bgcolor: 'transparent' }}

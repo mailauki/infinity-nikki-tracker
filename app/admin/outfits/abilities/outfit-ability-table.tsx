@@ -7,6 +7,7 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from 
 import { navLinksData } from '@/lib/nav-links'
 import { AbilityRaw } from '@/hooks/data/admin/abilities'
 import ImageUpload from '@/components/forms/image-upload'
+import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = AbilityRaw
 
@@ -20,12 +21,6 @@ export function OutfitAbilityTable({ rows: initialRows }: OutfitAbilityTableProp
     `${navLinksData.admin.outfits.abilities.edit}/${row.slug}?back=${encodeURIComponent(navLinksData.admin.outfits.abilities.list)}`
 
   const columns: GridColDef<Row>[] = [
-    {
-      field: 'id',
-      headerName: 'ID',
-      type: 'number',
-      width: 80,
-    },
     {
       field: 'actions',
       type: 'actions',
@@ -42,14 +37,21 @@ export function OutfitAbilityTable({ rows: initialRows }: OutfitAbilityTableProp
       ],
     },
     {
+      field: 'id',
+      headerName: 'ID',
+      type: 'number',
+      width: TABLE_ROW_HEIGHT,
+    },
+    {
       field: 'image_url',
       headerName: 'Image',
-      width: 100,
+      width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           <ImageUpload
             column="image_url"
+						size='sm'
             slug={row.slug}
             table="abilities"
             url={row.image_url ?? null}
@@ -90,7 +92,7 @@ export function OutfitAbilityTable({ rows: initialRows }: OutfitAbilityTableProp
         sorting: { sortModel: [{ field: 'title', sort: 'asc' }] },
       }}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
-      rowHeight={100}
+      rowHeight={TABLE_ROW_HEIGHT}
       rows={rows}
       sx={{ border: 0, bgcolor: 'transparent' }}
     />

@@ -15,9 +15,13 @@ type NavDrawerContextType = {
 export const NavBarToolbarContext = React.createContext<NavBarToolbarContextType | null>(null)
 export const NavDrawerContext = React.createContext<NavDrawerContextType | null>(null)
 
+const DRAWER_STORAGE_KEY = 'nav-drawer-open'
+
 export function NavBarToolbarProvider({ children }: { children: React.ReactNode }) {
   const [toolbarSlot, setToolbarSlot] = React.useState<HTMLDivElement | null>(null)
-  const [drawerOpen, setDrawerOpen] = React.useState(false)
+  const [drawerOpen, setDrawerOpen] = React.useState(
+    () => typeof window !== 'undefined' && localStorage.getItem(DRAWER_STORAGE_KEY) === 'true'
+  )
 
   return (
     <NavDrawerContext.Provider value={{ drawerOpen, setDrawerOpen }}>

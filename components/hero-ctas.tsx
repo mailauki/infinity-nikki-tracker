@@ -3,26 +3,9 @@
 import { Button, Divider, Stack } from '@mui/material'
 import Link from 'next/link'
 
-const buttonSx = {
-  contained: {
-    borderRadius: 6,
-    px: 3,
-    bgcolor: 'white',
-    color: 'black',
-    '&:hover': { bgcolor: 'grey.100' },
-  },
-  outlined: {
-    borderRadius: 6,
-    px: 3,
-    borderColor: 'rgba(255,255,255,0.7)',
-    color: 'white',
-    '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.08)' },
-  },
-}
-
 export function HeroCTAs({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
-    <Stack spacing={1.5} sx={{ mt: 3 }}>
+    <Stack spacing={1.5} sx={{ flexGrow: 1 }}>
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'center' }}>
         {isLoggedIn ? (
           <>

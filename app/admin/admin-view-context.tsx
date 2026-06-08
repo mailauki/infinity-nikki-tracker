@@ -1,7 +1,7 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 type View = 'list' | 'table'
 
@@ -9,8 +9,6 @@ const AdminViewContext = createContext<{ view: View; setView: (v: View) => void 
   view: 'list',
   setView: () => {},
 })
-
-const supabase = createClient()
 
 export function AdminViewProvider({
   initialView,
@@ -22,6 +20,7 @@ export function AdminViewProvider({
   children: React.ReactNode
 }) {
   const [view, setView] = useState(initialView)
+  const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
     const channel = supabase

@@ -15,7 +15,6 @@ import {
 import NavSection from './nav-section'
 import { navLinksData } from '@/lib/nav-links'
 import { MenuOpen, Menu } from '@mui/icons-material'
-import React from 'react'
 import { useNavDrawer } from './navbar-toolbar-context'
 
 const drawerWidth = 240
@@ -91,17 +90,9 @@ const DRAWER_STORAGE_KEY = 'nav-drawer-open'
 
 function NavDrawer() {
   const theme = useTheme()
-  const [open, setOpen] = React.useState(false)
-  const { setDrawerOpen } = useNavDrawer()
-
-  React.useEffect(() => {
-    const stored = localStorage.getItem(DRAWER_STORAGE_KEY) === 'true'
-    setOpen(stored)
-    setDrawerOpen(stored)
-  }, [setDrawerOpen])
+  const { drawerOpen: open, setDrawerOpen } = useNavDrawer()
 
   function toggleDrawer(value: boolean) {
-    setOpen(value)
     setDrawerOpen(value)
     localStorage.setItem(DRAWER_STORAGE_KEY, String(value))
   }
@@ -117,7 +108,7 @@ function NavDrawer() {
             zIndex: theme.zIndex.drawer + 1,
             display: { xs: 'flex', sm: 'none' },
           }}
-          onClick={() => setOpen(true)}
+          onClick={() => setDrawerOpen(true)}
         >
           <Menu />
         </IconButton>
@@ -127,7 +118,7 @@ function NavDrawer() {
         open={open}
         slotProps={{
           root: {
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           },
         }}
         sx={{
@@ -135,15 +126,15 @@ function NavDrawer() {
           '& .MuiDrawer-paper': { width: '100%' },
         }}
         variant="temporary"
-        onClose={() => setOpen(false)}
+        onClose={() => setDrawerOpen(false)}
       >
         <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
-          <IconButton onClick={() => setOpen(false)}>
+          <IconButton onClick={() => setDrawerOpen(false)}>
             <MenuOpen />
           </IconButton>
         </Toolbar>
         <Toolbar />
-        {navContent(true, () => setOpen(false))}
+        {navContent(true, () => setDrawerOpen(false))}
       </MuiDrawer>
       <Drawer
         anchor="left"
@@ -151,7 +142,7 @@ function NavDrawer() {
         sx={{
           display: { xs: 'none', sm: 'block' },
         }}
-        variant="permanent"
+        variant='permanent'
       >
         <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
           <IconButton onClick={() => toggleDrawer(!open)}>
@@ -159,7 +150,7 @@ function NavDrawer() {
           </IconButton>
         </Toolbar>
         <Toolbar />
-        {navContent(open, () => setOpen(false))}
+        {navContent(open, () => setDrawerOpen(false))}
       </Drawer>
     </>
   )

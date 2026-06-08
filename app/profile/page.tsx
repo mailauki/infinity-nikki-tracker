@@ -1,6 +1,6 @@
-import CollectionStats from './collection-stats'
+import CollectionCharts from './collection-charts'
 import RecentUpdates from './recent-updates'
-import ProfileView from './profile-view'
+import ProfileCard from './profile-card'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { redirect } from 'next/navigation'
@@ -12,6 +12,8 @@ import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrials } from '@/hooks/data/trials'
 import { getRecentObtained } from '@/hooks/data/obtained-eureka'
 import ProfileToolbar from './profile-toolbar'
+import ProfileStats from './profile-stats'
+import { getOutfitSets } from '@/hooks/data/outfit-sets'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -38,8 +40,9 @@ async function UserDetails() {
 
   const role = await getUserRole()
   const user_id = await getUserID()
-  const sets = await getEurekaSets()
+  const eurekaSets = await getEurekaSets()
   const trials = await getTrials()
+  const outfitSets = await getOutfitSets()
   const recentObtained = user_id ? await getRecentObtained(user_id) : []
 
   const { data: profile } = await supabase
@@ -52,14 +55,15 @@ async function UserDetails() {
     <>
       <ProfileToolbar isAdmin={role === 'admin'} />
       <Stack spacing={2}>
-        <ProfileView
+        <ProfileCard
           avatar_url={profile?.avatar_url ?? null}
           fullname={profile?.display_name ?? null}
           loadError={false}
           user={user}
           username={profile?.username ?? null}
         />
-        {user_id && <CollectionStats sets={sets || []} trials={trials || []} />}
+				<ProfileStats eurekaSets={eurekaSets || []} outfitSets={outfitSets || []} />
+        {user_id && <CollectionCharts eurekaSets={eurekaSets || []} trials={trials || []} />}
         {user_id && <RecentUpdates items={recentObtained || []} />}
       </Stack>
     </>

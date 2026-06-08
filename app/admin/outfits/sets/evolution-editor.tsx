@@ -15,6 +15,7 @@ import {
 } from '@mui/material'
 import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material'
 import { EvolutionDraft } from '@/lib/types/outfit'
+import { MENU_PROPS } from '@/lib/types/props'
 
 export default function EvolutionEditor({
   maxEvolutions,
@@ -112,6 +113,7 @@ export default function EvolutionEditor({
         <FormControl>
           <InputLabel>Glow-Up Evolution</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Glow-Up Evolution"
             value={glowupEvolutionOrder}
             onChange={(e) => onGlowupChange(e.target.value as number | '')}

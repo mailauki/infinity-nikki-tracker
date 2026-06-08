@@ -102,7 +102,6 @@ export default function FilterMenu() {
       </IconButton>
 
       <Drawer
-        disableScrollLock
         anchor="right"
         open={open}
         sx={{ '& .MuiDrawer-paper': { width: 350 } }}

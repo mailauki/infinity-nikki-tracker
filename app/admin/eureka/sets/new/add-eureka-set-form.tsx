@@ -34,6 +34,7 @@ import { useFormConfig } from '@/app/admin/form-context'
 import { addEurekaSet } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
 import { Button } from '@mui/material'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'add-eureka-set'
 
@@ -185,6 +186,7 @@ export default function AddEurekaSetForm({
         <FormControl>
           <InputLabel>Label</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Label"
             name="label"
             value={label}
@@ -219,6 +221,7 @@ export default function AddEurekaSetForm({
             <InputLabel>Trials</InputLabel>
             <Select
               multiple
+              MenuProps={MENU_PROPS}
               label="Trials"
               renderValue={(selected) =>
                 trials
@@ -261,6 +264,7 @@ export default function AddEurekaSetForm({
         <FormControl disabled={colorSelect.length === 0}>
           <InputLabel>Default Color</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             input={<OutlinedInput label="Default Color" />}
             renderValue={(slug) => {
               const color = colors.find((c) => c.slug === slug)

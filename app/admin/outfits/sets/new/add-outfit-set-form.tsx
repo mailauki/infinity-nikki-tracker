@@ -30,12 +30,9 @@ import { useFormConfig } from '@/app/admin/form-context'
 import { addOutfitSet } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
 import EvolutionEditor from '../evolution-editor'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'add-outfit-set'
-
-const MENU_PROPS = {
-  slotProps: { paper: { style: { maxHeight: 36 * 6 } } },
-}
 
 export default function AddOutfitSetForm({
   styles,

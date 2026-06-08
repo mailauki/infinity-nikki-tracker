@@ -16,6 +16,7 @@ import {
   LockedCell,
   useRowActions,
 } from '@/components/admin/table-utils'
+import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = EurekaSet
 
@@ -68,10 +69,10 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
     {
       field: 'image_url',
       headerName: 'Image',
-      width: 64,
+      width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 52, justifyContent: 'center' }}>
+        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           {isEditing(row.id) ? (
             <LockedCell href={editHref(row)}>
               <LazyAvatar

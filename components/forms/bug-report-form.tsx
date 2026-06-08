@@ -16,6 +16,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const CATEGORIES = ['Bug report', 'Missing content', 'Other']
 
@@ -63,7 +64,7 @@ export default function BugReportForm({ onClose }: BugReportFormProps) {
         )}
         <FormControl fullWidth required>
           <InputLabel>Category</InputLabel>
-          <Select label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
+          <Select MenuProps={MENU_PROPS} label="Category" value={category} onChange={(e) => setCategory(e.target.value)}>
             {CATEGORIES.map((c) => (
               <MenuItem key={c} value={c}>
                 {c}

@@ -11,6 +11,7 @@ import {
   SelectChangeEvent,
 } from '@mui/material'
 import LazyAvatar from '../lazy-avatar'
+import { MENU_PROPS } from '@/lib/types/props'
 
 export default function EurekaSelect({
   eurekaSets,
@@ -25,12 +26,12 @@ export default function EurekaSelect({
     <FormControl
       sx={{
         flex: 1,
-        // minWidth: { xs: '240px', sm: '260px', md: '300px' },
         whiteSpace: 'nowrap',
       }}
     >
       <InputLabel id="eureka-set-select-label">Eureka Set</InputLabel>
       <Select
+				MenuProps={MENU_PROPS}
         aria-label="Eureka Set"
         id="eureka-set-select"
         label="Eureka Set"

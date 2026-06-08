@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   Avatar,
@@ -12,9 +12,7 @@ import {
 } from '@mui/material'
 import ImageIcon from '@mui/icons-material/Image'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
-
-const SIZE = 90
-const TRIAL_SIZE = 180
+import { AvatarSize } from '@/lib/types/props'
 
 export default function ImageUpload({
   url,
@@ -23,6 +21,7 @@ export default function ImageUpload({
   onUpload,
   caption,
   column = 'image_url',
+	size='md',
 }: {
   url: string | null
   table:
@@ -36,13 +35,12 @@ export default function ImageUpload({
   onUpload: (url: string) => void
   caption?: string
   column?: string
+	size?: AvatarSize
 }) {
-  const supabase = createClient()
+  const supabase = useRef(createClient()).current
   const [uploading, setUploading] = useState(false)
 
   const isTrial = table === 'trials'
-  const w = isTrial ? '100%' : SIZE
-  const h = isTrial ? TRIAL_SIZE : SIZE
 
   const uploadImage: React.ChangeEventHandler<HTMLInputElement> = async (event) => {
     try {
@@ -97,11 +95,12 @@ export default function ImageUpload({
         <Stack sx={{ alignItems: 'center' }}>
           <Avatar
             alt="Image preview"
+            size={size}
             src={url ?? undefined}
-            sx={{ width: w, height: h }}
+            sx={isTrial ? { width: '100%' } : undefined}
             variant="rounded"
           >
-            <ImageIcon fontSize="large" />
+            <ImageIcon fontSize='inherit' />
           </Avatar>
           <input
             accept="image/*"
@@ -144,7 +143,7 @@ export default function ImageUpload({
             color: 'surface.containerLowest',
           }}
         >
-          {uploading ? <CircularProgress size={32} /> : <FileUploadIcon fontSize="large" />}
+          {uploading ? <CircularProgress size={32} /> : <FileUploadIcon fontSize={size === 'md' ? 'large' : 'medium'} />}
         </Box>
       </CardActionArea>
     </Card>

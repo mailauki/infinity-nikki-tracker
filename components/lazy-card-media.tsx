@@ -19,11 +19,14 @@ export default function LazyCardMedia({ image, sx, ...props }: CardMediaProps<'d
     startTimeRef.current = Date.now()
   }, [image])
 
-  // If the image was already cached, onLoad won't fire — check img.complete on mount
+  // If the image was already cached, onLoad won't fire — check img.complete after mount
   useEffect(() => {
-    if (imgRef.current?.complete && imgRef.current.naturalWidth > 0) {
-      setLoaded(true)
-    }
+    const id = setTimeout(() => {
+      if (imgRef.current?.complete && imgRef.current.naturalWidth > 0) {
+        setLoaded(true)
+      }
+    }, 0)
+    return () => clearTimeout(id)
   }, [image])
 
   function handleError() {

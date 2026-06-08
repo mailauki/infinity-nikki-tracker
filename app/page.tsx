@@ -5,14 +5,17 @@ import { Hero } from '../components/hero'
 import { HeroCTAs } from '@/components/hero-ctas'
 import { getUserID } from '@/hooks/user'
 import HelpActions from './help/help-actions'
+import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <Suspense>
-        <HomeCTAs />
-      </Suspense>
+      <NavBarToolbar>
+        <Suspense>
+          <HomeCTAs />
+        </Suspense>
+      </NavBarToolbar>
       <QuickAccess />
       <HelpActions />
     </>

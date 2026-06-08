@@ -42,6 +42,7 @@ import RarityToggle from '@/components/filter/rarity-toggle'
 import ImageUpload from '@/components/forms/image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editEurekaSet } from '../../actions'
+import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'edit-eureka-set'
 
@@ -184,6 +185,7 @@ export default function EditEurekaSetForm({
         <FormControl>
           <InputLabel>Label</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Label"
             name="label"
             value={label}
@@ -218,6 +220,7 @@ export default function EditEurekaSetForm({
             <InputLabel>Trials</InputLabel>
             <Select
               multiple
+              MenuProps={MENU_PROPS}
               label="Trials"
               renderValue={(selected) =>
                 trials
@@ -268,6 +271,7 @@ export default function EditEurekaSetForm({
         <FormControl disabled={colorSelect.length === 0}>
           <InputLabel>Default Color</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             input={<OutlinedInput label="Default Color" />}
             renderValue={(slug) => {
               const color = colors.find((c) => c.slug === slug)

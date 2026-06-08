@@ -7,6 +7,7 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from 
 import { navLinksData } from '@/lib/nav-links'
 import { Evolution } from '@/lib/types/outfit'
 import ImageUpload from '@/components/forms/image-upload'
+import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = Evolution
 
@@ -44,12 +45,13 @@ export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTable
     {
       field: 'image_url',
       headerName: 'Image',
-      width: 100,
+      width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           <ImageUpload
             column="image_url"
+						size='sm'
             slug={row.slug}
             table="evolutions"
             url={row.image_url ?? null}
@@ -65,12 +67,13 @@ export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTable
     {
       field: 'alt_image_url',
       headerName: 'Alt Image',
-      width: 100,
+      width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 100, justifyContent: 'center' }}>
+        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           <ImageUpload
             column="alt_image_url"
+						size='sm'
             slug={row.slug}
             table="evolutions"
             url={row.alt_image_url ?? null}
@@ -138,7 +141,7 @@ export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTable
         sorting: { sortModel: [{ field: 'id', sort: 'asc' }] },
       }}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
-      rowHeight={100}
+      rowHeight={TABLE_ROW_HEIGHT}
       rows={rows}
       sx={{ border: 0, bgcolor: 'transparent' }}
     />
