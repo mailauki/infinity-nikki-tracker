@@ -4,6 +4,8 @@ import BugReportForm from '@/components/forms/bug-report-form'
 import FeatureRequestForm from '@/components/forms/feature-request-form'
 import { AddComment, BugReport, Coffee, GitHub } from '@mui/icons-material'
 import {
+	Box,
+	Card,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -12,7 +14,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Stack,
+	Typography,
 } from '@mui/material'
 import { useState } from 'react'
 
@@ -21,8 +23,17 @@ export default function HelpActions() {
   const [bugOpen, setBugOpen] = useState(false)
 
   return (
-    <>
-      <Stack component="section" spacing={0}>
+      <Box sx={{ py: 3 }}>
+        <Typography sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="overline">
+          Helpful Links
+        </Typography>
+				<Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: { sm: '1fr', md: '1fr 1fr' },
+          gap: 2,
+        }}
+      >
         <List disablePadding>
           <ListItem disableGutters>
             <ListItemButton onClick={() => setFeatureOpen(true)}>
@@ -46,6 +57,8 @@ export default function HelpActions() {
               />
             </ListItemButton>
           </ListItem>
+        </List>
+				<List disablePadding>
           <ListItem disableGutters>
             <ListItemButton onClick={() => setBugOpen(true)}>
               <ListItemIcon>
@@ -71,8 +84,8 @@ export default function HelpActions() {
               />
             </ListItemButton>
           </ListItem>
-        </List>
-      </Stack>
+				</List>
+			</Box>
 
       <Dialog fullWidth maxWidth="sm" open={featureOpen} onClose={() => setFeatureOpen(false)}>
         <DialogTitle>Feature Request</DialogTitle>
@@ -87,6 +100,6 @@ export default function HelpActions() {
           <BugReportForm onClose={() => setBugOpen(false)} />
         </DialogContent>
       </Dialog>
-    </>
+		</Box>
   )
 }
