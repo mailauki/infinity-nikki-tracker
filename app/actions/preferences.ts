@@ -57,3 +57,21 @@ export async function updateTheme(value: 'system' | 'light' | 'dark') {
 export async function updateColorTheme(value: string) {
   await upsertUserPreference({ color_theme: value })
 }
+
+export async function updateOutfitFilters(filters: {
+  outfit_set_filter?: string | null
+  outfit_category_filter?: string | null
+  outfit_evolution_filter?: string | null
+  outfit_rarity_filter?: string | null
+  outfit_obtained_filter?: string | null
+}) {
+  await upsertUserPreference(filters as Record<string, string | null>)
+}
+
+export async function updateOutfitGroupBySet(value: boolean) {
+  await upsertUserPreference({ outfit_group_by_set: value })
+}
+
+export async function updateOutfitShowByEvolution(value: boolean) {
+  await upsertUserPreference({ outfit_show_by_evolution: value })
+}
