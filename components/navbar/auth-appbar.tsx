@@ -3,10 +3,13 @@
 import { AppBar, Stack, Toolbar, useColorScheme } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 
 export default function AuthAppBar() {
   const { mode, systemMode } = useColorScheme()
-  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
 
   return (
     <AppBar color="transparent" elevation={0} position="absolute">

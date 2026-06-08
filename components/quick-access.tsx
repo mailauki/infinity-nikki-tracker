@@ -10,6 +10,7 @@ import {
   useColorScheme,
 } from '@mui/material'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 const cards = [
   {
@@ -28,7 +29,9 @@ const cards = [
 
 export function QuickAccess() {
   const { mode, systemMode } = useColorScheme()
-  const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
 
   return (
     <Box sx={{ py: 3 }}>

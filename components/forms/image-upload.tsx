@@ -25,7 +25,7 @@ export default function ImageUpload({
   column = 'image_url',
 }: {
   url: string | null
-  table: 'eureka_variants' | 'outfit_variants' | 'trials' | 'outfit_sets' | 'evolutions'
+  table: 'eureka_variants' | 'outfit_variants' | 'trials' | 'outfit_sets' | 'evolutions' | 'abilities'
   slug: string | undefined
   onUpload: (url: string) => void
   caption?: string

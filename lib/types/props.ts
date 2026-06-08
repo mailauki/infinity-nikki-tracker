@@ -30,7 +30,7 @@ type AdminLink = {
 export type AdminLinks = {
   tabs: NavLink[]
   eureka: { sets: AdminLink; variants: AdminLink; trials: AdminLink }
-  outfits: { sets: AdminLink; variants: AdminLink; evolutions: AdminLink }
+  outfits: { sets: AdminLink; variants: AdminLink; evolutions: AdminLink, abilities: AdminLink }
 }
 
 export interface NavLink {

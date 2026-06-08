@@ -66,11 +66,9 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const initialGlowupEvolutionOrder =
     evolutions.find((e) => e.slug === outfitSet.glowup_evolution)?.order ?? ''
 
-  const derivedCategories = [
+  const initialCategorySelect = [
     ...new Set((variantRows ?? []).map((v) => v.outfit_category).filter(Boolean)),
   ] as string[]
-  const initialCategorySelect =
-    derivedCategories.length > 0 ? derivedCategories : outfitCategories.map((c) => c.slug)
 
   return (
     <EditOutfitSetForm

@@ -11,6 +11,7 @@ import { StatCard } from './stat-card'
 import AdminRecentsList from './admin-recents-list'
 import { navLinksData } from '@/lib/nav-links'
 import { getEvolutions } from '@/hooks/data/evolutions'
+import { getAbilities } from '@/hooks/data/abilities'
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -31,6 +32,7 @@ async function AdminContent() {
     outfitSets,
     outfitVariants,
     evolutions,
+		abilities,
     role,
     recentlyAdded,
     recentlyEdited,
@@ -40,6 +42,7 @@ async function AdminContent() {
     getOutfitSets(),
     getOutfitVariantsRaw(),
     getEvolutions(),
+		getAbilities(),
     getUserRole(),
     getRecentlyAdded(),
     getRecentlyEdited(),
@@ -52,7 +55,7 @@ async function AdminContent() {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+          gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr' },
           gap: 2,
         }}
       >
@@ -73,6 +76,12 @@ async function AdminContent() {
           count={evolutions?.length ?? 0}
           listHref={navLinksData.admin.outfits.evolutions.list}
           title="Evolutions"
+        />
+        <StatCard
+          addHref={isAdmin ? navLinksData.admin.outfits.abilities.add : undefined}
+          count={abilities?.length ?? 0}
+          listHref={navLinksData.admin.outfits.abilities.list}
+          title="Abilities"
         />
         <StatCard
           addHref={isAdmin ? navLinksData.admin.eureka.sets.add : undefined}
