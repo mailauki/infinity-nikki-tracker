@@ -1,4 +1,3 @@
-import { Stack } from '@mui/material'
 import { Suspense } from 'react'
 
 import { QuickAccess } from '@/components/quick-access'
@@ -9,14 +8,14 @@ import HelpActions from './help/help-actions'
 
 export default function HomePage() {
   return (
-    <Stack>
+    <>
       <Hero />
       <Suspense>
         <HomeCTAs />
       </Suspense>
       <QuickAccess />
       <HelpActions />
-    </Stack>
+    </>
   )
 }
 

@@ -102,11 +102,13 @@ export default function FilterMenu() {
       </IconButton>
 
       <Drawer
+				disableScrollLock
         anchor="right"
         open={open}
         sx={{ '& .MuiDrawer-paper': { width: 350 } }}
         onClose={() => setOpen(false)}
       >
+				<Toolbar sx={{ mb: 2 }} />
         <Toolbar>
           <Stack direction="row" sx={{ flex: 1, justifyContent: 'flex-end' }}>
             <IconButton onClick={() => setOpen(false)}>

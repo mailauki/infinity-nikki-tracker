@@ -66,7 +66,7 @@ NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 
 ### Middleware
 
-**`middleware.ts`** (root level) — exports `middleware()` and `config.matcher`. Calls `updateSession()` from `lib/supabase/proxy.ts` to refresh sessions on every request. Matches all paths except static files, images, and favicon.
+**`proxy.ts`** (root level) — exports `proxy()` and `config.matcher`. Calls `updateSession()` from `lib/supabase/proxy.ts` to refresh sessions on every request. Matches all paths except static files, images, and favicon. Note: `middleware.ts` is deprecated in Next.js 16; the correct convention is `proxy.ts` with `export function proxy()`.
 
 ### Component Organization
 
