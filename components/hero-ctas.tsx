@@ -47,7 +47,7 @@ export function HeroCTAs({ isLoggedIn }: { isLoggedIn: boolean }) {
           <>
             <Button
               component={Link}
-              href="/auth/sign-up"
+              href="/sign-up"
               sx={{ bgcolor: 'text.primary', borderRadius: 4 }}
               variant="contained"
             >

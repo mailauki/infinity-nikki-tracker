@@ -14,7 +14,7 @@ export function LogoutButton() {
     const supabase = createClient()
     await supabase.auth.signOut()
     router.replace(pathname)
-    router.push('/auth/login')
+    router.push('/login')
   }
 
   return (

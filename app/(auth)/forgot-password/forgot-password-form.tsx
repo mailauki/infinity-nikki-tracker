@@ -29,7 +29,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/update-password`,
+        redirectTo: `${window.location.origin}/update-password`,
       })
       if (error) throw error
       setSuccess(true)
@@ -87,7 +87,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
                 <Anchor
                   color="textSecondary"
                   component={Link}
-                  href="/auth/login"
+                  href="/login"
                   sx={{ fontWeight: 'medium' }}
                   underline="hover"
                 >
