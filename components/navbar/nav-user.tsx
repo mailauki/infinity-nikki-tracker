@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -22,6 +23,11 @@ import AvatarPreview from '../../app/settings/avatar-preview'
 
 export function NavUser() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
+  const pathname = usePathname()
+
+  useEffect(() => {
+    setAnchorElUser(null)
+  }, [pathname])
   // undefined = not yet loaded, null = no user
   const [userId, setUserId] = useState<string | null | undefined>(undefined)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -106,7 +112,6 @@ export function NavUser() {
         </IconButton>
       </Tooltip>
       <Menu
-        keepMounted
         anchorEl={anchorElUser}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         disableScrollLock={true}
