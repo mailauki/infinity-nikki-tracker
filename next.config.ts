@@ -16,8 +16,16 @@ while (!fs.existsSync(path.join(workspaceRoot, 'node_modules', 'next'))) {
 const nextConfig: NextConfig = {
   cacheComponents: true,
   turbopack: {
-    root: path.dirname(workspaceRoot), // Sets the root to the parent directory
+    root: workspaceRoot,
   },
+  headers: async () => [
+    {
+      // Prevent Safari from caching Turbopack dev chunks, which causes
+      // ChunkLoadError reload loops when chunks are invalidated during development
+      source: '/_next/static/chunks/:path*',
+      headers: [{ key: 'Cache-Control', value: 'no-store' }],
+    },
+  ],
   images: {
     remotePatterns: [
       {

@@ -12,6 +12,14 @@ export default function LazyCardMedia({ image, sx, ...props }: CardMediaProps<'d
   const [retryKey, setRetryKey] = useState(0)
   const startTimeRef = useRef<number>(Date.now())
   const imgRef = useRef<HTMLImageElement>(null)
+  const mountedRef = useRef(false)
+
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   useEffect(() => {
     setLoaded(false)
@@ -29,7 +37,12 @@ export default function LazyCardMedia({ image, sx, ...props }: CardMediaProps<'d
     return () => clearTimeout(id)
   }, [image])
 
+  function handleLoad() {
+    if (mountedRef.current) setLoaded(true)
+  }
+
   function handleError() {
+    if (!mountedRef.current) return
     if (Date.now() - startTimeRef.current < RETRY_TIMEOUT_MS) {
       setRetryKey((k) => k + 1)
     } else {
@@ -53,7 +66,7 @@ export default function LazyCardMedia({ image, sx, ...props }: CardMediaProps<'d
           src={retrySrc}
           style={{ visibility: 'hidden', position: 'absolute', width: 0, height: 0 }}
           onError={handleError}
-          onLoad={() => setLoaded(true)}
+          onLoad={handleLoad}
         />
       )}
       <CardMedia
