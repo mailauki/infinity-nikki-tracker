@@ -6,6 +6,7 @@ import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Cancel'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
+import { Category } from '@mui/icons-material'
 import {
   DataGrid,
   GridActionsCellItem,
@@ -19,8 +20,8 @@ import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { Ability, Evolution, OutfitSet } from '@/lib/types/outfit'
 import { Style, Label } from '@/lib/types/eureka'
+import LazyAvatar from '@/components/lazy-avatar'
 import RarityStars from '@/components/rarity-stars'
-import ImageUpload from '@/components/forms/image-upload'
 import { updateOutfitSet } from '@/app/admin/actions'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
@@ -33,7 +34,7 @@ interface OutfitSetTableProps {
   abilities: Ability[]
 }
 
-const LOCKED_FIELDS = ['slug', 'evolutions', 'glowup_evolution', 'updated_at']
+const LOCKED_FIELDS = ['slug', 'image_url', 'alt_image_url', 'evolutions', 'glowup_evolution', 'updated_at']
 
 function LockedCell({ children, href }: { children: React.ReactNode; href: string }) {
   return (
@@ -140,42 +141,40 @@ export function OutfitSetTable({
     {
       field: 'image_url',
       headerName: 'Image',
-      width: TABLE_ROW_HEIGHT,
+      width: 50,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
-          <ImageUpload
-            column="image_url"
-						size='sm'
-            slug={row.slug ?? undefined}
-            table="outfit_sets"
-            url={row.image_url ?? null}
-            onUpload={(url) =>
-              setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, image_url: url } : r)))
-            }
-          />
+        <Stack sx={{ flex: 1, height: 50, justifyContent: 'center' }}>
+          <LockedCell href={editHref(row)}>
+            <LazyAvatar
+              alt={row.title || 'Image'}
+              size="sm"
+              src={row.image_url ?? undefined}
+              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+            >
+              <Category fontSize="inherit" />
+            </LazyAvatar>
+          </LockedCell>
         </Stack>
       ),
     },
     {
       field: 'alt_image_url',
       headerName: 'Alt Image',
-      width: TABLE_ROW_HEIGHT,
+      width: 50,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
-          <ImageUpload
-            column="alt_image_url"
-						size='sm'
-            slug={row.slug ?? undefined}
-            table="outfit_sets"
-            url={row.alt_image_url ?? null}
-            onUpload={(url) =>
-              setRows((prev) =>
-                prev.map((r) => (r.id === row.id ? { ...r, alt_image_url: url } : r))
-              )
-            }
-          />
+        <Stack sx={{ flex: 1, height: 50, justifyContent: 'center' }}>
+          <LockedCell href={editHref(row)}>
+            <LazyAvatar
+              alt={row.title ? `${row.title} (alt)` : 'Alt Image'}
+              size="sm"
+              src={row.alt_image_url ?? undefined}
+              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+            >
+              <Category fontSize="inherit" />
+            </LazyAvatar>
+          </LockedCell>
         </Stack>
       ),
     },
@@ -210,7 +209,7 @@ export function OutfitSetTable({
       valueOptions: [2, 3, 4, 5],
       renderCell: ({ value }: GridRenderCellParams<Row>) =>
         value ? (
-          <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center', color: 'text.secondary' }}>
+          <Stack sx={{ flex: 1, height: 50, justifyContent: 'center', color: 'text.secondary' }}>
             <RarityStars rarity={value} />
           </Stack>
         ) : (
@@ -275,7 +274,7 @@ export function OutfitSetTable({
           </Box>
         )
         return (
-          <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
+          <Stack sx={{ flex: 1, height: 50, justifyContent: 'center' }}>
             {isEditing(row.id) ? <LockedCell href={editHref(row)}>{content}</LockedCell> : content}
           </Stack>
         )
@@ -318,10 +317,11 @@ export function OutfitSetTable({
       isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       processRowUpdate={processRowUpdate}
-      rowHeight={TABLE_ROW_HEIGHT}
+      rowHeight={50}
       rowModesModel={rowModesModel}
       rows={rows}
       sx={{ border: 0, bgcolor: 'transparent' }}
+      onProcessRowUpdateError={(err) => console.error('Row update error:', err)}
       onRowModesModelChange={setRowModesModel}
     />
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
@@ -51,9 +51,9 @@ export default function OutfitDataProvider({
     DEFAULT_PREFERENCES.outfit_hide_evolutions
   )
   const [filters, setFilters] = useState<OutfitFilterState>(DEFAULT_OUTFIT_FILTERS)
+  const [prefsLoaded, setPrefsLoaded] = useState(false)
   const [, startTransition] = useTransition()
   const supabase = useMemo(() => createClient(), [])
-  const prefsLoaded = useRef(false)
 
   useEffect(() => {
     fetchJson<OutfitSet[]>('/api/outfits')
@@ -85,10 +85,10 @@ export default function OutfitDataProvider({
           selectedRarity: prefs.outfit_rarity_filter ? Number(prefs.outfit_rarity_filter) : null,
           selectedObtainedFilter: (prefs.outfit_obtained_filter as ObtainedFilter) ?? null,
         })
-        prefsLoaded.current = true
+        setPrefsLoaded(true)
       })
       .catch(() => {
-        prefsLoaded.current = true
+        setPrefsLoaded(true)
       })
   }, [isLoggedIn])
 
@@ -150,7 +150,7 @@ export default function OutfitDataProvider({
   }
 
   useEffect(() => {
-    if (!isLoggedIn || !prefsLoaded.current) return
+    if (!isLoggedIn || !prefsLoaded) return
     startTransition(() =>
       updateOutfitFilters({
         outfit_set_filter: filters.selectedOutfitSet,

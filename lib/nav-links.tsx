@@ -95,11 +95,11 @@ export const navLinksData: {
       // },
       // ],
     },
-    {
-      title: 'Custom Looks',
-      url: '/looks',
-      icon: <AutoAwesome />,
-    },
+    // {
+    //   title: 'Custom Looks',
+    //   url: '/looks',
+    //   icon: <AutoAwesome />,
+    // },
     {
       title: 'Settings',
       url: '/settings',
