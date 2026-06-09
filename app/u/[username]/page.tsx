@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { Stack, Typography, Chip, Card, CardContent, Box, Divider } from '@mui/material'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
@@ -12,7 +13,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: `@${username}'s Collection` }
 }
 
-export default async function PublicProfilePage({ params }: Props) {
+export default function PublicProfilePage({ params }: Props) {
+  return (
+    <Suspense>
+      <ProfileView params={params} />
+    </Suspense>
+  )
+}
+
+async function ProfileView({ params }: Props) {
   const { username } = await params
 
   const supabase = await createClient()

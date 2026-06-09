@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', {
-  apiVersion: '2026-05-27.dahlia',
-})
+const stripe = process.env.STRIPE_SECRET_KEY
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2026-05-27.dahlia' })
+  : null
 
 const PRICE_ID = process.env.STRIPE_PRICE_ID ?? ''
 
@@ -28,7 +28,7 @@ export async function POST() {
     return NextResponse.json({ error: 'Already a supporter' }, { status: 400 })
   }
 
-  if (!PRICE_ID) {
+  if (!stripe || !PRICE_ID) {
     return NextResponse.json({ error: 'Stripe not configured' }, { status: 503 })
   }
 
