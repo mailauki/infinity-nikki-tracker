@@ -14,8 +14,8 @@ import {
   useColorScheme,
   useTheme,
 } from '@mui/material'
+import { alpha } from '@mui/material/styles'
 import { PieChart } from '@mui/x-charts/PieChart'
-import { lime } from '@mui/material/colors'
 import { countObtained, percent } from '@/hooks/count-obtained'
 import { EurekaSet, Trial } from '@/lib/types/eureka'
 import PercentLabel from '@/components/percent-label'
@@ -44,6 +44,7 @@ function CollectionRingsChart({
   variantsTotal: number
 }) {
   const { mode, systemMode } = useColorScheme()
+  const theme = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
@@ -58,9 +59,8 @@ function CollectionRingsChart({
     )
 
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
-  const ringColors = isDarkMode
-    ? [lime[500], lime[400], lime[300], lime[200]]
-    : [lime[900], lime[700], lime[500], lime[300]]
+  const tertiary = theme.palette.tertiary.main
+  const ringColors = [1, 0.75, 0.55, 0.35].map((opacity) => alpha(tertiary, opacity))
 
   const rings = [
     {
