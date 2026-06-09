@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, startTransition, useState } from 'react'
+import { useEffect, startTransition } from 'react'
 import {
   Box,
   Card,
@@ -19,6 +19,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useColorScheme } from '@mui/material/styles'
 import { updateTheme, updateColorTheme } from '@/app/actions/preferences'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
+import { useColorTheme } from '@/components/color-theme-context'
 import type { ColorTheme } from '@/lib/types/eureka'
 
 const modes = [
@@ -31,7 +32,7 @@ const COLOR_THEMES: ColorTheme[] = ['default', 'moonlight', 'cherry', 'forest']
 
 export default function AppearanceSettings({ isPremium }: { isPremium: boolean }) {
   const { mode, setMode } = useColorScheme()
-  const [colorTheme, setColorTheme] = useState<ColorTheme>('default')
+  const { colorTheme, setColorTheme } = useColorTheme()
 
   useEffect(() => {
     fetch('/api/preferences')
@@ -46,21 +47,15 @@ export default function AppearanceSettings({ isPremium }: { isPremium: boolean }
         ) {
           setMode(saved as 'system' | 'light' | 'dark')
         }
-        const validColorThemes: ColorTheme[] = ['default', 'moonlight', 'cherry', 'forest']
-        if (prefs.color_theme && validColorThemes.includes(prefs.color_theme)) {
-          setColorTheme(prefs.color_theme as ColorTheme)
-        }
       })
       .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  function handleColorThemeChange(value: ColorTheme) {
+  async function handleColorThemeChange(value: ColorTheme) {
     if (!isPremium && value !== 'default') return
     setColorTheme(value)
     startTransition(() => updateColorTheme(value))
-    // Reload to apply new theme via ThemeClientProvider
-    window.location.reload()
   }
 
   return (

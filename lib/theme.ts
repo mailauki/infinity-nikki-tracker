@@ -1,7 +1,6 @@
 'use client'
-import { alpha, createTheme } from '@mui/material/styles'
+import { alpha, createTheme, type ThemeOptions } from '@mui/material/styles'
 import { AvatarSize } from './types/props'
-import { blueGrey } from '@mui/material/colors'
 import { toggleButtonGroupClasses } from '@mui/material'
 
 const toggleButtonEdgeStyle = {
@@ -89,7 +88,7 @@ declare module '@mui/material/styles' {
   }
 }
 
-const theme = createTheme({
+export const baseThemeOptions: ThemeOptions = {
   cssVariables: {
     colorSchemeSelector: 'class',
   },
@@ -186,120 +185,6 @@ const theme = createTheme({
       fontWeight: 500,
       letterSpacing: '0.03125rem',
       textTransform: 'uppercase' as const,
-    },
-  },
-  colorSchemes: {
-    light: {
-      palette: {
-        primary: {
-          main: '#8F4C33',
-        },
-        secondary: {
-          main: '#77574C',
-        },
-        tertiary: {
-          main: '#3D6736',
-        },
-        neutral: {
-          main: '#877371',
-        },
-        success: {
-          main: '#695E2F',
-        },
-        error: {
-          main: '#BA1A1A',
-        },
-        info: {
-          main: blueGrey[600],
-        },
-        background: {
-          default: '#FFF8F6',
-          paper: '#FFF8F6',
-        },
-        text: {
-          primary: '#180F0C',
-          secondary: '#41332E',
-        },
-        divider: '#D8C2BB',
-        surface: {
-          // Surface Dim — darkened base (below Surface)
-          dim: '#E8D6D1',
-          dimHover: alpha('#E8D6D1', 0.7),
-          // Surface — base page/app background
-          main: '#FFF8F6',
-          mainHover: alpha('#FFF8F6', 0.7),
-          // Surface Bright — elevated base (above Surface)
-          bright: '#FFF8F6',
-          brightHover: alpha('#FFF8F6', 0.7),
-          // Surface Container Lowest → Highest
-          containerLowest: '#FFFFFF',
-          containerLowestHover: alpha('#FFFFFF', 0.7),
-          containerLow: '#FFF1EC',
-          containerLowHover: alpha('#FFF1EC', 0.7),
-          container: '#FCEAE4',
-          containerHover: alpha('#FCEAE4', 0.7),
-          containerHigh: '#F7E4DF',
-          containerHighHover: alpha('#F7E4DF', 0.7),
-          containerHighest: '#F1DFD9',
-          containerHighestHover: alpha('#F1DFD9', 0.7),
-        },
-      },
-    },
-    dark: {
-      palette: {
-        primary: {
-          main: '#FFB59A',
-        },
-        secondary: {
-          main: '#E7BEAF',
-        },
-        tertiary: {
-          main: '#A2CF95',
-        },
-        neutral: {
-          main: '#D5BAB6',
-        },
-        success: {
-          main: '#D5C68E',
-        },
-        error: {
-          main: '#FFB4AB',
-        },
-        info: {
-          main: blueGrey[400],
-        },
-        background: {
-          default: '#1a110e',
-          paper: '#1a110e',
-        },
-        text: {
-          primary: '#f1dfd9',
-          secondary: '#d8c2bb',
-        },
-        divider: '#53433e',
-        surface: {
-          // Surface Dim — darkened base (below Surface)
-          dim: '#1A110E',
-          dimHover: alpha('#1A110E', 0.7),
-          // Surface — base page/app background
-          main: '#1A110E',
-          mainHover: alpha('#1A110E', 0.7),
-          // Surface Bright — elevated base (above Surface)
-          bright: '#423733',
-          brightHover: alpha('#423733', 0.7),
-          // Surface Container Lowest → Highest
-          containerLowest: '#140C09',
-          containerLowestHover: alpha('#140C09', 0.7),
-          containerLow: '#231A16',
-          containerLowHover: alpha('#231A16', 0.7),
-          container: '#271E1A',
-          containerHover: alpha('#271E1A', 0.7),
-          containerHigh: '#322824',
-          containerHighHover: alpha('#322824', 0.7),
-          containerHighest: '#3D322F',
-          containerHighestHover: alpha('#3D322F', 0.7),
-        },
-      },
     },
   },
   components: {
@@ -499,6 +384,6 @@ const theme = createTheme({
       },
     },
   },
-})
+}
 
-export default theme
+export default createTheme(baseThemeOptions)

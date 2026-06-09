@@ -13,6 +13,9 @@ import PullToRefresh from '@/components/pull-to-refresh'
 import NavDrawer from '@/components/navbar/nav-drawer'
 import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
 import SnackbarAlertProvider from '@/components/snackbar-provider'
+import { cookies } from 'next/headers'
+import { connection } from 'next/server'
+import type { ColorTheme } from '@/lib/types/eureka'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -26,6 +29,7 @@ const notoSansJP = Noto_Sans_JP({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-noto-sans-jp',
+  preload: false,
 })
 
 const defaultUrl = process.env.VERCEL_URL
@@ -40,17 +44,23 @@ export const metadata: Metadata = {
   },
   description: 'Track your collection from your favorite cozy open-world game Infinity Nikki',
   icons: {
-    icon: [{ url: '/icon.png' }, { url: '/icon-dark.png', media: '(prefers-color-scheme: dark)' }],
-    shortcut: ['/shortcut-icon.png'],
-    apple: ['/apple-icon.png'],
+    icon: '/infinity-nikki-logo.png',
   },
 }
 
-export default function RootLayout({
+const VALID_THEMES: ColorTheme[] = ['default', 'moonlight', 'cherry', 'forest']
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  await connection()
+  const cookieStore = await cookies()
+  const raw = cookieStore.get('color_theme')?.value
+  const colorTheme: ColorTheme =
+    raw && (VALID_THEMES as string[]).includes(raw) ? (raw as ColorTheme) : 'default'
+
   return (
     <html
       suppressHydrationWarning
@@ -60,7 +70,7 @@ export default function RootLayout({
       <body>
         <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppRouterCacheProvider options={{ key: 'css' }}>
-          <ThemeClientProvider>
+          <ThemeClientProvider colorTheme={colorTheme}>
             <CssBaseline />
             <NavBarToolbarProvider>
 							<SnackbarAlertProvider>
