@@ -15,7 +15,7 @@ export default function AdminToolBar() {
 
   useEffect(() => {
     if (mounted.current && !isFormRoute && formId) {
-      setFormConfig({ formId: '', backUrl: '', pending: false, showAddAnother: false })
+      setFormConfig({ formId: '', backUrl: '', pending: false, showAddAnother: false, showUpdateOnly: false })
     }
     mounted.current = true
   }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps

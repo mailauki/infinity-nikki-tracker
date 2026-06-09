@@ -109,9 +109,15 @@ export default function EditEurekaSetForm({
   const [state, action, pending] = useActionState(boundAction, null)
 
   useEffect(() => {
-    setFormConfig({ formId: FORM_ID, backUrl: back, pending })
+    setFormConfig({ formId: FORM_ID, backUrl: back, pending, showUpdateOnly: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, back])
+
+  useEffect(() => {
+    if (state && 'savedTitle' in state && !('error' in state)) {
+      setFormConfig({ savedTitle: state.savedTitle })
+    }
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <form action={action} id={FORM_ID}>

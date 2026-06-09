@@ -176,5 +176,6 @@ export async function editEurekaSet(
     if (setDefaultError) return { error: setDefaultError.message }
   }
 
+  if (formData.get('update_only') === 'true') return { savedTitle: title }
   redirect(backUrl)
 }

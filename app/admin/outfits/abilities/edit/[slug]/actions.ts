@@ -26,5 +26,6 @@ export async function editAbility(
 
   if (error) return { error: error.message }
 
+  if (formData.get('update_only') === 'true') return { savedTitle: title }
   redirect(backUrl)
 }

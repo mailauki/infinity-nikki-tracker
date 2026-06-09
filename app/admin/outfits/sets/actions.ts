@@ -295,5 +295,6 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     if (imgError) return { error: imgError.message }
   }
 
+  if (formData.get('update_only') === 'true') return { savedTitle: title }
   redirect(backUrl)
 }

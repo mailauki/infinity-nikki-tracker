@@ -53,5 +53,6 @@ export async function editEvolution(
     if (imgError) return { error: imgError.message }
   }
 
+  if (formData.get('update_only') === 'true') return { savedTitle: subtitle }
   redirect(backUrl)
 }

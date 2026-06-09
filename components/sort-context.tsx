@@ -14,8 +14,14 @@ export const SortContext = createContext<SortContextValue>({
   toggleSort: () => {},
 })
 
-export function SortProvider({ children }: { children: React.ReactNode }) {
-  const [sortOrder, setSortOrder] = useState<SortOrder>('new')
+export function SortProvider({
+  children,
+  defaultOrder = 'new',
+}: {
+  children: React.ReactNode
+  defaultOrder?: SortOrder
+}) {
+  const [sortOrder, setSortOrder] = useState<SortOrder>(defaultOrder)
   const toggleSort = () => setSortOrder((prev) => (prev === 'new' ? 'old' : 'new'))
   return <SortContext.Provider value={{ sortOrder, toggleSort }}>{children}</SortContext.Provider>
 }

@@ -57,5 +57,6 @@ export async function editTrial(id: number, backUrl: string, _: unknown, formDat
 
   if (error) return { error: error.message }
 
+  if (formData.get('update_only') === 'true') return { savedTitle: title }
   redirect(backUrl)
 }

@@ -7,6 +7,7 @@ interface FormConfig {
   backUrl: string
   pending: boolean
   showAddAnother?: boolean
+  showUpdateOnly?: boolean
   savedTitle?: string
 }
 
@@ -19,6 +20,7 @@ const FormContext = createContext<FormContextValue>({
   backUrl: '',
   pending: false,
   showAddAnother: false,
+  showUpdateOnly: false,
   savedTitle: undefined,
   setFormConfig: () => {},
 })
@@ -29,6 +31,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     backUrl: '',
     pending: false,
     showAddAnother: false,
+    showUpdateOnly: false,
     savedTitle: undefined,
   })
 

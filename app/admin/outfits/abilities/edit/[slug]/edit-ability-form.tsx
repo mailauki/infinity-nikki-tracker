@@ -31,9 +31,16 @@ export default function EditAbilityForm({ ability, back }: { ability: AbilityRow
       formId: FORM_ID,
       backUrl: back ?? navLinksData.admin.outfits.abilities.list,
       pending,
+      showUpdateOnly: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, back])
+
+  useEffect(() => {
+    if (state && 'savedTitle' in state && !('error' in state)) {
+      setFormConfig({ savedTitle: state.savedTitle })
+    }
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <form action={action} id={FORM_ID}>
