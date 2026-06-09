@@ -5,19 +5,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-function slugify(text: string) {
-  return text
-    .toString()
-    .normalize('NFD') // split accented characters into base characters and diacritics
-    .replace(/[\u0300-\u036f]/g, '') // remove accents
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, '') // remove non-alphanumeric characters
-    .replace(/[\s]+/g, '_') // replace spaces with hyphens
-    .replace(/-+/g, '-'); // remove consecutive hyphens
-}
-
-
 export function toSlug(name: string) {
   return name
 	.trim()
@@ -26,7 +13,7 @@ export function toSlug(name: string) {
 	.normalize('NFD')
 	.replace(/[\u0300-\u036f]/g, '') 
   .replace(/[^a-z0-9 -]/g, '')
-	// .replace(/['‘’]/g, '')
+	.replace(/['‘’]/g, '')
 	.replace(/\s+/g, '_')
   .replace(/_+/g, '_')
 }

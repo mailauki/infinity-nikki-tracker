@@ -36,7 +36,9 @@ export default function PullToRefresh() {
       setPullDistance(0)
     }, 1000)
     return () => clearTimeout(timer)
-  }, [isRefreshing, router])
+  // router is intentionally omitted — useRouter() returns a new reference each render
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRefreshing])
 
   // Pull-to-refresh touch handlers on document
 

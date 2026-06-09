@@ -59,8 +59,8 @@ export function NavUser() {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!mounted) return
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted || event === 'INITIAL_SESSION') return
       const id = session?.user?.id ?? null
       setUserId(id)
       if (id) {

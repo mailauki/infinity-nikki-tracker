@@ -83,6 +83,17 @@ export type UserPreferences = Pick<
   | 'eureka_color'
   | 'eureka_rarity'
   | 'theme'
+  | 'color_theme'
+  | 'outfit_set_filter'
+  | 'outfit_category_filter'
+  | 'outfit_evolution_filter'
+  | 'outfit_rarity_filter'
+  | 'outfit_obtained_filter'
+  | 'outfit_group_by_set'
+  | 'outfit_show_by_evolution'
+  | 'outfit_hide_evolutions'
 >
+
+export type ColorTheme = 'default' | 'moonlight' | 'cherry' | 'forest'
 
 export type AdminPreferences = Pick<Tables<'admin_preferences'>, 'admin_view'>

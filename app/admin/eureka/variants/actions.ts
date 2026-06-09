@@ -66,5 +66,6 @@ export async function editEurekaVariant(
 
   if (error) return { error: error.message }
 
+  if (formData.get('update_only') === 'true') return { savedTitle: slug }
   redirect(backUrl)
 }

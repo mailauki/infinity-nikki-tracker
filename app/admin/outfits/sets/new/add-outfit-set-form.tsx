@@ -26,6 +26,7 @@ import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-materi
 import { Ability, EvolutionDraft, OutfitCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import RarityToggle from '@/components/filter/rarity-toggle'
+import { DRESS_SLUGS, SEPARATES_SLUGS } from '@/components/filter/outfit-category-select'
 import { useFormConfig } from '@/app/admin/form-context'
 import { addOutfitSet } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
@@ -60,7 +61,15 @@ export default function AddOutfitSetForm({
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {
     const { value } = e.target
-    setCategorySelect(typeof value === 'string' ? value.split(',') : value)
+    const next = typeof value === 'string' ? value.split(',') : value
+    const addedSlug = next.find((s) => !categorySelect.includes(s))
+    if (addedSlug && DRESS_SLUGS.includes(addedSlug)) {
+      setCategorySelect(next.filter((s) => !SEPARATES_SLUGS.includes(s)))
+    } else if (addedSlug && SEPARATES_SLUGS.includes(addedSlug)) {
+      setCategorySelect(next.filter((s) => !DRESS_SLUGS.includes(s)))
+    } else {
+      setCategorySelect(next)
+    }
   }
 
   const maxEvolutionsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
@@ -186,7 +195,7 @@ export default function AddOutfitSetForm({
             {labels.map((l) => {
               const selected = labelSelect.includes(l.slug)
               return (
-                <MenuItem key={l.slug} value={l.slug}>
+                <MenuItem key={l.slug} disabled={!selected && labelSelect.length >= 2} value={l.slug}>
                   {selected ? (
                     <CheckBox fontSize="small" sx={{ mr: 1 }} />
                   ) : (
@@ -254,8 +263,11 @@ export default function AddOutfitSetForm({
               </ListSubheader>,
               ...cats.map((c) => {
                 const selected = categorySelect.includes(c.slug)
+                const conflicting =
+                  (DRESS_SLUGS.includes(c.slug) && categorySelect.some((s) => SEPARATES_SLUGS.includes(s))) ||
+                  (SEPARATES_SLUGS.includes(c.slug) && categorySelect.some((s) => DRESS_SLUGS.includes(s)))
                 return (
-                  <MenuItem key={c.slug} value={c.slug}>
+                  <MenuItem key={c.slug} disabled={!selected && conflicting} value={c.slug}>
                     {selected ? (
                       <CheckBox fontSize="small" sx={{ mr: 1 }} />
                     ) : (

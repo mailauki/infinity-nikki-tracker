@@ -65,7 +65,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
         outfit_category: cat.slug,
         evolution: null,
         slug: `${slug}-${cat.slug}`,
-        default: false,
+        default: true,
       }))
       const evoVariants = evolutionRows.flatMap((evo) =>
         outfitCategories.map((cat) => ({
@@ -198,7 +198,7 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     if (updateError) return { error: updateError.message }
   }
 
-  // Insert new evolutions and their variants
+  // Insert new evolutions
   const newDrafts = evolutionDrafts.filter((d) => !d.existingSlug)
   if (newDrafts.length > 0) {
     const newEvoRows = newDrafts.map((draft) => ({
@@ -210,74 +210,65 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     }))
     const { error: evoError } = await supabase.from('evolutions').insert(newEvoRows)
     if (evoError) return { error: evoError.message }
-
-    if (outfitCategories.length > 0) {
-      const newVariants = newEvoRows.flatMap((evo) =>
-        outfitCategories.map((cat) => ({
-          outfit_set: slug,
-          outfit_category: cat.slug,
-          evolution: evo.slug,
-          slug: toSlugVariant(slug, cat.slug, evo.slug),
-          default: false,
-        }))
-      )
-      const { error: variantError } = await supabase.from('outfit_variants').insert(newVariants)
-      if (variantError) return { error: variantError.message }
-    }
   }
 
-  // Sync categories: add variants for newly selected categories, delete for removed ones
-  const { data: currentVariantCats } = await supabase
-    .from('outfit_variants')
-    .select('outfit_category')
-    .eq('outfit_set', slug)
-  const currentCategorySlugs = [
-    ...new Set((currentVariantCats ?? []).map((v) => v.outfit_category).filter(Boolean)),
-  ] as string[]
-  const submittedCategorySlugs = outfitCategories.map((c) => c.slug)
+  // Sync variants: diff DB state against (evolutions × categories), including base (null evolution)
+  if (outfitCategories.length > 0) {
+    const { data: finalEvolutions } = await supabase
+      .from('evolutions')
+      .select('slug')
+      .eq('outfit_set', slug)
 
-  const removedCategories = currentCategorySlugs.filter((s) => !submittedCategorySlugs.includes(s))
-  const addedCategories = submittedCategorySlugs.filter((s) => !currentCategorySlugs.includes(s))
+    const evolutionSlugs: (string | null)[] = [
+      null,
+      ...(finalEvolutions ?? []).map((e) => e.slug),
+    ]
 
-  if (removedCategories.length > 0) {
-    const { error: removeCatError } = await supabase
+    // Build the complete expected set of variant slugs
+    const expectedVariants = evolutionSlugs.flatMap((evo) =>
+      outfitCategories.map((cat) => ({
+        outfit_set: slug,
+        outfit_category: cat.slug,
+        evolution: evo,
+        slug: evo ? toSlugVariant(slug, cat.slug, evo) : `${slug}-${cat.slug}`,
+        default: evo === null,
+      }))
+    )
+    const expectedSlugs = new Set(expectedVariants.map((v) => v.slug))
+
+    // Fetch all current variants for this set
+    const { data: currentVariants } = await supabase
+      .from('outfit_variants')
+      .select('slug, outfit_category, evolution')
+      .eq('outfit_set', slug)
+
+    const currentSlugsInDB = new Set((currentVariants ?? []).map((v) => v.slug))
+
+    const toInsert = expectedVariants.filter((v) => !currentSlugsInDB.has(v.slug))
+    const toDelete = (currentVariants ?? [])
+      .filter((v) => !expectedSlugs.has(v.slug))
+      .map((v) => v.slug)
+
+    if (toInsert.length > 0) {
+      const { error: insertError } = await supabase.from('outfit_variants').insert(toInsert)
+      if (insertError) return { error: insertError.message }
+    }
+
+    if (toDelete.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('outfit_variants')
+        .delete()
+        .eq('outfit_set', slug)
+        .in('slug', toDelete)
+      if (deleteError) return { error: deleteError.message }
+    }
+  } else {
+    // No categories selected — remove all variants
+    const { error: deleteAllError } = await supabase
       .from('outfit_variants')
       .delete()
       .eq('outfit_set', slug)
-      .in('outfit_category', removedCategories)
-    if (removeCatError) return { error: removeCatError.message }
-  }
-
-  if (addedCategories.length > 0) {
-    const { data: finalEvolutions } = await supabase
-      .from('evolutions')
-      .select('slug, order')
-      .eq('outfit_set', slug)
-
-    const nullEvoRows = addedCategories.map((catSlug) => ({
-      outfit_set: slug,
-      outfit_category: catSlug,
-      evolution: null as string | null,
-      slug: `${slug}-${catSlug}`,
-      default: false,
-    }))
-    const newCatVariants =
-      finalEvolutions && finalEvolutions.length > 0
-        ? [
-            ...nullEvoRows,
-            ...finalEvolutions.flatMap((evo) =>
-              addedCategories.map((catSlug) => ({
-                outfit_set: slug,
-                outfit_category: catSlug,
-                evolution: evo.slug,
-                slug: toSlugVariant(slug, catSlug, evo.slug),
-                default: false,
-              }))
-            ),
-          ]
-        : nullEvoRows
-    const { error: addCatError } = await supabase.from('outfit_variants').insert(newCatVariants)
-    if (addCatError) return { error: addCatError.message }
+    if (deleteAllError) return { error: deleteAllError.message }
   }
 
   // Update glowup_evolution on the set
@@ -304,5 +295,6 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     if (imgError) return { error: imgError.message }
   }
 
+  if (formData.get('update_only') === 'true') return { savedTitle: title }
   redirect(backUrl)
 }

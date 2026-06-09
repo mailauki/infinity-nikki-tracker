@@ -22,6 +22,7 @@ import { Evolution, OutfitCategory, OutfitSetRaw, OutfitVariantRaw } from '@/lib
 import { useFormConfig } from '@/app/admin/form-context'
 import { editOutfitVariant } from '../../actions'
 import { MENU_PROPS } from '@/lib/types/props'
+import OutfitCategorySelect from '@/components/filter/outfit-category-select'
 
 const FORM_ID = 'edit-outfit-variant'
 
@@ -69,13 +70,21 @@ export default function EditOutfitVariantForm({
   const [state, action, pending] = useActionState(boundAction, null)
 
   useEffect(() => {
-    setFormConfig({ formId: FORM_ID, backUrl: back, pending })
+    setFormConfig({ formId: FORM_ID, backUrl: back, pending, showUpdateOnly: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, back])
 
+  useEffect(() => {
+    if (state && 'savedTitle' in state && !('error' in state)) {
+      setFormConfig({ savedTitle: state.savedTitle })
+    }
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
+
   const autoSlug =
-    outfitSet && outfitCategory && evolution
-      ? toSlugVariant(outfitSet, outfitCategory, evolution)
+    outfitSet && outfitCategory
+      ? evolution
+        ? toSlugVariant(outfitSet, outfitCategory, evolution)
+        : `${outfitSet}-${outfitCategory}`
       : (variant.slug ?? '')
   const currentSlug = editSlug ? slug : autoSlug
 
@@ -102,23 +111,12 @@ export default function EditOutfitVariantForm({
           </Select>
         </FormControl>
 
-        <FormControl>
-          <InputLabel>Category</InputLabel>
-          <Select
-            MenuProps={MENU_PROPS}
-            label="Category"
-            name="outfit_category"
-            value={outfitCategory}
-            onChange={(e) => setOutfitCategory(e.target.value)}
-          >
-            <MenuItem value="">—</MenuItem>
-            {outfitCategories.map((c) => (
-              <MenuItem key={c.slug} value={c.slug}>
-                {c.part}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <OutfitCategorySelect
+          categories={outfitCategories}
+          name="outfit_category"
+          selectedCategory={outfitCategory || null}
+          onCategoryChange={(e) => setOutfitCategory(e.target.value)}
+        />
 
         <FormControl>
           <InputLabel>Evolution</InputLabel>

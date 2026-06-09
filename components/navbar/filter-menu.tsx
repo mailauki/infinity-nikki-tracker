@@ -16,6 +16,7 @@ import { Close, FilterList } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
 
 import { useEurekaData } from '../eureka/eureka-context'
+import { useOutfitData } from '../outfits/outfit-context'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
 import ObtainedToggle from '../filter/obtained-toggle'
 import ColorSelect from '../filter/color-select'
@@ -24,8 +25,13 @@ import SortColorToggle from '../filter/sort-color-toggle'
 import SortEurekaToggle from '../filter/sort-eureka-toggle'
 import EurekaSelect from '../filter/eureka-select'
 import RarityToggle from '../filter/rarity-toggle'
+import OutfitSelect from '../filter/outfit-select'
+import SortEvolutionToggle from '../filter/sort-evolution-toggle'
+import OutfitEvolutionSelect from '../filter/outfit-evolution-select'
+import SortOutfitToggle from '../filter/sort-outfit-toggle'
+import OutfitCategorySelect from '../filter/outfit-category-select'
 
-const FILTER_PAGES = ['/eureka']
+const FILTER_PAGES = ['/eureka', '/outfits']
 
 export default function FilterMenu() {
   const pathname = usePathname()
@@ -53,7 +59,150 @@ export default function FilterMenu() {
     selectedRarity,
   } = filters
 
+  const {
+    outfitSets,
+    outfitCategories,
+    isLoggedIn: outfitLoggedIn,
+    groupBySet: outfitGroupBySet,
+    showByEvolution,
+    hideEvolutions,
+    onGroupBySetChange: onOutfitGroupBySetChange,
+    onShowByEvolutionChange,
+    onHideEvolutionsChange,
+    filters: outfitFilters,
+    onFiltersChange: onOutfitFiltersChange,
+    onClearFilters: onClearOutfitFilters,
+  } = useOutfitData()
+
+  const isOutfits = pathname.startsWith('/outfits')
+
   if (!FILTER_PAGES.includes(pathname)) return null
+
+  if (isOutfits) {
+    const {
+      selectedOutfitSet,
+      selectedOutfitCategory,
+      selectedEvolution,
+      selectedObtainedFilter,
+      selectedRarity,
+    } = outfitFilters
+
+    const hasActiveFilters =
+      selectedOutfitSet ||
+      selectedOutfitCategory ||
+      selectedEvolution ||
+      selectedObtainedFilter ||
+      selectedRarity
+
+    const allEvolutions = [
+      ...new Map(outfitSets.flatMap((s) => s.evolutions).map((e) => [e.slug, e])).values(),
+    ]
+
+    const handleShowByEvolutionChange = () => {
+      if (!showByEvolution) {
+        onOutfitFiltersChange({
+          selectedOutfitCategory: null,
+          selectedObtainedFilter: null,
+          selectedEvolution: null,
+        })
+      }
+      onShowByEvolutionChange()
+    }
+
+    return (
+      <>
+        <IconButton onClick={() => setOpen(true)}>
+          <FilterList />
+        </IconButton>
+        <Drawer
+          anchor="right"
+          open={open}
+          sx={{ '& .MuiDrawer-paper': { width: 350 } }}
+          onClose={() => setOpen(false)}
+        >
+          <Toolbar sx={{ mb: 2 }} />
+          <Toolbar>
+            <Stack direction="row" sx={{ flex: 1, justifyContent: 'flex-end' }}>
+              <IconButton onClick={() => setOpen(false)}>
+                <Close />
+              </IconButton>
+            </Stack>
+          </Toolbar>
+          <List>
+            <ListItem sx={{ gap: 1 }}>
+              <SortOutfitToggle
+                groupBySet={outfitGroupBySet}
+                onGroupBySetChange={onOutfitGroupBySetChange}
+              />
+              <OutfitSelect
+                outfitSets={outfitSets}
+                selectedOutfitSet={selectedOutfitSet}
+                onOutfitSetChange={(e) =>
+                  onOutfitFiltersChange({ selectedOutfitSet: e.target.value || null })
+                }
+              />
+            </ListItem>
+            <ListItem sx={{ gap: 1 }}>
+              <SortEvolutionToggle
+                hideEvolutions={hideEvolutions}
+                showByEvolution={showByEvolution}
+                onHideEvolutionsChange={onHideEvolutionsChange}
+                onShowByEvolutionChange={handleShowByEvolutionChange}
+              />
+              <OutfitEvolutionSelect
+                disabled={showByEvolution}
+                evolutions={allEvolutions}
+                selectedEvolution={selectedEvolution}
+                onEvolutionChange={(e) =>
+                  onOutfitFiltersChange({ selectedEvolution: e.target.value || null })
+                }
+              />
+            </ListItem>
+            {outfitLoggedIn && (
+              <ListItem>
+                <ObtainedToggle
+                  disabled={showByEvolution}
+                  selectedObtainedFilter={selectedObtainedFilter}
+                  onObtainedFilterChange={(_e, v) =>
+                    onOutfitFiltersChange({ selectedObtainedFilter: v })
+                  }
+                />
+              </ListItem>
+            )}
+            <ListItem>
+              <OutfitCategorySelect
+                categories={outfitCategories}
+                disabled={showByEvolution}
+                selectedCategory={showByEvolution ? null : selectedOutfitCategory}
+                onCategoryChange={(e) =>
+                  onOutfitFiltersChange({ selectedOutfitCategory: e.target.value || null })
+                }
+              />
+            </ListItem>
+            <ListItem>
+              <RarityToggle
+                selectedRarity={selectedRarity}
+                onRarityChange={(_e, v) => onOutfitFiltersChange({ selectedRarity: v })}
+              />
+            </ListItem>
+            <Divider sx={{ mx: 2, mt: 2 }} />
+            <ListItem>
+              <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
+                {hasActiveFilters && (
+                  <Button color="secondary" variant="outlined" onClick={onClearOutfitFilters}>
+                    Clear all
+                  </Button>
+                )}
+                <Button variant="contained" onClick={() => setOpen(false)}>
+                  Apply
+                </Button>
+              </Stack>
+            </ListItem>
+          </List>
+        </Drawer>
+      </>
+    )
+  }
 
   const handleEurekaSetChange = (event: SelectChangeEvent) => {
     onFiltersChange({ selectedEurekaSet: event.target.value || null })

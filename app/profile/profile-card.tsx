@@ -2,7 +2,8 @@
 
 import { type User } from '@supabase/supabase-js'
 import AvatarPreview from '@/app/settings/avatar-preview'
-import { Alert, Stack, Typography } from '@mui/material'
+import { Alert, Chip, Stack, Typography } from '@mui/material'
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 
 export default function ProfileCard({
   user,
@@ -10,12 +11,14 @@ export default function ProfileCard({
   username,
   avatar_url,
   loadError,
+  isPremium,
 }: {
   user: User | null
   fullname: string | null
   username: string | null
   avatar_url: string | null
   loadError: boolean
+  isPremium?: boolean
 }) {
   if (loadError) {
     return <Alert severity="error">Could not load your profile. Please refresh the page.</Alert>
@@ -26,7 +29,18 @@ export default function ProfileCard({
       <AvatarPreview size="xl" url={avatar_url} />
 
       <Stack spacing={0.5}>
-        <Typography variant="h6">{fullname ?? '—'}</Typography>
+        <Stack direction="row" sx={{ alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+          <Typography variant="h6">{fullname ?? '—'}</Typography>
+          {isPremium && (
+            <Chip
+              color="primary"
+              icon={<AutoAwesomeIcon fontSize="small" />}
+              label="Supporter"
+              size="small"
+              variant="outlined"
+            />
+          )}
+        </Stack>
         <Typography color="textSecondary" variant="body2">
           @{username ?? '—'}
         </Typography>

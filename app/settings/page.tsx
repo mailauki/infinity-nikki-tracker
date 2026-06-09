@@ -25,9 +25,24 @@ async function SettingsContent() {
     data: { user },
   } = await supabase.auth.getUser()
 
+  let isPremium = false
+  if (user_id) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_premium')
+      .eq('id', user_id)
+      .single()
+    isPremium = profile?.is_premium ?? false
+  }
+
   return (
     <Stack spacing={3} sx={{ flexGrow: 1 }}>
-      <SettingsTabs isAdmin={role === 'admin'} isLoggedIn={!!user_id} user={user} />
+      <SettingsTabs
+        isAdmin={role === 'admin'}
+        isLoggedIn={!!user_id}
+        isPremium={isPremium}
+        user={user}
+      />
     </Stack>
   )
 }

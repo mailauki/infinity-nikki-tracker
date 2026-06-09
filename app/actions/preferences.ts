@@ -1,5 +1,6 @@
 'use server'
 
+import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID } from '@/hooks/user'
 
@@ -52,4 +53,32 @@ export async function updateEurekaFilters(filters: {
 
 export async function updateTheme(value: 'system' | 'light' | 'dark') {
   await upsertUserPreference({ theme: value })
+}
+
+export async function updateColorTheme(value: string) {
+  await upsertUserPreference({ color_theme: value })
+  const cookieStore = await cookies()
+  cookieStore.set('color_theme', value, { path: '/', maxAge: 60 * 60 * 24 * 365 })
+}
+
+export async function updateOutfitFilters(filters: {
+  outfit_set_filter?: string | null
+  outfit_category_filter?: string | null
+  outfit_evolution_filter?: string | null
+  outfit_rarity_filter?: string | null
+  outfit_obtained_filter?: string | null
+}) {
+  await upsertUserPreference(filters as Record<string, string | null>)
+}
+
+export async function updateOutfitGroupBySet(value: boolean) {
+  await upsertUserPreference({ outfit_group_by_set: value })
+}
+
+export async function updateOutfitShowByEvolution(value: boolean) {
+  await upsertUserPreference({ outfit_show_by_evolution: value })
+}
+
+export async function updateOutfitHideEvolutions(value: boolean) {
+  await upsertUserPreference({ outfit_hide_evolutions: value })
 }

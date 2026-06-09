@@ -44,6 +44,7 @@ import { useFormConfig } from '@/app/admin/form-context'
 import { editOutfitSet } from '../../actions'
 import EvolutionEditor from '../../evolution-editor'
 import RarityToggle from '@/components/filter/rarity-toggle'
+import { DRESS_SLUGS, SEPARATES_SLUGS } from '@/components/filter/outfit-category-select'
 import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'edit-outfit-set'
@@ -108,7 +109,15 @@ export default function EditOutfitSetForm({
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {
     const { value } = e.target
-    setCategorySelect(typeof value === 'string' ? value.split(',') : value)
+    const next = typeof value === 'string' ? value.split(',') : value
+    const addedSlug = next.find((s) => !categorySelect.includes(s))
+    if (addedSlug && DRESS_SLUGS.includes(addedSlug)) {
+      setCategorySelect(next.filter((s) => !SEPARATES_SLUGS.includes(s)))
+    } else if (addedSlug && SEPARATES_SLUGS.includes(addedSlug)) {
+      setCategorySelect(next.filter((s) => !DRESS_SLUGS.includes(s)))
+    } else {
+      setCategorySelect(next)
+    }
   }
 
   const maxEvolutionsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
@@ -118,9 +127,15 @@ export default function EditOutfitSetForm({
   const [state, action, pending] = useActionState(boundAction, null)
 
   useEffect(() => {
-    setFormConfig({ formId: FORM_ID, backUrl: back, pending })
+    setFormConfig({ formId: FORM_ID, backUrl: back, pending, showUpdateOnly: true })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, back])
+
+  useEffect(() => {
+    if (state && 'savedTitle' in state && !('error' in state)) {
+      setFormConfig({ savedTitle: state.savedTitle })
+    }
+  }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <form action={action} id={FORM_ID}>
@@ -208,7 +223,7 @@ export default function EditOutfitSetForm({
             {labels.map((l) => {
               const selected = labelSelect.includes(l.slug)
               return (
-                <MenuItem key={l.slug} value={l.slug}>
+                <MenuItem key={l.slug} disabled={!selected && labelSelect.length >= 2} value={l.slug}>
                   {selected ? (
                     <CheckBox fontSize="small" sx={{ mr: 1 }} />
                   ) : (
@@ -276,8 +291,11 @@ export default function EditOutfitSetForm({
               </ListSubheader>,
               ...cats.map((c) => {
                 const selected = categorySelect.includes(c.slug)
+                const conflicting =
+                  (DRESS_SLUGS.includes(c.slug) && categorySelect.some((s) => SEPARATES_SLUGS.includes(s))) ||
+                  (SEPARATES_SLUGS.includes(c.slug) && categorySelect.some((s) => DRESS_SLUGS.includes(s)))
                 return (
-                  <MenuItem key={c.slug} value={c.slug}>
+                  <MenuItem key={c.slug} disabled={!selected && conflicting} value={c.slug}>
                     {selected ? (
                       <CheckBox fontSize="small" sx={{ mr: 1 }} />
                     ) : (
