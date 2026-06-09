@@ -13,9 +13,10 @@ export default function ProfileStats({
 	const eurekaSetsObtained = eurekaSets.filter((set) =>
     set.eureka_variants.every((variant) => variant.obtained)
   ).length
-	const outfitSetsObtained = outfitSets.filter((set) =>
-    set.outfit_variants.every((variant) => variant.obtained)
-  ).length
+	const outfitSetsObtained = outfitSets.filter((set) => {
+    const baseVariants = set.outfit_variants.filter((v) => v.evolution === null)
+    return baseVariants.length > 0 && baseVariants.every((v) => v.obtained)
+  }).length
 
 	return (
 		<Stack direction='row' divider={<Divider flexItem orientation="vertical" variant="middle" />} spacing={3}>
@@ -25,7 +26,7 @@ export default function ProfileStats({
 			</Stack>
 			<Stack sx={{ alignItems: 'center' }}>
 				<Typography variant='overline'>Outfit Sets</Typography>
-				<Typography component='span' variant='h6'>{0}</Typography>
+				<Typography component='span' variant='h6'>{outfitSetsObtained || 0}</Typography>
 			</Stack>
 		</Stack>
 	)

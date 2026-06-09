@@ -12,7 +12,7 @@ export async function handleObtainedOutfit(
   const { error } = await supabase.rpc('toggle_obtained_outfit', {
     p_outfit_set: outfit_set,
     p_outfit_category: outfit_category,
-    p_evolution: evolution ?? '',
+    p_evolution: evolution,
   })
 
   if (error) {

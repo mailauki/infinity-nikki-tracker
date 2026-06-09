@@ -50,17 +50,62 @@ export const metadata: Metadata = {
 
 const VALID_THEMES: ColorTheme[] = ['default', 'moonlight', 'cherry', 'forest']
 
-export default async function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+async function ThemedApp({ children }: { children: React.ReactNode }) {
   await connection()
   const cookieStore = await cookies()
   const raw = cookieStore.get('color_theme')?.value
   const colorTheme: ColorTheme =
     raw && (VALID_THEMES as string[]).includes(raw) ? (raw as ColorTheme) : 'default'
 
+  return (
+    <ThemeClientProvider colorTheme={colorTheme}>
+      <CssBaseline />
+      <NavBarToolbarProvider>
+        <SnackbarAlertProvider>
+          <Stack
+            direction="row"
+            sx={{
+              minHeight: '100vh',
+              backgroundColor: 'surface.containerLowest',
+              alignItems: 'flex-start',
+            }}
+          >
+            <Suspense fallback={null}>
+              <NavDrawer />
+            </Suspense>
+            <Stack
+              sx={{
+                flex: 1,
+                minHeight: '100vh',
+                minWidth: '300px',
+                justifyContent: 'flex-start',
+              }}
+            >
+              <Suspense>
+                <NavBar />
+              </Suspense>
+              <Toolbar sx={{ mb: 2 }} />
+              <Toolbar sx={{ mb: 2 }} />
+              {/* ^ Toolbar spacers for NavBar and NavBarToolbar */}
+              <Suspense>
+                <PullToRefresh />
+              </Suspense>
+              <Stack sx={{ flex: 1, p: 2 }}>{children}</Stack>
+              <Footer />
+            </Stack>
+          </Stack>
+          <Analytics />
+        </SnackbarAlertProvider>
+      </NavBarToolbarProvider>
+    </ThemeClientProvider>
+  )
+}
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
     <html
       suppressHydrationWarning
@@ -70,46 +115,9 @@ export default async function RootLayout({
       <body>
         <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppRouterCacheProvider options={{ key: 'css' }}>
-          <ThemeClientProvider colorTheme={colorTheme}>
-            <CssBaseline />
-            <NavBarToolbarProvider>
-							<SnackbarAlertProvider>
-              <Stack
-                direction="row"
-                sx={{
-                  minHeight: '100vh',
-                  backgroundColor: 'surface.containerLowest',
-                  alignItems: 'flex-start',
-                }}
-              >
-                <Suspense fallback={null}>
-                  <NavDrawer />
-                </Suspense>
-                <Stack
-                  sx={{
-                    flex: 1,
-                    minHeight: '100vh',
-                    minWidth: '300px',
-                    justifyContent: 'flex-start',
-                  }}
-                >
-                  <Suspense>
-                    <NavBar />
-                  </Suspense>
-                  <Toolbar sx={{ mb: 2 }} />
-                  <Toolbar sx={{ mb: 2 }} />
-                  {/* ^ Toolbar spacers for NavBar and NavBarToolbar */}
-                  <Suspense>
-                    <PullToRefresh />
-                  </Suspense>
-                  <Stack sx={{ flex: 1, p: 2 }}>{children}</Stack>
-                  <Footer />
-                </Stack>
-              </Stack>
-              <Analytics />
-							</SnackbarAlertProvider>
-            </NavBarToolbarProvider>
-          </ThemeClientProvider>
+          <Suspense>
+            <ThemedApp>{children}</ThemedApp>
+          </Suspense>
         </AppRouterCacheProvider>
       </body>
     </html>
