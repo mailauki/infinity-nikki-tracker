@@ -418,8 +418,8 @@ function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
 export default function CollectionCharts({ eurekaSets, trials }: { eurekaSets: EurekaSet[]; trials: Trial[] }) {
   const allVariants = eurekaSets.flatMap((set) => set.eureka_variants)
 
-  const eurekaSetsObtained = eurekaSets.filter((set) =>
-    set.eureka_variants.every((variant) => variant.obtained)
+  const eurekaSetsObtained = eurekaSets.filter(
+    (set) => set.eureka_variants.length > 0 && set.eureka_variants.every((v) => v.obtained)
   ).length
 
   const { obtained: variantsObtained, total: variantsTotal } = countObtained(allVariants)

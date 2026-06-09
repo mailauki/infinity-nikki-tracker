@@ -11,7 +11,7 @@ export default function FormToolBar() {
 
   useEffect(() => {
     if (!savedTitle) return
-    enqueueSnackbar(savedTitle ? `"${savedTitle}" saved successfully!` : 'Saved successfully!', {
+    enqueueSnackbar(`"${savedTitle}" saved successfully!`, {
       variant: 'success',
     })
     setFormConfig({ savedTitle: undefined })

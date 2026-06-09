@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
     const userId = session.metadata?.user_id
 
     if (!userId) {
-      return NextResponse.json({ error: 'Missing user_id in metadata' }, { status: 400 })
+      console.error('checkout.session.completed missing user_id in metadata', session.id)
+      return NextResponse.json({ received: true })
     }
 
     const supabase = createAdminClient()
