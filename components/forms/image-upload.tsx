@@ -22,7 +22,7 @@ export default function ImageUpload({
   onUpload,
   caption,
   column = 'image_url',
-	size='md',
+  size = 'md',
 }: {
   url: string | null
   table:
@@ -36,7 +36,7 @@ export default function ImageUpload({
   onUpload: (url: string) => void
   caption?: string
   column?: string
-	size?: AvatarSize
+  size?: AvatarSize
 }) {
   const supabase = useRef(createClient()).current
   const [uploading, setUploading] = useState(false)
@@ -73,7 +73,7 @@ export default function ImageUpload({
 
       onUpload(data.publicUrl)
     } catch (error) {
-			enqueueSnackbar('Error uploading image!', { variant: 'error' })
+      enqueueSnackbar('Error uploading image!', { variant: 'error' })
     } finally {
       setUploading(false)
     }
@@ -100,7 +100,7 @@ export default function ImageUpload({
             sx={isTrial ? { width: '100%' } : undefined}
             variant="rounded"
           >
-            <ImageIcon fontSize='inherit' />
+            <ImageIcon fontSize="inherit" />
           </Avatar>
           <input
             accept="image/*"
@@ -143,7 +143,11 @@ export default function ImageUpload({
             color: 'surface.containerLowest',
           }}
         >
-          {uploading ? <CircularProgress size={32} /> : <FileUploadIcon fontSize={size === 'md' ? 'large' : 'medium'} />}
+          {uploading ? (
+            <CircularProgress size={32} />
+          ) : (
+            <FileUploadIcon fontSize={size === 'md' ? 'large' : 'medium'} />
+          )}
         </Box>
       </CardActionArea>
     </Card>

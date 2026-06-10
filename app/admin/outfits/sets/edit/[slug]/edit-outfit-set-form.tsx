@@ -49,8 +49,6 @@ import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'edit-outfit-set'
 
-
-
 export default function EditOutfitSetForm({
   outfitSet,
   styles,
@@ -237,7 +235,11 @@ export default function EditOutfitSetForm({
             {labels.map((l) => {
               const selected = labelSelect.includes(l.slug)
               return (
-                <MenuItem key={l.slug} disabled={!selected && labelSelect.length >= 2} value={l.slug}>
+                <MenuItem
+                  key={l.slug}
+                  disabled={!selected && labelSelect.length >= 2}
+                  value={l.slug}
+                >
                   {selected ? (
                     <CheckBox fontSize="small" sx={{ mr: 1 }} />
                   ) : (
@@ -306,8 +308,10 @@ export default function EditOutfitSetForm({
               ...cats.map((c) => {
                 const selected = categorySelect.includes(c.slug)
                 const conflicting =
-                  (DRESS_SLUGS.includes(c.slug) && categorySelect.some((s) => SEPARATES_SLUGS.includes(s))) ||
-                  (SEPARATES_SLUGS.includes(c.slug) && categorySelect.some((s) => DRESS_SLUGS.includes(s)))
+                  (DRESS_SLUGS.includes(c.slug) &&
+                    categorySelect.some((s) => SEPARATES_SLUGS.includes(s))) ||
+                  (SEPARATES_SLUGS.includes(c.slug) &&
+                    categorySelect.some((s) => DRESS_SLUGS.includes(s)))
                 return (
                   <MenuItem key={c.slug} disabled={!selected && conflicting} value={c.slug}>
                     {selected ? (
@@ -336,6 +340,7 @@ export default function EditOutfitSetForm({
           <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between' }}>
             <ImageUpload
               caption="Default"
+              size="lg"
               slug={outfitSet.slug}
               table="outfit_sets"
               url={setImage}
@@ -344,6 +349,7 @@ export default function EditOutfitSetForm({
             <ImageUpload
               caption="Alternative"
               column="alt_image_url"
+              size="lg"
               slug={outfitSet.slug}
               table="outfit_sets"
               url={altSetImage}

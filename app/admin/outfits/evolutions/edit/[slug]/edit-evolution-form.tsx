@@ -113,6 +113,7 @@ export default function EditEvolutionForm({
           <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between' }}>
             <ImageUpload
               caption="Default"
+              size="lg"
               slug={evolution.slug}
               table="evolutions"
               url={imageUrl}
@@ -121,6 +122,7 @@ export default function EditEvolutionForm({
             <ImageUpload
               caption="Alternative"
               column="alt_image_url"
+              size="lg"
               slug={evolution.slug}
               table="evolutions"
               url={altImageUrl}
