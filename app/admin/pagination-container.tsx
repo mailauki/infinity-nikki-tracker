@@ -29,7 +29,7 @@ export default function PaginationContainer<T>({
 }: PaginationContainerProps<T>) {
   const isControlled = controlledPage !== undefined
   const [localPage, setLocalPage] = useState(0)
-  const [localRowsPerPage, setLocalRowsPerPage] = useState(15)
+  const [localRowsPerPage, setLocalRowsPerPage] = useState(10)
 
   const page = isControlled ? controlledPage : localPage
   const rowsPerPage = isControlled ? controlledRowsPerPage! : localRowsPerPage
@@ -99,7 +99,7 @@ export default function PaginationContainer<T>({
           count={allRows.length}
           page={page}
           rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[6, 8, 15, 20, 30, 50, 100]}
+          rowsPerPageOptions={[6, 8, 10, 15, 20, 30, 50, 100]}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleRowsPerPageChange}
         />

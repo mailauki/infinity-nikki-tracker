@@ -5,6 +5,7 @@ import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import FilterMenu from '@/components/navbar/filter-menu'
 import { SortButton } from '@/components/navbar/appbar-actions'
 import { useOutfitData } from './outfit-context'
+import DensityMenu from '../navbar/density-menu'
 
 export default function OutfitToolBar() {
   const { outfitSets, showByEvolution, filters } = useOutfitData()
@@ -46,6 +47,7 @@ export default function OutfitToolBar() {
           Showing: {resultsCount} results
         </Typography>
         <Stack direction="row" spacing={1}>
+					<DensityMenu /> {/* TODO: add density switching for card size and grid / list  */}
           <SortButton />
           <FilterMenu />
         </Stack>
