@@ -143,6 +143,14 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
 
   if (!rarity) return { error: 'Rarity is required.' }
 
+  // Capture the previous slug so we can carry variant images across a slug rename
+  const { data: existingSet } = await supabase
+    .from('outfit_sets')
+    .select('slug')
+    .eq('id', id)
+    .single()
+  const previousSlug = existingSet?.slug ?? slug
+
   const { error } = await supabase
     .from('outfit_sets')
     .update({
@@ -159,6 +167,28 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     .eq('id', id)
 
   if (error) return { error: error.message }
+
+  // The outfit_set FK cascades, but variant *slugs* are stored strings. Rename the
+  // base (null-evolution) variants in place so the sync below treats them as existing
+  // and preserves their image_url/alt_image_url instead of deleting + reinserting with
+  // null images. Evolution variants embed the evolution slug too, so they are left for
+  // the sync to rebuild (their images are managed by the evolution edit form).
+  if (previousSlug !== slug) {
+    const { data: renameVariants } = await supabase
+      .from('outfit_variants')
+      .select('slug, outfit_category')
+      .eq('outfit_set', slug)
+      .is('evolution', null)
+
+    for (const v of renameVariants ?? []) {
+      if (v.slug !== `${previousSlug}-${v.outfit_category}`) continue
+      const { error: renameError } = await supabase
+        .from('outfit_variants')
+        .update({ slug: `${slug}-${v.outfit_category}` })
+        .eq('slug', v.slug)
+      if (renameError) return { error: renameError.message }
+    }
+  }
 
   // Load current DB evolutions for this set (using the new slug post-cascade)
   const { data: currentEvolutions } = await supabase
@@ -282,12 +312,17 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     .eq('id', id)
   if (glowupError) return { error: glowupError.message }
 
-  // Update variant images from hidden inputs
+  // Update variant images from hidden inputs. The inputs are keyed by the slug at page
+  // load, so on a slug rename remap the old prefix to the new one to target the renamed row.
   const variantImageEntries = [...formData.entries()].filter(([key]) =>
     key.startsWith('variant_image_')
   )
   for (const [key, value] of variantImageEntries) {
-    const variantSlug = key.replace('variant_image_', '')
+    const submittedSlug = key.replace('variant_image_', '')
+    const variantSlug =
+      previousSlug !== slug && submittedSlug.startsWith(`${previousSlug}-`)
+        ? submittedSlug.replace(`${previousSlug}-`, `${slug}-`)
+        : submittedSlug
     const { error: imgError } = await supabase
       .from('outfit_variants')
       .update({ image_url: (value as string) || null })
@@ -295,6 +330,17 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     if (imgError) return { error: imgError.message }
   }
 
-  if (formData.get('update_only') === 'true') return { savedTitle: title }
+  if (formData.get('update_only') === 'true') {
+    const { data: variants } = await supabase
+      .from('outfit_variants')
+      .select(
+        'id, slug, outfit_set, outfit_category, evolution, image_url, alt_image_url, default, updated_at'
+      )
+      .eq('outfit_set', slug)
+      .is('evolution', null)
+      .order('id', { ascending: true })
+
+    return { savedTitle: title, variants: variants ?? [] }
+  }
   redirect(backUrl)
 }
