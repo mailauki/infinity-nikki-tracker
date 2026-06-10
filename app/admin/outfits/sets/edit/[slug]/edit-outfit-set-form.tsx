@@ -92,6 +92,9 @@ export default function EditOutfitSetForm({
   const [categorySelect, setCategorySelect] = useState<string[]>(initialCategorySelect)
   const [setImage, setSetImage] = useState<string | null>(outfitSet.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(outfitSet.alt_image_url ?? null)
+  const [variantRows, setVariantRows] = useState<OutfitVariantRow[]>(
+    initialVariants.filter((v) => v.evolution === null)
+  )
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
     Object.fromEntries(
       initialVariants
@@ -134,6 +137,17 @@ export default function EditOutfitSetForm({
   useEffect(() => {
     if (state && 'savedTitle' in state && !('error' in state)) {
       setFormConfig({ savedTitle: state.savedTitle })
+
+      if ('variants' in state) {
+        const fresh = state.variants.filter((v) => v.evolution === null)
+        setVariantRows(fresh)
+        setVariantImages(
+          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.image_url]))
+        )
+        setVariantAltImages(
+          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.alt_image_url]))
+        )
+      }
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -338,14 +352,14 @@ export default function EditOutfitSetForm({
           </Stack>
         </Stack>
 
-        {initialVariants.some((v) => v.evolution === null) && (
+        {variantRows.length > 0 && (
           <Stack spacing={1}>
             <Typography variant="subtitle2">Variant Images</Typography>
             <Box
               sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
             >
-              {initialVariants
-                .filter((v) => v.slug && v.evolution === null)
+              {variantRows
+                .filter((v) => v.slug)
                 .map((v) => (
                   <Stack
                     key={v.slug}

@@ -53,6 +53,14 @@ export async function editEvolution(
     if (imgError) return { error: imgError.message }
   }
 
-  if (formData.get('update_only') === 'true') return { savedTitle: subtitle }
+  if (formData.get('update_only') === 'true') {
+    const { data: variants } = await supabase
+      .from('outfit_variants')
+      .select('id, slug, outfit_category, image_url, alt_image_url, default, updated_at')
+      .eq('evolution', newSlug)
+      .order('id', { ascending: true })
+
+    return { savedTitle: subtitle, slug: newSlug, variants: variants ?? [] }
+  }
   redirect(backUrl)
 }
