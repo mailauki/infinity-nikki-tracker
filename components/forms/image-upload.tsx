@@ -72,7 +72,7 @@ export default function ImageUpload({
       if (dbError) throw dbError
 
       onUpload(data.publicUrl)
-    } catch (error) {
+    } catch {
       enqueueSnackbar('Error uploading image!', { variant: 'error' })
     } finally {
       setUploading(false)

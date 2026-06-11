@@ -13,8 +13,7 @@ import { updateLook } from '../actions'
 
 type Props = { params: Promise<{ id: string }> }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params
+export async function generateMetadata(): Promise<Metadata> {
   return { title: `Edit Look` }
 }
 

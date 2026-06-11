@@ -1,26 +1,26 @@
 'use client'
-import { Compare, ViewCompact, ViewList, ViewModule } from "@mui/icons-material";
-import { Divider, IconButton, ListItemIcon, Menu, MenuItem, MenuList, Tooltip } from "@mui/material";
-import React from "react";
+import { Compare, ViewCompact, ViewList, ViewModule } from '@mui/icons-material'
+import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material'
+import React from 'react'
 
 export default function DensityMenu() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
+    setAnchorEl(event.currentTarget)
+  }
   const handleClose = () => {
-    setAnchorEl(null);
-  };
-	return (
-		<>
-			<Tooltip title='View Density'>
-				<IconButton onClick={handleClick}>
-					<ViewModule />
-				</IconButton>
-			</Tooltip>
+    setAnchorEl(null)
+  }
+  return (
+    <>
+      <Tooltip title="View Density">
+        <IconButton onClick={handleClick}>
+          <ViewModule />
+        </IconButton>
+      </Tooltip>
 
-			<Menu
+      <Menu
         anchorEl={anchorEl}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         id="view-density-menu"
@@ -75,14 +75,14 @@ export default function DensityMenu() {
           </ListItemIcon>
           List
         </MenuItem>
-				<Divider />
-				<MenuItem onClick={handleClose}>
-					<ListItemIcon>
+        <Divider />
+        <MenuItem onClick={handleClose}>
+          <ListItemIcon>
             <Compare />
-					</ListItemIcon>
+          </ListItemIcon>
           Alt Images
-				</MenuItem>
+        </MenuItem>
       </Menu>
-		</>
-	)
+    </>
+  )
 }

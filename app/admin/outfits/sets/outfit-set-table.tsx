@@ -23,7 +23,6 @@ import { Style, Label } from '@/lib/types/eureka'
 import LazyAvatar from '@/components/lazy-avatar'
 import RarityStars from '@/components/rarity-stars'
 import { updateOutfitSet } from '@/app/admin/actions'
-import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = OutfitSet
 
@@ -34,7 +33,14 @@ interface OutfitSetTableProps {
   abilities: Ability[]
 }
 
-const LOCKED_FIELDS = ['slug', 'image_url', 'alt_image_url', 'evolutions', 'glowup_evolution', 'updated_at']
+const LOCKED_FIELDS = [
+  'slug',
+  'image_url',
+  'alt_image_url',
+  'evolutions',
+  'glowup_evolution',
+  'updated_at',
+]
 
 function LockedCell({ children, href }: { children: React.ReactNode; href: string }) {
   return (
