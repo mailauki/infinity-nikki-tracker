@@ -5,6 +5,7 @@ import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import FilterMenu from '@/components/navbar/filter-menu'
 import { SortButton } from '@/components/navbar/appbar-actions'
 import { useOutfitData } from './outfit-context'
+import DensityMenu from '../navbar/density-menu'
 
 export default function OutfitToolBar() {
   const { outfitSets, showByEvolution, filters } = useOutfitData()
@@ -23,7 +24,11 @@ export default function OutfitToolBar() {
     .map((set) => ({
       evolutions: set.evolutions,
       outfit_variants: set.outfit_variants
-        .filter((v) => !selectedOutfitCategory || v.outfit_category === selectedOutfitCategory)
+        .filter(
+          (v) =>
+            selectedOutfitCategory.length === 0 ||
+            (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
+        )
         .filter((v) => !selectedEvolution || v.evolution === selectedEvolution)
         .filter((v) => {
           if (selectedObtainedFilter === 'obtained') return v.obtained === true
@@ -46,6 +51,7 @@ export default function OutfitToolBar() {
           Showing: {resultsCount} results
         </Typography>
         <Stack direction="row" spacing={1}>
+					<DensityMenu /> {/* TODO: add density switching for card size and grid / list  */}
           <SortButton />
           <FilterMenu />
         </Stack>

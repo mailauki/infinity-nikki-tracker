@@ -6,7 +6,7 @@ import { ObtainedFilter } from '@/lib/types/props'
 
 export interface OutfitFilterState {
   selectedOutfitSet: string | null
-  selectedOutfitCategory: string | null
+  selectedOutfitCategory: string[]
   selectedEvolution: string | null
   selectedRarity: number | null
   selectedObtainedFilter: ObtainedFilter | null
@@ -36,7 +36,7 @@ interface OutfitDataContextValue {
 
 export const DEFAULT_OUTFIT_FILTERS: OutfitFilterState = {
   selectedOutfitSet: null,
-  selectedOutfitCategory: null,
+  selectedOutfitCategory: [],
   selectedEvolution: null,
   selectedRarity: null,
   selectedObtainedFilter: null,

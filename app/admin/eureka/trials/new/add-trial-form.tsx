@@ -94,7 +94,7 @@ export default function AddTrialForm() {
 
         <FormControl>
           <InputLabel>Location</InputLabel>
-          <Select defaultValue="" label="Location" name="location" MenuProps={MENU_PROPS}>
+          <Select MenuProps={MENU_PROPS} defaultValue="" label="Location" name="location">
             <MenuItem value="">—</MenuItem>
             <MenuItem value="Wishfield">Wishfield</MenuItem>
             <MenuItem value="Itzaland">Itzaland</MenuItem>

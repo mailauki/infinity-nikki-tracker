@@ -18,6 +18,28 @@ export default function ProfileStats({
     const baseVariants = set.outfit_variants.filter((v) => v.evolution === null)
     return baseVariants.length > 0 && baseVariants.every((v) => v.obtained)
   }).length
+  const isEvolutionObtained = (set: OutfitSet, slug: string) => {
+    const variants = set.outfit_variants.filter((v) => v.evolution === slug)
+    return variants.length > 0 && variants.every((v) => v.obtained)
+  }
+  const evolutionsObtained = outfitSets.reduce((count, set) => {
+    return (
+      count +
+      set.evolutions.filter(
+        (evolution) =>
+          evolution.slug !== set.glowup_evolution && isEvolutionObtained(set, evolution.slug)
+      ).length
+    )
+  }, 0)
+  const glowupsObtained = outfitSets.reduce((count, set) => {
+    return (
+      count +
+      set.evolutions.filter(
+        (evolution) =>
+          evolution.slug === set.glowup_evolution && isEvolutionObtained(set, evolution.slug)
+      ).length
+    )
+  }, 0)
 
   return (
     <Stack
@@ -25,18 +47,21 @@ export default function ProfileStats({
       divider={<Divider flexItem orientation="vertical" variant="middle" />}
       spacing={3}
     >
-      <Stack sx={{ alignItems: 'center' }}>
-        <Typography variant="overline">Eureka Sets</Typography>
-        <Typography component="span" variant="h6">
-          {eurekaSetsObtained}
-        </Typography>
-      </Stack>
-      <Stack sx={{ alignItems: 'center' }}>
-        <Typography variant="overline">Outfit Sets</Typography>
-        <Typography component="span" variant="h6">
-          {outfitSetsObtained}
-        </Typography>
-      </Stack>
+			<Stat obtained={eurekaSetsObtained || 0} title='Eureka Sets' />
+			<Stat obtained={outfitSetsObtained || 0} title='Outfit Sets' />
+			<Stat obtained={evolutionsObtained || 0} title='Evolutions' />
+			<Stat obtained={glowupsObtained || 0} title='Glow-ups' />
     </Stack>
   )
+}
+
+function Stat({title, obtained}: {title: string, obtained: number}) {
+	return (
+		<Stack sx={{ alignItems: 'center' }}>
+			<Typography variant="overline">{title}</Typography>
+			<Typography component="span" variant="h6">
+				{obtained}
+			</Typography>
+		</Stack>
+	)
 }

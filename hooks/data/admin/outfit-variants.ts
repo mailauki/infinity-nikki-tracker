@@ -28,6 +28,16 @@ export const getOutfitVariantsRaw = cache(async () => {
   return (outfitVariants ?? []) as OutfitVariantRaw[]
 })
 
+export const getOutfitVariantsCount = cache(async () => {
+  const supabase = await createClient()
+
+  const { count } = await supabase
+    .from('outfit_variants')
+    .select('*', { count: 'exact', head: true })
+
+  return count ?? 0
+})
+
 export const getOutfitVariantRaw = cache(async (slug: string) => {
   const supabase = await createClient()
 

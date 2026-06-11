@@ -2,8 +2,10 @@
 
 import { OutfitCategory } from '@/lib/types/outfit'
 import {
+  Checkbox,
   FormControl,
   InputLabel,
+  ListItemText,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -27,43 +29,87 @@ export function isCategoryDisabled(
   return false
 }
 
+type SingleProps = {
+  multiple?: false
+  selectedCategory: string | null
+  onCategoryChange: (event: SelectChangeEvent) => void
+}
+
+type MultipleProps = {
+  multiple: true
+  selectedCategory: string[]
+  onCategoryChange: (event: SelectChangeEvent<string[]>) => void
+}
+
+type OutfitCategorySelectProps = (SingleProps | MultipleProps) & {
+  categories: OutfitCategory[]
+  disabled?: boolean
+  name?: string
+}
+
 export default function OutfitCategorySelect({
   categories,
   selectedCategory,
   onCategoryChange,
   disabled,
   name,
-}: {
-  categories: OutfitCategory[]
-  selectedCategory: string | null
-  onCategoryChange: (event: SelectChangeEvent) => void
-  disabled?: boolean
-  name?: string
-}) {
+  multiple,
+}: OutfitCategorySelectProps) {
+  const selectedSlugs = Array.isArray(selectedCategory) ? selectedCategory : []
+
+  const categoryLabel = (category: OutfitCategory) => toTitle(category.title ?? category.slug)
+
   return (
     <FormControl disabled={disabled} sx={{ flex: 1, whiteSpace: 'nowrap' }}>
       <InputLabel id="outfit-category-select-label">Category</InputLabel>
-      <Select
-        MenuProps={MENU_PROPS}
-        aria-label="Category"
-        id="outfit-category-select"
-        label="Category"
-        labelId="outfit-category-select-label"
-        name={name}
-        value={selectedCategory ?? ''}
-        onChange={onCategoryChange}
-      >
-        <MenuItem value="">—</MenuItem>
-        {categories.map((category) => (
-          <MenuItem
-            key={category.slug}
-            disabled={isCategoryDisabled(category, selectedCategory)}
-            value={category.slug}
-          >
-            {toTitle(category.title ?? category.slug)}
-          </MenuItem>
-        ))}
-      </Select>
+      {multiple ? (
+        <Select<string[]>
+          multiple
+          MenuProps={MENU_PROPS}
+          aria-label="Category"
+          id="outfit-category-select"
+          label="Category"
+          labelId="outfit-category-select-label"
+          name={name}
+          renderValue={(selected) =>
+            categories
+              .filter((category) => selected.includes(category.slug))
+              .map(categoryLabel)
+              .join(', ')
+          }
+          value={selectedSlugs}
+          onChange={onCategoryChange}
+        >
+          {categories.map((category) => (
+            <MenuItem
+              key={category.slug}
+              disabled={isCategoryDisabled(category, selectedSlugs)}
+              value={category.slug}
+            >
+              <Checkbox checked={selectedSlugs.includes(category.slug)} />
+              <ListItemText primary={categoryLabel(category)} />
+            </MenuItem>
+          ))}
+        </Select>
+      ) : (
+        <Select
+          MenuProps={MENU_PROPS}
+          aria-label="Category"
+          id="outfit-category-select"
+          label="Category"
+          labelId="outfit-category-select-label"
+          name={name}
+          value={selectedCategory ?? ''}
+          onChange={onCategoryChange}
+        >
+          <MenuItem value="">—</MenuItem>
+          {categories.map((category) => (
+            <MenuItem key={category.slug} value={category.slug}>
+              {categoryLabel(category)}
+            </MenuItem>
+          ))}
+        </Select>
+      )}
     </FormControl>
   )
 }
