@@ -7,8 +7,16 @@ import { OutfitSet } from '@/lib/types/outfit'
 
 const RETRY_TIMEOUT_MS = 4000
 
-export default function OutfitSetImage({ set }: { set: OutfitSet }) {
-  const src = set.poster_image_url || set.image_url || ''
+export default function OutfitSetImage({
+  set,
+  overrideSrc,
+}: {
+  set: OutfitSet
+  // When set (e.g. a selected evolution's image), takes precedence over the
+  // set's own poster/image.
+  overrideSrc?: string | null
+}) {
+  const src = overrideSrc || set.poster_image_url || set.image_url || ''
 
   const [loaded, setLoaded] = useState(false)
   const [retryKey, setRetryKey] = useState(0)

@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Box, Stack, ToggleButton, ToggleButtonGroup, Toolbar } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
 import { percent } from '@/hooks/count-obtained'
@@ -15,13 +14,16 @@ const BASE = 'base'
 export default function OutfitEvolutionVariants({
   outfitSet,
   isLoggedIn,
+  selected,
+  onSelect,
 }: {
   outfitSet: OutfitSet
   isLoggedIn: boolean
+  // `null` selection means "show all evolutions".
+  selected: string | null
+  onSelect: (next: string | null) => void
 }) {
   const { title, evolutions, outfit_variants } = outfitSet
-  // `null` selection means "show all evolutions".
-  const [selected, setSelected] = useState<string | null>(null)
 
   // Sort by evolution order, with the null (default) evolution first.
   const evolutionOrder = new Map(evolutions.map((e) => [e.slug, e.order]))
@@ -48,7 +50,7 @@ export default function OutfitEvolutionVariants({
           exclusive
           size="small"
           value={selected}
-          onChange={(_, next) => setSelected(next)}
+          onChange={(_, next) => onSelect(next)}
         >
           {[null, ...evolutions].map((evolution) => {
             const value = evolution?.slug ?? BASE
