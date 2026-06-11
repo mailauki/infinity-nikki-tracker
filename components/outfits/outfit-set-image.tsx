@@ -10,13 +10,17 @@ const RETRY_TIMEOUT_MS = 4000
 export default function OutfitSetImage({
   set,
   overrideSrc,
+  square = false,
 }: {
   set: OutfitSet
   // When set (e.g. a selected evolution's image), takes precedence over the
   // set's own poster/image.
   overrideSrc?: string | null
+  // Alt images are square (1:1); normal/poster/evolution images are 9:16.
+  square?: boolean
 }) {
   const src = overrideSrc || set.poster_image_url || set.image_url || ''
+  const aspectRatio = square ? '1 / 1' : '9 / 16'
 
   const [loaded, setLoaded] = useState(false)
   const [retryKey, setRetryKey] = useState(0)
@@ -64,7 +68,7 @@ export default function OutfitSetImage({
   if (src) retrySrc = retryKey > 0 ? `${src}?retry=${retryKey}` : src
 
   return (
-    <Box sx={{ position: 'relative', width: '100%', maxWidth: '300px', aspectRatio: '9 / 16' }}>
+    <Box sx={{ position: 'relative', width: '100%', maxWidth: '300px', aspectRatio }}>
       {!loaded && retrySrc && (
         <Skeleton
           sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}

@@ -7,6 +7,7 @@ import { OutfitVariant } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
 import LazyAvatar from '@/components/lazy-avatar'
 import { useOutfitData } from './outfit-context'
+import { useOutfitImageMode } from './outfit-image-mode-context'
 
 export default function OutfitVariantCard({
   outfitVariant,
@@ -18,7 +19,10 @@ export default function OutfitVariantCard({
   isMissingFilter?: boolean
 }) {
   const { onToggleObtained } = useOutfitData()
+  const { showAlt } = useOutfitImageMode()
   const [exiting, setExiting] = useState(false)
+
+  const imageSrc = (showAlt && outfitVariant.alt_image_url) || outfitVariant.image_url || undefined
 
   function onToggle() {
     if (isMissingFilter) {
@@ -41,7 +45,9 @@ export default function OutfitVariantCard({
   }
 
   const categoryLabel = toTitle(outfitVariant.outfit_category ?? '')
-  const evolutionLabel = outfitVariant.evolution ? toTitle(outfitVariant.evolution.split('-')[1]) : 'Base'
+  const evolutionLabel = outfitVariant.evolution
+    ? toTitle(outfitVariant.evolution.split('-')[1])
+    : 'Base'
 
   return (
     <Grow in={!exiting} timeout={300} onExited={onExited}>
@@ -57,7 +63,7 @@ export default function OutfitVariantCard({
               alt={outfitVariant.slug || 'Outfit Variant'}
               color="transparent"
               size="lg"
-              src={outfitVariant.image_url!}
+              src={imageSrc}
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <Category fontSize="inherit" />

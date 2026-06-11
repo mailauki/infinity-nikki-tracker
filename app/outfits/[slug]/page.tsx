@@ -3,7 +3,6 @@ import { Suspense } from 'react'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { getOutfitSet } from '@/hooks/data/outfit-sets'
 import type { Metadata } from 'next'
-import SlugToolBar from '@/components/slug-toolbar'
 import OutfitSetDetail from '@/components/outfits/outfit-set-detail'
 
 type Props = {
@@ -37,10 +36,5 @@ async function OutfitSet({ slug }: { slug: string }) {
   const isLoggedIn = !!user_id
   const isAdmin = role === 'admin'
 
-  return (
-    <>
-      <SlugToolBar isAdmin={isAdmin} />
-      <OutfitSetDetail isLoggedIn={isLoggedIn} outfitSet={outfitSet} />
-    </>
-  )
+  return <OutfitSetDetail isAdmin={isAdmin} isLoggedIn={isLoggedIn} outfitSet={outfitSet} />
 }
