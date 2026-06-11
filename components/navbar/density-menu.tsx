@@ -1,6 +1,6 @@
 'use client'
 import { Compare, ViewCompact, ViewList, ViewModule } from '@mui/icons-material'
-import { Divider, IconButton, ListItemIcon, Menu, MenuItem, MenuList, Tooltip } from '@mui/material'
+import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material'
 import React from 'react'
 
 export default function DensityMenu() {

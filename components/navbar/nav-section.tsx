@@ -19,7 +19,6 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { SparkleIcon } from '../rarity-stars'
-import ToggleIcon from '../toggle-icon'
 
 export default function NavSection({
   items,

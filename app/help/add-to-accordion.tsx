@@ -16,8 +16,7 @@ import React from 'react'
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} {...props} />
-))(({ theme }) => ({
-  // border: `1px solid ${theme.palette.divider}`,
+))(() => ({
   borderRadius: 8,
   '&:not(:last-child)': {
     // borderBottom: 0,

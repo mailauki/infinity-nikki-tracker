@@ -1,6 +1,6 @@
 import { Alert, Link as Anchor } from '@mui/material'
 
-export default function LoginAlert() {
+export default function LoginAlert({ title }: { title?: string }) {
   return (
     <Alert severity="info" sx={{ mb: 2, whiteSpace: 'nowrap' }}>
       <Anchor color="inherit" href="/login">
@@ -10,7 +10,7 @@ export default function LoginAlert() {
       <Anchor color="inherit" href="/sign-up">
         Sign up
       </Anchor>{' '}
-      to track your collected Eureka
+      to track your {title ? `collected ${title}` : 'collection'}
     </Alert>
   )
 }

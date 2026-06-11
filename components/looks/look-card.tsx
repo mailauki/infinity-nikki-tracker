@@ -5,7 +5,6 @@ import Link from 'next/link'
 import {
   Avatar,
   AvatarGroup,
-  Box,
   Card,
   CardActionArea,
   CardContent,
