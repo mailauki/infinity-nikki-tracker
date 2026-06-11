@@ -26,10 +26,7 @@ async function LooksContent() {
   const user_id = await getUserID()
   if (!user_id) redirect('/login')
 
-  const [looks, { profile }] = await Promise.all([
-    getCustomLooks(user_id),
-    getProfile(user_id),
-  ])
+  const [looks, { profile }] = await Promise.all([getCustomLooks(user_id), getProfile(user_id)])
 
   const isPremium = profile?.is_premium ?? false
   const atLimit = !isPremium && looks.length >= FREE_LOOKS_LIMIT

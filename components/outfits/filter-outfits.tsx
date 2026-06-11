@@ -13,6 +13,7 @@ import { percent } from '@/hooks/count-obtained'
 import { toTitle } from '@/lib/utils'
 import OutfitVariantCard from './outfit-variant-card'
 import OutfitEvolutionSetCard from './outfit-evolution-set-card'
+import OutfitSetCard from './outfit-set-card'
 
 function GroupHeaderSkeleton() {
   return (
@@ -52,6 +53,7 @@ export default function FilterOutfits() {
     showByEvolution,
     hideEvolutions,
     filters,
+    onToggleObtained,
   } = useOutfitData()
   const { sortOrder } = useSortOrder()
 
@@ -203,6 +205,40 @@ export default function FilterOutfits() {
         <Alert severity="warning" sx={{ width: 'fit-content', my: 2 }}>
           Could not load your collection status. Progress may be inaccurate.
         </Alert>
+      )}
+
+      {filteredSets.length > 0 && (
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr', lg: '1fr 1fr 1fr 1fr' },
+            gap: 2,
+          }}
+        >
+          {filteredSets.map((set) => {
+            const variants = set.outfit_variants
+            const allObtained =
+              variants.length > 0 && variants.every((v) => v.obtained === true)
+            return (
+              <OutfitSetCard
+                key={set.id}
+                isLoggedIn={isLoggedIn}
+                obtained={allObtained}
+                set={set}
+                onToggle={() => {
+                  // Mark every variant to the opposite of the set's current
+                  // completion state. onToggleObtained flips a single variant,
+                  // so only toggle variants whose state needs to change.
+                  variants.forEach((v) => {
+                    if (v.obtained === allObtained) {
+                      onToggleObtained(v.outfit_set!, v.outfit_category!, v.evolution ?? null)
+                    }
+                  })
+                }}
+              />
+            )
+          })}
+        </Box>
       )}
 
       {filteredSets.length === 0 ? (

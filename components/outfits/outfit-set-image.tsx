@@ -1,13 +1,15 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import Avatar from '@mui/material/Avatar'
-import Skeleton from '@mui/material/Skeleton'
 import Box from '@mui/material/Box'
-import type { AvatarProps } from '@mui/material/Avatar'
+import Skeleton from '@mui/material/Skeleton'
+import Image from 'next/image'
+import { OutfitSet } from '@/lib/types/outfit'
 
 const RETRY_TIMEOUT_MS = 4000
 
-export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps) {
+export default function OutfitSetImage({ set }: { set: OutfitSet }) {
+  const src = set.poster_image_url || set.image_url || ''
+
   const [loaded, setLoaded] = useState(false)
   const [retryKey, setRetryKey] = useState(0)
   const startTimeRef = useRef<number>(Date.now())
@@ -50,27 +52,30 @@ export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps)
     }
   }
 
-  const retrySrc = src ? (retryKey > 0 ? `${src}?retry=${retryKey}` : src) : undefined
+  let retrySrc: string | undefined
+  if (src) retrySrc = retryKey > 0 ? `${src}?retry=${retryKey}` : src
 
   return (
-    <Box sx={{ position: 'relative', display: 'inline-flex', width: 'fit-content' }}>
-      {!loaded && src && (
+    <Box sx={{ position: 'relative', width: '100%', maxWidth: '300px', aspectRatio: '9 / 16' }}>
+      {!loaded && retrySrc && (
         <Skeleton
           sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
           variant="rounded"
         />
       )}
-      <Avatar
-        slotProps={{
-          img: retrySrc ? { ref: imgRef, onLoad: handleLoad, onError: handleError } : undefined,
-        }}
-        src={retrySrc}
-        sx={{ ...sx, opacity: loaded || !src ? 1 : 0 }}
-        variant="rounded"
-        {...props}
-      >
-        {children}
-      </Avatar>
+      {retrySrc && (
+        <Image
+          key={retryKey}
+          ref={imgRef}
+          fill
+          alt={set.title}
+          sizes="(max-width: 300px) 50vw, 300px"
+          src={retrySrc}
+          style={{ objectFit: 'cover', opacity: loaded ? 1 : 0 }}
+          onError={handleError}
+          onLoad={handleLoad}
+        />
+      )}
     </Box>
   )
 }

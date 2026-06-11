@@ -142,7 +142,7 @@ export function OutfitVariantTable({
         <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           <ImageUpload
             column="image_url"
-						size='sm'
+            size="sm"
             slug={row.slug ?? undefined}
             table="outfit_variants"
             url={row.image_url ?? null}
@@ -162,7 +162,7 @@ export function OutfitVariantTable({
         <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           <ImageUpload
             column="alt_image_url"
-						size='sm'
+            size="sm"
             slug={row.slug ?? undefined}
             table="outfit_variants"
             url={row.alt_image_url ?? null}

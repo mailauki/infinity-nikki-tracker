@@ -51,7 +51,7 @@ export function OutfitAbilityTable({ rows: initialRows }: OutfitAbilityTableProp
         <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           <ImageUpload
             column="image_url"
-						size='sm'
+            size="sm"
             slug={row.slug}
             table="abilities"
             url={row.image_url ?? null}

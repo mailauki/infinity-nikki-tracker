@@ -16,7 +16,7 @@ async function OutfitProviders({ children }: { children: React.ReactNode }) {
 
 export default function OutfitsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SortProvider defaultOrder="old">
+    <SortProvider>
       <Suspense fallback={<OutfitsLoading />}>
         <OutfitProviders>{children}</OutfitProviders>
       </Suspense>

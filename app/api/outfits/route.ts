@@ -12,7 +12,7 @@ export async function GET() {
     .from('outfit_sets')
     .select(
       `id, slug, title, description, rarity, style, label, label_2, ability,
-       image_url, alt_image_url, glowup_evolution, updated_at,
+       image_url, alt_image_url, poster_image_url, glowup_evolution, updated_at,
        outfit_variants ( id, slug, outfit_set, evolution, outfit_category, image_url, alt_image_url, default )`
     )
     .order('id', { ascending: true })
@@ -52,7 +52,9 @@ export async function GET() {
   }
 
   const obtainedOutfit = (obtained ?? []) as ObtainedOutfit[]
-  const outfitsWithObtained = outfits.map((outfitSet) => updateOutfitSet({ outfitSet, obtainedOutfit }))
+  const outfitsWithObtained = outfits.map((outfitSet) =>
+    updateOutfitSet({ outfitSet, obtainedOutfit })
+  )
 
   return NextResponse.json(outfitsWithObtained)
 }

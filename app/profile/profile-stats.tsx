@@ -47,21 +47,21 @@ export default function ProfileStats({
       divider={<Divider flexItem orientation="vertical" variant="middle" />}
       spacing={3}
     >
-			<Stat obtained={eurekaSetsObtained || 0} title='Eureka Sets' />
-			<Stat obtained={outfitSetsObtained || 0} title='Outfit Sets' />
-			<Stat obtained={evolutionsObtained || 0} title='Evolutions' />
-			<Stat obtained={glowupsObtained || 0} title='Glow-ups' />
+      <Stat obtained={eurekaSetsObtained || 0} title="Eureka Sets" />
+      <Stat obtained={outfitSetsObtained || 0} title="Outfit Sets" />
+      <Stat obtained={evolutionsObtained || 0} title="Evolutions" />
+      <Stat obtained={glowupsObtained || 0} title="Glow-ups" />
     </Stack>
   )
 }
 
-function Stat({title, obtained}: {title: string, obtained: number}) {
-	return (
-		<Stack sx={{ alignItems: 'center' }}>
-			<Typography variant="overline">{title}</Typography>
-			<Typography component="span" variant="h6">
-				{obtained}
-			</Typography>
-		</Stack>
-	)
+function Stat({ title, obtained }: { title: string; obtained: number }) {
+  return (
+    <Stack sx={{ alignItems: 'center' }}>
+      <Typography variant="overline">{title}</Typography>
+      <Typography component="span" variant="h6">
+        {obtained}
+      </Typography>
+    </Stack>
+  )
 }

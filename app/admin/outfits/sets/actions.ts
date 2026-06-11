@@ -249,10 +249,7 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
       .select('slug')
       .eq('outfit_set', slug)
 
-    const evolutionSlugs: (string | null)[] = [
-      null,
-      ...(finalEvolutions ?? []).map((e) => e.slug),
-    ]
+    const evolutionSlugs: (string | null)[] = [null, ...(finalEvolutions ?? []).map((e) => e.slug)]
 
     // Build the complete expected set of variant slugs
     const expectedVariants = evolutionSlugs.flatMap((evo) =>
