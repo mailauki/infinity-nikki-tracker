@@ -31,7 +31,7 @@ export default function EurekaSelect({
     >
       <InputLabel id="eureka-set-select-label">Eureka Set</InputLabel>
       <Select
-				MenuProps={MENU_PROPS}
+        MenuProps={MENU_PROPS}
         aria-label="Eureka Set"
         id="eureka-set-select"
         label="Eureka Set"

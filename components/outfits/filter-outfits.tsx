@@ -163,10 +163,7 @@ export default function FilterOutfits() {
                     {evoLabel}
                   </Button>
                   {isLoggedIn && (
-                    <ProgressChip
-                      percentage={percent(evoObtained, variants.length)}
-                      size="lg"
-                    />
+                    <ProgressChip percentage={percent(evoObtained, variants.length)} size="lg" />
                   )}
                 </Stack>
                 <Divider />
@@ -227,10 +224,7 @@ export default function FilterOutfits() {
           }}
         >
           {filteredSets.map((set) => {
-            const obtained = set.outfit_variants.reduce(
-              (sum, v) => sum + (v.obtained ? 1 : 0),
-              0
-            )
+            const obtained = set.outfit_variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
             const total = set.outfit_variants.length
             return (
               <React.Fragment key={set.slug}>

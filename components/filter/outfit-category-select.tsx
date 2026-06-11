@@ -18,9 +18,10 @@ export const SEPARATES_SLUGS = ['tops', 'bottoms']
 
 export function isCategoryDisabled(
   category: OutfitCategory,
-  selectedSlugs: string | string[] | null,
+  selectedSlugs: string | string[] | null
 ) {
-  const selected = selectedSlugs === null ? [] : Array.isArray(selectedSlugs) ? selectedSlugs : [selectedSlugs]
+  const selected =
+    selectedSlugs === null ? [] : Array.isArray(selectedSlugs) ? selectedSlugs : [selectedSlugs]
   if (selected.length === 0) return false
   const hasDress = selected.some((s) => DRESS_SLUGS.includes(s))
   const hasSeparates = selected.some((s) => SEPARATES_SLUGS.includes(s))

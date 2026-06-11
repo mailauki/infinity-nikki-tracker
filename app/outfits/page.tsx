@@ -13,7 +13,9 @@ export default function OutfitsPage() {
   return (
     <>
       <OutfitToolBar />
-			<Alert severity='info' sx={{ mb: 2 }}>Images are currently being uploaded.</Alert>
+      <Alert severity="info" sx={{ mb: 2 }}>
+        Images are currently being uploaded.
+      </Alert>
       <Suspense fallback={<OutfitsLoading />}>
         <FilterOutfits />
       </Suspense>

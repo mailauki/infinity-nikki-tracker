@@ -62,9 +62,7 @@ export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps)
       )}
       <Avatar
         slotProps={{
-          img: retrySrc
-            ? { ref: imgRef, onLoad: handleLoad, onError: handleError }
-            : undefined,
+          img: retrySrc ? { ref: imgRef, onLoad: handleLoad, onError: handleError } : undefined,
         }}
         src={retrySrc}
         sx={{ ...sx, opacity: loaded || !src ? 1 : 0 }}

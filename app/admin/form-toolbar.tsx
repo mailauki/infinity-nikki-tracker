@@ -7,7 +7,8 @@ import { useEffect } from 'react'
 import { enqueueSnackbar } from 'notistack'
 
 export default function FormToolBar() {
-  const { formId, backUrl, pending, showAddAnother, showUpdateOnly, savedTitle, setFormConfig } = useFormConfig()
+  const { formId, backUrl, pending, showAddAnother, showUpdateOnly, savedTitle, setFormConfig } =
+    useFormConfig()
 
   useEffect(() => {
     if (!savedTitle) return

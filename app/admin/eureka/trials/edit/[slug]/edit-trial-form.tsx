@@ -99,7 +99,7 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back: str
 
         <input name="image_url" type="hidden" value={imageUrl ?? ''} />
         <ImageUpload
-          size='xl'
+          size="xl"
           slug={trial.slug ?? undefined}
           table="trials"
           url={imageUrl}
