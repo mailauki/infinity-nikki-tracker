@@ -7,15 +7,15 @@ export function cn(...inputs: ClassValue[]) {
 
 export function toSlug(name: string) {
   return name
-	.trim()
-	.toLowerCase()
-  .replace(/\s*&\s*/g, '_and_')
-	.normalize('NFD')
-	.replace(/[\u0300-\u036f]/g, '') 
-  .replace(/[^a-z0-9 -]/g, '')
-	.replace(/['‘’]/g, '')
-	.replace(/\s+/g, '_')
-  .replace(/_+/g, '_')
+    .trim()
+    .toLowerCase()
+    .replace(/\s*&\s*/g, '_and_')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9 -]/g, '')
+    .replace(/['‘’]/g, '')
+    .replace(/\s+/g, '_')
+    .replace(/_+/g, '_')
 }
 
 export function toTitle(slug: string) {

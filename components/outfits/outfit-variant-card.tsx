@@ -48,9 +48,7 @@ export default function OutfitVariantCard({
       <Card
         sx={{
           minWidth: 'fit-content',
-          bgcolor: outfitVariant.obtained
-            ? 'surface.containerLow'
-            : 'surface.containerHighest',
+          bgcolor: outfitVariant.obtained ? 'surface.containerLow' : 'surface.containerHighest',
         }}
       >
         <Box sx={{ position: 'relative', height: '100%' }}>
@@ -85,11 +83,7 @@ export default function OutfitVariantCard({
                 aria-label={outfitVariant.obtained ? 'Mark as not obtained' : 'Mark as obtained'}
                 onClick={onToggle}
               >
-                {outfitVariant.obtained ? (
-                  <TaskAlt />
-                ) : (
-                  <RadioButtonUncheckedOutlined />
-                )}
+                {outfitVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
               </IconButton>
             )}
           </Box>

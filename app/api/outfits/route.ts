@@ -52,7 +52,9 @@ export async function GET() {
   }
 
   const obtainedOutfit = (obtained ?? []) as ObtainedOutfit[]
-  const outfitsWithObtained = outfits.map((outfitSet) => updateOutfitSet({ outfitSet, obtainedOutfit }))
+  const outfitsWithObtained = outfits.map((outfitSet) =>
+    updateOutfitSet({ outfitSet, obtainedOutfit })
+  )
 
   return NextResponse.json(outfitsWithObtained)
 }

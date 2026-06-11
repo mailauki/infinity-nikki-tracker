@@ -79,6 +79,7 @@ Exports `OutfitDataContext`, `DEFAULT_OUTFIT_FILTERS`, `OutfitFilterState`, and 
 ### Provider (`components/outfits/outfit-data-provider.tsx`)
 
 Client component. On mount:
+
 1. Fetches `OutfitSet[]` from `/api/outfits`
 2. Fetches `OutfitCategory[]` inline (derived from the outfit sets response or a separate call)
 3. If logged in: fetches `ObtainedOutfit[]` from `/api/obtained-outfit` and outfit-specific preferences from `/api/preferences`
@@ -89,12 +90,16 @@ Preference persistence: on filter/grouping state changes (after prefs loaded), c
 ## Components (`components/outfits/`)
 
 ### `outfit-toolbar.tsx`
+
 Client component. Uses `useOutfitData()` to compute result count (respecting active filters + showByEvolution toggle). Renders inside `NavBarToolbar`:
+
 - Left: "Showing: N results" caption
 - Right: `SortButton` + `FilterMenu` (outfit-aware variant)
 
 ### `filter-outfits.tsx`
+
 Client component. Uses `useOutfitData()` + `useSortOrder()`. Handles:
+
 - Loading skeleton
 - Error alert
 - Empty state ("No results / Try adjusting your filters")
@@ -108,7 +113,9 @@ Client component. Uses `useOutfitData()` + `useSortOrder()`. Handles:
 Filter logic mirrors `FilterEureka`: filter by set slug, rarity, evolution slug, category slug, obtained/missing status; then sort by id asc/desc per `sortOrder`.
 
 ### `outfit-variant-card.tsx`
+
 Client component. Props: `outfitVariant: OutfitVariant`, `isLoggedIn: boolean`, `isMissingFilter?: boolean`.
+
 - Displays variant image (fallback: `Category` icon)
 - Caption: `{OutfitCategory title} • {Evolution title or 'Base'}`
 - Obtained toggle icon button (top-right), `TaskAlt` / `RadioButtonUncheckedOutlined`
@@ -116,16 +123,20 @@ Client component. Props: `outfitVariant: OutfitVariant`, `isLoggedIn: boolean`, 
 - Uses `useOutfitData().onToggleObtained`
 
 ### `outfit-evolution-set-card.tsx`
+
 Client component. Props: `outfitSet: OutfitSet`, `evolution: Evolution | null`, `isLoggedIn: boolean`.
+
 - Shows the evolution's image (fallback: set image)
 - Caption: evolution title or "Base"
 - Links to `/outfits/${outfitSet.slug}`
 - Shows mini progress for this evolution's variants if logged in
 
 ### FilterMenu extension
+
 `components/navbar/filter-menu.tsx` needs an outfits-aware section. Since the menu currently reads exclusively from `useEurekaData()`, extend it to detect the active route (via `usePathname()`) and conditionally render outfit filters using `useOutfitData()` when on `/outfits`.
 
 Outfit filter options:
+
 - **Set**: select from `outfitSets` list
 - **Category**: select from `outfitCategories`
 - **Evolution**: derived from all evolutions present across filtered sets
@@ -142,6 +153,7 @@ Outfit filter options:
 ## File List
 
 **New files:**
+
 - `app/outfits/layout.tsx`
 - `app/outfits/loading.tsx`
 - `app/outfits/actions.ts`
@@ -156,6 +168,7 @@ Outfit filter options:
 - `supabase/migrations/YYYYMMDD_outfit_preference_columns.sql`
 
 **Modified files:**
+
 - `app/outfits/page.tsx` — replace "Coming Soon" with toolbar + filter grid
 - `app/actions/preferences.ts` — add outfit preference update actions
 - `lib/types/preferences.ts` (or `eureka.ts`) — add outfit preference fields to `UserPreferences`

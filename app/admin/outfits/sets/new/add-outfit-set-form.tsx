@@ -195,7 +195,11 @@ export default function AddOutfitSetForm({
             {labels.map((l) => {
               const selected = labelSelect.includes(l.slug)
               return (
-                <MenuItem key={l.slug} disabled={!selected && labelSelect.length >= 2} value={l.slug}>
+                <MenuItem
+                  key={l.slug}
+                  disabled={!selected && labelSelect.length >= 2}
+                  value={l.slug}
+                >
                   {selected ? (
                     <CheckBox fontSize="small" sx={{ mr: 1 }} />
                   ) : (
@@ -264,8 +268,10 @@ export default function AddOutfitSetForm({
               ...cats.map((c) => {
                 const selected = categorySelect.includes(c.slug)
                 const conflicting =
-                  (DRESS_SLUGS.includes(c.slug) && categorySelect.some((s) => SEPARATES_SLUGS.includes(s))) ||
-                  (SEPARATES_SLUGS.includes(c.slug) && categorySelect.some((s) => DRESS_SLUGS.includes(s)))
+                  (DRESS_SLUGS.includes(c.slug) &&
+                    categorySelect.some((s) => SEPARATES_SLUGS.includes(s))) ||
+                  (SEPARATES_SLUGS.includes(c.slug) &&
+                    categorySelect.some((s) => DRESS_SLUGS.includes(s)))
                 return (
                   <MenuItem key={c.slug} disabled={!selected && conflicting} value={c.slug}>
                     {selected ? (

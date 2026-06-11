@@ -8,9 +8,10 @@ export default function AdminToggleToolbar() {
   const pathname = usePathname()
   const isAdminMainPage = pathname === '/admin'
   const isFormRoute = pathname.endsWith('/new') || pathname.includes('/edit/')
-	
+
   return (
-    (!isAdminMainPage && !isFormRoute) && (
+    !isAdminMainPage &&
+    !isFormRoute && (
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <IconButton component="a" href="/admin">
           <ChevronLeft />

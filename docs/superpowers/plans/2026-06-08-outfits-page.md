@@ -12,33 +12,34 @@
 
 ## File Map
 
-| File | Action | Responsibility |
-|---|---|---|
-| `supabase/migrations/20260608000003_outfit_preference_columns.sql` | Create | Add outfit preference columns to `user_preferences` |
-| `lib/types/eureka.ts` | Modify | Extend `UserPreferences` with outfit pref fields |
-| `lib/preferences.ts` | Modify | Add outfit defaults to `DEFAULT_PREFERENCES` |
-| `hooks/data/preferences.ts` | Modify | Include outfit columns in the select query |
-| `app/api/preferences/route.ts` | Modify | Include outfit columns in the select query |
-| `app/api/outfits/route.ts` | Create | GET — outfit sets with variants + obtained flags |
-| `app/api/obtained-outfit/route.ts` | Create | GET — current user's obtained_outfit records |
-| `app/outfits/actions.ts` | Create | `handleObtainedOutfit` server action |
-| `app/actions/preferences.ts` | Modify | Add `updateOutfitFilters`, `updateOutfitGroupBySet`, `updateOutfitShowByEvolution` |
-| `components/outfits/outfit-context.tsx` | Create | `OutfitDataContext`, `useOutfitData`, filter state types |
-| `components/outfits/outfit-data-provider.tsx` | Create | Client provider: fetch, realtime, filter/grouping state |
-| `components/outfits/outfit-toolbar.tsx` | Create | NavBarToolbar with result count + sort + filter button |
-| `components/outfits/outfit-variant-card.tsx` | Create | Individual piece card with obtained toggle |
-| `components/outfits/outfit-evolution-set-card.tsx` | Create | Evolution-grouped card with progress bar |
-| `components/outfits/filter-outfits.tsx` | Create | Filterable grid — loading/error/empty states + card rendering |
-| `components/navbar/filter-menu.tsx` | Modify | Add outfits filter section, route-aware via `usePathname` |
-| `app/outfits/layout.tsx` | Create | Server layout wrapping children in `SortProvider` + `OutfitDataProvider` |
-| `app/outfits/loading.tsx` | Create | Skeleton loading UI |
-| `app/outfits/page.tsx` | Modify | Replace "Coming Soon" with toolbar + filter grid |
+| File                                                               | Action | Responsibility                                                                     |
+| ------------------------------------------------------------------ | ------ | ---------------------------------------------------------------------------------- |
+| `supabase/migrations/20260608000003_outfit_preference_columns.sql` | Create | Add outfit preference columns to `user_preferences`                                |
+| `lib/types/eureka.ts`                                              | Modify | Extend `UserPreferences` with outfit pref fields                                   |
+| `lib/preferences.ts`                                               | Modify | Add outfit defaults to `DEFAULT_PREFERENCES`                                       |
+| `hooks/data/preferences.ts`                                        | Modify | Include outfit columns in the select query                                         |
+| `app/api/preferences/route.ts`                                     | Modify | Include outfit columns in the select query                                         |
+| `app/api/outfits/route.ts`                                         | Create | GET — outfit sets with variants + obtained flags                                   |
+| `app/api/obtained-outfit/route.ts`                                 | Create | GET — current user's obtained_outfit records                                       |
+| `app/outfits/actions.ts`                                           | Create | `handleObtainedOutfit` server action                                               |
+| `app/actions/preferences.ts`                                       | Modify | Add `updateOutfitFilters`, `updateOutfitGroupBySet`, `updateOutfitShowByEvolution` |
+| `components/outfits/outfit-context.tsx`                            | Create | `OutfitDataContext`, `useOutfitData`, filter state types                           |
+| `components/outfits/outfit-data-provider.tsx`                      | Create | Client provider: fetch, realtime, filter/grouping state                            |
+| `components/outfits/outfit-toolbar.tsx`                            | Create | NavBarToolbar with result count + sort + filter button                             |
+| `components/outfits/outfit-variant-card.tsx`                       | Create | Individual piece card with obtained toggle                                         |
+| `components/outfits/outfit-evolution-set-card.tsx`                 | Create | Evolution-grouped card with progress bar                                           |
+| `components/outfits/filter-outfits.tsx`                            | Create | Filterable grid — loading/error/empty states + card rendering                      |
+| `components/navbar/filter-menu.tsx`                                | Modify | Add outfits filter section, route-aware via `usePathname`                          |
+| `app/outfits/layout.tsx`                                           | Create | Server layout wrapping children in `SortProvider` + `OutfitDataProvider`           |
+| `app/outfits/loading.tsx`                                          | Create | Skeleton loading UI                                                                |
+| `app/outfits/page.tsx`                                             | Modify | Replace "Coming Soon" with toolbar + filter grid                                   |
 
 ---
 
 ### Task 1: Supabase migration — outfit preference columns
 
 **Files:**
+
 - Create: `supabase/migrations/20260608000003_outfit_preference_columns.sql`
 
 - [ ] **Step 1: Write the migration file**
@@ -83,6 +84,7 @@ git commit -m "feat: add outfit preference columns to user_preferences"
 ### Task 2: Update `UserPreferences` type, defaults, and preference queries
 
 **Files:**
+
 - Modify: `lib/types/eureka.ts`
 - Modify: `lib/preferences.ts`
 - Modify: `hooks/data/preferences.ts`
@@ -181,6 +183,7 @@ git commit -m "feat: extend UserPreferences with outfit-specific preference fiel
 ### Task 3: API route — `/api/outfits`
 
 **Files:**
+
 - Create: `app/api/outfits/route.ts`
 
 - [ ] **Step 1: Create the route**
@@ -212,10 +215,7 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  const [outfitCategories, evolutions] = await Promise.all([
-    getOutfitCategories(),
-    getEvolutions(),
-  ])
+  const [outfitCategories, evolutions] = await Promise.all([getOutfitCategories(), getEvolutions()])
 
   const outfits = (outfitSets ?? []).map((outfitSet) =>
     createOutfitSet({
@@ -282,6 +282,7 @@ git commit -m "feat: add /api/outfits GET route"
 ### Task 4: API route — `/api/obtained-outfit`
 
 **Files:**
+
 - Create: `app/api/obtained-outfit/route.ts`
 
 - [ ] **Step 1: Create the route**
@@ -337,6 +338,7 @@ git commit -m "feat: add /api/obtained-outfit GET route"
 ### Task 5: Server action — `handleObtainedOutfit`
 
 **Files:**
+
 - Create: `app/outfits/actions.ts`
 
 - [ ] **Step 1: Create the action**
@@ -387,6 +389,7 @@ git commit -m "feat: add handleObtainedOutfit server action"
 ### Task 6: Preference server actions — outfit-specific updaters
 
 **Files:**
+
 - Modify: `app/actions/preferences.ts`
 
 - [ ] **Step 1: Add three new exported functions** at the end of `app/actions/preferences.ts`
@@ -431,6 +434,7 @@ git commit -m "feat: add outfit preference server actions"
 ### Task 7: Outfit context
 
 **Files:**
+
 - Create: `components/outfits/outfit-context.tsx`
 
 - [ ] **Step 1: Create the context file**
@@ -524,6 +528,7 @@ git commit -m "feat: add OutfitDataContext and useOutfitData hook"
 ### Task 8: Outfit data provider
 
 **Files:**
+
 - Create: `components/outfits/outfit-data-provider.tsx`
 
 - [ ] **Step 1: Create the provider**
@@ -545,11 +550,7 @@ import {
 } from '@/app/actions/preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
 import { updateOutfitSet } from '@/hooks/outfit'
-import {
-  DEFAULT_OUTFIT_FILTERS,
-  OutfitDataContext,
-  OutfitFilterState,
-} from './outfit-context'
+import { DEFAULT_OUTFIT_FILTERS, OutfitDataContext, OutfitFilterState } from './outfit-context'
 
 async function fetchJson<T>(url: string): Promise<T> {
   const r = await fetch(url)
@@ -662,10 +663,7 @@ export default function OutfitDataProvider({
         )
       )
     } else {
-      setObtainedOutfit((prev) => [
-        ...prev,
-        { id: -1, outfit_set, outfit_category, evolution },
-      ])
+      setObtainedOutfit((prev) => [...prev, { id: -1, outfit_set, outfit_category, evolution }])
     }
     handleObtainedOutfit(outfit_set, outfit_category, evolution)
   }
@@ -717,9 +715,7 @@ export default function OutfitDataProvider({
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          setObtainedOutfit((prev) =>
-            prev.filter((o) => o.id !== payload.old.id)
-          )
+          setObtainedOutfit((prev) => prev.filter((o) => o.id !== payload.old.id))
         }
       )
       .subscribe()
@@ -782,6 +778,7 @@ git commit -m "feat: add OutfitDataProvider with fetch, realtime, and filter sta
 ### Task 9: Outfit variant card
 
 **Files:**
+
 - Create: `components/outfits/outfit-variant-card.tsx`
 
 - [ ] **Step 1: Create the card**
@@ -838,9 +835,7 @@ export default function OutfitVariantCard({
       <Card
         sx={{
           minWidth: 'fit-content',
-          bgcolor: outfitVariant.obtained
-            ? 'surface.containerLow'
-            : 'surface.containerHighest',
+          bgcolor: outfitVariant.obtained ? 'surface.containerLow' : 'surface.containerHighest',
         }}
       >
         <Box sx={{ position: 'relative', height: '100%' }}>
@@ -872,11 +867,7 @@ export default function OutfitVariantCard({
           <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
             {isLoggedIn && (
               <IconButton onClick={onToggle}>
-                {outfitVariant.obtained ? (
-                  <TaskAlt />
-                ) : (
-                  <RadioButtonUncheckedOutlined />
-                )}
+                {outfitVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
               </IconButton>
             )}
           </Box>
@@ -907,6 +898,7 @@ git commit -m "feat: add OutfitVariantCard with obtained toggle"
 ### Task 10: Outfit evolution set card
 
 **Files:**
+
 - Create: `components/outfits/outfit-evolution-set-card.tsx`
 
 - [ ] **Step 1: Create the card**
@@ -1013,6 +1005,7 @@ git commit -m "feat: add OutfitEvolutionSetCard with progress bar"
 ### Task 11: Filter outfits grid component
 
 **Files:**
+
 - Create: `components/outfits/filter-outfits.tsx`
 
 - [ ] **Step 1: Create the component**
@@ -1171,17 +1164,12 @@ export default function FilterOutfits() {
           }}
         >
           {filteredSets.map((set) => {
-            const obtained = set.outfit_variants.reduce(
-              (sum, v) => sum + (v.obtained ? 1 : 0),
-              0
-            )
+            const obtained = set.outfit_variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
             const total = set.outfit_variants.length
             return (
               <React.Fragment key={set.slug}>
                 {groupBySet && (
-                  <Box
-                    sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' }, mt: 2 }}
-                  >
+                  <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' }, mt: 2 }}>
                     <Stack
                       direction="row"
                       sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
@@ -1248,6 +1236,7 @@ git commit -m "feat: add FilterOutfits grid component"
 ### Task 12: Outfit toolbar
 
 **Files:**
+
 - Create: `components/outfits/outfit-toolbar.tsx`
 
 - [ ] **Step 1: Create the toolbar**
@@ -1331,6 +1320,7 @@ git commit -m "feat: add OutfitToolBar"
 ### Task 13: Extend `FilterMenu` for outfits
 
 **Files:**
+
 - Modify: `components/navbar/filter-menu.tsx`
 
 The current `FilterMenu` only handles `/eureka`. We need to add an outfits branch that renders when `pathname` starts with `/outfits`.
@@ -1408,9 +1398,7 @@ export default function FilterMenu() {
       selectedRarity
 
     const allEvolutions = [
-      ...new Map(
-        outfitSets.flatMap((s) => s.evolutions).map((e) => [e.slug, e])
-      ).values(),
+      ...new Map(outfitSets.flatMap((s) => s.evolutions).map((e) => [e.slug, e])).values(),
     ]
 
     const handleShowByEvolutionChange = () => {
@@ -1485,9 +1473,7 @@ export default function FilterMenu() {
                 categories={outfitCategories}
                 disabled={showByEvolution}
                 selectedCategory={showByEvolution ? null : selectedOutfitCategory}
-                onCategoryChange={(_e, v) =>
-                  onOutfitFiltersChange({ selectedOutfitCategory: v })
-                }
+                onCategoryChange={(_e, v) => onOutfitFiltersChange({ selectedOutfitCategory: v })}
               />
             </ListItem>
             <ListItem>
@@ -1525,7 +1511,11 @@ export default function FilterMenu() {
   } = eurekaFilters
 
   const hasActiveFilters =
-    selectedEurekaSet || selectedCategory || selectedObtainedFilter || selectedColor || selectedRarity
+    selectedEurekaSet ||
+    selectedCategory ||
+    selectedObtainedFilter ||
+    selectedColor ||
+    selectedRarity
 
   const handleEurekaSetChange = (event: SelectChangeEvent) => {
     onEurekaFiltersChange({ selectedEurekaSet: event.target.value || null })
@@ -1547,7 +1537,11 @@ export default function FilterMenu() {
 
   const handleShowByColorChange = () => {
     if (!showByColor) {
-      onEurekaFiltersChange({ selectedCategory: null, selectedObtainedFilter: null, selectedColor: null })
+      onEurekaFiltersChange({
+        selectedCategory: null,
+        selectedObtainedFilter: null,
+        selectedColor: null,
+      })
     }
     onShowByColorChange()
   }
@@ -1589,7 +1583,10 @@ export default function FilterMenu() {
             />
           </ListItem>
           <ListItem sx={{ gap: 1 }}>
-            <SortColorToggle showByColor={showByColor} onShowByColorChange={handleShowByColorChange} />
+            <SortColorToggle
+              showByColor={showByColor}
+              onShowByColorChange={handleShowByColorChange}
+            />
             <ColorSelect
               colors={colors}
               disabled={showByColor}
@@ -1654,6 +1651,7 @@ Expected: no errors (new sub-components don't exist yet — errors from missing 
 ### Task 14: New filter sub-components for outfits
 
 **Files:**
+
 - Create: `components/filter/outfit-select.tsx`
 - Create: `components/filter/outfit-evolution-select.tsx`
 - Create: `components/filter/outfit-category-toggle.tsx`
@@ -1724,13 +1722,7 @@ export default function OutfitSelect({
 ```tsx
 // components/filter/outfit-evolution-select.tsx
 import { Evolution } from '@/lib/types/outfit'
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  SelectChangeEvent,
-} from '@mui/material'
+import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material'
 import { toTitle } from '@/lib/utils'
 import { MENU_PROPS } from '@/lib/types/props'
 
@@ -1887,6 +1879,7 @@ git commit -m "feat: extend FilterMenu with outfits branch and add outfit filter
 ### Task 15: Route files — layout, loading, page
 
 **Files:**
+
 - Create: `app/outfits/layout.tsx`
 - Create: `app/outfits/loading.tsx`
 - Modify: `app/outfits/page.tsx`
@@ -2028,6 +2021,7 @@ yarn dev
 - [ ] **Step 2: Verify unauthenticated view**
 
 Visit `http://localhost:3000/outfits`. Confirm:
+
 - Grid loads with outfit variant cards
 - "Login to track your collection" alert appears
 - Sort button and filter icon appear in toolbar
@@ -2036,6 +2030,7 @@ Visit `http://localhost:3000/outfits`. Confirm:
 - [ ] **Step 3: Verify filter menu**
 
 Open the filter drawer. Confirm:
+
 - Outfit Set dropdown lists all sets
 - Evolution dropdown lists all evolutions
 - Category toggle shows outfit categories
@@ -2045,6 +2040,7 @@ Open the filter drawer. Confirm:
 - [ ] **Step 4: Verify authenticated view**
 
 Log in, then visit `/outfits`. Confirm:
+
 - Obtained toggle icons appear on cards
 - Clicking a toggle marks/unmarks the piece
 - Progress chips appear in group headers

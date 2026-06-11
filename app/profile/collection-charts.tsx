@@ -415,7 +415,13 @@ function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
   )
 }
 
-export default function CollectionCharts({ eurekaSets, trials }: { eurekaSets: EurekaSet[]; trials: Trial[] }) {
+export default function CollectionCharts({
+  eurekaSets,
+  trials,
+}: {
+  eurekaSets: EurekaSet[]
+  trials: Trial[]
+}) {
   const allVariants = eurekaSets.flatMap((set) => set.eureka_variants)
 
   const eurekaSetsObtained = eurekaSets.filter(

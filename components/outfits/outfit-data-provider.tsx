@@ -14,11 +14,7 @@ import {
 } from '@/app/actions/preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
 import { updateOutfitSet } from '@/hooks/outfit'
-import {
-  DEFAULT_OUTFIT_FILTERS,
-  OutfitDataContext,
-  OutfitFilterState,
-} from './outfit-context'
+import { DEFAULT_OUTFIT_FILTERS, OutfitDataContext, OutfitFilterState } from './outfit-context'
 
 async function fetchJson<T>(url: string): Promise<T> {
   const r = await fetch(url)
@@ -143,10 +139,7 @@ export default function OutfitDataProvider({
         )
       )
     } else {
-      setObtainedOutfit((prev) => [
-        ...prev,
-        { id: -1, outfit_set, outfit_category, evolution },
-      ])
+      setObtainedOutfit((prev) => [...prev, { id: -1, outfit_set, outfit_category, evolution }])
     }
     handleObtainedOutfit(outfit_set, outfit_category, evolution)
   }
