@@ -198,7 +198,7 @@ export default function FilterOutfits() {
     <>
       {!isLoggedIn && (
         <Box sx={{ width: 'fit-content', my: 2 }}>
-          <LoginAlert />
+          <LoginAlert title='Outfits' />
         </Box>
       )}
 
