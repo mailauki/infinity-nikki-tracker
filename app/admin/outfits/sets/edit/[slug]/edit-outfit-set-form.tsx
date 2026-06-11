@@ -90,6 +90,9 @@ export default function EditOutfitSetForm({
   const [categorySelect, setCategorySelect] = useState<string[]>(initialCategorySelect)
   const [setImage, setSetImage] = useState<string | null>(outfitSet.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(outfitSet.alt_image_url ?? null)
+  const [posterSetImage, setPosterSetImage] = useState<string | null>(
+    outfitSet.poster_image_url ?? null
+  )
   const [variantRows, setVariantRows] = useState<OutfitVariantRow[]>(
     initialVariants.filter((v) => v.evolution === null)
   )
@@ -354,6 +357,15 @@ export default function EditOutfitSetForm({
               table="outfit_sets"
               url={altSetImage}
               onUpload={(url) => setAltSetImage(url)}
+            />
+            <ImageUpload
+              caption="Poster"
+              column="poster_image_url"
+              size="lg"
+              slug={outfitSet.slug}
+              table="outfit_sets"
+              url={posterSetImage}
+              onUpload={(url) => setPosterSetImage(url)}
             />
           </Stack>
         </Stack>
