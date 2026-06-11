@@ -24,7 +24,11 @@ export default function OutfitToolBar() {
     .map((set) => ({
       evolutions: set.evolutions,
       outfit_variants: set.outfit_variants
-        .filter((v) => !selectedOutfitCategory || v.outfit_category === selectedOutfitCategory)
+        .filter(
+          (v) =>
+            selectedOutfitCategory.length === 0 ||
+            (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
+        )
         .filter((v) => !selectedEvolution || v.evolution === selectedEvolution)
         .filter((v) => {
           if (selectedObtainedFilter === 'obtained') return v.obtained === true

@@ -80,7 +80,9 @@ export default function OutfitDataProvider({
         setHideEvolutions(prefs.outfit_hide_evolutions)
         setFilters({
           selectedOutfitSet: prefs.outfit_set_filter ?? null,
-          selectedOutfitCategory: prefs.outfit_category_filter ?? null,
+          selectedOutfitCategory: prefs.outfit_category_filter
+            ? prefs.outfit_category_filter.split(',').filter(Boolean)
+            : [],
           selectedEvolution: prefs.outfit_evolution_filter ?? null,
           selectedRarity: prefs.outfit_rarity_filter ? Number(prefs.outfit_rarity_filter) : null,
           selectedObtainedFilter: (prefs.outfit_obtained_filter as ObtainedFilter) ?? null,
@@ -154,7 +156,9 @@ export default function OutfitDataProvider({
     startTransition(() =>
       updateOutfitFilters({
         outfit_set_filter: filters.selectedOutfitSet,
-        outfit_category_filter: filters.selectedOutfitCategory,
+        outfit_category_filter: filters.selectedOutfitCategory.length
+          ? filters.selectedOutfitCategory.join(',')
+          : null,
         outfit_evolution_filter: filters.selectedEvolution,
         outfit_rarity_filter: filters.selectedRarity ? String(filters.selectedRarity) : null,
         outfit_obtained_filter: filters.selectedObtainedFilter,

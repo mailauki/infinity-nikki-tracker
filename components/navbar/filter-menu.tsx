@@ -89,7 +89,7 @@ export default function FilterMenu() {
 
     const hasActiveFilters =
       selectedOutfitSet ||
-      selectedOutfitCategory ||
+      selectedOutfitCategory.length > 0 ||
       selectedEvolution ||
       selectedObtainedFilter ||
       selectedRarity
@@ -101,7 +101,7 @@ export default function FilterMenu() {
     const handleShowByEvolutionChange = () => {
       if (!showByEvolution) {
         onOutfitFiltersChange({
-          selectedOutfitCategory: null,
+          selectedOutfitCategory: [],
           selectedObtainedFilter: null,
           selectedEvolution: null,
         })
@@ -171,11 +171,17 @@ export default function FilterMenu() {
             )}
             <ListItem>
               <OutfitCategorySelect
+                multiple
                 categories={outfitCategories}
                 disabled={showByEvolution}
-                selectedCategory={showByEvolution ? null : selectedOutfitCategory}
+                selectedCategory={showByEvolution ? [] : selectedOutfitCategory}
                 onCategoryChange={(e) =>
-                  onOutfitFiltersChange({ selectedOutfitCategory: e.target.value || null })
+                  onOutfitFiltersChange({
+                    selectedOutfitCategory:
+                      typeof e.target.value === 'string'
+                        ? e.target.value.split(',').filter(Boolean)
+                        : e.target.value,
+                  })
                 }
               />
             </ListItem>

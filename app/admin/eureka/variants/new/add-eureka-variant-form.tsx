@@ -86,10 +86,10 @@ export default function AddEurekaVariantForm({
         <FormControl required>
           <InputLabel>Eureka Set</InputLabel>
           <Select
+            MenuProps={MENU_PROPS}
             label="Eureka Set"
             name="eureka_set"
             value={eurekaSet}
-            MenuProps={MENU_PROPS}
             onChange={(e) => setEurekaSet(e.target.value)}
           >
             <MenuItem value="">—</MenuItem>

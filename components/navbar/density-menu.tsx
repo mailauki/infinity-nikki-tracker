@@ -22,10 +22,9 @@ export default function DensityMenu() {
 
 			<Menu
         anchorEl={anchorEl}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         id="view-density-menu"
         open={open}
-        onClose={handleClose}
-        onClick={handleClose}
         slotProps={{
           paper: {
             elevation: 0,
@@ -55,7 +54,8 @@ export default function DensityMenu() {
           },
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        onClick={handleClose}
+        onClose={handleClose}
       >
         <MenuItem onClick={handleClose}>
           <ListItemIcon>
