@@ -1,0 +1,12 @@
+# Package manager internals (Yarn release binary, vendored)
+.yarn/
+
+# Vendored agent skill content — not ours to format
+.agents/
+
+# Supabase-generated types — regenerate via the CLI, don't hand-format
+lib/types/supabase.ts
+
+# Build output / deps
+.next/
+node_modules/
