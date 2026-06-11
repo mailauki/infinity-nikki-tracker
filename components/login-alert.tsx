@@ -10,8 +10,7 @@ export default function LoginAlert({ title }: { title?: string }) {
       <Anchor color="inherit" href="/sign-up">
         Sign up
       </Anchor>{' '}
-      to track your{' '}
-			{title ? `collected ${title}` : 'collection'}
+      to track your {title ? `collected ${title}` : 'collection'}
     </Alert>
   )
 }

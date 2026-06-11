@@ -126,7 +126,7 @@ export default function FilterEureka() {
     <>
       {!isLoggedIn && (
         <Box sx={{ width: 'fit-content', my: 2 }}>
-          <LoginAlert title='Eureka' />
+          <LoginAlert title="Eureka" />
         </Box>
       )}
 

@@ -5,7 +5,6 @@ import FeatureRequestForm from '@/components/forms/feature-request-form'
 import { AddComment, BugReport, Coffee, GitHub } from '@mui/icons-material'
 import {
   Box,
-  Card,
   Dialog,
   DialogContent,
   DialogTitle,

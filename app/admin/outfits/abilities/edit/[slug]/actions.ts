@@ -3,7 +3,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
-import { navLinksData } from '@/lib/nav-links'
 
 export async function editAbility(
   currentSlug: string,

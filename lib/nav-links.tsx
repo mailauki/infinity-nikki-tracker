@@ -1,12 +1,5 @@
 import { AdminLinks, NavLink } from '@/lib/types/props'
-import {
-  Help,
-  Info,
-  AccountCircle,
-  AutoAwesome,
-  Settings,
-  AdminPanelSettings,
-} from '@mui/icons-material'
+import { Help, Info, AccountCircle, Settings, AdminPanelSettings } from '@mui/icons-material'
 
 export const navLinksData: {
   home: NavLink[]
