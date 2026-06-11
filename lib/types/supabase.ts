@@ -493,6 +493,7 @@ export type Database = {
           image_url: string | null
           label: string | null
           label_2: string | null
+          poster_image_url: string | null
           rarity: number
           slug: string
           style: string | null
@@ -509,6 +510,7 @@ export type Database = {
           image_url?: string | null
           label?: string | null
           label_2?: string | null
+          poster_image_url?: string | null
           rarity: number
           slug: string
           style?: string | null
@@ -525,6 +527,7 @@ export type Database = {
           image_url?: string | null
           label?: string | null
           label_2?: string | null
+          poster_image_url?: string | null
           rarity?: number
           slug?: string
           style?: string | null
