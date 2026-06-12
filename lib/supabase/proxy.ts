@@ -30,13 +30,16 @@ export async function updateSession(request: NextRequest) {
   )
 
   // Do not run code between createServerClient and
-  // supabase.auth.getClaims(). A simple mistake could make it very hard to debug
+  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.
 
-  // IMPORTANT: If you remove getClaims() and you use server-side rendering
-  // with the Supabase client, your users may be randomly logged out.
-  const { data } = await supabase.auth.getClaims()
-  const user = data?.claims
+  // IMPORTANT: Do not use getClaims() here. It decodes the JWT locally without
+  // a network round-trip, but it can silently return null when the session cookie
+  // format doesn't match (e.g. after a signOut + signIn cycle). getUser() makes
+  // a real API call, handles token refresh, and is the only reliable guard.
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
   if (
     request.nextUrl.pathname !== '/' &&
