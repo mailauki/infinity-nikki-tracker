@@ -48,10 +48,7 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
         <Stack direction="row" spacing={0.5}>
           {showImageSwap && (
             <Tooltip title={IMAGE_MODE_LABEL[mode]}>
-              <IconButton
-                aria-label={IMAGE_MODE_LABEL[mode]}
-                onClick={cycleMode}
-              >
+              <IconButton aria-label={IMAGE_MODE_LABEL[mode]} onClick={cycleMode}>
                 <Compare />
               </IconButton>
             </Tooltip>

@@ -1,6 +1,6 @@
 import { Evolution, OutfitSet } from '@/lib/types/outfit'
 import { RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
-import { Card, CardActionArea, CardHeader, IconButton, Typography } from '@mui/material'
+import { Card, CardActionArea, IconButton, Stack, Typography } from '@mui/material'
 import RarityStars from '../rarity-stars'
 import Link from 'next/link'
 import { toTitle } from '@/lib/utils'
@@ -50,39 +50,29 @@ export default function OutfitSetCard({
           <LazyImage
             image={imageSrc || set.image_url || ''}
             kind="media"
-            sx={{ width: '100%', maxWidth: 300, aspectRatio: '9 / 16' }}
+            sx={{ width: '100%', aspectRatio: '9 / 16' }}
             title={title}
           />
         )}
       </CardActionArea>
-      <CardHeader
-        disableTypography
-        action={
-          isLoggedIn && (
-            <IconButton
-              aria-label={obtained ? 'Mark as not obtained' : 'Mark as obtained'}
-              onClick={onToggle}
-            >
-              {obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
-            </IconButton>
-          )
-        }
-        subheader={
+      <Stack direction="row" sx={{ px: 1, alignItems: 'center', justifyContent: 'space-between' }}>
+        <Stack spacing={1} sx={{ px: 1, py: 2, maxWidth: 'calc(100% - 40px)' }}>
+          <Typography noWrap variant="overline">
+            {title}
+          </Typography>
           <Typography color="textSecondary" variant="subtitle2">
             <RarityStars rarity={set.rarity} />
           </Typography>
-        }
-        sx={{ '& .MuiCardHeader-content': { maxWidth: 'calc(100% - 40px)' } }}
-        title={
-          <Typography
-            noWrap
-            sx={{ pb: 0.5, fontSize: { sm: 'subtitle2.fontSize', md: 'subtitle1.fontSize' } }}
-            variant={'subtitle1'}
+        </Stack>
+        {isLoggedIn && (
+          <IconButton
+            aria-label={obtained ? 'Mark as not obtained' : 'Mark as obtained'}
+            onClick={onToggle}
           >
-            {title}
-          </Typography>
-        }
-      />
+            {obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
+          </IconButton>
+        )}
+      </Stack>
     </Card>
   )
 }

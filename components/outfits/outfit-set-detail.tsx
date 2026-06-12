@@ -50,8 +50,8 @@ export default function OutfitSetDetail({
     <>
       <SlugToolBar isAdmin={isAdmin} />
       <Stack useFlexGap direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
-        <Container disableGutters fixed maxWidth="xs" sx={{ m: 0 }}>
-          <Stack spacing={2}>
+        <Container disableGutters fixed maxWidth="xs">
+          <Stack spacing={2} sx={{ alignItems: 'center' }}>
             {showingAlt ? (
               <LazyImage
                 alt={outfitSet.title}
@@ -66,7 +66,10 @@ export default function OutfitSetDetail({
                 title={outfitSet.title}
               />
             )}
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack
+              direction="row"
+              sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
+            >
               <Typography color="textSecondary" variant="subtitle2">
                 <RarityStars rarity={rarity!} />
               </Typography>
@@ -75,13 +78,21 @@ export default function OutfitSetDetail({
                 {label_2 && <Chip label={toTitle(label_2)} variant="outlined" />}
               </Stack>
             </Stack>
-            <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+            <Stack
+              direction="row"
+              sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
+            >
               <Typography color="textSecondary" variant="body1">
                 {toTitle(style ?? '')}
               </Typography>
               {isLoggedIn && <ProgressChip percentage={percent(obtained, total)} size="md" />}
             </Stack>
-            {ability && <Chip label={toTitle(ability)} />}
+            <Stack
+              direction="row"
+              sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
+            >
+              {ability && <Chip label={toTitle(ability)} />}
+            </Stack>
             <Typography variant="body2">{description}</Typography>
           </Stack>
         </Container>

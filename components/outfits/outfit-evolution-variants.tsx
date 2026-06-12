@@ -3,8 +3,6 @@
 import { Box, Stack, ToggleButton, ToggleButtonGroup, Toolbar } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
 import { percent } from '@/hooks/count-obtained'
-import { toTitle } from '@/lib/utils'
-import { GRID_COLUMNS } from '@/lib/types/props'
 import ProgressChip from '@/components/progress-chip'
 import OutfitVariantCard from './outfit-variant-card'
 
@@ -23,7 +21,7 @@ export default function OutfitEvolutionVariants({
   selected: string | null
   onSelect: (next: string | null) => void
 }) {
-  const { title, evolutions, outfit_variants } = outfitSet
+  const { evolutions, outfit_variants } = outfitSet
 
   // Sort by evolution order, with the null (default) evolution first.
   const evolutionOrder = new Map(evolutions.map((e) => [e.slug, e.order]))
@@ -56,7 +54,7 @@ export default function OutfitEvolutionVariants({
             const value = evolution?.slug ?? BASE
             return (
               <ToggleButton key={value} value={value}>
-								{evolution?.subtitle ? evolution.subtitle : 'Base'}
+                {evolution?.subtitle ? evolution.subtitle : 'Base'}
               </ToggleButton>
             )
           })}
@@ -68,7 +66,13 @@ export default function OutfitEvolutionVariants({
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr', lg: '1fr 1fr 1fr 1fr'},
+          gridTemplateColumns: {
+            xs: '1fr 1fr',
+            sm: '1fr 1fr 1fr',
+            md: '1fr 1fr',
+            lg: '1fr 1fr 1fr 1fr',
+            xl: '1fr 1fr 1fr 1fr 1fr',
+          },
           gap: { xs: 1, sm: 1.5, md: 2 },
         }}
       >

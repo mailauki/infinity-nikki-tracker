@@ -1,20 +1,25 @@
 'use client'
-import React from 'react'
-import { Alert, Box, Button, Divider, Skeleton, Stack, Typography } from '@mui/material'
-import { ChevronRight } from '@mui/icons-material'
+import { Alert, Box, Divider, Skeleton, Stack, Typography } from '@mui/material'
 
 import ErrorAlert from '@/components/error-alert'
 import LoginAlert from '@/components/login-alert'
-import ProgressChip from '@/components/progress-chip'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
 import { GRID_COLUMNS } from '@/lib/types/props'
-import { percent } from '@/hooks/count-obtained'
-import { toTitle } from '@/lib/utils'
 import OutfitVariantCard from './outfit-variant-card'
 import OutfitEvolutionSetCard from './outfit-evolution-set-card'
 import OutfitSetCard from './outfit-set-card'
+import OutfitSetSection from './outfit-set-section'
+
+// Shared responsive column track for both density grids.
+const OUTFIT_GRID_COLUMNS = {
+  xs: 'repeat(2, 1fr)',
+  sm: 'repeat(3, 1fr)',
+  md: 'repeat(4, 1fr)',
+  lg: 'repeat(6, 1fr)',
+  xl: 'repeat(8, 1fr)',
+}
 
 function GroupHeaderSkeleton() {
   return (
@@ -139,52 +144,6 @@ export default function FilterOutfits() {
         />
       ))
     }
-    if (groupBySet) {
-      return [null, ...set.evolutions]
-        .map((evolution) => {
-          const evolutionKey = evolution?.slug ?? null
-          const variants = set.outfit_variants.filter((v) =>
-            evolutionKey === null ? v.evolution === null : v.evolution === evolutionKey
-          )
-          if (variants.length === 0) return null
-          const evoLabel = evolution
-            ? `${set.title}: ${toTitle(evolution.subtitle ?? evolution.slug)}`
-            : set.title
-          const evoObtained = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
-          return (
-            <React.Fragment key={evolutionKey ?? 'base'}>
-              <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' }, mt: 1 }}>
-                <Stack
-                  direction="row"
-                  sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
-                >
-                  <Button
-                    color="inherit"
-                    endIcon={<ChevronRight />}
-                    href={`/outfits/${evolution?.slug}`}
-                    size="small"
-                  >
-                    {evoLabel}
-                  </Button>
-                  {isLoggedIn && (
-                    <ProgressChip percentage={percent(evoObtained, variants.length)} size="lg" />
-                  )}
-                </Stack>
-                <Divider />
-              </Box>
-              {variants.map((variant) => (
-                <OutfitVariantCard
-                  key={variant.id}
-                  isLoggedIn={isLoggedIn}
-                  isMissingFilter={selectedObtainedFilter === 'missing'}
-                  outfitVariant={variant}
-                />
-              ))}
-            </React.Fragment>
-          )
-        })
-        .filter(Boolean)
-    }
     return set.outfit_variants.map((variant) => (
       <OutfitVariantCard
         key={variant.id}
@@ -224,12 +183,7 @@ export default function FilterOutfits() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: '1fr 1fr',
-              md: '1fr 1fr 1fr',
-              lg: '1fr 1fr 1fr 1fr',
-            },
+            gridTemplateColumns: OUTFIT_GRID_COLUMNS,
             gap: 2,
           }}
         >
@@ -270,47 +224,15 @@ export default function FilterOutfits() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: GRID_COLUMNS,
-            gap: { xs: 1, sm: 1.5, md: 2 },
-            py: groupBySet ? 0 : 2,
+            gridTemplateColumns: OUTFIT_GRID_COLUMNS,
+            gap: 2,
           }}
         >
-          {filteredSets.map((set) => {
-            const obtained = set.outfit_variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
-            const total = set.outfit_variants.length
-            return (
-              <React.Fragment key={set.slug}>
-                {groupBySet && showByEvolution && (
-                  <Box
-                    sx={{
-                      gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' },
-                      mt: 2,
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
-                    >
-                      <Button
-                        color="inherit"
-                        endIcon={<ChevronRight />}
-                        href={`/outfits/${set.slug}`}
-                        size="small"
-                      >
-                        {set.title}
-                      </Button>
-
-                      {isLoggedIn && (
-                        <ProgressChip percentage={percent(obtained, total)} size="lg" />
-                      )}
-                    </Stack>
-                    <Divider />
-                  </Box>
-                )}
-                {renderSetVariants(set)}
-              </React.Fragment>
-            )
-          })}
+          {groupBySet
+            ? filteredSets.map((set) => (
+                <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
+              ))
+            : filteredSets.flatMap((set) => renderSetVariants(set))}
         </Box>
       )}
     </>
