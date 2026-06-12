@@ -13,6 +13,18 @@ export const OUTFIT_IMAGE_MODES: OutfitImageMode[] = ['image', 'alt', 'poster']
 // implemented.
 export type OutfitDensity = 'standard' | 'compact'
 
+// Resolve which image to show for the current mode, falling back to the main
+// image when the requested source is missing (e.g. no poster/alt).
+export function resolveOutfitImage(
+  mode: OutfitImageMode,
+  sources: { poster?: string | null; image?: string | null; alt?: string | null }
+): string | null | undefined {
+  const { poster, image, alt } = sources
+  if (mode === 'alt') return alt || image
+  if (mode === 'poster') return poster || image
+  return image
+}
+
 type OutfitImageModeContextValue = {
   mode: OutfitImageMode
   setMode: (mode: OutfitImageMode) => void
