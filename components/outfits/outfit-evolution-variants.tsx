@@ -56,7 +56,7 @@ export default function OutfitEvolutionVariants({
             const value = evolution?.slug ?? BASE
             return (
               <ToggleButton key={value} value={value}>
-								{evolution?.subtitle ? evolution.subtitle : 'Base'}
+                {evolution?.subtitle ? evolution.subtitle : 'Base'}
               </ToggleButton>
             )
           })}
@@ -68,7 +68,13 @@ export default function OutfitEvolutionVariants({
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr', lg: '1fr 1fr 1fr 1fr'},
+          gridTemplateColumns: {
+            xs: '1fr 1fr',
+            sm: '1fr 1fr 1fr',
+            md: '1fr 1fr',
+            lg: '1fr 1fr 1fr 1fr',
+            xl: '1fr 1fr 1fr 1fr 1fr',
+          },
           gap: { xs: 1, sm: 1.5, md: 2 },
         }}
       >
