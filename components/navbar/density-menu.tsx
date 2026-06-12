@@ -1,10 +1,20 @@
 'use client'
-import { Compare, ViewCompact, ViewList, ViewModule } from '@mui/icons-material'
-import { Divider, IconButton, ListItemIcon, Menu, MenuItem, Tooltip } from '@mui/material'
+import { Check, Compare, ViewCompact, ViewModule } from '@mui/icons-material'
+import {
+  Divider,
+  IconButton,
+  ListItemIcon,
+  ListItemText,
+  Menu,
+  MenuItem,
+  Tooltip,
+} from '@mui/material'
 import React from 'react'
+import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 
 export default function DensityMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const { mode, cycleMode, density, setDensity } = useOutfitImageMode()
   const open = Boolean(anchorEl)
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -12,6 +22,13 @@ export default function DensityMenu() {
   const handleClose = () => {
     setAnchorEl(null)
   }
+
+  const IMAGE_MODE_LABEL = {
+    image: 'Showing main image',
+    alt: 'Showing alternate image',
+    poster: 'Showing poster image',
+  } as const
+
   return (
     <>
       <Tooltip title="View Density">
@@ -57,30 +74,46 @@ export default function DensityMenu() {
         onClick={handleClose}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose}>
+        <MenuItem
+          selected={density === 'standard'}
+          onClick={() => {
+            setDensity('standard')
+            handleClose()
+          }}
+        >
           <ListItemIcon>
             <ViewModule />
           </ListItemIcon>
-          Standard
+          <ListItemText>Standard</ListItemText>
+          {density === 'standard' && <Check fontSize="small" sx={{ ml: 2 }} />}
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        <MenuItem
+          selected={density === 'compact'}
+          onClick={() => {
+            setDensity('compact')
+            handleClose()
+          }}
+        >
           <ListItemIcon>
             <ViewCompact />
           </ListItemIcon>
-          Compact
+          <ListItemText>Compact</ListItemText>
+          {density === 'compact' && <Check fontSize="small" sx={{ ml: 2 }} />}
         </MenuItem>
-        <MenuItem onClick={handleClose}>
+        {/* <MenuItem onClick={handleClose}>
           <ListItemIcon>
             <ViewList />
           </ListItemIcon>
           List
-        </MenuItem>
+          {density === 'list' && <Check fontSize="small" sx={{ ml: 2 }} />}
+        </MenuItem> */}
+        {/* TODO: list view density will be added later */}
         <Divider />
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={cycleMode}>
           <ListItemIcon>
             <Compare />
           </ListItemIcon>
-          Alt Images
+          {IMAGE_MODE_LABEL[mode]}
         </MenuItem>
       </Menu>
     </>

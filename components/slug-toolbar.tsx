@@ -3,16 +3,22 @@
 import { IconButton, Stack, Tooltip } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { useParams, usePathname } from 'next/navigation'
-import { ChevronLeft, Edit, Flip } from '@mui/icons-material'
+import { ChevronLeft, Compare, Edit, Flip } from '@mui/icons-material'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 
 export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
   const pathname = usePathname()
   const { slug } = useParams()
-  const { showAlt, toggleAlt } = useOutfitImageMode()
+  const { mode, cycleMode } = useOutfitImageMode()
 
-  // The alt-image swap is available to everyone on the outfits slug page.
+  // The image swap is available to everyone on the outfits slug page.
   const showImageSwap = pathname.startsWith('/outfits/')
+
+  const IMAGE_MODE_LABEL = {
+    image: 'Showing main image',
+    alt: 'Showing alternate image',
+    poster: 'Showing poster image',
+  } as const
 
   const path =
     pathname.split('/')[2] === slug
@@ -41,18 +47,17 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
 
         <Stack direction="row" spacing={0.5}>
           {showImageSwap && (
-            <Tooltip title={showAlt ? 'Show original images' : 'Show alternate images'}>
+            <Tooltip title={IMAGE_MODE_LABEL[mode]}>
               <IconButton
-                aria-label={showAlt ? 'Show original images' : 'Show alternate images'}
-                color={showAlt ? 'primary' : 'default'}
-                onClick={toggleAlt}
+                aria-label={IMAGE_MODE_LABEL[mode]}
+                onClick={cycleMode}
               >
-                <Flip />
+                <Compare />
               </IconButton>
             </Tooltip>
           )}
           {isAdmin && (
-            <IconButton component="a" href={`/${path}/edit/${slug}`}>
+            <IconButton component="a" href={`/admin/${path}/edit/${slug}`}>
               <Edit />
             </IconButton>
           )}

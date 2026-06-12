@@ -1,21 +1,56 @@
 'use client'
 
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useMemo, useState } from 'react'
+
+// The image swap cycles through these three sources. Not every entity has all
+// three (variants/evolutions have no poster) — consumers fall back as needed.
+export type OutfitImageMode = 'image' | 'alt' | 'poster'
+
+// Cycle order; `image` (the main image) is the default starting mode.
+export const OUTFIT_IMAGE_MODES: OutfitImageMode[] = ['image', 'alt', 'poster']
+
+// Card layout density for the outfits grid. `list` is planned but not yet
+// implemented.
+export type OutfitDensity = 'standard' | 'compact'
 
 type OutfitImageModeContextValue = {
-  // When true, components show alt_image_url (falling back to image_url).
-  showAlt: boolean
-  toggleAlt: () => void
+  mode: OutfitImageMode
+  setMode: (mode: OutfitImageMode) => void
+  cycleMode: () => void
+  density: OutfitDensity
+  setDensity: (density: OutfitDensity) => void
 }
 
-// Defaults make the hook safe outside the slug page (e.g. the main outfits
-// grid), where no provider is mounted.
+// Defaults make the hook safe outside a provider (e.g. nested cards), where no
+// provider is mounted.
 const OutfitImageModeContext = createContext<OutfitImageModeContextValue>({
-  showAlt: false,
-  toggleAlt: () => {},
+  mode: 'image',
+  setMode: () => {},
+  cycleMode: () => {},
+  density: 'standard',
+  setDensity: () => {},
 })
 
-export const OutfitImageModeProvider = OutfitImageModeContext.Provider
+export function OutfitImageModeProvider({ children }: { children: React.ReactNode }) {
+  const [mode, setMode] = useState<OutfitImageMode>('image')
+  const [density, setDensity] = useState<OutfitDensity>('standard')
+
+  const value = useMemo<OutfitImageModeContextValue>(
+    () => ({
+      mode,
+      setMode,
+      cycleMode: () =>
+        setMode(
+          (m) => OUTFIT_IMAGE_MODES[(OUTFIT_IMAGE_MODES.indexOf(m) + 1) % OUTFIT_IMAGE_MODES.length]
+        ),
+      density,
+      setDensity,
+    }),
+    [mode, density]
+  )
+
+  return <OutfitImageModeContext.Provider value={value}>{children}</OutfitImageModeContext.Provider>
+}
 
 export function useOutfitImageMode() {
   return useContext(OutfitImageModeContext)

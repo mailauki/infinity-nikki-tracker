@@ -19,7 +19,7 @@ export default function OutfitSetImage({
   // Alt images are square (1:1); normal/poster/evolution images are 9:16.
   square?: boolean
 }) {
-  const src = overrideSrc || set.poster_image_url || set.image_url || ''
+  const src = overrideSrc || set.image_url || ''
   const aspectRatio = square ? '1 / 1' : '9 / 16'
 
   const [loaded, setLoaded] = useState(false)

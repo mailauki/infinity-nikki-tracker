@@ -7,6 +7,7 @@ import ErrorAlert from '@/components/error-alert'
 import LoginAlert from '@/components/login-alert'
 import ProgressChip from '@/components/progress-chip'
 import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
 import { GRID_COLUMNS } from '@/lib/types/props'
 import { percent } from '@/hooks/count-obtained'
@@ -55,6 +56,7 @@ export default function FilterOutfits() {
     filters,
     onToggleObtained,
   } = useOutfitData()
+  const { density } = useOutfitImageMode()
   const { sortOrder } = useSortOrder()
 
   const {
@@ -207,41 +209,7 @@ export default function FilterOutfits() {
         </Alert>
       )}
 
-      {filteredSets.length > 0 && (
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr', lg: '1fr 1fr 1fr 1fr' },
-            gap: 2,
-          }}
-        >
-          {filteredSets.map((set) => {
-            const variants = set.outfit_variants
-            const allObtained =
-              variants.length > 0 && variants.every((v) => v.obtained === true)
-            return (
-              <OutfitSetCard
-                key={set.id}
-                isLoggedIn={isLoggedIn}
-                obtained={allObtained}
-                set={set}
-                onToggle={() => {
-                  // Mark every variant to the opposite of the set's current
-                  // completion state. onToggleObtained flips a single variant,
-                  // so only toggle variants whose state needs to change.
-                  variants.forEach((v) => {
-                    if (v.obtained === allObtained) {
-                      onToggleObtained(v.outfit_set!, v.outfit_category!, v.evolution ?? null)
-                    }
-                  })
-                }}
-              />
-            )
-          })}
-        </Box>
-      )}
-
-      {filteredSets.length === 0 ? (
+      {filteredSets.length === 0 && (
         <Stack sx={{ py: 8, alignItems: 'center', justifyContent: 'center' }}>
           <Typography color="textSecondary" variant="h6">
             No results
@@ -250,7 +218,55 @@ export default function FilterOutfits() {
             Try adjusting your filters
           </Typography>
         </Stack>
-      ) : (
+      )}
+
+      {filteredSets.length > 0 && density === 'standard' && (
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: '1fr 1fr',
+              md: '1fr 1fr 1fr',
+              lg: '1fr 1fr 1fr 1fr',
+            },
+            gap: 2,
+          }}
+        >
+          {filteredSets.flatMap((set) =>
+            // Render the base set plus each evolution as its own card.
+            [null, ...set.evolutions].map((evolution) => {
+              const evolutionKey = evolution?.slug ?? null
+              const variants = set.outfit_variants.filter((v) =>
+                evolutionKey === null ? v.evolution === null : v.evolution === evolutionKey
+              )
+              if (variants.length === 0) return null
+              const allObtained = variants.every((v) => v.obtained === true)
+              return (
+                <OutfitSetCard
+                  key={`${set.id}-${evolutionKey ?? 'base'}`}
+                  evolution={evolution}
+                  isLoggedIn={isLoggedIn}
+                  obtained={allObtained}
+                  set={set}
+                  onToggle={() => {
+                    // Mark every variant in this group to the opposite of its
+                    // current completion state. onToggleObtained flips a single
+                    // variant, so only toggle the ones that need to change.
+                    variants.forEach((v) => {
+                      if (v.obtained === allObtained) {
+                        onToggleObtained(v.outfit_set!, v.outfit_category!, v.evolution ?? null)
+                      }
+                    })
+                  }}
+                />
+              )
+            })
+          )}
+        </Box>
+      )}
+
+      {filteredSets.length > 0 && density === 'compact' && (
         <Box
           sx={{
             display: 'grid',

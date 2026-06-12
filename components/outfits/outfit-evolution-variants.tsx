@@ -44,7 +44,7 @@ export default function OutfitEvolutionVariants({
   const total = variants.length
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} sx={{ flex: 1 }}>
       <Toolbar disableGutters sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
         <ToggleButtonGroup
           exclusive
@@ -54,12 +54,9 @@ export default function OutfitEvolutionVariants({
         >
           {[null, ...evolutions].map((evolution) => {
             const value = evolution?.slug ?? BASE
-            const label = evolution
-              ? `${title}: ${toTitle(evolution.subtitle ?? evolution.slug)}`
-              : title
             return (
               <ToggleButton key={value} value={value}>
-                {label}
+								{evolution?.subtitle ? evolution.subtitle : 'Base'}
               </ToggleButton>
             )
           })}
@@ -71,7 +68,7 @@ export default function OutfitEvolutionVariants({
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: GRID_COLUMNS,
+          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr', lg: '1fr 1fr 1fr 1fr'},
           gap: { xs: 1, sm: 1.5, md: 2 },
         }}
       >

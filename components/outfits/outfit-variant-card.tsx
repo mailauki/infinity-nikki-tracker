@@ -19,10 +19,12 @@ export default function OutfitVariantCard({
   isMissingFilter?: boolean
 }) {
   const { onToggleObtained } = useOutfitData()
-  const { showAlt } = useOutfitImageMode()
+  const { mode } = useOutfitImageMode()
   const [exiting, setExiting] = useState(false)
 
-  const imageSrc = (showAlt && outfitVariant.alt_image_url) || outfitVariant.image_url || undefined
+  // Variants have no poster image, so only alt mode differs from the default.
+  const imageSrc =
+    (mode === 'alt' && outfitVariant.alt_image_url) || outfitVariant.image_url || undefined
 
   function onToggle() {
     if (isMissingFilter) {

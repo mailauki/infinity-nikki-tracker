@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Stack, Typography, Chip } from '@mui/material'
+import { Stack, Typography, Chip, Container } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
 import { percent } from '@/hooks/count-obtained'
 import { toTitle } from '@/lib/utils'
@@ -10,7 +10,8 @@ import ProgressChip from '@/components/progress-chip'
 import SlugToolBar from '@/components/slug-toolbar'
 import OutfitSetImage from './outfit-set-image'
 import OutfitEvolutionVariants from './outfit-evolution-variants'
-import { OutfitImageModeProvider } from './outfit-image-mode-context'
+import { useOutfitImageMode } from './outfit-image-mode-context'
+import { useParams, useSearchParams } from 'next/navigation'
 
 export default function OutfitSetDetail({
   outfitSet,
@@ -23,29 +24,38 @@ export default function OutfitSetDetail({
 }) {
   const { ability, evolutions, outfit_variants, rarity, label, label_2, style, description } =
     outfitSet
+  const { mode } = useOutfitImageMode()
 
+	const searchParams = useSearchParams()
+  const evolutionParams = searchParams.get('evolution')
+	const evolutionParamsSlug = evolutionParams ? `${outfitSet.slug}-${evolutionParams}` : null
   // `null` selection means "show all evolutions".
-  const [selected, setSelected] = useState<string | null>(null)
-  const [showAlt, setShowAlt] = useState(false)
+  const [selected, setSelected] = useState<string | null>(evolutionParamsSlug || null)
 
   const selectedEvolution = evolutions.find((e) => e.slug === selected) ?? null
 
-  // Resolve the poster image, honoring the selected evolution and the alt
-  // toggle, falling back to the normal image when no alt exists.
-  const altSrc = selectedEvolution ? selectedEvolution.alt_image_url : outfitSet.alt_image_url
-  const showingAlt = showAlt && !!altSrc
-  const posterSrc = selectedEvolution
-    ? (showingAlt && altSrc) || selectedEvolution.image_url
-    : (showingAlt && altSrc) || outfitSet.poster_image_url || outfitSet.image_url
+  // Resolve the poster image for the current mode. Evolutions have no poster,
+  // so poster mode falls back to the evolution image. Alt falls back to image.
+  const poster = selectedEvolution ? null : outfitSet.poster_image_url
+  const image = selectedEvolution ? selectedEvolution.image_url : outfitSet.image_url
+  const alt = selectedEvolution ? selectedEvolution.alt_image_url : outfitSet.alt_image_url
+
+  let posterSrc: string | null | undefined
+  if (mode === 'alt') posterSrc = alt || image
+  else if (mode === 'image') posterSrc = image
+  else posterSrc = poster || image
+
+  const showingAlt = mode === 'alt' && !!alt
 
   const obtained = outfit_variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
   const total = outfit_variants.length
 
   return (
-    <OutfitImageModeProvider value={{ showAlt, toggleAlt: () => setShowAlt((v) => !v) }}>
+    <>
       <SlugToolBar isAdmin={isAdmin} />
-      <Stack direction="row" spacing={2}>
-        <Stack spacing={2} sx={{ minWidth: '300px', maxWidth: '400px' }}>
+      <Stack useFlexGap direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
+        <Container disableGutters fixed maxWidth='xs' sx={{ m: 0 }}>
+					<Stack spacing={2}>
           <OutfitSetImage overrideSrc={posterSrc} set={outfitSet} square={showingAlt} />
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography color="textSecondary" variant="subtitle2">
@@ -64,7 +74,8 @@ export default function OutfitSetDetail({
           </Stack>
           {ability && <Chip label={toTitle(ability)} />}
           <Typography variant="body2">{description}</Typography>
-        </Stack>
+					</Stack>
+        </Container>
 
         <OutfitEvolutionVariants
           isLoggedIn={isLoggedIn}
@@ -73,6 +84,6 @@ export default function OutfitSetDetail({
           onSelect={setSelected}
         />
       </Stack>
-    </OutfitImageModeProvider>
+    </>
   )
 }
