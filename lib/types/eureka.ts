@@ -94,6 +94,7 @@ export type UserPreferences = Pick<
   | 'outfit_hide_evolutions'
   | 'outfit_image_mode'
   | 'outfit_density'
+  | 'sort_order'
 >
 
 export type ColorTheme = 'default' | 'moonlight' | 'cherry' | 'forest'

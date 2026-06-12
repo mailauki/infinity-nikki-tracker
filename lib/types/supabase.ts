@@ -747,6 +747,7 @@ export type Database = {
           outfit_set_filter: string | null
           outfit_show_by_evolution: boolean
           show_by_color: boolean
+          sort_order: string
           theme: string
           updated_at: string | null
           user_id: string
@@ -771,6 +772,7 @@ export type Database = {
           outfit_set_filter?: string | null
           outfit_show_by_evolution?: boolean
           show_by_color?: boolean
+          sort_order?: string
           theme?: string
           updated_at?: string | null
           user_id: string
@@ -795,6 +797,7 @@ export type Database = {
           outfit_set_filter?: string | null
           outfit_show_by_evolution?: boolean
           show_by_color?: boolean
+          sort_order?: string
           theme?: string
           updated_at?: string | null
           user_id?: string

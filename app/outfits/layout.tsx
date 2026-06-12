@@ -9,18 +9,18 @@ async function OutfitProviders({ children }: { children: React.ReactNode }) {
   const userId = await getUserID()
 
   return (
-    <OutfitDataProvider isLoggedIn={!!userId} userId={userId}>
-      <OutfitImageModeProvider isLoggedIn={!!userId}>{children}</OutfitImageModeProvider>
-    </OutfitDataProvider>
+    <SortProvider isLoggedIn={!!userId}>
+      <OutfitDataProvider isLoggedIn={!!userId} userId={userId}>
+        <OutfitImageModeProvider isLoggedIn={!!userId}>{children}</OutfitImageModeProvider>
+      </OutfitDataProvider>
+    </SortProvider>
   )
 }
 
 export default function OutfitsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SortProvider>
-      <Suspense fallback={<OutfitsLoading />}>
-        <OutfitProviders>{children}</OutfitProviders>
-      </Suspense>
-    </SortProvider>
+    <Suspense fallback={<OutfitsLoading />}>
+      <OutfitProviders>{children}</OutfitProviders>
+    </Suspense>
   )
 }

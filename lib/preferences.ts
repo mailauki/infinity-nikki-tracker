@@ -20,6 +20,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   outfit_hide_evolutions: false,
   outfit_image_mode: 'image',
   outfit_density: 'standard',
+  sort_order: 'new',
 }
 
 export const DEFAULT_ADMIN_PREFERENCES: AdminPreferences = {

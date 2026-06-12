@@ -91,3 +91,7 @@ export async function updateOutfitImageMode(value: OutfitImageMode) {
 export async function updateOutfitDensity(value: OutfitDensity) {
   await upsertUserPreference({ outfit_density: value })
 }
+
+export async function updateSortOrder(value: 'new' | 'old') {
+  await upsertUserPreference({ sort_order: value })
+}

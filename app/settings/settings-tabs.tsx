@@ -48,7 +48,7 @@ export default function SettingsTabs({
       </NavBarToolbar>
 
       {tab === 'profile' && (isLoggedIn ? <ProfileSettings user={user} /> : <LoginAlert />)}
-      {tab === 'appearance' && <AppearanceSettings isPremium={isPremium} />}
+      {tab === 'appearance' && <AppearanceSettings isLoggedIn={isLoggedIn} isPremium={isPremium} />}
       {tab === 'account' && (isLoggedIn ? <AccountSettings isAdmin={isAdmin} /> : <LoginAlert />)}
     </>
   )

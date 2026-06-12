@@ -46,7 +46,6 @@ export default function ProfileStats({
       direction="row"
       divider={<Divider flexItem orientation="vertical" variant="middle" />}
       spacing={{ xs: 1, sm: 2, md: 3 }}
-			// sx={{ justifyContent: { sm: 'space-between', md: 'flex-start' }}}
     >
       <Stat obtained={eurekaSetsObtained || 0} title="Eureka Sets" />
       <Stat obtained={outfitSetsObtained || 0} title="Outfit Sets" />
