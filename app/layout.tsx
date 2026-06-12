@@ -13,9 +13,10 @@ import PullToRefresh from '@/components/pull-to-refresh'
 import NavDrawer from '@/components/navbar/nav-drawer'
 import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
 import SnackbarAlertProvider from '@/components/snackbar-provider'
-import { cookies } from 'next/headers'
 import { connection } from 'next/server'
 import type { ColorTheme } from '@/lib/types/eureka'
+import { getUserID } from '@/hooks/user'
+import { getPreferences } from '@/hooks/data/preferences'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -52,10 +53,15 @@ const VALID_THEMES: ColorTheme[] = ['default', 'moonlight', 'cherry', 'forest']
 
 async function ThemedApp({ children }: { children: React.ReactNode }) {
   await connection()
-  const cookieStore = await cookies()
-  const raw = cookieStore.get('color_theme')?.value
-  const colorTheme: ColorTheme =
-    raw && (VALID_THEMES as string[]).includes(raw) ? (raw as ColorTheme) : 'default'
+
+  let colorTheme: ColorTheme = 'default'
+  const user_id = await getUserID()
+
+  if (user_id) {
+    const prefs = await getPreferences(user_id)
+    const saved = prefs.color_theme
+    if (saved && (VALID_THEMES as string[]).includes(saved)) colorTheme = saved as ColorTheme
+  }
 
   return (
     <ThemeClientProvider colorTheme={colorTheme}>
