@@ -1,11 +1,12 @@
 import { Evolution, OutfitSet } from '@/lib/types/outfit'
 import { RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
-import { Card, CardActionArea, IconButton, Stack, Typography } from '@mui/material'
+import { Avatar, Box, Card, CardActionArea, IconButton, Stack, Typography } from '@mui/material'
 import RarityStars from '../rarity-stars'
 import Link from 'next/link'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
 import { resolveOutfitImage, useOutfitImageMode } from './outfit-image-mode-context'
+import ToggleIcon from '../toggle-icon'
 
 export default function OutfitSetCard({
   set,
@@ -36,8 +37,10 @@ export default function OutfitSetCard({
     : resolveOutfitImage(mode, { image: set.image_url, alt: set.alt_image_url })
   const showingAlt = mode === 'alt' && !!(evolution ? evolution.alt_image_url : set.alt_image_url)
 
+	const glowup = set.glowup_evolution === evolution?.slug
+
   return (
-    <Card sx={{ flexGrow: 1 }}>
+    <Card sx={{ flexGrow: 1, position: 'relative' }}>
       <CardActionArea component={Link} href={href}>
         {showingAlt ? (
           <LazyImage alt={title} kind="square" src={imageSrc || set.image_url || ''} />
@@ -68,6 +71,10 @@ export default function OutfitSetCard({
           </IconButton>
         )}
       </Stack>
+			<Box sx={{ position: 'absolute', top: 10, right: 10 }}>
+				{(evolution && !glowup) && <ToggleIcon item={{title: 'evolution', image: '/icons/evolution.png'}} size='xs' />}
+				{glowup && <ToggleIcon item={{title: 'glowup', image: '/icons/glowup.png'}} size='xs' />}
+			</Box>
     </Card>
   )
 }
