@@ -67,7 +67,6 @@ export default function EditOutfitSetForm({
   initialCategorySelect = [],
   initialVariants = [],
   initialCarouselImages = [],
-  initialEvolutionCarouselImages = {},
   back,
 }: {
   outfitSet: OutfitSetRaw
@@ -80,7 +79,6 @@ export default function EditOutfitSetForm({
   initialCategorySelect?: string[]
   initialVariants?: OutfitVariantRow[]
   initialCarouselImages?: CarouselImage[]
-  initialEvolutionCarouselImages?: Record<string, CarouselImage[]>
   back: string
 }) {
   const { setFormConfig } = useFormConfig()
@@ -102,9 +100,6 @@ export default function EditOutfitSetForm({
   const [setImage, setSetImage] = useState<string | null>(outfitSet.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(outfitSet.alt_image_url ?? null)
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>(initialCarouselImages)
-  const [evolutionCarouselImages, setEvolutionCarouselImages] = useState<
-    Record<string, CarouselImage[]>
-  >(initialEvolutionCarouselImages)
   const [variantRows, setVariantRows] = useState<OutfitVariantRow[]>(
     initialVariants.filter((v) => v.evolution === null)
   )
@@ -383,33 +378,6 @@ export default function EditOutfitSetForm({
             onChange={setCarouselImages}
           />
         </Stack>
-
-        {evolutionDrafts.some((d) => d.existingSlug) && (
-          <Stack spacing={2}>
-            <Typography variant="subtitle2">Evolution Gallery Images</Typography>
-            {evolutionDrafts
-              .filter((d) => d.existingSlug)
-              .map((d) => (
-                <Stack key={d.existingSlug} spacing={0.5}>
-                  <Typography color="textSecondary" variant="caption">
-                    {d.subtitle || `Evolution ${d.order}`}
-                  </Typography>
-                  <CarouselImageUpload
-                    foreignKeyField="evolution"
-                    images={evolutionCarouselImages[d.existingSlug!] ?? []}
-                    slug={d.existingSlug!}
-                    table="evolution_carousel_images"
-                    onChange={(imgs) =>
-                      setEvolutionCarouselImages((prev) => ({
-                        ...prev,
-                        [d.existingSlug!]: imgs,
-                      }))
-                    }
-                  />
-                </Stack>
-              ))}
-          </Stack>
-        )}
 
         {variantRows.length > 0 && (
           <Stack spacing={1}>

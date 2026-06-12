@@ -49,11 +49,26 @@ async function EditEvolution({
 
   if (!evolution) notFound()
 
-  const { data: variantRows } = await supabase
-    .from('outfit_variants')
-    .select('id, slug, outfit_category, image_url, alt_image_url, default, updated_at')
-    .eq('evolution', slug)
-    .order('id', { ascending: true })
+  const [{ data: variantRows }, carouselRows] = await Promise.all([
+    supabase
+      .from('outfit_variants')
+      .select('id, slug, outfit_category, image_url, alt_image_url, default, updated_at')
+      .eq('evolution', slug)
+      .order('id', { ascending: true }),
+    supabase
+      .from('evolution_carousel_images')
+      .select('id, image_url, sort_order')
+      .eq('evolution', slug)
+      .order('sort_order', { ascending: true })
+      .then((r) => r.data ?? []),
+  ])
 
-  return <EditEvolutionForm back={back} evolution={evolution} variants={variantRows ?? []} />
+  return (
+    <EditEvolutionForm
+      back={back}
+      evolution={evolution}
+      initialCarouselImages={carouselRows}
+      variants={variantRows ?? []}
+    />
+  )
 }
