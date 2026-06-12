@@ -3,7 +3,9 @@
 import { useActionState, useEffect, useState } from 'react'
 import { Alert, Box, Stack, TextField, Typography } from '@mui/material'
 import ImageUpload from '@/components/forms/image-upload'
+import CarouselImageUpload from '@/components/forms/carousel-image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
+import { CarouselImage } from '@/lib/types/outfit'
 import { editEvolution } from './actions'
 import { navLinksData } from '@/lib/nav-links'
 import { Tables } from '@/lib/types/supabase'
@@ -31,10 +33,12 @@ const FORM_ID = 'edit-evolution'
 export default function EditEvolutionForm({
   evolution,
   variants,
+  initialCarouselImages = [],
   back,
 }: {
   evolution: EvolutionRow
   variants: VariantRow[]
+  initialCarouselImages?: CarouselImage[]
   back: string
 }) {
   const { setFormConfig } = useFormConfig()
@@ -42,6 +46,7 @@ export default function EditEvolutionForm({
   const [description, setDescription] = useState(evolution.description ?? '')
   const [imageUrl, setImageUrl] = useState<string | null>(evolution.image_url ?? null)
   const [altImageUrl, setAltImageUrl] = useState<string | null>(evolution.alt_image_url ?? null)
+  const [carouselImages, setCarouselImages] = useState<CarouselImage[]>(initialCarouselImages)
   const [currentSlug, setCurrentSlug] = useState(evolution.slug)
   const [variantRows, setVariantRows] = useState<VariantRow[]>(variants)
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
@@ -107,6 +112,17 @@ export default function EditEvolutionForm({
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
+
+        <Stack spacing={1}>
+          <Typography variant="subtitle2">Gallery Images</Typography>
+          <CarouselImageUpload
+            foreignKeyField="evolution"
+            images={carouselImages}
+            slug={currentSlug}
+            table="evolution_carousel_images"
+            onChange={setCarouselImages}
+          />
+        </Stack>
 
         <Stack spacing={1}>
           <Typography variant="subtitle2">Evolution Set Images</Typography>
