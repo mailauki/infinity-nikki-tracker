@@ -23,11 +23,17 @@ export type EvolutionDraft = {
   existingSlug?: string
 }
 
+export type CarouselImage = Pick<
+  Tables<'outfit_set_carousel_images'>,
+  'id' | 'image_url' | 'sort_order'
+>
+
 export type OutfitSet = Tables<'outfit_sets'> & {
   image_url: string | null | undefined
   outfit_variants: OutfitVariant[]
   outfit_categories: OutfitCategory[]
   evolutions: Evolution[]
+  carousel_images: CarouselImage[]
 }
 
 export type OutfitSetRaw = Pick<
@@ -43,7 +49,6 @@ export type OutfitSetRaw = Pick<
   | 'ability'
   | 'image_url'
   | 'alt_image_url'
-  | 'poster_image_url'
   | 'glowup_evolution'
   | 'updated_at'
 >

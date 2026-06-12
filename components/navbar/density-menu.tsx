@@ -26,7 +26,6 @@ export default function DensityMenu() {
   const IMAGE_MODE_LABEL = {
     image: 'Showing main image',
     alt: 'Showing alternate image',
-    poster: 'Showing poster image',
   } as const
 
   return (

@@ -23,7 +23,13 @@ import {
 } from '@mui/material'
 import { toSlug, toTitle } from '@/lib/utils'
 import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
-import { Ability, EvolutionDraft, OutfitCategory, OutfitSetRaw } from '@/lib/types/outfit'
+import {
+  Ability,
+  CarouselImage,
+  EvolutionDraft,
+  OutfitCategory,
+  OutfitSetRaw,
+} from '@/lib/types/outfit'
 import { Tables } from '@/lib/types/supabase'
 import { Label, Style } from '@/lib/types/eureka'
 
@@ -40,6 +46,7 @@ type OutfitVariantRow = Pick<
   | 'updated_at'
 >
 import ImageUpload from '@/components/forms/image-upload'
+import CarouselImageUpload from '@/components/forms/carousel-image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editOutfitSet } from '../../actions'
 import EvolutionEditor from '../../evolution-editor'
@@ -59,6 +66,7 @@ export default function EditOutfitSetForm({
   initialGlowupEvolutionOrder = '',
   initialCategorySelect = [],
   initialVariants = [],
+  initialCarouselImages = [],
   back,
 }: {
   outfitSet: OutfitSetRaw
@@ -70,6 +78,7 @@ export default function EditOutfitSetForm({
   initialGlowupEvolutionOrder?: number | ''
   initialCategorySelect?: string[]
   initialVariants?: OutfitVariantRow[]
+  initialCarouselImages?: CarouselImage[]
   back: string
 }) {
   const { setFormConfig } = useFormConfig()
@@ -90,9 +99,7 @@ export default function EditOutfitSetForm({
   const [categorySelect, setCategorySelect] = useState<string[]>(initialCategorySelect)
   const [setImage, setSetImage] = useState<string | null>(outfitSet.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(outfitSet.alt_image_url ?? null)
-  const [posterSetImage, setPosterSetImage] = useState<string | null>(
-    outfitSet.poster_image_url ?? null
-  )
+  const [carouselImages, setCarouselImages] = useState<CarouselImage[]>(initialCarouselImages)
   const [variantRows, setVariantRows] = useState<OutfitVariantRow[]>(
     initialVariants.filter((v) => v.evolution === null)
   )
@@ -358,16 +365,16 @@ export default function EditOutfitSetForm({
               url={altSetImage}
               onUpload={(url) => setAltSetImage(url)}
             />
-            <ImageUpload
-              caption="Poster"
-              column="poster_image_url"
-              size="lg"
-              slug={outfitSet.slug}
-              table="outfit_sets"
-              url={posterSetImage}
-              onUpload={(url) => setPosterSetImage(url)}
-            />
           </Stack>
+        </Stack>
+
+        <Stack spacing={1}>
+          <Typography variant="subtitle2">Gallery Images</Typography>
+          <CarouselImageUpload
+            images={carouselImages}
+            outfitSetSlug={outfitSet.slug ?? ''}
+            onChange={setCarouselImages}
+          />
         </Stack>
 
         {variantRows.length > 0 && (

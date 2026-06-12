@@ -12,8 +12,9 @@ export async function GET() {
     .from('outfit_sets')
     .select(
       `id, slug, title, description, rarity, style, label, label_2, ability,
-       image_url, alt_image_url, poster_image_url, glowup_evolution, updated_at,
-       outfit_variants ( id, slug, outfit_set, evolution, outfit_category, image_url, alt_image_url, default )`
+       image_url, alt_image_url, glowup_evolution, updated_at,
+       outfit_variants ( id, slug, outfit_set, evolution, outfit_category, image_url, alt_image_url, default ),
+       outfit_set_carousel_images ( id, image_url, sort_order )`
     )
     .order('id', { ascending: true })
     .order('id', { referencedTable: 'outfit_variants', ascending: true })
@@ -27,7 +28,10 @@ export async function GET() {
 
   const outfits = (outfitSets ?? []).map((outfitSet) =>
     createOutfitSet({
-      outfitSet: outfitSet as Omit<OutfitSet, 'created_at' | 'outfit_categories' | 'evolutions'>,
+      outfitSet: {
+        ...outfitSet,
+        carousel_images: outfitSet.outfit_set_carousel_images ?? [],
+      } as unknown as Omit<OutfitSet, 'created_at' | 'outfit_categories' | 'evolutions'>,
       outfitCategories,
       evolutions,
     })

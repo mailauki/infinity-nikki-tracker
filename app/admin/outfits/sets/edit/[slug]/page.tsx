@@ -34,20 +34,28 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
     .select(
-      'id, slug, title, description, rarity, style, label, label_2, ability, image_url, alt_image_url, poster_image_url, glowup_evolution, updated_at'
+      'id, slug, title, description, rarity, style, label, label_2, ability, image_url, alt_image_url, glowup_evolution, updated_at'
     )
     .eq('slug', slug)
     .single()
 
   if (!outfitSet || !outfitSet.slug) notFound()
 
-  const [styles, labels, abilities, evolutions, outfitCategories] = await Promise.all([
-    getStyles(),
-    getLabels(),
-    getAbilities(),
-    getEvolutionsBySet(outfitSet.slug),
-    getOutfitCategories(),
-  ])
+  const [styles, labels, abilities, evolutions, outfitCategories, carouselRows] = await Promise.all(
+    [
+      getStyles(),
+      getLabels(),
+      getAbilities(),
+      getEvolutionsBySet(outfitSet.slug),
+      getOutfitCategories(),
+      supabase
+        .from('outfit_set_carousel_images')
+        .select('id, image_url, sort_order')
+        .eq('outfit_set', outfitSet.slug)
+        .order('sort_order', { ascending: true })
+        .then((r) => r.data ?? []),
+    ]
+  )
 
   const { data: variantRows } = await supabase
     .from('outfit_variants')
@@ -74,6 +82,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
     <EditOutfitSetForm
       abilities={abilities}
       back={back}
+      initialCarouselImages={carouselRows}
       initialCategorySelect={initialCategorySelect}
       initialDrafts={initialDrafts}
       initialGlowupEvolutionOrder={initialGlowupEvolutionOrder}
