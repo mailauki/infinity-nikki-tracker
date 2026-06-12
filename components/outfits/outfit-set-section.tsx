@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import { Fragment } from 'react'
 import { ChevronRight } from '@mui/icons-material'
 import { Box, Button, Divider, Stack } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
@@ -38,7 +38,7 @@ export default function OutfitSetSection({
       const obtained = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
 
       return (
-        <React.Fragment key={evolutionKey ?? 'base'}>
+        <Fragment key={evolutionKey ?? 'base'}>
           <Box sx={{ gridColumn: '1 / -1', mt: 1 }}>
             <Stack
               direction="row"
@@ -61,7 +61,7 @@ export default function OutfitSetSection({
               outfitVariant={variant}
             />
           ))}
-        </React.Fragment>
+        </Fragment>
       )
     })
     .filter(Boolean)

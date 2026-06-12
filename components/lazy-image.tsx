@@ -3,7 +3,15 @@ import Avatar, { type AvatarProps } from '@mui/material/Avatar'
 import CardMedia, { type CardMediaProps } from '@mui/material/CardMedia'
 import Box, { type BoxProps } from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
+import { type SxProps, type Theme } from '@mui/material/styles'
 import { useLazyImage } from '@/hooks/use-lazy-image'
+
+// Subtle dim so bright outfit art is easier on the eyes in dark mode.
+const darkDim = (theme: Theme) => theme.applyStyles('dark', { filter: 'brightness(0.85)' })
+
+// Normalize an sx prop (object | array | function) into array entries so the
+// caller's styles compose with ours instead of overwriting them.
+const toSxArray = (sx: SxProps<Theme> | undefined) => (Array.isArray(sx) ? sx : [sx])
 
 type AvatarCorner = 'circular' | 'rounded' | 'square'
 
@@ -69,11 +77,7 @@ function AvatarImage({
           img: retrySrc ? { ref: imgRef, onLoad: handleLoad, onError: handleError } : undefined,
         }}
         src={retrySrc}
-        sx={[
-          { opacity: loaded || !src ? 1 : 0 },
-          ...(Array.isArray(sx) ? sx : [sx]),
-          (theme) => theme.applyStyles('dark', { filter: 'brightness(0.85)' }),
-        ]}
+        sx={[{ opacity: loaded || !src ? 1 : 0 }, ...toSxArray(sx), darkDim]}
         variant={variant}
         {...props}
       >
@@ -113,14 +117,9 @@ function SquareImage({
         }}
         src={retrySrc}
         sx={[
-          {
-            width: '100%',
-            height: 'auto',
-            aspectRatio: '1 / 1',
-            opacity: loaded || !src ? 1 : 0,
-          },
-          ...(Array.isArray(sx) ? sx : [sx]),
-          (theme) => theme.applyStyles('dark', { filter: 'brightness(0.85)' }),
+          { width: '100%', height: 'auto', aspectRatio: '1 / 1', opacity: loaded || !src ? 1 : 0 },
+          ...toSxArray(sx),
+          darkDim,
         ]}
         variant={variant}
       />
@@ -150,10 +149,7 @@ function MediaImage({ image, sx, ...props }: CardMediaProps<'div'>) {
       )}
       <CardMedia
         image={retrySrc}
-        sx={[
-          { height: '100%', opacity: loaded || !image ? 1 : 0 },
-          (theme) => theme.applyStyles('dark', { filter: 'brightness(0.85)' }),
-        ]}
+        sx={[{ height: '100%', opacity: loaded || !image ? 1 : 0 }, darkDim]}
         {...props}
       />
     </Box>

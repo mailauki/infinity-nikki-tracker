@@ -12,6 +12,15 @@ import OutfitEvolutionSetCard from './outfit-evolution-set-card'
 import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
 
+// Shared responsive column track for both density grids.
+const OUTFIT_GRID_COLUMNS = {
+  xs: 'repeat(2, 1fr)',
+  sm: 'repeat(3, 1fr)',
+  md: 'repeat(4, 1fr)',
+  lg: 'repeat(6, 1fr)',
+  xl: 'repeat(8, 1fr)',
+}
+
 function GroupHeaderSkeleton() {
   return (
     <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' } }}>
@@ -174,17 +183,10 @@ export default function FilterOutfits() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: {
-              xs: 'repeat(2, 1fr)',
-              sm: 'repeat(3, 1fr)',
-              md: 'repeat(4, 1fr)',
-              lg: 'repeat(6, 1fr)',
-              xl: 'repeat(8, 1fr)',
-            },
+            gridTemplateColumns: OUTFIT_GRID_COLUMNS,
             gap: 2,
           }}
         >
-          {' '}
           {filteredSets.flatMap((set) =>
             // Render the base set plus each evolution as its own card.
             [null, ...set.evolutions].map((evolution) => {
@@ -222,13 +224,7 @@ export default function FilterOutfits() {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: {
-              xs: 'repeat(2, 1fr)',
-              sm: 'repeat(3, 1fr)',
-              md: 'repeat(4, 1fr)',
-              lg: 'repeat(6, 1fr)',
-              xl: 'repeat(8, 1fr)',
-            },
+            gridTemplateColumns: OUTFIT_GRID_COLUMNS,
             gap: 2,
           }}
         >
