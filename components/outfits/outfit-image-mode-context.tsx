@@ -1,6 +1,8 @@
 'use client'
 
-import { createContext, useContext, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState, useTransition } from 'react'
+import { UserPreferences } from '@/lib/types/eureka'
+import { updateOutfitDensity, updateOutfitImageMode } from '@/app/actions/preferences'
 
 // The image swap cycles through these three sources. Not every entity has all
 // three (variants/evolutions have no poster) — consumers fall back as needed.
@@ -43,22 +45,54 @@ const OutfitImageModeContext = createContext<OutfitImageModeContextValue>({
   setDensity: () => {},
 })
 
-export function OutfitImageModeProvider({ children }: { children: React.ReactNode }) {
-  const [mode, setMode] = useState<OutfitImageMode>('image')
-  const [density, setDensity] = useState<OutfitDensity>('standard')
+export function OutfitImageModeProvider({
+  isLoggedIn = false,
+  children,
+}: {
+  isLoggedIn?: boolean
+  children: React.ReactNode
+}) {
+  const [mode, setModeState] = useState<OutfitImageMode>('image')
+  const [density, setDensityState] = useState<OutfitDensity>('standard')
+  const [, startTransition] = useTransition()
+
+  // Hydrate from saved preferences for logged-in users.
+  useEffect(() => {
+    if (!isLoggedIn) return
+    fetch('/api/preferences')
+      .then((r) => (r.ok ? (r.json() as Promise<UserPreferences>) : null))
+      .then((prefs) => {
+        if (!prefs) return
+        if (prefs.outfit_image_mode) setModeState(prefs.outfit_image_mode as OutfitImageMode)
+        if (prefs.outfit_density) setDensityState(prefs.outfit_density as OutfitDensity)
+      })
+      .catch(() => {})
+  }, [isLoggedIn])
+
+  const setMode = (next: OutfitImageMode) => {
+    setModeState(next)
+    if (isLoggedIn) startTransition(() => updateOutfitImageMode(next))
+  }
+
+  const setDensity = (next: OutfitDensity) => {
+    setDensityState(next)
+    if (isLoggedIn) startTransition(() => updateOutfitDensity(next))
+  }
 
   const value = useMemo<OutfitImageModeContextValue>(
     () => ({
       mode,
       setMode,
-      cycleMode: () =>
-        setMode(
-          (m) => OUTFIT_IMAGE_MODES[(OUTFIT_IMAGE_MODES.indexOf(m) + 1) % OUTFIT_IMAGE_MODES.length]
-        ),
+      cycleMode: () => {
+        const next =
+          OUTFIT_IMAGE_MODES[(OUTFIT_IMAGE_MODES.indexOf(mode) + 1) % OUTFIT_IMAGE_MODES.length]
+        setMode(next)
+      },
       density,
       setDensity,
     }),
-    [mode, density]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [mode, density, isLoggedIn]
   )
 
   return <OutfitImageModeContext.Provider value={value}>{children}</OutfitImageModeContext.Provider>

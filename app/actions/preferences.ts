@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID } from '@/hooks/user'
+import type { OutfitImageMode, OutfitDensity } from '@/components/outfits/outfit-image-mode-context'
 
 async function upsertUserPreference(updates: Record<string, boolean | string | null>) {
   const user_id = await getUserID()
@@ -81,4 +82,12 @@ export async function updateOutfitShowByEvolution(value: boolean) {
 
 export async function updateOutfitHideEvolutions(value: boolean) {
   await upsertUserPreference({ outfit_hide_evolutions: value })
+}
+
+export async function updateOutfitImageMode(value: OutfitImageMode) {
+  await upsertUserPreference({ outfit_image_mode: value })
+}
+
+export async function updateOutfitDensity(value: OutfitDensity) {
+  await upsertUserPreference({ outfit_density: value })
 }

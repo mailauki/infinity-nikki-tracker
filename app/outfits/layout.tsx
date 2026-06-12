@@ -10,7 +10,7 @@ async function OutfitProviders({ children }: { children: React.ReactNode }) {
 
   return (
     <OutfitDataProvider isLoggedIn={!!userId} userId={userId}>
-      <OutfitImageModeProvider>{children}</OutfitImageModeProvider>
+      <OutfitImageModeProvider isLoggedIn={!!userId}>{children}</OutfitImageModeProvider>
     </OutfitDataProvider>
   )
 }

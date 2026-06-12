@@ -18,6 +18,8 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   outfit_group_by_set: true,
   outfit_show_by_evolution: false,
   outfit_hide_evolutions: false,
+  outfit_image_mode: 'image',
+  outfit_density: 'standard',
 }
 
 export const DEFAULT_ADMIN_PREFERENCES: AdminPreferences = {
