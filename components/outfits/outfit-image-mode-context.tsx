@@ -4,26 +4,24 @@ import { createContext, useContext, useEffect, useMemo, useState, useTransition 
 import { UserPreferences } from '@/lib/types/eureka'
 import { updateOutfitDensity, updateOutfitImageMode } from '@/app/actions/preferences'
 
-// The image swap cycles through these three sources. Not every entity has all
-// three (variants/evolutions have no poster) — consumers fall back as needed.
-export type OutfitImageMode = 'image' | 'alt' | 'poster'
+// The image swap cycles between main image and alternate image.
+export type OutfitImageMode = 'image' | 'alt'
 
 // Cycle order; `image` (the main image) is the default starting mode.
-export const OUTFIT_IMAGE_MODES: OutfitImageMode[] = ['image', 'alt', 'poster']
+export const OUTFIT_IMAGE_MODES: OutfitImageMode[] = ['image', 'alt']
 
 // Card layout density for the outfits grid. `list` is planned but not yet
 // implemented.
 export type OutfitDensity = 'standard' | 'compact'
 
 // Resolve which image to show for the current mode, falling back to the main
-// image when the requested source is missing (e.g. no poster/alt).
+// image when the requested source is missing.
 export function resolveOutfitImage(
   mode: OutfitImageMode,
-  sources: { poster?: string | null; image?: string | null; alt?: string | null }
+  sources: { image?: string | null; alt?: string | null }
 ): string | null | undefined {
-  const { poster, image, alt } = sources
+  const { image, alt } = sources
   if (mode === 'alt') return alt || image
-  if (mode === 'poster') return poster || image
   return image
 }
 

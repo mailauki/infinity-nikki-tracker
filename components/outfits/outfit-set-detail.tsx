@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Stack, Typography, Chip, Container } from '@mui/material'
+import { Stack, Typography, Chip, Container, IconButton, Tooltip } from '@mui/material'
+import { Collections } from '@mui/icons-material'
 import { OutfitSet } from '@/lib/types/outfit'
 import { percent } from '@/hooks/count-obtained'
 import { toTitle } from '@/lib/utils'
@@ -10,6 +11,7 @@ import ProgressChip from '@/components/progress-chip'
 import SlugToolBar from '@/components/slug-toolbar'
 import LazyImage from '@/components/lazy-image'
 import OutfitEvolutionVariants from './outfit-evolution-variants'
+import OutfitCarousel from './outfit-carousel'
 import { resolveOutfitImage, useOutfitImageMode } from './outfit-image-mode-context'
 import { useSearchParams } from 'next/navigation'
 
@@ -29,19 +31,19 @@ export default function OutfitSetDetail({
   const searchParams = useSearchParams()
   const evolutionParams = searchParams.get('evolution')
   const evolutionParamsSlug = evolutionParams ? `${outfitSet.slug}-${evolutionParams}` : null
-  // `null` selection means "show all evolutions".
   const [selected, setSelected] = useState<string | null>(evolutionParamsSlug || null)
+  const [showCarousel, setShowCarousel] = useState(false)
 
   const selectedEvolution = evolutions.find((e) => e.slug === selected) ?? null
 
-  // Resolve the poster image for the current mode. Evolutions have no poster,
-  // so poster mode falls back to the evolution image. Alt falls back to image.
-  const poster = selectedEvolution ? null : outfitSet.poster_image_url
   const image = selectedEvolution ? selectedEvolution.image_url : outfitSet.image_url
   const alt = selectedEvolution ? selectedEvolution.alt_image_url : outfitSet.alt_image_url
 
-  const posterSrc = resolveOutfitImage(mode, { poster, image, alt })
+  const imageSrc = resolveOutfitImage(mode, { image, alt })
   const showingAlt = mode === 'alt' && !!alt
+
+  const carouselImages = outfitSet.carousel_images ?? []
+  const hasCarousel = !selectedEvolution && carouselImages.length > 0
 
   const obtained = outfit_variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
   const total = outfit_variants.length
@@ -52,15 +54,19 @@ export default function OutfitSetDetail({
       <Stack useFlexGap direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
         <Container disableGutters fixed maxWidth="xs">
           <Stack spacing={2} sx={{ alignItems: 'center' }}>
-            {showingAlt ? (
+            {showCarousel && hasCarousel ? (
+              <OutfitCarousel images={carouselImages} title={outfitSet.title} />
+            ) : null}
+            {(!showCarousel || !hasCarousel) && showingAlt && (
               <LazyImage
                 alt={outfitSet.title}
                 kind="square"
-                src={posterSrc || outfitSet.image_url || ''}
+                src={imageSrc || outfitSet.image_url || ''}
               />
-            ) : (
+            )}
+            {(!showCarousel || !hasCarousel) && !showingAlt && (
               <LazyImage
-                image={posterSrc || outfitSet.image_url || ''}
+                image={imageSrc || outfitSet.image_url || ''}
                 kind="media"
                 sx={{ width: '100%', maxWidth: 300, aspectRatio: '9 / 16' }}
                 title={outfitSet.title}
@@ -73,7 +79,19 @@ export default function OutfitSetDetail({
               <Typography color="textSecondary" variant="subtitle2">
                 <RarityStars rarity={rarity!} />
               </Typography>
-              <Stack direction="row" spacing={0.5}>
+              <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
+                {hasCarousel && (
+                  <Tooltip title={showCarousel ? 'Hide gallery' : 'Show gallery'}>
+                    <IconButton
+                      aria-label={showCarousel ? 'Hide gallery' : 'Show gallery'}
+                      color={showCarousel ? 'primary' : 'default'}
+                      size="small"
+                      onClick={() => setShowCarousel((v) => !v)}
+                    >
+                      <Collections fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
                 <Chip label={toTitle(label ?? '')} variant="outlined" />
                 {label_2 && <Chip label={toTitle(label_2)} variant="outlined" />}
               </Stack>

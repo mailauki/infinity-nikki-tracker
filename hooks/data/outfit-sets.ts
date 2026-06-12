@@ -26,7 +26,6 @@ export const getOutfitSets = cache(async () => {
       ability,
       image_url,
       alt_image_url,
-      poster_image_url,
       glowup_evolution,
       updated_at,
       outfit_variants (
@@ -38,11 +37,17 @@ export const getOutfitSets = cache(async () => {
         image_url,
         alt_image_url,
         default
+      ),
+      outfit_set_carousel_images (
+        id,
+        image_url,
+        sort_order
       )
     `
     )
     .order('id', { ascending: true })
     .order('id', { referencedTable: 'outfit_variants', ascending: true })
+    .order('sort_order', { referencedTable: 'outfit_set_carousel_images', ascending: true })
 
   const outfitCategories = await getOutfitCategories()
   const evolutions = await getEvolutions()
@@ -69,8 +74,9 @@ export const getOutfitSets = cache(async () => {
         glowupEvolutionSlug,
         categoryOrder
       ),
+      carousel_images: outfitSet.outfit_set_carousel_images ?? [],
     }
-  }) as OutfitSet[]
+  }) as unknown as OutfitSet[]
 
   const user_id = await getUserID()
   if (!user_id) return outfits
@@ -98,7 +104,6 @@ export const getOutfitSet = cache(async (slug: string) => {
       ability,
       image_url,
       alt_image_url,
-      poster_image_url,
       glowup_evolution,
       updated_at,
       outfit_variants (
@@ -110,11 +115,17 @@ export const getOutfitSet = cache(async (slug: string) => {
         image_url,
         alt_image_url,
         default
+      ),
+      outfit_set_carousel_images (
+        id,
+        image_url,
+        sort_order
       )
     `
     )
     .order('id', { ascending: true })
     .order('id', { referencedTable: 'outfit_variants', ascending: false })
+    .order('sort_order', { referencedTable: 'outfit_set_carousel_images', ascending: true })
     .eq('slug', slug)
     .single()
 
@@ -123,7 +134,14 @@ export const getOutfitSet = cache(async (slug: string) => {
   const outfitCategories = await getOutfitCategories()
   const evolutions = await getEvolutions()
 
-  const outfit = createOutfitSet({ outfitSet, outfitCategories, evolutions })
+  const outfit = createOutfitSet({
+    outfitSet: {
+      ...outfitSet,
+      carousel_images: outfitSet.outfit_set_carousel_images ?? [],
+    },
+    outfitCategories,
+    evolutions,
+  })
 
   const user_id = await getUserID()
   if (!user_id) return outfit

@@ -31,14 +31,9 @@ export default function OutfitSetCard({
     ? `${set.title}: ${toTitle(evolution.subtitle ?? evolution.slug)}`
     : set.title
 
-  // Evolutions have no poster of their own.
   const imageSrc = evolution
     ? resolveOutfitImage(mode, { image: evolution.image_url, alt: evolution.alt_image_url })
-    : resolveOutfitImage(mode, {
-        poster: set.poster_image_url,
-        image: set.image_url,
-        alt: set.alt_image_url,
-      })
+    : resolveOutfitImage(mode, { image: set.image_url, alt: set.alt_image_url })
   const showingAlt = mode === 'alt' && !!(evolution ? evolution.alt_image_url : set.alt_image_url)
 
   return (

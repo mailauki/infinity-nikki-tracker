@@ -3,7 +3,7 @@
 import { IconButton, Stack, Tooltip } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { useParams, usePathname } from 'next/navigation'
-import { ChevronLeft, Compare, Edit, Flip } from '@mui/icons-material'
+import { ChevronLeft, Compare, Edit } from '@mui/icons-material'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 
 export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
@@ -17,7 +17,6 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
   const IMAGE_MODE_LABEL = {
     image: 'Showing main image',
     alt: 'Showing alternate image',
-    poster: 'Showing poster image',
   } as const
 
   const path =
