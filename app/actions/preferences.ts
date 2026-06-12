@@ -62,6 +62,11 @@ export async function updateColorTheme(value: string) {
   cookieStore.set('color_theme', value, { path: '/', maxAge: 60 * 60 * 24 * 365 })
 }
 
+export async function clearColorThemeCookie() {
+  const cookieStore = await cookies()
+  cookieStore.delete('color_theme')
+}
+
 export async function updateOutfitFilters(filters: {
   outfit_set_filter?: string | null
   outfit_category_filter?: string | null
