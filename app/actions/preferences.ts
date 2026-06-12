@@ -1,6 +1,5 @@
 'use server'
 
-import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID } from '@/hooks/user'
 import type { OutfitImageMode, OutfitDensity } from '@/components/outfits/outfit-image-mode-context'
@@ -58,13 +57,6 @@ export async function updateTheme(value: 'system' | 'light' | 'dark') {
 
 export async function updateColorTheme(value: string) {
   await upsertUserPreference({ color_theme: value })
-  const cookieStore = await cookies()
-  cookieStore.set('color_theme', value, { path: '/', maxAge: 60 * 60 * 24 * 365 })
-}
-
-export async function clearColorThemeCookie() {
-  const cookieStore = await cookies()
-  cookieStore.delete('color_theme')
 }
 
 export async function updateOutfitFilters(filters: {
