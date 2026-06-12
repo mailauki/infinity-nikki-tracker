@@ -7,7 +7,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { EurekaCategory, EurekaColor, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { updateEurekaVariant } from '@/app/admin/actions'
 import {
   actionsColumn,
@@ -79,7 +79,7 @@ export function EurekaVariantTable({
         <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           {isEditing(row.id) ? (
             <LockedCell href={editHref(row)}>
-              <LazyAvatar
+              <LazyImage
                 alt={row.eureka_set || 'Image'}
                 color="transparent"
                 size="sm"
@@ -87,10 +87,10 @@ export function EurekaVariantTable({
                 sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
               >
                 <Category fontSize="inherit" />
-              </LazyAvatar>
+              </LazyImage>
             </LockedCell>
           ) : (
-            <LazyAvatar
+            <LazyImage
               alt={row.eureka_set || 'Image'}
               color="transparent"
               size="sm"
@@ -98,7 +98,7 @@ export function EurekaVariantTable({
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <Category fontSize="inherit" />
-            </LazyAvatar>
+            </LazyImage>
           )}
         </Stack>
       ),

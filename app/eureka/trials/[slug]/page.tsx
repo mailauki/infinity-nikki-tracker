@@ -7,7 +7,7 @@ import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrial } from '@/hooks/data/trials'
 import { getUserRole } from '@/hooks/user'
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
-import LazyCardMedia from '@/components/lazy-card-media'
+import LazyImage from '@/components/lazy-image'
 import { GRID_COLUMNS } from '@/lib/types/props'
 import SlugToolBar from '@/components/slug-toolbar'
 
@@ -49,7 +49,7 @@ async function Trial({ slug }: { slug: string }) {
     <>
       <SlugToolBar isAdmin={isAdmin} />
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-        <LazyCardMedia image={trial.image_url!} sx={{ height: 360 }} title={trial.title} />
+        <LazyImage image={trial.image_url!} kind="media" sx={{ height: 360 }} title={trial.title} />
         <Typography variant="body2">{trial.description}</Typography>
         <Box
           sx={{

@@ -2,7 +2,7 @@
 
 import { EurekaSet } from '@/lib/types/eureka'
 import { Box, Card, CardActionArea, Stack, Typography } from '@mui/material'
-import LazyAvatar from '../lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { Category } from '@mui/icons-material'
 import RarityStars from '../rarity-stars'
 
@@ -14,7 +14,7 @@ export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
       <CardActionArea aria-label={title} href={`/eureka/${eurekaSet.slug}`}>
         <Box sx={{ position: 'relative' }}>
           <Stack sx={{ pt: 1, alignItems: 'center' }}>
-            <LazyAvatar
+            <LazyImage
               alt={title ?? slug}
               color="transparent"
               size="lg"
@@ -22,7 +22,7 @@ export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <Category fontSize="inherit" />
-            </LazyAvatar>
+            </LazyImage>
           </Stack>
           <Stack
             direction="row"

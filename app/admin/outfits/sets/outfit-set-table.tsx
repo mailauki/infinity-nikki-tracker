@@ -20,7 +20,7 @@ import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { Ability, Evolution, OutfitSet } from '@/lib/types/outfit'
 import { Style, Label } from '@/lib/types/eureka'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import RarityStars from '@/components/rarity-stars'
 import { updateOutfitSet } from '@/app/admin/actions'
 
@@ -153,14 +153,14 @@ export function OutfitSetTable({
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
         <Stack sx={{ flex: 1, height: 50, justifyContent: 'center' }}>
           <LockedCell href={editHref(row)}>
-            <LazyAvatar
+            <LazyImage
               alt={row.title || 'Image'}
               size="sm"
               src={row.image_url ?? undefined}
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <Category fontSize="inherit" />
-            </LazyAvatar>
+            </LazyImage>
           </LockedCell>
         </Stack>
       ),
@@ -173,14 +173,14 @@ export function OutfitSetTable({
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
         <Stack sx={{ flex: 1, height: 50, justifyContent: 'center' }}>
           <LockedCell href={editHref(row)}>
-            <LazyAvatar
+            <LazyImage
               alt={row.title ? `${row.title} (alt)` : 'Alt Image'}
               size="sm"
               src={row.alt_image_url ?? undefined}
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <Category fontSize="inherit" />
-            </LazyAvatar>
+            </LazyImage>
           </LockedCell>
         </Stack>
       ),

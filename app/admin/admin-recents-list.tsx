@@ -13,7 +13,7 @@ import {
   Typography,
 } from '@mui/material'
 import { Category, Edit } from '@mui/icons-material'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { RecentAdminItem } from '@/hooks/data/admin/recents'
 import { formatDate } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
@@ -83,13 +83,13 @@ export default function AdminRecentsList({
                   }
                 >
                   <ListItemAvatar>
-                    <LazyAvatar
+                    <LazyImage
                       alt={row.slug}
                       src={row.image_url ?? undefined}
                       sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
                     >
                       <Category fontSize="inherit" />
-                    </LazyAvatar>
+                    </LazyImage>
                   </ListItemAvatar>
                   <ListItemText
                     primary={row.title}

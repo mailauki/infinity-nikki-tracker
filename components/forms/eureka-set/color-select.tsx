@@ -15,7 +15,7 @@ import {
   Theme,
   useTheme,
 } from '@mui/material'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { MENU_PROPS } from '@/lib/types/props'
 
 function getStyles(color: string, colorSelect: readonly string[], theme: Theme) {
@@ -55,14 +55,14 @@ export default function ColorSelect({
               <Chip
                 key={slug}
                 icon={
-                  <LazyAvatar
+                  <LazyImage
                     alt={slug}
                     color="transparent"
                     size="xs"
                     src={colors.find((color) => color.slug === slug)!.image_url!}
                   >
                     <ColorLens fontSize="inherit" />
-                  </LazyAvatar>
+                  </LazyImage>
                 }
                 label={colorBySlug[slug] ?? slug}
               />
@@ -93,14 +93,14 @@ export default function ColorSelect({
                   style={{ marginRight: 8, padding: 9, boxSizing: 'content-box' }}
                 />
                 <ListItemAvatar sx={{ mr: -1.5 }}>
-                  <LazyAvatar
+                  <LazyImage
                     alt={color.title || color.slug}
                     color="transparent"
                     size="xs"
                     src={color.image_url!}
                   >
                     <ColorLens fontSize="inherit" />
-                  </LazyAvatar>
+                  </LazyImage>
                 </ListItemAvatar>
                 <ListItemText primary={color.title} />
               </MenuItem>

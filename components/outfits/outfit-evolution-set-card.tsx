@@ -3,7 +3,7 @@ import { Category } from '@mui/icons-material'
 import { Evolution, OutfitSet } from '@/lib/types/outfit'
 import { percent } from '@/hooks/count-obtained'
 import { toTitle } from '@/lib/utils'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import RarityStars from '@/components/rarity-stars'
 
 export default function OutfitEvolutionSetCard({
@@ -36,13 +36,13 @@ export default function OutfitEvolutionSetCard({
     >
       <Box sx={{ position: 'relative' }}>
         <Stack sx={{ pt: 1, alignItems: 'center' }}>
-          <LazyAvatar
+          <LazyImage
             alt={label}
             src={image ?? undefined}
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
             <Category fontSize="inherit" />
-          </LazyAvatar>
+          </LazyImage>
         </Stack>
         <Stack
           direction="row"

@@ -14,7 +14,7 @@ import {
 } from '@mui/material'
 import { Edit } from '@mui/icons-material'
 import { Category } from '@mui/icons-material'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { RecentAdminItem } from '@/hooks/data/admin/recently'
 import { formatDate } from '@/lib/utils'
 
@@ -52,13 +52,13 @@ export default function DashboardList({
                 }
               >
                 <ListItemAvatar>
-                  <LazyAvatar
+                  <LazyImage
                     alt={item.slug}
                     src={item.image_url ?? undefined}
                     sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
                   >
                     <Category fontSize="inherit" />
-                  </LazyAvatar>
+                  </LazyImage>
                 </ListItemAvatar>
                 <ListItemText
                   primary={item.title}

@@ -10,7 +10,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { RecentObtained } from '@/lib/types/eureka'
 import { toTitle, formatDate, toSlug } from '@/lib/utils'
 
@@ -34,7 +34,7 @@ export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
             <ListItem key={item.id} disablePadding>
               <ListItemButton component="a" href={`/eureka/${toSlug(item.eureka_sets!.title!)}`}>
                 <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
-                  <LazyAvatar
+                  <LazyImage
                     alt={item.eureka_sets?.title}
                     size="md"
                     src={

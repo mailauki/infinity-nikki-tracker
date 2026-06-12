@@ -28,7 +28,7 @@ import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
 import CategoryIcon from '@mui/icons-material/Category'
 import SaveIcon from '@mui/icons-material/Save'
 import { toTitle } from '@/lib/utils'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import type { FlatVariant, CustomLook } from '@/lib/types/looks'
 
 type SavePayload = {
@@ -64,7 +64,7 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
       <CardActionArea sx={{ p: 0.75 }} onClick={() => onToggle(variant.slug)}>
         <Stack sx={{ alignItems: 'center', gap: 0.5 }}>
           <Box sx={{ position: 'relative' }}>
-            <LazyAvatar
+            <LazyImage
               alt={variant.slug}
               color="transparent"
               size="md"
@@ -72,7 +72,7 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <CategoryIcon fontSize="inherit" />
-            </LazyAvatar>
+            </LazyImage>
             {selected && (
               <CheckCircleIcon
                 color="primary"

@@ -6,7 +6,7 @@ import { EurekaVariant } from '@/lib/types/eureka'
 import { Box, Card, Grow, IconButton, Stack, Typography } from '@mui/material'
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { useEurekaData } from './eureka-context'
-import LazyAvatar from '../lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 
 export default function EurekaVariantCard({
   eurekaVariant,
@@ -42,7 +42,7 @@ export default function EurekaVariantCard({
       >
         <Box sx={{ position: 'relative', height: '100%' }}>
           <Stack sx={{ pt: 1, alignItems: 'center' }}>
-            <LazyAvatar
+            <LazyImage
               alt={eurekaVariant.slug || 'Eureka Variant'}
               color="transparent"
               size="lg"
@@ -50,7 +50,7 @@ export default function EurekaVariantCard({
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <Category fontSize="inherit" />
-            </LazyAvatar>
+            </LazyImage>
           </Stack>
           <Stack
             direction="row"

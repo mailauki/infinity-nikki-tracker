@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@mui/material'
 
-import LazyCardMedia from '@/components/lazy-card-media'
+import LazyImage from '@/components/lazy-image'
 import EurekaCard from '@/components/eureka/eureka-card'
 import { ViewAllButton } from '@/components/view-all-button'
 import ErrorAlert from '@/components/error-alert'
@@ -98,7 +98,7 @@ function TrialCard({ trial, isLoggedIn }: { trial: Total; isLoggedIn: boolean })
           </Typography>
         }
       />
-      <LazyCardMedia image={trial.image_url!} sx={{ height: 160 }} title={trial.title} />
+      <LazyImage image={trial.image_url!} kind="media" sx={{ height: 160 }} title={trial.title} />
       <CardContent sx={{ p: 0 }}>
         <List sx={{ width: '100%' }}>
           {trial.eurekaSets?.map((eurekaSet: EurekaSet) => (
