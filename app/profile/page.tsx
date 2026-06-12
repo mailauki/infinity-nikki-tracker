@@ -68,7 +68,7 @@ async function UserDetails() {
         />
         <ProfileStats eurekaSets={eurekaSets || []} outfitSets={outfitSets || []} />
         {!isPremium && <PremiumUpgrade />}
-				<Alert severity='info'>Outfit collection stats coming soon</Alert>
+        <Alert severity="info">Outfit collection stats coming soon</Alert>
         {user_id && <CollectionCharts eurekaSets={eurekaSets || []} trials={trials || []} />}
         {user_id && <RecentUpdates items={recentObtained || []} />}
       </Stack>
