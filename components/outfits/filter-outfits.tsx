@@ -201,8 +201,10 @@ export default function FilterOutfits() {
                   key={`${set.id}-${evolutionKey ?? 'base'}`}
                   evolution={evolution}
                   isLoggedIn={isLoggedIn}
+                  isMissingFilter={selectedObtainedFilter === 'missing'}
                   obtained={allObtained}
                   set={set}
+                  shouldHide={hideEvolutions && evolutionKey !== null}
                   onToggle={() => {
                     // Mark every variant in this group to the opposite of its
                     // current completion state. onToggleObtained flips a single

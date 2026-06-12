@@ -13,12 +13,12 @@ interface ToggleItem {
 
 export default function ToggleIcon({
   item,
-  isSelected,
+  isSelected = false,
   disabled,
   size = 'sm',
 }: {
   item: ToggleItem
-  isSelected: boolean
+  isSelected?: boolean
   disabled?: boolean
   size?: AvatarSize
 }) {

@@ -1,11 +1,15 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import { Evolution, OutfitSet } from '@/lib/types/outfit'
 import { RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
-import { Card, CardActionArea, IconButton, Stack, Typography } from '@mui/material'
+import { Box, Card, CardActionArea, Grow, IconButton, Stack, Typography } from '@mui/material'
 import RarityStars from '../rarity-stars'
 import Link from 'next/link'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
 import { resolveOutfitImage, useOutfitImageMode } from './outfit-image-mode-context'
+import ToggleIcon from '../toggle-icon'
 
 export default function OutfitSetCard({
   set,
@@ -13,6 +17,8 @@ export default function OutfitSetCard({
   isLoggedIn,
   obtained,
   onToggle,
+  isMissingFilter = false,
+  shouldHide = false,
 }: {
   set: OutfitSet
   // When provided, the card represents this evolution of the set (its image,
@@ -21,8 +27,39 @@ export default function OutfitSetCard({
   isLoggedIn: boolean
   obtained: boolean
   onToggle: () => void
+  // When the "missing" filter is active, completing this group animates the
+  // card out (the obtained toggle is committed in onExited) so it leaves the
+  // filtered view smoothly instead of vanishing instantly.
+  isMissingFilter?: boolean
+  // When true (e.g. an evolution card while "hide evolutions" is active), the
+  // card animates out and stays unmounted.
+  shouldHide?: boolean
 }) {
   const { mode } = useOutfitImageMode()
+  const [grown, setGrown] = useState(false)
+  const [exiting, setExiting] = useState(false)
+
+  useEffect(() => setGrown(true), [])
+
+  // Animate out when this card should be hidden by a filter change, and grow
+  // back in when the filter is cleared.
+  useEffect(() => {
+    setExiting(shouldHide)
+  }, [shouldHide])
+
+  function handleToggle() {
+    if (isMissingFilter) {
+      setExiting(true)
+    } else {
+      onToggle()
+    }
+  }
+
+  function handleExited() {
+    // Only the missing-filter toggle commits an obtained change on exit; the
+    // hide-evolutions case just unmounts.
+    if (isMissingFilter && !shouldHide) onToggle()
+  }
 
   const href = evolution
     ? `/outfits/${evolution.slug.replace('-', '?evolution=')}`
@@ -36,38 +73,53 @@ export default function OutfitSetCard({
     : resolveOutfitImage(mode, { image: set.image_url, alt: set.alt_image_url })
   const showingAlt = mode === 'alt' && !!(evolution ? evolution.alt_image_url : set.alt_image_url)
 
+	const glowup = set.glowup_evolution === evolution?.slug
+
   return (
-    <Card sx={{ flexGrow: 1 }}>
-      <CardActionArea component={Link} href={href}>
-        {showingAlt ? (
-          <LazyImage alt={title} kind="square" src={imageSrc || set.image_url || ''} />
-        ) : (
-          <LazyImage
-            image={imageSrc || set.image_url || ''}
-            kind="media"
-            sx={{ width: '100%', aspectRatio: '9 / 16' }}
-            title={title}
-          />
-        )}
-      </CardActionArea>
-      <Stack direction="row" sx={{ px: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-        <Stack spacing={1} sx={{ px: 1, py: 2, maxWidth: 'calc(100% - 40px)' }}>
-          <Typography noWrap variant="overline">
-            {title}
-          </Typography>
-          <Typography color="textSecondary" variant="subtitle2">
-            <RarityStars rarity={set.rarity} />
-          </Typography>
+    <Grow unmountOnExit in={grown && !exiting} timeout={300} onExited={handleExited}>
+      <Card sx={{ flexGrow: 1, position: 'relative' }}>
+        <CardActionArea component={Link} href={href}>
+          {showingAlt ? (
+            <LazyImage alt={title} kind="square" src={imageSrc || set.image_url || ''} />
+          ) : (
+            <LazyImage
+              image={imageSrc || set.image_url || ''}
+              kind="media"
+              sx={{ width: '100%', aspectRatio: '9 / 16' }}
+              title={title}
+            />
+          )}
+        </CardActionArea>
+        <Stack
+          direction="row"
+          sx={{ px: 1, alignItems: 'center', justifyContent: 'space-between' }}
+        >
+          <Stack spacing={1} sx={{ px: 1, py: 2, maxWidth: 'calc(100% - 40px)' }}>
+            <Typography noWrap variant="overline">
+              {title}
+            </Typography>
+            <Typography color="textSecondary" variant="subtitle2">
+              <RarityStars rarity={set.rarity} />
+            </Typography>
+          </Stack>
+          {isLoggedIn && (
+            <IconButton
+              aria-label={obtained ? 'Mark as not obtained' : 'Mark as obtained'}
+              onClick={handleToggle}
+            >
+              {obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
+            </IconButton>
+          )}
         </Stack>
-        {isLoggedIn && (
-          <IconButton
-            aria-label={obtained ? 'Mark as not obtained' : 'Mark as obtained'}
-            onClick={onToggle}
-          >
-            {obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
-          </IconButton>
-        )}
-      </Stack>
-    </Card>
+        <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
+          {evolution && !glowup && (
+            <ToggleIcon item={{ title: 'evolution', image: '/icons/evolution.png' }} size="xs" />
+          )}
+          {glowup && (
+            <ToggleIcon item={{ title: 'glowup', image: '/icons/glowup.png' }} size="xs" />
+          )}
+        </Box>
+      </Card>
+    </Grow>
   )
 }
