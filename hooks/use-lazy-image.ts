@@ -1,13 +1,20 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import Avatar from '@mui/material/Avatar'
-import Skeleton from '@mui/material/Skeleton'
-import Box from '@mui/material/Box'
-import type { AvatarProps } from '@mui/material/Avatar'
 
 const RETRY_TIMEOUT_MS = 4000
 
-export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps) {
+export interface UseLazyImageResult {
+  loaded: boolean
+  // src with ?retry=N appended when retryKey > 0
+  retrySrc: string | undefined
+  // exposed for use as a React `key` on the <img>
+  retryKey: number
+  imgRef: React.RefObject<HTMLImageElement | null>
+  handleLoad: () => void
+  handleError: () => void
+}
+
+export function useLazyImage(src: string | null | undefined): UseLazyImageResult {
   const [loaded, setLoaded] = useState(false)
   const [retryKey, setRetryKey] = useState(0)
   const startTimeRef = useRef<number>(Date.now())
@@ -50,27 +57,8 @@ export default function LazyAvatar({ src, sx, children, ...props }: AvatarProps)
     }
   }
 
-  const retrySrc = src ? (retryKey > 0 ? `${src}?retry=${retryKey}` : src) : undefined
+  let retrySrc: string | undefined
+  if (src) retrySrc = retryKey > 0 ? `${src}?retry=${retryKey}` : src
 
-  return (
-    <Box sx={{ position: 'relative', display: 'inline-flex', width: 'fit-content' }}>
-      {!loaded && src && (
-        <Skeleton
-          sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-          variant="rounded"
-        />
-      )}
-      <Avatar
-        slotProps={{
-          img: retrySrc ? { ref: imgRef, onLoad: handleLoad, onError: handleError } : undefined,
-        }}
-        src={retrySrc}
-        sx={{ ...sx, opacity: loaded || !src ? 1 : 0 }}
-        variant="rounded"
-        {...props}
-      >
-        {children}
-      </Avatar>
-    </Box>
-  )
+  return { loaded, retrySrc, retryKey, imgRef, handleLoad, handleError }
 }

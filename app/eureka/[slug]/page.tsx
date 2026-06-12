@@ -5,7 +5,7 @@ import { getEurekaSet } from '@/hooks/data/eureka-sets'
 import { Stack, Button, Divider, Typography, Chip } from '@mui/material'
 import type { Metadata } from 'next'
 import { Category, ChevronRight } from '@mui/icons-material'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import EurekaVariantColorFilter from '@/components/eureka/eureka-variant-color-filter'
 import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
@@ -64,14 +64,14 @@ async function EurekaSet({ slug }: { slug: string }) {
         <Stack spacing={1}>
           <Stack direction="row" sx={{ flex: 1, justifyContent: 'space-between' }}>
             <Stack sx={{ pt: 1, alignItems: 'center' }}>
-              <LazyAvatar
+              <LazyImage
                 alt={slug || 'Eureka Variant'}
                 size="xl"
                 src={image_url!}
                 sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
               >
                 <Category fontSize="inherit" />
-              </LazyAvatar>
+              </LazyImage>
             </Stack>
 
             <Chip label={toTitle(label ?? '')} variant="outlined" />

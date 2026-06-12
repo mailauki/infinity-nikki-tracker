@@ -8,7 +8,7 @@ import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
 import ProgressChip from '@/components/progress-chip'
 import SlugToolBar from '@/components/slug-toolbar'
-import OutfitSetImage from './outfit-set-image'
+import LazyImage from '@/components/lazy-image'
 import OutfitEvolutionVariants from './outfit-evolution-variants'
 import { resolveOutfitImage, useOutfitImageMode } from './outfit-image-mode-context'
 import { useSearchParams } from 'next/navigation'
@@ -52,7 +52,20 @@ export default function OutfitSetDetail({
       <Stack useFlexGap direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
         <Container disableGutters fixed maxWidth="xs" sx={{ m: 0 }}>
           <Stack spacing={2}>
-            <OutfitSetImage overrideSrc={posterSrc} set={outfitSet} square={showingAlt} />
+            {showingAlt ? (
+              <LazyImage
+                alt={outfitSet.title}
+                kind="square"
+                src={posterSrc || outfitSet.image_url || ''}
+              />
+            ) : (
+              <LazyImage
+                image={posterSrc || outfitSet.image_url || ''}
+                kind="media"
+                sx={{ width: '100%', maxWidth: 300, aspectRatio: '9 / 16' }}
+                title={outfitSet.title}
+              />
+            )}
             <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
               <Typography color="textSecondary" variant="subtitle2">
                 <RarityStars rarity={rarity!} />

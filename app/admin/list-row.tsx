@@ -7,7 +7,7 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { formatDate } from '@/lib/utils'
 
 export default function ListRow({
@@ -39,13 +39,13 @@ export default function ListRow({
       }
     >
       <ListItemAvatar>
-        <LazyAvatar
+        <LazyImage
           alt={slug}
           src={image_url}
           sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
         >
           <Category fontSize="inherit" />
-        </LazyAvatar>
+        </LazyImage>
       </ListItemAvatar>
       <ListItemText primary={title} secondary={subheader} />
       <ListItemText

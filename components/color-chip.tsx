@@ -1,6 +1,6 @@
 import { EurekaColor } from '@/lib/types/eureka'
 import { Chip } from '@mui/material'
-import LazyAvatar from './lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { Done } from '@mui/icons-material'
 
 export default function ColorChip({
@@ -18,7 +18,7 @@ export default function ColorChip({
       <Chip
         key={color.slug}
         clickable
-        avatar={<LazyAvatar alt={color.title || color.slug} size="xs" src={color.image_url!} />}
+        avatar={<LazyImage alt={color.title || color.slug} size="xs" src={color.image_url!} />}
         color={active ? 'primary' : 'default'}
         deleteIcon={<Done />}
         label={color.title}
@@ -31,7 +31,7 @@ export default function ColorChip({
   return (
     <Chip
       key={color.slug}
-      avatar={<LazyAvatar alt={color.title || color.slug} size="xs" src={color.image_url!} />}
+      avatar={<LazyImage alt={color.title || color.slug} size="xs" src={color.image_url!} />}
       color="default"
       deleteIcon={<Done />}
       label={color.title}

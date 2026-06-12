@@ -2,7 +2,7 @@
 import { AvatarSize } from '@/lib/types/props'
 import { useColorScheme } from '@mui/material'
 import { useEffect, useState } from 'react'
-import LazyAvatar from './lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { Category as CategoryIcon } from '@mui/icons-material'
 
 interface ToggleItem {
@@ -31,7 +31,7 @@ export default function ToggleIcon({
   const filter = [brightness, opacity].filter(Boolean).join(' ') || 'none'
 
   return (
-    <LazyAvatar
+    <LazyImage
       alt={item.title}
       size={size}
       src={item.image ?? item.image_url ?? undefined}
@@ -43,6 +43,6 @@ export default function ToggleIcon({
       variant="rounded"
     >
       <CategoryIcon sx={{ color: 'divider' }} />
-    </LazyAvatar>
+    </LazyImage>
   )
 }

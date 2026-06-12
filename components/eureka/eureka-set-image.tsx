@@ -1,7 +1,7 @@
 import { CardHeader, Typography } from '@mui/material'
 import { CardSize } from '@/lib/types/props'
 import { Category } from '@mui/icons-material'
-import LazyAvatar from '../lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 
 export default function EurekaSetImage({
   imageUrl,
@@ -23,9 +23,9 @@ export default function EurekaSetImage({
       <CardHeader
         action={action}
         avatar={
-          <LazyAvatar alt={alt} color="transparent" size="lg" src={imageUrl}>
+          <LazyImage alt={alt} color="transparent" size="lg" src={imageUrl}>
             <Category fontSize="inherit" />
-          </LazyAvatar>
+          </LazyImage>
         }
         sx={{ width: '100%' }}
       />
@@ -37,9 +37,9 @@ export default function EurekaSetImage({
       disableTypography
       action={action}
       avatar={
-        <LazyAvatar alt={alt} color="transparent" size="md" src={imageUrl}>
+        <LazyImage alt={alt} color="transparent" size="md" src={imageUrl}>
           <Category fontSize="inherit" />
-        </LazyAvatar>
+        </LazyImage>
       }
       subheader={<Typography variant="body2">{subheader}</Typography>}
       sx={{ width: '100%' }}

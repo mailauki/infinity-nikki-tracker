@@ -12,7 +12,7 @@ import {
   Select,
   SelectChangeEvent,
 } from '@mui/material'
-import LazyAvatar from '../lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { MENU_PROPS } from '@/lib/types/props'
 
 export default function ColorSelect({
@@ -51,14 +51,14 @@ export default function ColorSelect({
           <MenuItem key={color.slug} value={color.slug}>
             <ListItem disablePadding component="div">
               <ListItemAvatar>
-                <LazyAvatar
+                <LazyImage
                   alt={color.title || color.slug}
                   color="transparent"
                   size="xs"
                   src={color.image_url!}
                 >
                   <ColorLens fontSize="inherit" />
-                </LazyAvatar>
+                </LazyImage>
               </ListItemAvatar>
               <ListItemText>{color.title}</ListItemText>
             </ListItem>

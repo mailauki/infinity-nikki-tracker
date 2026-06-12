@@ -25,7 +25,7 @@ import {
   Typography,
 } from '@mui/material'
 import { ColorLens } from '@mui/icons-material'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { toSlug, toTitle } from '@/lib/utils'
 import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
 import {
@@ -285,14 +285,14 @@ export default function EditEurekaSetForm({
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   <Chip
                     icon={
-                      <LazyAvatar
+                      <LazyImage
                         alt={slug}
                         color="transparent"
                         size="xs"
                         src={color?.image_url ?? ''}
                       >
                         <ColorLens fontSize="inherit" />
-                      </LazyAvatar>
+                      </LazyImage>
                     }
                     label={color?.title ?? slug}
                   />
@@ -308,14 +308,14 @@ export default function EditEurekaSetForm({
               return (
                 <MenuItem key={slug} value={slug}>
                   <ListItemAvatar sx={{ mr: -1.5 }}>
-                    <LazyAvatar
+                    <LazyImage
                       alt={color?.title ?? slug}
                       color="transparent"
                       size="xs"
                       src={color?.image_url ?? ''}
                     >
                       <ColorLens fontSize="inherit" />
-                    </LazyAvatar>
+                    </LazyImage>
                   </ListItemAvatar>
                   <ListItemText primary={color?.title ?? slug} />
                 </MenuItem>

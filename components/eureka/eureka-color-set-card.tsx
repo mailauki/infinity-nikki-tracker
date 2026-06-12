@@ -2,7 +2,7 @@ import { countObtained, percent } from '@/hooks/count-obtained'
 import { EurekaColor, EurekaSet } from '@/lib/types/eureka'
 import { Box, Card, LinearProgress, Stack, Typography } from '@mui/material'
 import { Category } from '@mui/icons-material'
-import LazyAvatar from '../lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import RarityStars from '../rarity-stars'
 
 export default function EurekaColorSetCard({
@@ -32,7 +32,7 @@ export default function EurekaColorSetCard({
     >
       <Box sx={{ position: 'relative' }}>
         <Stack sx={{ pt: 1, alignItems: 'center' }}>
-          <LazyAvatar
+          <LazyImage
             alt={slug}
             color="transparent"
             size="lg"
@@ -40,7 +40,7 @@ export default function EurekaColorSetCard({
             sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
             <Category fontSize="inherit" />
-          </LazyAvatar>
+          </LazyImage>
         </Stack>
         <Stack
           direction="row"

@@ -5,7 +5,7 @@ import { Box, Card, Grow, IconButton, Stack, Typography } from '@mui/material'
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { OutfitVariant } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { useOutfitData } from './outfit-context'
 import { useOutfitImageMode } from './outfit-image-mode-context'
 
@@ -61,7 +61,7 @@ export default function OutfitVariantCard({
       >
         <Box sx={{ position: 'relative', height: '100%' }}>
           <Stack sx={{ pt: 1, alignItems: 'center' }}>
-            <LazyAvatar
+            <LazyImage
               alt={outfitVariant.slug || 'Outfit Variant'}
               color="transparent"
               size="lg"
@@ -69,7 +69,7 @@ export default function OutfitVariantCard({
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <Category fontSize="inherit" />
-            </LazyAvatar>
+            </LazyImage>
           </Stack>
           <Stack
             direction="row"

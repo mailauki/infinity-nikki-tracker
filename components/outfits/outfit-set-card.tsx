@@ -4,7 +4,7 @@ import { Card, CardActionArea, CardHeader, IconButton, Typography } from '@mui/m
 import RarityStars from '../rarity-stars'
 import Link from 'next/link'
 import { toTitle } from '@/lib/utils'
-import OutfitSetImage from './outfit-set-image'
+import LazyImage from '@/components/lazy-image'
 import { resolveOutfitImage, useOutfitImageMode } from './outfit-image-mode-context'
 
 export default function OutfitSetCard({
@@ -44,7 +44,16 @@ export default function OutfitSetCard({
   return (
     <Card sx={{ flexGrow: 1 }}>
       <CardActionArea component={Link} href={href}>
-        <OutfitSetImage overrideSrc={imageSrc} set={set} square={showingAlt} />
+        {showingAlt ? (
+          <LazyImage alt={title} kind="square" src={imageSrc || set.image_url || ''} />
+        ) : (
+          <LazyImage
+            image={imageSrc || set.image_url || ''}
+            kind="media"
+            sx={{ width: '100%', maxWidth: 300, aspectRatio: '9 / 16' }}
+            title={title}
+          />
+        )}
       </CardActionArea>
       <CardHeader
         disableTypography

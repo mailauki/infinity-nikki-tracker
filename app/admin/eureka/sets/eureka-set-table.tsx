@@ -7,7 +7,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { EurekaSet, Label, Style } from '@/lib/types/eureka'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import RarityStars from '@/components/rarity-stars'
 import { updateEurekaSet } from '@/app/admin/actions'
 import {
@@ -75,7 +75,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
         <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           {isEditing(row.id) ? (
             <LockedCell href={editHref(row)}>
-              <LazyAvatar
+              <LazyImage
                 alt={row.title || 'Image'}
                 color="transparent"
                 size="sm"
@@ -83,10 +83,10 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
                 sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
               >
                 <Category fontSize="inherit" />
-              </LazyAvatar>
+              </LazyImage>
             </LockedCell>
           ) : (
-            <LazyAvatar
+            <LazyImage
               alt={row.title || 'Image'}
               color="transparent"
               size="sm"
@@ -94,7 +94,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
               <Category fontSize="inherit" />
-            </LazyAvatar>
+            </LazyImage>
           )}
         </Stack>
       ),

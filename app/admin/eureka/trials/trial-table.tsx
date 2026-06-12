@@ -7,7 +7,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toSlug } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { Trial } from '@/lib/types/eureka'
-import LazyAvatar from '@/components/lazy-avatar'
+import LazyImage from '@/components/lazy-image'
 import { updateTrial } from '@/app/admin/actions'
 import {
   actionsColumn,
@@ -72,7 +72,7 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
         <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
           {isEditing(row.id) ? (
             <LockedCell href={editHref(row)}>
-              <LazyAvatar
+              <LazyImage
                 alt={row.title || 'Image'}
                 size="sm"
                 src={row.image_url!}
@@ -80,10 +80,10 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
                 variant="rounded"
               >
                 <Category fontSize="inherit" />
-              </LazyAvatar>
+              </LazyImage>
             </LockedCell>
           ) : (
-            <LazyAvatar
+            <LazyImage
               alt={row.title || 'Image'}
               size="sm"
               src={row.image_url!}
@@ -91,7 +91,7 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
               variant="rounded"
             >
               <Category fontSize="inherit" />
-            </LazyAvatar>
+            </LazyImage>
           )}
         </Stack>
       ),
