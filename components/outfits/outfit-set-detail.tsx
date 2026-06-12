@@ -47,8 +47,6 @@ export default function OutfitSetDetail({
   const imageSrc = resolveOutfitImage(mode, { image, alt })
   const showingAlt = mode === 'alt' && !!alt
 
-  // When no evolution is selected, combine outfit-set images + all evolution images.
-  // When an evolution is selected, show only that evolution's images.
   const carouselImages = selectedEvolution
     ? (selectedEvolution.carousel_images ?? [])
     : [
