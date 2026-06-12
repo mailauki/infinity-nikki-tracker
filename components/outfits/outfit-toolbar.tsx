@@ -51,7 +51,7 @@ export default function OutfitToolBar() {
           Showing: {resultsCount} results
         </Typography>
         <Stack direction="row" spacing={1}>
-					<DensityMenu /> {/* TODO: add density switching for card size and grid / list  */}
+          <DensityMenu /> {/* TODO: add density switching for card size and grid / list  */}
           <SortButton />
           <FilterMenu />
         </Stack>

@@ -36,7 +36,7 @@ export default function ColorSelect({
     >
       <InputLabel id="colors-select-label">Color</InputLabel>
       <Select
-				MenuProps={MENU_PROPS}
+        MenuProps={MENU_PROPS}
         aria-label="Color"
         disabled={disabled}
         id="colors-select"
