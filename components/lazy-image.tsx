@@ -69,7 +69,11 @@ function AvatarImage({
           img: retrySrc ? { ref: imgRef, onLoad: handleLoad, onError: handleError } : undefined,
         }}
         src={retrySrc}
-        sx={{ ...sx, opacity: loaded || !src ? 1 : 0 }}
+        sx={[
+          { opacity: loaded || !src ? 1 : 0 },
+          ...(Array.isArray(sx) ? sx : [sx]),
+          (theme) => theme.applyStyles('dark', { filter: 'brightness(0.85)' }),
+        ]}
         variant={variant}
         {...props}
       >
@@ -108,13 +112,16 @@ function SquareImage({
           img: retrySrc ? { ref: imgRef, onLoad: handleLoad, onError: handleError } : undefined,
         }}
         src={retrySrc}
-        sx={{
-          width: '100%',
-          height: 'auto',
-          aspectRatio: '1 / 1',
-          ...sx,
-          opacity: loaded || !src ? 1 : 0,
-        }}
+        sx={[
+          {
+            width: '100%',
+            height: 'auto',
+            aspectRatio: '1 / 1',
+            opacity: loaded || !src ? 1 : 0,
+          },
+          ...(Array.isArray(sx) ? sx : [sx]),
+          (theme) => theme.applyStyles('dark', { filter: 'brightness(0.85)' }),
+        ]}
         variant={variant}
       />
     </Box>
@@ -143,7 +150,10 @@ function MediaImage({ image, sx, ...props }: CardMediaProps<'div'>) {
       )}
       <CardMedia
         image={retrySrc}
-        sx={{ height: '100%', opacity: loaded || !image ? 1 : 0 }}
+        sx={[
+          { height: '100%', opacity: loaded || !image ? 1 : 0 },
+          (theme) => theme.applyStyles('dark', { filter: 'brightness(0.85)' }),
+        ]}
         {...props}
       />
     </Box>
