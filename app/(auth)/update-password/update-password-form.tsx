@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 import { Button, Card, CardContent, CardHeader, TextField } from '@mui/material'
@@ -11,7 +10,6 @@ export function UpdatePasswordForm({ className, ...props }: React.ComponentProps
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   const handleUpdatePassword = async (e: React.SyntheticEvent) => {
     e.preventDefault()
@@ -22,8 +20,7 @@ export function UpdatePasswordForm({ className, ...props }: React.ComponentProps
     try {
       const { error } = await supabase.auth.updateUser({ password })
       if (error) throw error
-      router.refresh()
-      router.push('/profile')
+      window.location.replace('/profile')
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : 'An error occurred')
     } finally {
