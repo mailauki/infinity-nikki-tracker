@@ -34,6 +34,11 @@ export default function OutfitSetDetail({
   const [selected, setSelected] = useState<string | null>(evolutionParamsSlug || null)
   const [showCarousel, setShowCarousel] = useState(false)
 
+  function handleSelectEvolution(slug: string | null) {
+    setSelected(slug)
+    setShowCarousel(false)
+  }
+
   const selectedEvolution = evolutions.find((e) => e.slug === selected) ?? null
 
   const image = selectedEvolution ? selectedEvolution.image_url : outfitSet.image_url
@@ -42,8 +47,13 @@ export default function OutfitSetDetail({
   const imageSrc = resolveOutfitImage(mode, { image, alt })
   const showingAlt = mode === 'alt' && !!alt
 
-  const carouselImages = outfitSet.carousel_images ?? []
-  const hasCarousel = !selectedEvolution && carouselImages.length > 0
+  const carouselImages = selectedEvolution
+    ? (selectedEvolution.carousel_images ?? [])
+    : [
+        ...(outfitSet.carousel_images ?? []),
+        ...outfitSet.evolutions.flatMap((e) => e.carousel_images ?? []),
+      ]
+  const hasCarousel = carouselImages.length > 0
 
   const obtained = outfit_variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
   const total = outfit_variants.length
@@ -119,7 +129,7 @@ export default function OutfitSetDetail({
           isLoggedIn={isLoggedIn}
           outfitSet={outfitSet}
           selected={selected}
-          onSelect={setSelected}
+          onSelect={handleSelectEvolution}
         />
       </Stack>
     </>
