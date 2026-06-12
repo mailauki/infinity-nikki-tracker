@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
-import { Stack } from '@mui/material'
+import { Alert, Stack } from '@mui/material'
 import { Metadata } from 'next'
 import ProfileLoading from './loading'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
@@ -68,6 +68,7 @@ async function UserDetails() {
         />
         <ProfileStats eurekaSets={eurekaSets || []} outfitSets={outfitSets || []} />
         {!isPremium && <PremiumUpgrade />}
+				<Alert severity='info'>Outfit collection stats coming soon</Alert>
         {user_id && <CollectionCharts eurekaSets={eurekaSets || []} trials={trials || []} />}
         {user_id && <RecentUpdates items={recentObtained || []} />}
       </Stack>

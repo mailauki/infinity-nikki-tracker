@@ -18,22 +18,16 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: workspaceRoot,
   },
-  headers: async () => [
-    {
-      // Prevent Safari from caching Turbopack dev chunks, which causes
-      // ChunkLoadError reload loops when chunks are invalidated during development
-      source: '/_next/static/chunks/:path*',
-      headers: [{ key: 'Cache-Control', value: 'no-store' }],
-    },
-  ],
+  // headers: async () => [
+  //   {
+  //     // Prevent Safari from caching Turbopack dev chunks, which causes
+  //     // ChunkLoadError reload loops when chunks are invalidated during development
+  //     source: '/_next/static/chunks/:path*',
+  //     headers: [{ key: 'Cache-Control', value: 'no-store' }],
+  //   },
+  // ],
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'static.wikia.nocookie.net',
-        port: '',
-        pathname: '/infinity-nikki/**',
-      },
       {
         protocol: 'https',
         hostname: 'ykfuevyqpjvtxidjnhxm.supabase.co',

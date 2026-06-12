@@ -737,14 +737,17 @@ export type Database = {
           eureka_set_filter: string | null
           group_by_set: boolean
           outfit_category_filter: string | null
+          outfit_density: string
           outfit_evolution_filter: string | null
           outfit_group_by_set: boolean
           outfit_hide_evolutions: boolean
+          outfit_image_mode: string
           outfit_obtained_filter: string | null
           outfit_rarity_filter: string | null
           outfit_set_filter: string | null
           outfit_show_by_evolution: boolean
           show_by_color: boolean
+          sort_order: string
           theme: string
           updated_at: string | null
           user_id: string
@@ -759,14 +762,17 @@ export type Database = {
           eureka_set_filter?: string | null
           group_by_set?: boolean
           outfit_category_filter?: string | null
+          outfit_density?: string
           outfit_evolution_filter?: string | null
           outfit_group_by_set?: boolean
           outfit_hide_evolutions?: boolean
+          outfit_image_mode?: string
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
           outfit_set_filter?: string | null
           outfit_show_by_evolution?: boolean
           show_by_color?: boolean
+          sort_order?: string
           theme?: string
           updated_at?: string | null
           user_id: string
@@ -781,14 +787,17 @@ export type Database = {
           eureka_set_filter?: string | null
           group_by_set?: boolean
           outfit_category_filter?: string | null
+          outfit_density?: string
           outfit_evolution_filter?: string | null
           outfit_group_by_set?: boolean
           outfit_hide_evolutions?: boolean
+          outfit_image_mode?: string
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
           outfit_set_filter?: string | null
           outfit_show_by_evolution?: boolean
           show_by_color?: boolean
+          sort_order?: string
           theme?: string
           updated_at?: string | null
           user_id?: string

@@ -7,18 +7,18 @@ async function EurekaProviders({ children }: { children: React.ReactNode }) {
   const userId = await getUserID()
 
   return (
-    <EurekaDataProvider isLoggedIn={!!userId} userId={userId}>
-      {children}
-    </EurekaDataProvider>
+    <SortProvider isLoggedIn={!!userId}>
+      <EurekaDataProvider isLoggedIn={!!userId} userId={userId}>
+        {children}
+      </EurekaDataProvider>
+    </SortProvider>
   )
 }
 
 export default function EurekaLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SortProvider>
-      <Suspense>
-        <EurekaProviders>{children}</EurekaProviders>
-      </Suspense>
-    </SortProvider>
+    <Suspense>
+      <EurekaProviders>{children}</EurekaProviders>
+    </Suspense>
   )
 }

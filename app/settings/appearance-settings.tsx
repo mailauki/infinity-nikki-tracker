@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, startTransition } from 'react'
+import { useEffect, useState, startTransition } from 'react'
 import {
   Box,
   Card,
@@ -17,9 +17,10 @@ import LightModeIcon from '@mui/icons-material/LightMode'
 import LockIcon from '@mui/icons-material/Lock'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useColorScheme } from '@mui/material/styles'
-import { updateTheme, updateColorTheme } from '@/app/actions/preferences'
+import { updateTheme, updateColorTheme, updateSortOrder } from '@/app/actions/preferences'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '@/components/color-theme-context'
+import type { SortOrder } from '@/components/sort-context'
 import type { ColorTheme } from '@/lib/types/eureka'
 
 const modes = [
@@ -30,9 +31,16 @@ const modes = [
 
 const COLOR_THEMES: ColorTheme[] = ['default', 'moonlight', 'cherry', 'forest']
 
-export default function AppearanceSettings({ isPremium }: { isPremium: boolean }) {
+export default function AppearanceSettings({
+  isPremium,
+  isLoggedIn = false,
+}: {
+  isPremium: boolean
+  isLoggedIn?: boolean
+}) {
   const { mode, setMode } = useColorScheme()
   const { colorTheme, setColorTheme } = useColorTheme()
+  const [sortOrder, setSortOrder] = useState<SortOrder>('new')
 
   useEffect(() => {
     fetch('/api/preferences')
@@ -47,10 +55,18 @@ export default function AppearanceSettings({ isPremium }: { isPremium: boolean }
         ) {
           setMode(saved as 'system' | 'light' | 'dark')
         }
+        if (prefs.sort_order === 'new' || prefs.sort_order === 'old') {
+          setSortOrder(prefs.sort_order)
+        }
       })
       .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  function handleSortChange(value: SortOrder) {
+    setSortOrder(value)
+    startTransition(() => updateSortOrder(value))
+  }
 
   async function handleColorThemeChange(value: ColorTheme) {
     if (!isPremium && value !== 'default') return
@@ -81,6 +97,31 @@ export default function AppearanceSettings({ isPremium }: { isPremium: boolean }
             ))}
           </ToggleButtonGroup>
         </Stack>
+
+        {isLoggedIn && (
+          <Stack spacing={2}>
+            <Typography variant="subtitle1">Default Sort</Typography>
+            <ToggleButtonGroup
+              exclusive
+              aria-label="default sort order"
+              value={sortOrder}
+              onChange={(_, value) => {
+                if (!value) return
+                handleSortChange(value)
+              }}
+            >
+              <ToggleButton aria-label="Newest first" sx={{ px: 2 }} value="new">
+                Newest first
+              </ToggleButton>
+              <ToggleButton aria-label="Oldest first" sx={{ px: 2 }} value="old">
+                Oldest first
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <Typography color="textSecondary" variant="caption">
+              Applies to the Eureka and Outfits collection views.
+            </Typography>
+          </Stack>
+        )}
 
         <Stack spacing={2}>
           <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
