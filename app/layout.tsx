@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   },
 }
 
-const VALID_THEMES: ColorTheme[] = ['default', 'moonlight', 'cherry', 'forest']
+const VALID_THEMES: ColorTheme[] = ['default', 'moonlight', 'blossom', 'forest']
 
 async function ThemedApp({ children }: { children: React.ReactNode }) {
   await connection()

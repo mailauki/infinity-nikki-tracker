@@ -124,7 +124,7 @@ export const COLOR_THEME_PRESETS: Record<ColorTheme, ColorThemePreset> = {
       },
     },
   },
-  cherry: {
+  blossom: {
     label: 'Cherry Blossom',
     description: 'Deep rose and soft pink',
     light: {
