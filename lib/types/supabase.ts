@@ -286,6 +286,38 @@ export type Database = {
           },
         ]
       }
+      evolution_carousel_images: {
+        Row: {
+          created_at: string | null
+          evolution: string
+          id: number
+          image_url: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string | null
+          evolution: string
+          id?: number
+          image_url: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string | null
+          evolution?: string
+          id?: number
+          image_url?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'evolution_carousel_images_evolution_fkey'
+            columns: ['evolution']
+            isOneToOne: false
+            referencedRelation: 'evolutions'
+            referencedColumns: ['slug']
+          },
+        ]
+      }
       evolutions: {
         Row: {
           alt_image_url: string | null

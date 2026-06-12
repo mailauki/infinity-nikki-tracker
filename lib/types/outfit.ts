@@ -15,7 +15,9 @@ export type Evolution = Pick<
   | 'outfit_set'
   | 'image_url'
   | 'alt_image_url'
->
+> & {
+  carousel_images: CarouselImage[]
+}
 
 export type EvolutionDraft = {
   subtitle: string
