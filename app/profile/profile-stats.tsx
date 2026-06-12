@@ -45,7 +45,8 @@ export default function ProfileStats({
     <Stack
       direction="row"
       divider={<Divider flexItem orientation="vertical" variant="middle" />}
-      spacing={3}
+      spacing={{ xs: 1, sm: 2, md: 3 }}
+			// sx={{ justifyContent: { sm: 'space-between', md: 'flex-start' }}}
     >
       <Stat obtained={eurekaSetsObtained || 0} title="Eureka Sets" />
       <Stat obtained={outfitSetsObtained || 0} title="Outfit Sets" />
@@ -57,7 +58,7 @@ export default function ProfileStats({
 
 function Stat({ title, obtained }: { title: string; obtained: number }) {
   return (
-    <Stack sx={{ alignItems: 'center' }}>
+    <Stack sx={{ alignItems: 'center', flexGrow: { xs: 1, sm: 1, md: 0 } }}>
       <Typography variant="overline">{title}</Typography>
       <Typography component="span" variant="h6">
         {obtained}
