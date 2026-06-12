@@ -28,13 +28,13 @@ export default function OutfitSetSection({
         evolutionKey === null ? v.evolution === null : v.evolution === evolutionKey
       )
       if (variants.length === 0) return null
-			
-			const href = evolution
-				? `/outfits/${evolution.slug.replace('-', '?evolution=')}`
-				: `/outfits/${set.slug}`
-			const title = evolution
-				? `${set.title}: ${toTitle(evolution.subtitle ?? evolution.slug)}`
-				: set.title
+
+      const href = evolution
+        ? `/outfits/${evolution.slug.replace('-', '?evolution=')}`
+        : `/outfits/${set.slug}`
+      const title = evolution
+        ? `${set.title}: ${toTitle(evolution.subtitle ?? evolution.slug)}`
+        : set.title
       const obtained = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
 
       return (

@@ -183,8 +183,9 @@ export default function FilterOutfits() {
             },
             gap: 2,
           }}
-        > {
-          filteredSets.flatMap((set) =>
+        >
+          {' '}
+          {filteredSets.flatMap((set) =>
             // Render the base set plus each evolution as its own card.
             [null, ...set.evolutions].map((evolution) => {
               const evolutionKey = evolution?.slug ?? null
@@ -212,8 +213,8 @@ export default function FilterOutfits() {
                   }}
                 />
               )
-            }))
-					}
+            })
+          )}
         </Box>
       )}
 
