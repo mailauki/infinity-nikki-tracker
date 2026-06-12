@@ -10,6 +10,7 @@ import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
 import { resolveOutfitImage, useOutfitImageMode } from './outfit-image-mode-context'
 import ToggleIcon from '../toggle-icon'
+import ProgressChip from '../progress-chip'
 
 export default function OutfitSetCard({
   set,
@@ -111,7 +112,10 @@ export default function OutfitSetCard({
             </IconButton>
           )}
         </Stack>
-        <Box sx={{ position: 'absolute', top: 10, right: 10 }}>
+        <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+					<ProgressChip percentage={obtained ? 100 : 0} size='xs' />
+				</Box>
+        <Box sx={{ position: 'absolute', top: 12, left: 12 }}>
           {evolution && !glowup && (
             <ToggleIcon item={{ title: 'evolution', image: '/icons/evolution.png' }} size="xs" />
           )}
