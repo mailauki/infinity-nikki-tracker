@@ -29,7 +29,7 @@ const modes = [
   { value: 'dark', label: 'Dark', icon: <DarkModeIcon fontSize="small" /> },
 ] as const
 
-const COLOR_THEMES: ColorTheme[] = ['default', 'moonlight', 'cherry', 'forest']
+const COLOR_THEMES: ColorTheme[] = ['default', 'moonlight', 'blossom', 'forest']
 
 export default function AppearanceSettings({
   isPremium,

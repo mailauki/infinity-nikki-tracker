@@ -97,6 +97,6 @@ export type UserPreferences = Pick<
   | 'sort_order'
 >
 
-export type ColorTheme = 'default' | 'moonlight' | 'cherry' | 'forest'
+export type ColorTheme = 'default' | 'moonlight' | 'blossom' | 'forest'
 
 export type AdminPreferences = Pick<Tables<'admin_preferences'>, 'admin_view'>
