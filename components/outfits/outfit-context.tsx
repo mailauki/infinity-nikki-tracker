@@ -23,10 +23,8 @@ interface OutfitDataContextValue {
   isObtainedError: boolean
   userId: string | null
   groupBySet: boolean
-  showByEvolution: boolean
   hideEvolutions: boolean
   onGroupBySetChange: () => void
-  onShowByEvolutionChange: () => void
   onHideEvolutionsChange: () => void
   filters: OutfitFilterState
   onFiltersChange: (updates: Partial<OutfitFilterState>) => void
@@ -53,10 +51,8 @@ export const OutfitDataContext = createContext<OutfitDataContextValue>({
   isObtainedError: false,
   userId: null,
   groupBySet: true,
-  showByEvolution: false,
   hideEvolutions: false,
   onGroupBySetChange: () => {},
-  onShowByEvolutionChange: () => {},
   onHideEvolutionsChange: () => {},
   filters: DEFAULT_OUTFIT_FILTERS,
   onFiltersChange: () => {},

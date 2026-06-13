@@ -5,10 +5,12 @@ import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import FilterMenu from '@/components/navbar/filter-menu'
 import { SortButton } from '@/components/navbar/appbar-actions'
 import { useOutfitData } from './outfit-context'
+import { useOutfitImageMode } from './outfit-image-mode-context'
 import DensityMenu from '../navbar/density-menu'
 
 export default function OutfitToolBar() {
-  const { outfitSets, showByEvolution, filters } = useOutfitData()
+  const { outfitSets, hideEvolutions, filters } = useOutfitData()
+  const { density } = useOutfitImageMode()
 
   const {
     selectedOutfitSet,
@@ -22,7 +24,6 @@ export default function OutfitToolBar() {
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => ({
-      evolutions: set.evolutions,
       outfit_variants: set.outfit_variants
         .filter(
           (v) =>
@@ -37,9 +38,23 @@ export default function OutfitToolBar() {
         }),
     }))
 
-  const resultsCount = showByEvolution
-    ? filtered.reduce((sum, set) => sum + set.evolutions.length + 1, 0) // +1 for base
-    : filtered.reduce((sum, set) => sum + set.outfit_variants.length, 0)
+  // Standard density renders one card per (set, evolution) group that has
+  // variants — base set plus each evolution — so count those visible groups.
+  // Hidden evolution cards (hideEvolutions) are unmounted, so exclude them.
+  // Compact density renders one card per variant, so count variants.
+  const resultsCount =
+    density === 'standard'
+      ? filtered.reduce((sum, set) => {
+          // When hiding evolutions, only the base (null) group card stays mounted.
+          const groupKeys = hideEvolutions
+            ? [null]
+            : [...new Set(set.outfit_variants.map((v) => v.evolution))]
+          return (
+            sum +
+            groupKeys.filter((key) => set.outfit_variants.some((v) => v.evolution === key)).length
+          )
+        }, 0)
+      : filtered.reduce((sum, set) => sum + set.outfit_variants.length, 0)
 
   return (
     <NavBarToolbar>
@@ -51,7 +66,7 @@ export default function OutfitToolBar() {
           Showing: {resultsCount} results
         </Typography>
         <Stack direction="row" spacing={1}>
-          <DensityMenu /> {/* TODO: add density switching for card size and grid / list  */}
+          <DensityMenu />
           <SortButton />
           <FilterMenu />
         </Stack>

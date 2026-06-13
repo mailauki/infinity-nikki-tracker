@@ -73,10 +73,6 @@ export async function updateOutfitGroupBySet(value: boolean) {
   await upsertUserPreference({ outfit_group_by_set: value })
 }
 
-export async function updateOutfitShowByEvolution(value: boolean) {
-  await upsertUserPreference({ outfit_show_by_evolution: value })
-}
-
 export async function updateOutfitHideEvolutions(value: boolean) {
   await upsertUserPreference({ outfit_hide_evolutions: value })
 }

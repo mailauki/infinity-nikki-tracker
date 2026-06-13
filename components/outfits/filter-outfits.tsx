@@ -8,7 +8,6 @@ import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-conte
 import { useSortOrder } from '@/components/sort-context'
 import { GRID_COLUMNS } from '@/lib/types/props'
 import OutfitVariantCard from './outfit-variant-card'
-import OutfitEvolutionSetCard from './outfit-evolution-set-card'
 import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
 
@@ -56,7 +55,6 @@ export default function FilterOutfits() {
     isError,
     isObtainedError,
     groupBySet,
-    showByEvolution,
     hideEvolutions,
     filters,
     onToggleObtained,
@@ -112,9 +110,6 @@ export default function FilterOutfits() {
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => {
-      if (showByEvolution) {
-        return set
-      }
       const filteredVariants = set.outfit_variants
         .filter((v) => !hideEvolutions || v.evolution === null)
         .filter(
@@ -130,20 +125,10 @@ export default function FilterOutfits() {
         })
       return { ...set, outfit_variants: filteredVariants }
     })
-    .filter((set) => (showByEvolution ? set.evolutions.length > 0 : set.outfit_variants.length > 0))
+    .filter((set) => set.outfit_variants.length > 0)
     .sort((a, b) => (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!))
 
   function renderSetVariants(set: (typeof filteredSets)[number]) {
-    if (showByEvolution) {
-      return [null, ...set.evolutions].map((evolution) => (
-        <OutfitEvolutionSetCard
-          key={evolution?.slug ?? 'base'}
-          evolution={evolution}
-          isLoggedIn={isLoggedIn}
-          outfitSet={set}
-        />
-      ))
-    }
     return set.outfit_variants.map((variant) => (
       <OutfitVariantCard
         key={variant.id}
