@@ -49,17 +49,10 @@ export default function OutfitSetCard({
   }, [shouldHide])
 
   function handleToggle() {
+    onToggle()
     if (isMissingFilter) {
       setExiting(true)
-    } else {
-      onToggle()
     }
-  }
-
-  function handleExited() {
-    // Only the missing-filter toggle commits an obtained change on exit; the
-    // hide-evolutions case just unmounts.
-    if (isMissingFilter && !shouldHide) onToggle()
   }
 
   const href = evolution
@@ -77,7 +70,7 @@ export default function OutfitSetCard({
   const glowup = set.glowup_evolution === evolution?.slug
 
   return (
-    <Grow unmountOnExit in={grown && !exiting} timeout={300} onExited={handleExited}>
+    <Grow unmountOnExit in={grown && !exiting} timeout={300}>
       <Card sx={{ flexGrow: 1, position: 'relative' }}>
         <CardActionArea component={Link} href={href}>
           {showingAlt ? (
