@@ -8,8 +8,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Infinity Nikki Tracker',
     short_name: 'Nikki Tracker',
-    description:
-      'Track your collection from your favorite cozy open-world game Infinity Nikki',
+    description: 'Track your collection from your favorite cozy open-world game Infinity Nikki',
     start_url: '/',
     display: 'standalone',
     orientation: 'portrait',

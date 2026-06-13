@@ -25,8 +25,16 @@ export default function OutfitSetDetail({
   isLoggedIn: boolean
   isAdmin: boolean
 }) {
-  const { ability, evolutions, outfit_variants: rawVariants, rarity, label, label_2, style, description } =
-    outfitSet
+  const {
+    ability,
+    evolutions,
+    outfit_variants: rawVariants,
+    rarity,
+    label,
+    label_2,
+    style,
+    description,
+  } = outfitSet
   const { mode } = useOutfitImageMode()
   const { obtainedOutfit } = useOutfitData()
 

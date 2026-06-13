@@ -74,7 +74,7 @@ export default function OutfitSetCard({
     : resolveOutfitImage(mode, { image: set.image_url, alt: set.alt_image_url })
   const showingAlt = mode === 'alt' && !!(evolution ? evolution.alt_image_url : set.alt_image_url)
 
-	const glowup = set.glowup_evolution === evolution?.slug
+  const glowup = set.glowup_evolution === evolution?.slug
 
   return (
     <Grow unmountOnExit in={grown && !exiting} timeout={300} onExited={handleExited}>
@@ -113,10 +113,8 @@ export default function OutfitSetCard({
           )}
         </Stack>
         <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
-					{isLoggedIn && (
-						<ProgressChip percentage={obtained ? 100 : 0} size='xs' />
-					)}
-				</Box>
+          {isLoggedIn && <ProgressChip percentage={obtained ? 100 : 0} size="xs" />}
+        </Box>
         <Box sx={{ position: 'absolute', top: 12, left: 12 }}>
           {evolution && !glowup && (
             <ToggleIcon item={{ title: 'evolution', image: '/icons/evolution.png' }} size="xs" />
