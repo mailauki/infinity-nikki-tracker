@@ -202,6 +202,8 @@ Configured in `.claude/settings.json`:
 
 **Branch protection:** `main` requires a PR with 1 approving review + Vercel status check. Force push and deletion are blocked.
 
+**Merge-race guard (do not strand commits):** A squash-merge captures only the commits that existed on the branch *at merge time*. Pushing more commits to a branch after its PR is merged silently strands that work outside `main`. Therefore: **before a PR is merged, confirm all intended commits are already pushed; never push to a branch whose PR is already merged** — branch from `main` and cherry-pick instead. A tracked `pre-push` hook (`.githooks/pre-push`, enabled via `core.hooksPath .githooks` — run `git config core.hooksPath .githooks` after a fresh clone) blocks pushes to any branch whose PR is `MERGED` (override with `git push --no-verify`). The repo also has "automatically delete head branch on merge" enabled so a late push reopens the PR visibly rather than riding a stale branch.
+
 **Claude branches:** Auto-generated branches use pattern `claude/<feature>-<id>` — check for unmerged remote branches and create PRs as needed.
 
 **Vercel CLI:**
