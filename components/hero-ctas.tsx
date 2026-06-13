@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Divider, Stack } from '@mui/material'
+import { Button, Stack } from '@mui/material'
 import Link from 'next/link'
 
 export function HeroCTAs({ isLoggedIn }: { isLoggedIn: boolean }) {
@@ -47,7 +47,6 @@ export function HeroCTAs({ isLoggedIn }: { isLoggedIn: boolean }) {
           </>
         )}
       </Stack>
-      <Divider />
     </Stack>
   )
 }
