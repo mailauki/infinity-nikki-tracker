@@ -211,7 +211,22 @@ export default function OutfitDataProvider({
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          setObtainedOutfit((prev) => [...prev, payload.new as ObtainedOutfit])
+          const incoming = payload.new as ObtainedOutfit
+          setObtainedOutfit((prev) => {
+            const withoutPlaceholder = prev.filter(
+              (o) =>
+                !(
+                  o.id === -1 &&
+                  o.outfit_set === incoming.outfit_set &&
+                  o.outfit_category === incoming.outfit_category &&
+                  (incoming.evolution === null
+                    ? o.evolution === null
+                    : o.evolution === incoming.evolution)
+                )
+            )
+            if (withoutPlaceholder.some((o) => o.id === incoming.id)) return prev
+            return [...withoutPlaceholder, incoming]
+          })
         }
       )
       .on(
