@@ -57,7 +57,7 @@ export default function FilterOutfits() {
     groupBySet,
     hideEvolutions,
     filters,
-    onToggleObtained,
+    onBatchToggleObtained,
   } = useOutfitData()
   const { density } = useOutfitImageMode()
   const { sortOrder } = useSortOrder()
@@ -191,14 +191,14 @@ export default function FilterOutfits() {
                   set={set}
                   shouldHide={hideEvolutions && evolutionKey !== null}
                   onToggle={() => {
-                    // Mark every variant in this group to the opposite of its
-                    // current completion state. onToggleObtained flips a single
-                    // variant, so only toggle the ones that need to change.
-                    variants.forEach((v) => {
-                      if (v.obtained === allObtained) {
-                        onToggleObtained(v.outfit_set!, v.outfit_category!, v.evolution ?? null)
-                      }
-                    })
+                    const toToggle = variants
+                      .filter((v) => v.obtained === allObtained)
+                      .map((v) => ({
+                        outfit_set: v.outfit_set!,
+                        outfit_category: v.outfit_category!,
+                        evolution: v.evolution ?? null,
+                      }))
+                    onBatchToggleObtained(toToggle, !allObtained)
                   }}
                 />
               )

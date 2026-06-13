@@ -105,11 +105,12 @@ export default function OutfitDataProvider({
     setFilters(DEFAULT_OUTFIT_FILTERS)
   }
 
-  const handleToggleObtained = (
+  const handleToggleObtained = async (
     outfit_set: string,
     outfit_category: string,
     evolution: string | null
   ) => {
+    const saved = obtainedOutfit
     const isObtained = obtainedOutfit.some(
       (o) =>
         o.outfit_set === outfit_set &&
@@ -130,7 +131,47 @@ export default function OutfitDataProvider({
     } else {
       setObtainedOutfit((prev) => [...prev, { id: -1, outfit_set, outfit_category, evolution }])
     }
-    handleObtainedOutfit(outfit_set, outfit_category, evolution)
+    try {
+      await handleObtainedOutfit(outfit_set, outfit_category, evolution)
+    } catch (err) {
+      console.error('Failed to toggle obtained outfit:', err)
+      setObtainedOutfit(saved)
+    }
+  }
+
+  const handleBatchToggleObtained = async (
+    variants: Array<{ outfit_set: string; outfit_category: string; evolution: string | null }>,
+    targetObtained: boolean
+  ) => {
+    const saved = obtainedOutfit
+    const matches = (
+      o: { outfit_set: string; outfit_category: string; evolution: string | null },
+      v: { outfit_set: string; outfit_category: string; evolution: string | null }
+    ) =>
+      o.outfit_set === v.outfit_set &&
+      o.outfit_category === v.outfit_category &&
+      (v.evolution === null ? o.evolution === null : o.evolution === v.evolution)
+
+    if (targetObtained) {
+      setObtainedOutfit((prev) => {
+        const toAdd = variants
+          .filter((v) => !prev.some((o) => matches(o, v)))
+          .map((v) => ({ id: -1, ...v }))
+        return [...prev, ...toAdd]
+      })
+    } else {
+      setObtainedOutfit((prev) => prev.filter((o) => !variants.some((v) => matches(o, v))))
+    }
+
+    for (const v of variants) {
+      try {
+        await handleObtainedOutfit(v.outfit_set, v.outfit_category, v.evolution)
+      } catch (err) {
+        console.error('Failed to batch toggle obtained outfit:', err)
+        setObtainedOutfit(saved)
+        return
+      }
+    }
   }
 
   useEffect(() => {
@@ -217,6 +258,7 @@ export default function OutfitDataProvider({
         onFiltersChange: handleFiltersChange,
         onClearFilters: handleClearFilters,
         onToggleObtained: handleToggleObtained,
+        onBatchToggleObtained: handleBatchToggleObtained,
       }}
     >
       {children}

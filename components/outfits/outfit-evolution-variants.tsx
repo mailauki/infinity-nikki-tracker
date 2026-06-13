@@ -5,6 +5,7 @@ import { OutfitSet } from '@/lib/types/outfit'
 import { percent } from '@/hooks/count-obtained'
 import ProgressChip from '@/components/progress-chip'
 import OutfitVariantCard from './outfit-variant-card'
+import { useOutfitData } from './outfit-context'
 
 // Sentinel for the "Base" toggle, since the Base evolution has no slug.
 const BASE = 'base'
@@ -21,7 +22,18 @@ export default function OutfitEvolutionVariants({
   selected: string | null
   onSelect: (next: string | null) => void
 }) {
-  const { evolutions, outfit_variants } = outfitSet
+  const { obtainedOutfit } = useOutfitData()
+  const { evolutions, outfit_variants: rawVariants } = outfitSet
+
+  const outfit_variants = rawVariants.map((v) => ({
+    ...v,
+    obtained: obtainedOutfit.some(
+      (o) =>
+        o.outfit_set === v.outfit_set &&
+        o.outfit_category === v.outfit_category &&
+        (v.evolution === null ? o.evolution === null : o.evolution === v.evolution)
+    ),
+  }))
 
   // Sort by evolution order, with the null (default) evolution first.
   const evolutionOrder = new Map(evolutions.map((e) => [e.slug, e.order]))

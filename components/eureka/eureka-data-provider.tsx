@@ -112,7 +112,8 @@ export default function EurekaDataProvider({
     setFilters(DEFAULT_FILTERS)
   }
 
-  const handleToggleObtained = (eureka_set: string, category: string, color: string) => {
+  const handleToggleObtained = async (eureka_set: string, category: string, color: string) => {
+    const saved = obtainedEureka
     const isObtained = obtainedEureka.some(
       (o) => o.eureka_set === eureka_set && o.category === category && o.color === color
     )
@@ -125,7 +126,12 @@ export default function EurekaDataProvider({
     } else {
       setObtainedEureka((prev) => [...prev, { id: -1, eureka_set, category, color }])
     }
-    handleObtained(eureka_set, category, color)
+    try {
+      await handleObtained(eureka_set, category, color)
+    } catch (err) {
+      console.error('Failed to toggle obtained eureka:', err)
+      setObtainedEureka(saved)
+    }
   }
 
   useEffect(() => {

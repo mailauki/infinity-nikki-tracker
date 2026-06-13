@@ -13,6 +13,7 @@ import LazyImage from '@/components/lazy-image'
 import OutfitEvolutionVariants from './outfit-evolution-variants'
 import OutfitCarousel from './outfit-carousel'
 import { resolveOutfitImage, useOutfitImageMode } from './outfit-image-mode-context'
+import { useOutfitData } from './outfit-context'
 import { useSearchParams } from 'next/navigation'
 
 export default function OutfitSetDetail({
@@ -24,9 +25,20 @@ export default function OutfitSetDetail({
   isLoggedIn: boolean
   isAdmin: boolean
 }) {
-  const { ability, evolutions, outfit_variants, rarity, label, label_2, style, description } =
+  const { ability, evolutions, outfit_variants: rawVariants, rarity, label, label_2, style, description } =
     outfitSet
   const { mode } = useOutfitImageMode()
+  const { obtainedOutfit } = useOutfitData()
+
+  const outfit_variants = rawVariants.map((v) => ({
+    ...v,
+    obtained: obtainedOutfit.some(
+      (o) =>
+        o.outfit_set === v.outfit_set &&
+        o.outfit_category === v.outfit_category &&
+        (v.evolution === null ? o.evolution === null : o.evolution === v.evolution)
+    ),
+  }))
 
   const searchParams = useSearchParams()
   const evolutionParams = searchParams.get('evolution')
