@@ -206,6 +206,8 @@ Configured in `.claude/settings.json`:
 
 **Cleaning up merged local branches:** Run `git cleanup-merged` (alias → `.githooks/cleanup-merged-branches.sh`) to delete local branches whose PR is `MERGED` **and** whose commits are all in `origin/main`. It deletes only when `git cherry origin/main <branch>` confirms nothing is stranded — a branch with a post-squash commit is kept with a warning, never deleted. Flags: `--dry-run`, `--yes`. Don't `git branch -D` a merged branch by hand without this check.
 
+**Lock PRs after merge:** Merge via the project `/merge-pr` command, which squash-merges, verifies the PR is `MERGED`, then runs `gh pr lock <n> --reason resolved` and finally `git cleanup-merged`. GitHub has no native auto-lock, so the lock lives in the merge flow; if you merge via the web UI, lock manually with `gh pr lock <n> --reason resolved`. Locking marks the PR done and stops the thread reopening (it does not by itself prevent pushes to the head branch — that's the pre-push hook's job).
+
 **Per-clone setup (local git config, not auto-applied on clone):** after a fresh clone, run `git config core.hooksPath .githooks` (enables the pre-push hook) and `git config alias.cleanup-merged '!bash "$(git rev-parse --show-toplevel)/.githooks/cleanup-merged-branches.sh"'` (registers the cleanup command).
 
 **Claude branches:** Auto-generated branches use pattern `claude/<feature>-<id>` — check for unmerged remote branches and create PRs as needed.
