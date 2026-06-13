@@ -6,11 +6,13 @@ import {
   Card,
   CardActionArea,
   CardHeader,
+  Stack,
   Typography,
   useColorScheme,
 } from '@mui/material'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import LazyImage from './lazy-image'
 
 const cards = [
   {
@@ -55,7 +57,19 @@ export function QuickAccess() {
                   background: (theme) =>
                     `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                 }}
-              />
+              >
+                <Stack sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                  <LazyImage
+                    size="xl"
+                    src={
+                      title === 'Outfits'
+                        ? '/quick-access/perfect-start-alt.png'
+                        : '/quick-access/first-snow-head-white.png'
+                    }
+                    variant="square"
+                  />
+                </Stack>
+              </Box>
               <CardHeader
                 avatar={
                   <Avatar
