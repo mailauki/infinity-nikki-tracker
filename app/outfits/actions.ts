@@ -13,10 +13,13 @@ export async function handleObtainedOutfit(
 
   const supabase = await createClient()
 
+  // Null means "base variant" on the client; the DB stores the concrete base slug.
+  const effectiveEvolution = evolution ?? `${outfit_set}-base`
+
   const { error } = await supabase.rpc('toggle_obtained_outfit', {
     p_outfit_set: outfit_set,
     p_outfit_category: outfit_category,
-    p_evolution: evolution as string,
+    p_evolution: effectiveEvolution,
   })
 
   if (error) {

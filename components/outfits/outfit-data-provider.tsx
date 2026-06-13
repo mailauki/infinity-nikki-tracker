@@ -211,7 +211,12 @@ export default function OutfitDataProvider({
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          const incoming = payload.new as ObtainedOutfit
+          const raw = payload.new as ObtainedOutfit
+          // Normalize base evolution slug to null so placeholder matching works
+          const incoming: ObtainedOutfit = {
+            ...raw,
+            evolution: raw.evolution === `${raw.outfit_set}-base` ? null : raw.evolution,
+          }
           setObtainedOutfit((prev) => {
             const withoutPlaceholder = prev.filter(
               (o) =>

@@ -55,7 +55,12 @@ export async function GET() {
     return NextResponse.json({ error: obtainedError.message }, { status: 500 })
   }
 
-  const obtainedOutfit = (obtained ?? []) as ObtainedOutfit[]
+  // Normalize base evolution slugs to null so updateOutfitSet can match against
+  // base variants (which createOutfitSet already normalizes to evolution = null).
+  const obtainedOutfit = (obtained ?? []).map((o) => ({
+    ...o,
+    evolution: o.evolution === `${o.outfit_set}-base` ? null : o.evolution,
+  })) as ObtainedOutfit[]
   const outfitsWithObtained = outfits.map((outfitSet) =>
     updateOutfitSet({ outfitSet, obtainedOutfit })
   )

@@ -23,5 +23,10 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json((data ?? []) as ObtainedOutfit[])
+  // Normalize base evolution slugs ({outfit_set}-base) to null for client compatibility.
+  const normalized = (data ?? []).map((o) => ({
+    ...o,
+    evolution: o.evolution === `${o.outfit_set}-base` ? null : o.evolution,
+  }))
+  return NextResponse.json(normalized as ObtainedOutfit[])
 }
