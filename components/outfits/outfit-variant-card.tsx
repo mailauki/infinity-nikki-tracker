@@ -27,23 +27,14 @@ export default function OutfitVariantCard({
     (mode === 'alt' && outfitVariant.alt_image_url) || outfitVariant.image_url || undefined
 
   function onToggle() {
-    if (isMissingFilter) {
-      setExiting(true)
-    } else {
-      onToggleObtained(
-        outfitVariant.outfit_set!,
-        outfitVariant.outfit_category!,
-        outfitVariant.evolution ?? null
-      )
-    }
-  }
-
-  function onExited() {
     onToggleObtained(
       outfitVariant.outfit_set!,
       outfitVariant.outfit_category!,
       outfitVariant.evolution ?? null
     )
+    if (isMissingFilter) {
+      setExiting(true)
+    }
   }
 
   const categoryLabel = toTitle(outfitVariant.outfit_category ?? '')
@@ -52,7 +43,7 @@ export default function OutfitVariantCard({
     : 'Base'
 
   return (
-    <Grow in={!exiting} timeout={300} onExited={onExited}>
+    <Grow in={!exiting} timeout={300}>
       <Card
         sx={{
           minWidth: 'fit-content',
