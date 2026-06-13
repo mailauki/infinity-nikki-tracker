@@ -30,6 +30,10 @@ interface OutfitDataContextValue {
   onFiltersChange: (updates: Partial<OutfitFilterState>) => void
   onClearFilters: () => void
   onToggleObtained: (outfit_set: string, outfit_category: string, evolution: string | null) => void
+  onBatchToggleObtained: (
+    variants: Array<{ outfit_set: string; outfit_category: string; evolution: string | null }>,
+    targetObtained: boolean
+  ) => void
 }
 
 export const DEFAULT_OUTFIT_FILTERS: OutfitFilterState = {
@@ -58,6 +62,7 @@ export const OutfitDataContext = createContext<OutfitDataContextValue>({
   onFiltersChange: () => {},
   onClearFilters: () => {},
   onToggleObtained: () => {},
+  onBatchToggleObtained: () => {},
 })
 
 export function useOutfitData() {
