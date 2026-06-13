@@ -113,7 +113,9 @@ export default function OutfitSetCard({
           )}
         </Stack>
         <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
-					<ProgressChip percentage={obtained ? 100 : 0} size='xs' />
+					{isLoggedIn && (
+						<ProgressChip percentage={obtained ? 100 : 0} size='xs' />
+					)}
 				</Box>
         <Box sx={{ position: 'absolute', top: 12, left: 12 }}>
           {evolution && !glowup && (
