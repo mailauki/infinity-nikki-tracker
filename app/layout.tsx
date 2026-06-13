@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Noto_Sans_JP, Roboto } from 'next/font/google'
@@ -47,6 +47,20 @@ export const metadata: Metadata = {
   icons: {
     icon: '/infinity-nikki-logo.png',
   },
+  appleWebApp: {
+    capable: true,
+    title: 'Nikki Tracker',
+    statusBarStyle: 'default',
+  },
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#FFF8F6' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a110e' },
+  ],
 }
 
 const VALID_THEMES: ColorTheme[] = ['default', 'moonlight', 'blossom', 'forest']
