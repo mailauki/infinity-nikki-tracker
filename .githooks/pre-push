@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+#
+# pre-push: block pushing to a branch whose PR is already MERGED.
+#
+# Why: a squash-merge only captures the commits that existed at merge time.
+# Pushing more commits to an already-merged branch silently strands that work
+# outside main (it rides a stale branch / reopens the PR unnoticed). This guard
+# stops that at the source — branch from main for follow-up work instead.
+#
+# Requires: gh (GitHub CLI), authenticated. If gh is missing/unauthenticated or
+# offline, the hook warns and allows the push (fail-open — never block on tooling).
+#
+# Bypass (rare, intentional): git push --no-verify
+
+branch="$(git symbolic-ref --short HEAD 2>/dev/null)"
+
+# Nothing to check on a detached HEAD.
+[ -z "$branch" ] && exit 0
+
+# Never gate pushes to main itself.
+if [ "$branch" = "main" ]; then
+  exit 0
+fi
+
+# gh must be present and authenticated; otherwise fail open.
+if ! command -v gh >/dev/null 2>&1; then
+  echo "pre-push: gh CLI not found — skipping merged-PR check." >&2
+  exit 0
+fi
+if ! gh auth status >/dev/null 2>&1; then
+  echo "pre-push: gh not authenticated — skipping merged-PR check." >&2
+  exit 0
+fi
+
+# Look up the PR state for this branch's head. Empty if no PR exists.
+state="$(gh pr view "$branch" --json state --jq '.state' 2>/dev/null)"
+
+if [ "$state" = "MERGED" ]; then
+  echo "" >&2
+  echo "✗ pre-push blocked: the PR for branch '$branch' is already MERGED." >&2
+  echo "" >&2
+  echo "  Pushing more commits here strands them outside main (the squash" >&2
+  echo "  already captured only what existed at merge time)." >&2
+  echo "" >&2
+  echo "  Do this instead:" >&2
+  echo "    git checkout main && git pull" >&2
+  echo "    git checkout -b <follow-up-branch>" >&2
+  echo "    git cherry-pick <commits>   # if they were already committed here" >&2
+  echo "" >&2
+  echo "  To override intentionally: git push --no-verify" >&2
+  echo "" >&2
+  exit 1
+fi
+
+exit 0
