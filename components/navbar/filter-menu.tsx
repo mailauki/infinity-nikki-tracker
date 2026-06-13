@@ -29,6 +29,7 @@ import OutfitSelect from '../filter/outfit-select'
 import SortEvolutionToggle from '../filter/sort-evolution-toggle'
 import OutfitEvolutionSelect from '../filter/outfit-evolution-select'
 import SortOutfitToggle from '../filter/sort-outfit-toggle'
+import DensityToggle from '../filter/density-toggle'
 import { useOutfitImageMode } from '../outfits/outfit-image-mode-context'
 import OutfitCategorySelect from '../filter/outfit-category-select'
 
@@ -119,6 +120,9 @@ export default function FilterMenu() {
             </Stack>
           </Toolbar>
           <List>
+            <ListItem>
+              <DensityToggle />
+            </ListItem>
             <ListItem sx={{ gap: 1 }}>
               <SortOutfitToggle
                 disabled={density === 'standard'}

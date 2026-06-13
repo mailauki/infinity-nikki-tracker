@@ -6,7 +6,6 @@ import FilterMenu from '@/components/navbar/filter-menu'
 import { SortButton } from '@/components/navbar/appbar-actions'
 import { useOutfitData } from './outfit-context'
 import { useOutfitImageMode } from './outfit-image-mode-context'
-import DensityMenu from '../navbar/density-menu'
 
 export default function OutfitToolBar() {
   const { outfitSets, groupBySet, hideEvolutions, filters } = useOutfitData()
@@ -85,7 +84,6 @@ export default function OutfitToolBar() {
           Showing: {resultsCount} results
         </Typography>
         <Stack direction="row" spacing={1}>
-          <DensityMenu />
           <SortButton />
           <FilterMenu />
         </Stack>
