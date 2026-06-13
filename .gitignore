@@ -46,5 +46,13 @@ supabase/.temp/
 
 # claude code
 .claude/skills/
+.claude/plans/
+.superpowers/
+
+# editor
+.vscode/
+
+# playwright mcp
+.playwright-mcp/
 
 certificates
