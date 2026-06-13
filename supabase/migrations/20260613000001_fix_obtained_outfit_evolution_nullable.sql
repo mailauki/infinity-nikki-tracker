@@ -2,12 +2,19 @@
 -- variants get a real FK-valid slug ({set_slug}-base) instead of NULL.
 -- Existing non-base evolutions are bumped up by 1 to make room for order = 1.
 --
--- PostgreSQL evaluates UNIQUE constraint violations at end-of-statement, so
--- incrementing all orders in a single UPDATE is safe (no row-by-row conflict).
+-- PostgreSQL checks the evolutions_outfit_set_order_key unique constraint
+-- per-row (IMMEDIATE). To avoid mid-update conflicts we shift to a safe range
+-- (order + 1000) first, then bring values to their final position (- 999),
+-- giving a net change of +1 with no intermediate collisions.
 
--- 1. Increment all existing non-base evolution orders by 1 (base will take order = 1).
+-- 1a. Move all non-base orders to a safe range (no set has order > 100).
 update public.evolutions
-set    "order" = "order" + 1
+set    "order" = "order" + 1000
+where  subtitle is distinct from 'base';
+
+-- 1b. Bring them back to their final position (original + 1).
+update public.evolutions
+set    "order" = "order" - 999
 where  subtitle is distinct from 'base';
 
 -- 2. Insert a base evolution (order = 1) for every outfit set that doesn't
