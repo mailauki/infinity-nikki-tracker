@@ -9,7 +9,6 @@ import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 import {
   updateOutfitFilters,
   updateOutfitGroupBySet,
-  updateOutfitShowByEvolution,
   updateOutfitHideEvolutions,
 } from '@/app/actions/preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
@@ -40,9 +39,6 @@ export default function OutfitDataProvider({
   const [isError, setIsError] = useState(false)
   const [isObtainedError, setIsObtainedError] = useState(false)
   const [groupBySet, setGroupBySet] = useState<boolean>(DEFAULT_PREFERENCES.outfit_group_by_set)
-  const [showByEvolution, setShowByEvolution] = useState<boolean>(
-    DEFAULT_PREFERENCES.outfit_show_by_evolution
-  )
   const [hideEvolutions, setHideEvolutions] = useState<boolean>(
     DEFAULT_PREFERENCES.outfit_hide_evolutions
   )
@@ -72,7 +68,6 @@ export default function OutfitDataProvider({
     fetchJson<UserPreferences>('/api/preferences')
       .then((prefs) => {
         setGroupBySet(prefs.outfit_group_by_set)
-        setShowByEvolution(prefs.outfit_show_by_evolution)
         setHideEvolutions(prefs.outfit_hide_evolutions)
         setFilters({
           selectedOutfitSet: prefs.outfit_set_filter ?? null,
@@ -94,12 +89,6 @@ export default function OutfitDataProvider({
     const next = !groupBySet
     setGroupBySet(next)
     if (isLoggedIn) startTransition(() => updateOutfitGroupBySet(next))
-  }
-
-  const handleShowByEvolutionChange = () => {
-    const next = !showByEvolution
-    setShowByEvolution(next)
-    if (isLoggedIn) startTransition(() => updateOutfitShowByEvolution(next))
   }
 
   const handleHideEvolutionsChange = () => {
@@ -221,10 +210,8 @@ export default function OutfitDataProvider({
         isObtainedError,
         userId,
         groupBySet,
-        showByEvolution,
         hideEvolutions,
         onGroupBySetChange: handleGroupBySetChange,
-        onShowByEvolutionChange: handleShowByEvolutionChange,
         onHideEvolutionsChange: handleHideEvolutionsChange,
         filters,
         onFiltersChange: handleFiltersChange,

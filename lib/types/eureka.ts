@@ -90,7 +90,6 @@ export type UserPreferences = Pick<
   | 'outfit_rarity_filter'
   | 'outfit_obtained_filter'
   | 'outfit_group_by_set'
-  | 'outfit_show_by_evolution'
   | 'outfit_hide_evolutions'
   | 'outfit_image_mode'
   | 'outfit_density'

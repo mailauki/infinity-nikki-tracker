@@ -8,7 +8,7 @@ import { useOutfitData } from './outfit-context'
 import DensityMenu from '../navbar/density-menu'
 
 export default function OutfitToolBar() {
-  const { outfitSets, showByEvolution, filters } = useOutfitData()
+  const { outfitSets, filters } = useOutfitData()
 
   const {
     selectedOutfitSet,
@@ -22,7 +22,6 @@ export default function OutfitToolBar() {
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => ({
-      evolutions: set.evolutions,
       outfit_variants: set.outfit_variants
         .filter(
           (v) =>
@@ -37,9 +36,7 @@ export default function OutfitToolBar() {
         }),
     }))
 
-  const resultsCount = showByEvolution
-    ? filtered.reduce((sum, set) => sum + set.evolutions.length + 1, 0) // +1 for base
-    : filtered.reduce((sum, set) => sum + set.outfit_variants.length, 0)
+  const resultsCount = filtered.reduce((sum, set) => sum + set.outfit_variants.length, 0)
 
   return (
     <NavBarToolbar>

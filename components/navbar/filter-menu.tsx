@@ -64,10 +64,8 @@ export default function FilterMenu() {
     outfitCategories,
     isLoggedIn: outfitLoggedIn,
     groupBySet: outfitGroupBySet,
-    showByEvolution,
     hideEvolutions,
     onGroupBySetChange: onOutfitGroupBySetChange,
-    onShowByEvolutionChange,
     onHideEvolutionsChange,
     filters: outfitFilters,
     onFiltersChange: onOutfitFiltersChange,
@@ -97,17 +95,6 @@ export default function FilterMenu() {
     const allEvolutions = [
       ...new Map(outfitSets.flatMap((s) => s.evolutions).map((e) => [e.slug, e])).values(),
     ]
-
-    const handleShowByEvolutionChange = () => {
-      if (!showByEvolution) {
-        onOutfitFiltersChange({
-          selectedOutfitCategory: [],
-          selectedObtainedFilter: null,
-          selectedEvolution: null,
-        })
-      }
-      onShowByEvolutionChange()
-    }
 
     return (
       <>
@@ -145,12 +132,9 @@ export default function FilterMenu() {
             <ListItem sx={{ gap: 1 }}>
               <SortEvolutionToggle
                 hideEvolutions={hideEvolutions}
-                showByEvolution={showByEvolution}
                 onHideEvolutionsChange={onHideEvolutionsChange}
-                onShowByEvolutionChange={handleShowByEvolutionChange}
               />
               <OutfitEvolutionSelect
-                disabled={showByEvolution}
                 evolutions={allEvolutions}
                 selectedEvolution={selectedEvolution}
                 onEvolutionChange={(e) =>
@@ -161,7 +145,6 @@ export default function FilterMenu() {
             {outfitLoggedIn && (
               <ListItem>
                 <ObtainedToggle
-                  disabled={showByEvolution}
                   selectedObtainedFilter={selectedObtainedFilter}
                   onObtainedFilterChange={(_e, v) =>
                     onOutfitFiltersChange({ selectedObtainedFilter: v })
@@ -173,8 +156,7 @@ export default function FilterMenu() {
               <OutfitCategorySelect
                 multiple
                 categories={outfitCategories}
-                disabled={showByEvolution}
-                selectedCategory={showByEvolution ? [] : selectedOutfitCategory}
+                selectedCategory={selectedOutfitCategory}
                 onCategoryChange={(e) =>
                   onOutfitFiltersChange({
                     selectedOutfitCategory:
