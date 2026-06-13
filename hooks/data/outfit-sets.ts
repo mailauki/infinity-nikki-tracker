@@ -1,12 +1,11 @@
 import { notFound } from 'next/navigation'
 import { cache } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { getUserID } from '../user'
 import { getOutfitCategories } from './outfit-categories'
 import { getEvolutions } from './evolutions'
 import { getObtainedOutfit } from './obtained-outfit'
-import { createOutfitSet, sortOutfitVariants, updateOutfitSet } from '../outfit'
+import { createOutfitSet, updateOutfitSet } from '../outfit'
 
 export const getOutfitSets = cache(async () => {
   const supabase = await createClient()
@@ -51,32 +50,17 @@ export const getOutfitSets = cache(async () => {
 
   const outfitCategories = await getOutfitCategories()
   const evolutions = await getEvolutions()
-  const categoryOrder = outfitCategories.map((c) => c.slug)
 
-  const outfits = (outfitSets ?? []).map((outfitSet) => {
-    const glowupEvolutionSlug = outfitSet.glowup_evolution ?? null
-    const evolutionSlugs = [...new Set(outfitSet.outfit_variants.map((v) => v.evolution))]
-    const resolvedEvolutions = evolutionSlugs
-      .flatMap((slug) => evolutions.filter((e) => e.slug === slug))
-      .sort((a, b) => a.order - b.order)
-
-    return {
-      ...outfitSet,
-      image_url:
-        outfitSet.image_url ??
-        outfitSet.outfit_variants.find((v) => v.evolution === null && v.outfit_category === 'hair')
-          ?.image_url ??
-        outfitSet.outfit_variants.find((v) => v.evolution === null)?.image_url,
-      outfit_categories: outfitCategories,
-      evolutions: resolvedEvolutions,
-      outfit_variants: sortOutfitVariants(
-        outfitSet.outfit_variants as OutfitVariant[],
-        glowupEvolutionSlug,
-        categoryOrder
-      ),
-      carousel_images: outfitSet.outfit_set_carousel_images ?? [],
-    }
-  }) as unknown as OutfitSet[]
+  const outfits = (outfitSets ?? []).map((outfitSet) =>
+    createOutfitSet({
+      outfitSet: {
+        ...outfitSet,
+        carousel_images: outfitSet.outfit_set_carousel_images ?? [],
+      },
+      outfitCategories,
+      evolutions,
+    })
+  )
 
   const user_id = await getUserID()
   if (!user_id) return outfits
