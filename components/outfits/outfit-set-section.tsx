@@ -17,16 +17,21 @@ export default function OutfitSetSection({
   set: OutfitSet
   isLoggedIn: boolean
 }) {
-  const { filters } = useOutfitData()
+  const { filters, outfitSets } = useOutfitData()
   const isMissingFilter = filters.selectedObtainedFilter === 'missing'
+
+  // `set.outfit_variants` is already filtered (e.g. the missing filter culls
+  // obtained variants), so the progress chip must read the full, unfiltered
+  // group from context to show the true obtained-out-of-total percentage.
+  const fullSet = outfitSets.find((s) => s.id === set.id) ?? set
 
   // Render the base group plus each evolution group as its own header + cards.
   return [null, ...set.evolutions]
     .map((evolution) => {
       const evolutionKey = evolution?.slug ?? null
-      const variants = set.outfit_variants.filter((v) =>
+      const inEvolution = (v: { evolution: string | null }) =>
         evolutionKey === null ? v.evolution === null : v.evolution === evolutionKey
-      )
+      const variants = set.outfit_variants.filter(inEvolution)
       if (variants.length === 0) return null
 
       const href = evolution
@@ -35,7 +40,9 @@ export default function OutfitSetSection({
       const title = evolution
         ? `${set.title}: ${toTitle(evolution.subtitle ?? evolution.slug)}`
         : set.title
-      const obtained = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
+
+      const groupVariants = fullSet.outfit_variants.filter(inEvolution)
+      const obtained = groupVariants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
 
       return (
         <Fragment key={evolutionKey ?? 'base'}>
@@ -48,7 +55,7 @@ export default function OutfitSetSection({
                 {title}
               </Button>
               {isLoggedIn && (
-                <ProgressChip percentage={percent(obtained, variants.length)} size="lg" />
+                <ProgressChip percentage={percent(obtained, groupVariants.length)} size="lg" />
               )}
             </Stack>
             <Divider />
