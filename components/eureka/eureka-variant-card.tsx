@@ -21,19 +21,14 @@ export default function EurekaVariantCard({
   const [exiting, setExiting] = useState(false)
 
   function onToggle() {
+    onToggleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
     if (isMissingFilter) {
       setExiting(true)
-    } else {
-      onToggleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
     }
   }
 
-  function onExited() {
-    onToggleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
-  }
-
   return (
-    <Grow in={!exiting} timeout={300} onExited={onExited}>
+    <Grow in={!exiting} timeout={300}>
       <Card
         sx={{
           minWidth: 'fit-content',
