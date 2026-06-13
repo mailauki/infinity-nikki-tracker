@@ -106,6 +106,12 @@ export default function FilterOutfits() {
     )
   }
 
+  // The grouped section view (group-by-set in compact density) shows each set as
+  // a whole. There the obtained/missing filter is applied at the SET level — keep
+  // every variant so the section renders the full set and its true progress —
+  // rather than culling individual variants as the flat views do.
+  const setLevelObtained = groupBySet && density === 'compact'
+
   const filteredSets = outfitSets
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
@@ -119,6 +125,8 @@ export default function FilterOutfits() {
         )
         .filter((v) => !selectedEvolution || v.evolution === selectedEvolution)
         .filter((v) => {
+          // Set-level mode keeps every variant; the filter is applied per set below.
+          if (setLevelObtained) return true
           if (selectedObtainedFilter === 'obtained') return v.obtained === true
           if (selectedObtainedFilter === 'missing') return v.obtained !== true
           return true
@@ -126,6 +134,13 @@ export default function FilterOutfits() {
       return { ...set, outfit_variants: filteredVariants }
     })
     .filter((set) => set.outfit_variants.length > 0)
+    // Set-level obtained/missing filter: a set is "obtained" only if every
+    // (filtered) variant is obtained, "missing" if any is not.
+    .filter((set) => {
+      if (!setLevelObtained || !selectedObtainedFilter) return true
+      const allObtained = set.outfit_variants.every((v) => v.obtained === true)
+      return selectedObtainedFilter === 'obtained' ? allObtained : !allObtained
+    })
     .sort((a, b) => (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!))
 
   function renderSetVariants(set: (typeof filteredSets)[number]) {
