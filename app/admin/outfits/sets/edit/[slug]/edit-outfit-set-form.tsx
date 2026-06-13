@@ -105,20 +105,21 @@ export default function EditOutfitSetForm({
   const [evolutionCarouselImages, setEvolutionCarouselImages] = useState<
     Record<string, CarouselImage[]>
   >(initialEvolutionCarouselImages)
+  // Base variants use the {set_slug}-base evolution slug (never null) after migration.
+  const baseEvoSlug = `${outfitSet.slug}-base`
+  const isBaseVariant = (v: OutfitVariantRow) => v.evolution === baseEvoSlug || v.default === true
   const [variantRows, setVariantRows] = useState<OutfitVariantRow[]>(
-    initialVariants.filter((v) => v.evolution === null)
+    initialVariants.filter(isBaseVariant)
   )
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
     Object.fromEntries(
-      initialVariants
-        .filter((v) => v.slug && v.evolution === null)
-        .map((v) => [v.slug, v.image_url])
+      initialVariants.filter((v) => v.slug && isBaseVariant(v)).map((v) => [v.slug, v.image_url])
     )
   )
   const [variantAltImages, setVariantAltImages] = useState<Record<string, string | null>>(
     Object.fromEntries(
       initialVariants
-        .filter((v) => v.slug && v.evolution === null)
+        .filter((v) => v.slug && isBaseVariant(v))
         .map((v) => [v.slug, v.alt_image_url])
     )
   )
@@ -152,7 +153,7 @@ export default function EditOutfitSetForm({
       setFormConfig({ savedTitle: state.savedTitle })
 
       if ('variants' in state) {
-        const fresh = state.variants.filter((v) => v.evolution === null)
+        const fresh = state.variants.filter(isBaseVariant)
         setVariantRows(fresh)
         setVariantImages(
           Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.image_url]))

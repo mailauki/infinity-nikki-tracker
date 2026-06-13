@@ -33,22 +33,34 @@ export function createOutfitSet({
 }): OutfitSet {
   const glowupEvolutionSlug = outfitSet.glowup_evolution ?? null
   const categoryOrder = (outfitCategories ?? []).map((c) => c.slug)
-  const evolutionSlugs = [...new Set(outfitSet.outfit_variants.map((v) => v.evolution))]
+
+  // Identify base evolutions (subtitle === 'base', order === 0) so their DB slug
+  // can be normalized back to null for all client code.
+  const baseEvoSlugs = new Set(
+    (evolutions ?? []).filter((e) => e.subtitle === 'base').map((e) => e.slug)
+  )
+
+  const normalizedVariants = outfitSet.outfit_variants.map((v) => ({
+    ...v,
+    evolution: v.evolution !== null && baseEvoSlugs.has(v.evolution) ? null : v.evolution,
+  }))
+
+  const evolutionSlugs = [...new Set(normalizedVariants.map((v) => v.evolution))]
   const resolvedEvolutions = evolutionSlugs
-    .flatMap((slug) => evolutions?.filter((e) => e.slug === slug) ?? [])
+    .flatMap((slug) => (slug ? (evolutions?.filter((e) => e.slug === slug) ?? []) : []))
     .sort((a, b) => a.order - b.order)
 
   return {
     ...outfitSet,
     image_url:
       outfitSet.image_url ??
-      outfitSet.outfit_variants.find((v) => v.evolution === null && v.outfit_category === 'hair')
+      normalizedVariants.find((v) => v.evolution === null && v.outfit_category === 'hair')
         ?.image_url ??
-      outfitSet.outfit_variants.find((v) => v.evolution === null)?.image_url,
+      normalizedVariants.find((v) => v.evolution === null)?.image_url,
     outfit_categories: outfitCategories ?? [],
     evolutions: resolvedEvolutions,
     outfit_variants: sortOutfitVariants(
-      outfitSet.outfit_variants as OutfitVariant[],
+      normalizedVariants as OutfitVariant[],
       glowupEvolutionSlug,
       categoryOrder
     ),

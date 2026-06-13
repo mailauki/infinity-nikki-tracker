@@ -169,7 +169,20 @@ export default function EurekaDataProvider({
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          setObtainedEureka((prev) => [...prev, payload.new as ObtainedEureka])
+          const incoming = payload.new as ObtainedEureka
+          setObtainedEureka((prev) => {
+            const withoutPlaceholder = prev.filter(
+              (o) =>
+                !(
+                  o.id === -1 &&
+                  o.eureka_set === incoming.eureka_set &&
+                  o.category === incoming.category &&
+                  o.color === incoming.color
+                )
+            )
+            if (withoutPlaceholder.some((o) => o.id === incoming.id)) return prev
+            return [...withoutPlaceholder, incoming]
+          })
         }
       )
       .on(

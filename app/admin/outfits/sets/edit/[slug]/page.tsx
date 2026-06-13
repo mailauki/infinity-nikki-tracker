@@ -65,18 +65,21 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
     .eq('outfit_set', outfitSet.slug)
     .order('id', { ascending: true })
 
-  const initialDrafts: EvolutionDraft[] = evolutions.map((e) => ({
+  // Exclude base evolution (subtitle === 'base') from the editor; it is auto-managed.
+  // DB orders are bumped by 1 relative to the 1-based UI, so subtract 1 for display.
+  const nonBaseEvolutions = evolutions.filter((e) => e.subtitle !== 'base')
+  const initialDrafts: EvolutionDraft[] = nonBaseEvolutions.map((e) => ({
     subtitle: e.subtitle ?? '',
-    order: e.order,
+    order: e.order - 1,
     existingSlug: e.slug,
   }))
 
   const initialEvolutionCarouselImages = Object.fromEntries(
-    evolutions.map((e) => [e.slug, e.carousel_images])
+    nonBaseEvolutions.map((e) => [e.slug, e.carousel_images])
   )
 
-  const initialGlowupEvolutionOrder =
-    evolutions.find((e) => e.slug === outfitSet.glowup_evolution)?.order ?? ''
+  const glowupEvo = nonBaseEvolutions.find((e) => e.slug === outfitSet.glowup_evolution)
+  const initialGlowupEvolutionOrder: number | '' = glowupEvo ? glowupEvo.order - 1 : ''
 
   const initialCategorySelect = [
     ...new Set((variantRows ?? []).map((v) => v.outfit_category).filter(Boolean)),
