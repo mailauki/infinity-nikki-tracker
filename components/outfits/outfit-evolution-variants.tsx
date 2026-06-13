@@ -25,26 +25,29 @@ export default function OutfitEvolutionVariants({
   const { obtainedOutfit } = useOutfitData()
   const { evolutions, outfit_variants: rawVariants } = outfitSet
 
+  // Base variants carry the concrete {set}-base slug end-to-end.
+  const baseEvoSlug = `${outfitSet.slug}-base`
+
   const outfit_variants = rawVariants.map((v) => ({
     ...v,
     obtained: obtainedOutfit.some(
       (o) =>
         o.outfit_set === v.outfit_set &&
         o.outfit_category === v.outfit_category &&
-        (v.evolution === null ? o.evolution === null : o.evolution === v.evolution)
+        o.evolution === v.evolution
     ),
   }))
 
-  // Sort by evolution order, with the null (default) evolution first.
+  // Sort by evolution order, with the base evolution first.
   const evolutionOrder = new Map(evolutions.map((e) => [e.slug, e.order]))
   const orderOf = (slug: string | null) =>
-    slug === null ? -Infinity : (evolutionOrder.get(slug) ?? Infinity)
+    slug === baseEvoSlug ? -Infinity : (evolutionOrder.get(slug ?? '') ?? Infinity)
 
   const variants = (
     selected === null
       ? outfit_variants
       : outfit_variants.filter((v) =>
-          selected === BASE ? v.evolution === null : v.evolution === selected
+          selected === BASE ? v.evolution === baseEvoSlug : v.evolution === selected
         )
   )
     .slice()

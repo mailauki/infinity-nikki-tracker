@@ -29,7 +29,7 @@ interface OutfitDataContextValue {
   filters: OutfitFilterState
   onFiltersChange: (updates: Partial<OutfitFilterState>) => void
   onClearFilters: () => void
-  onToggleObtained: (outfit_set: string, outfit_category: string, evolution: string | null) => void
+  onToggleObtained: (outfit_set: string, outfit_category: string, evolution: string) => void
   onBatchToggleObtained: (
     variants: Array<{ outfit_set: string; outfit_category: string; evolution: string | null }>,
     targetObtained: boolean

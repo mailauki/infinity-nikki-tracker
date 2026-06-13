@@ -25,12 +25,14 @@ export default function OutfitSetSection({
   // group from context to show the true obtained-out-of-total percentage.
   const fullSet = outfitSets.find((s) => s.id === set.id) ?? set
 
+  // Base variants carry the concrete {set}-base slug end-to-end.
+  const baseEvoSlug = `${set.slug}-base`
+
   // Render the base group plus each evolution group as its own header + cards.
   return [null, ...set.evolutions]
     .map((evolution) => {
-      const evolutionKey = evolution?.slug ?? null
-      const inEvolution = (v: { evolution: string | null }) =>
-        evolutionKey === null ? v.evolution === null : v.evolution === evolutionKey
+      const evolutionKey = evolution?.slug ?? baseEvoSlug
+      const inEvolution = (v: { evolution: string | null }) => v.evolution === evolutionKey
       const variants = set.outfit_variants.filter(inEvolution)
       if (variants.length === 0) return null
 
@@ -45,7 +47,7 @@ export default function OutfitSetSection({
       const obtained = groupVariants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
 
       return (
-        <Fragment key={evolutionKey ?? 'base'}>
+        <Fragment key={evolutionKey}>
           <Box sx={{ gridColumn: '1 / -1', mt: 1 }}>
             <Stack
               direction="row"

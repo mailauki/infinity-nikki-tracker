@@ -44,7 +44,7 @@ export default function OutfitSetDetail({
       (o) =>
         o.outfit_set === v.outfit_set &&
         o.outfit_category === v.outfit_category &&
-        (v.evolution === null ? o.evolution === null : o.evolution === v.evolution)
+        o.evolution === v.evolution
     ),
   }))
 
