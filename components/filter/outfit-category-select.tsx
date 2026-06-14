@@ -2,7 +2,9 @@
 
 import { OutfitCategory } from '@/lib/types/outfit'
 import {
+  Box,
   Checkbox,
+  Chip,
   FormControl,
   InputLabel,
   ListItemText,
@@ -72,21 +74,20 @@ export default function OutfitCategorySelect({
           label="Category"
           labelId="outfit-category-select-label"
           name={name}
-          renderValue={(selected) =>
-            categories
-              .filter((category) => selected.includes(category.slug))
-              .map(categoryLabel)
-              .join(', ')
-          }
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {categories
+                .filter((category) => selected.includes(category.slug))
+                .map((category) => (
+                  <Chip key={category.slug} label={categoryLabel(category)} size="small" />
+                ))}
+            </Box>
+          )}
           value={selectedSlugs}
           onChange={onCategoryChange}
         >
           {categories.map((category) => (
-            <MenuItem
-              key={category.slug}
-              disabled={isCategoryDisabled(category, selectedSlugs)}
-              value={category.slug}
-            >
+            <MenuItem key={category.slug} value={category.slug}>
               <Checkbox checked={selectedSlugs.includes(category.slug)} />
               <ListItemText primary={categoryLabel(category)} />
             </MenuItem>
@@ -105,7 +106,11 @@ export default function OutfitCategorySelect({
         >
           <MenuItem value="">—</MenuItem>
           {categories.map((category) => (
-            <MenuItem key={category.slug} value={category.slug}>
+            <MenuItem
+              key={category.slug}
+              disabled={isCategoryDisabled(category, selectedCategory)}
+              value={category.slug}
+            >
               {categoryLabel(category)}
             </MenuItem>
           ))}

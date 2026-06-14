@@ -91,6 +91,7 @@ export type UserPreferences = Pick<
   | 'outfit_obtained_filter'
   | 'outfit_group_by_set'
   | 'outfit_hide_evolutions'
+  | 'outfit_hide_glowups'
   | 'outfit_image_mode'
   | 'outfit_density'
   | 'sort_order'

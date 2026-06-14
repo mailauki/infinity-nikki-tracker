@@ -1,0 +1,30 @@
+'use client'
+
+import { Stack, ToggleButton, Tooltip } from '@mui/material'
+import ToggleIcon from '../toggle-icon'
+
+export default function GlowupToggle({
+  hideGlowups,
+  onHideGlowupsChange,
+}: {
+  hideGlowups: boolean
+  onHideGlowupsChange: () => void
+}) {
+  return (
+    <Tooltip title="Hide Glowups">
+      <ToggleButton
+        selected={hideGlowups}
+        sx={{ py: 0.75 }}
+        value="hideGlowups"
+        onChange={onHideGlowupsChange}
+        size="small"
+      >
+        <ToggleIcon
+          isSelected={hideGlowups}
+          item={{ title: 'glowup', image: '/icons/glowup.png' }}
+          size="xs"
+        />
+      </ToggleButton>
+    </Tooltip>
+  )
+}

@@ -5,6 +5,53 @@ import {
   OutfitVariant,
   ObtainedOutfit,
 } from '@/lib/types/outfit'
+import { ObtainedFilter } from '@/lib/types/props'
+
+// Classify a group of variants by collection progress: 'missing' when none are
+// obtained, 'obtained' when all are, 'in-progress' when some (but not all) are.
+// An empty group is treated as 'missing'.
+export function classifyObtained(
+  variants: Array<{ obtained?: boolean }>
+): 'missing' | 'in-progress' | 'obtained' {
+  if (variants.length === 0) return 'missing'
+  const obtainedCount = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
+  if (obtainedCount === 0) return 'missing'
+  if (obtainedCount === variants.length) return 'obtained'
+  return 'in-progress'
+}
+
+// Whether a group of variants passes the selected set-level obtained filter
+// (missing / in-progress / obtained). A null filter passes everything.
+export function matchesObtainedFilter(
+  variants: Array<{ obtained?: boolean }>,
+  filter: ObtainedFilter | null
+): boolean {
+  if (!filter) return true
+  return classifyObtained(variants) === filter
+}
+
+// Decide whether a variant's evolution should be visible given the independent
+// "hide evolutions" and "hide glowups" toggles. The base set is always shown;
+// the glowup (the evolution matching set.glowup_evolution) is governed solely by
+// hideGlowups, and every other (non-base, non-glowup) evolution solely by
+// hideEvolutions — so the two toggles never affect each other.
+export function isEvolutionVisible({
+  evolutionSlug,
+  baseSlug,
+  glowupSlug,
+  hideEvolutions,
+  hideGlowups,
+}: {
+  evolutionSlug: string | null
+  baseSlug: string
+  glowupSlug: string | null
+  hideEvolutions: boolean
+  hideGlowups: boolean
+}): boolean {
+  if (evolutionSlug === baseSlug) return true
+  if (glowupSlug && evolutionSlug === glowupSlug) return !hideGlowups
+  return !hideEvolutions
+}
 
 export function sortOutfitVariants(
   variants: OutfitVariant[],

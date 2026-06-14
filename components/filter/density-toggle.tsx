@@ -13,7 +13,11 @@ export default function DensityToggle() {
   const { mode, cycleMode, density, setDensity } = useOutfitImageMode()
 
   return (
-    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'space-between' }}
+    >
       <ToggleButtonGroup
         exclusive
         aria-label="View density"

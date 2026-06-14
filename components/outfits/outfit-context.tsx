@@ -7,7 +7,7 @@ import { ObtainedFilter } from '@/lib/types/props'
 export interface OutfitFilterState {
   selectedOutfitSet: string | null
   selectedOutfitCategory: string[]
-  selectedEvolution: string | null
+  selectedEvolution: number | null
   selectedRarity: number | null
   selectedObtainedFilter: ObtainedFilter | null
 }
@@ -24,8 +24,10 @@ interface OutfitDataContextValue {
   userId: string | null
   groupBySet: boolean
   hideEvolutions: boolean
+  hideGlowups: boolean
   onGroupBySetChange: () => void
   onHideEvolutionsChange: () => void
+  onHideGlowupsChange: () => void
   filters: OutfitFilterState
   onFiltersChange: (updates: Partial<OutfitFilterState>) => void
   onClearFilters: () => void
@@ -56,8 +58,10 @@ export const OutfitDataContext = createContext<OutfitDataContextValue>({
   userId: null,
   groupBySet: true,
   hideEvolutions: false,
+  hideGlowups: false,
   onGroupBySetChange: () => {},
   onHideEvolutionsChange: () => {},
+  onHideGlowupsChange: () => {},
   filters: DEFAULT_OUTFIT_FILTERS,
   onFiltersChange: () => {},
   onClearFilters: () => {},

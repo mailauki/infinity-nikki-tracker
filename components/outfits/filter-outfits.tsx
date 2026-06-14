@@ -7,6 +7,7 @@ import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
 import { GRID_COLUMNS } from '@/lib/types/props'
+import { isEvolutionVisible, matchesObtainedFilter } from '@/hooks/outfit'
 import OutfitVariantCard from './outfit-variant-card'
 import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
@@ -56,6 +57,7 @@ export default function FilterOutfits() {
     isObtainedError,
     groupBySet,
     hideEvolutions,
+    hideGlowups,
     filters,
     onBatchToggleObtained,
   } = useOutfitData()
@@ -106,41 +108,67 @@ export default function FilterOutfits() {
     )
   }
 
-  // The grouped section view (group-by-set in compact density) shows each set as
-  // a whole. There the obtained/missing filter is applied at the SET level — keep
-  // every variant so the section renders the full set and its true progress —
-  // rather than culling individual variants as the flat views do.
-  const setLevelObtained = groupBySet && density === 'compact'
+  // When grouped, each set renders as one card/header per evolution group (base
+  // plus each evolution), so the obtained filter is applied at the GROUP level:
+  // 'missing' = no variant in the group obtained, 'in-progress' = some, and
+  // 'obtained' = all. Variants are kept intact so each group shows true progress.
+  // When not grouped, the flat views render one card per variant, so the filter
+  // is applied per variant (missing/obtained only — 'in-progress' is inapplicable
+  // and the toggle does not offer it there).
+  const groupLevelObtained = groupBySet
 
   const filteredSets = outfitSets
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => {
-      const filteredVariants = set.outfit_variants
-        .filter((v) => !hideEvolutions || v.evolution === `${set.slug}-base`)
+      const orderBySlug = new Map(set.evolutions.map((e) => [e.slug, e.order]))
+      const baseEvoSlug = `${set.slug}-base`
+      // Variants in scope for this set after the structural filters (evolution
+      // visibility + evolution order). The group-level obtained state is judged
+      // over these — the FULL group — so it reflects true set progress rather
+      // than the category-filtered subset.
+      const scopedVariants = set.outfit_variants
+        .filter((v) =>
+          isEvolutionVisible({
+            evolutionSlug: v.evolution,
+            baseSlug: baseEvoSlug,
+            glowupSlug: set.glowup_evolution,
+            hideEvolutions,
+            hideGlowups,
+          })
+        )
+        .filter(
+          (v) =>
+            !selectedEvolution ||
+            (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
+        )
+      // Group-level obtained filter: drop whole evolution groups whose full-group
+      // state doesn't match the selected missing / in-progress / obtained state.
+      const inMatchingGroup =
+        groupLevelObtained && selectedObtainedFilter
+          ? scopedVariants.filter((v) => {
+              const group = scopedVariants.filter((g) => g.evolution === v.evolution)
+              return matchesObtainedFilter(group, selectedObtainedFilter)
+            })
+          : scopedVariants
+      // Apply the category filter last so it only narrows what is displayed,
+      // without affecting the group-level obtained classification above. In
+      // ungrouped mode the obtained filter is still per variant.
+      const culledVariants = inMatchingGroup
         .filter(
           (v) =>
             selectedOutfitCategory.length === 0 ||
             (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
         )
-        .filter((v) => !selectedEvolution || v.evolution === selectedEvolution)
         .filter((v) => {
-          // Set-level mode keeps every variant; the filter is applied per set below.
-          if (setLevelObtained) return true
+          if (groupLevelObtained) return true
           if (selectedObtainedFilter === 'obtained') return v.obtained === true
           if (selectedObtainedFilter === 'missing') return v.obtained !== true
           return true
         })
-      return { ...set, outfit_variants: filteredVariants }
+      return { ...set, outfit_variants: culledVariants }
     })
     .filter((set) => set.outfit_variants.length > 0)
-    // Set-level obtained/missing filter: a set is "obtained" only if every
-    // (filtered) variant is obtained, "missing" if any is not.
-    .filter((set) => {
-      if (!setLevelObtained || !selectedObtainedFilter) return true
-      const allObtained = set.outfit_variants.every((v) => v.obtained === true)
-      return selectedObtainedFilter === 'obtained' ? allObtained : !allObtained
-    })
     .sort((a, b) => (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!))
 
   function renderSetVariants(set: (typeof filteredSets)[number]) {
@@ -204,7 +232,15 @@ export default function FilterOutfits() {
                   isMissingFilter={selectedObtainedFilter === 'missing'}
                   obtained={allObtained}
                   set={set}
-                  shouldHide={hideEvolutions && evolutionKey !== baseEvoSlug}
+                  shouldHide={
+                    !isEvolutionVisible({
+                      evolutionSlug: evolutionKey,
+                      baseSlug: baseEvoSlug,
+                      glowupSlug: set.glowup_evolution,
+                      hideEvolutions,
+                      hideGlowups,
+                    })
+                  }
                   onToggle={() => {
                     const toToggle = variants
                       .filter((v) => v.obtained === allObtained)
