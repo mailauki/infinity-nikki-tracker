@@ -23,6 +23,8 @@ import { Style, Label } from '@/lib/types/eureka'
 import LazyImage from '@/components/lazy-image'
 import RarityStars from '@/components/rarity-stars'
 import { updateOutfitSet } from '@/app/admin/actions'
+import ImageUpload from '@/components/forms/image-upload'
+import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = OutfitSet
 
@@ -147,11 +149,11 @@ export function OutfitSetTable({
     {
       field: 'image_url',
       headerName: 'Image',
-      width: 50,
+      width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 50, justifyContent: 'center' }}>
-          <LockedCell href={editHref(row)}>
+        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
+          {/* <LockedCell href={editHref(row)}>
             <LazyImage
               alt={row.title || 'Image'}
               size="sm"
@@ -160,18 +162,30 @@ export function OutfitSetTable({
             >
               <Category fontSize="inherit" />
             </LazyImage>
-          </LockedCell>
+          </LockedCell> */}
+					<ImageUpload
+						column="image_url"
+						size="sm"
+						slug={row.slug}
+						table='outfit_sets'
+						url={row.image_url ?? null}
+						onUpload={(url) =>
+							setRows((prev) =>
+								prev.map((r) => (r.slug === row.slug ? { ...r, image_url: url } : r))
+							)
+						}
+					/>
         </Stack>
       ),
     },
     {
       field: 'alt_image_url',
       headerName: 'Alt Image',
-      width: 50,
+      width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: 50, justifyContent: 'center' }}>
-          <LockedCell href={editHref(row)}>
+        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
+          {/* <LockedCell href={editHref(row)}>
             <LazyImage
               alt={row.title ? `${row.title} (alt)` : 'Alt Image'}
               size="sm"
@@ -180,7 +194,19 @@ export function OutfitSetTable({
             >
               <Category fontSize="inherit" />
             </LazyImage>
-          </LockedCell>
+          </LockedCell> */}
+					<ImageUpload
+						column="alt_image_url"
+						size="sm"
+						slug={row.slug}
+						table='outfit_sets'
+						url={row.alt_image_url ?? null}
+						onUpload={(url) =>
+							setRows((prev) =>
+								prev.map((r) => (r.slug === row.slug ? { ...r, alt_image_url: url } : r))
+							)
+						}
+					/>
         </Stack>
       ),
     },
