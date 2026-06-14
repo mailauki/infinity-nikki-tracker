@@ -182,6 +182,7 @@ export default function FilterMenu() {
               <OutfitCategorySelect
                 multiple
                 categories={outfitCategories}
+                disabled={density === 'standard'}
                 selectedCategory={selectedOutfitCategory}
                 onCategoryChange={(e) =>
                   onOutfitFiltersChange({
