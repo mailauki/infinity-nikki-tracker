@@ -87,11 +87,7 @@ export default function OutfitCategorySelect({
           onChange={onCategoryChange}
         >
           {categories.map((category) => (
-            <MenuItem
-              key={category.slug}
-              disabled={isCategoryDisabled(category, selectedSlugs)}
-              value={category.slug}
-            >
+            <MenuItem key={category.slug} value={category.slug}>
               <Checkbox checked={selectedSlugs.includes(category.slug)} />
               <ListItemText primary={categoryLabel(category)} />
             </MenuItem>
@@ -110,7 +106,11 @@ export default function OutfitCategorySelect({
         >
           <MenuItem value="">—</MenuItem>
           {categories.map((category) => (
-            <MenuItem key={category.slug} value={category.slug}>
+            <MenuItem
+              key={category.slug}
+              disabled={isCategoryDisabled(category, selectedCategory)}
+              value={category.slug}
+            >
               {categoryLabel(category)}
             </MenuItem>
           ))}
