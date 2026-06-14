@@ -77,6 +77,10 @@ export async function updateOutfitHideEvolutions(value: boolean) {
   await upsertUserPreference({ outfit_hide_evolutions: value })
 }
 
+export async function updateOutfitHideGlowups(value: boolean) {
+  await upsertUserPreference({ outfit_hide_glowups: value })
+}
+
 export async function updateOutfitImageMode(value: OutfitImageMode) {
   await upsertUserPreference({ outfit_image_mode: value })
 }

@@ -17,6 +17,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   outfit_obtained_filter: null,
   outfit_group_by_set: true,
   outfit_hide_evolutions: false,
+  outfit_hide_glowups: false,
   outfit_image_mode: 'image',
   outfit_density: 'standard',
   sort_order: 'new',

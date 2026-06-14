@@ -40,11 +40,8 @@ export default function OutfitVariantCard({
 
   const categoryLabel = toTitle(outfitVariant.outfit_category ?? '')
   const isBaseVariant =
-    !outfitVariant.evolution ||
-    outfitVariant.evolution === `${outfitVariant.outfit_set}-base`
-  const evolutionLabel = isBaseVariant
-    ? 'Base'
-    : toTitle(outfitVariant.evolution!.split('-')[1])
+    !outfitVariant.evolution || outfitVariant.evolution === `${outfitVariant.outfit_set}-base`
+  const evolutionLabel = isBaseVariant ? 'Base' : toTitle(outfitVariant.evolution!.split('-')[1])
 
   return (
     <Grow in={!exiting} timeout={300}>

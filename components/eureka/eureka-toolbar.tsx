@@ -2,7 +2,7 @@
 
 import { Stack, Typography } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
-import FilterMenu from '@/components/navbar/filter-menu'
+import FilterMenu from '@/components/filter/filter-menu'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { SortButton } from '@/components/navbar/appbar-actions'
 

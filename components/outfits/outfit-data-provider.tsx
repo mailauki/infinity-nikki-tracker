@@ -10,6 +10,7 @@ import {
   updateOutfitFilters,
   updateOutfitGroupBySet,
   updateOutfitHideEvolutions,
+  updateOutfitHideGlowups,
 } from '@/app/actions/preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
 import { updateOutfitSet } from '@/hooks/outfit'
@@ -42,6 +43,7 @@ export default function OutfitDataProvider({
   const [hideEvolutions, setHideEvolutions] = useState<boolean>(
     DEFAULT_PREFERENCES.outfit_hide_evolutions
   )
+  const [hideGlowups, setHideGlowups] = useState<boolean>(DEFAULT_PREFERENCES.outfit_hide_glowups)
   const [filters, setFilters] = useState<OutfitFilterState>(DEFAULT_OUTFIT_FILTERS)
   const [prefsLoaded, setPrefsLoaded] = useState(false)
   const [, startTransition] = useTransition()
@@ -69,12 +71,15 @@ export default function OutfitDataProvider({
       .then((prefs) => {
         setGroupBySet(prefs.outfit_group_by_set)
         setHideEvolutions(prefs.outfit_hide_evolutions)
+        setHideGlowups(prefs.outfit_hide_glowups)
         setFilters({
           selectedOutfitSet: prefs.outfit_set_filter ?? null,
           selectedOutfitCategory: prefs.outfit_category_filter
             ? prefs.outfit_category_filter.split(',').filter(Boolean)
             : [],
-          selectedEvolution: prefs.outfit_evolution_filter ?? null,
+          selectedEvolution: prefs.outfit_evolution_filter
+            ? Number(prefs.outfit_evolution_filter)
+            : null,
           selectedRarity: prefs.outfit_rarity_filter ? Number(prefs.outfit_rarity_filter) : null,
           selectedObtainedFilter: (prefs.outfit_obtained_filter as ObtainedFilter) ?? null,
         })
@@ -95,6 +100,12 @@ export default function OutfitDataProvider({
     const next = !hideEvolutions
     setHideEvolutions(next)
     if (isLoggedIn) startTransition(() => updateOutfitHideEvolutions(next))
+  }
+
+  const handleHideGlowupsChange = () => {
+    const next = !hideGlowups
+    setHideGlowups(next)
+    if (isLoggedIn) startTransition(() => updateOutfitHideGlowups(next))
   }
 
   const handleFiltersChange = (updates: Partial<OutfitFilterState>) => {
@@ -187,7 +198,9 @@ export default function OutfitDataProvider({
         outfit_category_filter: filters.selectedOutfitCategory.length
           ? filters.selectedOutfitCategory.join(',')
           : null,
-        outfit_evolution_filter: filters.selectedEvolution,
+        outfit_evolution_filter: filters.selectedEvolution
+          ? String(filters.selectedEvolution)
+          : null,
         outfit_rarity_filter: filters.selectedRarity ? String(filters.selectedRarity) : null,
         outfit_obtained_filter: filters.selectedObtainedFilter,
       })
@@ -272,8 +285,10 @@ export default function OutfitDataProvider({
         userId,
         groupBySet,
         hideEvolutions,
+        hideGlowups,
         onGroupBySetChange: handleGroupBySetChange,
         onHideEvolutionsChange: handleHideEvolutionsChange,
+        onHideGlowupsChange: handleHideGlowupsChange,
         filters,
         onFiltersChange: handleFiltersChange,
         onClearFilters: handleClearFilters,

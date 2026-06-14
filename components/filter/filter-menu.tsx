@@ -11,6 +11,7 @@ import {
   SelectChangeEvent,
   Stack,
   Toolbar,
+	Typography,
 } from '@mui/material'
 import { Close, FilterList } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
@@ -18,20 +19,21 @@ import { usePathname } from 'next/navigation'
 import { useEurekaData } from '../eureka/eureka-context'
 import { useOutfitData } from '../outfits/outfit-context'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
-import ObtainedToggle from '../filter/obtained-toggle'
-import ColorSelect from '../filter/color-select'
-import CategoryToggle from '../filter/category-toggle'
-import SortColorToggle from '../filter/sort-color-toggle'
-import SortEurekaToggle from '../filter/sort-eureka-toggle'
-import EurekaSelect from '../filter/eureka-select'
-import RarityToggle from '../filter/rarity-toggle'
-import OutfitSelect from '../filter/outfit-select'
-import SortEvolutionToggle from '../filter/sort-evolution-toggle'
-import OutfitEvolutionSelect from '../filter/outfit-evolution-select'
-import SortOutfitToggle from '../filter/sort-outfit-toggle'
-import DensityToggle from '../filter/density-toggle'
+import ObtainedToggle from './obtained-toggle'
+import ColorSelect from './color-select'
+import CategoryToggle from './category-toggle'
+import SortColorToggle from './sort-color-toggle'
+import SortEurekaToggle from './sort-eureka-toggle'
+import EurekaSelect from './eureka-select'
+import RarityToggle from './rarity-toggle'
+import OutfitSelect from './outfit-select'
+import EvolutionToggle from './evolution-toggle'
+import SortOutfitToggle from './sort-outfit-toggle'
+import DensityToggle from './density-toggle'
 import { useOutfitImageMode } from '../outfits/outfit-image-mode-context'
-import OutfitCategorySelect from '../filter/outfit-category-select'
+import OutfitCategorySelect from './outfit-category-select'
+import EvolutionOrderToggle from './evolution-order-toggle'
+import GlowupToggle from './glowup-toggle'
 
 const FILTER_PAGES = ['/eureka', '/outfits']
 
@@ -67,8 +69,10 @@ export default function FilterMenu() {
     isLoggedIn: outfitLoggedIn,
     groupBySet: outfitGroupBySet,
     hideEvolutions,
+    hideGlowups,
     onGroupBySetChange: onOutfitGroupBySetChange,
     onHideEvolutionsChange,
+    onHideGlowupsChange,
     filters: outfitFilters,
     onFiltersChange: onOutfitFiltersChange,
     onClearFilters: onClearOutfitFilters,
@@ -96,9 +100,9 @@ export default function FilterMenu() {
       selectedObtainedFilter ||
       selectedRarity
 
-    const allEvolutions = [
-      ...new Map(outfitSets.flatMap((s) => s.evolutions).map((e) => [e.slug, e])).values(),
-    ]
+    const availableOrders = [
+      ...new Set(outfitSets.flatMap((s) => s.evolutions).map((e) => e.order)),
+    ].sort((a, b) => a - b)
 
     return (
       <>
@@ -137,18 +141,27 @@ export default function FilterMenu() {
                 }
               />
             </ListItem>
-            <ListItem sx={{ gap: 1 }}>
-              <SortEvolutionToggle
-                hideEvolutions={hideEvolutions}
-                onHideEvolutionsChange={onHideEvolutionsChange}
-              />
-              <OutfitEvolutionSelect
-                evolutions={allEvolutions}
-                selectedEvolution={selectedEvolution}
-                onEvolutionChange={(e) =>
-                  onOutfitFiltersChange({ selectedEvolution: e.target.value || null })
-                }
-              />
+            <ListItem>
+							<Stack spacing={0.5} sx={{ flexGrow: 1 }}>
+								<Typography variant="overline">
+									Evolutions
+								</Typography>
+								<Stack direction='row' spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+									<Stack direction='row' spacing={1}>
+										<EvolutionToggle
+											hideEvolutions={hideEvolutions}
+											onHideEvolutionsChange={onHideEvolutionsChange}
+										/>
+										<GlowupToggle hideGlowups={hideGlowups} onHideGlowupsChange={onHideGlowupsChange} />
+									</Stack>
+									<EvolutionOrderToggle
+										availableOrders={availableOrders}
+										disabled={hideEvolutions && hideGlowups}
+										selectedEvolution={selectedEvolution}
+										onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
+									/>
+								</Stack>
+							</Stack>
             </ListItem>
             {outfitLoggedIn && (
               <ListItem>

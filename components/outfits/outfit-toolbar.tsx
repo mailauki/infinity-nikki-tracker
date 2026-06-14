@@ -2,13 +2,14 @@
 
 import { Stack, Typography } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
-import FilterMenu from '@/components/navbar/filter-menu'
+import FilterMenu from '@/components/filter/filter-menu'
 import { SortButton } from '@/components/navbar/appbar-actions'
+import { isEvolutionVisible } from '@/hooks/outfit'
 import { useOutfitData } from './outfit-context'
 import { useOutfitImageMode } from './outfit-image-mode-context'
 
 export default function OutfitToolBar() {
-  const { outfitSets, groupBySet, hideEvolutions, filters } = useOutfitData()
+  const { outfitSets, groupBySet, hideEvolutions, hideGlowups, filters } = useOutfitData()
   const { density } = useOutfitImageMode()
 
   const {
@@ -27,22 +28,38 @@ export default function OutfitToolBar() {
   const filtered = outfitSets
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
-    .map((set) => ({
-      outfit_variants: set.outfit_variants
-        .filter((v) => !hideEvolutions || v.evolution === `${set.slug}-base`)
-        .filter(
-          (v) =>
-            selectedOutfitCategory.length === 0 ||
-            (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
-        )
-        .filter((v) => !selectedEvolution || v.evolution === selectedEvolution)
-        .filter((v) => {
-          if (setLevelObtained) return true
-          if (selectedObtainedFilter === 'obtained') return v.obtained === true
-          if (selectedObtainedFilter === 'missing') return v.obtained !== true
-          return true
-        }),
-    }))
+    .map((set) => {
+      const orderBySlug = new Map(set.evolutions.map((e) => [e.slug, e.order]))
+      const baseEvoSlug = `${set.slug}-base`
+      return {
+        outfit_variants: set.outfit_variants
+          .filter((v) =>
+            isEvolutionVisible({
+              evolutionSlug: v.evolution,
+              baseSlug: baseEvoSlug,
+              glowupSlug: set.glowup_evolution,
+              hideEvolutions,
+              hideGlowups,
+            })
+          )
+          .filter(
+            (v) =>
+              selectedOutfitCategory.length === 0 ||
+              (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
+          )
+          .filter(
+            (v) =>
+              !selectedEvolution ||
+              (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
+          )
+          .filter((v) => {
+            if (setLevelObtained) return true
+            if (selectedObtainedFilter === 'obtained') return v.obtained === true
+            if (selectedObtainedFilter === 'missing') return v.obtained !== true
+            return true
+          }),
+      }
+    })
     .filter((set) => set.outfit_variants.length > 0)
     .filter((set) => {
       if (!setLevelObtained || !selectedObtainedFilter) return true
@@ -53,20 +70,16 @@ export default function OutfitToolBar() {
   // Count what is actually rendered:
   // - Group-by-set (compact) renders one section per set, so count sets.
   // - Standard density renders one card per (set, evolution) group that has
-  //   variants — base set plus each evolution. Hidden evolution cards
-  //   (hideEvolutions) are unmounted, so exclude them.
+  //   variants — base set plus each visible evolution. Variants hidden by the
+  //   evolution/glowup toggles are already pruned from `filtered`, so each
+  //   distinct surviving evolution is exactly one rendered card.
   // - Otherwise compact density renders one card per variant, so count variants.
   function countResults() {
     if (setLevelObtained) return filtered.length
     if (density === 'standard') {
       return filtered.reduce((sum, set) => {
-        const groupKeys = hideEvolutions
-          ? [null]
-          : [...new Set(set.outfit_variants.map((v) => v.evolution))]
-        return (
-          sum +
-          groupKeys.filter((key) => set.outfit_variants.some((v) => v.evolution === key)).length
-        )
+        const groupKeys = new Set(set.outfit_variants.map((v) => v.evolution))
+        return sum + groupKeys.size
       }, 0)
     }
     return filtered.reduce((sum, set) => sum + set.outfit_variants.length, 0)

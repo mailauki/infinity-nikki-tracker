@@ -7,6 +7,7 @@ import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
 import { GRID_COLUMNS } from '@/lib/types/props'
+import { isEvolutionVisible } from '@/hooks/outfit'
 import OutfitVariantCard from './outfit-variant-card'
 import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
@@ -56,6 +57,7 @@ export default function FilterOutfits() {
     isObtainedError,
     groupBySet,
     hideEvolutions,
+    hideGlowups,
     filters,
     onBatchToggleObtained,
   } = useOutfitData()
@@ -116,14 +118,28 @@ export default function FilterOutfits() {
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => {
+      const orderBySlug = new Map(set.evolutions.map((e) => [e.slug, e.order]))
+      const baseEvoSlug = `${set.slug}-base`
       const filteredVariants = set.outfit_variants
-        .filter((v) => !hideEvolutions || v.evolution === `${set.slug}-base`)
+        .filter((v) =>
+          isEvolutionVisible({
+            evolutionSlug: v.evolution,
+            baseSlug: baseEvoSlug,
+            glowupSlug: set.glowup_evolution,
+            hideEvolutions,
+            hideGlowups,
+          })
+        )
         .filter(
           (v) =>
             selectedOutfitCategory.length === 0 ||
             (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
         )
-        .filter((v) => !selectedEvolution || v.evolution === selectedEvolution)
+        .filter(
+          (v) =>
+            !selectedEvolution ||
+            (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
+        )
         .filter((v) => {
           // Set-level mode keeps every variant; the filter is applied per set below.
           if (setLevelObtained) return true
@@ -204,7 +220,15 @@ export default function FilterOutfits() {
                   isMissingFilter={selectedObtainedFilter === 'missing'}
                   obtained={allObtained}
                   set={set}
-                  shouldHide={hideEvolutions && evolutionKey !== baseEvoSlug}
+                  shouldHide={
+                    !isEvolutionVisible({
+                      evolutionSlug: evolutionKey,
+                      baseSlug: baseEvoSlug,
+                      glowupSlug: set.glowup_evolution,
+                      hideEvolutions,
+                      hideGlowups,
+                    })
+                  }
                   onToggle={() => {
                     const toToggle = variants
                       .filter((v) => v.obtained === allObtained)

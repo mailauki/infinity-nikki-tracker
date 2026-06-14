@@ -6,6 +6,29 @@ import {
   ObtainedOutfit,
 } from '@/lib/types/outfit'
 
+// Decide whether a variant's evolution should be visible given the independent
+// "hide evolutions" and "hide glowups" toggles. The base set is always shown;
+// the glowup (the evolution matching set.glowup_evolution) is governed solely by
+// hideGlowups, and every other (non-base, non-glowup) evolution solely by
+// hideEvolutions — so the two toggles never affect each other.
+export function isEvolutionVisible({
+  evolutionSlug,
+  baseSlug,
+  glowupSlug,
+  hideEvolutions,
+  hideGlowups,
+}: {
+  evolutionSlug: string | null
+  baseSlug: string
+  glowupSlug: string | null
+  hideEvolutions: boolean
+  hideGlowups: boolean
+}): boolean {
+  if (evolutionSlug === baseSlug) return true
+  if (glowupSlug && evolutionSlug === glowupSlug) return !hideGlowups
+  return !hideEvolutions
+}
+
 export function sortOutfitVariants(
   variants: OutfitVariant[],
   defaultEvolutionSlug: string | null | undefined,
