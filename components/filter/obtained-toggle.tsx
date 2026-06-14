@@ -3,9 +3,16 @@
 import { ObtainedFilter } from '@/lib/types/props'
 import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 
+const LABELS: Record<ObtainedFilter, string> = {
+  missing: 'Missing',
+  'in-progress': 'In Progress',
+  obtained: 'Obtained',
+}
+
 export default function ObtainedToggle({
   selectedObtainedFilter,
   onObtainedFilterChange,
+  options = ['missing', 'obtained'],
   disabled,
 }: {
   selectedObtainedFilter: ObtainedFilter | null
@@ -13,6 +20,7 @@ export default function ObtainedToggle({
     event: React.MouseEvent<HTMLElement>,
     newFilter: ObtainedFilter | null
   ) => void
+  options?: ObtainedFilter[]
   disabled?: boolean
 }) {
   return (
@@ -23,9 +31,9 @@ export default function ObtainedToggle({
       value={selectedObtainedFilter}
       onChange={onObtainedFilterChange}
     >
-      {(['missing', 'obtained'] as const).map((filter) => (
+      {options.map((filter) => (
         <ToggleButton key={filter} sx={{ py: 0.75 }} value={filter}>
-          {filter.charAt(0).toUpperCase() + filter.slice(1)}
+          {LABELS[filter]}
         </ToggleButton>
       ))}
     </ToggleButtonGroup>

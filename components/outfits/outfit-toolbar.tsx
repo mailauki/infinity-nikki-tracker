@@ -4,7 +4,7 @@ import { Stack, Typography } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import FilterMenu from '@/components/filter/filter-menu'
 import { SortButton } from '@/components/navbar/appbar-actions'
-import { isEvolutionVisible } from '@/hooks/outfit'
+import { isEvolutionVisible, matchesObtainedFilter } from '@/hooks/outfit'
 import { useOutfitData } from './outfit-context'
 import { useOutfitImageMode } from './outfit-image-mode-context'
 
@@ -20,10 +20,9 @@ export default function OutfitToolBar() {
     selectedRarity,
   } = filters
 
-  // The grouped section view (group-by-set in compact density) applies the
-  // obtained/missing filter at the set level, keeping every variant. Mirror that
-  // here so the results count matches what is rendered.
-  const setLevelObtained = groupBySet && density === 'compact'
+  // Mirror filter-outfits: grouped mode applies the obtained filter per evolution
+  // group (missing / in-progress / obtained); ungrouped applies it per variant.
+  const groupLevelObtained = groupBySet
 
   const filtered = outfitSets
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
@@ -31,51 +30,52 @@ export default function OutfitToolBar() {
     .map((set) => {
       const orderBySlug = new Map(set.evolutions.map((e) => [e.slug, e.order]))
       const baseEvoSlug = `${set.slug}-base`
-      return {
-        outfit_variants: set.outfit_variants
-          .filter((v) =>
-            isEvolutionVisible({
-              evolutionSlug: v.evolution,
-              baseSlug: baseEvoSlug,
-              glowupSlug: set.glowup_evolution,
-              hideEvolutions,
-              hideGlowups,
+      const variants = set.outfit_variants
+        .filter((v) =>
+          isEvolutionVisible({
+            evolutionSlug: v.evolution,
+            baseSlug: baseEvoSlug,
+            glowupSlug: set.glowup_evolution,
+            hideEvolutions,
+            hideGlowups,
+          })
+        )
+        .filter(
+          (v) =>
+            selectedOutfitCategory.length === 0 ||
+            (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
+        )
+        .filter(
+          (v) =>
+            !selectedEvolution ||
+            (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
+        )
+        .filter((v) => {
+          if (groupLevelObtained) return true
+          if (selectedObtainedFilter === 'obtained') return v.obtained === true
+          if (selectedObtainedFilter === 'missing') return v.obtained !== true
+          return true
+        })
+      const culled =
+        groupLevelObtained && selectedObtainedFilter
+          ? variants.filter((v) => {
+              const group = variants.filter((g) => g.evolution === v.evolution)
+              return matchesObtainedFilter(group, selectedObtainedFilter)
             })
-          )
-          .filter(
-            (v) =>
-              selectedOutfitCategory.length === 0 ||
-              (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
-          )
-          .filter(
-            (v) =>
-              !selectedEvolution ||
-              (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
-          )
-          .filter((v) => {
-            if (setLevelObtained) return true
-            if (selectedObtainedFilter === 'obtained') return v.obtained === true
-            if (selectedObtainedFilter === 'missing') return v.obtained !== true
-            return true
-          }),
-      }
+          : variants
+      return { outfit_variants: culled }
     })
     .filter((set) => set.outfit_variants.length > 0)
-    .filter((set) => {
-      if (!setLevelObtained || !selectedObtainedFilter) return true
-      const allObtained = set.outfit_variants.every((v) => v.obtained === true)
-      return selectedObtainedFilter === 'obtained' ? allObtained : !allObtained
-    })
 
   // Count what is actually rendered:
   // - Group-by-set (compact) renders one section per set, so count sets.
   // - Standard density renders one card per (set, evolution) group that has
-  //   variants — base set plus each visible evolution. Variants hidden by the
-  //   evolution/glowup toggles are already pruned from `filtered`, so each
-  //   distinct surviving evolution is exactly one rendered card.
+  //   variants. Variants hidden by the evolution/glowup/obtained filters are
+  //   already pruned from `filtered`, so each distinct surviving evolution is
+  //   exactly one rendered card.
   // - Otherwise compact density renders one card per variant, so count variants.
   function countResults() {
-    if (setLevelObtained) return filtered.length
+    if (groupLevelObtained && density === 'compact') return filtered.length
     if (density === 'standard') {
       return filtered.reduce((sum, set) => {
         const groupKeys = new Set(set.outfit_variants.map((v) => v.evolution))

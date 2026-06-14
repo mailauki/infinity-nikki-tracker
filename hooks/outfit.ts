@@ -5,6 +5,30 @@ import {
   OutfitVariant,
   ObtainedOutfit,
 } from '@/lib/types/outfit'
+import { ObtainedFilter } from '@/lib/types/props'
+
+// Classify a group of variants by collection progress: 'missing' when none are
+// obtained, 'obtained' when all are, 'in-progress' when some (but not all) are.
+// An empty group is treated as 'missing'.
+export function classifyObtained(
+  variants: Array<{ obtained?: boolean }>
+): 'missing' | 'in-progress' | 'obtained' {
+  if (variants.length === 0) return 'missing'
+  const obtainedCount = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
+  if (obtainedCount === 0) return 'missing'
+  if (obtainedCount === variants.length) return 'obtained'
+  return 'in-progress'
+}
+
+// Whether a group of variants passes the selected set-level obtained filter
+// (missing / in-progress / obtained). A null filter passes everything.
+export function matchesObtainedFilter(
+  variants: Array<{ obtained?: boolean }>,
+  filter: ObtainedFilter | null
+): boolean {
+  if (!filter) return true
+  return classifyObtained(variants) === filter
+}
 
 // Decide whether a variant's evolution should be visible given the independent
 // "hide evolutions" and "hide glowups" toggles. The base set is always shown;

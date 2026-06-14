@@ -93,6 +93,11 @@ export default function OutfitDataProvider({
   const handleGroupBySetChange = () => {
     const next = !groupBySet
     setGroupBySet(next)
+    // 'in-progress' is a group-level state; clear it when leaving grouped mode so
+    // an inapplicable filter doesn't linger in the flat (per-variant) views.
+    if (!next && filters.selectedObtainedFilter === 'in-progress') {
+      setFilters((prev) => ({ ...prev, selectedObtainedFilter: null }))
+    }
     if (isLoggedIn) startTransition(() => updateOutfitGroupBySet(next))
   }
 
