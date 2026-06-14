@@ -2,23 +2,27 @@ import { createClient } from '@/lib/supabase/server'
 import { ObtainedEureka, RecentObtained } from '@/lib/types/eureka'
 import { UUID } from 'crypto'
 import { cache } from 'react'
+import { fetchAllRows } from './fetch-all-rows'
 
 export const getObtainedEureka = cache(async (user_id: UUID | string) => {
   const supabase = await createClient()
 
-  const { data: obtainedEureka } = await supabase
-    .from('obtained_eureka')
-    .select(
-      `
+  // Page through every row — a large collection exceeds PostgREST's 1000-row cap.
+  return fetchAllRows<ObtainedEureka>((from, to) =>
+    supabase
+      .from('obtained_eureka')
+      .select(
+        `
 			id,
 			eureka_set,
 			category,
 			color
 		`
-    )
-    .eq('user_id', user_id)
-
-  return obtainedEureka as ObtainedEureka[]
+      )
+      .eq('user_id', user_id)
+      .order('id', { ascending: true })
+      .range(from, to)
+  )
 })
 
 export const getRecentObtained = cache(async (user_id: UUID | string) => {

@@ -30,7 +30,8 @@ export default function OutfitVariantCard({
     onToggleObtained(
       outfitVariant.outfit_set!,
       outfitVariant.outfit_category!,
-      outfitVariant.evolution ?? null
+      // Base variants carry the concrete {set}-base slug; fall back defensively.
+      outfitVariant.evolution ?? `${outfitVariant.outfit_set}-base`
     )
     if (isMissingFilter) {
       setExiting(true)
@@ -38,9 +39,12 @@ export default function OutfitVariantCard({
   }
 
   const categoryLabel = toTitle(outfitVariant.outfit_category ?? '')
-  const evolutionLabel = outfitVariant.evolution
-    ? toTitle(outfitVariant.evolution.split('-')[1])
-    : 'Base'
+  const isBaseVariant =
+    !outfitVariant.evolution ||
+    outfitVariant.evolution === `${outfitVariant.outfit_set}-base`
+  const evolutionLabel = isBaseVariant
+    ? 'Base'
+    : toTitle(outfitVariant.evolution!.split('-')[1])
 
   return (
     <Grow in={!exiting} timeout={300}>

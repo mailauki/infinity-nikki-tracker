@@ -117,7 +117,7 @@ export default function FilterOutfits() {
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => {
       const filteredVariants = set.outfit_variants
-        .filter((v) => !hideEvolutions || v.evolution === null)
+        .filter((v) => !hideEvolutions || v.evolution === `${set.slug}-base`)
         .filter(
           (v) =>
             selectedOutfitCategory.length === 0 ||
@@ -187,38 +187,38 @@ export default function FilterOutfits() {
             gap: 2,
           }}
         >
-          {filteredSets.flatMap((set) =>
+          {filteredSets.flatMap((set) => {
+            // Base variants carry the concrete {set}-base slug end-to-end.
+            const baseEvoSlug = `${set.slug}-base`
             // Render the base set plus each evolution as its own card.
-            [null, ...set.evolutions].map((evolution) => {
-              const evolutionKey = evolution?.slug ?? null
-              const variants = set.outfit_variants.filter((v) =>
-                evolutionKey === null ? v.evolution === null : v.evolution === evolutionKey
-              )
+            return [null, ...set.evolutions].map((evolution) => {
+              const evolutionKey = evolution?.slug ?? baseEvoSlug
+              const variants = set.outfit_variants.filter((v) => v.evolution === evolutionKey)
               if (variants.length === 0) return null
               const allObtained = variants.every((v) => v.obtained === true)
               return (
                 <OutfitSetCard
-                  key={`${set.id}-${evolutionKey ?? 'base'}`}
+                  key={`${set.id}-${evolutionKey}`}
                   evolution={evolution}
                   isLoggedIn={isLoggedIn}
                   isMissingFilter={selectedObtainedFilter === 'missing'}
                   obtained={allObtained}
                   set={set}
-                  shouldHide={hideEvolutions && evolutionKey !== null}
+                  shouldHide={hideEvolutions && evolutionKey !== baseEvoSlug}
                   onToggle={() => {
                     const toToggle = variants
                       .filter((v) => v.obtained === allObtained)
                       .map((v) => ({
                         outfit_set: v.outfit_set!,
                         outfit_category: v.outfit_category!,
-                        evolution: v.evolution ?? null,
+                        evolution: v.evolution,
                       }))
                     onBatchToggleObtained(toToggle, !allObtained)
                   }}
                 />
               )
             })
-          )}
+          })}
         </Box>
       )}
 

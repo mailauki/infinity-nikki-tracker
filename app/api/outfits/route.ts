@@ -4,6 +4,7 @@ import { OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { createOutfitSet, updateOutfitSet } from '@/hooks/outfit'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getEvolutions } from '@/hooks/data/evolutions'
+import { getObtainedOutfit } from '@/hooks/data/obtained-outfit'
 
 export async function GET() {
   const supabase = await createClient()
@@ -45,22 +46,18 @@ export async function GET() {
     return NextResponse.json(outfits)
   }
 
-  const { data: obtained, error: obtainedError } = await supabase
-    .from('obtained_outfit')
-    .select('id, outfit_set, outfit_category, evolution')
-    .eq('user_id', user.id)
-
-  if (obtainedError) {
-    console.error('Failed to fetch obtained outfits:', obtainedError)
-    return NextResponse.json({ error: obtainedError.message }, { status: 500 })
+  let obtainedOutfit: ObtainedOutfit[]
+  try {
+    // Reads every page (PostgREST caps a single response at 1000 rows). Base
+    // variants carry the concrete {set}-base slug end-to-end, matching what
+    // createOutfitSet leaves on base variants — so obtained rows match directly.
+    obtainedOutfit = await getObtainedOutfit(user.id)
+  } catch (obtainedError) {
+    const message =
+      obtainedError instanceof Error ? obtainedError.message : 'Failed to fetch obtained outfits'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 
-  // Normalize base evolution slugs to null so updateOutfitSet can match against
-  // base variants (which createOutfitSet already normalizes to evolution = null).
-  const obtainedOutfit = (obtained ?? []).map((o) => ({
-    ...o,
-    evolution: o.evolution === `${o.outfit_set}-base` ? null : o.evolution,
-  })) as ObtainedOutfit[]
   const outfitsWithObtained = outfits.map((outfitSet) =>
     updateOutfitSet({ outfitSet, obtainedOutfit })
   )

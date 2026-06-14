@@ -29,7 +29,7 @@ export default function OutfitToolBar() {
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => ({
       outfit_variants: set.outfit_variants
-        .filter((v) => !hideEvolutions || v.evolution === null)
+        .filter((v) => !hideEvolutions || v.evolution === `${set.slug}-base`)
         .filter(
           (v) =>
             selectedOutfitCategory.length === 0 ||

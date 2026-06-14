@@ -108,14 +108,14 @@ export default function OutfitDataProvider({
   const handleToggleObtained = async (
     outfit_set: string,
     outfit_category: string,
-    evolution: string | null
+    evolution: string
   ) => {
     const saved = obtainedOutfit
     const isObtained = obtainedOutfit.some(
       (o) =>
         o.outfit_set === outfit_set &&
         o.outfit_category === outfit_category &&
-        (evolution === null ? o.evolution === null : o.evolution === evolution)
+        o.evolution === evolution
     )
     if (isObtained) {
       setObtainedOutfit((prev) =>
@@ -124,7 +124,7 @@ export default function OutfitDataProvider({
             !(
               o.outfit_set === outfit_set &&
               o.outfit_category === outfit_category &&
-              (evolution === null ? o.evolution === null : o.evolution === evolution)
+              o.evolution === evolution
             )
         )
       )
@@ -150,7 +150,7 @@ export default function OutfitDataProvider({
     ) =>
       o.outfit_set === v.outfit_set &&
       o.outfit_category === v.outfit_category &&
-      (v.evolution === null ? o.evolution === null : o.evolution === v.evolution)
+      o.evolution === v.evolution
 
     if (targetObtained) {
       setObtainedOutfit((prev) => {
@@ -165,7 +165,12 @@ export default function OutfitDataProvider({
 
     for (const v of variants) {
       try {
-        await handleObtainedOutfit(v.outfit_set, v.outfit_category, v.evolution)
+        // Client uses null for base variants; the DB stores the concrete {set}-base slug.
+        await handleObtainedOutfit(
+          v.outfit_set,
+          v.outfit_category,
+          v.evolution ?? `${v.outfit_set}-base`
+        )
       } catch (err) {
         console.error('Failed to batch toggle obtained outfit:', err)
         setObtainedOutfit(saved)
@@ -211,12 +216,9 @@ export default function OutfitDataProvider({
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          const raw = payload.new as ObtainedOutfit
-          // Normalize base evolution slug to null so placeholder matching works
-          const incoming: ObtainedOutfit = {
-            ...raw,
-            evolution: raw.evolution === `${raw.outfit_set}-base` ? null : raw.evolution,
-          }
+          // Base variants carry the concrete {set}-base slug end-to-end, so the
+          // incoming row matches placeholders directly without normalization.
+          const incoming = payload.new as ObtainedOutfit
           setObtainedOutfit((prev) => {
             const withoutPlaceholder = prev.filter(
               (o) =>
@@ -224,9 +226,7 @@ export default function OutfitDataProvider({
                   o.id === -1 &&
                   o.outfit_set === incoming.outfit_set &&
                   o.outfit_category === incoming.outfit_category &&
-                  (incoming.evolution === null
-                    ? o.evolution === null
-                    : o.evolution === incoming.evolution)
+                  o.evolution === incoming.evolution
                 )
             )
             if (withoutPlaceholder.some((o) => o.id === incoming.id)) return prev

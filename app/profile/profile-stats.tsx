@@ -15,7 +15,8 @@ export default function ProfileStats({
     (set) => set.eureka_variants.length > 0 && set.eureka_variants.every((v) => v.obtained)
   ).length
   const outfitSetsObtained = outfitSets.filter((set) => {
-    const baseVariants = set.outfit_variants.filter((v) => v.evolution === null)
+    const baseEvoSlug = `${set.slug}-base`
+    const baseVariants = set.outfit_variants.filter((v) => v.evolution === baseEvoSlug)
     return baseVariants.length > 0 && baseVariants.every((v) => v.obtained)
   }).length
   const isEvolutionObtained = (set: OutfitSet, slug: string) => {

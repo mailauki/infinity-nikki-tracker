@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { ObtainedOutfit } from '@/lib/types/outfit'
+import { getObtainedOutfit } from '@/hooks/data/obtained-outfit'
 
 export async function GET() {
   const supabase = await createClient()
@@ -13,20 +13,13 @@ export async function GET() {
     return NextResponse.json([])
   }
 
-  const { data, error } = await supabase
-    .from('obtained_outfit')
-    .select('id, outfit_set, outfit_category, evolution')
-    .eq('user_id', user.id)
-
-  if (error) {
-    console.error('Failed to fetch obtained outfit:', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+  try {
+    // Reads every page (PostgREST caps a single response at 1000 rows). Base
+    // variants carry the concrete {outfit_set}-base slug end-to-end.
+    const obtainedOutfit = await getObtainedOutfit(user.id)
+    return NextResponse.json(obtainedOutfit)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to fetch obtained outfit'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
-
-  // Normalize base evolution slugs ({outfit_set}-base) to null for client compatibility.
-  const normalized = (data ?? []).map((o) => ({
-    ...o,
-    evolution: o.evolution === `${o.outfit_set}-base` ? null : o.evolution,
-  }))
-  return NextResponse.json(normalized as ObtainedOutfit[])
 }
