@@ -110,18 +110,6 @@ export default function OutfitSetDetail({
                 <RarityStars rarity={rarity!} />
               </Typography>
               <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
-                {hasCarousel && (
-                  <Tooltip title={showCarousel ? 'Hide gallery' : 'Show gallery'}>
-                    <IconButton
-                      aria-label={showCarousel ? 'Hide gallery' : 'Show gallery'}
-                      color={showCarousel ? 'primary' : 'default'}
-                      size="small"
-                      onClick={() => setShowCarousel((v) => !v)}
-                    >
-                      <Collections fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                )}
                 <Chip label={toTitle(label ?? '')} variant="outlined" />
                 {label_2 && <Chip label={toTitle(label_2)} variant="outlined" />}
               </Stack>
@@ -140,6 +128,17 @@ export default function OutfitSetDetail({
               sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
             >
               {ability && <Chip label={toTitle(ability)} />}
+							{hasCarousel && (
+								<Tooltip title={showCarousel ? 'Hide gallery' : 'Show gallery'}>
+									<IconButton
+										aria-label={showCarousel ? 'Hide gallery' : 'Show gallery'}
+										color={showCarousel ? 'primary' : 'default'}
+										onClick={() => setShowCarousel((v) => !v)}
+									>
+										<Collections fontSize="small" />
+									</IconButton>
+								</Tooltip>
+							)}
             </Stack>
             <Typography variant="body2">{description}</Typography>
           </Stack>
