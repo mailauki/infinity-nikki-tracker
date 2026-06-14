@@ -123,7 +123,11 @@ export default function FilterOutfits() {
     .map((set) => {
       const orderBySlug = new Map(set.evolutions.map((e) => [e.slug, e.order]))
       const baseEvoSlug = `${set.slug}-base`
-      const filteredVariants = set.outfit_variants
+      // Variants in scope for this set after the structural filters (evolution
+      // visibility + evolution order). The group-level obtained state is judged
+      // over these — the FULL group — so it reflects true set progress rather
+      // than the category-filtered subset.
+      const scopedVariants = set.outfit_variants
         .filter((v) =>
           isEvolutionVisible({
             evolutionSlug: v.evolution,
@@ -135,30 +139,33 @@ export default function FilterOutfits() {
         )
         .filter(
           (v) =>
-            selectedOutfitCategory.length === 0 ||
-            (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
-        )
-        .filter(
-          (v) =>
             !selectedEvolution ||
             (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
         )
+      // Group-level obtained filter: drop whole evolution groups whose full-group
+      // state doesn't match the selected missing / in-progress / obtained state.
+      const inMatchingGroup =
+        groupLevelObtained && selectedObtainedFilter
+          ? scopedVariants.filter((v) => {
+              const group = scopedVariants.filter((g) => g.evolution === v.evolution)
+              return matchesObtainedFilter(group, selectedObtainedFilter)
+            })
+          : scopedVariants
+      // Apply the category filter last so it only narrows what is displayed,
+      // without affecting the group-level obtained classification above. In
+      // ungrouped mode the obtained filter is still per variant.
+      const culledVariants = inMatchingGroup
+        .filter(
+          (v) =>
+            selectedOutfitCategory.length === 0 ||
+            (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
+        )
         .filter((v) => {
-          // Grouped mode keeps every variant; the filter is applied per group below.
           if (groupLevelObtained) return true
           if (selectedObtainedFilter === 'obtained') return v.obtained === true
           if (selectedObtainedFilter === 'missing') return v.obtained !== true
           return true
         })
-      // Group-level obtained filter: drop whole evolution groups that don't match
-      // the selected missing / in-progress / obtained state.
-      const culledVariants =
-        groupLevelObtained && selectedObtainedFilter
-          ? filteredVariants.filter((v) => {
-              const group = filteredVariants.filter((g) => g.evolution === v.evolution)
-              return matchesObtainedFilter(group, selectedObtainedFilter)
-            })
-          : filteredVariants
       return { ...set, outfit_variants: culledVariants }
     })
     .filter((set) => set.outfit_variants.length > 0)

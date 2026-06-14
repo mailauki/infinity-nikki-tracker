@@ -30,7 +30,10 @@ export default function OutfitToolBar() {
     .map((set) => {
       const orderBySlug = new Map(set.evolutions.map((e) => [e.slug, e.order]))
       const baseEvoSlug = `${set.slug}-base`
-      const variants = set.outfit_variants
+      // Group-level obtained state is judged over the FULL group (after only the
+      // structural filters), so the category filter narrows display without
+      // affecting completion — mirrors filter-outfits.
+      const scoped = set.outfit_variants
         .filter((v) =>
           isEvolutionVisible({
             evolutionSlug: v.evolution,
@@ -42,13 +45,21 @@ export default function OutfitToolBar() {
         )
         .filter(
           (v) =>
-            selectedOutfitCategory.length === 0 ||
-            (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
-        )
-        .filter(
-          (v) =>
             !selectedEvolution ||
             (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
+        )
+      const inMatchingGroup =
+        groupLevelObtained && selectedObtainedFilter
+          ? scoped.filter((v) => {
+              const group = scoped.filter((g) => g.evolution === v.evolution)
+              return matchesObtainedFilter(group, selectedObtainedFilter)
+            })
+          : scoped
+      const culled = inMatchingGroup
+        .filter(
+          (v) =>
+            selectedOutfitCategory.length === 0 ||
+            (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
         )
         .filter((v) => {
           if (groupLevelObtained) return true
@@ -56,13 +67,6 @@ export default function OutfitToolBar() {
           if (selectedObtainedFilter === 'missing') return v.obtained !== true
           return true
         })
-      const culled =
-        groupLevelObtained && selectedObtainedFilter
-          ? variants.filter((v) => {
-              const group = variants.filter((g) => g.evolution === v.evolution)
-              return matchesObtainedFilter(group, selectedObtainedFilter)
-            })
-          : variants
       return { outfit_variants: culled }
     })
     .filter((set) => set.outfit_variants.length > 0)
