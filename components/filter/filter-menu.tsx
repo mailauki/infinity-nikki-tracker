@@ -172,7 +172,7 @@ export default function FilterMenu() {
               <ListItem>
                 <ObtainedToggle
                   options={
-                    outfitGroupBySet && density === 'standard'
+                    outfitGroupBySet
                       ? ['missing', 'in-progress', 'obtained']
                       : ['missing', 'obtained']
                   }
