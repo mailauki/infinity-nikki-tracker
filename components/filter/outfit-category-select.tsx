@@ -2,7 +2,9 @@
 
 import { OutfitCategory } from '@/lib/types/outfit'
 import {
+  Box,
   Checkbox,
+  Chip,
   FormControl,
   InputLabel,
   ListItemText,
@@ -72,12 +74,15 @@ export default function OutfitCategorySelect({
           label="Category"
           labelId="outfit-category-select-label"
           name={name}
-          renderValue={(selected) =>
-            categories
-              .filter((category) => selected.includes(category.slug))
-              .map(categoryLabel)
-              .join(', ')
-          }
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {categories
+                .filter((category) => selected.includes(category.slug))
+                .map((category) => (
+                  <Chip key={category.slug} label={categoryLabel(category)} size="small" />
+                ))}
+            </Box>
+          )}
           value={selectedSlugs}
           onChange={onCategoryChange}
         >

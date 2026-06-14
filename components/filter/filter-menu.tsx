@@ -11,7 +11,7 @@ import {
   SelectChangeEvent,
   Stack,
   Toolbar,
-	Typography,
+  Typography,
 } from '@mui/material'
 import { Close, FilterList } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
@@ -142,26 +142,31 @@ export default function FilterMenu() {
               />
             </ListItem>
             <ListItem>
-							<Stack spacing={0.5} sx={{ flexGrow: 1 }}>
-								<Typography variant="overline">
-									Evolutions
-								</Typography>
-								<Stack direction='row' spacing={1} sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-									<Stack direction='row' spacing={1}>
-										<EvolutionToggle
-											hideEvolutions={hideEvolutions}
-											onHideEvolutionsChange={onHideEvolutionsChange}
-										/>
-										<GlowupToggle hideGlowups={hideGlowups} onHideGlowupsChange={onHideGlowupsChange} />
-									</Stack>
-									<EvolutionOrderToggle
-										availableOrders={availableOrders}
-										disabled={hideEvolutions && hideGlowups}
-										selectedEvolution={selectedEvolution}
-										onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
-									/>
-								</Stack>
-							</Stack>
+              <Stack spacing={0.5} sx={{ flexGrow: 1 }}>
+                <Typography variant="overline">Evolutions</Typography>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+                >
+                  <Stack direction="row" spacing={1}>
+                    <EvolutionToggle
+                      hideEvolutions={hideEvolutions}
+                      onHideEvolutionsChange={onHideEvolutionsChange}
+                    />
+                    <GlowupToggle
+                      hideGlowups={hideGlowups}
+                      onHideGlowupsChange={onHideGlowupsChange}
+                    />
+                  </Stack>
+                  <EvolutionOrderToggle
+                    availableOrders={availableOrders}
+                    disabled={hideEvolutions && hideGlowups}
+                    selectedEvolution={selectedEvolution}
+                    onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
+                  />
+                </Stack>
+              </Stack>
             </ListItem>
             {outfitLoggedIn && (
               <ListItem>

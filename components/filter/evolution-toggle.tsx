@@ -11,19 +11,19 @@ export default function EvolutionToggle({
   onHideEvolutionsChange: () => void
 }) {
   return (
-		<Tooltip title="Hide Evolutions">
-			<ToggleButton
-				selected={hideEvolutions}
-				value="hideEvolutions"
-				onChange={onHideEvolutionsChange}
-				size='small'
-			>
-				<ToggleIcon
-					isSelected={hideEvolutions}
-					item={{ title: 'evolution', image: '/icons/evolution.png' }}
-					size="xs"
-				/>
-			</ToggleButton>
-		</Tooltip>
+    <Tooltip title="Hide Evolutions">
+      <ToggleButton
+        selected={hideEvolutions}
+        value="hideEvolutions"
+        onChange={onHideEvolutionsChange}
+        size="small"
+      >
+        <ToggleIcon
+          isSelected={hideEvolutions}
+          item={{ title: 'evolution', image: '/icons/evolution.png' }}
+          size="xs"
+        />
+      </ToggleButton>
+    </Tooltip>
   )
 }

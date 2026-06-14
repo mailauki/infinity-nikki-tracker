@@ -11,20 +11,20 @@ export default function GlowupToggle({
   onHideGlowupsChange: () => void
 }) {
   return (
-		<Tooltip title="Hide Glowups">
-			<ToggleButton
-				selected={hideGlowups}
-				sx={{ py: 0.75 }}
-				value="hideGlowups"
-				onChange={onHideGlowupsChange}
-				size='small'
-			>
-				<ToggleIcon
-					isSelected={hideGlowups}
-					item={{ title: 'glowup', image: '/icons/glowup.png' }}
-					size="xs"
-				/>
-			</ToggleButton>
-		</Tooltip>
+    <Tooltip title="Hide Glowups">
+      <ToggleButton
+        selected={hideGlowups}
+        sx={{ py: 0.75 }}
+        value="hideGlowups"
+        onChange={onHideGlowupsChange}
+        size="small"
+      >
+        <ToggleIcon
+          isSelected={hideGlowups}
+          item={{ title: 'glowup', image: '/icons/glowup.png' }}
+          size="xs"
+        />
+      </ToggleButton>
+    </Tooltip>
   )
 }
