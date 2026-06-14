@@ -61,6 +61,7 @@ export default function OutfitEvolutionVariants({
       <Toolbar disableGutters sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
         <ToggleButtonGroup
           exclusive
+          disabled={evolutions.length === 0}
           size="small"
           value={selected}
           onChange={(_, next) => onSelect(next)}
