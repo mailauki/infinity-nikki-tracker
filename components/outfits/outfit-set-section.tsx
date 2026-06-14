@@ -77,7 +77,9 @@ export default function OutfitSetSection({
                     size="small"
                     variant="outlined"
                   />
-                  <ProgressChip percentage={percent(obtained, groupVariants.length)} size="lg" />
+                  <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+                    <ProgressChip percentage={percent(obtained, groupVariants.length)} size="lg" />
+                  </Box>
                   <IconButton
                     aria-label={allObtained ? 'Mark as not obtained' : 'Mark as obtained'}
                     size="small"
