@@ -1,8 +1,8 @@
 'use client'
 
 import { Fragment } from 'react'
-import { ChevronRight } from '@mui/icons-material'
-import { Box, Button, Divider, Stack } from '@mui/material'
+import { ChevronRight, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
+import { Box, Button, Chip, Divider, IconButton, Stack } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
 import { percent } from '@/hooks/count-obtained'
 import { toTitle } from '@/lib/utils'
@@ -17,7 +17,7 @@ export default function OutfitSetSection({
   set: OutfitSet
   isLoggedIn: boolean
 }) {
-  const { filters, outfitSets } = useOutfitData()
+  const { filters, outfitSets, onBatchToggleObtained } = useOutfitData()
   const isMissingFilter = filters.selectedObtainedFilter === 'missing'
 
   // `set.outfit_variants` is already filtered (e.g. the missing filter culls
@@ -45,6 +45,20 @@ export default function OutfitSetSection({
 
       const groupVariants = fullSet.outfit_variants.filter(inEvolution)
       const obtained = groupVariants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
+      const allObtained = groupVariants.length > 0 && obtained === groupVariants.length
+
+      // Batch-toggle the whole evolution group: when fully obtained, clear it;
+      // otherwise mark the remaining (not-yet-obtained) variants obtained.
+      const handleToggle = () => {
+        const toToggle = groupVariants
+          .filter((v) => !!v.obtained === allObtained)
+          .map((v) => ({
+            outfit_set: v.outfit_set!,
+            outfit_category: v.outfit_category!,
+            evolution: v.evolution,
+          }))
+        onBatchToggleObtained(toToggle, !allObtained)
+      }
 
       return (
         <Fragment key={evolutionKey}>
@@ -57,7 +71,23 @@ export default function OutfitSetSection({
                 {title}
               </Button>
               {isLoggedIn && (
-                <ProgressChip percentage={percent(obtained, groupVariants.length)} size="lg" />
+                <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                  <Chip
+                    label={`${obtained} / ${groupVariants.length}`}
+                    size="small"
+                    variant="outlined"
+                  />
+                  <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+                    <ProgressChip percentage={percent(obtained, groupVariants.length)} size="lg" />
+                  </Box>
+                  <IconButton
+                    aria-label={allObtained ? 'Mark as not obtained' : 'Mark as obtained'}
+                    size="small"
+                    onClick={handleToggle}
+                  >
+                    {allObtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
+                  </IconButton>
+                </Stack>
               )}
             </Stack>
             <Divider />

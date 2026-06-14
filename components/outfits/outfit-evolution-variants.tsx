@@ -6,6 +6,7 @@ import { percent } from '@/hooks/count-obtained'
 import ProgressChip from '@/components/progress-chip'
 import OutfitVariantCard from './outfit-variant-card'
 import { useOutfitData } from './outfit-context'
+import { AutoAwesome } from '@mui/icons-material'
 
 // Sentinel for the "Base" toggle, since the Base evolution has no slug.
 const BASE = 'base'
@@ -61,14 +62,18 @@ export default function OutfitEvolutionVariants({
       <Toolbar disableGutters sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
         <ToggleButtonGroup
           exclusive
+          disabled={evolutions.length === 0}
           size="small"
           value={selected}
           onChange={(_, next) => onSelect(next)}
+          sx={{ flexWrap: 'wrap' }}
         >
           {[null, ...evolutions].map((evolution) => {
             const value = evolution?.slug ?? BASE
+            const isGlowup = !!evolution && evolution.slug === outfitSet.glowup_evolution
             return (
               <ToggleButton key={value} value={value}>
+                {isGlowup && '✦ '}
                 {evolution?.subtitle ? evolution.subtitle : 'Base'}
               </ToggleButton>
             )
