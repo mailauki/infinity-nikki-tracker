@@ -128,17 +128,17 @@ export default function OutfitSetDetail({
               sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
             >
               {ability && <Chip label={toTitle(ability)} />}
-							{hasCarousel && (
-								<Tooltip title={showCarousel ? 'Hide gallery' : 'Show gallery'}>
-									<IconButton
-										aria-label={showCarousel ? 'Hide gallery' : 'Show gallery'}
-										color={showCarousel ? 'primary' : 'default'}
-										onClick={() => setShowCarousel((v) => !v)}
-									>
-										<Collections fontSize="small" />
-									</IconButton>
-								</Tooltip>
-							)}
+              {hasCarousel && (
+                <Tooltip title={showCarousel ? 'Hide gallery' : 'Show gallery'}>
+                  <IconButton
+                    aria-label={showCarousel ? 'Hide gallery' : 'Show gallery'}
+                    color={showCarousel ? 'primary' : 'default'}
+                    onClick={() => setShowCarousel((v) => !v)}
+                  >
+                    <Collections fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              )}
             </Stack>
             <Typography variant="body2">{description}</Typography>
           </Stack>

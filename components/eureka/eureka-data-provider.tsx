@@ -134,6 +134,38 @@ export default function EurekaDataProvider({
     }
   }
 
+  const handleBatchToggleObtained = async (
+    variants: Array<{ eureka_set: string; category: string; color: string }>,
+    targetObtained: boolean
+  ) => {
+    const saved = obtainedEureka
+    const matches = (
+      o: { eureka_set: string | null; category: string | null; color: string | null },
+      v: { eureka_set: string; category: string; color: string }
+    ) => o.eureka_set === v.eureka_set && o.category === v.category && o.color === v.color
+
+    if (targetObtained) {
+      setObtainedEureka((prev) => {
+        const toAdd = variants
+          .filter((v) => !prev.some((o) => matches(o, v)))
+          .map((v) => ({ id: -1, ...v }))
+        return [...prev, ...toAdd]
+      })
+    } else {
+      setObtainedEureka((prev) => prev.filter((o) => !variants.some((v) => matches(o, v))))
+    }
+
+    for (const v of variants) {
+      try {
+        await handleObtained(v.eureka_set, v.category, v.color)
+      } catch (err) {
+        console.error('Failed to batch toggle obtained eureka:', err)
+        setObtainedEureka(saved)
+        return
+      }
+    }
+  }
+
   useEffect(() => {
     if (!isLoggedIn || !prefsLoaded.current) return
     startTransition(() =>
@@ -233,6 +265,7 @@ export default function EurekaDataProvider({
         onFiltersChange: handleFiltersChange,
         onClearFilters: handleClearFilters,
         onToggleObtained: handleToggleObtained,
+        onBatchToggleObtained: handleBatchToggleObtained,
       }}
     >
       {children}

@@ -1,7 +1,17 @@
 'use client'
 import React from 'react'
-import { Alert, Box, Button, Divider, Skeleton, Stack, Typography } from '@mui/material'
-import { ChevronRight } from '@mui/icons-material'
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Divider,
+  IconButton,
+  Skeleton,
+  Stack,
+  Typography,
+} from '@mui/material'
+import { ChevronRight, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 
 import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
@@ -50,6 +60,7 @@ export default function FilterEureka() {
     groupBySet,
     showByColor,
     filters,
+    onBatchToggleObtained,
   } = useEurekaData()
   const { sortOrder } = useSortOrder()
 
@@ -155,7 +166,25 @@ export default function FilterEureka() {
           }}
         >
           {filteredSets.map((set) => {
-            const { obtained, total } = countObtained(set.eureka_variants)
+            // `set.eureka_variants` is already filtered, so read the full set from
+            // context for the true count and the batch-toggle target.
+            const fullSet = eurekaSets.find((s) => s.id === set.id) ?? set
+            const groupVariants = fullSet.eureka_variants
+            const { obtained, total } = countObtained(groupVariants)
+            const allObtained = total > 0 && obtained === total
+
+            // Batch-toggle the whole set: when fully obtained, clear it; otherwise
+            // mark the remaining (not-yet-obtained) variants obtained.
+            const handleToggle = () => {
+              const toToggle = groupVariants
+                .filter((v) => !!v.obtained === allObtained)
+                .map((v) => ({
+                  eureka_set: v.eureka_set!,
+                  category: v.category!,
+                  color: v.color!,
+                }))
+              onBatchToggleObtained(toToggle, !allObtained)
+            }
             return (
               <React.Fragment key={set.slug}>
                 {groupBySet && (
@@ -179,7 +208,19 @@ export default function FilterEureka() {
                       </Button>
 
                       {isLoggedIn && (
-                        <ProgressChip percentage={percent(obtained, total)} size="lg" />
+                        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                          <Chip label={`${obtained} / ${total}`} size="small" variant="outlined" />
+                          <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+                            <ProgressChip percentage={percent(obtained, total)} size="lg" />
+                          </Box>
+                          <IconButton
+                            aria-label={allObtained ? 'Mark as not obtained' : 'Mark as obtained'}
+                            size="small"
+                            onClick={handleToggle}
+                          >
+                            {allObtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
+                          </IconButton>
+                        </Stack>
                       )}
                     </Stack>
                     <Divider />

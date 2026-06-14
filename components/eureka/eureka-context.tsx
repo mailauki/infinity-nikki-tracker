@@ -33,6 +33,10 @@ interface EurekaDataContextValue {
   onFiltersChange: (updates: Partial<FilterState>) => void
   onClearFilters: () => void
   onToggleObtained: (eureka_set: string, category: string, color: string) => void
+  onBatchToggleObtained: (
+    variants: Array<{ eureka_set: string; category: string; color: string }>,
+    targetObtained: boolean
+  ) => void
 }
 
 const DEFAULT_FILTERS: FilterState = {
@@ -63,6 +67,7 @@ export const EurekaDataContext = createContext<EurekaDataContextValue>({
   onFiltersChange: () => {},
   onClearFilters: () => {},
   onToggleObtained: () => {},
+  onBatchToggleObtained: () => {},
 })
 
 export { DEFAULT_FILTERS }
