@@ -1,7 +1,8 @@
 'use client'
-import { IconButton, Toolbar } from '@mui/material'
+import { IconButton, Stack, Toolbar } from '@mui/material'
 import { usePathname } from 'next/navigation'
 import AdminViewToggle from './admin-view-toggle'
+import AdminVariantColumnsToggle from './admin-variant-columns-toggle'
 import { ChevronLeft } from '@mui/icons-material'
 
 export default function AdminToggleToolbar() {
@@ -16,7 +17,10 @@ export default function AdminToggleToolbar() {
         <IconButton component="a" href="/admin">
           <ChevronLeft />
         </IconButton>
-        <AdminViewToggle />
+        <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
+          <AdminVariantColumnsToggle />
+          <AdminViewToggle />
+        </Stack>
       </Toolbar>
     )
   )

@@ -6,7 +6,6 @@ import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import CancelIcon from '@mui/icons-material/Cancel'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import { Category } from '@mui/icons-material'
 import {
   DataGrid,
   GridActionsCellItem,
@@ -18,12 +17,13 @@ import {
 } from '@mui/x-data-grid'
 import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
-import { Ability, Evolution, OutfitSet } from '@/lib/types/outfit'
+import { Ability, Evolution, OutfitCategory, OutfitSet } from '@/lib/types/outfit'
 import { Style, Label } from '@/lib/types/eureka'
-import LazyImage from '@/components/lazy-image'
 import RarityStars from '@/components/rarity-stars'
 import { updateOutfitSet } from '@/app/admin/actions'
 import ImageUpload from '@/components/forms/image-upload'
+import { categoryImageColumns } from '@/components/admin/variant-image-cell'
+import { useAdminView } from '@/app/admin/admin-view-context'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = OutfitSet
@@ -33,12 +33,12 @@ interface OutfitSetTableProps {
   styles: Style[]
   labels: Label[]
   abilities: Ability[]
+  outfitCategories: OutfitCategory[]
 }
 
 const LOCKED_FIELDS = [
   'slug',
-  'image_url',
-  'alt_image_url',
+  'variant_images',
   'evolutions',
   'glowup_evolution',
   'updated_at',
@@ -59,7 +59,9 @@ export function OutfitSetTable({
   styles,
   labels,
   abilities,
+  outfitCategories,
 }: OutfitSetTableProps) {
+  const { showVariantColumns } = useAdminView()
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
@@ -152,29 +154,19 @@ export function OutfitSetTable({
       width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
-          {/* <LockedCell href={editHref(row)}>
-            <LazyImage
-              alt={row.title || 'Image'}
-              size="sm"
-              src={row.image_url ?? undefined}
-              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-            >
-              <Category fontSize="inherit" />
-            </LazyImage>
-          </LockedCell> */}
-					<ImageUpload
-						column="image_url"
-						size="sm"
-						slug={row.slug}
-						table='outfit_sets'
-						url={row.image_url ?? null}
-						onUpload={(url) =>
-							setRows((prev) =>
-								prev.map((r) => (r.slug === row.slug ? { ...r, image_url: url } : r))
-							)
-						}
-					/>
+        <Stack sx={{ py: 0.5, justifyContent: 'center' }}>
+          <ImageUpload
+            column="image_url"
+            size="sm"
+            slug={row.slug}
+            table="outfit_sets"
+            url={row.image_url ?? null}
+            onUpload={(url) =>
+              setRows((prev) =>
+                prev.map((r) => (r.slug === row.slug ? { ...r, image_url: url } : r))
+              )
+            }
+          />
         </Stack>
       ),
     },
@@ -184,32 +176,48 @@ export function OutfitSetTable({
       width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
-          {/* <LockedCell href={editHref(row)}>
-            <LazyImage
-              alt={row.title ? `${row.title} (alt)` : 'Alt Image'}
-              size="sm"
-              src={row.alt_image_url ?? undefined}
-              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-            >
-              <Category fontSize="inherit" />
-            </LazyImage>
-          </LockedCell> */}
-					<ImageUpload
-						column="alt_image_url"
-						size="sm"
-						slug={row.slug}
-						table='outfit_sets'
-						url={row.alt_image_url ?? null}
-						onUpload={(url) =>
-							setRows((prev) =>
-								prev.map((r) => (r.slug === row.slug ? { ...r, alt_image_url: url } : r))
-							)
-						}
-					/>
+        <Stack sx={{ py: 0.5, justifyContent: 'center' }}>
+          <ImageUpload
+            column="alt_image_url"
+            size="sm"
+            slug={row.slug}
+            table="outfit_sets"
+            url={row.alt_image_url ?? null}
+            onUpload={(url) =>
+              setRows((prev) =>
+                prev.map((r) => (r.slug === row.slug ? { ...r, alt_image_url: url } : r))
+              )
+            }
+          />
         </Stack>
       ),
     },
+    // One column per category, toggled by the toolbar. The set row represents
+    // the base look, so each cell shows the base variant for that category (base
+    // variants carry the {set}-base evolution slug). Categories the set doesn't
+    // use render locked.
+    ...(showVariantColumns
+      ? categoryImageColumns<Row>({
+          outfitCategories,
+          getVariant: (row, categorySlug) =>
+            row.outfit_variants.find(
+              (v) => v.evolution === `${row.slug}-base` && v.outfit_category === categorySlug
+            ) ?? null,
+          onUpload: (row, variantId, column, url) =>
+            setRows((prev) =>
+              prev.map((r) =>
+                r.id === row.id
+                  ? {
+                      ...r,
+                      outfit_variants: r.outfit_variants.map((v) =>
+                        v.id === variantId ? { ...v, [column]: url } : v
+                      ),
+                    }
+                  : r
+              )
+            ),
+        })
+      : []),
     {
       field: 'title',
       headerName: 'Title',
@@ -349,7 +357,7 @@ export function OutfitSetTable({
       isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       processRowUpdate={processRowUpdate}
-      rowHeight={50}
+      rowHeight={TABLE_ROW_HEIGHT}
       rowModesModel={rowModesModel}
       rows={rows}
       sx={{ border: 0, bgcolor: 'transparent' }}

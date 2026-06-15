@@ -30,7 +30,7 @@ type AdminLink = {
 export type AdminLinks = {
   tabs: NavLink[]
   eureka: { sets: AdminLink; variants: AdminLink; trials: AdminLink }
-  outfits: { sets: AdminLink; variants: AdminLink; evolutions: AdminLink; abilities: AdminLink }
+  outfits: { sets: AdminLink; evolutions: AdminLink; abilities: AdminLink }
 }
 
 export interface NavLink {
@@ -55,7 +55,7 @@ export const GRID_COLUMNS = {
   md: '1fr 1fr 1fr 1fr 1fr',
 }
 
-export const TABLE_ROW_HEIGHT = 40
+export const TABLE_ROW_HEIGHT = 50
 
 export const MENU_PROPS = {
   slotProps: { paper: { style: { maxHeight: 36 * 6 } } },

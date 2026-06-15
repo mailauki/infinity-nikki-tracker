@@ -99,25 +99,3 @@ export async function updateOutfitSet(
   if (error) throw new Error(error.message)
   return data
 }
-
-export async function updateOutfitVariant(
-  id: number,
-  fields: {
-    outfit_set?: string
-    outfit_category?: string | null
-    evolution?: string | null
-    default?: boolean
-  }
-) {
-  await requireAdmin()
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('outfit_variants')
-    .update({ ...fields, updated_at: new Date().toISOString() })
-    .eq('id', id)
-    .select()
-    .single()
-
-  if (error) throw new Error(error.message)
-  return data
-}

@@ -53,10 +53,38 @@ export async function editEvolution(
     if (imgError) return { error: imgError.message }
   }
 
+  // Update variant titles from text inputs.
+  const variantTitleEntries = [...formData.entries()].filter(([key]) =>
+    key.startsWith('variant_title_')
+  )
+  for (const [key, value] of variantTitleEntries) {
+    const variantSlug = key.replace('variant_title_', '')
+    const { error: titleError } = await supabase
+      .from('outfit_variants')
+      .update({ title: (value as string).trim() || null })
+      .eq('slug', variantSlug)
+    if (titleError) return { error: titleError.message }
+  }
+
+  // Update variant descriptions from text inputs.
+  const variantDescriptionEntries = [...formData.entries()].filter(([key]) =>
+    key.startsWith('variant_description_')
+  )
+  for (const [key, value] of variantDescriptionEntries) {
+    const variantSlug = key.replace('variant_description_', '')
+    const { error: descError } = await supabase
+      .from('outfit_variants')
+      .update({ description: (value as string).trim() || null })
+      .eq('slug', variantSlug)
+    if (descError) return { error: descError.message }
+  }
+
   if (formData.get('update_only') === 'true') {
     const { data: variants } = await supabase
       .from('outfit_variants')
-      .select('id, slug, outfit_category, image_url, alt_image_url, default, updated_at')
+      .select(
+        'id, slug, outfit_category, image_url, alt_image_url, title, description, default, updated_at'
+      )
       .eq('evolution', newSlug)
       .order('id', { ascending: true })
 

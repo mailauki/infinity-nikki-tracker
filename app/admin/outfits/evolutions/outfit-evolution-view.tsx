@@ -1,12 +1,18 @@
 'use client'
 
 import { useAdminView } from '../../admin-view-context'
-import { Evolution } from '@/lib/types/outfit'
+import { Evolution, OutfitCategory } from '@/lib/types/outfit'
 import { OutfitEvolutionTable } from './outfit-evolution-table'
 import OutfitEvolutionList from './outfit-evolution-list'
 import TableContainer from '../../table-container'
 
-export default function OutfitEvolutionView({ evolutions }: { evolutions: Evolution[] }) {
+export default function OutfitEvolutionView({
+  evolutions,
+  outfitCategories,
+}: {
+  evolutions: Evolution[]
+  outfitCategories: OutfitCategory[]
+}) {
   const { view } = useAdminView()
 
   // The {set}-base row is not a selectable evolution — its image lives on the
@@ -16,7 +22,7 @@ export default function OutfitEvolutionView({ evolutions }: { evolutions: Evolut
 
   return view === 'table' ? (
     <TableContainer>
-      <OutfitEvolutionTable rows={rows} />
+      <OutfitEvolutionTable outfitCategories={outfitCategories} rows={rows} />
     </TableContainer>
   ) : (
     <OutfitEvolutionList rows={rows} />

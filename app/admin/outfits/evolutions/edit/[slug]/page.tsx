@@ -52,7 +52,9 @@ async function EditEvolution({
   const [{ data: variantRows }, carouselRows] = await Promise.all([
     supabase
       .from('outfit_variants')
-      .select('id, slug, outfit_category, image_url, alt_image_url, default, updated_at')
+      .select(
+        'id, slug, outfit_category, image_url, alt_image_url, title, description, default, updated_at'
+      )
       .eq('evolution', slug)
       .order('id', { ascending: true }),
     supabase

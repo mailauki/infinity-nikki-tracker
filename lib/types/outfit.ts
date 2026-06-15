@@ -17,6 +17,9 @@ export type Evolution = Pick<
   | 'alt_image_url'
 > & {
   carousel_images: CarouselImage[]
+  // Populated only by admin hooks that embed variants (e.g. the evolutions
+  // admin table); the public/data pipeline leaves this undefined.
+  outfit_variants?: OutfitVariant[]
 }
 
 export type EvolutionDraft = {
@@ -66,23 +69,6 @@ export type OutfitVariant = Pick<
   | 'alt_image_url'
   | 'default'
 > & { obtained?: boolean }
-
-export type OutfitVariantRaw = Pick<
-  Tables<'outfit_variants'>,
-  | 'id'
-  | 'slug'
-  | 'outfit_set'
-  | 'evolution'
-  | 'outfit_category'
-  | 'image_url'
-  | 'alt_image_url'
-  | 'default'
-  | 'updated_at'
-> & {
-  outfit_sets: { title: string } | null
-  outfit_categories: { title: string } | null
-  evolutions: { title: string | null } | null
-}
 
 export type ObtainedOutfit = Pick<
   Tables<'obtained_outfit'>,

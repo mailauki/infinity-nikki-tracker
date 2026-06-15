@@ -638,36 +638,42 @@ export type Database = {
           alt_image_url: string | null
           created_at: string | null
           default: boolean
+          description: string | null
           evolution: string | null
           id: number
           image_url: string | null
           outfit_category: string | null
           outfit_set: string
           slug: string
+          title: string | null
           updated_at: string | null
         }
         Insert: {
           alt_image_url?: string | null
           created_at?: string | null
           default?: boolean
+          description?: string | null
           evolution?: string | null
           id?: number
           image_url?: string | null
           outfit_category?: string | null
           outfit_set: string
           slug: string
+          title?: string | null
           updated_at?: string | null
         }
         Update: {
           alt_image_url?: string | null
           created_at?: string | null
           default?: boolean
+          description?: string | null
           evolution?: string | null
           id?: number
           image_url?: string | null
           outfit_category?: string | null
           outfit_set?: string
           slug?: string
+          title?: string | null
           updated_at?: string | null
         }
         Relationships: [

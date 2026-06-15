@@ -2,7 +2,6 @@ import { Suspense } from 'react'
 import { getAdminData } from '@/hooks/data/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
-import { getOutfitVariantsCount } from '@/hooks/data/admin/outfit-variants'
 import { getUserRole } from '@/hooks/user'
 import { getRecentlyAdded, getRecentlyEdited } from '@/hooks/data/admin/recents'
 import { Metadata } from 'next'
@@ -30,7 +29,6 @@ async function AdminContent() {
     eurekaSets,
     { eurekaVariants, trials },
     outfitSets,
-    outfitVariantsCount,
     evolutions,
     abilities,
     role,
@@ -40,7 +38,6 @@ async function AdminContent() {
     getEurekaSets(),
     getAdminData(),
     getOutfitSets(),
-    getOutfitVariantsCount(),
     getEvolutions(),
     getAbilities(),
     getUserRole(),
@@ -64,12 +61,6 @@ async function AdminContent() {
           count={outfitSets?.length ?? 0}
           listHref={navLinksData.admin.outfits.sets.list}
           title="Outfit Sets"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.outfits.variants.add : undefined}
-          count={outfitVariantsCount}
-          listHref={navLinksData.admin.outfits.variants.list}
-          title="Outfit Variants"
         />
         <StatCard
           addHref={undefined}

@@ -48,7 +48,7 @@ export function OutfitAbilityTable({ rows: initialRows }: OutfitAbilityTableProp
       width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
+        <Stack sx={{ py: 0.5, justifyContent: 'center' }}>
           <ImageUpload
             column="image_url"
             size="sm"

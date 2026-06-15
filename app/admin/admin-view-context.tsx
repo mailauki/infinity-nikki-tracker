@@ -5,9 +5,19 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 type View = 'list' | 'table'
 
-const AdminViewContext = createContext<{ view: View; setView: (v: View) => void }>({
+const AdminViewContext = createContext<{
+  view: View
+  setView: (v: View) => void
+  // Ephemeral (session-only) toggle for the per-category variant image columns
+  // in the outfit set and evolution admin tables. Defaults to hidden so those
+  // wide grids load clean.
+  showVariantColumns: boolean
+  setShowVariantColumns: (v: boolean) => void
+}>({
   view: 'list',
   setView: () => {},
+  showVariantColumns: false,
+  setShowVariantColumns: () => {},
 })
 
 export function AdminViewProvider({
@@ -20,6 +30,7 @@ export function AdminViewProvider({
   children: React.ReactNode
 }) {
   const [view, setView] = useState(initialView)
+  const [showVariantColumns, setShowVariantColumns] = useState(false)
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
@@ -45,7 +56,11 @@ export function AdminViewProvider({
     }
   }, [userId])
 
-  return <AdminViewContext value={{ view, setView }}>{children}</AdminViewContext>
+  return (
+    <AdminViewContext value={{ view, setView, showVariantColumns, setShowVariantColumns }}>
+      {children}
+    </AdminViewContext>
+  )
 }
 
 export function useAdminView() {

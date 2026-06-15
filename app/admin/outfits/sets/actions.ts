@@ -344,16 +344,19 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     .eq('id', id)
   if (glowupError) return { error: glowupError.message }
 
+  // Resolve a submitted variant input key back to its current DB slug, carrying
+  // the slug across a set rename (variant_image_ / variant_title_ / etc.).
+  const resolveVariantSlug = (submittedSlug: string) =>
+    previousSlug !== slug && submittedSlug.startsWith(`${previousSlug}-`)
+      ? submittedSlug.replace(`${previousSlug}-`, `${slug}-`)
+      : submittedSlug
+
   // Update variant images from hidden inputs.
   const variantImageEntries = [...formData.entries()].filter(([key]) =>
     key.startsWith('variant_image_')
   )
   for (const [key, value] of variantImageEntries) {
-    const submittedSlug = key.replace('variant_image_', '')
-    const variantSlug =
-      previousSlug !== slug && submittedSlug.startsWith(`${previousSlug}-`)
-        ? submittedSlug.replace(`${previousSlug}-`, `${slug}-`)
-        : submittedSlug
+    const variantSlug = resolveVariantSlug(key.replace('variant_image_', ''))
     const { error: imgError } = await supabase
       .from('outfit_variants')
       .update({ image_url: (value as string) || null })
@@ -361,11 +364,37 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     if (imgError) return { error: imgError.message }
   }
 
+  // Update variant titles from text inputs.
+  const variantTitleEntries = [...formData.entries()].filter(([key]) =>
+    key.startsWith('variant_title_')
+  )
+  for (const [key, value] of variantTitleEntries) {
+    const variantSlug = resolveVariantSlug(key.replace('variant_title_', ''))
+    const { error: titleError } = await supabase
+      .from('outfit_variants')
+      .update({ title: (value as string).trim() || null })
+      .eq('slug', variantSlug)
+    if (titleError) return { error: titleError.message }
+  }
+
+  // Update variant descriptions from text inputs.
+  const variantDescriptionEntries = [...formData.entries()].filter(([key]) =>
+    key.startsWith('variant_description_')
+  )
+  for (const [key, value] of variantDescriptionEntries) {
+    const variantSlug = resolveVariantSlug(key.replace('variant_description_', ''))
+    const { error: descError } = await supabase
+      .from('outfit_variants')
+      .update({ description: (value as string).trim() || null })
+      .eq('slug', variantSlug)
+    if (descError) return { error: descError.message }
+  }
+
   if (formData.get('update_only') === 'true') {
     const { data: variants } = await supabase
       .from('outfit_variants')
       .select(
-        'id, slug, outfit_set, outfit_category, evolution, image_url, alt_image_url, default, updated_at'
+        'id, slug, outfit_set, outfit_category, evolution, image_url, alt_image_url, title, description, default, updated_at'
       )
       .eq('outfit_set', slug)
       .eq('evolution', baseEvoSlug)

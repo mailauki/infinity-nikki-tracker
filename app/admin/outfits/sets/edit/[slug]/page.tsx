@@ -60,7 +60,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: variantRows } = await supabase
     .from('outfit_variants')
     .select(
-      'id, slug, outfit_set, outfit_category, evolution, image_url, alt_image_url, default, updated_at'
+      'id, slug, outfit_set, outfit_category, evolution, image_url, alt_image_url, title, description, default, updated_at'
     )
     .eq('outfit_set', outfitSet.slug)
     .order('id', { ascending: true })
@@ -73,10 +73,6 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
     order: e.order - 1,
     existingSlug: e.slug,
   }))
-
-  const initialEvolutionCarouselImages = Object.fromEntries(
-    nonBaseEvolutions.map((e) => [e.slug, e.carousel_images])
-  )
 
   const glowupEvo = nonBaseEvolutions.find((e) => e.slug === outfitSet.glowup_evolution)
   const initialGlowupEvolutionOrder: number | '' = glowupEvo ? glowupEvo.order - 1 : ''
@@ -92,7 +88,6 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
       initialCarouselImages={carouselRows}
       initialCategorySelect={initialCategorySelect}
       initialDrafts={initialDrafts}
-      initialEvolutionCarouselImages={initialEvolutionCarouselImages}
       initialGlowupEvolutionOrder={initialGlowupEvolutionOrder}
       initialVariants={variantRows ?? []}
       labels={labels}

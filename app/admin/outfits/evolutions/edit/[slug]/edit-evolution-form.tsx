@@ -25,7 +25,15 @@ type EvolutionRow = Pick<
 
 type VariantRow = Pick<
   Tables<'outfit_variants'>,
-  'id' | 'slug' | 'outfit_category' | 'image_url' | 'alt_image_url' | 'default' | 'updated_at'
+  | 'id'
+  | 'slug'
+  | 'outfit_category'
+  | 'image_url'
+  | 'alt_image_url'
+  | 'title'
+  | 'description'
+  | 'default'
+  | 'updated_at'
 >
 
 const FORM_ID = 'edit-evolution'
@@ -55,6 +63,12 @@ export default function EditEvolutionForm({
   const [variantAltImages, setVariantAltImages] = useState<Record<string, string | null>>(
     Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.alt_image_url]))
   )
+  const [variantTitles, setVariantTitles] = useState<Record<string, string>>(
+    Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.title ?? '']))
+  )
+  const [variantDescriptions, setVariantDescriptions] = useState<Record<string, string>>(
+    Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.description ?? '']))
+  )
 
   const boundAction = editEvolution.bind(null, currentSlug, evolution.outfit_set, back)
   const [state, action, pending] = useActionState(boundAction, null)
@@ -83,6 +97,12 @@ export default function EditEvolutionForm({
         )
         setVariantAltImages(
           Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.alt_image_url]))
+        )
+        setVariantTitles(
+          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.title ?? '']))
+        )
+        setVariantDescriptions(
+          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.description ?? '']))
         )
       }
     }
@@ -156,7 +176,7 @@ export default function EditEvolutionForm({
               {variantRows
                 .filter((v) => v.slug)
                 .map((v) => (
-                  <Stack key={v.slug} spacing={0.5}>
+                  <Stack key={v.slug} spacing={1}>
                     <Typography variant="caption">
                       {(v.outfit_category && toTitle(v.outfit_category)) ?? v.slug}
                     </Typography>
@@ -193,6 +213,26 @@ export default function EditEvolutionForm({
                         }
                       />
                     </Stack>
+                    <TextField
+                      label="Title"
+                      name={`variant_title_${v.slug}`}
+                      size="small"
+                      value={variantTitles[v.slug!] ?? ''}
+                      onChange={(e) =>
+                        setVariantTitles((prev) => ({ ...prev, [v.slug!]: e.target.value }))
+                      }
+                    />
+                    <TextField
+                      multiline
+                      label="Description"
+                      minRows={2}
+                      name={`variant_description_${v.slug}`}
+                      size="small"
+                      value={variantDescriptions[v.slug!] ?? ''}
+                      onChange={(e) =>
+                        setVariantDescriptions((prev) => ({ ...prev, [v.slug!]: e.target.value }))
+                      }
+                    />
                   </Stack>
                 ))}
             </Box>
