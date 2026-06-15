@@ -70,23 +70,6 @@ export type OutfitVariant = Pick<
   | 'default'
 > & { obtained?: boolean }
 
-export type OutfitVariantRaw = Pick<
-  Tables<'outfit_variants'>,
-  | 'id'
-  | 'slug'
-  | 'outfit_set'
-  | 'evolution'
-  | 'outfit_category'
-  | 'image_url'
-  | 'alt_image_url'
-  | 'default'
-  | 'updated_at'
-> & {
-  outfit_sets: { title: string } | null
-  outfit_categories: { title: string } | null
-  evolutions: { title: string | null } | null
-}
-
 export type ObtainedOutfit = Pick<
   Tables<'obtained_outfit'>,
   'id' | 'outfit_set' | 'outfit_category' | 'evolution'

@@ -22,7 +22,6 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
     { data: eurekaVariants },
     { data: trials },
     { data: outfitSets },
-    { data: outfitVariants },
     { data: evolutions },
   ] = await Promise.all([
     supabase
@@ -45,11 +44,6 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       .select('slug, title, image_url, created_at')
       .not('created_at', 'is', null)
       .order('created_at', { ascending: false, nullsFirst: false })
-      .limit(limit),
-    supabase
-      .from('outfit_variants')
-      .select('slug, image_url, created_at')
-      .order('created_at', { ascending: false })
       .limit(limit),
     supabase
       .from('evolutions')
@@ -91,14 +85,6 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}${backDashboard}`,
       date: o.created_at!,
     })),
-    ...(outfitVariants ?? []).map((v) => ({
-      slug: v.slug,
-      title: toTitle(v.slug),
-      image_url: v.image_url,
-      type: navLinksData.admin.outfits.variants.title,
-      editHref: `${navLinksData.admin.outfits.variants.edit}/${v.slug}${backDashboard}`,
-      date: v.created_at,
-    })),
     ...(evolutions ?? []).map((e) => ({
       slug: e.slug,
       title: e.title,
@@ -118,7 +104,6 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
     { data: eurekaVariants },
     { data: trials },
     { data: outfitSets },
-    { data: outfitVariants },
     { data: evolutions },
   ] = await Promise.all([
     supabase
@@ -142,12 +127,6 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
     supabase
       .from('outfit_sets')
       .select('slug, title, image_url, updated_at')
-      .not('updated_at', 'is', null)
-      .order('updated_at', { ascending: false, nullsFirst: false })
-      .limit(limit),
-    supabase
-      .from('outfit_variants')
-      .select('slug, image_url, updated_at')
       .not('updated_at', 'is', null)
       .order('updated_at', { ascending: false, nullsFirst: false })
       .limit(limit),
@@ -191,14 +170,6 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       type: navLinksData.admin.outfits.sets.title,
       editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}${backDashboard}`,
       date: o.updated_at!,
-    })),
-    ...(outfitVariants ?? []).map((v) => ({
-      slug: v.slug,
-      title: toTitle(v.slug),
-      image_url: v.image_url,
-      type: navLinksData.admin.outfits.variants.title,
-      editHref: `${navLinksData.admin.outfits.variants.edit}/${v.slug}${backDashboard}`,
-      date: v.updated_at!,
     })),
     ...(evolutions ?? []).map((e) => ({
       slug: e.slug,
