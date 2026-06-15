@@ -15,6 +15,7 @@ interface FilterState {
 
 interface EurekaDataContextValue {
   eurekaSets: EurekaSet[]
+  obtainedKeys: Set<string>
   obtainedEureka: ObtainedEureka[]
   categories: EurekaCategory[]
   colors: EurekaColor[]
@@ -23,7 +24,6 @@ interface EurekaDataContextValue {
   isAdmin: boolean
   isLoading: boolean
   isError: boolean
-  isObtainedError: boolean
   userId: string | null
   groupBySet: boolean
   showByColor: boolean
@@ -49,6 +49,7 @@ const DEFAULT_FILTERS: FilterState = {
 
 export const EurekaDataContext = createContext<EurekaDataContextValue>({
   eurekaSets: [],
+  obtainedKeys: new Set(),
   obtainedEureka: [],
   categories: [],
   colors: [],
@@ -57,7 +58,6 @@ export const EurekaDataContext = createContext<EurekaDataContextValue>({
   isAdmin: false,
   isLoading: true,
   isError: false,
-  isObtainedError: false,
   userId: null,
   groupBySet: true,
   showByColor: false,

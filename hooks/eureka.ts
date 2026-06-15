@@ -5,6 +5,43 @@ import {
   EurekaSet,
   ObtainedEureka,
 } from '@/lib/types/eureka'
+import { toSlugVariant } from '@/lib/utils'
+
+// Build an O(1) membership Set of obtained variants keyed by
+// `${set}-${category}-${color}`. Lets callers resolve `obtained` without the
+// O(variants × obtained) `.find` that updateEurekaSet/updateEurekaVariants run.
+export function buildObtainedKeySet(obtainedEureka: ObtainedEureka[] | null): Set<string> {
+  const keys = new Set<string>()
+  for (const o of obtainedEureka ?? []) {
+    if (o.eureka_set && o.category && o.color) {
+      keys.add(toSlugVariant(o.eureka_set, o.category, o.color))
+    }
+  }
+  return keys
+}
+
+// True when this variant is in the obtained key Set (see buildObtainedKeySet).
+export function isVariantObtained(variant: EurekaVariant, obtainedKeys: Set<string>): boolean {
+  if (!variant.eureka_set || !variant.category || !variant.color) return false
+  return obtainedKeys.has(toSlugVariant(variant.eureka_set, variant.category, variant.color))
+}
+
+// Materialize `.obtained` on every variant of every set via an O(1) Set lookup.
+// Replaces the per-render updateEurekaSet().map() that did O(variants × obtained)
+// `.find` calls and re-allocated the whole tree on every render; callers memoize
+// this on [eurekaSets, obtainedKeys] so it only recomputes when data changes.
+export function applyObtainedKeys(
+  eurekaSets: EurekaSet[],
+  obtainedKeys: Set<string>
+): EurekaSet[] {
+  return eurekaSets.map((set) => ({
+    ...set,
+    eureka_variants: set.eureka_variants.map((variant) => ({
+      ...variant,
+      obtained: isVariantObtained(variant, obtainedKeys),
+    })) as EurekaVariant[],
+  })) as EurekaSet[]
+}
 
 function colorRank(slug: string | null, defaultColorSlug: string | null | undefined): number {
   if (slug === defaultColorSlug) return -1

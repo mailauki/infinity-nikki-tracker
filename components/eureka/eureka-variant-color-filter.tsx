@@ -7,6 +7,7 @@ import type { EurekaColor, EurekaVariant } from '@/lib/types/eureka'
 import EurekaVariantCard from './eureka-variant-card'
 import ColorChip from '../color-chip'
 import { useEurekaData } from './eureka-context'
+import { isVariantObtained } from '@/hooks/eureka'
 
 export default function EurekaVariantColorFilter({
   colors,
@@ -17,14 +18,12 @@ export default function EurekaVariantColorFilter({
   eureka_variants: EurekaVariant[]
   isLoggedIn: boolean
 }) {
-  const { obtainedEureka } = useEurekaData()
+  const { obtainedKeys } = useEurekaData()
   const [selectedColor, setSelectedColor] = useState<string | null>(null)
 
   const variantsWithObtained = eureka_variants.map((v) => ({
     ...v,
-    obtained: obtainedEureka.some(
-      (o) => o.eureka_set === v.eureka_set && o.category === v.category && o.color === v.color
-    ),
+    obtained: isVariantObtained(v, obtainedKeys),
   }))
 
   const filteredVariants =

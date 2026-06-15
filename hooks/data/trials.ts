@@ -1,10 +1,13 @@
-import { cache } from 'react'
+import { cacheLife } from 'next/cache'
 
-import { createClient } from '@/lib/supabase/server'
+import { createPublicClient } from '@/lib/supabase/public'
 import { Trial } from '@/lib/types/eureka'
 
-export const getTrials = cache(async () => {
-  const supabase = await createClient()
+export async function getTrials() {
+  'use cache'
+  cacheLife('days')
+
+  const supabase = createPublicClient()
 
   const { data: trials } = await supabase
     .from('trials')
@@ -12,10 +15,13 @@ export const getTrials = cache(async () => {
     .order('id', { ascending: true })
 
   return (trials ?? []) as Trial[]
-})
+}
 
-export const getTrial = cache(async (slug: string) => {
-  const supabase = await createClient()
+export async function getTrial(slug: string) {
+  'use cache'
+  cacheLife('days')
+
+  const supabase = createPublicClient()
 
   const { data: trial } = await supabase
     .from('trials')
@@ -24,4 +30,4 @@ export const getTrial = cache(async (slug: string) => {
     .maybeSingle()
 
   return trial as Trial | null
-})
+}

@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
 import {
-  Alert,
   Box,
   Button,
   Chip,
@@ -56,7 +55,6 @@ export default function FilterEureka() {
     isLoggedIn,
     isLoading,
     isError,
-    isObtainedError,
     groupBySet,
     showByColor,
     filters,
@@ -139,12 +137,6 @@ export default function FilterEureka() {
         <Box sx={{ width: 'fit-content', my: 2 }}>
           <LoginAlert title="Eureka" />
         </Box>
-      )}
-
-      {isObtainedError && (
-        <Alert severity="warning" sx={{ width: 'fit-content', my: 2 }}>
-          Could not load your collection status. Progress may be inaccurate.
-        </Alert>
       )}
 
       {filteredSets.length === 0 ? (

@@ -33,6 +33,7 @@ export default function EurekaColorSetCard({
       <Box sx={{ position: 'relative' }}>
         <Stack sx={{ pt: 1, alignItems: 'center' }}>
           <LazyImage
+            optimized
             alt={slug}
             color="transparent"
             size="lg"
