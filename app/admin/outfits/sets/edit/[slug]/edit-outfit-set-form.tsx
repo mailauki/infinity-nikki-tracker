@@ -42,6 +42,8 @@ type OutfitVariantRow = Pick<
   | 'evolution'
   | 'image_url'
   | 'alt_image_url'
+  | 'title'
+  | 'description'
   | 'default'
   | 'updated_at'
 >
@@ -123,6 +125,20 @@ export default function EditOutfitSetForm({
         .map((v) => [v.slug, v.alt_image_url])
     )
   )
+  const [variantTitles, setVariantTitles] = useState<Record<string, string>>(
+    Object.fromEntries(
+      initialVariants
+        .filter((v) => v.slug && isBaseVariant(v))
+        .map((v) => [v.slug, v.title ?? ''])
+    )
+  )
+  const [variantDescriptions, setVariantDescriptions] = useState<Record<string, string>>(
+    Object.fromEntries(
+      initialVariants
+        .filter((v) => v.slug && isBaseVariant(v))
+        .map((v) => [v.slug, v.description ?? ''])
+    )
+  )
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {
     const { value } = e.target
@@ -160,6 +176,12 @@ export default function EditOutfitSetForm({
         )
         setVariantAltImages(
           Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.alt_image_url]))
+        )
+        setVariantTitles(
+          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.title ?? '']))
+        )
+        setVariantDescriptions(
+          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.description ?? '']))
         )
       }
     }
@@ -421,34 +443,53 @@ export default function EditOutfitSetForm({
               {variantRows
                 .filter((v) => v.slug)
                 .map((v) => (
-                  <Stack
-                    key={v.slug}
-                    direction="row"
-                    spacing={1}
-                    sx={{ justifyContent: 'space-between' }}
-                  >
-                    <input
-                      name={`variant_image_${v.slug}`}
-                      type="hidden"
-                      value={variantImages[v.slug!] ?? ''}
-                    />
-                    <ImageUpload
-                      caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
-                      slug={v.slug ?? undefined}
-                      table="outfit_variants"
-                      url={variantImages[v.slug!] ?? null}
-                      onUpload={(url) => setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))}
-                    />
-                    <ImageUpload
-                      caption={
-                        (v.outfit_category && `Alt ${toTitle(v.outfit_category)}`) ?? undefined
+                  <Stack key={v.slug} spacing={1}>
+                    <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between' }}>
+                      <input
+                        name={`variant_image_${v.slug}`}
+                        type="hidden"
+                        value={variantImages[v.slug!] ?? ''}
+                      />
+                      <ImageUpload
+                        caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
+                        slug={v.slug ?? undefined}
+                        table="outfit_variants"
+                        url={variantImages[v.slug!] ?? null}
+                        onUpload={(url) =>
+                          setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))
+                        }
+                      />
+                      <ImageUpload
+                        caption={
+                          (v.outfit_category && `Alt ${toTitle(v.outfit_category)}`) ?? undefined
+                        }
+                        column="alt_image_url"
+                        slug={v.slug ?? undefined}
+                        table="outfit_variants"
+                        url={variantAltImages[v.slug!] ?? null}
+                        onUpload={(url) =>
+                          setVariantAltImages((prev) => ({ ...prev, [v.slug!]: url }))
+                        }
+                      />
+                    </Stack>
+                    <TextField
+                      label="Title"
+                      name={`variant_title_${v.slug}`}
+                      size="small"
+                      value={variantTitles[v.slug!] ?? ''}
+                      onChange={(e) =>
+                        setVariantTitles((prev) => ({ ...prev, [v.slug!]: e.target.value }))
                       }
-                      column="alt_image_url"
-                      slug={v.slug ?? undefined}
-                      table="outfit_variants"
-                      url={variantAltImages[v.slug!] ?? null}
-                      onUpload={(url) =>
-                        setVariantAltImages((prev) => ({ ...prev, [v.slug!]: url }))
+                    />
+                    <TextField
+                      multiline
+                      label="Description"
+                      minRows={2}
+                      name={`variant_description_${v.slug}`}
+                      size="small"
+                      value={variantDescriptions[v.slug!] ?? ''}
+                      onChange={(e) =>
+                        setVariantDescriptions((prev) => ({ ...prev, [v.slug!]: e.target.value }))
                       }
                     />
                   </Stack>
