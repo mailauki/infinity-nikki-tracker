@@ -55,7 +55,7 @@ export const GRID_COLUMNS = {
   md: '1fr 1fr 1fr 1fr 1fr',
 }
 
-export const TABLE_ROW_HEIGHT = 40
+export const TABLE_ROW_HEIGHT = 50
 
 export const MENU_PROPS = {
   slotProps: { paper: { style: { maxHeight: 36 * 6 } } },

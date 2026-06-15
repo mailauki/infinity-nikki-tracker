@@ -55,7 +55,7 @@ export function OutfitEvolutionTable({
       width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
+        <Stack sx={{ py: 0.5, justifyContent: 'center' }}>
           <ImageUpload
             column="image_url"
             size="sm"
@@ -77,7 +77,7 @@ export function OutfitEvolutionTable({
       width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
+        <Stack sx={{ py: 0.5, justifyContent: 'center' }}>
           <ImageUpload
             column="alt_image_url"
             size="sm"

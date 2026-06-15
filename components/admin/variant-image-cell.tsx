@@ -43,7 +43,7 @@ export default function VariantImageCell({
     <Stack direction="row" sx={{ gap: 0.5, py: 0.5, justifyContent: 'center' }}>
       <ImageUpload
         column="image_url"
-        size="xs"
+        size="sm"
         slug={variant.slug ?? undefined}
         table="outfit_variants"
         url={variant.image_url ?? null}
@@ -51,7 +51,7 @@ export default function VariantImageCell({
       />
       <ImageUpload
         column="alt_image_url"
-        size="xs"
+        size="sm"
         slug={variant.slug ?? undefined}
         table="outfit_variants"
         url={variant.alt_image_url ?? null}

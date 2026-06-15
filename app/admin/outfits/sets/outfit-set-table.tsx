@@ -38,8 +38,6 @@ interface OutfitSetTableProps {
 
 const LOCKED_FIELDS = [
   'slug',
-  'image_url',
-  'alt_image_url',
   'variant_images',
   'evolutions',
   'glowup_evolution',
@@ -156,7 +154,7 @@ export function OutfitSetTable({
       width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
+        <Stack sx={{ py: 0.5, justifyContent: 'center' }}>
           <ImageUpload
             column="image_url"
             size="sm"
@@ -178,7 +176,7 @@ export function OutfitSetTable({
       width: TABLE_ROW_HEIGHT,
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => (
-        <Stack sx={{ flex: 1, height: TABLE_ROW_HEIGHT, justifyContent: 'center' }}>
+        <Stack sx={{ py: 0.5, justifyContent: 'center' }}>
           <ImageUpload
             column="alt_image_url"
             size="sm"
@@ -359,7 +357,7 @@ export function OutfitSetTable({
       isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       processRowUpdate={processRowUpdate}
-      rowHeight={50}
+      rowHeight={TABLE_ROW_HEIGHT}
       rowModesModel={rowModesModel}
       rows={rows}
       sx={{ border: 0, bgcolor: 'transparent' }}
