@@ -22,6 +22,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
   const label = (formData.get('label') as string | null) || null
   const label_2 = (formData.get('label_2') as string | null) || null
   const ability = (formData.get('ability') as string | null) || null
+  const seasons = (formData.get('seasons') as string | null) || null
   const evolutionDrafts = JSON.parse(
     (formData.get('evolution_drafts') as string) || '[]'
   ) as EvolutionDraft[]
@@ -37,7 +38,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
 
   const { error } = await supabase
     .from('outfit_sets')
-    .insert([{ title, slug, description, rarity, style, label, label_2, ability }])
+    .insert([{ title, slug, description, rarity, style, label, label_2, ability, seasons }])
 
   if (error) return { error: error.message }
 
@@ -151,6 +152,7 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
   const label = (formData.get('label') as string | null) || null
   const label_2 = (formData.get('label_2') as string | null) || null
   const ability = (formData.get('ability') as string | null) || null
+  const seasons = (formData.get('seasons') as string | null) || null
   const evolutionDrafts = JSON.parse(
     (formData.get('evolution_drafts') as string) || '[]'
   ) as EvolutionDraft[]
@@ -183,6 +185,7 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
       label,
       label_2,
       ability,
+      seasons,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)

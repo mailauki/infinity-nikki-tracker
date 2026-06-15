@@ -11,6 +11,7 @@ import AdminRecentsList from './admin-recents-list'
 import { navLinksData } from '@/lib/nav-links'
 import { getEvolutions } from '@/hooks/data/evolutions'
 import { getAbilities } from '@/hooks/data/abilities'
+import { getSeasons } from '@/hooks/data/seasons'
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -31,6 +32,7 @@ async function AdminContent() {
     outfitSets,
     evolutions,
     abilities,
+    seasons,
     role,
     recentlyAdded,
     recentlyEdited,
@@ -40,6 +42,7 @@ async function AdminContent() {
     getOutfitSets(),
     getEvolutions(),
     getAbilities(),
+    getSeasons(),
     getUserRole(),
     getRecentlyAdded(),
     getRecentlyEdited(),
@@ -73,6 +76,12 @@ async function AdminContent() {
           count={abilities?.length ?? 0}
           listHref={navLinksData.admin.outfits.abilities.list}
           title="Abilities"
+        />
+        <StatCard
+          addHref={isAdmin ? navLinksData.admin.outfits.seasons.add : undefined}
+          count={seasons?.length ?? 0}
+          listHref={navLinksData.admin.outfits.seasons.list}
+          title="Seasons"
         />
         <StatCard
           addHref={isAdmin ? navLinksData.admin.eureka.sets.add : undefined}

@@ -20,30 +20,16 @@ export const navLinksData: {
       title: 'Outfits',
       url: '/outfits',
       image: '/icons/outfits.png',
-      // items: [
-      //   {
-      //     title: 'Sets',
-      //     url: '/outfits/sets',
-      //   },
-      //   {
-      //     title: 'Pieces',
-      //     url: '/outfits/pieces',
-      //   },
-      //   {
-      //     title: 'Accessories',
-      //     url: '/outfits/accessories',
-      //   },
-      //   {
-      //     title: 'Evolutions',
-      //     url: '/outfits/evolutions',
-      //     image: '/icons/evolution.png',
-      //   },
-      //   // {
-      //   // 	title: 'Glow Up',
-      //   // 	url: '/outfits/glowup',
-      //   // 	image: '/icons/glowup.png',
-      //   // },
-      // ],
+      items: [
+				{
+					title: 'Seasons',
+					url: '/outfits/seasons'
+				},
+        // {
+        //   title: 'Sets',
+        //   url: '/outfits/sets',
+        // },
+      ],
     },
     {
       title: 'Eureka',
@@ -127,6 +113,7 @@ export const navLinksData: {
           { title: 'Sets', url: '/admin/outfits/sets' },
           { title: 'Evolutions', url: '/admin/outfits/evolutions' },
           { title: 'Abilities', url: '/admin/outfits/abilities' },
+          { title: 'Seasons', url: '/admin/outfits/seasons' },
         ],
       },
       {
@@ -177,6 +164,12 @@ export const navLinksData: {
         list: '/admin/outfits/abilities',
         add: '/admin/outfits/abilities/new',
         edit: '/admin/outfits/abilities/edit',
+      },
+      seasons: {
+        title: 'Seasons',
+        list: '/admin/outfits/seasons',
+        add: '/admin/outfits/seasons/new',
+        edit: '/admin/outfits/seasons/edit',
       },
     },
   },

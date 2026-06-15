@@ -557,7 +557,9 @@ export type Database = {
           image_url: string | null
           label: string | null
           label_2: string | null
+          location: string | null
           rarity: number
+          seasons: string | null
           slug: string
           style: string | null
           title: string
@@ -573,7 +575,9 @@ export type Database = {
           image_url?: string | null
           label?: string | null
           label_2?: string | null
+          location?: string | null
           rarity: number
+          seasons?: string | null
           slug: string
           style?: string | null
           title: string
@@ -589,7 +593,9 @@ export type Database = {
           image_url?: string | null
           label?: string | null
           label_2?: string | null
+          location?: string | null
           rarity?: number
+          seasons?: string | null
           slug?: string
           style?: string | null
           title?: string
@@ -622,6 +628,13 @@ export type Database = {
             columns: ["label"]
             isOneToOne: false
             referencedRelation: "labels"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outfit_sets_seasons_fkey"
+            columns: ["seasons"]
+            isOneToOne: false
+            referencedRelation: "seasons"
             referencedColumns: ["slug"]
           },
           {
@@ -733,6 +746,27 @@ export type Database = {
           role?: string
           updated_at?: string | null
           username?: string | null
+        }
+        Relationships: []
+      }
+      seasons: {
+        Row: {
+          created_at: string
+          id: number
+          slug: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          slug: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          slug?: string
+          title?: string
         }
         Relationships: []
       }

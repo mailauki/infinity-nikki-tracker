@@ -2,6 +2,8 @@ import { Tables } from './supabase'
 
 export type Ability = Pick<Tables<'abilities'>, 'slug' | 'title' | 'image_url'>
 
+export type Season = Pick<Tables<'seasons'>, 'slug' | 'title'>
+
 export type OutfitCategory = Pick<Tables<'outfit_categories'>, 'slug' | 'title' | 'part'>
 
 export type Evolution = Pick<
@@ -52,6 +54,7 @@ export type OutfitSetRaw = Pick<
   | 'label'
   | 'label_2'
   | 'ability'
+  | 'seasons'
   | 'image_url'
   | 'alt_image_url'
   | 'glowup_evolution'
