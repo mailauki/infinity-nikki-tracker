@@ -74,10 +74,6 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
     existingSlug: e.slug,
   }))
 
-  const initialEvolutionCarouselImages = Object.fromEntries(
-    nonBaseEvolutions.map((e) => [e.slug, e.carousel_images])
-  )
-
   const glowupEvo = nonBaseEvolutions.find((e) => e.slug === outfitSet.glowup_evolution)
   const initialGlowupEvolutionOrder: number | '' = glowupEvo ? glowupEvo.order - 1 : ''
 
@@ -92,7 +88,6 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
       initialCarouselImages={carouselRows}
       initialCategorySelect={initialCategorySelect}
       initialDrafts={initialDrafts}
-      initialEvolutionCarouselImages={initialEvolutionCarouselImages}
       initialGlowupEvolutionOrder={initialGlowupEvolutionOrder}
       initialVariants={variantRows ?? []}
       labels={labels}
