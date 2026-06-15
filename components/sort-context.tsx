@@ -39,12 +39,11 @@ export function SortProvider({
       .catch(() => {})
   }, [isLoggedIn])
 
-  const toggleSort = () =>
-    setSortOrder((prev) => {
-      const next = prev === 'new' ? 'old' : 'new'
-      if (isLoggedIn) startTransition(() => updateSortOrder(next))
-      return next
-    })
+  const toggleSort = () => {
+    const next = sortOrder === 'new' ? 'old' : 'new'
+    setSortOrder(next)
+    if (isLoggedIn) startTransition(() => updateSortOrder(next))
+  }
 
   return <SortContext.Provider value={{ sortOrder, toggleSort }}>{children}</SortContext.Provider>
 }

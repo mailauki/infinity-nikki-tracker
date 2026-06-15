@@ -27,6 +27,10 @@ const nextConfig: NextConfig = {
   //   },
   // ],
   images: {
+    formats: ['image/avif', 'image/webp'],
+    // Grid thumbnails render at Avatar sizes (xs 24 … xl 140, see lib/theme.ts);
+    // these candidates cover those at 1x/2x DPR so srcset picks a small file.
+    imageSizes: [24, 40, 48, 56, 80, 94, 112, 140, 188, 280],
     remotePatterns: [
       {
         protocol: 'https',

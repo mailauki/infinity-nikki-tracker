@@ -38,6 +38,7 @@ export default function EurekaVariantCard({
         <Box sx={{ position: 'relative', height: '100%' }}>
           <Stack sx={{ pt: 1, alignItems: 'center' }}>
             <LazyImage
+              optimized
               alt={eurekaVariant.slug || 'Eureka Variant'}
               color="transparent"
               size="lg"

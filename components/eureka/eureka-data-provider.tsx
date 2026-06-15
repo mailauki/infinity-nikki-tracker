@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 
-import { updateEurekaSet } from '@/hooks/eureka'
+import { applyObtainedKeys, buildObtainedKeySet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
 import {
   EurekaCategory,
@@ -25,6 +25,14 @@ async function fetchJson<T>(url: string): Promise<T> {
   return r.json()
 }
 
+interface EurekaBootstrap {
+  sets: EurekaSet[]
+  categories: EurekaCategory[]
+  colors: EurekaColor[]
+  trials: Trial[]
+  obtained: ObtainedEureka[]
+}
+
 export default function EurekaDataProvider({
   isLoggedIn,
   isAdmin = false,
@@ -43,7 +51,6 @@ export default function EurekaDataProvider({
   const [obtainedEureka, setObtainedEureka] = useState<ObtainedEureka[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
-  const [isObtainedError, setIsObtainedError] = useState(false)
   const [groupBySet, setGroupBySet] = useState<boolean>(DEFAULT_PREFERENCES.group_by_set)
   const [showByColor, setShowByColor] = useState<boolean>(DEFAULT_PREFERENCES.show_by_color)
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS)
@@ -52,17 +59,13 @@ export default function EurekaDataProvider({
   const prefsLoaded = useRef(false)
 
   useEffect(() => {
-    Promise.all([
-      fetchJson<EurekaSet[]>('/api/eureka'),
-      fetchJson<EurekaCategory[]>('/api/categories'),
-      fetchJson<EurekaColor[]>('/api/colors'),
-      fetchJson<Trial[]>('/api/trials'),
-    ])
-      .then(([sets, cats, cols, trls]) => {
+    fetchJson<EurekaBootstrap>('/api/eureka/bootstrap')
+      .then(({ sets, categories: cats, colors: cols, trials: trls, obtained }) => {
         setEurekaSets(sets)
         setCategories(cats)
         setColors(cols)
         setTrials(trls)
+        setObtainedEureka(obtained)
         setIsLoading(false)
       })
       .catch((err) => {
@@ -183,13 +186,8 @@ export default function EurekaDataProvider({
   useEffect(() => {
     if (!isLoggedIn) return
 
-    fetchJson<ObtainedEureka[]>('/api/obtained-eureka')
-      .then((data) => setObtainedEureka(data))
-      .catch((err) => {
-        console.error('Failed to load obtained eureka:', err)
-        setIsObtainedError(true)
-      })
-
+    // obtainedEureka is seeded from /api/eureka/bootstrap; this effect only owns
+    // the realtime subscription that keeps it in sync across tabs/devices.
     const obtainedChannel = supabase
       .channel(`obtained-filter-channel:${userId}`)
       .on(
@@ -239,14 +237,21 @@ export default function EurekaDataProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
-  const eurekaSetsWithObtained = eurekaSets.map((set) =>
-    updateEurekaSet({ eurekaSet: set, obtainedEureka })
+  // O(1) obtained lookups, recomputed only when obtainedEureka changes — instead
+  // of re-deriving `.obtained` on every variant of every set on every render.
+  const obtainedKeys = useMemo(() => buildObtainedKeySet(obtainedEureka), [obtainedEureka])
+
+  // Materialize `.obtained` once per data change (not per render) via the Set.
+  const eurekaSetsWithObtained = useMemo(
+    () => applyObtainedKeys(eurekaSets, obtainedKeys),
+    [eurekaSets, obtainedKeys]
   )
 
   return (
     <EurekaDataContext.Provider
       value={{
         eurekaSets: eurekaSetsWithObtained,
+        obtainedKeys,
         obtainedEureka,
         categories,
         colors,
@@ -255,7 +260,6 @@ export default function EurekaDataProvider({
         isAdmin,
         isLoading,
         isError,
-        isObtainedError,
         userId,
         groupBySet,
         showByColor,
