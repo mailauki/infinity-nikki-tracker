@@ -23,6 +23,7 @@ import RarityStars from '@/components/rarity-stars'
 import { updateOutfitSet } from '@/app/admin/actions'
 import ImageUpload from '@/components/forms/image-upload'
 import { categoryImageColumns } from '@/components/admin/variant-image-cell'
+import { useAdminView } from '@/app/admin/admin-view-context'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = OutfitSet
@@ -62,6 +63,7 @@ export function OutfitSetTable({
   abilities,
   outfitCategories,
 }: OutfitSetTableProps) {
+  const { showVariantColumns } = useAdminView()
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
@@ -192,29 +194,32 @@ export function OutfitSetTable({
         </Stack>
       ),
     },
-    // One column per category. The set row represents the base look, so each
-    // cell shows the base variant for that category (base variants carry the
-    // {set}-base evolution slug). Categories the set doesn't use render locked.
-    ...categoryImageColumns<Row>({
-      outfitCategories,
-      getVariant: (row, categorySlug) =>
-        row.outfit_variants.find(
-          (v) => v.evolution === `${row.slug}-base` && v.outfit_category === categorySlug
-        ) ?? null,
-      onUpload: (row, variantId, column, url) =>
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === row.id
-              ? {
-                  ...r,
-                  outfit_variants: r.outfit_variants.map((v) =>
-                    v.id === variantId ? { ...v, [column]: url } : v
-                  ),
-                }
-              : r
-          )
-        ),
-    }),
+    // One column per category, toggled by the toolbar. The set row represents
+    // the base look, so each cell shows the base variant for that category (base
+    // variants carry the {set}-base evolution slug). Categories the set doesn't
+    // use render locked.
+    ...(showVariantColumns
+      ? categoryImageColumns<Row>({
+          outfitCategories,
+          getVariant: (row, categorySlug) =>
+            row.outfit_variants.find(
+              (v) => v.evolution === `${row.slug}-base` && v.outfit_category === categorySlug
+            ) ?? null,
+          onUpload: (row, variantId, column, url) =>
+            setRows((prev) =>
+              prev.map((r) =>
+                r.id === row.id
+                  ? {
+                      ...r,
+                      outfit_variants: r.outfit_variants.map((v) =>
+                        v.id === variantId ? { ...v, [column]: url } : v
+                      ),
+                    }
+                  : r
+              )
+            ),
+        })
+      : []),
     {
       field: 'title',
       headerName: 'Title',

@@ -8,6 +8,7 @@ import { navLinksData } from '@/lib/nav-links'
 import { Evolution, OutfitCategory } from '@/lib/types/outfit'
 import ImageUpload from '@/components/forms/image-upload'
 import { categoryImageColumns } from '@/components/admin/variant-image-cell'
+import { useAdminView } from '@/app/admin/admin-view-context'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = Evolution
@@ -21,6 +22,7 @@ export function OutfitEvolutionTable({
   rows: initialRows,
   outfitCategories,
 }: OutfitEvolutionTableProps) {
+  const { showVariantColumns } = useAdminView()
   const [rows, setRows] = useState<Row[]>(initialRows)
   const editHref = (row: Row) =>
     `${navLinksData.admin.outfits.evolutions.edit}/${row.slug}?back=${encodeURIComponent(navLinksData.admin.outfits.evolutions.list)}`
@@ -91,26 +93,28 @@ export function OutfitEvolutionTable({
         </Stack>
       ),
     },
-    // One column per category, each showing this evolution's variant for that
-    // category (or a locked cell when the evolution has no variant there).
-    ...categoryImageColumns<Row>({
-      outfitCategories,
-      getVariant: (row, categorySlug) =>
-        (row.outfit_variants ?? []).find((v) => v.outfit_category === categorySlug) ?? null,
-      onUpload: (row, variantId, column, url) =>
-        setRows((prev) =>
-          prev.map((r) =>
-            r.id === row.id
-              ? {
-                  ...r,
-                  outfit_variants: (r.outfit_variants ?? []).map((v) =>
-                    v.id === variantId ? { ...v, [column]: url } : v
-                  ),
-                }
-              : r
-          )
-        ),
-    }),
+    // One column per category, toggled by the toolbar. Each shows this
+    // evolution's variant for the category (or a locked cell when absent).
+    ...(showVariantColumns
+      ? categoryImageColumns<Row>({
+          outfitCategories,
+          getVariant: (row, categorySlug) =>
+            (row.outfit_variants ?? []).find((v) => v.outfit_category === categorySlug) ?? null,
+          onUpload: (row, variantId, column, url) =>
+            setRows((prev) =>
+              prev.map((r) =>
+                r.id === row.id
+                  ? {
+                      ...r,
+                      outfit_variants: (r.outfit_variants ?? []).map((v) =>
+                        v.id === variantId ? { ...v, [column]: url } : v
+                      ),
+                    }
+                  : r
+              )
+            ),
+        })
+      : []),
     {
       field: 'title',
       headerName: 'Set Title',
