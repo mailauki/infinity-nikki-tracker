@@ -5,17 +5,22 @@ import { Stack } from '@mui/material'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { navLinksData } from '@/lib/nav-links'
-import { Evolution } from '@/lib/types/outfit'
+import { Evolution, OutfitCategory } from '@/lib/types/outfit'
 import ImageUpload from '@/components/forms/image-upload'
+import { categoryImageColumns } from '@/components/admin/variant-image-cell'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = Evolution
 
 interface OutfitEvolutionTableProps {
   rows: Row[]
+  outfitCategories: OutfitCategory[]
 }
 
-export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTableProps) {
+export function OutfitEvolutionTable({
+  rows: initialRows,
+  outfitCategories,
+}: OutfitEvolutionTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const editHref = (row: Row) =>
     `${navLinksData.admin.outfits.evolutions.edit}/${row.slug}?back=${encodeURIComponent(navLinksData.admin.outfits.evolutions.list)}`
@@ -86,6 +91,26 @@ export function OutfitEvolutionTable({ rows: initialRows }: OutfitEvolutionTable
         </Stack>
       ),
     },
+    // One column per category, each showing this evolution's variant for that
+    // category (or a locked cell when the evolution has no variant there).
+    ...categoryImageColumns<Row>({
+      outfitCategories,
+      getVariant: (row, categorySlug) =>
+        (row.outfit_variants ?? []).find((v) => v.outfit_category === categorySlug) ?? null,
+      onUpload: (row, variantId, column, url) =>
+        setRows((prev) =>
+          prev.map((r) =>
+            r.id === row.id
+              ? {
+                  ...r,
+                  outfit_variants: (r.outfit_variants ?? []).map((v) =>
+                    v.id === variantId ? { ...v, [column]: url } : v
+                  ),
+                }
+              : r
+          )
+        ),
+    }),
     {
       field: 'title',
       headerName: 'Set Title',

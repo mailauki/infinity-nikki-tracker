@@ -17,6 +17,9 @@ export type Evolution = Pick<
   | 'alt_image_url'
 > & {
   carousel_images: CarouselImage[]
+  // Populated only by admin hooks that embed variants (e.g. the evolutions
+  // admin table); the public/data pipeline leaves this undefined.
+  outfit_variants?: OutfitVariant[]
 }
 
 export type EvolutionDraft = {
