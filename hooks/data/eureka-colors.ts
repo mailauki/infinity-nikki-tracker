@@ -1,13 +1,10 @@
-import { cacheLife } from 'next/cache'
+import { cache } from 'react'
 
 import { EurekaColor } from '@/lib/types/eureka'
-import { createPublicClient } from '@/lib/supabase/public'
+import { createClient } from '@/lib/supabase/server'
 
-export async function getEurekaColors() {
-  'use cache'
-  cacheLife('days')
-
-  const supabase = createPublicClient()
+export const getEurekaColors = cache(async () => {
+  const supabase = await createClient()
 
   const { data: colors } = await supabase
     .from('eureka_colors')
@@ -15,4 +12,4 @@ export async function getEurekaColors() {
     .order('id', { ascending: true })
 
   return (colors ?? []) as EurekaColor[]
-}
+})

@@ -1,13 +1,10 @@
-import { cacheLife } from 'next/cache'
+import { cache } from 'react'
 
 import { EurekaCategory } from '@/lib/types/eureka'
-import { createPublicClient } from '@/lib/supabase/public'
+import { createClient } from '@/lib/supabase/server'
 
-export async function getEurekaCategories() {
-  'use cache'
-  cacheLife('days')
-
-  const supabase = createPublicClient()
+export const getEurekaCategories = cache(async () => {
+  const supabase = await createClient()
 
   const { data: categories } = await supabase
     .from('eureka_categories')
@@ -15,4 +12,4 @@ export async function getEurekaCategories() {
     .order('id', { ascending: true })
 
   return (categories ?? []) as EurekaCategory[]
-}
+})
