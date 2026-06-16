@@ -16,13 +16,22 @@ import { Edit, EditOff } from '@mui/icons-material'
 import { toSlug } from '@/lib/utils'
 import ImageUpload from '@/components/forms/image-upload'
 import { Trial } from '@/lib/types/eureka'
+import { Location } from '@/lib/types/outfit'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editTrial } from '../../actions'
 import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'edit-trial'
 
-export default function EditTrialForm({ trial, back }: { trial: Trial; back: string }) {
+export default function EditTrialForm({
+  trial,
+  locations,
+  back,
+}: {
+  trial: Trial
+  locations: Location[]
+  back: string
+}) {
   const { setFormConfig } = useFormConfig()
   const [slug, setSlug] = useState(trial.slug ?? toSlug(trial.title))
   const [location, setLocation] = useState(trial.location ?? '')
@@ -92,8 +101,11 @@ export default function EditTrialForm({ trial, back }: { trial: Trial; back: str
             onChange={(e) => setLocation(e.target.value)}
           >
             <MenuItem value="">—</MenuItem>
-            <MenuItem value="Wishfield">Wishfield</MenuItem>
-            <MenuItem value="Itzaland">Itzaland</MenuItem>
+            {locations.map((l) => (
+              <MenuItem key={l.slug} value={l.slug}>
+                {l.title}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
 

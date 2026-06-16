@@ -29,6 +29,7 @@ import {
   EvolutionDraft,
   OutfitCategory,
   OutfitSetRaw,
+  Season,
 } from '@/lib/types/outfit'
 import { Tables } from '@/lib/types/supabase'
 import { Label, Style } from '@/lib/types/eureka'
@@ -63,6 +64,7 @@ export default function EditOutfitSetForm({
   styles,
   labels,
   abilities,
+  seasons,
   outfitCategories,
   initialDrafts = [],
   initialGlowupEvolutionOrder = '',
@@ -75,6 +77,7 @@ export default function EditOutfitSetForm({
   styles: Style[]
   labels: Label[]
   abilities: Ability[]
+  seasons: Season[]
   outfitCategories: OutfitCategory[]
   initialDrafts?: EvolutionDraft[]
   initialGlowupEvolutionOrder?: number | ''
@@ -93,6 +96,7 @@ export default function EditOutfitSetForm({
     [outfitSet.label, outfitSet.label_2].filter(Boolean) as string[]
   )
   const [ability, setAbility] = useState(outfitSet.ability ?? '')
+  const [season, setSeason] = useState(outfitSet.seasons ?? '')
   const [editSlug, setEditSlug] = useState(false)
   const [evolutionDrafts, setEvolutionDrafts] = useState<EvolutionDraft[]>(initialDrafts)
   const [glowupEvolutionOrder, setGlowupEvolutionOrder] = useState<number | ''>(
@@ -307,6 +311,24 @@ export default function EditOutfitSetForm({
             {abilities.map((a) => (
               <MenuItem key={a.slug} value={a.slug}>
                 {a.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl>
+          <InputLabel>Season</InputLabel>
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Season"
+            name="seasons"
+            value={season}
+            onChange={(e) => setSeason(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {seasons.map((s) => (
+              <MenuItem key={s.slug} value={s.slug}>
+                {s.title}
               </MenuItem>
             ))}
           </Select>

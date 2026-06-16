@@ -5,6 +5,7 @@ import EditOutfitSetForm from './edit-outfit-set-form'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getAbilities } from '@/hooks/data/abilities'
+import { getSeasons } from '@/hooks/data/seasons'
 import { getEvolutionsBySet } from '@/hooks/data/evolutions'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { EvolutionDraft } from '@/lib/types/outfit'
@@ -34,18 +35,19 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
     .select(
-      'id, slug, title, description, rarity, style, label, label_2, ability, image_url, alt_image_url, glowup_evolution, updated_at'
+      'id, slug, title, description, rarity, style, label, label_2, ability, seasons, image_url, alt_image_url, glowup_evolution, updated_at'
     )
     .eq('slug', slug)
     .single()
 
   if (!outfitSet || !outfitSet.slug) notFound()
 
-  const [styles, labels, abilities, evolutions, outfitCategories, carouselRows] = await Promise.all(
-    [
+  const [styles, labels, abilities, seasons, evolutions, outfitCategories, carouselRows] =
+    await Promise.all([
       getStyles(),
       getLabels(),
       getAbilities(),
+      getSeasons(),
       getEvolutionsBySet(outfitSet.slug),
       getOutfitCategories(),
       supabase
@@ -54,8 +56,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
         .eq('outfit_set', outfitSet.slug)
         .order('sort_order', { ascending: true })
         .then((r) => r.data ?? []),
-    ]
-  )
+    ])
 
   const { data: variantRows } = await supabase
     .from('outfit_variants')
@@ -93,6 +94,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
       labels={labels}
       outfitCategories={outfitCategories}
       outfitSet={outfitSet}
+      seasons={seasons}
       styles={styles}
     />
   )

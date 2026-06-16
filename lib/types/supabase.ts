@@ -389,6 +389,27 @@ export type Database = {
         }
         Relationships: []
       }
+      locations: {
+        Row: {
+          created_at: string
+          id: number
+          slug: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          slug: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
       obtained_eureka: {
         Row: {
           category: string | null
@@ -558,6 +579,7 @@ export type Database = {
           label: string | null
           label_2: string | null
           rarity: number
+          seasons: string | null
           slug: string
           style: string | null
           title: string
@@ -574,6 +596,7 @@ export type Database = {
           label?: string | null
           label_2?: string | null
           rarity: number
+          seasons?: string | null
           slug: string
           style?: string | null
           title: string
@@ -590,6 +613,7 @@ export type Database = {
           label?: string | null
           label_2?: string | null
           rarity?: number
+          seasons?: string | null
           slug?: string
           style?: string | null
           title?: string
@@ -622,6 +646,13 @@ export type Database = {
             columns: ["label"]
             isOneToOne: false
             referencedRelation: "labels"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outfit_sets_seasons_fkey"
+            columns: ["seasons"]
+            isOneToOne: false
+            referencedRelation: "seasons"
             referencedColumns: ["slug"]
           },
           {
@@ -736,6 +767,38 @@ export type Database = {
         }
         Relationships: []
       }
+      seasons: {
+        Row: {
+          created_at: string
+          id: number
+          location: string | null
+          slug: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          location?: string | null
+          slug: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          location?: string | null
+          slug?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seasons_location_fkey"
+            columns: ["location"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       styles: {
         Row: {
           created_at: string
@@ -791,7 +854,15 @@ export type Database = {
           title?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trials_location_fkey"
+            columns: ["location"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       user_preferences: {
         Row: {

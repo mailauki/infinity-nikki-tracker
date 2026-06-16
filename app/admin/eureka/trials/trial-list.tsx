@@ -3,6 +3,7 @@
 import { Trial } from '@/lib/types/eureka'
 import ListRow from '../../list-row'
 import { navLinksData } from '@/lib/nav-links'
+import { toTitle } from '@/lib/utils'
 import { AdminList } from '../../admin-list'
 
 interface TrialListProps {
@@ -30,7 +31,7 @@ export default function TrialList({
           image_url={trial.image_url ?? undefined}
           list="admin/eureka/trials"
           slug={trial.slug ?? undefined}
-          subheader={trial.location ?? ''}
+          subheader={trial.location ? toTitle(trial.location) : ''}
           title={trial.title}
           updated_at={trial.updated_at}
         />

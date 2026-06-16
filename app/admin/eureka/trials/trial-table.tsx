@@ -7,6 +7,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toSlug } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { Trial } from '@/lib/types/eureka'
+import { Location } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
 import { updateTrial } from '@/app/admin/actions'
 import {
@@ -21,11 +22,12 @@ type Row = Trial
 
 interface TrialTableProps {
   rows: Row[]
+  locations: Location[]
 }
 
 const LOCKED_FIELDS = ['slug', 'image_url', 'updated_at']
 
-export function TrialTable({ rows: initialRows }: TrialTableProps) {
+export function TrialTable({ rows: initialRows, locations }: TrialTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const {
     rowModesModel,
@@ -131,7 +133,7 @@ export function TrialTable({ rows: initialRows }: TrialTableProps) {
       width: 120,
       editable: true,
       type: 'singleSelect',
-      valueOptions: ['Wishfield', 'Itzaland'],
+      valueOptions: locations.map((l) => ({ value: l.slug, label: l.title })),
     },
     {
       field: 'description',

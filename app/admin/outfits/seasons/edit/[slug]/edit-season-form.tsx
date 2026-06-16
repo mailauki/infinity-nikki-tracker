@@ -13,46 +13,53 @@ import {
   TextField,
 } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
-import { toSlug } from '@/lib/utils'
 import { Location } from '@/lib/types/outfit'
-import { useFormConfig } from '@/app/admin/form-context'
-import { addTrial } from '../actions'
-import { navLinksData } from '@/lib/nav-links'
 import { MENU_PROPS } from '@/lib/types/props'
+import { useFormConfig } from '@/app/admin/form-context'
+import { editSeason } from './actions'
+import { navLinksData } from '@/lib/nav-links'
 
-const FORM_ID = 'add-trial'
+type SeasonRow = {
+  slug: string
+  title: string
+  location: string | null
+}
 
-export default function AddTrialForm({ locations }: { locations: Location[] }) {
+const FORM_ID = 'edit-season'
+
+export default function EditSeasonForm({
+  season,
+  locations,
+  back,
+}: {
+  season: SeasonRow
+  locations: Location[]
+  back: string
+}) {
   const { setFormConfig } = useFormConfig()
-  const [title, setTitle] = useState('')
-  const [slug, setSlug] = useState('')
+  const [title, setTitle] = useState(season.title)
+  const [slug, setSlug] = useState(season.slug)
+  const [location, setLocation] = useState(season.location ?? '')
   const [editSlug, setEditSlug] = useState(false)
 
-  const [state, action, pending] = useActionState(addTrial, null)
+  const boundAction = editSeason.bind(null, season.slug, back)
+  const [state, action, pending] = useActionState(boundAction, null)
 
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.admin.eureka.trials.list,
+      backUrl: back ?? navLinksData.admin.outfits.seasons.list,
       pending,
-      showAddAnother: true,
+      showUpdateOnly: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending])
+  }, [pending, back])
 
   useEffect(() => {
-    if (state && 'addAnother' in state) {
+    if (state && 'savedTitle' in state && !('error' in state)) {
       setFormConfig({ savedTitle: state.savedTitle })
-      setTitle('')
-      setSlug('')
-      setEditSlug(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  function handleTitleChange(value: string) {
-    setTitle(value)
-    if (!editSlug) setSlug(toSlug(value))
-  }
 
   return (
     <form action={action} id={FORM_ID}>
@@ -64,14 +71,14 @@ export default function AddTrialForm({ locations }: { locations: Location[] }) {
           label="Title"
           name="title"
           value={title}
-          onChange={(e) => handleTitleChange(e.target.value)}
+          onChange={(e) => setTitle(e.target.value)}
         />
 
         <input name="slug" type="hidden" value={slug} />
         <TextField
           required
           disabled={!editSlug}
-          helperText="Auto-generated from name — edit if needed"
+          helperText="Edit with caution — changing the slug will break any outfit sets referencing this season"
           label="Slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },
@@ -89,13 +96,15 @@ export default function AddTrialForm({ locations }: { locations: Location[] }) {
           onChange={(e) => setSlug(e.target.value)}
         />
 
-        <TextField label="Realm" name="realm" />
-
-        <TextField multiline label="Description" minRows={3} name="description" />
-
         <FormControl>
           <InputLabel>Location</InputLabel>
-          <Select MenuProps={MENU_PROPS} defaultValue="" label="Location" name="location">
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Location"
+            name="location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          >
             <MenuItem value="">—</MenuItem>
             {locations.map((l) => (
               <MenuItem key={l.slug} value={l.slug}>

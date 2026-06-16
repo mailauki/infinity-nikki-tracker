@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import EditTrialForm from './edit-trial-form'
 import { getTrialRaw } from '@/hooks/data/admin/trials'
+import { getLocations } from '@/hooks/data/locations'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -21,10 +22,10 @@ export default async function EditTrialPage({ params }: { params: Promise<{ slug
 
 async function EditTrial({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const trial = await getTrialRaw(slug)
+  const [trial, locations] = await Promise.all([getTrialRaw(slug), getLocations()])
   if (!trial) notFound()
 
   const back = '/admin/eureka/trials'
 
-  return <EditTrialForm back={back} trial={trial} />
+  return <EditTrialForm back={back} locations={locations} trial={trial} />
 }
