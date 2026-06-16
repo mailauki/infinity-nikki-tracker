@@ -2,7 +2,9 @@ import { Tables } from './supabase'
 
 export type Ability = Pick<Tables<'abilities'>, 'slug' | 'title' | 'image_url'>
 
-export type Season = Pick<Tables<'seasons'>, 'slug' | 'title'>
+export type Season = Pick<Tables<'seasons'>, 'slug' | 'title' | 'location'>
+
+export type Location = Pick<Tables<'locations'>, 'slug' | 'title'>
 
 export type OutfitCategory = Pick<Tables<'outfit_categories'>, 'slug' | 'title' | 'part'>
 

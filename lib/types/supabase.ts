@@ -389,6 +389,27 @@ export type Database = {
         }
         Relationships: []
       }
+      locations: {
+        Row: {
+          created_at: string
+          id: number
+          slug: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          slug: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
       obtained_eureka: {
         Row: {
           category: string | null
@@ -557,7 +578,6 @@ export type Database = {
           image_url: string | null
           label: string | null
           label_2: string | null
-          location: string | null
           rarity: number
           seasons: string | null
           slug: string
@@ -575,7 +595,6 @@ export type Database = {
           image_url?: string | null
           label?: string | null
           label_2?: string | null
-          location?: string | null
           rarity: number
           seasons?: string | null
           slug: string
@@ -593,7 +612,6 @@ export type Database = {
           image_url?: string | null
           label?: string | null
           label_2?: string | null
-          location?: string | null
           rarity?: number
           seasons?: string | null
           slug?: string
@@ -753,22 +771,33 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          location: string | null
           slug: string
           title: string
         }
         Insert: {
           created_at?: string
           id?: number
+          location?: string | null
           slug: string
           title: string
         }
         Update: {
           created_at?: string
           id?: number
+          location?: string | null
           slug?: string
           title?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "seasons_location_fkey"
+            columns: ["location"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       styles: {
         Row: {
@@ -825,7 +854,15 @@ export type Database = {
           title?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trials_location_fkey"
+            columns: ["location"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       user_preferences: {
         Row: {

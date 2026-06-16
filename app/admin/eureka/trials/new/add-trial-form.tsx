@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
 import { toSlug } from '@/lib/utils'
+import { Location } from '@/lib/types/outfit'
 import { useFormConfig } from '@/app/admin/form-context'
 import { addTrial } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
@@ -21,7 +22,7 @@ import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'add-trial'
 
-export default function AddTrialForm() {
+export default function AddTrialForm({ locations }: { locations: Location[] }) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
@@ -96,8 +97,11 @@ export default function AddTrialForm() {
           <InputLabel>Location</InputLabel>
           <Select MenuProps={MENU_PROPS} defaultValue="" label="Location" name="location">
             <MenuItem value="">—</MenuItem>
-            <MenuItem value="Wishfield">Wishfield</MenuItem>
-            <MenuItem value="Itzaland">Itzaland</MenuItem>
+            {locations.map((l) => (
+              <MenuItem key={l.slug} value={l.slug}>
+                {l.title}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Stack>

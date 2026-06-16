@@ -1,8 +1,20 @@
 'use client'
 
 import { useActionState, useEffect, useState } from 'react'
-import { Alert, IconButton, InputAdornment, Stack, TextField } from '@mui/material'
+import {
+  Alert,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+} from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
+import { Location } from '@/lib/types/outfit'
+import { MENU_PROPS } from '@/lib/types/props'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editSeason } from './actions'
 import { navLinksData } from '@/lib/nav-links'
@@ -10,14 +22,24 @@ import { navLinksData } from '@/lib/nav-links'
 type SeasonRow = {
   slug: string
   title: string
+  location: string | null
 }
 
 const FORM_ID = 'edit-season'
 
-export default function EditSeasonForm({ season, back }: { season: SeasonRow; back: string }) {
+export default function EditSeasonForm({
+  season,
+  locations,
+  back,
+}: {
+  season: SeasonRow
+  locations: Location[]
+  back: string
+}) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState(season.title)
   const [slug, setSlug] = useState(season.slug)
+  const [location, setLocation] = useState(season.location ?? '')
   const [editSlug, setEditSlug] = useState(false)
 
   const boundAction = editSeason.bind(null, season.slug, back)
@@ -73,6 +95,24 @@ export default function EditSeasonForm({ season, back }: { season: SeasonRow; ba
           value={slug}
           onChange={(e) => setSlug(e.target.value)}
         />
+
+        <FormControl>
+          <InputLabel>Location</InputLabel>
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Location"
+            name="location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {locations.map((l) => (
+              <MenuItem key={l.slug} value={l.slug}>
+                {l.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
       </Stack>
     </form>
   )
