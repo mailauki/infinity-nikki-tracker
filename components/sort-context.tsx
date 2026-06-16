@@ -10,14 +10,14 @@ export type OutfitSortOrder = 'rarity_asc' | 'rarity_desc' | 'progress_asc' | 'p
 interface SortContextValue {
   sortOrder: SortOrder
   toggleSort: () => void
-  outfitSortOrder: OutfitSortOrder
-  setOutfitSortOrder: (order: OutfitSortOrder) => void
+  outfitSortOrder: OutfitSortOrder | null
+  setOutfitSortOrder: (order: OutfitSortOrder | null) => void
 }
 
 export const SortContext = createContext<SortContextValue>({
   sortOrder: 'new',
   toggleSort: () => {},
-  outfitSortOrder: 'rarity_desc',
+  outfitSortOrder: null,
   setOutfitSortOrder: () => {},
 })
 
@@ -31,7 +31,7 @@ export function SortProvider({
   defaultOrder?: SortOrder
 }) {
   const [sortOrder, setSortOrder] = useState<SortOrder>(defaultOrder)
-  const [outfitSortOrder, setOutfitSortOrder] = useState<OutfitSortOrder>('rarity_desc')
+  const [outfitSortOrder, setOutfitSortOrder] = useState<OutfitSortOrder | null>(null)
   const [, startTransition] = useTransition()
 
   // Hydrate from the saved preference for logged-in users.
