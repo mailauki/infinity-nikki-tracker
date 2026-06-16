@@ -10,8 +10,14 @@
 --   4. Restore the FK (now backed by the unique constraint on slug)
 
 -- abilities -----------------------------------------------------------------
-alter table public.abilities
-  add constraint abilities_slug_key unique (slug);
+-- unique(slug) is now declared inline in 20260601000004 so the FKs are valid on
+-- a clean rebuild. Guard the add so this migration still applies on databases
+-- where 20260601000004 ran before that constraint existed (the constraint is
+-- absent there) and is a no-op on a fresh rebuild (already present).
+do $$ begin
+  alter table public.abilities add constraint abilities_slug_key unique (slug);
+exception when duplicate_table or duplicate_object then null;
+end $$;
 
 alter table public.outfit_sets
   drop constraint outfit_sets_ability_fkey;
@@ -27,8 +33,10 @@ alter table public.outfit_sets
     foreign key (ability) references public.abilities (slug) on update cascade;
 
 -- outfit_categories ---------------------------------------------------------
-alter table public.outfit_categories
-  add constraint outfit_categories_slug_key unique (slug);
+do $$ begin
+  alter table public.outfit_categories add constraint outfit_categories_slug_key unique (slug);
+exception when duplicate_table or duplicate_object then null;
+end $$;
 
 alter table public.outfit_variants
   drop constraint outfit_variants_outfit_category_fkey;
@@ -44,8 +52,10 @@ alter table public.outfit_variants
     foreign key (outfit_category) references public.outfit_categories (slug) on update cascade;
 
 -- evolutions ----------------------------------------------------------------
-alter table public.evolutions
-  add constraint evolutions_slug_key unique (slug);
+do $$ begin
+  alter table public.evolutions add constraint evolutions_slug_key unique (slug);
+exception when duplicate_table or duplicate_object then null;
+end $$;
 
 alter table public.outfit_variants
   drop constraint outfit_variants_evolution_fkey;
