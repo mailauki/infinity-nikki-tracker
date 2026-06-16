@@ -1,12 +1,10 @@
 'use client'
 
-import { useState } from 'react'
 import IconButton from '@mui/material/IconButton'
-import { Divider, ListSubheader, Menu, MenuItem, Tooltip } from '@mui/material'
-import { Check, Edit, EditOff, Sort, SwitchLeft, SwitchRight } from '@mui/icons-material'
+import { Tooltip } from '@mui/material'
+import { Edit, EditOff, SwitchLeft, SwitchRight } from '@mui/icons-material'
 import { useProfileEdit } from '@/app/profile/profile-context'
-import { useSortOrder, OutfitSortOrder } from '@/components/sort-context'
-import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useSortOrder, SortAxis } from '@/components/sort-context'
 
 export function ProfileEditButton() {
   const context = useProfileEdit()
@@ -22,110 +20,27 @@ export function ProfileEditButton() {
   )
 }
 
+// Direction labels per axis. `desc` is the first ("default") direction for each.
+const DIR_LABELS: Record<SortAxis, { desc: string; asc: string }> = {
+  date: { desc: 'New to Old', asc: 'Old to New' },
+  rarity: { desc: 'High to Low', asc: 'Low to High' },
+  progress: { desc: 'High to Low', asc: 'Low to High' },
+  title: { desc: 'Z to A', asc: 'A to Z' },
+}
+
 export function SortButton() {
-  const { sortOrder, toggleSort } = useSortOrder()
-  const label = sortOrder === 'new' ? 'New to Old' : 'Old to New'
+  const { sortAxis, sortDir, toggleSortDir } = useSortOrder()
+  const label = DIR_LABELS[sortAxis][sortDir]
 
   return (
     <Tooltip title={`Sort: ${label}`}>
-      <IconButton aria-label={`Sort ${label}`} onClick={toggleSort}>
-        {sortOrder === 'new' ? (
+      <IconButton aria-label={`Sort ${label}`} onClick={toggleSortDir}>
+        {sortDir === 'desc' ? (
           <SwitchRight sx={{ rotate: '90deg' }} />
         ) : (
           <SwitchLeft sx={{ rotate: '90deg' }} />
         )}
       </IconButton>
     </Tooltip>
-  )
-}
-
-const OUTFIT_SORT_OPTIONS: { value: OutfitSortOrder; label: string; group: string }[] = [
-  { value: 'rarity_desc', label: 'High to Low', group: 'Quality' },
-  { value: 'rarity_asc', label: 'Low to High', group: 'Quality' },
-  { value: 'progress_desc', label: 'High to Low', group: 'Progress' },
-  { value: 'progress_asc', label: 'Low to High', group: 'Progress' },
-]
-
-export function OutfitSortMenu() {
-  const { outfitSortOrder, setOutfitSortOrder } = useSortOrder()
-  const { isLoggedIn } = useOutfitData()
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-
-  const open = Boolean(anchorEl)
-
-  // Progress sort is meaningless without obtained data; clear it when logged out.
-  const effectiveSortOrder =
-    !isLoggedIn && (outfitSortOrder === 'progress_asc' || outfitSortOrder === 'progress_desc')
-      ? null
-      : outfitSortOrder
-
-  function handleSelect(value: OutfitSortOrder) {
-    // Clicking the active option clears the override (back to default sort button).
-    setOutfitSortOrder(effectiveSortOrder === value ? null : value)
-    setAnchorEl(null)
-  }
-
-  const isOverrideActive = effectiveSortOrder !== null
-
-  return (
-    <>
-      <Tooltip title={isOverrideActive ? 'Sort override active' : 'Sort by...'}>
-        <IconButton
-          aria-label="Sort options"
-          color={isOverrideActive ? 'primary' : 'default'}
-          onClick={(e) => setAnchorEl(e.currentTarget)}
-        >
-          <Sort />
-        </IconButton>
-      </Tooltip>
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        slotProps={{ list: { dense: true } }}
-        onClose={() => setAnchorEl(null)}
-      >
-        <ListSubheader disableSticky sx={{ lineHeight: '32px' }}>
-          Quality
-        </ListSubheader>
-        {OUTFIT_SORT_OPTIONS.filter((o) => o.group === 'Quality').map((option) => (
-          <MenuItem
-            key={option.value}
-            selected={effectiveSortOrder === option.value}
-            sx={{ gap: 1 }}
-            onClick={() => handleSelect(option.value)}
-          >
-            {effectiveSortOrder === option.value ? (
-              <Check fontSize="small" />
-            ) : (
-              <Check fontSize="small" sx={{ visibility: 'hidden' }} />
-            )}
-            {option.label}
-          </MenuItem>
-        ))}
-        {isLoggedIn && (
-          <>
-            <Divider />
-            <ListSubheader disableSticky sx={{ lineHeight: '32px' }}>
-              Progress
-            </ListSubheader>
-            {OUTFIT_SORT_OPTIONS.filter((o) => o.group === 'Progress').map((option) => (
-              <MenuItem
-                key={option.value}
-                selected={effectiveSortOrder === option.value}
-                sx={{ gap: 1 }}
-                onClick={() => handleSelect(option.value)}
-              >
-                {effectiveSortOrder === option.value ? (
-                  <Check fontSize="small" />
-                ) : (
-                  <Check fontSize="small" sx={{ visibility: 'hidden' }} />
-                )}
-                {option.label}
-              </MenuItem>
-            ))}
-          </>
-        )}
-      </Menu>
-    </>
   )
 }

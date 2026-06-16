@@ -95,6 +95,7 @@ export type UserPreferences = Pick<
   | 'outfit_image_mode'
   | 'outfit_density'
   | 'sort_order'
+  | 'outfit_sort_axis'
 >
 
 export type ColorTheme = 'default' | 'moonlight' | 'blossom' | 'forest'

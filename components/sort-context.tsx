@@ -2,24 +2,39 @@
 
 import { createContext, useContext, useEffect, useState, useTransition } from 'react'
 import { UserPreferences } from '@/lib/types/eureka'
-import { updateSortOrder } from '@/app/actions/preferences'
+import { updateSortDir, updateSortAxis } from '@/app/actions/preferences'
 
 export type SortOrder = 'new' | 'old'
-export type OutfitSortOrder = 'rarity_asc' | 'rarity_desc' | 'progress_asc' | 'progress_desc'
+export type SortAxis = 'date' | 'rarity' | 'progress' | 'title'
+export type SortDir = 'asc' | 'desc'
+
+// The persisted `sort_order` column predates the axis/direction split and stores
+// the date direction as 'new'/'old'. We treat `sortDir` as the unified direction
+// and map it to that legacy shape: desc = newest first ('new'), asc = oldest ('old').
+const dirToOrder = (dir: SortDir): SortOrder => (dir === 'desc' ? 'new' : 'old')
+const orderToDir = (order: SortOrder): SortDir => (order === 'new' ? 'desc' : 'asc')
 
 interface SortContextValue {
+  sortDir: SortDir
+  toggleSortDir: () => void
+  sortAxis: SortAxis
+  setSortAxis: (axis: SortAxis) => void
+  // Date-axis direction alias kept for the eureka/trials views and the settings
+  // "Default Sort" toggle, which only ever sort by date.
   sortOrder: SortOrder
   toggleSort: () => void
-  outfitSortOrder: OutfitSortOrder | null
-  setOutfitSortOrder: (order: OutfitSortOrder | null) => void
 }
 
 export const SortContext = createContext<SortContextValue>({
+  sortDir: 'desc',
+  toggleSortDir: () => {},
+  sortAxis: 'date',
+  setSortAxis: () => {},
   sortOrder: 'new',
   toggleSort: () => {},
-  outfitSortOrder: null,
-  setOutfitSortOrder: () => {},
 })
+
+const SORT_AXES: SortAxis[] = ['date', 'rarity', 'progress', 'title']
 
 export function SortProvider({
   children,
@@ -30,29 +45,50 @@ export function SortProvider({
   isLoggedIn?: boolean
   defaultOrder?: SortOrder
 }) {
-  const [sortOrder, setSortOrder] = useState<SortOrder>(defaultOrder)
-  const [outfitSortOrder, setOutfitSortOrder] = useState<OutfitSortOrder | null>(null)
+  const [sortDir, setSortDir] = useState<SortDir>(orderToDir(defaultOrder))
+  const [sortAxis, setSortAxisState] = useState<SortAxis>('date')
   const [, startTransition] = useTransition()
 
-  // Hydrate from the saved preference for logged-in users.
+  // Hydrate from saved preferences for logged-in users.
   useEffect(() => {
     if (!isLoggedIn) return
     fetch('/api/preferences')
       .then((r) => (r.ok ? (r.json() as Promise<UserPreferences>) : null))
       .then((prefs) => {
-        if (prefs?.sort_order) setSortOrder(prefs.sort_order as SortOrder)
+        if (!prefs) return
+        // Back-compat: accept legacy 'new'/'old' as well as 'asc'/'desc'.
+        const stored = prefs.sort_order
+        if (stored === 'new' || stored === 'old') setSortDir(orderToDir(stored))
+        else if (stored === 'asc' || stored === 'desc') setSortDir(stored)
+        if (prefs.outfit_sort_axis && SORT_AXES.includes(prefs.outfit_sort_axis as SortAxis)) {
+          setSortAxisState(prefs.outfit_sort_axis as SortAxis)
+        }
       })
       .catch(() => {})
   }, [isLoggedIn])
 
-  const toggleSort = () => {
-    const next = sortOrder === 'new' ? 'old' : 'new'
-    setSortOrder(next)
-    if (isLoggedIn) startTransition(() => updateSortOrder(next))
+  const toggleSortDir = () => {
+    const next: SortDir = sortDir === 'desc' ? 'asc' : 'desc'
+    setSortDir(next)
+    if (isLoggedIn) startTransition(() => updateSortDir(next))
+  }
+
+  const setSortAxis = (axis: SortAxis) => {
+    setSortAxisState(axis)
+    if (isLoggedIn) startTransition(() => updateSortAxis(axis))
   }
 
   return (
-    <SortContext.Provider value={{ sortOrder, toggleSort, outfitSortOrder, setOutfitSortOrder }}>
+    <SortContext.Provider
+      value={{
+        sortDir,
+        toggleSortDir,
+        sortAxis,
+        setSortAxis,
+        sortOrder: dirToOrder(sortDir),
+        toggleSort: toggleSortDir,
+      }}
+    >
       {children}
     </SortContext.Provider>
   )

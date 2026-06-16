@@ -884,6 +884,7 @@ export type Database = {
           outfit_obtained_filter: string | null
           outfit_rarity_filter: string | null
           outfit_set_filter: string | null
+          outfit_sort_axis: string | null
           show_by_color: boolean
           sort_order: string | null
           theme: string
@@ -909,6 +910,7 @@ export type Database = {
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
           outfit_set_filter?: string | null
+          outfit_sort_axis?: string | null
           show_by_color?: boolean
           sort_order?: string | null
           theme?: string
@@ -934,6 +936,7 @@ export type Database = {
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
           outfit_set_filter?: string | null
+          outfit_sort_axis?: string | null
           show_by_color?: boolean
           sort_order?: string | null
           theme?: string

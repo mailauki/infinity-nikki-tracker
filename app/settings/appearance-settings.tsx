@@ -17,7 +17,7 @@ import LightModeIcon from '@mui/icons-material/LightMode'
 import LockIcon from '@mui/icons-material/Lock'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useColorScheme } from '@mui/material/styles'
-import { updateTheme, updateColorTheme, updateSortOrder } from '@/app/actions/preferences'
+import { updateTheme, updateColorTheme, updateSortDir } from '@/app/actions/preferences'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '@/components/color-theme-context'
 import type { SortOrder } from '@/components/sort-context'
@@ -55,9 +55,9 @@ export default function AppearanceSettings({
         ) {
           setMode(saved as 'system' | 'light' | 'dark')
         }
-        if (prefs.sort_order === 'new' || prefs.sort_order === 'old') {
-          setSortOrder(prefs.sort_order)
-        }
+        // Accept both the legacy 'new'/'old' and the new 'asc'/'desc' shapes.
+        if (prefs.sort_order === 'new' || prefs.sort_order === 'desc') setSortOrder('new')
+        else if (prefs.sort_order === 'old' || prefs.sort_order === 'asc') setSortOrder('old')
       })
       .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,7 +65,8 @@ export default function AppearanceSettings({
 
   function handleSortChange(value: SortOrder) {
     setSortOrder(value)
-    startTransition(() => updateSortOrder(value))
+    // sort_order is the date direction: 'new' = newest first (desc), 'old' = asc.
+    startTransition(() => updateSortDir(value === 'new' ? 'desc' : 'asc'))
   }
 
   async function handleColorThemeChange(value: ColorTheme) {

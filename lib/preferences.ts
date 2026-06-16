@@ -21,6 +21,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   outfit_image_mode: 'image',
   outfit_density: 'standard',
   sort_order: 'new',
+  outfit_sort_axis: 'date',
 }
 
 export const DEFAULT_ADMIN_PREFERENCES: AdminPreferences = {
