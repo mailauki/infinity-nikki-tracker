@@ -62,7 +62,11 @@ export default function FilterOutfits() {
     onBatchToggleObtained,
   } = useOutfitData()
   const { density } = useOutfitImageMode()
-  const { sortOrder } = useSortOrder()
+  const { outfitSortOrder: rawOutfitSortOrder } = useSortOrder()
+  const outfitSortOrder =
+    !isLoggedIn && (rawOutfitSortOrder === 'progress_asc' || rawOutfitSortOrder === 'progress_desc')
+      ? ('rarity_desc' as const)
+      : rawOutfitSortOrder
 
   const {
     selectedOutfitSet,
@@ -168,7 +172,22 @@ export default function FilterOutfits() {
       return { ...set, outfit_variants: culledVariants }
     })
     .filter((set) => set.outfit_variants.length > 0)
-    .sort((a, b) => (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!))
+    .sort((a, b) => {
+      const progress = (s: (typeof filteredSets)[number]) => {
+        const total = s.outfit_variants.length
+        return total === 0 ? 0 : s.outfit_variants.filter((v) => v.obtained).length / total
+      }
+      switch (outfitSortOrder) {
+        case 'rarity_asc':
+          return a.rarity - b.rarity || a.id! - b.id!
+        case 'rarity_desc':
+          return b.rarity - a.rarity || a.id! - b.id!
+        case 'progress_asc':
+          return progress(a) - progress(b) || a.id! - b.id!
+        case 'progress_desc':
+          return progress(b) - progress(a) || a.id! - b.id!
+      }
+    })
 
   function renderSetVariants(set: (typeof filteredSets)[number]) {
     return set.outfit_variants.map((variant) => (

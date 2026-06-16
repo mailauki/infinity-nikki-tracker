@@ -64,9 +64,9 @@ export default function OutfitEvolutionVariants({
           exclusive
           disabled={evolutions.length === 0}
           size="small"
+          sx={{ flexWrap: 'wrap' }}
           value={selected}
           onChange={(_, next) => onSelect(next)}
-          sx={{ flexWrap: 'wrap' }}
         >
           {[null, ...evolutions].map((evolution) => {
             const value = evolution?.slug ?? BASE

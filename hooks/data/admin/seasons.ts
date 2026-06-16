@@ -9,7 +9,7 @@ export async function getSeasonsRaw(): Promise<SeasonRaw[]> {
   const { data } = await supabase
     .from('seasons')
     .select('id, slug, title, location')
-    .order('title', { ascending: true })
+    .order('id', { ascending: true })
 
   return (data ?? []) as SeasonRaw[]
 }

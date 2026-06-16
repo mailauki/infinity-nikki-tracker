@@ -3,12 +3,18 @@
 import { Stack, Typography } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import FilterMenu from '@/components/filter/filter-menu'
-import { SortButton } from '@/components/navbar/appbar-actions'
+import { OutfitSortMenu } from '@/components/navbar/appbar-actions'
 import { isEvolutionVisible, matchesObtainedFilter } from '@/hooks/outfit'
 import { useOutfitData } from './outfit-context'
 import { useOutfitImageMode } from './outfit-image-mode-context'
 
-export default function OutfitToolBar() {
+export default function OutfitToolBar({
+  showFilters = true,
+  baseEvolutionOnly = false,
+}: {
+  showFilters?: boolean
+  baseEvolutionOnly?: boolean
+}) {
   const { outfitSets, groupBySet, hideEvolutions, hideGlowups, filters } = useOutfitData()
   const { density } = useOutfitImageMode()
 
@@ -33,21 +39,23 @@ export default function OutfitToolBar() {
       // Group-level obtained state is judged over the FULL group (after only the
       // structural filters), so the category filter narrows display without
       // affecting completion — mirrors filter-outfits.
-      const scoped = set.outfit_variants
-        .filter((v) =>
-          isEvolutionVisible({
-            evolutionSlug: v.evolution,
-            baseSlug: baseEvoSlug,
-            glowupSlug: set.glowup_evolution,
-            hideEvolutions,
-            hideGlowups,
-          })
-        )
-        .filter(
-          (v) =>
-            !selectedEvolution ||
-            (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
-        )
+      const scoped = baseEvolutionOnly
+        ? set.outfit_variants.filter((v) => v.evolution === baseEvoSlug)
+        : set.outfit_variants
+            .filter((v) =>
+              isEvolutionVisible({
+                evolutionSlug: v.evolution,
+                baseSlug: baseEvoSlug,
+                glowupSlug: set.glowup_evolution,
+                hideEvolutions,
+                hideGlowups,
+              })
+            )
+            .filter(
+              (v) =>
+                !selectedEvolution ||
+                (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
+            )
       const inMatchingGroup =
         groupLevelObtained && selectedObtainedFilter
           ? scoped.filter((v) => {
@@ -101,8 +109,8 @@ export default function OutfitToolBar() {
           Showing: {resultsCount} results
         </Typography>
         <Stack direction="row" spacing={1}>
-          <SortButton />
-          <FilterMenu />
+          <OutfitSortMenu />
+          {showFilters && <FilterMenu />}
         </Stack>
       </Stack>
     </NavBarToolbar>

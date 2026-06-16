@@ -21,10 +21,10 @@ export const navLinksData: {
       url: '/outfits',
       image: '/icons/outfits.png',
       items: [
-				{
-					title: 'Seasons',
-					url: '/outfits/seasons'
-				},
+        {
+          title: 'Seasons',
+          url: '/outfits/seasons',
+        },
         // {
         //   title: 'Sets',
         //   url: '/outfits/sets',

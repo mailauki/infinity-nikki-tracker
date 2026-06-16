@@ -1,10 +1,12 @@
 'use client'
 
+import { useState } from 'react'
 import IconButton from '@mui/material/IconButton'
-import { Tooltip } from '@mui/material'
-import { Edit, EditOff, SwitchLeft, SwitchRight } from '@mui/icons-material'
+import { Divider, ListSubheader, Menu, MenuItem, Tooltip } from '@mui/material'
+import { Check, Edit, EditOff, Sort, SwitchLeft, SwitchRight } from '@mui/icons-material'
 import { useProfileEdit } from '@/app/profile/profile-context'
-import { useSortOrder } from '@/components/sort-context'
+import { useSortOrder, OutfitSortOrder } from '@/components/sort-context'
+import { useOutfitData } from '@/components/outfits/outfit-context'
 
 export function ProfileEditButton() {
   const context = useProfileEdit()
@@ -34,5 +36,89 @@ export function SortButton() {
         )}
       </IconButton>
     </Tooltip>
+  )
+}
+
+const OUTFIT_SORT_OPTIONS: { value: OutfitSortOrder; label: string; group: string }[] = [
+  { value: 'rarity_desc', label: 'High to Low', group: 'Quality' },
+  { value: 'rarity_asc', label: 'Low to High', group: 'Quality' },
+  { value: 'progress_desc', label: 'High to Low', group: 'Progress' },
+  { value: 'progress_asc', label: 'Low to High', group: 'Progress' },
+]
+
+export function OutfitSortMenu() {
+  const { outfitSortOrder, setOutfitSortOrder } = useSortOrder()
+  const { isLoggedIn } = useOutfitData()
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+
+  const open = Boolean(anchorEl)
+
+  function handleSelect(value: OutfitSortOrder) {
+    setOutfitSortOrder(value)
+    setAnchorEl(null)
+  }
+
+  // If the user logs out while a progress sort is active, fall back to rarity.
+  const effectiveSortOrder =
+    !isLoggedIn && (outfitSortOrder === 'progress_asc' || outfitSortOrder === 'progress_desc')
+      ? 'rarity_desc'
+      : outfitSortOrder
+
+  return (
+    <>
+      <Tooltip title="Sort">
+        <IconButton aria-label="Sort options" onClick={(e) => setAnchorEl(e.currentTarget)}>
+          <Sort />
+        </IconButton>
+      </Tooltip>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        slotProps={{ list: { dense: true } }}
+        onClose={() => setAnchorEl(null)}
+      >
+        <ListSubheader disableSticky sx={{ lineHeight: '32px' }}>
+          Quality
+        </ListSubheader>
+        {OUTFIT_SORT_OPTIONS.filter((o) => o.group === 'Quality').map((option) => (
+          <MenuItem
+            key={option.value}
+            selected={effectiveSortOrder === option.value}
+            sx={{ gap: 1 }}
+            onClick={() => handleSelect(option.value)}
+          >
+            {effectiveSortOrder === option.value ? (
+              <Check fontSize="small" />
+            ) : (
+              <Check fontSize="small" sx={{ visibility: 'hidden' }} />
+            )}
+            {option.label}
+          </MenuItem>
+        ))}
+        {isLoggedIn && (
+          <>
+            <Divider />
+            <ListSubheader disableSticky sx={{ lineHeight: '32px' }}>
+              Progress
+            </ListSubheader>
+            {OUTFIT_SORT_OPTIONS.filter((o) => o.group === 'Progress').map((option) => (
+              <MenuItem
+                key={option.value}
+                selected={effectiveSortOrder === option.value}
+                sx={{ gap: 1 }}
+                onClick={() => handleSelect(option.value)}
+              >
+                {effectiveSortOrder === option.value ? (
+                  <Check fontSize="small" />
+                ) : (
+                  <Check fontSize="small" sx={{ visibility: 'hidden' }} />
+                )}
+                {option.label}
+              </MenuItem>
+            ))}
+          </>
+        )}
+      </Menu>
+    </>
   )
 }

@@ -14,9 +14,9 @@ export default function EvolutionToggle({
     <Tooltip title="Hide Evolutions">
       <ToggleButton
         selected={hideEvolutions}
+        size="small"
         value="hideEvolutions"
         onChange={onHideEvolutionsChange}
-        size="small"
       >
         <ToggleIcon
           isSelected={hideEvolutions}

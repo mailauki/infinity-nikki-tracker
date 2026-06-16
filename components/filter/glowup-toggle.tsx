@@ -14,10 +14,10 @@ export default function GlowupToggle({
     <Tooltip title="Hide Glowups">
       <ToggleButton
         selected={hideGlowups}
+        size="small"
         sx={{ py: 0.75 }}
         value="hideGlowups"
         onChange={onHideGlowupsChange}
-        size="small"
       >
         <ToggleIcon
           isSelected={hideGlowups}
