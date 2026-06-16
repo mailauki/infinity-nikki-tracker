@@ -8,7 +8,7 @@ export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 
 export type CategoryFilter = 'head' | 'hands' | 'feet'
 
-export type ObtainedFilter = 'missing' | 'in-progress' | 'obtained'
+export type ObtainedFilter = 'missing' | 'obtained'
 
 type Enumerate<N extends number, Acc extends number[] = []> = Acc['length'] extends N
   ? Acc[number]

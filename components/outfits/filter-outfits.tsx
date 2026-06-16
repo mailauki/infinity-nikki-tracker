@@ -110,11 +110,10 @@ export default function FilterOutfits() {
 
   // When grouped, each set renders as one card/header per evolution group (base
   // plus each evolution), so the obtained filter is applied at the GROUP level:
-  // 'missing' = no variant in the group obtained, 'in-progress' = some, and
-  // 'obtained' = all. Variants are kept intact so each group shows true progress.
-  // When not grouped, the flat views render one card per variant, so the filter
-  // is applied per variant (missing/obtained only — 'in-progress' is inapplicable
-  // and the toggle does not offer it there).
+  // 'obtained' = every variant in the group obtained, 'missing' = any group that
+  // is not fully complete (none or only some obtained). Variants are kept intact
+  // so each group shows true progress. When not grouped, the flat views render
+  // one card per variant, so the filter is applied per variant.
   const groupLevelObtained = groupBySet
 
   const filteredSets = outfitSets
@@ -143,7 +142,7 @@ export default function FilterOutfits() {
             (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
         )
       // Group-level obtained filter: drop whole evolution groups whose full-group
-      // state doesn't match the selected missing / in-progress / obtained state.
+      // state doesn't match the selected missing / obtained state.
       const inMatchingGroup =
         groupLevelObtained && selectedObtainedFilter
           ? scopedVariants.filter((v) => {

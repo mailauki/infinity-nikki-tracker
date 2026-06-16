@@ -21,7 +21,7 @@ export default function OutfitToolBar() {
   } = filters
 
   // Mirror filter-outfits: grouped mode applies the obtained filter per evolution
-  // group (missing / in-progress / obtained); ungrouped applies it per variant.
+  // group (missing / obtained); ungrouped applies it per variant.
   const groupLevelObtained = groupBySet
 
   const filtered = outfitSets

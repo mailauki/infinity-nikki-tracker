@@ -3,9 +3,8 @@
 import { ObtainedFilter } from '@/lib/types/props'
 import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 
-const LABELS: Record<ObtainedFilter, string> = {
+const LABELS: Partial<Record<ObtainedFilter, string>> = {
   missing: 'Missing',
-  'in-progress': 'In Progress',
   obtained: 'Obtained',
 }
 

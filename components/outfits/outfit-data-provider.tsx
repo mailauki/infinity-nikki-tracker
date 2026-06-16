@@ -81,7 +81,13 @@ export default function OutfitDataProvider({
             ? Number(prefs.outfit_evolution_filter)
             : null,
           selectedRarity: prefs.outfit_rarity_filter ? Number(prefs.outfit_rarity_filter) : null,
-          selectedObtainedFilter: (prefs.outfit_obtained_filter as ObtainedFilter) ?? null,
+          // 'in-progress' is no longer a selectable filter; normalize any legacy
+          // persisted value to null so it doesn't apply an invisible filter.
+          selectedObtainedFilter:
+            prefs.outfit_obtained_filter === 'missing' ||
+            prefs.outfit_obtained_filter === 'obtained'
+              ? (prefs.outfit_obtained_filter as ObtainedFilter)
+              : null,
         })
         setPrefsLoaded(true)
       })
@@ -93,11 +99,6 @@ export default function OutfitDataProvider({
   const handleGroupBySetChange = () => {
     const next = !groupBySet
     setGroupBySet(next)
-    // 'in-progress' is a group-level state; clear it when leaving grouped mode so
-    // an inapplicable filter doesn't linger in the flat (per-variant) views.
-    if (!next && filters.selectedObtainedFilter === 'in-progress') {
-      setFilters((prev) => ({ ...prev, selectedObtainedFilter: null }))
-    }
     if (isLoggedIn) startTransition(() => updateOutfitGroupBySet(next))
   }
 

@@ -171,11 +171,6 @@ export default function FilterMenu() {
             {outfitLoggedIn && (
               <ListItem>
                 <ObtainedToggle
-                  options={
-                    outfitGroupBySet
-                      ? ['missing', 'in-progress', 'obtained']
-                      : ['missing', 'obtained']
-                  }
                   selectedObtainedFilter={selectedObtainedFilter}
                   onObtainedFilterChange={(_e, v) =>
                     onOutfitFiltersChange({ selectedObtainedFilter: v })
