@@ -66,7 +66,11 @@ export default function FilterOutfitsBySeason({ seasons }: { seasons: Season[] }
     onBatchToggleObtained,
   } = useOutfitData()
   const { density } = useOutfitImageMode()
-  const { outfitSortOrder } = useSortOrder()
+  const { outfitSortOrder: rawOutfitSortOrder } = useSortOrder()
+  const outfitSortOrder =
+    !isLoggedIn && (rawOutfitSortOrder === 'progress_asc' || rawOutfitSortOrder === 'progress_desc')
+      ? ('rarity_desc' as const)
+      : rawOutfitSortOrder
 
   const { selectedOutfitSet, selectedOutfitCategory, selectedObtainedFilter, selectedRarity } =
     filters
