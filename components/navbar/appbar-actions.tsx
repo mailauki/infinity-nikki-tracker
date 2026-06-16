@@ -53,21 +53,28 @@ export function OutfitSortMenu() {
 
   const open = Boolean(anchorEl)
 
+  // Progress sort is meaningless without obtained data; clear it when logged out.
+  const effectiveSortOrder =
+    !isLoggedIn && (outfitSortOrder === 'progress_asc' || outfitSortOrder === 'progress_desc')
+      ? null
+      : outfitSortOrder
+
   function handleSelect(value: OutfitSortOrder) {
-    setOutfitSortOrder(value)
+    // Clicking the active option clears the override (back to default sort button).
+    setOutfitSortOrder(effectiveSortOrder === value ? null : value)
     setAnchorEl(null)
   }
 
-  // If the user logs out while a progress sort is active, fall back to rarity.
-  const effectiveSortOrder =
-    !isLoggedIn && (outfitSortOrder === 'progress_asc' || outfitSortOrder === 'progress_desc')
-      ? 'rarity_desc'
-      : outfitSortOrder
+  const isOverrideActive = effectiveSortOrder !== null
 
   return (
     <>
-      <Tooltip title="Sort">
-        <IconButton aria-label="Sort options" onClick={(e) => setAnchorEl(e.currentTarget)}>
+      <Tooltip title={isOverrideActive ? 'Sort override active' : 'Sort by...'}>
+        <IconButton
+          aria-label="Sort options"
+          color={isOverrideActive ? 'primary' : 'default'}
+          onClick={(e) => setAnchorEl(e.currentTarget)}
+        >
           <Sort />
         </IconButton>
       </Tooltip>

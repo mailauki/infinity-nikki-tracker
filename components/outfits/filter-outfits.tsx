@@ -62,11 +62,16 @@ export default function FilterOutfits() {
     onBatchToggleObtained,
   } = useOutfitData()
   const { density } = useOutfitImageMode()
-  const { outfitSortOrder: rawOutfitSortOrder } = useSortOrder()
+  const { sortOrder, outfitSortOrder: rawOutfitSortOrder } = useSortOrder()
+  // If a quality/progress override is active use it; otherwise fall back to the
+  // shared new/old sort button. Clear progress overrides when logged out.
   const outfitSortOrder =
-    !isLoggedIn && (rawOutfitSortOrder === 'progress_asc' || rawOutfitSortOrder === 'progress_desc')
-      ? ('rarity_desc' as const)
-      : rawOutfitSortOrder
+    rawOutfitSortOrder === null
+      ? sortOrder
+      : !isLoggedIn &&
+          (rawOutfitSortOrder === 'progress_asc' || rawOutfitSortOrder === 'progress_desc')
+        ? sortOrder
+        : rawOutfitSortOrder
 
   const {
     selectedOutfitSet,
@@ -186,6 +191,10 @@ export default function FilterOutfits() {
           return progress(a) - progress(b) || a.id! - b.id!
         case 'progress_desc':
           return progress(b) - progress(a) || a.id! - b.id!
+        case 'old':
+          return a.id! - b.id!
+        default:
+          return b.id! - a.id!
       }
     })
 
