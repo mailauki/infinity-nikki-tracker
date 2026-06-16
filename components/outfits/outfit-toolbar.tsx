@@ -3,7 +3,7 @@
 import { Stack, Typography } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import FilterMenu from '@/components/filter/filter-menu'
-import { SortButton } from '@/components/navbar/appbar-actions'
+import { OutfitSortMenu } from '@/components/navbar/appbar-actions'
 import { isEvolutionVisible, matchesObtainedFilter } from '@/hooks/outfit'
 import { useOutfitData } from './outfit-context'
 import { useOutfitImageMode } from './outfit-image-mode-context'
@@ -109,7 +109,7 @@ export default function OutfitToolBar({
           Showing: {resultsCount} results
         </Typography>
         <Stack direction="row" spacing={1}>
-          <SortButton />
+          <OutfitSortMenu />
           {showFilters && <FilterMenu />}
         </Stack>
       </Stack>

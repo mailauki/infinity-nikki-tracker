@@ -5,15 +5,20 @@ import { UserPreferences } from '@/lib/types/eureka'
 import { updateSortOrder } from '@/app/actions/preferences'
 
 export type SortOrder = 'new' | 'old'
+export type OutfitSortOrder = 'rarity_asc' | 'rarity_desc' | 'progress_asc' | 'progress_desc'
 
 interface SortContextValue {
   sortOrder: SortOrder
   toggleSort: () => void
+  outfitSortOrder: OutfitSortOrder
+  setOutfitSortOrder: (order: OutfitSortOrder) => void
 }
 
 export const SortContext = createContext<SortContextValue>({
   sortOrder: 'new',
   toggleSort: () => {},
+  outfitSortOrder: 'rarity_desc',
+  setOutfitSortOrder: () => {},
 })
 
 export function SortProvider({
@@ -26,6 +31,7 @@ export function SortProvider({
   defaultOrder?: SortOrder
 }) {
   const [sortOrder, setSortOrder] = useState<SortOrder>(defaultOrder)
+  const [outfitSortOrder, setOutfitSortOrder] = useState<OutfitSortOrder>('rarity_desc')
   const [, startTransition] = useTransition()
 
   // Hydrate from the saved preference for logged-in users.
@@ -45,7 +51,11 @@ export function SortProvider({
     if (isLoggedIn) startTransition(() => updateSortOrder(next))
   }
 
-  return <SortContext.Provider value={{ sortOrder, toggleSort }}>{children}</SortContext.Provider>
+  return (
+    <SortContext.Provider value={{ sortOrder, toggleSort, outfitSortOrder, setOutfitSortOrder }}>
+      {children}
+    </SortContext.Provider>
+  )
 }
 
 export function useSortOrder() {

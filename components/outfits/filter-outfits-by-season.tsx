@@ -66,14 +66,10 @@ export default function FilterOutfitsBySeason({ seasons }: { seasons: Season[] }
     onBatchToggleObtained,
   } = useOutfitData()
   const { density } = useOutfitImageMode()
-  const { sortOrder } = useSortOrder()
+  const { outfitSortOrder } = useSortOrder()
 
-  const {
-    selectedOutfitSet,
-    selectedOutfitCategory,
-    selectedObtainedFilter,
-    selectedRarity,
-  } = filters
+  const { selectedOutfitSet, selectedOutfitCategory, selectedObtainedFilter, selectedRarity } =
+    filters
 
   if (isError) {
     return (
@@ -139,7 +135,22 @@ export default function FilterOutfitsBySeason({ seasons }: { seasons: Season[] }
       return { ...set, outfit_variants: culledVariants }
     })
     .filter((set) => set.outfit_variants.length > 0)
-    .sort((a, b) => (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!))
+    .sort((a, b) => {
+      const progress = (s: (typeof filteredSets)[number]) => {
+        const total = s.outfit_variants.length
+        return total === 0 ? 0 : s.outfit_variants.filter((v) => v.obtained).length / total
+      }
+      switch (outfitSortOrder) {
+        case 'rarity_asc':
+          return a.rarity - b.rarity || a.id! - b.id!
+        case 'rarity_desc':
+          return b.rarity - a.rarity || a.id! - b.id!
+        case 'progress_asc':
+          return progress(a) - progress(b) || a.id! - b.id!
+        case 'progress_desc':
+          return progress(b) - progress(a) || a.id! - b.id!
+      }
+    })
 
   // Group the filtered sets by their season slug. Seasoned groups are ordered by
   // season id (ascending); unseasoned sets trail under "Unassigned".
