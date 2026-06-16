@@ -3,17 +3,13 @@
 import { OutfitSet } from '@/lib/types/outfit'
 import { Category } from '@mui/icons-material'
 import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  ListItem,
+  Autocomplete,
+  Box,
   ListItemAvatar,
   ListItemText,
-  SelectChangeEvent,
+  TextField,
 } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
-import { MENU_PROPS } from '@/lib/types/props'
 
 export default function OutfitSelect({
   outfitSets,
@@ -22,35 +18,36 @@ export default function OutfitSelect({
 }: {
   outfitSets: OutfitSet[]
   selectedOutfitSet: string | null
-  onOutfitSetChange: (event: SelectChangeEvent) => void
+  onOutfitSetChange: (slug: string | null) => void
 }) {
+  const value = outfitSets.find((set) => set.slug === selectedOutfitSet) ?? null
+
   return (
-    <FormControl sx={{ flex: 1, whiteSpace: 'nowrap' }}>
-      <InputLabel id="outfit-set-select-label">Outfit Set</InputLabel>
-      <Select
-        MenuProps={MENU_PROPS}
-        aria-label="Outfit Set"
-        id="outfit-set-select"
-        label="Outfit Set"
-        labelId="outfit-set-select-label"
-        sx={{ '& .MuiOutlinedInput-input': { py: selectedOutfitSet ? 1 : undefined } }}
-        value={selectedOutfitSet ?? ''}
-        onChange={onOutfitSetChange}
-      >
-        <MenuItem value="">—</MenuItem>
-        {outfitSets.map((set) => (
-          <MenuItem key={set.slug} value={set.slug}>
-            <ListItem disablePadding component="div">
-              <ListItemAvatar>
-                <LazyImage alt={set.title} size="sm" src={set.image_url!}>
-                  <Category fontSize="inherit" />
-                </LazyImage>
-              </ListItemAvatar>
-              <ListItemText>{set.title}</ListItemText>
-            </ListItem>
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <Autocomplete
+      autoHighlight
+      fullWidth
+      getOptionLabel={(option) => option.title}
+      isOptionEqualToValue={(option, val) => option.slug === val.slug}
+      options={outfitSets}
+      renderInput={(params) => (
+        <TextField {...params} aria-label="Outfit Set" label="Outfit Set" />
+      )}
+      renderOption={(props, option) => {
+        const { key, ...optionProps } = props
+        return (
+          <Box key={key} component="li" {...optionProps} sx={{ gap: 1 }}>
+            <ListItemAvatar sx={{ minWidth: 'auto' }}>
+              <LazyImage alt={option.title} size="sm" src={option.image_url!}>
+                <Category fontSize="inherit" />
+              </LazyImage>
+            </ListItemAvatar>
+            <ListItemText>{option.title}</ListItemText>
+          </Box>
+        )
+      }}
+      sx={{ flex: 1, whiteSpace: 'nowrap' }}
+      value={value}
+      onChange={(_e, newValue) => onOutfitSetChange(newValue?.slug ?? null)}
+    />
   )
 }
