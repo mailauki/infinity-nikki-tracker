@@ -17,7 +17,7 @@ import { navLinksData } from '@/lib/nav-links'
 import { MenuOpen, Menu } from '@mui/icons-material'
 import { useNavDrawer } from './navbar-toolbar-context'
 
-const drawerWidth = 240
+export const NAV_DRAWER_WIDTH = 240
 
 const openedMixin = (theme: Theme): CSSObject => ({
   height: 'calc(100vh - 40px)',
@@ -25,7 +25,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
   borderRadius: '30px',
   margin: 20,
   marginRight: 0,
-  width: drawerWidth,
+  width: NAV_DRAWER_WIDTH,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
@@ -48,7 +48,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
 })
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(({ theme }) => ({
-  width: drawerWidth,
+  width: NAV_DRAWER_WIDTH,
   flexShrink: 0,
   whiteSpace: 'nowrap',
   boxSizing: 'border-box',
@@ -105,7 +105,7 @@ function NavDrawer() {
             position: 'fixed',
             top: 24,
             left: 18,
-            zIndex: theme.zIndex.drawer + 1,
+            zIndex: theme.zIndex.drawer - 1,
             display: { xs: 'flex', sm: 'none' },
           }}
           onClick={() => setDrawerOpen(true)}
@@ -119,6 +119,7 @@ function NavDrawer() {
         slotProps={{
           root: {
             keepMounted: true,
+            disableScrollLock: true,
           },
         }}
         sx={{

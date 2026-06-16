@@ -1,11 +1,20 @@
 'use client'
 
 import * as React from 'react'
-import { useNavDrawer } from './navbar-toolbar-context'
-import { AppBar, Toolbar } from '@mui/material'
+import { usePathname } from 'next/navigation'
+import { useNavDrawer, useFilterDrawer } from './navbar-toolbar-context'
+import { AppBar, Toolbar, useTheme } from '@mui/material'
+import { FILTER_DRAWER_WIDTH, FILTER_PAGES } from '@/components/filter/filter-menu'
+import { NAV_DRAWER_WIDTH } from './nav-drawer'
 
 export default function NavBarToolbar({ children }: { children: React.ReactNode }) {
   const { drawerOpen } = useNavDrawer()
+  const { filterOpen } = useFilterDrawer()
+  const pathname = usePathname()
+	const theme = useTheme()
+  const filterPushed = filterOpen && FILTER_PAGES.includes(pathname)
+  const filterInset = filterPushed ? `calc(${FILTER_DRAWER_WIDTH}px + 21px)` : '0px'
+	const navInset = drawerOpen ? `calc(${NAV_DRAWER_WIDTH}px) - 21px` : `calc(${theme.spacing(10)} + 21px)`
   return (
     <AppBar
       color="transparent"
@@ -14,13 +23,14 @@ export default function NavBarToolbar({ children }: { children: React.ReactNode 
       sx={{
         borderColor: 'transparent',
         pointerEvents: 'none',
-        ml: { xs: 0, sm: drawerOpen ? '260px' : 'calc(var(--mui-spacing) * 10 + 21px)' },
+        ml: { xs: 0, sm: navInset },
+        mr: { xs: 0, sm: filterInset },
         width: {
           xs: '100%',
-          sm: drawerOpen ? 'calc(100% - 260px)' : 'calc(100% - (var(--mui-spacing) * 10 + 21px))',
+          sm: `calc(100% - ${navInset} - ${filterInset})`,
         },
         transition: (theme) =>
-          theme.transitions.create(['margin-left', 'width'], {
+          theme.transitions.create(['margin-left', 'margin-right', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: drawerOpen
               ? theme.transitions.duration.enteringScreen
