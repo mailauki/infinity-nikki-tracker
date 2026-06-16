@@ -1,8 +1,19 @@
 -- supabase/migrations/20260603000001_evolutions_per_outfit_set.sql
 -- Bind evolutions to a single outfit set (title = set title, subtitle = per-evo label)
---
--- NOTE: outfit_set column and FK already exist on the remote DB (added manually).
--- This migration completes the remaining changes.
+
+-- 0. Ensure the outfit_set column + FK exist ---------------------------------
+-- These were originally added by hand on the remote DB, so this migration was
+-- not self-contained and failed a clean rebuild. Create them idempotently:
+-- a no-op on the existing remote DB, and the missing setup on a fresh rebuild.
+alter table public.evolutions
+  add column if not exists outfit_set text;
+
+do $$ begin
+  alter table public.evolutions
+    add constraint evolutions_outfit_set_fkey
+      foreign key (outfit_set) references public.outfit_sets (slug) on update cascade;
+exception when duplicate_object then null;
+end $$;
 
 -- 1. Finish evolutions table changes -----------------------------------------
 
