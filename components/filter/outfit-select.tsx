@@ -2,13 +2,7 @@
 
 import { OutfitSet } from '@/lib/types/outfit'
 import { Category } from '@mui/icons-material'
-import {
-  Autocomplete,
-  Box,
-  ListItemAvatar,
-  ListItemText,
-  TextField,
-} from '@mui/material'
+import { Autocomplete, Box, ListItemAvatar, ListItemText, TextField } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
 
 export default function OutfitSelect({
@@ -29,9 +23,7 @@ export default function OutfitSelect({
       getOptionLabel={(option) => option.title}
       isOptionEqualToValue={(option, val) => option.slug === val.slug}
       options={outfitSets}
-      renderInput={(params) => (
-        <TextField {...params} aria-label="Outfit Set" label="Outfit Set" />
-      )}
+      renderInput={(params) => <TextField {...params} aria-label="Outfit Set" label="Outfit Set" />}
       renderOption={(props, option) => {
         const { key, ...optionProps } = props
         return (

@@ -13,8 +13,8 @@ export default function RarityToggle({
       <Typography
         component={FormLabel}
         id="rating-buttons-group-label"
-        variant="overline"
         sx={{ fontSize: 'overline.fontSize', pb: 0.5 }}
+        variant="overline"
       >
         Rarity
       </Typography>

@@ -149,9 +149,7 @@ export default function FilterMenu() {
               <OutfitSelect
                 outfitSets={outfitSets}
                 selectedOutfitSet={selectedOutfitSet}
-                onOutfitSetChange={(slug) =>
-                  onOutfitFiltersChange({ selectedOutfitSet: slug })
-                }
+                onOutfitSetChange={(slug) => onOutfitFiltersChange({ selectedOutfitSet: slug })}
               />
             </ListItem>
             <ListItem>

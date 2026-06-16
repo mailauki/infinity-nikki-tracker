@@ -126,9 +126,7 @@ export default function EditOutfitSetForm({
   )
   const [variantTitles, setVariantTitles] = useState<Record<string, string>>(
     Object.fromEntries(
-      initialVariants
-        .filter((v) => v.slug && isBaseVariant(v))
-        .map((v) => [v.slug, v.title ?? ''])
+      initialVariants.filter((v) => v.slug && isBaseVariant(v)).map((v) => [v.slug, v.title ?? ''])
     )
   )
   const [variantDescriptions, setVariantDescriptions] = useState<Record<string, string>>(

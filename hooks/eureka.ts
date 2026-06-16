@@ -30,10 +30,7 @@ export function isVariantObtained(variant: EurekaVariant, obtainedKeys: Set<stri
 // Replaces the per-render updateEurekaSet().map() that did O(variants × obtained)
 // `.find` calls and re-allocated the whole tree on every render; callers memoize
 // this on [eurekaSets, obtainedKeys] so it only recomputes when data changes.
-export function applyObtainedKeys(
-  eurekaSets: EurekaSet[],
-  obtainedKeys: Set<string>
-): EurekaSet[] {
+export function applyObtainedKeys(eurekaSets: EurekaSet[], obtainedKeys: Set<string>): EurekaSet[] {
   return eurekaSets.map((set) => ({
     ...set,
     eureka_variants: set.eureka_variants.map((variant) => ({

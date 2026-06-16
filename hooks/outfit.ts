@@ -16,8 +16,7 @@ export function matchesObtainedFilter(
   filter: ObtainedFilter | null
 ): boolean {
   if (!filter) return true
-  const fullyObtained =
-    variants.length > 0 && variants.every((v) => v.obtained === true)
+  const fullyObtained = variants.length > 0 && variants.every((v) => v.obtained === true)
   return filter === 'obtained' ? fullyObtained : !fullyObtained
 }
 

@@ -36,13 +36,7 @@ interface OutfitSetTableProps {
   outfitCategories: OutfitCategory[]
 }
 
-const LOCKED_FIELDS = [
-  'slug',
-  'variant_images',
-  'evolutions',
-  'glowup_evolution',
-  'updated_at',
-]
+const LOCKED_FIELDS = ['slug', 'variant_images', 'evolutions', 'glowup_evolution', 'updated_at']
 
 function LockedCell({ children, href }: { children: React.ReactNode; href: string }) {
   return (
