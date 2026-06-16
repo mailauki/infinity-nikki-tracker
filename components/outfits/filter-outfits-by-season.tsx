@@ -8,9 +8,9 @@ import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
 import { GRID_COLUMNS } from '@/lib/types/props'
-import { isEvolutionVisible, matchesObtainedFilter } from '@/hooks/outfit'
+import { matchesObtainedFilter } from '@/hooks/outfit'
 import { toTitle } from '@/lib/utils'
-import { OutfitSet } from '@/lib/types/outfit'
+import { OutfitSet, Season } from '@/lib/types/outfit'
 import OutfitVariantCard from './outfit-variant-card'
 import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
@@ -54,7 +54,7 @@ function VariantCardSkeleton() {
   )
 }
 
-export default function FilterOutfitsBySeason() {
+export default function FilterOutfitsBySeason({ seasons }: { seasons: Season[] }) {
   const {
     outfitSets,
     isLoggedIn,
@@ -62,8 +62,6 @@ export default function FilterOutfitsBySeason() {
     isError,
     isObtainedError,
     groupBySet,
-    hideEvolutions,
-    hideGlowups,
     filters,
     onBatchToggleObtained,
   } = useOutfitData()
@@ -73,7 +71,6 @@ export default function FilterOutfitsBySeason() {
   const {
     selectedOutfitSet,
     selectedOutfitCategory,
-    selectedEvolution,
     selectedObtainedFilter,
     selectedRarity,
   } = filters
@@ -118,23 +115,8 @@ export default function FilterOutfitsBySeason() {
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => {
-      const orderBySlug = new Map(set.evolutions.map((e) => [e.slug, e.order]))
       const baseEvoSlug = `${set.slug}-base`
-      const scopedVariants = set.outfit_variants
-        .filter((v) =>
-          isEvolutionVisible({
-            evolutionSlug: v.evolution,
-            baseSlug: baseEvoSlug,
-            glowupSlug: set.glowup_evolution,
-            hideEvolutions,
-            hideGlowups,
-          })
-        )
-        .filter(
-          (v) =>
-            !selectedEvolution ||
-            (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
-        )
+      const scopedVariants = set.outfit_variants.filter((v) => v.evolution === baseEvoSlug)
       const inMatchingGroup =
         groupLevelObtained && selectedObtainedFilter
           ? scopedVariants.filter((v) => {
@@ -159,8 +141,10 @@ export default function FilterOutfitsBySeason() {
     .filter((set) => set.outfit_variants.length > 0)
     .sort((a, b) => (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!))
 
-  // Group the filtered sets by their season slug. Seasoned groups come first in
-  // alphabetical order by title; unseasoned sets trail under "Unassigned".
+  // Group the filtered sets by their season slug. Seasoned groups are ordered by
+  // season id (ascending); unseasoned sets trail under "Unassigned".
+  const seasonIdMap = new Map(seasons.map((s) => [s.slug, s.id]))
+
   const groups = new Map<string, typeof filteredSets>()
   for (const set of filteredSets) {
     const key = set.seasons ?? ''
@@ -178,7 +162,9 @@ export default function FilterOutfitsBySeason() {
     .sort((a, b) => {
       if (!a.slug) return 1
       if (!b.slug) return -1
-      return a.label.localeCompare(b.label)
+      const aId = seasonIdMap.get(a.slug) ?? Infinity
+      const bId = seasonIdMap.get(b.slug) ?? Infinity
+      return aId - bId
     })
 
   function renderSetVariants(set: OutfitSet) {
@@ -193,43 +179,30 @@ export default function FilterOutfitsBySeason() {
   }
 
   function renderStandardCards(set: OutfitSet) {
-    // Base variants carry the concrete {set}-base slug end-to-end.
     const baseEvoSlug = `${set.slug}-base`
-    return [null, ...set.evolutions].map((evolution) => {
-      const evolutionKey = evolution?.slug ?? baseEvoSlug
-      const variants = set.outfit_variants.filter((v) => v.evolution === evolutionKey)
-      if (variants.length === 0) return null
-      const allObtained = variants.every((v) => v.obtained === true)
-      return (
-        <OutfitSetCard
-          key={`${set.id}-${evolutionKey}`}
-          evolution={evolution}
-          isLoggedIn={isLoggedIn}
-          isMissingFilter={selectedObtainedFilter === 'missing'}
-          obtained={allObtained}
-          set={set}
-          shouldHide={
-            !isEvolutionVisible({
-              evolutionSlug: evolutionKey,
-              baseSlug: baseEvoSlug,
-              glowupSlug: set.glowup_evolution,
-              hideEvolutions,
-              hideGlowups,
-            })
-          }
-          onToggle={() => {
-            const toToggle = variants
-              .filter((v) => v.obtained === allObtained)
-              .map((v) => ({
-                outfit_set: v.outfit_set!,
-                outfit_category: v.outfit_category!,
-                evolution: v.evolution,
-              }))
-            onBatchToggleObtained(toToggle, !allObtained)
-          }}
-        />
-      )
-    })
+    const variants = set.outfit_variants.filter((v) => v.evolution === baseEvoSlug)
+    if (variants.length === 0) return []
+    const allObtained = variants.every((v) => v.obtained === true)
+    return [
+      <OutfitSetCard
+        key={`${set.id}-${baseEvoSlug}`}
+        evolution={null}
+        isLoggedIn={isLoggedIn}
+        isMissingFilter={selectedObtainedFilter === 'missing'}
+        obtained={allObtained}
+        set={set}
+        onToggle={() => {
+          const toToggle = variants
+            .filter((v) => v.obtained === allObtained)
+            .map((v) => ({
+              outfit_set: v.outfit_set!,
+              outfit_category: v.outfit_category!,
+              evolution: v.evolution,
+            }))
+          onBatchToggleObtained(toToggle, !allObtained)
+        }}
+      />,
+    ]
   }
 
   return (
