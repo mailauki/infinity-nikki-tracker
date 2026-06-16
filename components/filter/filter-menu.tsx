@@ -34,6 +34,7 @@ import { useOutfitImageMode } from '../outfits/outfit-image-mode-context'
 import OutfitCategorySelect from './outfit-category-select'
 import EvolutionOrderToggle from './evolution-order-toggle'
 import GlowupToggle from './glowup-toggle'
+import SortAxisToggle from './sort-axis-toggle'
 
 const FILTER_PAGES = ['/eureka', '/outfits']
 
@@ -125,7 +126,7 @@ export default function FilterMenu() {
         <Drawer
           anchor="right"
           open={open}
-          sx={{ '& .MuiDrawer-paper': { width: 350 } }}
+          sx={{ '& .MuiDrawer-paper': { width: 400 } }}
           onClose={() => setOpen(false)}
         >
           <Toolbar sx={{ mb: 2 }} />
@@ -178,6 +179,9 @@ export default function FilterMenu() {
                   </Stack>
                 </Stack>
               </Stack>
+            </ListItem>
+            <ListItem>
+              <SortAxisToggle />
             </ListItem>
             {outfitLoggedIn && (
               <ListItem>

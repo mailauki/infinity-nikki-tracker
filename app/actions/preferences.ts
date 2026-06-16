@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getUserID } from '@/hooks/user'
 import type { OutfitImageMode, OutfitDensity } from '@/components/outfits/outfit-image-mode-context'
+import type { SortAxis, SortDir } from '@/components/sort-context'
 
 async function upsertUserPreference(updates: Record<string, boolean | string | null>) {
   const user_id = await getUserID()
@@ -89,6 +90,10 @@ export async function updateOutfitDensity(value: OutfitDensity) {
   await upsertUserPreference({ outfit_density: value })
 }
 
-export async function updateSortOrder(value: 'new' | 'old') {
+export async function updateSortDir(value: SortDir) {
   await upsertUserPreference({ sort_order: value })
+}
+
+export async function updateSortAxis(value: SortAxis) {
+  await upsertUserPreference({ outfit_sort_axis: value })
 }

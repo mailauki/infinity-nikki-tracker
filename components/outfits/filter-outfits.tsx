@@ -62,16 +62,9 @@ export default function FilterOutfits() {
     onBatchToggleObtained,
   } = useOutfitData()
   const { density } = useOutfitImageMode()
-  const { sortOrder, outfitSortOrder: rawOutfitSortOrder } = useSortOrder()
-  // If a quality/progress override is active use it; otherwise fall back to the
-  // shared new/old sort button. Clear progress overrides when logged out.
-  const outfitSortOrder =
-    rawOutfitSortOrder === null
-      ? sortOrder
-      : !isLoggedIn &&
-          (rawOutfitSortOrder === 'progress_asc' || rawOutfitSortOrder === 'progress_desc')
-        ? sortOrder
-        : rawOutfitSortOrder
+  const { sortAxis, sortDir } = useSortOrder()
+  // Progress sorting needs obtained data; fall back to date when logged out.
+  const axis = !isLoggedIn && sortAxis === 'progress' ? 'date' : sortAxis
 
   const {
     selectedOutfitSet,
@@ -182,20 +175,23 @@ export default function FilterOutfits() {
         const total = s.outfit_variants.length
         return total === 0 ? 0 : s.outfit_variants.filter((v) => v.obtained).length / total
       }
-      switch (outfitSortOrder) {
-        case 'rarity_asc':
-          return a.rarity - b.rarity || a.id! - b.id!
-        case 'rarity_desc':
-          return b.rarity - a.rarity || a.id! - b.id!
-        case 'progress_asc':
-          return progress(a) - progress(b) || a.id! - b.id!
-        case 'progress_desc':
-          return progress(b) - progress(a) || a.id! - b.id!
-        case 'old':
-          return a.id! - b.id!
+      let cmp: number
+      switch (axis) {
+        case 'rarity':
+          cmp = a.rarity - b.rarity
+          break
+        case 'progress':
+          cmp = progress(a) - progress(b)
+          break
+        case 'title':
+          cmp = a.title.localeCompare(b.title)
+          break
         default:
-          return b.id! - a.id!
+          cmp = a.id! - b.id!
       }
+      // `desc` is the default direction for date/rarity/progress (newest /
+      // highest first); for title, `asc` is A→Z. Stable tiebreak on id.
+      return (sortDir === 'asc' ? cmp : -cmp) || a.id! - b.id!
     })
 
   function renderSetVariants(set: (typeof filteredSets)[number]) {
