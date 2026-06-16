@@ -126,7 +126,7 @@ export default function FilterMenu() {
         <Drawer
           anchor="right"
           open={open}
-          sx={{ '& .MuiDrawer-paper': { width: 350 } }}
+          sx={{ '& .MuiDrawer-paper': { width: 400 } }}
           onClose={() => setOpen(false)}
         >
           <Toolbar sx={{ mb: 2 }} />
