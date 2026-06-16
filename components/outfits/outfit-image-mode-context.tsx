@@ -31,6 +31,7 @@ type OutfitImageModeContextValue = {
   cycleMode: () => void
   density: OutfitDensity
   setDensity: (density: OutfitDensity) => void
+  reset: () => void
 }
 
 // Defaults make the hook safe outside a provider (e.g. nested cards), where no
@@ -41,6 +42,7 @@ const OutfitImageModeContext = createContext<OutfitImageModeContextValue>({
   cycleMode: () => {},
   density: 'standard',
   setDensity: () => {},
+  reset: () => {},
 })
 
 export function OutfitImageModeProvider({
@@ -77,6 +79,19 @@ export function OutfitImageModeProvider({
     if (isLoggedIn) startTransition(() => updateOutfitDensity(next))
   }
 
+  // Restore both image mode and density to their defaults ('image' / 'standard'),
+  // persisting the reset for logged-in users. Used by the filter menu "Clear all".
+  const reset = () => {
+    setModeState('image')
+    setDensityState('standard')
+    if (isLoggedIn) {
+      startTransition(() => {
+        updateOutfitImageMode('image')
+        updateOutfitDensity('standard')
+      })
+    }
+  }
+
   const value = useMemo<OutfitImageModeContextValue>(
     () => ({
       mode,
@@ -88,6 +103,7 @@ export function OutfitImageModeProvider({
       },
       density,
       setDensity,
+      reset,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [mode, density, isLoggedIn]

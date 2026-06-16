@@ -78,7 +78,7 @@ export default function FilterMenu() {
     onClearFilters: onClearOutfitFilters,
   } = useOutfitData()
 
-  const { density } = useOutfitImageMode()
+  const { density, mode: imageMode, reset: resetImageMode } = useOutfitImageMode()
 
   const isOutfits = pathname.startsWith('/outfits')
 
@@ -93,12 +93,25 @@ export default function FilterMenu() {
       selectedRarity,
     } = outfitFilters
 
+    // "Clear all" resets every control in this drawer, so it should appear when
+    // any of them is non-default — the filters, the grouping/evolution toggles,
+    // or the density / image-mode controls.
     const hasActiveFilters =
       selectedOutfitSet ||
       selectedOutfitCategory.length > 0 ||
       selectedEvolution ||
       selectedObtainedFilter ||
-      selectedRarity
+      selectedRarity ||
+      !outfitGroupBySet ||
+      hideEvolutions ||
+      hideGlowups ||
+      density !== 'standard' ||
+      imageMode !== 'image'
+
+    const handleClearAll = () => {
+      onClearOutfitFilters()
+      resetImageMode()
+    }
 
     const availableOrders = [
       ...new Set(outfitSets.flatMap((s) => s.evolutions).map((e) => e.order)),
@@ -149,6 +162,12 @@ export default function FilterMenu() {
                   spacing={1}
                   sx={{ alignItems: 'center', justifyContent: 'space-between' }}
                 >
+                  <EvolutionOrderToggle
+                    availableOrders={availableOrders}
+                    disabled={hideEvolutions && hideGlowups}
+                    selectedEvolution={selectedEvolution}
+                    onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
+                  />
                   <Stack direction="row" spacing={1}>
                     <EvolutionToggle
                       hideEvolutions={hideEvolutions}
@@ -159,12 +178,6 @@ export default function FilterMenu() {
                       onHideGlowupsChange={onHideGlowupsChange}
                     />
                   </Stack>
-                  <EvolutionOrderToggle
-                    availableOrders={availableOrders}
-                    disabled={hideEvolutions && hideGlowups}
-                    selectedEvolution={selectedEvolution}
-                    onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
-                  />
                 </Stack>
               </Stack>
             </ListItem>
@@ -204,7 +217,7 @@ export default function FilterMenu() {
             <ListItem>
               <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
                 {hasActiveFilters && (
-                  <Button color="secondary" variant="outlined" onClick={onClearOutfitFilters}>
+                  <Button color="secondary" variant="outlined" onClick={handleClearAll}>
                     Clear all
                   </Button>
                 )}
@@ -252,12 +265,16 @@ export default function FilterMenu() {
     onFiltersChange({ selectedRarity: value })
   }
 
+  // "Clear all" resets every control in this drawer, so it should appear when
+  // any of them is non-default — the filters or the grouping toggles.
   const hasActiveFilters =
     selectedEurekaSet ||
     selectedCategory ||
     selectedObtainedFilter ||
     selectedColor ||
-    selectedRarity
+    selectedRarity ||
+    !groupBySet ||
+    showByColor
 
   return (
     <>

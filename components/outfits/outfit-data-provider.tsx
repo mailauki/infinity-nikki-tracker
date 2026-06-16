@@ -119,7 +119,21 @@ export default function OutfitDataProvider({
   }
 
   const handleClearFilters = () => {
+    // Reset every control in the outfit filter menu — the filters plus the
+    // grouping/evolution toggles — back to their defaults. The filters reset is
+    // persisted by the [filters] effect; the toggles are persisted here. (Density
+    // and image mode live in OutfitImageModeProvider and are reset separately.)
     setFilters(DEFAULT_OUTFIT_FILTERS)
+    setGroupBySet(DEFAULT_PREFERENCES.outfit_group_by_set)
+    setHideEvolutions(DEFAULT_PREFERENCES.outfit_hide_evolutions)
+    setHideGlowups(DEFAULT_PREFERENCES.outfit_hide_glowups)
+    if (isLoggedIn) {
+      startTransition(() => {
+        updateOutfitGroupBySet(DEFAULT_PREFERENCES.outfit_group_by_set)
+        updateOutfitHideEvolutions(DEFAULT_PREFERENCES.outfit_hide_evolutions)
+        updateOutfitHideGlowups(DEFAULT_PREFERENCES.outfit_hide_glowups)
+      })
+    }
   }
 
   const handleToggleObtained = async (

@@ -112,7 +112,18 @@ export default function EurekaDataProvider({
   }
 
   const handleClearFilters = () => {
+    // Reset every control in the eureka filter menu — the filters plus the
+    // group-by-set and show-by-color toggles — back to their defaults. The
+    // filters reset is persisted by the [filters] effect; the toggles here.
     setFilters(DEFAULT_FILTERS)
+    setGroupBySet(DEFAULT_PREFERENCES.group_by_set)
+    setShowByColor(DEFAULT_PREFERENCES.show_by_color)
+    if (isLoggedIn) {
+      startTransition(() => {
+        updateGroupBySet(DEFAULT_PREFERENCES.group_by_set)
+        updateShowByColor(DEFAULT_PREFERENCES.show_by_color)
+      })
+    }
   }
 
   const handleToggleObtained = async (eureka_set: string, category: string, color: string) => {
