@@ -1,7 +1,7 @@
 'use client'
 
 import { useAdminView } from '../../admin-view-context'
-import { Ability, OutfitCategory, OutfitSet } from '@/lib/types/outfit'
+import { Ability, OutfitCategory, OutfitSet, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import { OutfitSetTable } from './outfit-set-table'
 import OutfitSetList from './outfit-set-list'
@@ -12,12 +12,16 @@ export default function OutfitSetView({
   styles,
   labels,
   abilities,
+  seasons,
+  seasonCategories,
   outfitCategories,
 }: {
   outfitSets: OutfitSet[]
   styles: Style[]
   labels: Label[]
   abilities: Ability[]
+  seasons: Season[]
+  seasonCategories: SeasonCategory[]
   outfitCategories: OutfitCategory[]
 }) {
   const { view } = useAdminView()
@@ -29,6 +33,8 @@ export default function OutfitSetView({
         labels={labels}
         outfitCategories={outfitCategories}
         rows={outfitSets}
+        seasonCategories={seasonCategories}
+        seasons={seasons}
         styles={styles}
       />
     </TableContainer>

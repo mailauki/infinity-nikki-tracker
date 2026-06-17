@@ -6,6 +6,7 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getAbilities } from '@/hooks/data/abilities'
 import { getSeasons } from '@/hooks/data/seasons'
+import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getEvolutionsBySet } from '@/hooks/data/evolutions'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { EvolutionDraft } from '@/lib/types/outfit'
@@ -35,28 +36,37 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
     .select(
-      'id, slug, title, description, rarity, style, label, label_2, ability, seasons, image_url, alt_image_url, glowup_evolution, updated_at'
+      'id, slug, title, description, rarity, style, label, label_2, ability, seasons, season_category, image_url, alt_image_url, glowup_evolution, updated_at'
     )
     .eq('slug', slug)
     .single()
 
   if (!outfitSet || !outfitSet.slug) notFound()
 
-  const [styles, labels, abilities, seasons, evolutions, outfitCategories, carouselRows] =
-    await Promise.all([
-      getStyles(),
-      getLabels(),
-      getAbilities(),
-      getSeasons(),
-      getEvolutionsBySet(outfitSet.slug),
-      getOutfitCategories(),
-      supabase
-        .from('outfit_set_carousel_images')
-        .select('id, image_url, sort_order')
-        .eq('outfit_set', outfitSet.slug)
-        .order('sort_order', { ascending: true })
-        .then((r) => r.data ?? []),
-    ])
+  const [
+    styles,
+    labels,
+    abilities,
+    seasons,
+    seasonCategories,
+    evolutions,
+    outfitCategories,
+    carouselRows,
+  ] = await Promise.all([
+    getStyles(),
+    getLabels(),
+    getAbilities(),
+    getSeasons(),
+    getSeasonCategories(),
+    getEvolutionsBySet(outfitSet.slug),
+    getOutfitCategories(),
+    supabase
+      .from('outfit_set_carousel_images')
+      .select('id, image_url, sort_order')
+      .eq('outfit_set', outfitSet.slug)
+      .order('sort_order', { ascending: true })
+      .then((r) => r.data ?? []),
+  ])
 
   const { data: variantRows } = await supabase
     .from('outfit_variants')
@@ -94,6 +104,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
       labels={labels}
       outfitCategories={outfitCategories}
       outfitSet={outfitSet}
+      seasonCategories={seasonCategories}
       seasons={seasons}
       styles={styles}
     />

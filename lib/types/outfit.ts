@@ -4,6 +4,11 @@ export type Ability = Pick<Tables<'abilities'>, 'slug' | 'title' | 'image_url'>
 
 export type Season = Pick<Tables<'seasons'>, 'id' | 'slug' | 'title' | 'location'>
 
+export type SeasonCategory = Pick<
+  Tables<'season_categories'>,
+  'id' | 'slug' | 'title' | 'image_url' | 'description'
+>
+
 export type Location = Pick<Tables<'locations'>, 'slug' | 'title'>
 
 export type OutfitCategory = Pick<Tables<'outfit_categories'>, 'slug' | 'title' | 'part'>
@@ -57,6 +62,7 @@ export type OutfitSetRaw = Pick<
   | 'label_2'
   | 'ability'
   | 'seasons'
+  | 'season_category'
   | 'image_url'
   | 'alt_image_url'
   | 'glowup_evolution'

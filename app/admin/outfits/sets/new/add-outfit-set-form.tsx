@@ -23,7 +23,7 @@ import {
 } from '@mui/material'
 import { toSlug } from '@/lib/utils'
 import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
-import { Ability, EvolutionDraft, OutfitCategory, Season } from '@/lib/types/outfit'
+import { Ability, EvolutionDraft, OutfitCategory, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import RarityToggle from '@/components/filter/rarity-toggle'
 import { DRESS_SLUGS, SEPARATES_SLUGS } from '@/components/filter/outfit-category-select'
@@ -40,12 +40,14 @@ export default function AddOutfitSetForm({
   labels,
   abilities,
   seasons,
+  seasonCategories,
   outfitCategories,
 }: {
   styles: Style[]
   labels: Label[]
   abilities: Ability[]
   seasons: Season[]
+  seasonCategories: SeasonCategory[]
   outfitCategories: OutfitCategory[]
 }) {
   const { setFormConfig } = useFormConfig()
@@ -56,6 +58,7 @@ export default function AddOutfitSetForm({
   const [labelSelect, setLabelSelect] = useState<string[]>([])
   const [ability, setAbility] = useState('')
   const [season, setSeason] = useState('')
+  const [seasonCategory, setSeasonCategory] = useState('')
   const [description, setDescription] = useState('')
   const [evolutionDrafts, setEvolutionDrafts] = useState<EvolutionDraft[]>([])
   const [glowupEvolutionOrder, setGlowupEvolutionOrder] = useState<number | ''>('')
@@ -105,6 +108,7 @@ export default function AddOutfitSetForm({
       setLabelSelect([])
       setAbility('')
       setSeason('')
+      setSeasonCategory('')
       setDescription('')
       setEvolutionDrafts([])
       setGlowupEvolutionOrder('')
@@ -256,6 +260,24 @@ export default function AddOutfitSetForm({
             {seasons.map((s) => (
               <MenuItem key={s.slug} value={s.slug}>
                 {s.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl>
+          <InputLabel>Season Category</InputLabel>
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Season Category"
+            name="season_category"
+            value={seasonCategory}
+            onChange={(e) => setSeasonCategory(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {seasonCategories.map((sc) => (
+              <MenuItem key={sc.slug} value={sc.slug}>
+                {sc.title}
               </MenuItem>
             ))}
           </Select>

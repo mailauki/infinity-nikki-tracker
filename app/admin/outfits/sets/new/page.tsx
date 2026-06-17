@@ -4,6 +4,7 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getAbilities } from '@/hooks/data/abilities'
 import { getSeasons } from '@/hooks/data/seasons'
+import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
@@ -23,19 +24,22 @@ export default function NewOutfitSetPage() {
 }
 
 async function NewOutfitSet() {
-  const [styles, labels, abilities, seasons, outfitCategories] = await Promise.all([
-    getStyles(),
-    getLabels(),
-    getAbilities(),
-    getSeasons(),
-    getOutfitCategories(),
-  ])
+  const [styles, labels, abilities, seasons, seasonCategories, outfitCategories] =
+    await Promise.all([
+      getStyles(),
+      getLabels(),
+      getAbilities(),
+      getSeasons(),
+      getSeasonCategories(),
+      getOutfitCategories(),
+    ])
 
   return (
     <AddOutfitSetForm
       abilities={abilities}
       labels={labels}
       outfitCategories={outfitCategories}
+      seasonCategories={seasonCategories}
       seasons={seasons}
       styles={styles}
     />
