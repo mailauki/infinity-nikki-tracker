@@ -579,6 +579,7 @@ export type Database = {
           label: string | null
           label_2: string | null
           rarity: number
+          season_category: string | null
           seasons: string | null
           slug: string
           style: string | null
@@ -596,6 +597,7 @@ export type Database = {
           label?: string | null
           label_2?: string | null
           rarity: number
+          season_category?: string | null
           seasons?: string | null
           slug: string
           style?: string | null
@@ -613,6 +615,7 @@ export type Database = {
           label?: string | null
           label_2?: string | null
           rarity?: number
+          season_category?: string | null
           seasons?: string | null
           slug?: string
           style?: string | null
@@ -646,6 +649,13 @@ export type Database = {
             columns: ["label"]
             isOneToOne: false
             referencedRelation: "labels"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outfit_sets_season_category_fkey"
+            columns: ["season_category"]
+            isOneToOne: false
+            referencedRelation: "season_categories"
             referencedColumns: ["slug"]
           },
           {
