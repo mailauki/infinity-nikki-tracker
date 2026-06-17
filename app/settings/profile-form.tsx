@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { type User } from '@supabase/supabase-js'
 import AvatarUpload from './avatar-upload'
@@ -14,7 +14,7 @@ export default function ProfileForm({
   user: User | null
   isAdmin?: boolean
 }) {
-  const supabase = useRef(createClient()).current
+  const supabase = useMemo(() => createClient(), [])
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [uploading, setUploading] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -42,7 +42,7 @@ export default function ProfileForm({
         }
         setLoading(false)
       })
-  }, [user?.id])
+  }, [user, supabase])
 
   async function saveProfile(updates: {
     fullname: string | null

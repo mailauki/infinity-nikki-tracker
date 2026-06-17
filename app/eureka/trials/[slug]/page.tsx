@@ -8,7 +8,7 @@ import { getTrial } from '@/hooks/data/trials'
 import { getUserRole } from '@/hooks/user'
 import EurekaSetCard from '@/components/eureka/eureka-set-card'
 import LazyImage from '@/components/lazy-image'
-import { GRID_COLUMNS } from '@/lib/types/props'
+import { GRID_COLUMNS_CONTAINER, GRID_CONTAINER } from '@/lib/types/props'
 import SlugToolBar from '@/components/slug-toolbar'
 
 type Props = {
@@ -51,17 +51,19 @@ async function Trial({ slug }: { slug: string }) {
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <LazyImage image={trial.image_url!} kind="media" sx={{ height: 360 }} title={trial.title} />
         <Typography variant="body2">{trial.description}</Typography>
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: GRID_COLUMNS,
-            gap: { xs: 1, sm: 1.5, md: 2 },
-            py: 0,
-          }}
-        >
-          {trialSets.map((eurekaSet) => (
-            <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />
-          ))}
+        <Box sx={GRID_CONTAINER}>
+          <Box
+            sx={{
+              display: 'grid',
+              ...GRID_COLUMNS_CONTAINER,
+              gap: { xs: 1, sm: 1.5, md: 2 },
+              py: 0,
+            }}
+          >
+            {trialSets.map((eurekaSet) => (
+              <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />
+            ))}
+          </Box>
         </Box>
       </Stack>
     </>

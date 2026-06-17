@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   Box,
@@ -19,17 +19,15 @@ import { CarouselImage } from '@/lib/types/outfit'
 export default function CarouselImageUpload({
   slug,
   table,
-  foreignKeyField,
   images,
   onChange,
 }: {
   slug: string
   table: 'outfit_set_carousel_images' | 'evolution_carousel_images'
-  foreignKeyField: 'outfit_set' | 'evolution'
   images: CarouselImage[]
   onChange: (images: CarouselImage[]) => void
 }) {
-  const supabase = useRef(createClient()).current
+  const supabase = useMemo(() => createClient(), [])
   const [uploading, setUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 

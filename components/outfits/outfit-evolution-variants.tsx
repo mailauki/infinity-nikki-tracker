@@ -2,11 +2,9 @@
 
 import { Box, Stack, ToggleButton, ToggleButtonGroup, Toolbar } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
-import { percent } from '@/hooks/count-obtained'
 import ProgressChip from '@/components/progress-chip'
 import OutfitVariantCard from './outfit-variant-card'
 import { useOutfitData } from './outfit-context'
-import { AutoAwesome } from '@mui/icons-material'
 
 // Sentinel for the "Base" toggle, since the Base evolution has no slug.
 const BASE = 'base'
@@ -79,8 +77,8 @@ export default function OutfitEvolutionVariants({
             )
           })}
         </ToggleButtonGroup>
-
-        {isLoggedIn && <ProgressChip percentage={percent(obtained, total)} size="sm" />}
+				{/* {isLoggedIn && <ProgressChip obtained={obtained} size="sm" total={total} />} */}
+        {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant='parts' />}
       </Toolbar>
 
       <Box

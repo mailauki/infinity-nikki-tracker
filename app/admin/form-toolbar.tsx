@@ -16,7 +16,7 @@ export default function FormToolBar() {
       variant: 'success',
     })
     setFormConfig({ savedTitle: undefined })
-  }, [savedTitle])
+  }, [savedTitle, setFormConfig])
 
   if (!formId) return null
 

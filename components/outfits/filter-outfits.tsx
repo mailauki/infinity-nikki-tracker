@@ -6,24 +6,25 @@ import LoginAlert from '@/components/login-alert'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
-import { GRID_COLUMNS } from '@/lib/types/props'
+import { GRID_CONTAINER, OUTFIT_GRID_COLUMNS_CONTAINER } from '@/lib/types/props'
 import { isEvolutionVisible, matchesObtainedFilter } from '@/hooks/outfit'
 import OutfitVariantCard from './outfit-variant-card'
 import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
 
-// Shared responsive column track for both density grids.
-const OUTFIT_GRID_COLUMNS = {
-  xs: 'repeat(2, 1fr)',
-  sm: 'repeat(3, 1fr)',
-  md: 'repeat(4, 1fr)',
-  lg: 'repeat(6, 1fr)',
-  xl: 'repeat(8, 1fr)',
+// Column counts respond to the CONTENT width, not the viewport, so the grid
+// reflows when the filter panel opens and narrows the content area. Each grid is
+// wrapped in GRID_CONTAINER (an inline-size container); OUTFIT_GRID_SX switches
+// column count at container-width thresholds matching MUI's breakpoints.
+const OUTFIT_GRID_SX = {
+  display: 'grid',
+  gap: 2,
+  ...OUTFIT_GRID_COLUMNS_CONTAINER,
 }
 
 function GroupHeaderSkeleton() {
   return (
-    <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' } }}>
+    <Box sx={{ gridColumn: '1 / -1' }}>
       <Stack
         direction="row"
         sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
@@ -84,12 +85,12 @@ export default function FilterOutfits() {
 
   if (isLoading) {
     return (
-      <Box sx={{ flexGrow: 1, py: 3 }}>
+      <Box sx={{ flexGrow: 1, py: 3, ...GRID_CONTAINER }}>
         <Skeleton height={20} sx={{ mt: 2, mb: 0.5 }} variant="text" width={100} />
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: GRID_COLUMNS,
+            ...OUTFIT_GRID_COLUMNS_CONTAINER,
             gap: { xs: 1, sm: 1.5, md: 2 },
           }}
         >
@@ -231,13 +232,8 @@ export default function FilterOutfits() {
       )}
 
       {filteredSets.length > 0 && density === 'standard' && (
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: OUTFIT_GRID_COLUMNS,
-            gap: 2,
-          }}
-        >
+        <Box sx={GRID_CONTAINER}>
+          <Box sx={OUTFIT_GRID_SX}>
           {filteredSets.flatMap((set) => {
             // Base variants carry the concrete {set}-base slug end-to-end.
             const baseEvoSlug = `${set.slug}-base`
@@ -247,14 +243,15 @@ export default function FilterOutfits() {
               const variants = set.outfit_variants.filter((v) => v.evolution === evolutionKey)
               if (variants.length === 0) return null
               const allObtained = variants.every((v) => v.obtained === true)
+							const obtained = variants.filter((v) => v.obtained === true).length
               return (
                 <OutfitSetCard
                   key={`${set.id}-${evolutionKey}`}
                   evolution={evolution}
                   isLoggedIn={isLoggedIn}
                   isMissingFilter={selectedObtainedFilter === 'missing'}
-                  obtained={allObtained}
-                  set={set}
+                  obtained={obtained}
+									set={set}
                   shouldHide={
                     !isEvolutionVisible({
                       evolutionSlug: evolutionKey,
@@ -264,6 +261,7 @@ export default function FilterOutfits() {
                       hideGlowups,
                     })
                   }
+                  total={variants.length}
                   onToggle={() => {
                     const toToggle = variants
                       .filter((v) => v.obtained === allObtained)
@@ -278,22 +276,19 @@ export default function FilterOutfits() {
               )
             })
           })}
+          </Box>
         </Box>
       )}
 
       {filteredSets.length > 0 && density === 'compact' && (
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: OUTFIT_GRID_COLUMNS,
-            gap: 2,
-          }}
-        >
-          {groupBySet
-            ? filteredSets.map((set) => (
-                <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
-              ))
-            : filteredSets.flatMap((set) => renderSetVariants(set))}
+        <Box sx={GRID_CONTAINER}>
+          <Box sx={OUTFIT_GRID_SX}>
+            {groupBySet
+              ? filteredSets.map((set) => (
+                  <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
+                ))
+              : filteredSets.flatMap((set) => renderSetVariants(set))}
+          </Box>
         </Box>
       )}
     </>

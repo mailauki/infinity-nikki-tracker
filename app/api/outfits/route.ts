@@ -13,7 +13,7 @@ export async function GET() {
     .from('outfit_sets')
     .select(
       `id, slug, title, description, rarity, style, label, label_2, ability,
-       image_url, alt_image_url, glowup_evolution, updated_at,
+       image_url, alt_image_url, glowup_evolution, seasons, updated_at,
        outfit_variants ( id, slug, outfit_set, evolution, outfit_category, image_url, alt_image_url, default ),
        outfit_set_carousel_images ( id, image_url, sort_order )`
     )

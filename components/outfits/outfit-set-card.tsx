@@ -17,6 +17,7 @@ export default function OutfitSetCard({
   evolution = null,
   isLoggedIn,
   obtained,
+	total,
   onToggle,
   isMissingFilter = false,
   shouldHide = false,
@@ -26,7 +27,8 @@ export default function OutfitSetCard({
   // title, and link); otherwise it represents the base set.
   evolution?: Evolution | null
   isLoggedIn: boolean
-  obtained: boolean
+  obtained: number
+  total: number
   onToggle: () => void
   // When the "missing" filter is active, completing this group animates the
   // card out (the obtained toggle is committed in onExited) so it leaves the
@@ -106,7 +108,7 @@ export default function OutfitSetCard({
           )}
         </Stack>
         <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
-          {isLoggedIn && <ProgressChip percentage={obtained ? 100 : 0} size="xs" />}
+          {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant='parts' />}
         </Box>
         <Box sx={{ position: 'absolute', top: 12, left: 12 }}>
           {evolution && !glowup && (

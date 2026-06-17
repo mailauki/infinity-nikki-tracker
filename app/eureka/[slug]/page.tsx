@@ -9,7 +9,7 @@ import LazyImage from '@/components/lazy-image'
 import EurekaVariantColorFilter from '@/components/eureka/eureka-variant-color-filter'
 import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
-import { countObtained, percent } from '@/hooks/count-obtained'
+import { countObtained } from '@/hooks/count-obtained'
 import ProgressChip from '@/components/progress-chip'
 import SlugToolBar from '@/components/slug-toolbar'
 
@@ -113,7 +113,7 @@ async function EurekaSet({ slug }: { slug: string }) {
                   : toTitle(eureka_set_trials[0].trial)}
               </Button>
 
-              <ProgressChip percentage={percent(obtained, total)} size="sm" />
+              <ProgressChip obtained={obtained} size="sm" total={total} />
             </Stack>
 
             <Divider />

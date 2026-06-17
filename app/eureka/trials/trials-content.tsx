@@ -23,7 +23,7 @@ import { useEurekaData } from '@/components/eureka/eureka-context'
 import { useSortOrder } from '@/components/sort-context'
 import { EurekaSet, Total } from '@/lib/types/eureka'
 import ProgressChip from '@/components/progress-chip'
-import { countObtained, percent } from '@/hooks/count-obtained'
+import { countObtained } from '@/hooks/count-obtained'
 
 export default function TrialsContent() {
   const { eurekaSets, trials, isLoggedIn, isLoading, isError } = useEurekaData()
@@ -86,7 +86,7 @@ function TrialCard({ trial, isLoggedIn }: { trial: Total; isLoggedIn: boolean })
         disableTypography
         action={
           isLoggedIn && (
-            <ProgressChip percentage={percent(obtained.obtained, obtained.total)} size="xs" />
+            <ProgressChip obtained={obtained.obtained} size="xs" total={obtained.total} />
           )
         }
         title={

@@ -55,6 +55,29 @@ export const GRID_COLUMNS = {
   md: '1fr 1fr 1fr 1fr 1fr',
 }
 
+// Container-query grid: column counts respond to the CONTENT width, not the
+// viewport, so grids reflow when the filter panel opens and narrows the content
+// area. Wrap a grid in a Box with GRID_CONTAINER (an inline-size container) and
+// give the grid GRID_COLUMNS_CONTAINER, which switches column count at
+// container-width thresholds matching MUI's breakpoints (sm 600 / md 900).
+export const GRID_CONTAINER = { containerType: 'inline-size' as const }
+
+export const GRID_COLUMNS_CONTAINER = {
+  gridTemplateColumns: 'repeat(3, 1fr)',
+  '@container (min-width: 600px)': { gridTemplateColumns: 'repeat(4, 1fr)' },
+  '@container (min-width: 900px)': { gridTemplateColumns: 'repeat(5, 1fr)' },
+}
+
+// Outfit grids pack more columns than the eureka grids (2 → 3 → 4 → 6 → 8).
+// Same container-query approach: pair with GRID_CONTAINER on an ancestor.
+export const OUTFIT_GRID_COLUMNS_CONTAINER = {
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  '@container (min-width: 600px)': { gridTemplateColumns: 'repeat(3, 1fr)' },
+  '@container (min-width: 900px)': { gridTemplateColumns: 'repeat(4, 1fr)' },
+  '@container (min-width: 1200px)': { gridTemplateColumns: 'repeat(6, 1fr)' },
+  '@container (min-width: 1536px)': { gridTemplateColumns: 'repeat(8, 1fr)' },
+}
+
 export const TABLE_ROW_HEIGHT = 50
 
 export const MENU_PROPS = {

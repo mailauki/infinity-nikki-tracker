@@ -1,21 +1,21 @@
 'use client'
 import React from 'react'
-import { Box, Button, Chip, Divider, IconButton, Skeleton, Stack, Typography } from '@mui/material'
+import { Box, Button, Divider, IconButton, Skeleton, Stack, Typography } from '@mui/material'
 import { ChevronRight, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 
 import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { useSortOrder } from '@/components/sort-context'
-import { GRID_COLUMNS } from '@/lib/types/props'
+import { GRID_COLUMNS_CONTAINER, GRID_CONTAINER } from '@/lib/types/props'
 import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
 import EurekaVariantCard from '@/components/eureka/eureka-variant-card'
 import ProgressChip from '@/components/progress-chip'
 import LoginAlert from '@/components/login-alert'
-import { countObtained, percent } from '@/hooks/count-obtained'
+import { countObtained } from '@/hooks/count-obtained'
 
 function GroupHeaderSkeleton() {
   return (
-    <Box sx={{ gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' } }}>
+    <Box sx={{ gridColumn: '1 / -1' }}>
       <Stack
         direction="row"
         sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
@@ -71,12 +71,12 @@ export default function FilterEureka() {
 
   if (isLoading) {
     return (
-      <Box sx={{ flexGrow: 1, py: 3 }}>
+      <Box sx={{ flexGrow: 1, py: 3, ...GRID_CONTAINER }}>
         <Skeleton height={20} sx={{ mt: 2, mb: 0.5 }} variant="text" width={100} />
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: GRID_COLUMNS,
+            ...GRID_COLUMNS_CONTAINER,
             gap: { xs: 1, sm: 1.5, md: 2 },
           }}
         >
@@ -140,10 +140,11 @@ export default function FilterEureka() {
           </Typography>
         </Stack>
       ) : (
+        <Box sx={GRID_CONTAINER}>
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: GRID_COLUMNS,
+            ...GRID_COLUMNS_CONTAINER,
             gap: { xs: 1, sm: 1.5, md: 2 },
             py: groupBySet ? 0 : 2,
           }}
@@ -173,7 +174,7 @@ export default function FilterEureka() {
                 {groupBySet && (
                   <Box
                     sx={{
-                      gridColumn: { xs: '1/4', sm: '1/5', md: '1/6' },
+                      gridColumn: '1 / -1',
                       mt: 2,
                     }}
                   >
@@ -192,9 +193,9 @@ export default function FilterEureka() {
 
                       {isLoggedIn && (
                         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                          <Chip label={`${obtained} / ${total}`} size="small" variant="outlined" />
+                          <ProgressChip obtained={obtained} total={total} variant='parts' />
                           <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
-                            <ProgressChip percentage={percent(obtained, total)} size="lg" />
+                            <ProgressChip obtained={obtained} size="lg" total={total} />
                           </Box>
                           <IconButton
                             aria-label={allObtained ? 'Mark as not obtained' : 'Mark as obtained'}
@@ -229,6 +230,7 @@ export default function FilterEureka() {
               </React.Fragment>
             )
           })}
+        </Box>
         </Box>
       )}
     </>

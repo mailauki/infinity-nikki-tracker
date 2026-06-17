@@ -36,10 +36,10 @@ export const navLinksData: {
       url: '/eureka',
       image: '/icons/eureka.png',
       items: [
-        {
-          title: 'Sets',
-          url: '/eureka/sets',
-        },
+        // {
+        //   title: 'Sets',
+        //   url: '/eureka/sets',
+        // },
         {
           title: 'Trials',
           url: '/eureka/trials',

@@ -18,12 +18,16 @@ import { MENU_PROPS } from '@/lib/types/props'
 export const DRESS_SLUGS = ['dress']
 export const SEPARATES_SLUGS = ['tops', 'bottoms']
 
+function toSlugArray(selectedSlugs: string | string[] | null): string[] {
+  if (selectedSlugs === null) return []
+  return Array.isArray(selectedSlugs) ? selectedSlugs : [selectedSlugs]
+}
+
 export function isCategoryDisabled(
   category: OutfitCategory,
   selectedSlugs: string | string[] | null
 ) {
-  const selected =
-    selectedSlugs === null ? [] : Array.isArray(selectedSlugs) ? selectedSlugs : [selectedSlugs]
+  const selected = toSlugArray(selectedSlugs)
   if (selected.length === 0) return false
   const hasDress = selected.some((s) => DRESS_SLUGS.includes(s))
   const hasSeparates = selected.some((s) => SEPARATES_SLUGS.includes(s))

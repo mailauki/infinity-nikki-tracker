@@ -38,13 +38,13 @@ export default function EvolutionEditor({
       setDrafts(trimmed)
       onChange(trimmed)
     }
-  }, [maxEvolutions])
+  }, [maxEvolutions, drafts, onChange])
 
   useEffect(() => {
     if (glowupEvolutionOrder !== '' && glowupEvolutionOrder > drafts.length) {
       onGlowupChange('')
     }
-  }, [drafts.length, glowupEvolutionOrder])
+  }, [drafts.length, glowupEvolutionOrder, onGlowupChange])
 
   function handleAdd() {
     const next = [...drafts, { subtitle: '', order: drafts.length + 1 }]

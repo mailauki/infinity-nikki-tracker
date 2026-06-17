@@ -414,7 +414,6 @@ export default function EditOutfitSetForm({
         <Stack spacing={1}>
           <Typography variant="subtitle2">Gallery Images</Typography>
           <CarouselImageUpload
-            foreignKeyField="outfit_set"
             images={carouselImages}
             slug={outfitSet.slug ?? ''}
             table="outfit_set_carousel_images"

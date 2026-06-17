@@ -2,9 +2,8 @@
 
 import { Fragment } from 'react'
 import { ChevronRight, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
-import { Box, Button, Chip, Divider, IconButton, Stack } from '@mui/material'
+import { Box, Button, Divider, IconButton, Stack } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
-import { percent } from '@/hooks/count-obtained'
 import { toTitle } from '@/lib/utils'
 import ProgressChip from '@/components/progress-chip'
 import { useOutfitData } from './outfit-context'
@@ -72,13 +71,9 @@ export default function OutfitSetSection({
               </Button>
               {isLoggedIn && (
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                  <Chip
-                    label={`${obtained} / ${groupVariants.length}`}
-                    size="small"
-                    variant="outlined"
-                  />
+                  <ProgressChip obtained={obtained} total={groupVariants.length} variant='parts' />
                   <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
-                    <ProgressChip percentage={percent(obtained, groupVariants.length)} size="lg" />
+                    <ProgressChip obtained={obtained} size="lg" total={groupVariants.length} />
                   </Box>
                   <IconButton
                     aria-label={allObtained ? 'Mark as not obtained' : 'Mark as obtained'}
