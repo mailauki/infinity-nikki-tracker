@@ -767,24 +767,87 @@ export type Database = {
         }
         Relationships: []
       }
+      season_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: number
+          image_url: string | null
+          slug: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          slug: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      season_category_map: {
+        Row: {
+          category: string
+          season: string
+        }
+        Insert: {
+          category: string
+          season: string
+        }
+        Update: {
+          category?: string
+          season?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "season_category_map_category_fkey"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "season_categories"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "season_category_map_season_fkey"
+            columns: ["season"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       seasons: {
         Row: {
           created_at: string
+          description: string | null
           id: number
+          image_url: string | null
           location: string | null
           slug: string
           title: string
         }
         Insert: {
           created_at?: string
+          description?: string | null
           id?: number
+          image_url?: string | null
           location?: string | null
           slug: string
           title: string
         }
         Update: {
           created_at?: string
+          description?: string | null
           id?: number
+          image_url?: string | null
           location?: string | null
           slug?: string
           title?: string
