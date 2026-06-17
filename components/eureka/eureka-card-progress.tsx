@@ -9,7 +9,6 @@ import {
 } from '@mui/material'
 
 import { CardSize, Percentage } from '@/lib/types/props'
-import ProgressChip from '../progress-chip'
 import PercentLabel from '../percent-label'
 
 export default function EurekaCardProgress({
@@ -55,7 +54,6 @@ export default function EurekaCardProgress({
           <Typography component="p" variant="h6">
             {percentage}%
           </Typography>
-          <ProgressChip percentage={percentage} size={size} />
         </Stack>
       )}
       <LinearProgress color="inherit" value={percentage} variant="determinate" />

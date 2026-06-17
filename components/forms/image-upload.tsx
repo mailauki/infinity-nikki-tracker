@@ -1,5 +1,5 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
   Avatar,
@@ -38,7 +38,7 @@ export default function ImageUpload({
   column?: string
   size?: AvatarSize
 }) {
-  const supabase = useRef(createClient()).current
+  const supabase = useMemo(() => createClient(), [])
   const [uploading, setUploading] = useState(false)
 
   const isTrial = table === 'trials'

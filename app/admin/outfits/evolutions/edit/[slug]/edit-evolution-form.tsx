@@ -136,7 +136,6 @@ export default function EditEvolutionForm({
         <Stack spacing={1}>
           <Typography variant="subtitle2">Gallery Images</Typography>
           <CarouselImageUpload
-            foreignKeyField="evolution"
             images={carouselImages}
             slug={currentSlug}
             table="evolution_carousel_images"

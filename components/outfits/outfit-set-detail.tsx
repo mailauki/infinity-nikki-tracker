@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Stack, Typography, Chip, Container, IconButton, Tooltip } from '@mui/material'
 import { Collections } from '@mui/icons-material'
 import { OutfitSet } from '@/lib/types/outfit'
-import { percent } from '@/hooks/count-obtained'
 import { toTitle } from '@/lib/utils'
 import RarityStars from '@/components/rarity-stars'
 import ProgressChip from '@/components/progress-chip'
@@ -121,7 +120,7 @@ export default function OutfitSetDetail({
               <Typography color="textSecondary" variant="body1">
                 {toTitle(style ?? '')}
               </Typography>
-              {isLoggedIn && <ProgressChip percentage={percent(obtained, total)} size="md" />}
+              {isLoggedIn && <ProgressChip obtained={obtained} size="md" total={total} />}
             </Stack>
             <Stack
               direction="row"

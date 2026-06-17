@@ -1,5 +1,5 @@
 import { Box, Divider, Skeleton, Stack } from '@mui/material'
-import { GRID_COLUMNS } from '@/lib/types/props'
+import { GRID_COLUMNS_CONTAINER, GRID_CONTAINER } from '@/lib/types/props'
 
 export default function EurekaSetLoading() {
   return (
@@ -25,19 +25,21 @@ export default function EurekaSetLoading() {
         <Divider />
       </Stack>
 
-      <Box
-        sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1, sm: 1.5, md: 2 } }}
-      >
-        {Array.from({ length: 6 }).map((_, i) => (
-          <Skeleton
-            key={i}
-            height={0}
-            style={{ paddingBottom: '133%' }}
-            sx={{ borderRadius: 1 }}
-            variant="rectangular"
-            width="100%"
-          />
-        ))}
+      <Box sx={GRID_CONTAINER}>
+        <Box
+          sx={{ display: 'grid', ...GRID_COLUMNS_CONTAINER, gap: { xs: 1, sm: 1.5, md: 2 } }}
+        >
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton
+              key={i}
+              height={0}
+              style={{ paddingBottom: '133%' }}
+              sx={{ borderRadius: 1 }}
+              variant="rectangular"
+              width="100%"
+            />
+          ))}
+        </Box>
       </Box>
     </Stack>
   )

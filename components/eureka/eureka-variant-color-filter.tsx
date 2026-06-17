@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Box, Stack } from '@mui/material'
-import { GRID_COLUMNS } from '@/lib/types/props'
+import { GRID_COLUMNS_CONTAINER, GRID_CONTAINER } from '@/lib/types/props'
 import type { EurekaColor, EurekaVariant } from '@/lib/types/eureka'
 import EurekaVariantCard from './eureka-variant-card'
 import ColorChip from '../color-chip'
@@ -48,17 +48,19 @@ export default function EurekaVariantColorFilter({
         ))}
       </Stack>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: GRID_COLUMNS,
-          gap: { xs: 1, sm: 1.5, md: 2 },
-          py: 0,
-        }}
-      >
-        {filteredVariants.map((variant) => (
-          <EurekaVariantCard key={variant.id} eurekaVariant={variant} isLoggedIn={isLoggedIn} />
-        ))}
+      <Box sx={GRID_CONTAINER}>
+        <Box
+          sx={{
+            display: 'grid',
+            ...GRID_COLUMNS_CONTAINER,
+            gap: { xs: 1, sm: 1.5, md: 2 },
+            py: 0,
+          }}
+        >
+          {filteredVariants.map((variant) => (
+            <EurekaVariantCard key={variant.id} eurekaVariant={variant} isLoggedIn={isLoggedIn} />
+          ))}
+        </Box>
       </Box>
     </Stack>
   )

@@ -1,17 +1,33 @@
+import { percent } from '@/hooks/count-obtained'
 import { CardSize } from '@/lib/types/props'
 import { Check, MoreHoriz } from '@mui/icons-material'
 import { Chip } from '@mui/material'
 
 export default function ProgressChip({
-  percentage,
+  obtained,
+  total,
   size = 'sm',
+  variant = 'percent',
 }: {
-  percentage: number
+  obtained: number
+  total: number
   size?: CardSize
+  variant?: 'percent' | 'parts'
 }) {
+	const percentage = percent(obtained, total)
   const isComplete = percentage === 100
   const completeLabel = size === 'sm' ? <Check /> : 'Complete'
   const unfinishedLabel = size === 'sm' ? `${percentage}%` : 'Unfinished'
+
+	if (variant === 'parts') {
+		return (
+      <Chip
+        color={isComplete ? 'success' : 'default'}
+        label={isComplete ? <Check /> : `${obtained} / ${total}`}
+        size="small"
+				variant='outlined'
+      />)
+	}
 
   if (size === 'xs')
     return (

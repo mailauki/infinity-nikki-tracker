@@ -13,7 +13,7 @@ export default function NavBarToolbar({ children }: { children: React.ReactNode 
   const pathname = usePathname()
 	const theme = useTheme()
   const filterPushed = filterOpen && FILTER_PAGES.includes(pathname)
-  const filterInset = filterPushed ? `calc(${FILTER_DRAWER_WIDTH}px + 21px)` : '0px'
+  const filterInset = filterPushed ? `${FILTER_DRAWER_WIDTH}px` : '0px'
 	const navInset = drawerOpen ? `calc(${NAV_DRAWER_WIDTH}px) - 21px` : `calc(${theme.spacing(10)} + 21px)`
   return (
     <AppBar

@@ -1,7 +1,7 @@
 'use client'
 
 import { ViewDay } from '@mui/icons-material'
-import { Stack, Tooltip, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { Stack, Tooltip, ToggleButton } from '@mui/material'
 
 export default function SortOutfitToggle({
   groupBySet,

@@ -54,7 +54,7 @@ export function AdminViewProvider({
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [userId])
+  }, [userId, supabase])
 
   return (
     <AdminViewContext value={{ view, setView, showVariantColumns, setShowVariantColumns }}>

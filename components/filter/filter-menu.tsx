@@ -15,7 +15,6 @@ import {
   Theme,
   Toolbar,
   Typography,
-	useTheme,
 } from '@mui/material'
 import { Close, FilterList } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
@@ -48,18 +47,12 @@ export const FILTER_DRAWER_WIDTH = 400
 const FILTER_STORAGE_KEY = 'filter-drawer-open'
 
 const openedMixin = (theme: Theme): CSSObject => ({
-  // width: FILTER_DRAWER_WIDTH,
-  // transition: theme.transitions.create('width', {
-  //   easing: theme.transitions.easing.sharp,
-  //   duration: theme.transitions.duration.enteringScreen,
-  // }),
-  // overflowX: 'hidden',
-  height: 'calc(100vh - 40px)',
+  height: 'calc(100vh - 100px)',
 	borderColor: 'transparent',
 	borderRadius: '30px',
-	margin: 20,
-	marginLeft: 0,
-  // marginRight: 0,
+	// marginRight: 20,
+  marginTop: 80,
+	marginBottom: 20,
 	width: FILTER_DRAWER_WIDTH,
 	transition: theme.transitions.create('width', {
 		easing: theme.transitions.easing.sharp,
@@ -69,18 +62,12 @@ const openedMixin = (theme: Theme): CSSObject => ({
 })
 
 const closedMixin = (theme: Theme): CSSObject => ({
-  // width: 0,
-  // transition: theme.transitions.create('width', {
-  //   easing: theme.transitions.easing.sharp,
-  //   duration: theme.transitions.duration.leavingScreen,
-  // }),
-  // overflowX: 'hidden',
-  height: 'calc(100vh - 40px)',
+  height: 'calc(100vh - 100px)',
   borderColor: 'transparent',
   borderRadius: '30px',
-  margin: 20,
-  marginLeft: 0,
-  // marginRight: 0,
+	// marginRight: 20,
+  marginTop: 80,
+	marginBottom: 20,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -118,7 +105,6 @@ const PermanentDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !=
 // content-pushing drawer at `sm`+, mirroring the nav-drawer split. The body
 // (filter controls) is passed as children so both branches reuse it.
 function FilterDrawer({ children }: { children: React.ReactNode }) {
-	const theme = useTheme()
   const { filterOpen, setFilterOpen } = useFilterDrawer()
 
   function toggleDrawer(value: boolean) {
@@ -128,9 +114,8 @@ function FilterDrawer({ children }: { children: React.ReactNode }) {
 
   const header = (
     <>
-      <Toolbar sx={{ mb: 2 }} />
       <Toolbar>
-        <Stack direction="row" sx={{ flex: 1, justifyContent: 'flex-end' }}>
+        <Stack direction="row" sx={{ flex: 1, justifyContent: 'flex-end', mt: 0.5 }}>
           <IconButton onClick={() => toggleDrawer(false)}>
             <Close />
           </IconButton>
@@ -144,6 +129,14 @@ function FilterDrawer({ children }: { children: React.ReactNode }) {
       <IconButton onClick={() => toggleDrawer(!filterOpen)}>
         <FilterList />
       </IconButton>
+			{/* <NavBarToolbar>
+        <Stack direction="row" sx={{ flexGrow: 1, justifyContent: 'flex-end' }}>
+          <IconButton onClick={() => toggleDrawer(!filterOpen)}>
+						<FilterList />
+					</IconButton>
+        </Stack>
+			</NavBarToolbar> */}
+
       <MuiDrawer
         anchor="right"
         open={filterOpen}
@@ -264,6 +257,9 @@ export default function FilterMenu() {
             <ListItem>
               <DensityToggle />
             </ListItem>
+            <ListItem>
+              <SortAxisToggle />
+            </ListItem>
             <ListItem sx={{ gap: 1 }}>
               <SortOutfitToggle
                 disabled={density === 'standard'}
@@ -302,9 +298,6 @@ export default function FilterMenu() {
                   </Stack>
                 </Stack>
               </Stack>
-            </ListItem>
-            <ListItem>
-              <SortAxisToggle />
             </ListItem>
             {outfitLoggedIn && (
               <ListItem>

@@ -108,7 +108,7 @@ export default function OutfitToolBar({
         <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
           Showing: {resultsCount} results
         </Typography>
-        <Stack direction="row" spacing={1} sx={{ position: 'relative', width: '96px', height: '40px' }}>
+        <Stack direction="row" spacing={1} sx={{ position: 'relative', width: '88px', height: '40px' }}>
           <SortButton />
           {showFilters && <FilterMenu />}
         </Stack>

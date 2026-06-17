@@ -40,12 +40,12 @@ export default function EurekaToolBar() {
     <NavBarToolbar>
       <Stack
         direction="row"
-        sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
+        sx={{ width: '100%', flexGrow: 1, alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}
       >
         <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
           Showing: {resultsCount} results
         </Typography>
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} sx={{ position: 'relative', width: '88px', height: '40px' }}>
           <SortButton />
           <FilterMenu />
         </Stack>

@@ -6,21 +6,21 @@ import { ChevronRight } from '@mui/icons-material'
 import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { useSortOrder } from '@/components/sort-context'
-import { GRID_COLUMNS } from '@/lib/types/props'
+import { GRID_COLUMNS_CONTAINER, GRID_CONTAINER } from '@/lib/types/props'
 import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
 import ProgressChip from '@/components/progress-chip'
-import { countObtained, percent } from '@/hooks/count-obtained'
+import { countObtained } from '@/hooks/count-obtained'
 
 function SetSkeleton() {
   return (
-    <Box>
+    <Box sx={GRID_CONTAINER}>
       <Stack direction="row" sx={{ mb: 0.5, justifyContent: 'space-between' }}>
         <Skeleton height={28} variant="text" width={140} />
         <Skeleton height={24} variant="rounded" width={60} />
       </Stack>
       <Divider sx={{ mb: 2 }} />
       <Box
-        sx={{ display: 'grid', gridTemplateColumns: GRID_COLUMNS, gap: { xs: 1, sm: 1.5, md: 2 } }}
+        sx={{ display: 'grid', ...GRID_COLUMNS_CONTAINER, gap: { xs: 1, sm: 1.5, md: 2 } }}
       >
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton
@@ -66,7 +66,7 @@ export default function SetsContent() {
       {sortedSets.map((set) => {
         const { obtained, total } = countObtained(set.eureka_variants)
         return (
-          <Box key={set.slug}>
+          <Box key={set.slug} sx={GRID_CONTAINER}>
             <Stack
               direction="row"
               sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
@@ -79,13 +79,13 @@ export default function SetsContent() {
               >
                 {set.title}
               </Button>
-              {isLoggedIn && <ProgressChip percentage={percent(obtained, total)} size="lg" />}
+              {isLoggedIn && <ProgressChip obtained={obtained} size="lg" total={total} />}
             </Stack>
             <Divider sx={{ mb: 2 }} />
             <Box
               sx={{
                 display: 'grid',
-                gridTemplateColumns: GRID_COLUMNS,
+                ...GRID_COLUMNS_CONTAINER,
                 gap: { xs: 1, sm: 1.5, md: 2 },
               }}
             >

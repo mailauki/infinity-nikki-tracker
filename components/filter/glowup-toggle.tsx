@@ -1,6 +1,6 @@
 'use client'
 
-import { Stack, ToggleButton, Tooltip } from '@mui/material'
+import { ToggleButton, Tooltip } from '@mui/material'
 import ToggleIcon from '../toggle-icon'
 
 export default function GlowupToggle({

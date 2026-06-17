@@ -264,6 +264,7 @@ export default function LookBuilder({
   }
 
   // ── Composer panel (right / top) ────────────────────────────────────────
+  const saveLabel = initialLook ? 'Save changes' : 'Create look'
   const composerPanel = (
     <Stack spacing={2} sx={{ minWidth: 0 }}>
       <TextField
@@ -357,7 +358,7 @@ export default function LookBuilder({
         variant="contained"
         onClick={handleSave}
       >
-        {isPending ? 'Saving…' : initialLook ? 'Save changes' : 'Create look'}
+        {isPending ? 'Saving…' : saveLabel}
       </Button>
     </Stack>
   )

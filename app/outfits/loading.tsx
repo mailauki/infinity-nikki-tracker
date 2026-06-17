@@ -1,9 +1,9 @@
 import { Box, Divider, Skeleton, Stack } from '@mui/material'
-import { GRID_COLUMNS } from '@/lib/types/props'
+import { GRID_CONTAINER, OUTFIT_GRID_COLUMNS_CONTAINER } from '@/lib/types/props'
 
 function GroupSkeleton() {
   return (
-    <Box>
+    <Box sx={GRID_CONTAINER}>
       <Stack
         direction="row"
         sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
@@ -15,7 +15,7 @@ function GroupSkeleton() {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: GRID_COLUMNS,
+          ...OUTFIT_GRID_COLUMNS_CONTAINER,
           gap: { xs: 1, sm: 1.5, md: 2 },
         }}
       >
