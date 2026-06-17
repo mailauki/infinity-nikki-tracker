@@ -1,61 +1,108 @@
 'use client'
 
-import { Box, Card, CardActions, CardContent, CardHeader, List, ListItem, ListItemAvatar, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+} from '@mui/material'
 
 import { useOutfitData } from '@/components/outfits/outfit-context'
-import { Season } from '@/lib/types/outfit'
+import { Season, SeasonCategory } from '@/lib/types/outfit'
 import LazyImage from '../lazy-image'
-import RarityStars from '../rarity-stars'
 import { ViewAllButton } from '../view-all-button'
 
-export default function FilterOutfitsBySeason({ seasons }: { seasons: Season[] }) {
-  const {
-    outfitSets,
-  } = useOutfitData()
-	return (
-		<Box sx={{ containerType: 'inline-size' }}>
-		<Box
-			sx={{
-				display: 'grid',
-				gridTemplateColumns: '1fr',
-				'@container (min-width: 600px)': { gridTemplateColumns: '1fr 1fr' },
-				gap: 3,
-			}}
-		>
-		{seasons.map((season) => (
-			<Card key={season.slug}>
-      <CardHeader
-        disableTypography
-        title={
-          <Typography noWrap component="h2" sx={{ maxWidth: { xs: 300, sm: 360 } }} variant="h6">
-            {season.title}
-          </Typography>
-        }
-      />
-			{/* <LazyImage image={season.image_url!} kind="media" sx={{ height: 160 }} title={season.title} /> */}
-      <CardContent>
-        <List sx={{ width: '100%' }}>
-          {outfitSets.filter((set) => set.seasons === season.slug).slice(0,2).map((set) => (
-            <ListItem key={set.id} disablePadding>
-							<ListItemAvatar>
-							<LazyImage kind='avatar' size='lg' src={set.alt_image_url!} />
-						</ListItemAvatar>
-						<Stack spacing={2} sx={{ ml: 2 }}>
-							<Typography variant='subtitle1'>{set.title}</Typography>
-							<Typography color='textSecondary'>
-								<RarityStars rarity={set.rarity} />
-								</Typography>
-						</Stack>
-            </ListItem>
-          ))}
-        </List>
-      </CardContent>
-      <CardActions>
-        <ViewAllButton href={`/outfits/seasons/${season.slug}`} />
-      </CardActions>
-    </Card>
-		))}
-		</Box>
-		</Box>
-	)
+export default function FilterOutfitsBySeason({
+  seasons,
+  seasonCategories,
+}: {
+  seasons: Season[]
+  seasonCategories: SeasonCategory[]
+}) {
+  const { outfitSets } = useOutfitData()
+
+  const categoryTitle = (slug: string) =>
+    seasonCategories.find((sc) => sc.slug === slug)?.title ?? slug
+
+  // A season's categories are the distinct season_category values among the
+  // outfit sets assigned to that season (the seasons<->categories link lives on
+  // outfit_sets, not a join table).
+  const categoriesForSeason = (seasonSlug: string) =>
+    [
+      ...new Set(
+        outfitSets
+          .filter((set) => set.seasons === seasonSlug)
+          .map((set) => set.season_category)
+          .filter((slug): slug is string => Boolean(slug))
+      ),
+    ]
+
+  return (
+    <Box sx={{ containerType: 'inline-size' }}>
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: '1fr',
+          '@container (min-width: 600px)': { gridTemplateColumns: '1fr 1fr' },
+          gap: 3,
+        }}
+      >
+        {seasons.map((season) => {
+          const categories = categoriesForSeason(season.slug)
+          return (
+            <Card key={season.slug} sx={{ display: 'flex', flexDirection: 'column' }}>
+              <CardHeader
+                disableTypography
+                title={
+                  <Typography
+                    noWrap
+                    component="h2"
+                    sx={{ maxWidth: { xs: 300, sm: 360 } }}
+                    variant="h6"
+                  >
+                    {season.title}
+                  </Typography>
+                }
+              />
+              {season.image_url && (
+                <LazyImage
+                  image={season.image_url}
+                  kind="media"
+                  sx={{ height: 160 }}
+                  title={season.title}
+                />
+              )}
+              <CardContent sx={{ flexGrow: 1 }}>
+                <List dense sx={{ width: '100%' }}>
+                  {categories.length ? (
+                    categories.map((slug) => (
+                      <ListItem key={slug} disableGutters secondaryAction={<Typography variant='caption'>{outfitSets.filter(set => set.season_category === slug).length}</Typography>}>
+                        <ListItemText primary={categoryTitle(slug)} />
+                      </ListItem>
+                    ))
+                  ) : (
+                    <ListItem disableGutters>
+                      <ListItemText
+                        primary="No categories"
+                        slotProps={{ primary: { color: 'text.secondary' } }}
+                      />
+                    </ListItem>
+                  )}
+                </List>
+              </CardContent>
+              <CardActions>
+                <ViewAllButton href={`/outfits/seasons/${season.slug}`} />
+              </CardActions>
+            </Card>
+          )
+        })}
+      </Box>
+    </Box>
+  )
 }
