@@ -17,7 +17,14 @@ import {
 } from '@mui/x-data-grid'
 import { formatDate, toSlug, toTitle } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
-import { Ability, Evolution, OutfitCategory, OutfitSet } from '@/lib/types/outfit'
+import {
+  Ability,
+  Evolution,
+  OutfitCategory,
+  OutfitSet,
+  Season,
+  SeasonCategory,
+} from '@/lib/types/outfit'
 import { Style, Label } from '@/lib/types/eureka'
 import RarityStars from '@/components/rarity-stars'
 import { updateOutfitSet } from '@/app/admin/actions'
@@ -33,6 +40,8 @@ interface OutfitSetTableProps {
   styles: Style[]
   labels: Label[]
   abilities: Ability[]
+  seasons: Season[]
+  seasonCategories: SeasonCategory[]
   outfitCategories: OutfitCategory[]
 }
 
@@ -53,6 +62,8 @@ export function OutfitSetTable({
   styles,
   labels,
   abilities,
+  seasons,
+  seasonCategories,
   outfitCategories,
 }: OutfitSetTableProps) {
   const { showVariantColumns } = useAdminView()
@@ -93,6 +104,8 @@ export function OutfitSetTable({
         label: newRow.label,
         label_2: newRow.label_2,
         ability: newRow.ability,
+        seasons: newRow.seasons,
+        season_category: newRow.season_category,
       })
       setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)))
       return newRow
@@ -289,6 +302,30 @@ export function OutfitSetTable({
       valueOptions: [
         { value: '', label: '—' },
         ...abilities.map((a) => ({ value: a.slug, label: toTitle(a.title ?? '') })),
+      ],
+      valueFormatter: (value: string | null) => toTitle(value || '—'),
+    },
+    {
+      field: 'seasons',
+      headerName: 'Season',
+      width: 160,
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: [
+        { value: '', label: '—' },
+        ...seasons.map((s) => ({ value: s.slug, label: toTitle(s.title ?? '') })),
+      ],
+      valueFormatter: (value: string | null) => toTitle(value || '—'),
+    },
+    {
+      field: 'season_category',
+      headerName: 'Season Category',
+      width: 180,
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: [
+        { value: '', label: '—' },
+        ...seasonCategories.map((sc) => ({ value: sc.slug, label: toTitle(sc.title ?? '') })),
       ],
       valueFormatter: (value: string | null) => toTitle(value || '—'),
     },

@@ -85,13 +85,24 @@ export async function updateOutfitSet(
     label?: string | null
     label_2?: string | null
     ability?: string | null
+    seasons?: string | null
+    season_category?: string | null
   }
 ) {
   await requireAdmin()
   const supabase = await createClient()
+
+  // FK columns reject '' — the grid's singleSelect '—' option yields an empty
+  // string, so coerce those to null before writing.
+  const FK_FIELDS = ['style', 'label', 'label_2', 'ability', 'seasons', 'season_category'] as const
+  const normalized = { ...fields }
+  for (const key of FK_FIELDS) {
+    if (normalized[key] === '') normalized[key] = null
+  }
+
   const { data, error } = await supabase
     .from('outfit_sets')
-    .update({ ...fields, updated_at: new Date().toISOString() })
+    .update({ ...normalized, updated_at: new Date().toISOString() })
     .eq('id', id)
     .select()
     .single()
