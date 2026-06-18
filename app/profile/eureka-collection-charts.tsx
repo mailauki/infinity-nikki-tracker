@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Chip,
   LinearProgress,
   Skeleton,
   Stack,
@@ -239,11 +238,15 @@ function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
   const setSegments = fiveStar
     .map((set) => {
       const { obtained, total } = countObtained(set.eureka_variants)
+      // Heat-map: ramp the secondary color's opacity by completion, so a set's
+      // fill intensity reads as its progress at a glance. A 0% set stays the
+      // muted color rather than fading to transparent.
+      const ratio = total > 0 ? obtained / total : 0
       return {
         id: set.slug,
         value: total,
         label: set.title,
-        color: total > 0 && obtained === total ? secondary : muted,
+        color: ratio === 0 ? muted : alpha(secondary, ratio),
         formattedValue: `${percent(obtained, total)}% (${obtained}/${total})`,
         obtained,
         total,
