@@ -25,6 +25,7 @@ export default function ProgressChip({
         color={isComplete ? 'success' : 'default'}
         label={isComplete ? <Check /> : `${obtained} / ${total}`}
         size="small"
+        sx={{ bgcolor: 'surface.containerHover' }}
         variant="outlined"
       />
     )

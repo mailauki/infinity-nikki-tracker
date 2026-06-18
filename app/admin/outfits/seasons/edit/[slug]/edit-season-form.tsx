@@ -131,7 +131,7 @@ export default function EditSeasonForm({
         <input name="image_url" type="hidden" value={imageUrl ?? ''} />
         <ImageUpload
           // caption="Season Image"
-					size="xl"
+          size="xl"
           slug={season.slug}
           table="seasons"
           url={imageUrl}

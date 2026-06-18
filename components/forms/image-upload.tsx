@@ -43,8 +43,8 @@ export default function ImageUpload({
   const [uploading, setUploading] = useState(false)
 
   const isTrial = table === 'trials'
-	const isSeason = table === 'seasons'
-	const isFullWidth = isTrial || isSeason
+  const isSeason = table === 'seasons'
+  const isFullWidth = isTrial || isSeason
 
   const uploadImage: React.ChangeEventHandler<HTMLInputElement> = async (event) => {
     try {

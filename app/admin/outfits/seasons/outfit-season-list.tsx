@@ -24,7 +24,13 @@ export default function OutfitSeasonList({
       getKey={(season) => season.slug}
       page={page}
       renderRow={(row) => (
-        <ListRow list="admin/outfits/seasons" slug={row.slug} title={row.title} updated_at={null} />
+        <ListRow
+          image_url={row.image_url!}
+          list="admin/outfits/seasons"
+          slug={row.slug}
+          title={row.title}
+          updated_at={null}
+        />
       )}
       rows={rows}
       rowsPerPage={rowsPerPage}
