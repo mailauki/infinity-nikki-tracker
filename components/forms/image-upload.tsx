@@ -32,6 +32,7 @@ export default function ImageUpload({
     | 'outfit_sets'
     | 'evolutions'
     | 'abilities'
+    | 'seasons'
   slug: string | undefined
   onUpload: (url: string) => void
   caption?: string
@@ -42,6 +43,8 @@ export default function ImageUpload({
   const [uploading, setUploading] = useState(false)
 
   const isTrial = table === 'trials'
+	const isSeason = table === 'seasons'
+	const isFullWidth = isTrial || isSeason
 
   const uploadImage: React.ChangeEventHandler<HTMLInputElement> = async (event) => {
     try {
@@ -97,7 +100,7 @@ export default function ImageUpload({
             alt="Image preview"
             size={size}
             src={url ?? undefined}
-            sx={isTrial ? { width: '100%' } : undefined}
+            sx={isFullWidth ? { width: '100%' } : undefined}
             variant="rounded"
           >
             <ImageIcon fontSize="inherit" />

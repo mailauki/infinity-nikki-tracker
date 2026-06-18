@@ -27,6 +27,7 @@ export default function AddSeasonForm({ locations }: { locations: Location[] }) 
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [location, setLocation] = useState('')
+  const [description, setDescription] = useState('')
   const [editSlug, setEditSlug] = useState(false)
 
   const [state, action, pending] = useActionState(addSeason, null)
@@ -47,6 +48,7 @@ export default function AddSeasonForm({ locations }: { locations: Location[] }) 
       setTitle('')
       setSlug('')
       setLocation('')
+      setDescription('')
       setEditSlug(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -108,6 +110,16 @@ export default function AddSeasonForm({ locations }: { locations: Location[] }) 
             ))}
           </Select>
         </FormControl>
+
+        <TextField
+          multiline
+          helperText="Image can be added after saving"
+          label="Description"
+          minRows={3}
+          name="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
       </Stack>
     </form>
   )
