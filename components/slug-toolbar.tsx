@@ -12,7 +12,7 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
   const { mode, cycleMode } = useOutfitImageMode()
 
   // The image swap is available to everyone on the outfits slug page.
-  const showImageSwap = pathname.startsWith('/outfits/')
+  const showImageSwap = pathname.startsWith('/outfits/') && !pathname.includes('seasons')
 
   const IMAGE_MODE_LABEL = {
     image: 'Showing main image',
@@ -28,21 +28,15 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
       ? `${pathname.split('/')[1]}`
       : pathname.split('/').slice(1, 3).join('/')
 
-  if (!isAdmin && !showImageSwap) return null
-
   return (
     <NavBarToolbar>
       <Stack
         direction="row"
         sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
       >
-        {isAdmin ? (
-          <IconButton component="a" href={`/${backUrl}`}>
-            <ChevronLeft />
-          </IconButton>
-        ) : (
-          <span />
-        )}
+        <IconButton component="a" href={`/${backUrl}`}>
+          <ChevronLeft />
+        </IconButton>
 
         <Stack direction="row" spacing={0.5}>
           {showImageSwap && (
