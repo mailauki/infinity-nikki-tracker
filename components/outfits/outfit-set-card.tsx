@@ -17,7 +17,7 @@ export default function OutfitSetCard({
   evolution = null,
   isLoggedIn,
   obtained,
-	total,
+  total,
   onToggle,
   isMissingFilter = false,
   shouldHide = false,
@@ -108,7 +108,7 @@ export default function OutfitSetCard({
           )}
         </Stack>
         <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
-          {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant='parts' />}
+          {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
         </Box>
         <Box sx={{ position: 'absolute', top: 12, left: 12 }}>
           {evolution && !glowup && (

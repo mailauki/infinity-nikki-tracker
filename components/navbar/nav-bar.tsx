@@ -16,10 +16,12 @@ export default function NavBar() {
   const { drawerOpen } = useNavDrawer()
   const { filterOpen } = useFilterDrawer()
   const pathname = usePathname()
-	const theme = useTheme()
+  const theme = useTheme()
   const filterPushed = filterOpen && FILTER_PAGES.includes(pathname)
   const filterInset = filterPushed ? `${FILTER_DRAWER_WIDTH}px` : '0px'
-	const navInset = drawerOpen ? `calc(${NAV_DRAWER_WIDTH}px) - 21px` : `calc(${theme.spacing(10)} + 21px)`
+  const navInset = drawerOpen
+    ? `calc(${NAV_DRAWER_WIDTH}px) - 21px`
+    : `calc(${theme.spacing(10)} + 21px)`
   const { colorTheme } = useColorTheme()
   const { mode, systemMode } = useColorScheme()
   // CSS-variables mode resolves sx theme callbacks once and doesn't re-run them

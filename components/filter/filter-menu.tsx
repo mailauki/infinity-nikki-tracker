@@ -48,26 +48,26 @@ const FILTER_STORAGE_KEY = 'filter-drawer-open'
 
 const openedMixin = (theme: Theme): CSSObject => ({
   height: 'calc(100vh - 100px)',
-	borderColor: 'transparent',
-	borderRadius: '30px',
-	// marginRight: 20,
+  borderColor: 'transparent',
+  borderRadius: '30px',
+  // marginRight: 20,
   marginTop: 80,
-	marginBottom: 20,
-	width: FILTER_DRAWER_WIDTH,
-	transition: theme.transitions.create('width', {
-		easing: theme.transitions.easing.sharp,
-		duration: theme.transitions.duration.enteringScreen,
-	}),
-	overflowX: 'hidden',
+  marginBottom: 20,
+  width: FILTER_DRAWER_WIDTH,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
 })
 
 const closedMixin = (theme: Theme): CSSObject => ({
   height: 'calc(100vh - 100px)',
   borderColor: 'transparent',
   borderRadius: '30px',
-	// marginRight: 20,
+  // marginRight: 20,
   marginTop: 80,
-	marginBottom: 20,
+  marginBottom: 20,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -129,7 +129,7 @@ function FilterDrawer({ children }: { children: React.ReactNode }) {
       <IconButton onClick={() => toggleDrawer(!filterOpen)}>
         <FilterList />
       </IconButton>
-			{/* <NavBarToolbar>
+      {/* <NavBarToolbar>
         <Stack direction="row" sx={{ flexGrow: 1, justifyContent: 'flex-end' }}>
           <IconButton onClick={() => toggleDrawer(!filterOpen)}>
 						<FilterList />
@@ -254,97 +254,97 @@ export default function FilterMenu() {
     return (
       <FilterDrawer>
         <List>
-            <ListItem>
-              <DensityToggle />
-            </ListItem>
-            <ListItem>
-              <SortAxisToggle />
-            </ListItem>
-            <ListItem sx={{ gap: 1 }}>
-              <SortOutfitToggle
-                disabled={density === 'standard'}
-                groupBySet={outfitGroupBySet}
-                onGroupBySetChange={onOutfitGroupBySetChange}
-              />
-              <OutfitSelect
-                outfitSets={outfitSets}
-                selectedOutfitSet={selectedOutfitSet}
-                onOutfitSetChange={(slug) => onOutfitFiltersChange({ selectedOutfitSet: slug })}
-              />
-            </ListItem>
-            <ListItem>
-              <Stack spacing={0.5} sx={{ flexGrow: 1 }}>
-                <Typography variant="overline">Evolutions</Typography>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-                >
-                  <EvolutionOrderToggle
-                    availableOrders={availableOrders}
-                    disabled={hideEvolutions && hideGlowups}
-                    selectedEvolution={selectedEvolution}
-                    onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
+          <ListItem>
+            <DensityToggle />
+          </ListItem>
+          <ListItem>
+            <SortAxisToggle />
+          </ListItem>
+          <ListItem sx={{ gap: 1 }}>
+            <SortOutfitToggle
+              disabled={density === 'standard'}
+              groupBySet={outfitGroupBySet}
+              onGroupBySetChange={onOutfitGroupBySetChange}
+            />
+            <OutfitSelect
+              outfitSets={outfitSets}
+              selectedOutfitSet={selectedOutfitSet}
+              onOutfitSetChange={(slug) => onOutfitFiltersChange({ selectedOutfitSet: slug })}
+            />
+          </ListItem>
+          <ListItem>
+            <Stack spacing={0.5} sx={{ flexGrow: 1 }}>
+              <Typography variant="overline">Evolutions</Typography>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                <EvolutionOrderToggle
+                  availableOrders={availableOrders}
+                  disabled={hideEvolutions && hideGlowups}
+                  selectedEvolution={selectedEvolution}
+                  onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
+                />
+                <Stack direction="row" spacing={1}>
+                  <EvolutionToggle
+                    hideEvolutions={hideEvolutions}
+                    onHideEvolutionsChange={onHideEvolutionsChange}
                   />
-                  <Stack direction="row" spacing={1}>
-                    <EvolutionToggle
-                      hideEvolutions={hideEvolutions}
-                      onHideEvolutionsChange={onHideEvolutionsChange}
-                    />
-                    <GlowupToggle
-                      hideGlowups={hideGlowups}
-                      onHideGlowupsChange={onHideGlowupsChange}
-                    />
-                  </Stack>
+                  <GlowupToggle
+                    hideGlowups={hideGlowups}
+                    onHideGlowupsChange={onHideGlowupsChange}
+                  />
                 </Stack>
               </Stack>
-            </ListItem>
-            {outfitLoggedIn && (
-              <ListItem>
-                <ObtainedToggle
-                  selectedObtainedFilter={selectedObtainedFilter}
-                  onObtainedFilterChange={(_e, v) =>
-                    onOutfitFiltersChange({ selectedObtainedFilter: v })
-                  }
-                />
-              </ListItem>
-            )}
+            </Stack>
+          </ListItem>
+          {outfitLoggedIn && (
             <ListItem>
-              <OutfitCategorySelect
-                multiple
-                categories={outfitCategories}
-                disabled={density === 'standard'}
-                selectedCategory={selectedOutfitCategory}
-                onCategoryChange={(e) =>
-                  onOutfitFiltersChange({
-                    selectedOutfitCategory:
-                      typeof e.target.value === 'string'
-                        ? e.target.value.split(',').filter(Boolean)
-                        : e.target.value,
-                  })
+              <ObtainedToggle
+                selectedObtainedFilter={selectedObtainedFilter}
+                onObtainedFilterChange={(_e, v) =>
+                  onOutfitFiltersChange({ selectedObtainedFilter: v })
                 }
               />
             </ListItem>
-            <ListItem>
-              <RarityToggle
-                selectedRarity={selectedRarity}
-                onRarityChange={(_e, v) => onOutfitFiltersChange({ selectedRarity: v })}
-              />
-            </ListItem>
-            <Divider sx={{ mx: 2, mt: 2 }} />
-            <ListItem>
-              <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
-                {hasActiveFilters && (
-                  <Button color="secondary" variant="outlined" onClick={handleClearAll}>
-                    Clear all
-                  </Button>
-                )}
-                <Button variant="contained" onClick={closeFilter}>
-                  Apply
+          )}
+          <ListItem>
+            <OutfitCategorySelect
+              multiple
+              categories={outfitCategories}
+              disabled={density === 'standard'}
+              selectedCategory={selectedOutfitCategory}
+              onCategoryChange={(e) =>
+                onOutfitFiltersChange({
+                  selectedOutfitCategory:
+                    typeof e.target.value === 'string'
+                      ? e.target.value.split(',').filter(Boolean)
+                      : e.target.value,
+                })
+              }
+            />
+          </ListItem>
+          <ListItem>
+            <RarityToggle
+              selectedRarity={selectedRarity}
+              onRarityChange={(_e, v) => onOutfitFiltersChange({ selectedRarity: v })}
+            />
+          </ListItem>
+          <Divider sx={{ mx: 2, mt: 2 }} />
+          <ListItem>
+            <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
+              {hasActiveFilters && (
+                <Button color="secondary" variant="outlined" onClick={handleClearAll}>
+                  Clear all
                 </Button>
-              </Stack>
-            </ListItem>
-          </List>
+              )}
+              <Button variant="contained" onClick={closeFilter}>
+                Apply
+              </Button>
+            </Stack>
+          </ListItem>
+        </List>
       </FilterDrawer>
     )
   }
@@ -396,60 +396,60 @@ export default function FilterMenu() {
   return (
     <FilterDrawer>
       <List>
-          <ListItem sx={{ gap: 1 }}>
-            <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={onGroupBySetChange} />
-            <EurekaSelect
-              eurekaSets={eurekaSets}
-              selectedEurekaSet={selectedEurekaSet}
-              onEurekaSetChange={handleEurekaSetChange}
-            />
-          </ListItem>
-          <ListItem sx={{ gap: 1 }}>
-            <SortColorToggle
-              showByColor={showByColor}
-              onShowByColorChange={handleShowByColorChange}
-            />
-            <ColorSelect
-              colors={colors}
+        <ListItem sx={{ gap: 1 }}>
+          <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={onGroupBySetChange} />
+          <EurekaSelect
+            eurekaSets={eurekaSets}
+            selectedEurekaSet={selectedEurekaSet}
+            onEurekaSetChange={handleEurekaSetChange}
+          />
+        </ListItem>
+        <ListItem sx={{ gap: 1 }}>
+          <SortColorToggle
+            showByColor={showByColor}
+            onShowByColorChange={handleShowByColorChange}
+          />
+          <ColorSelect
+            colors={colors}
+            disabled={showByColor}
+            selectedColor={selectedColor}
+            onColorChange={handleColorChange}
+          />
+        </ListItem>
+        {isLoggedIn && (
+          <ListItem>
+            <ObtainedToggle
               disabled={showByColor}
-              selectedColor={selectedColor}
-              onColorChange={handleColorChange}
+              selectedObtainedFilter={selectedObtainedFilter}
+              onObtainedFilterChange={handleObtainedFilterChange}
             />
           </ListItem>
-          {isLoggedIn && (
-            <ListItem>
-              <ObtainedToggle
-                disabled={showByColor}
-                selectedObtainedFilter={selectedObtainedFilter}
-                onObtainedFilterChange={handleObtainedFilterChange}
-              />
-            </ListItem>
-          )}
-          <ListItem>
-            <CategoryToggle
-              categories={categories}
-              disabled={showByColor}
-              selectedCategory={showByColor ? null : selectedCategory}
-              onCategoryChange={handleCategoryChange}
-            />
-          </ListItem>
-          <ListItem>
-            <RarityToggle selectedRarity={selectedRarity} onRarityChange={handleRarityChange} />
-          </ListItem>
-          <Divider sx={{ mx: 2, mt: 2 }} />
-          <ListItem>
-            <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
-              {hasActiveFilters && (
-                <Button color="secondary" variant="outlined" onClick={onClearFilters}>
-                  Clear all
-                </Button>
-              )}
-              <Button variant="contained" onClick={closeFilter}>
-                Apply
+        )}
+        <ListItem>
+          <CategoryToggle
+            categories={categories}
+            disabled={showByColor}
+            selectedCategory={showByColor ? null : selectedCategory}
+            onCategoryChange={handleCategoryChange}
+          />
+        </ListItem>
+        <ListItem>
+          <RarityToggle selectedRarity={selectedRarity} onRarityChange={handleRarityChange} />
+        </ListItem>
+        <Divider sx={{ mx: 2, mt: 2 }} />
+        <ListItem>
+          <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
+            {hasActiveFilters && (
+              <Button color="secondary" variant="outlined" onClick={onClearFilters}>
+                Clear all
               </Button>
-            </Stack>
-          </ListItem>
-        </List>
+            )}
+            <Button variant="contained" onClick={closeFilter}>
+              Apply
+            </Button>
+          </Stack>
+        </ListItem>
+      </List>
     </FilterDrawer>
   )
 }

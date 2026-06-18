@@ -103,12 +103,22 @@ export default function OutfitToolBar({
     <NavBarToolbar>
       <Stack
         direction="row"
-        sx={{ width: '100%', flexGrow: 1, alignItems: 'center', justifyContent: 'space-between', position: 'relative' }}
+        sx={{
+          width: '100%',
+          flexGrow: 1,
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          position: 'relative',
+        }}
       >
         <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
           Showing: {resultsCount} results
         </Typography>
-        <Stack direction="row" spacing={1} sx={{ position: 'relative', width: '88px', height: '40px' }}>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ position: 'relative', width: '88px', height: '40px' }}
+        >
           <SortButton />
           {showFilters && <FilterMenu />}
         </Stack>

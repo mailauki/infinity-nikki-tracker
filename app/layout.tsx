@@ -104,7 +104,9 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
               <Suspense>
                 <PullToRefresh />
               </Suspense>
-              <Stack component='main' sx={{ flex: 1, p: 2 }}>{children}</Stack>
+              <Stack component="main" sx={{ flex: 1, p: 2 }}>
+                {children}
+              </Stack>
               <Footer />
             </FilterContentShim>
           </Stack>

@@ -15,10 +15,10 @@ import {
 
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
-import LazyImage from '../lazy-image'
-import { ViewAllButton } from '../view-all-button'
+import LazyImage from '@/components/lazy-image'
+import { ViewAllButton } from '@/components/view-all-button'
 
-export default function FilterOutfitsBySeason({
+export default function SeasonsContent({
   seasons,
   seasonCategories,
   locations,
@@ -81,13 +81,9 @@ export default function FilterOutfitsBySeason({
                         {String(index + 1).padStart(2, '0')}
                       </Typography>
                     }
-										sx={{ '& .MuiCardHeader-content': { width: 'calc(100% - 6rem)' } }}
+                    sx={{ '& .MuiCardHeader-content': { width: 'calc(100% - 6rem)' } }}
                     title={
-                      <Typography
-                        noWrap
-                        component="h2"
-                        variant="h6"
-                      >
+                      <Typography noWrap component="h2" variant="h6">
                         {season.title}
                       </Typography>
                     }

@@ -234,48 +234,48 @@ export default function FilterOutfits() {
       {filteredSets.length > 0 && density === 'standard' && (
         <Box sx={GRID_CONTAINER}>
           <Box sx={OUTFIT_GRID_SX}>
-          {filteredSets.flatMap((set) => {
-            // Base variants carry the concrete {set}-base slug end-to-end.
-            const baseEvoSlug = `${set.slug}-base`
-            // Render the base set plus each evolution as its own card.
-            return [null, ...set.evolutions].map((evolution) => {
-              const evolutionKey = evolution?.slug ?? baseEvoSlug
-              const variants = set.outfit_variants.filter((v) => v.evolution === evolutionKey)
-              if (variants.length === 0) return null
-              const allObtained = variants.every((v) => v.obtained === true)
-							const obtained = variants.filter((v) => v.obtained === true).length
-              return (
-                <OutfitSetCard
-                  key={`${set.id}-${evolutionKey}`}
-                  evolution={evolution}
-                  isLoggedIn={isLoggedIn}
-                  isMissingFilter={selectedObtainedFilter === 'missing'}
-                  obtained={obtained}
-									set={set}
-                  shouldHide={
-                    !isEvolutionVisible({
-                      evolutionSlug: evolutionKey,
-                      baseSlug: baseEvoSlug,
-                      glowupSlug: set.glowup_evolution,
-                      hideEvolutions,
-                      hideGlowups,
-                    })
-                  }
-                  total={variants.length}
-                  onToggle={() => {
-                    const toToggle = variants
-                      .filter((v) => v.obtained === allObtained)
-                      .map((v) => ({
-                        outfit_set: v.outfit_set!,
-                        outfit_category: v.outfit_category!,
-                        evolution: v.evolution,
-                      }))
-                    onBatchToggleObtained(toToggle, !allObtained)
-                  }}
-                />
-              )
-            })
-          })}
+            {filteredSets.flatMap((set) => {
+              // Base variants carry the concrete {set}-base slug end-to-end.
+              const baseEvoSlug = `${set.slug}-base`
+              // Render the base set plus each evolution as its own card.
+              return [null, ...set.evolutions].map((evolution) => {
+                const evolutionKey = evolution?.slug ?? baseEvoSlug
+                const variants = set.outfit_variants.filter((v) => v.evolution === evolutionKey)
+                if (variants.length === 0) return null
+                const allObtained = variants.every((v) => v.obtained === true)
+                const obtained = variants.filter((v) => v.obtained === true).length
+                return (
+                  <OutfitSetCard
+                    key={`${set.id}-${evolutionKey}`}
+                    evolution={evolution}
+                    isLoggedIn={isLoggedIn}
+                    isMissingFilter={selectedObtainedFilter === 'missing'}
+                    obtained={obtained}
+                    set={set}
+                    shouldHide={
+                      !isEvolutionVisible({
+                        evolutionSlug: evolutionKey,
+                        baseSlug: baseEvoSlug,
+                        glowupSlug: set.glowup_evolution,
+                        hideEvolutions,
+                        hideGlowups,
+                      })
+                    }
+                    total={variants.length}
+                    onToggle={() => {
+                      const toToggle = variants
+                        .filter((v) => v.obtained === allObtained)
+                        .map((v) => ({
+                          outfit_set: v.outfit_set!,
+                          outfit_category: v.outfit_category!,
+                          evolution: v.evolution,
+                        }))
+                      onBatchToggleObtained(toToggle, !allObtained)
+                    }}
+                  />
+                )
+              })
+            })}
           </Box>
         </Box>
       )}
