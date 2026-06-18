@@ -252,11 +252,15 @@ function OutfitSeasonsChart({
   const seasonSegments = seasonGroups.map(({ season, variants }) => {
     const obtained = variants.filter((v) => v.obtained).length
     const total = variants.length
+    // Heat-map: ramp the secondary color's opacity by completion, so a
+    // season's fill intensity reads as its progress at a glance. A 0% season
+    // stays the muted color rather than fading to transparent.
+    const ratio = total > 0 ? obtained / total : 0
     return {
       id: season.slug,
       value: total,
       label: season.title,
-      color: total > 0 && obtained === total ? secondary : muted,
+      color: ratio === 0 ? muted : alpha(secondary, ratio),
       formattedValue: `${percent(obtained, total)}% (${obtained}/${total})`,
       obtained,
       total,
