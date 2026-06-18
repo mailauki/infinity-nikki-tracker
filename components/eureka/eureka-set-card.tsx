@@ -38,11 +38,7 @@ export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
           </Stack>
 
           <Box sx={{ position: 'absolute', top: 8, left: 8 }}>
-            {rarity && (
-              <Typography color="textSecondary" variant="overline">
-                <RarityStars rarity={rarity} />
-              </Typography>
-            )}
+            {rarity && <RarityStars rarity={rarity} />}
           </Box>
         </Box>
       </CardActionArea>

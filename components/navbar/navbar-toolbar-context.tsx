@@ -26,12 +26,14 @@ const FILTER_STORAGE_KEY = 'filter-drawer-open'
 
 export function NavBarToolbarProvider({ children }: { children: React.ReactNode }) {
   const [toolbarSlot, setToolbarSlot] = React.useState<HTMLDivElement | null>(null)
-  const [drawerOpen, setDrawerOpen] = React.useState(
-    () => typeof window !== 'undefined' && localStorage.getItem(DRAWER_STORAGE_KEY) === 'true'
-  )
-  const [filterOpen, setFilterOpen] = React.useState(
-    () => typeof window !== 'undefined' && localStorage.getItem(FILTER_STORAGE_KEY) === 'true'
-  )
+  const [drawerOpen, setDrawerOpen] = React.useState(false)
+  const [filterOpen, setFilterOpen] = React.useState(false)
+
+  // Read persisted state after mount to avoid an SSR/client hydration mismatch.
+  React.useEffect(() => {
+    setDrawerOpen(localStorage.getItem(DRAWER_STORAGE_KEY) === 'true')
+    setFilterOpen(localStorage.getItem(FILTER_STORAGE_KEY) === 'true')
+  }, [])
 
   return (
     <NavDrawerContext.Provider value={{ drawerOpen, setDrawerOpen }}>

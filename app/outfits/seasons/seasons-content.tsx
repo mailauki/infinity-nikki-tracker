@@ -117,7 +117,12 @@ export default function SeasonsContent({
                             disableGutters
                             secondaryAction={
                               <Typography variant="caption">
-                                {outfitSets.filter((set) => set.season_category === slug && set.seasons === season.slug).length}
+                                {
+                                  outfitSets.filter(
+                                    (set) =>
+                                      set.season_category === slug && set.seasons === season.slug
+                                  ).length
+                                }
                               </Typography>
                             }
                           >

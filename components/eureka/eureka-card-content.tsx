@@ -26,9 +26,7 @@ export default function EurekaCardContent({
             <Typography component="p" variant="h5">
               {title}
             </Typography>
-            <Typography color="textSecondary" variant="caption">
-              <RarityStars rarity={rarity!} />
-            </Typography>
+            <RarityStars rarity={rarity!} />
           </Stack>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
             <Typography variant="overline">{trial}</Typography>
@@ -38,9 +36,7 @@ export default function EurekaCardContent({
       ) : (
         <Stack spacing={0.5}>
           <Typography variant="subtitle1">{title}</Typography>
-          <Typography color="textSecondary" variant="caption">
-            {rarity ? <RarityStars rarity={rarity} /> : subheader}
-          </Typography>
+          {rarity ? <RarityStars rarity={rarity} /> : subheader}
         </Stack>
       )}
     </CardContent>

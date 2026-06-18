@@ -1,5 +1,5 @@
 'use client'
-import { createSvgIcon, Stack } from '@mui/material'
+import { createSvgIcon, Stack, Typography } from '@mui/material'
 
 export const SparkleIcon = createSvgIcon(
   <svg
@@ -16,10 +16,12 @@ export const SparkleIcon = createSvgIcon(
 
 export default function RarityStars({ rarity }: { rarity: number }) {
   return (
-    <Stack direction="row" spacing={0.25}>
-      {Array.from({ length: rarity }, (_, index) => (
-        <SparkleIcon key={index} color="inherit" fontSize="inherit" sx={{ rotate: '15deg' }} />
-      ))}
-    </Stack>
+    <Typography color="textSecondary" variant="subtitle2">
+      <Stack direction="row" spacing={0.25}>
+        {Array.from({ length: rarity }, (_, index) => (
+          <SparkleIcon key={index} color="inherit" fontSize="inherit" sx={{ rotate: '15deg' }} />
+        ))}
+      </Stack>
+    </Typography>
   )
 }
