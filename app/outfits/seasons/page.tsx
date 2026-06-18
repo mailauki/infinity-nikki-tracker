@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { Metadata } from 'next'
 import SeasonsToolBar from '@/components/outfits/seasons-toolbar'
-import OutfitsLoading from '../loading'
+import SeasonsLoading from './loading'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getLocations } from '@/hooks/data/locations'
@@ -21,7 +21,7 @@ export default async function SeasonsPage() {
   return (
     <>
       <SeasonsToolBar count={seasons.length} />
-      <Suspense fallback={<OutfitsLoading />}>
+      <Suspense fallback={<SeasonsLoading />}>
         <SeasonsContent
           locations={locations}
           seasonCategories={seasonCategories}
