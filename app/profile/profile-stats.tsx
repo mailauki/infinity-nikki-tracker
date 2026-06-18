@@ -48,10 +48,10 @@ export default function ProfileStats({
       divider={<Divider flexItem orientation="vertical" variant="middle" />}
       spacing={{ xs: 1, sm: 2, md: 3 }}
     >
-      <Stat obtained={eurekaSetsObtained || 0} title="Eureka Sets" />
       <Stat obtained={outfitSetsObtained || 0} title="Outfit Sets" />
       <Stat obtained={evolutionsObtained || 0} title="Evolutions" />
       <Stat obtained={glowupsObtained || 0} title="Glow-ups" />
+      <Stat obtained={eurekaSetsObtained || 0} title="Eureka Sets" />
     </Stack>
   )
 }
