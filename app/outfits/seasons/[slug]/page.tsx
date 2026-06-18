@@ -7,6 +7,7 @@ import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import { getUserID } from '@/hooks/user'
 import OutfitSetListItem from './outfit-set-item'
 import LazyImage from '@/components/lazy-image'
+import SlugToolBar from '@/components/slug-toolbar'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -49,6 +50,7 @@ export default async function SeasonPage({ params }: Props) {
 
   return (
     <>
+      <SlugToolBar isAdmin={false} />
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
         <LazyImage
           image={season.image_url!}
