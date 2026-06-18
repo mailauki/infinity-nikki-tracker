@@ -7,7 +7,6 @@ import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import { getUserID } from '@/hooks/user'
 import OutfitSetListItem from './outfit-set-item'
 import LazyImage from '@/components/lazy-image'
-import SlugToolBar from '@/components/slug-toolbar'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -58,8 +57,8 @@ export default async function SeasonPage({ params }: Props) {
           title={season.title}
         />
         <Typography component="h1" variant="h4">
-					{season.title}
-				</Typography>
+          {season.title}
+        </Typography>
         <Typography variant="body2">{season.description}</Typography>
 
         {categoryGroups.length ? (
