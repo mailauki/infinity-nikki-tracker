@@ -42,9 +42,9 @@ export default function OutfitSetListItem({
               alignItems: 'flex-start',
               justifyContent: 'flex-start',
             },
-						'& .MuiCardHeader-action': {
-							px: 1,
-						},
+            '& .MuiCardHeader-action': {
+              px: 1,
+            },
           }}
           title={
             <Typography component="span" variant="subtitle1">
