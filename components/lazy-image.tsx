@@ -3,6 +3,7 @@ import Avatar, { type AvatarProps } from '@mui/material/Avatar'
 import CardMedia, { type CardMediaProps } from '@mui/material/CardMedia'
 import Box, { type BoxProps } from '@mui/material/Box'
 import Skeleton from '@mui/material/Skeleton'
+import CategoryIcon from '@mui/icons-material/Category'
 import { type SxProps, type Theme } from '@mui/material/styles'
 import Image from 'next/image'
 import { useLazyImage } from '@/hooks/use-lazy-image'
@@ -31,13 +32,15 @@ type AvatarKind = {
   size?: AvatarSize
 } & Omit<AvatarProps, 'variant'>
 
-// Square (1:1) poster, also Avatar-rendered, sized full-width.
+// Square (1:1) poster, also Avatar-rendered, sized full-width. `size` scales the
+// fallback placeholder icon (the square itself stays full-width up to maxWidth).
 type SquareKind = {
   kind: 'square'
   src?: string | null
   alt: string
   variant?: AvatarCorner
   maxWidth?: number | string
+  size?: AvatarSize
   sx?: BoxProps['sx']
 }
 
@@ -53,8 +56,10 @@ export default function LazyImage(props: LazyImageProps) {
     return <MediaImage {...rest} />
   }
   if (props.kind === 'square') {
-    const { alt, maxWidth = 300, src, sx, variant = 'rounded' } = props
-    return <SquareImage alt={alt} maxWidth={maxWidth} src={src} sx={sx} variant={variant} />
+    const { alt, maxWidth = 300, size, src, sx, variant = 'rounded' } = props
+    return (
+      <SquareImage alt={alt} maxWidth={maxWidth} size={size} src={src} sx={sx} variant={variant} />
+    )
   }
   const { children, kind, optimized, size, src, sx, variant = 'rounded', ...rest } = props
   void kind
@@ -188,18 +193,31 @@ function SquareImage({
   alt,
   variant,
   maxWidth,
+  size,
   sx,
 }: {
   src?: string | null
   alt: string
   variant: AvatarCorner
   maxWidth: number | string
+  size?: AvatarSize
   sx?: BoxProps['sx']
 }) {
   const { loaded, retrySrc, imgRef, handleLoad, handleError } = useLazyImage(src)
 
+  // With an explicit `size`, defer to the Avatar's fixed size variant; without
+  // one, the square fills its container (full width up to maxWidth).
+  const fullWidth = !size
+
   return (
-    <Box sx={{ position: 'relative', display: 'inline-flex', width: '100%', maxWidth }}>
+    <Box
+      sx={{
+        position: 'relative',
+        display: 'inline-flex',
+        width: fullWidth ? '100%' : 'fit-content',
+        maxWidth,
+      }}
+    >
       {!loaded && src && (
         <Skeleton
           sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
@@ -208,17 +226,24 @@ function SquareImage({
       )}
       <Avatar
         alt={alt}
+        size={size}
         slotProps={{
           img: retrySrc ? { ref: imgRef, onLoad: handleLoad, onError: handleError } : undefined,
         }}
         src={retrySrc}
         sx={[
-          { width: '100%', height: 'auto', aspectRatio: '1 / 1', opacity: loaded || !src ? 1 : 0 },
+          {
+            aspectRatio: '1 / 1',
+            opacity: loaded || !src ? 1 : 0,
+            ...(!size && { width: '100%', height: '100%' }),
+          },
           ...toSxArray(sx),
           darkDim,
         ]}
         variant={variant}
-      />
+      >
+        <CategoryIcon fontSize="inherit" />
+      </Avatar>
     </Box>
   )
 }
