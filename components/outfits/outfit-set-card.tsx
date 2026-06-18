@@ -94,9 +94,7 @@ export default function OutfitSetCard({
             <Typography noWrap variant="overline">
               {title}
             </Typography>
-            <Typography color="textSecondary" variant="subtitle2">
-              <RarityStars rarity={set.rarity} />
-            </Typography>
+            <RarityStars rarity={set.rarity} />
           </Stack>
           {isLoggedIn && (
             <IconButton

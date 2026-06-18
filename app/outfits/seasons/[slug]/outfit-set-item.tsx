@@ -2,27 +2,23 @@
 import LazyImage from '@/components/lazy-image'
 import RarityStars from '@/components/rarity-stars'
 import { OutfitSet } from '@/lib/types/outfit'
-import { Box, Card, CardActionArea, ListItem, ListItemAvatar, ListItemText } from '@mui/material'
+import { Box, ListItem, ListItemAvatar, ListItemButton, ListItemText } from '@mui/material'
 import Link from 'next/link'
 
 export default function OutfitSetListItem({ set }: { set: OutfitSet }) {
   return (
     <ListItem disablePadding>
-      <CardActionArea component={Link} href={`/outfits/${set.slug}`} sx={{ borderRadius: 3 }}>
-        <Card sx={{ display: 'flex', alignItems: 'center', p: 1, boxShadow: 'none' }}>
+      <ListItemButton component={Link} href={`/outfits/${set.slug}`}>
           <ListItemAvatar>
             <LazyImage alt={set.title} kind="square" maxWidth={56} src={set.image_url || ''} />
           </ListItemAvatar>
           <ListItemText
             primary={set.title}
             secondary={
-              <Box component="span" sx={{ color: 'text.secondary' }}>
-                <RarityStars rarity={set.rarity} />
-              </Box>
+              <RarityStars rarity={set.rarity} />
             }
           />
-        </Card>
-      </CardActionArea>
+      </ListItemButton>
     </ListItem>
   )
 }

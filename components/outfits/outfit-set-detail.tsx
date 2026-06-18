@@ -105,9 +105,7 @@ export default function OutfitSetDetail({
               direction="row"
               sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
             >
-              <Typography color="textSecondary" variant="subtitle2">
-                <RarityStars rarity={rarity!} />
-              </Typography>
+              <RarityStars rarity={rarity!} />
               <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
                 <Chip label={toTitle(label ?? '')} variant="outlined" />
                 {label_2 && <Chip label={toTitle(label_2)} variant="outlined" />}
