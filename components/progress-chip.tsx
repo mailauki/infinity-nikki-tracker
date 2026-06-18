@@ -14,20 +14,21 @@ export default function ProgressChip({
   size?: CardSize
   variant?: 'percent' | 'parts'
 }) {
-	const percentage = percent(obtained, total)
+  const percentage = percent(obtained, total)
   const isComplete = percentage === 100
   const completeLabel = size === 'sm' ? <Check /> : 'Complete'
   const unfinishedLabel = size === 'sm' ? `${percentage}%` : 'Unfinished'
 
-	if (variant === 'parts') {
-		return (
+  if (variant === 'parts') {
+    return (
       <Chip
         color={isComplete ? 'success' : 'default'}
         label={isComplete ? <Check /> : `${obtained} / ${total}`}
         size="small"
-				variant='outlined'
-      />)
-	}
+        variant="outlined"
+      />
+    )
+  }
 
   if (size === 'xs')
     return (

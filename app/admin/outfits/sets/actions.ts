@@ -37,22 +37,20 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
 
   if (!rarity) return { error: 'Rarity is required.' }
 
-  const { error } = await supabase
-    .from('outfit_sets')
-    .insert([
-      {
-        title,
-        slug,
-        description,
-        rarity,
-        style,
-        label,
-        label_2,
-        ability,
-        seasons,
-        season_category,
-      },
-    ])
+  const { error } = await supabase.from('outfit_sets').insert([
+    {
+      title,
+      slug,
+      description,
+      rarity,
+      style,
+      label,
+      label_2,
+      ability,
+      seasons,
+      season_category,
+    },
+  ])
 
   if (error) return { error: error.message }
 

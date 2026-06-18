@@ -77,8 +77,8 @@ export default function OutfitEvolutionVariants({
             )
           })}
         </ToggleButtonGroup>
-				{/* {isLoggedIn && <ProgressChip obtained={obtained} size="sm" total={total} />} */}
-        {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant='parts' />}
+        {/* {isLoggedIn && <ProgressChip obtained={obtained} size="sm" total={total} />} */}
+        {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
       </Toolbar>
 
       <Box

@@ -26,9 +26,7 @@ export default function EurekaSetLoading() {
       </Stack>
 
       <Box sx={GRID_CONTAINER}>
-        <Box
-          sx={{ display: 'grid', ...GRID_COLUMNS_CONTAINER, gap: { xs: 1, sm: 1.5, md: 2 } }}
-        >
+        <Box sx={{ display: 'grid', ...GRID_COLUMNS_CONTAINER, gap: { xs: 1, sm: 1.5, md: 2 } }}>
           {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton
               key={i}

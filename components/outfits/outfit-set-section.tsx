@@ -71,7 +71,7 @@ export default function OutfitSetSection({
               </Button>
               {isLoggedIn && (
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                  <ProgressChip obtained={obtained} total={groupVariants.length} variant='parts' />
+                  <ProgressChip obtained={obtained} total={groupVariants.length} variant="parts" />
                   <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
                     <ProgressChip obtained={obtained} size="lg" total={groupVariants.length} />
                   </Box>

@@ -14,11 +14,12 @@ import {
 } from '@mui/material'
 
 import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useSortOrder } from '@/components/sort-context'
 import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
-import LazyImage from '../lazy-image'
-import { ViewAllButton } from '../view-all-button'
+import LazyImage from '@/components/lazy-image'
+import { ViewAllButton } from '@/components/view-all-button'
 
-export default function FilterOutfitsBySeason({
+export default function SeasonsContent({
   seasons,
   seasonCategories,
   locations,
@@ -28,6 +29,13 @@ export default function FilterOutfitsBySeason({
   locations: Location[]
 }) {
   const { outfitSets } = useOutfitData()
+  const { sortOrder } = useSortOrder()
+
+  // The sort button orders seasons by their index (id): 'new' = highest id
+  // first, 'old' = lowest first.
+  const sortedSeasons = [...seasons].sort((a, b) =>
+    sortOrder === 'new' ? b.id - a.id : a.id - b.id
+  )
 
   const categoryTitle = (slug: string) =>
     seasonCategories.find((sc) => sc.slug === slug)?.title ?? slug
@@ -46,9 +54,10 @@ export default function FilterOutfitsBySeason({
     ),
   ]
 
-  // Group seasons by location, mirroring how trials group by realm.
+  // Group seasons by location, mirroring how trials group by realm. Seasons are
+  // pre-sorted by index so each group preserves the chosen order.
   const locationGroups = Object.entries(
-    seasons.reduce<Record<string, Season[]>>((groups, season) => {
+    sortedSeasons.reduce<Record<string, Season[]>>((groups, season) => {
       const location = season.location ?? 'Other'
       ;(groups[location] ??= []).push(season)
       return groups
@@ -72,22 +81,21 @@ export default function FilterOutfitsBySeason({
           >
             {group.map((season, index) => {
               const categories = categoriesForSeason(season.slug)
+              // Keep each season's ordinal fixed to its position in old→new order,
+              // so new→old sorting reverses the displayed numbers (highest first).
+              const ordinal = sortOrder === 'new' ? group.length - index : index + 1
               return (
                 <Card key={season.slug} sx={{ display: 'flex', flexDirection: 'column' }}>
                   <CardHeader
                     disableTypography
                     avatar={
                       <Typography component="span" variant="h3">
-                        {String(index + 1).padStart(2, '0')}
+                        {String(ordinal).padStart(2, '0')}
                       </Typography>
                     }
-										sx={{ '& .MuiCardHeader-content': { width: 'calc(100% - 6rem)' } }}
+                    sx={{ '& .MuiCardHeader-content': { width: 'calc(100% - 6rem)' } }}
                     title={
-                      <Typography
-                        noWrap
-                        component="h2"
-                        variant="h6"
-                      >
+                      <Typography noWrap component="h2" variant="h6">
                         {season.title}
                       </Typography>
                     }
@@ -109,7 +117,7 @@ export default function FilterOutfitsBySeason({
                             disableGutters
                             secondaryAction={
                               <Typography variant="caption">
-                                {outfitSets.filter((set) => set.season_category === slug).length}
+                                {outfitSets.filter((set) => set.season_category === slug && set.seasons === season.slug).length}
                               </Typography>
                             }
                           >

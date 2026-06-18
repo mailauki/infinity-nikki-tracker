@@ -7,9 +7,7 @@ export default function TrialLoading() {
       <Skeleton height={360} variant="rectangular" width="100%" />
       <Skeleton height={20} variant="text" width="70%" />
       <Box sx={GRID_CONTAINER}>
-        <Box
-          sx={{ display: 'grid', ...GRID_COLUMNS_CONTAINER, gap: { xs: 1, sm: 1.5, md: 2 } }}
-        >
+        <Box sx={{ display: 'grid', ...GRID_COLUMNS_CONTAINER, gap: { xs: 1, sm: 1.5, md: 2 } }}>
           {Array.from({ length: 4 }).map((_, i) => (
             <Skeleton
               key={i}

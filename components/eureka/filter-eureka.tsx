@@ -141,96 +141,96 @@ export default function FilterEureka() {
         </Stack>
       ) : (
         <Box sx={GRID_CONTAINER}>
-        <Box
-          sx={{
-            display: 'grid',
-            ...GRID_COLUMNS_CONTAINER,
-            gap: { xs: 1, sm: 1.5, md: 2 },
-            py: groupBySet ? 0 : 2,
-          }}
-        >
-          {filteredSets.map((set) => {
-            // `set.eureka_variants` is already filtered, so read the full set from
-            // context for the true count and the batch-toggle target.
-            const fullSet = eurekaSets.find((s) => s.id === set.id) ?? set
-            const groupVariants = fullSet.eureka_variants
-            const { obtained, total } = countObtained(groupVariants)
-            const allObtained = total > 0 && obtained === total
+          <Box
+            sx={{
+              display: 'grid',
+              ...GRID_COLUMNS_CONTAINER,
+              gap: { xs: 1, sm: 1.5, md: 2 },
+              py: groupBySet ? 0 : 2,
+            }}
+          >
+            {filteredSets.map((set) => {
+              // `set.eureka_variants` is already filtered, so read the full set from
+              // context for the true count and the batch-toggle target.
+              const fullSet = eurekaSets.find((s) => s.id === set.id) ?? set
+              const groupVariants = fullSet.eureka_variants
+              const { obtained, total } = countObtained(groupVariants)
+              const allObtained = total > 0 && obtained === total
 
-            // Batch-toggle the whole set: when fully obtained, clear it; otherwise
-            // mark the remaining (not-yet-obtained) variants obtained.
-            const handleToggle = () => {
-              const toToggle = groupVariants
-                .filter((v) => !!v.obtained === allObtained)
-                .map((v) => ({
-                  eureka_set: v.eureka_set!,
-                  category: v.category!,
-                  color: v.color!,
-                }))
-              onBatchToggleObtained(toToggle, !allObtained)
-            }
-            return (
-              <React.Fragment key={set.slug}>
-                {groupBySet && (
-                  <Box
-                    sx={{
-                      gridColumn: '1 / -1',
-                      mt: 2,
-                    }}
-                  >
-                    <Stack
-                      direction="row"
-                      sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
+              // Batch-toggle the whole set: when fully obtained, clear it; otherwise
+              // mark the remaining (not-yet-obtained) variants obtained.
+              const handleToggle = () => {
+                const toToggle = groupVariants
+                  .filter((v) => !!v.obtained === allObtained)
+                  .map((v) => ({
+                    eureka_set: v.eureka_set!,
+                    category: v.category!,
+                    color: v.color!,
+                  }))
+                onBatchToggleObtained(toToggle, !allObtained)
+              }
+              return (
+                <React.Fragment key={set.slug}>
+                  {groupBySet && (
+                    <Box
+                      sx={{
+                        gridColumn: '1 / -1',
+                        mt: 2,
+                      }}
                     >
-                      <Button
-                        color="inherit"
-                        endIcon={<ChevronRight />}
-                        href={`/eureka/${set.slug}`}
-                        size="small"
+                      <Stack
+                        direction="row"
+                        sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
                       >
-                        {set.title}
-                      </Button>
+                        <Button
+                          color="inherit"
+                          endIcon={<ChevronRight />}
+                          href={`/eureka/${set.slug}`}
+                          size="small"
+                        >
+                          {set.title}
+                        </Button>
 
-                      {isLoggedIn && (
-                        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-                          <ProgressChip obtained={obtained} total={total} variant='parts' />
-                          <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
-                            <ProgressChip obtained={obtained} size="lg" total={total} />
-                          </Box>
-                          <IconButton
-                            aria-label={allObtained ? 'Mark as not obtained' : 'Mark as obtained'}
-                            size="small"
-                            onClick={handleToggle}
-                          >
-                            {allObtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
-                          </IconButton>
-                        </Stack>
-                      )}
-                    </Stack>
-                    <Divider />
-                  </Box>
-                )}
-                {showByColor
-                  ? set.colors.map((color) => (
-                      <EurekaColorSetCard
-                        key={`${set.slug}-${color.slug}`}
-                        color={color}
-                        eurekaSet={set}
-                        isLoggedIn={isLoggedIn}
-                      />
-                    ))
-                  : set.eureka_variants.map((variant) => (
-                      <EurekaVariantCard
-                        key={variant.id}
-                        eurekaVariant={variant}
-                        isLoggedIn={isLoggedIn}
-                        isMissingFilter={selectedObtainedFilter === 'missing'}
-                      />
-                    ))}
-              </React.Fragment>
-            )
-          })}
-        </Box>
+                        {isLoggedIn && (
+                          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                            <ProgressChip obtained={obtained} total={total} variant="parts" />
+                            <Box sx={{ display: { xs: 'none', sm: 'inline-flex' } }}>
+                              <ProgressChip obtained={obtained} size="lg" total={total} />
+                            </Box>
+                            <IconButton
+                              aria-label={allObtained ? 'Mark as not obtained' : 'Mark as obtained'}
+                              size="small"
+                              onClick={handleToggle}
+                            >
+                              {allObtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
+                            </IconButton>
+                          </Stack>
+                        )}
+                      </Stack>
+                      <Divider />
+                    </Box>
+                  )}
+                  {showByColor
+                    ? set.colors.map((color) => (
+                        <EurekaColorSetCard
+                          key={`${set.slug}-${color.slug}`}
+                          color={color}
+                          eurekaSet={set}
+                          isLoggedIn={isLoggedIn}
+                        />
+                      ))
+                    : set.eureka_variants.map((variant) => (
+                        <EurekaVariantCard
+                          key={variant.id}
+                          eurekaVariant={variant}
+                          isLoggedIn={isLoggedIn}
+                          isMissingFilter={selectedObtainedFilter === 'missing'}
+                        />
+                      ))}
+                </React.Fragment>
+              )
+            })}
+          </Box>
         </Box>
       )}
     </>
