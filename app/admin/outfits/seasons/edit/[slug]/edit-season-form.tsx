@@ -15,6 +15,7 @@ import {
 import { Edit, EditOff } from '@mui/icons-material'
 import { Location } from '@/lib/types/outfit'
 import { MENU_PROPS } from '@/lib/types/props'
+import ImageUpload from '@/components/forms/image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editSeason } from './actions'
 import { navLinksData } from '@/lib/nav-links'
@@ -23,6 +24,8 @@ type SeasonRow = {
   slug: string
   title: string
   location: string | null
+  description: string | null
+  image_url: string | null
 }
 
 const FORM_ID = 'edit-season'
@@ -40,6 +43,8 @@ export default function EditSeasonForm({
   const [title, setTitle] = useState(season.title)
   const [slug, setSlug] = useState(season.slug)
   const [location, setLocation] = useState(season.location ?? '')
+  const [description, setDescription] = useState(season.description ?? '')
+  const [imageUrl, setImageUrl] = useState<string | null>(season.image_url)
   const [editSlug, setEditSlug] = useState(false)
 
   const boundAction = editSeason.bind(null, season.slug, back)
@@ -113,6 +118,25 @@ export default function EditSeasonForm({
             ))}
           </Select>
         </FormControl>
+
+        <TextField
+          multiline
+          label="Description"
+          minRows={3}
+          name="description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+
+        <input name="image_url" type="hidden" value={imageUrl ?? ''} />
+        <ImageUpload
+          // caption="Season Image"
+					size="xl"
+          slug={season.slug}
+          table="seasons"
+          url={imageUrl}
+          onUpload={(url) => setImageUrl(url)}
+        />
       </Stack>
     </form>
   )
