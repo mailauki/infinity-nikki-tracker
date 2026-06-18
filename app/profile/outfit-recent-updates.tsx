@@ -11,10 +11,10 @@ import {
   Typography,
 } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
-import { RecentObtained } from '@/lib/types/eureka'
-import { toTitle, formatDate, toSlug } from '@/lib/utils'
+import { RecentObtainedOutfit } from '@/lib/types/outfit'
+import { toTitle, formatDate } from '@/lib/utils'
 
-export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
+export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOutfit[] }) {
   if (!items?.length) return null
 
   return (
@@ -32,21 +32,23 @@ export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
         <List disablePadding>
           {items.map((item) => (
             <ListItem key={item.id} disablePadding>
-              <ListItemButton component="a" href={`/eureka/${toSlug(item.eureka_sets!.title!)}`}>
+              <ListItemButton component="a" href={`/outfits/${item.outfit_set}`}>
                 <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
                   <LazyImage
-                    alt={item.eureka_sets?.title}
+                    alt={item.outfit_sets?.title}
                     size="md"
                     src={
-                      item.eureka_sets?.eureka_variants.find(
-                        (v) => v.category === item.category && v.color === item.color
+                      item.outfit_sets?.outfit_variants.find(
+                        (v) =>
+                          v.outfit_category === item.outfit_category &&
+                          v.evolution === item.evolution
                       )?.image_url ?? undefined
                     }
                   />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={item.eureka_sets?.title ?? toTitle(item.eureka_set ?? '')}
-                  secondary={[item.eureka_categories?.title, item.eureka_colors?.title]
+                  primary={item.outfit_sets?.title ?? toTitle(item.outfit_set ?? '')}
+                  secondary={[item.outfit_categories?.title, item.evolutions?.title]
                     .filter(Boolean)
                     .join(' • ')}
                   slotProps={{
