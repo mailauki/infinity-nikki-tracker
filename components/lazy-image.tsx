@@ -205,8 +205,19 @@ function SquareImage({
 }) {
   const { loaded, retrySrc, imgRef, handleLoad, handleError } = useLazyImage(src)
 
+  // With an explicit `size`, defer to the Avatar's fixed size variant; without
+  // one, the square fills its container (full width up to maxWidth).
+  const fullWidth = !size
+
   return (
-    <Box sx={{ position: 'relative', display: 'inline-flex', width: '100%', maxWidth }}>
+    <Box
+      sx={{
+        position: 'relative',
+        display: 'inline-flex',
+        width: fullWidth ? '100%' : 'fit-content',
+        maxWidth,
+      }}
+    >
       {!loaded && src && (
         <Skeleton
           sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
@@ -221,13 +232,17 @@ function SquareImage({
         }}
         src={retrySrc}
         sx={[
-          { width: '100%', height: 'auto', aspectRatio: '1 / 1', opacity: loaded || !src ? 1 : 0 },
+          {
+            aspectRatio: '1 / 1',
+            opacity: loaded || !src ? 1 : 0,
+            ...(!size && { width: '100%', height: '100%' }),
+          },
           ...toSxArray(sx),
           darkDim,
         ]}
         variant={variant}
       >
-        <CategoryIcon />
+        <CategoryIcon fontSize="inherit" />
       </Avatar>
     </Box>
   )
