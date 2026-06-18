@@ -81,13 +81,16 @@ export default function SeasonsContent({
           >
             {group.map((season, index) => {
               const categories = categoriesForSeason(season.slug)
+              // Keep each season's ordinal fixed to its position in old→new order,
+              // so new→old sorting reverses the displayed numbers (highest first).
+              const ordinal = sortOrder === 'new' ? group.length - index : index + 1
               return (
                 <Card key={season.slug} sx={{ display: 'flex', flexDirection: 'column' }}>
                   <CardHeader
                     disableTypography
                     avatar={
                       <Typography component="span" variant="h3">
-                        {String(index + 1).padStart(2, '0')}
+                        {String(ordinal).padStart(2, '0')}
                       </Typography>
                     }
                     sx={{ '& .MuiCardHeader-content': { width: 'calc(100% - 6rem)' } }}
@@ -114,7 +117,7 @@ export default function SeasonsContent({
                             disableGutters
                             secondaryAction={
                               <Typography variant="caption">
-                                {outfitSets.filter((set) => set.season_category === slug).length}
+                                {outfitSets.filter((set) => set.season_category === slug && set.seasons === season.slug).length}
                               </Typography>
                             }
                           >
