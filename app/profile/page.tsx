@@ -1,20 +1,23 @@
-import CollectionCharts from './collection-charts'
-import RecentUpdates from './recent-updates'
 import ProfileCard from './profile-card'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
-import { Alert, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import ProfileLoading from './loading'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrials } from '@/hooks/data/trials'
 import { getRecentObtained } from '@/hooks/data/obtained-eureka'
+import { getRecentObtainedOutfit } from '@/hooks/data/obtained-outfit'
+import { getSeasons } from '@/hooks/data/seasons'
 import ProfileToolbar from './profile-toolbar'
 import ProfileStats from './profile-stats'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import PremiumUpgrade from './premium-upgrade'
+import EurekaStats from './eureka-stats'
+import OutfitStats from './outfit-stats'
+import StatsToggle from './stats-toggle'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -44,7 +47,9 @@ async function UserDetails() {
   const eurekaSets = await getEurekaSets()
   const trials = await getTrials()
   const outfitSets = await getOutfitSets()
+  const seasons = await getSeasons()
   const recentObtained = user_id ? await getRecentObtained(user_id) : []
+  const recentObtainedOutfit = user_id ? await getRecentObtainedOutfit(user_id) : []
 
   const { data: profile } = await supabase
     .from('profiles')
@@ -68,9 +73,24 @@ async function UserDetails() {
         />
         <ProfileStats eurekaSets={eurekaSets || []} outfitSets={outfitSets || []} />
         {!isPremium && <PremiumUpgrade />}
-        <Alert severity="info">Outfit collection stats coming soon</Alert>
-        {user_id && <CollectionCharts eurekaSets={eurekaSets || []} trials={trials || []} />}
-        {user_id && <RecentUpdates items={recentObtained || []} />}
+        <StatsToggle
+          eureka={
+            <EurekaStats
+              eurekaSets={eurekaSets || []}
+              recentObtained={recentObtained || []}
+              trials={trials || []}
+              user_id={Boolean(user_id)}
+            />
+          }
+          outfits={
+            <OutfitStats
+              outfitSets={outfitSets || []}
+              recentObtained={recentObtainedOutfit || []}
+              seasons={seasons || []}
+              user_id={Boolean(user_id)}
+            />
+          }
+        />
       </Stack>
     </>
   )
