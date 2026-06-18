@@ -1,10 +1,5 @@
 import { notFound } from 'next/navigation'
-import {
-  List,
-  ListSubheader,
-  Stack,
-  Typography,
-} from '@mui/material'
+import { List, ListSubheader, Stack, Typography } from '@mui/material'
 import { Metadata } from 'next'
 import { getSeasonRaw } from '@/hooks/data/admin/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'

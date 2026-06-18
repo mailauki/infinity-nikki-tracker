@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 
 import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useSortOrder } from '@/components/sort-context'
 import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
 import { ViewAllButton } from '@/components/view-all-button'
@@ -28,6 +29,13 @@ export default function SeasonsContent({
   locations: Location[]
 }) {
   const { outfitSets } = useOutfitData()
+  const { sortOrder } = useSortOrder()
+
+  // The sort button orders seasons by their index (id): 'new' = highest id
+  // first, 'old' = lowest first.
+  const sortedSeasons = [...seasons].sort((a, b) =>
+    sortOrder === 'new' ? b.id - a.id : a.id - b.id
+  )
 
   const categoryTitle = (slug: string) =>
     seasonCategories.find((sc) => sc.slug === slug)?.title ?? slug
@@ -46,9 +54,10 @@ export default function SeasonsContent({
     ),
   ]
 
-  // Group seasons by location, mirroring how trials group by realm.
+  // Group seasons by location, mirroring how trials group by realm. Seasons are
+  // pre-sorted by index so each group preserves the chosen order.
   const locationGroups = Object.entries(
-    seasons.reduce<Record<string, Season[]>>((groups, season) => {
+    sortedSeasons.reduce<Record<string, Season[]>>((groups, season) => {
       const location = season.location ?? 'Other'
       ;(groups[location] ??= []).push(season)
       return groups
