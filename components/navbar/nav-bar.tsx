@@ -1,8 +1,7 @@
 'use client'
 
-import { AppBar, Toolbar, useColorScheme } from '@mui/material'
+import { AppBar, Toolbar } from '@mui/material'
 import { alpha, useTheme } from '@mui/material/styles'
-import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '@/components/color-theme-context'
@@ -23,24 +22,24 @@ export default function NavBar() {
     ? `calc(${NAV_DRAWER_WIDTH}px) - 21px`
     : `calc(${theme.spacing(10)} + 21px)`
   const { colorTheme } = useColorTheme()
-  const { mode, systemMode } = useColorScheme()
-  // CSS-variables mode resolves sx theme callbacks once and doesn't re-run them
-  // on a color-scheme change, so derive the surface color from the active mode
-  // ourselves. The mounted guard avoids an SSR/client hydration mismatch.
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
 
+  // Build the surface gradient for both schemes and let MUI's CSS-variables
+  // dark class swap them. Deriving the color from useColorScheme + a mounted
+  // guard instead made the gradient (and thus the AppBar's emotion className)
+  // differ between SSR and the first client render → a hydration mismatch.
   const preset = COLOR_THEME_PRESETS[colorTheme]
-  const surface = (isDarkMode ? preset.dark : preset.light).surface.containerLowest
-  const background = `linear-gradient(to bottom, ${alpha(surface, 0.7)} 0%, ${alpha(surface, 0.3)} 70%, ${alpha(surface, 0)} 100%)`
+  const gradient = (surface: string) =>
+    `linear-gradient(to bottom, ${alpha(surface, 0.7)} 0%, ${alpha(surface, 0.3)} 70%, ${alpha(surface, 0)} 100%)`
+  const background = gradient(preset.light.surface.containerLowest)
+  const darkBackground = gradient(preset.dark.surface.containerLowest)
 
   return (
     <AppBar
       color="default"
       position="fixed"
-      sx={{
+      sx={(theme) => ({
         background,
+        ...theme.applyStyles('dark', { background: darkBackground }),
         border: 0,
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
@@ -51,14 +50,13 @@ export default function NavBar() {
           xs: '100%',
           sm: `calc(100% - ${navInset} - ${filterInset})`,
         },
-        transition: (theme) =>
-          theme.transitions.create(['margin-left', 'margin-right', 'width'], {
-            easing: theme.transitions.easing.sharp,
-            duration: drawerOpen
-              ? theme.transitions.duration.enteringScreen
-              : theme.transitions.duration.leavingScreen,
-          }),
-      }}
+        transition: theme.transitions.create(['margin-left', 'margin-right', 'width'], {
+          easing: theme.transitions.easing.sharp,
+          duration: drawerOpen
+            ? theme.transitions.duration.enteringScreen
+            : theme.transitions.duration.leavingScreen,
+        }),
+      })}
       variant="outlined"
     >
       <Toolbar sx={{ alignItems: 'flex-end', justifyContent: 'center', mb: 2 }}>
