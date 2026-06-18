@@ -15,7 +15,7 @@ export default function StatsToggle({
   const [view, setView] = useState<StatsView>('outfits')
 
   return (
-    <Stack spacing={2}>
+    <>
       <ToggleButtonGroup
         exclusive
         aria-label="Collection stats view"
@@ -29,8 +29,12 @@ export default function StatsToggle({
         <ToggleButton value="outfits">Outfit Stats</ToggleButton>
         <ToggleButton value="eureka">Eureka Stats</ToggleButton>
       </ToggleButtonGroup>
-      <Box hidden={view !== 'outfits'}>{outfits}</Box>
-      <Box hidden={view !== 'eureka'}>{eureka}</Box>
-    </Stack>
+      <Box hidden={view !== 'outfits'}>
+        <Stack spacing={2}>{outfits}</Stack>
+      </Box>
+      <Box hidden={view !== 'eureka'}>
+        <Stack spacing={2}>{eureka}</Stack>
+      </Box>
+    </>
   )
 }
