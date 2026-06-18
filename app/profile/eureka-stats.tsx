@@ -1,6 +1,6 @@
 import { EurekaSet, RecentObtained, Trial } from '@/lib/types/eureka'
-import CollectionCharts from './collection-charts'
-import RecentUpdates from './recent-updates'
+import EurekaCollectionCharts from './eureka-collection-charts'
+import EurekaRecentUpdates from './eureka-recent-updates'
 
 export default function EurekaStats({
   user_id,
@@ -15,8 +15,8 @@ export default function EurekaStats({
 }) {
   return (
     <>
-      {user_id && <CollectionCharts eurekaSets={eurekaSets || []} trials={trials || []} />}
-      {user_id && <RecentUpdates items={recentObtained || []} />}
+      {user_id && <EurekaCollectionCharts eurekaSets={eurekaSets || []} trials={trials || []} />}
+      {user_id && <EurekaRecentUpdates items={recentObtained || []} />}
     </>
   )
 }

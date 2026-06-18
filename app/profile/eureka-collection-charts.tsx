@@ -20,6 +20,7 @@ import { countObtained, percent } from '@/hooks/count-obtained'
 import { EurekaSet, Trial } from '@/lib/types/eureka'
 import PercentLabel from '@/components/percent-label'
 import { SparkleIcon } from '@/components/rarity-stars'
+import ProgressChip from '@/components/progress-chip'
 
 const RINGS_CHART_SIZE = 240
 const COLOR_SETS_CHART_SIZE = 220
@@ -184,11 +185,7 @@ function CollectionRingsChart({
                   <Typography sx={{ flex: 1 }} variant="body2">
                     {ring.label}
                   </Typography>
-                  <Chip
-                    label={`${ring.obtained} / ${ring.total}`}
-                    size="small"
-                    variant="outlined"
-                  />
+                  <ProgressChip obtained={ring.obtained} total={ring.total} variant="parts" />
                 </Stack>
                 <Box sx={{ ml: 3, color: ring.color }}>
                   <LinearProgress
@@ -403,7 +400,11 @@ function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
                     <Typography sx={{ flex: 1 }} variant="body2">
                       {text}
                     </Typography>
-                    <Chip label={`${value}`} size="small" variant="outlined" />
+                    <ProgressChip
+                      obtained={Number(value.split('/')[0])}
+                      total={Number(value.split('/')[1])}
+                      variant="parts"
+                    />
                   </Stack>
                 ))}
               </Stack>
@@ -415,7 +416,7 @@ function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
   )
 }
 
-export default function CollectionCharts({
+export default function EurekaCollectionCharts({
   eurekaSets,
   trials,
 }: {

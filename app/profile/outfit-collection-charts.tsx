@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Chip,
   LinearProgress,
   Skeleton,
   Stack,
@@ -19,10 +18,10 @@ import { PieChart } from '@mui/x-charts/PieChart'
 import { percent } from '@/hooks/count-obtained'
 import { OutfitSet, Season } from '@/lib/types/outfit'
 import PercentLabel from '@/components/percent-label'
-import { SparkleIcon } from '@/components/rarity-stars'
+import ProgressChip from '@/components/progress-chip'
 
 const RINGS_CHART_SIZE = 240
-const GLOWUP_CHART_SIZE = 220
+const SEASONS_CHART_SIZE = 220
 
 // A variant group is complete when it is non-empty and every variant is obtained.
 function isComplete(variants: { obtained?: boolean }[]) {
@@ -34,8 +33,8 @@ function OutfitRingsChart({
   setsTotal,
   evolutionsObtained,
   evolutionsTotal,
-  seasonsObtained,
-  seasonsTotal,
+  glowupsObtained,
+  glowupsTotal,
   variantsObtained,
   variantsTotal,
 }: {
@@ -43,8 +42,8 @@ function OutfitRingsChart({
   setsTotal: number
   evolutionsObtained: number
   evolutionsTotal: number
-  seasonsObtained: number
-  seasonsTotal: number
+  glowupsObtained: number
+  glowupsTotal: number
   variantsObtained: number
   variantsTotal: number
 }) {
@@ -85,9 +84,9 @@ function OutfitRingsChart({
       outerRadius: 72,
     },
     {
-      label: 'Seasons',
-      obtained: seasonsObtained,
-      total: seasonsTotal,
+      label: 'Glow-ups',
+      obtained: glowupsObtained,
+      total: glowupsTotal,
       color: ringColors[2],
       innerRadius: 76,
       outerRadius: 90,
@@ -189,11 +188,7 @@ function OutfitRingsChart({
                   <Typography sx={{ flex: 1 }} variant="body2">
                     {ring.label}
                   </Typography>
-                  <Chip
-                    label={`${ring.obtained} / ${ring.total}`}
-                    size="small"
-                    variant="outlined"
-                  />
+                  <ProgressChip obtained={ring.obtained} total={ring.total} variant="parts" />
                 </Stack>
                 <Box sx={{ ml: 3, color: ring.color }}>
                   <LinearProgress
@@ -211,7 +206,13 @@ function OutfitRingsChart({
   )
 }
 
-function OutfitGlowupChart({ outfitSets }: { outfitSets: OutfitSet[] }) {
+function OutfitSeasonsChart({
+  outfitSets,
+  seasons,
+}: {
+  outfitSets: OutfitSet[]
+  seasons: Season[]
+}) {
   const { mode, systemMode } = useColorScheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -224,7 +225,7 @@ function OutfitGlowupChart({ outfitSets }: { outfitSets: OutfitSet[] }) {
     return (
       <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
         <CardContent>
-          <Skeleton height={GLOWUP_CHART_SIZE} variant="rounded" />
+          <Skeleton height={SEASONS_CHART_SIZE} variant="rounded" />
         </CardContent>
       </Card>
     )
@@ -233,25 +234,27 @@ function OutfitGlowupChart({ outfitSets }: { outfitSets: OutfitSet[] }) {
   const primary = theme.palette.primary.main
   const secondary = theme.palette.secondary.main
 
-  // Sets that actually have a glow-up evolution with variants.
-  const glowupSets = outfitSets
-    .map((set) => {
-      const variants = set.outfit_variants.filter((v) => v.evolution === set.glowup_evolution)
-      return { set, variants }
+  // Seasons that actually have sets with variants.
+  const seasonGroups = seasons
+    .map((season) => {
+      const variants = outfitSets
+        .filter((set) => set.seasons === season.slug)
+        .flatMap((set) => set.outfit_variants)
+      return { season, variants }
     })
-    .filter(({ set, variants }) => set.glowup_evolution && variants.length > 0)
+    .filter(({ variants }) => variants.length > 0)
 
-  const glowupVariantsTotal = glowupSets.reduce((acc, { variants }) => acc + variants.length, 0)
-  const glowupSetsTotal = glowupSets.length
-  const glowupSetsObtained = glowupSets.filter(({ variants }) => isComplete(variants)).length
+  const seasonVariantsTotal = seasonGroups.reduce((acc, { variants }) => acc + variants.length, 0)
+  const seasonsTotal = seasonGroups.length
+  const seasonsObtained = seasonGroups.filter(({ variants }) => isComplete(variants)).length
 
-  const setSegments = glowupSets.map(({ set, variants }) => {
+  const seasonSegments = seasonGroups.map(({ season, variants }) => {
     const obtained = variants.filter((v) => v.obtained).length
     const total = variants.length
     return {
-      id: set.slug,
+      id: season.slug,
       value: total,
-      label: set.title,
+      label: season.title,
       color: total > 0 && obtained === total ? secondary : muted,
       formattedValue: `${percent(obtained, total)}% (${obtained}/${total})`,
       obtained,
@@ -259,13 +262,13 @@ function OutfitGlowupChart({ outfitSets }: { outfitSets: OutfitSet[] }) {
     }
   })
 
-  const selected = selectedSlug ? (setSegments.find((s) => s.id === selectedSlug) ?? null) : null
+  const selected = selectedSlug ? (seasonSegments.find((s) => s.id === selectedSlug) ?? null) : null
 
-  const innerObtained = selected ? selected.obtained : glowupSetsObtained
-  const innerTotal = selected ? selected.total : glowupSetsTotal
+  const innerObtained = selected ? selected.obtained : seasonsObtained
+  const innerTotal = selected ? selected.total : seasonsTotal
   const innerPct = percent(innerObtained, innerTotal)
 
-  if (glowupVariantsTotal === 0) return null
+  if (seasonVariantsTotal === 0) return null
 
   return (
     <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
@@ -274,13 +277,7 @@ function OutfitGlowupChart({ outfitSets }: { outfitSets: OutfitSet[] }) {
         sx={{ mt: -1 }}
         title={
           <Typography color="text.secondary" variant="overline">
-            Glow-up Progress
-            <SparkleIcon
-              aria-label="glow-up"
-              color="inherit"
-              fontSize="inherit"
-              sx={{ rotate: '15deg', ml: 0.5, mb: 0.25 }}
-            />
+            Season Progress
           </Typography>
         }
       />
@@ -293,13 +290,13 @@ function OutfitGlowupChart({ outfitSets }: { outfitSets: OutfitSet[] }) {
           <Box
             sx={{
               position: 'relative',
-              width: GLOWUP_CHART_SIZE,
-              height: GLOWUP_CHART_SIZE,
+              width: SEASONS_CHART_SIZE,
+              height: SEASONS_CHART_SIZE,
               flexShrink: 0,
             }}
           >
             <PieChart
-              height={GLOWUP_CHART_SIZE}
+              height={SEASONS_CHART_SIZE}
               margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
               series={[
                 {
@@ -324,22 +321,22 @@ function OutfitGlowupChart({ outfitSets }: { outfitSets: OutfitSet[] }) {
                   valueFormatter: (item) => `${percent(item.value, innerTotal)}%`,
                 },
                 {
-                  id: 'sets',
-                  data: setSegments,
+                  id: 'seasons',
+                  data: seasonSegments,
                   innerRadius: 76,
                   outerRadius: 100,
                   paddingAngle: 1.5,
                   cornerRadius: 3,
                   valueFormatter: (item) =>
-                    (item as (typeof setSegments)[number]).formattedValue ??
-                    `${percent(item.value, glowupVariantsTotal)}%`,
+                    (item as (typeof seasonSegments)[number]).formattedValue ??
+                    `${percent(item.value, seasonVariantsTotal)}%`,
                 },
               ]}
               slots={{ legend: () => null }}
-              width={GLOWUP_CHART_SIZE}
+              width={SEASONS_CHART_SIZE}
               onItemClick={(_, { seriesId, dataIndex }) => {
-                if (seriesId !== 'sets') return
-                const slug = setSegments[dataIndex]?.id ?? null
+                if (seriesId !== 'seasons') return
+                const slug = seasonSegments[dataIndex]?.id ?? null
                 setSelectedSlug((prev) => (prev === slug ? null : slug))
               }}
             />
@@ -374,17 +371,17 @@ function OutfitGlowupChart({ outfitSets }: { outfitSets: OutfitSet[] }) {
                 ],
               },
               {
-                label: 'Glow-ups',
+                label: 'Seasons',
                 rows: [
                   {
                     color: secondary,
                     text: 'Complete',
-                    value: `${glowupSetsObtained} / ${glowupSetsTotal}`,
+                    value: `${seasonsObtained} / ${seasonsTotal}`,
                   },
                   {
                     color: muted,
                     text: 'Unfinished',
-                    value: `${glowupSetsTotal - glowupSetsObtained} / ${glowupSetsTotal}`,
+                    value: `${seasonsTotal - seasonsObtained} / ${seasonsTotal}`,
                   },
                 ],
               },
@@ -407,7 +404,11 @@ function OutfitGlowupChart({ outfitSets }: { outfitSets: OutfitSet[] }) {
                     <Typography sx={{ flex: 1 }} variant="body2">
                       {text}
                     </Typography>
-                    <Chip label={`${value}`} size="small" variant="outlined" />
+                    <ProgressChip
+                      obtained={Number(value.split('/')[0])}
+                      total={Number(value.split('/')[1])}
+                      variant="parts"
+                    />
                   </Stack>
                 ))}
               </Stack>
@@ -446,12 +447,14 @@ export default function OutfitCollectionCharts({
   const evolutionsTotal = evolutionGroups.length
   const evolutionsObtained = evolutionGroups.filter(isComplete).length
 
-  // A season is complete when every set in that season is fully obtained.
-  const seasonsTotal = seasons.length
-  const seasonsObtained = seasons.filter((season) => {
-    const sets = outfitSets.filter((set) => set.seasons === season.slug)
-    return sets.length > 0 && sets.every((set) => isComplete(set.outfit_variants))
-  }).length
+  // Glow-up groups across sets that have a glow-up evolution with variants;
+  // a glow-up is complete when all its variants are obtained.
+  const glowupGroups = outfitSets
+    .filter((set) => set.glowup_evolution)
+    .map((set) => set.outfit_variants.filter((v) => v.evolution === set.glowup_evolution))
+    .filter((variants) => variants.length > 0)
+  const glowupsTotal = glowupGroups.length
+  const glowupsObtained = glowupGroups.filter(isComplete).length
 
   return (
     <Box
@@ -464,14 +467,14 @@ export default function OutfitCollectionCharts({
       <OutfitRingsChart
         evolutionsObtained={evolutionsObtained}
         evolutionsTotal={evolutionsTotal}
-        seasonsObtained={seasonsObtained}
-        seasonsTotal={seasonsTotal}
+        glowupsObtained={glowupsObtained}
+        glowupsTotal={glowupsTotal}
         setsObtained={setsObtained}
         setsTotal={outfitSets.length}
         variantsObtained={variantsObtained}
         variantsTotal={variantsTotal}
       />
-      <OutfitGlowupChart outfitSets={outfitSets} />
+      <OutfitSeasonsChart outfitSets={outfitSets} seasons={seasons} />
     </Box>
   )
 }

@@ -14,7 +14,7 @@ import LazyImage from '@/components/lazy-image'
 import { RecentObtained } from '@/lib/types/eureka'
 import { toTitle, formatDate, toSlug } from '@/lib/utils'
 
-export default function RecentUpdates({ items }: { items: RecentObtained[] }) {
+export default function EurekaRecentUpdates({ items }: { items: RecentObtained[] }) {
   if (!items?.length) return null
 
   return (

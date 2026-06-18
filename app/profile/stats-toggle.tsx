@@ -26,8 +26,8 @@ export default function StatsToggle({
           if (next) setView(next)
         }}
       >
-        <ToggleButton value="outfits">Outfits</ToggleButton>
-        <ToggleButton value="eureka">Eureka</ToggleButton>
+        <ToggleButton value="outfits">Outfit Stats</ToggleButton>
+        <ToggleButton value="eureka">Eureka Stats</ToggleButton>
       </ToggleButtonGroup>
       <Box hidden={view !== 'outfits'}>{outfits}</Box>
       <Box hidden={view !== 'eureka'}>{eureka}</Box>
