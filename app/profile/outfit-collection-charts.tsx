@@ -234,12 +234,13 @@ function OutfitSeasonsChart({
   const primary = theme.palette.primary.main
   const secondary = theme.palette.secondary.main
 
-  // Seasons that actually have sets with variants.
+  // Seasons that actually have sets with variants. Progress is measured against
+  // each set's default (base) variants only, matching the seasons page.
   const seasonGroups = seasons
     .map((season) => {
       const variants = outfitSets
         .filter((set) => set.seasons === season.slug)
-        .flatMap((set) => set.outfit_variants)
+        .flatMap((set) => set.outfit_variants.filter((v) => v.default))
       return { season, variants }
     })
     .filter(({ variants }) => variants.length > 0)
