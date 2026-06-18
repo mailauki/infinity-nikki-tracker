@@ -7,8 +7,8 @@ import Link from "next/link";
 
 export default function OutfitSetListItem({ set }: { set: OutfitSet }) {
 	return (
-		<ListItem disablePadding sx={{ overflow: 'clip' }}>
-			<CardActionArea component={Link} href={`/outfits/${set.slug}`}>
+		<ListItem disablePadding>
+			<CardActionArea component={Link} href={`/outfits/${set.slug}`} sx={{ borderRadius: 3 }}>
 				<Card sx={{ display: 'flex', alignItems: 'center', p: 1, boxShadow: 'none' }}>
 					<ListItemAvatar>
 						<LazyImage
