@@ -12,10 +12,7 @@ export async function GET() {
   const { data: outfitSets, error } = await supabase
     .from('outfit_sets')
     .select(
-      `id, slug, title, description, rarity, style, label, label_2, ability,
-       image_url, alt_image_url, glowup_evolution, seasons, updated_at,
-       outfit_variants ( id, slug, outfit_set, evolution, outfit_category, image_url, alt_image_url, default ),
-       outfit_set_carousel_images ( id, image_url, sort_order )`
+      `id, slug, title, description, rarity, style, label, label_2, ability, image_url, alt_image_url, glowup_evolution, seasons, season_category, updated_at, outfit_variants ( id, slug, outfit_set, evolution, outfit_category, image_url, alt_image_url, default ), outfit_set_carousel_images ( id, image_url, sort_order )`
     )
     .order('id', { ascending: true })
     .order('id', { referencedTable: 'outfit_variants', ascending: true })

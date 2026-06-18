@@ -7,7 +7,7 @@ export const getSeasons = cache(async () => {
 
   const { data: seasons } = await supabase
     .from('seasons')
-    .select('id, slug, title, location')
+    .select('id, slug, title, location, image_url, description')
     .order('id', { ascending: true })
 
   return (seasons ?? []) as Season[]
