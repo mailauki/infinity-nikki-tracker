@@ -151,7 +151,7 @@ function NavDrawer() {
           </IconButton>
         </Toolbar>
         <Toolbar />
-        {navContent(open, () => setDrawerOpen(false))}
+        {navContent(open, () => {})}
       </Drawer>
     </>
   )
