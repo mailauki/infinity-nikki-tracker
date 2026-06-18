@@ -5,19 +5,28 @@ import FilterOutfitsBySeason from '@/components/outfits/filter-outfits-by-season
 import OutfitsLoading from '../loading'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { getLocations } from '@/hooks/data/locations'
 
 export const metadata: Metadata = {
   title: 'Outfits by Season',
 }
 
 export default async function SeasonsPage() {
-  const [seasons, seasonCategories] = await Promise.all([getSeasons(), getSeasonCategories()])
+  const [seasons, seasonCategories, locations] = await Promise.all([
+    getSeasons(),
+    getSeasonCategories(),
+    getLocations(),
+  ])
 
   return (
     <>
       <OutfitToolBar baseEvolutionOnly showFilters={false} />
       <Suspense fallback={<OutfitsLoading />}>
-        <FilterOutfitsBySeason seasonCategories={seasonCategories} seasons={seasons} />
+        <FilterOutfitsBySeason
+          locations={locations}
+          seasonCategories={seasonCategories}
+          seasons={seasons}
+        />
       </Suspense>
     </>
   )
