@@ -61,9 +61,7 @@ export default function EurekaColorSetCard({
         )}
 
         <Box sx={{ position: 'absolute', top: 8, left: 8 }}>
-          {eurekaSet.rarity && (
-            <RarityStars rarity={eurekaSet.rarity} />
-          )}
+          {eurekaSet.rarity && <RarityStars rarity={eurekaSet.rarity} />}
         </Box>
       </Box>
     </Card>

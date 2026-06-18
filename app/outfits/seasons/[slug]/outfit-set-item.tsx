@@ -9,15 +9,10 @@ export default function OutfitSetListItem({ set }: { set: OutfitSet }) {
   return (
     <ListItem disablePadding>
       <ListItemButton component={Link} href={`/outfits/${set.slug}`}>
-          <ListItemAvatar>
-            <LazyImage alt={set.title} kind="square" maxWidth={56} src={set.image_url || ''} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={set.title}
-            secondary={
-              <RarityStars rarity={set.rarity} />
-            }
-          />
+        <ListItemAvatar>
+          <LazyImage alt={set.title} kind="square" maxWidth={56} src={set.image_url || ''} />
+        </ListItemAvatar>
+        <ListItemText primary={set.title} secondary={<RarityStars rarity={set.rarity} />} />
       </ListItemButton>
     </ListItem>
   )

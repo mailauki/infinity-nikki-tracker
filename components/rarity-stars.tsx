@@ -16,12 +16,12 @@ export const SparkleIcon = createSvgIcon(
 
 export default function RarityStars({ rarity }: { rarity: number }) {
   return (
-		<Typography color="textSecondary" variant="subtitle2">
-			<Stack direction="row" spacing={0.25}>
-				{Array.from({ length: rarity }, (_, index) => (
-					<SparkleIcon key={index} color="inherit" fontSize="inherit" sx={{ rotate: '15deg' }} />
-				))}
-			</Stack>
-		</Typography>
+    <Typography color="textSecondary" variant="subtitle2">
+      <Stack direction="row" spacing={0.25}>
+        {Array.from({ length: rarity }, (_, index) => (
+          <SparkleIcon key={index} color="inherit" fontSize="inherit" sx={{ rotate: '15deg' }} />
+        ))}
+      </Stack>
+    </Typography>
   )
 }
