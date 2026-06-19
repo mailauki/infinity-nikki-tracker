@@ -8,6 +8,7 @@ import { getUserID } from '@/hooks/user'
 import OutfitSetListItem from './outfit-set-item'
 import LazyImage from '@/components/lazy-image'
 import SlugToolBar from '@/components/slug-toolbar'
+import ProgressChip from '@/components/progress-chip'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -40,6 +41,18 @@ export default async function SeasonPage({ params }: Props) {
   // Sets in this season, grouped by their season_category (the season<->category
   // link lives on outfit_sets). Sets without a category fall under "Other".
   const seasonSets = outfitSets.filter((set) => set.seasons === slug)
+
+  // Season completion aggregates the base ("default") variants of every set in
+  // the season, mirroring the per-set progress in OutfitSetListItem.
+  const seasonBaseVariants = seasonSets.flatMap((set) =>
+    set.outfit_variants.filter((variant) => variant.default)
+  )
+  const seasonTotal = seasonBaseVariants.length
+  const seasonObtained = seasonBaseVariants.reduce(
+    (sum, variant) => sum + (variant.obtained ? 1 : 0),
+    0
+  )
+
   const categoryGroups = Object.entries(
     seasonSets.reduce<Record<string, typeof seasonSets>>((groups, set) => {
       const category = set.season_category ?? 'Other'
@@ -58,9 +71,12 @@ export default async function SeasonPage({ params }: Props) {
           sx={{ height: 360 }}
           title={season.title}
         />
-        <Typography component="h1" variant="h4">
-          {season.title}
-        </Typography>
+        <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography component="h1" variant="h4">
+            {season.title}
+          </Typography>
+          {isLoggedIn && <ProgressChip obtained={seasonObtained} total={seasonTotal} />}
+        </Stack>
         <Typography variant="body2">{season.description}</Typography>
 
         {categoryGroups.length ? (
