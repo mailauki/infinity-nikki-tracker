@@ -22,10 +22,10 @@ export async function Hero() {
           subtitle={
             <Container fixed maxWidth="xs">
               <Typography
-                sx={{ fontSize: 20, textAlign: 'center', textWrap: 'auto' }}
+                sx={{ fontSize: 20, textAlign: 'center', textWrap: 'auto', pb: 0.25 }}
                 variant="subtitle1"
               >
-                Track your Eureka outfit collection from your favorite cozy open-world game
+                Track your collection from your favorite cozy open-world game
               </Typography>
             </Container>
           }
