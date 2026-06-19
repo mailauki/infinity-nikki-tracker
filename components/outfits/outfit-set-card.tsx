@@ -101,7 +101,7 @@ export default function OutfitSetCard({
               aria-label={obtained ? 'Mark as not obtained' : 'Mark as obtained'}
               onClick={handleToggle}
             >
-              {obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
+              {obtained === total ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
             </IconButton>
           )}
         </Stack>
