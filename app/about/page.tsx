@@ -1,5 +1,76 @@
-import { Typography, Link as Anchor, Stack, ListItem, List, ListItemText } from '@mui/material'
+import {
+  Typography,
+  Link as Anchor,
+  Stack,
+  ListItem,
+  List,
+  ListItemText,
+  Box,
+  Card,
+  CardContent,
+  Container,
+} from '@mui/material'
 import { Metadata } from 'next'
+
+const featurePages = [
+  {
+    title: 'Eureka',
+    subtitle:
+      'Browse every Eureka set and its individual pieces in one place, mark pieces as obtained, and watch your progress update in real time.',
+    bullets: [
+      'Group by set or view pieces individually, and filter to a single Eureka set',
+      'Switch to a by-color view, or filter by a specific color',
+      'Filter by category and rarity, and sort newest or oldest first',
+      'When signed in, filter to only obtained or only missing pieces — plus a dedicated Missing view that lists everything you haven’t collected yet',
+      'Trials view — see how far along you are in each in-game trial',
+    ],
+  },
+  {
+    title: 'Outfits',
+    subtitle:
+      'Track full outfit sets along with their evolutions and glow-ups, and mark what you own.',
+    bullets: [
+      'Group by set or view variants individually, and filter to a single outfit set',
+      'Filter by evolution stage, or hide evolutions and glow-ups to focus on base sets',
+      'Filter by one or more outfit categories and by rarity',
+      'Adjust the display density and sort order, and when signed in filter to only obtained or only missing items',
+    ],
+  },
+  {
+    title: 'Seasons',
+    subtitle:
+      'Explore outfits by season — grouped by location, with each season’s categories and set counts at a glance.',
+    bullets: [
+      'Sort seasons newest or oldest first',
+      'Open any season to see its outfit sets grouped by category',
+    ],
+  },
+  {
+    title: 'Custom Looks (TBD)',
+    subtitle: 'Build and save your own outfit combinations from Eureka and outfit pieces.',
+    bullets: [
+      'Mix and match pieces into a saved look, with thumbnail previews',
+      'Save a few looks for free, or upgrade to premium for unlimited looks',
+    ],
+  },
+  {
+    title: 'Profile',
+    subtitle: 'Your collection at a glance once you’re signed in.',
+    bullets: [
+      'See completed Outfit Sets, Evolutions, Glow-ups, and Eureka Sets at a glance',
+      'Toggle between Outfit and Eureka stats — each with completion charts and your most recent updates',
+    ],
+  },
+  {
+    title: 'Settings',
+    subtitle: 'Personalize the app and manage your account.',
+    bullets: [
+      'Appearance — choose a system, light, or dark mode, set a default sort order, and pick a color theme (additional themes with premium)',
+      'Profile — update your display name, username, and avatar',
+      'Account — change your email or password, request admin access, or delete your account',
+    ],
+  },
+]
 
 export const metadata: Metadata = {
   title: 'About',
@@ -8,11 +79,9 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-      <Stack component="section" spacing={1}>
-        <Typography component="h2" variant="h5">
-          What is this?
-        </Typography>
-        <Typography color="textSecondary" variant="subtitle2">
+      <Section>
+        <SectionTitle>What is this?</SectionTitle>
+        <SectionSubtitle>
           A fan-made collection tracker for{' '}
           <Anchor
             color="textSecondary"
@@ -24,278 +93,252 @@ export default function AboutPage() {
           </Anchor>{' '}
           — see your Eureka sets and variants at a glance, track your progress, and know exactly
           what you&apos;re still missing.
-        </Typography>
-      </Stack>
+        </SectionSubtitle>
+      </Section>
 
-      <Stack component="section" spacing={1}>
-        <Typography component="h2" variant="h5">
-          Features
-        </Typography>
-        <List dense sx={{ listStyle: 'disc', pl: 4 }}>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  Browse all Eureka sets — see every set and its individual pieces in one place,
-                  organized by style and rarity
-                </Typography>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  Track what you have — mark pieces as obtained and watch your progress update in
-                  real time
-                </Typography>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  See what&apos;s missing — a dedicated view filters down to only the pieces you
-                  haven&apos;t collected yet
-                </Typography>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  Progress by trial — see how far along you are in each in-game trial
-                </Typography>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  Filter and sort — narrow things down by category, color, rarity, or completion
-                  status
-                </Typography>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  Use it as a guest or sign in — browse freely without an account, or sign in to
-                  save and track your own personal collection
-                </Typography>
-              }
-            />
-          </ListItem>
-        </List>
-      </Stack>
+      <Section>
+        <SectionTitle>About me</SectionTitle>
+        <SectionSubtitle>
+          I&apos;m Julie Evans, a UX-focused developer. This tracker is a side project built with
+          Next.js, Supabase, and MUI — born out of playing the game and wanting a clearer view of my
+          own collection.
+        </SectionSubtitle>
+        <SectionList
+          bullets={[
+            <>
+              GitHub:{' '}
+              <Anchor
+                key="me-github"
+                color="textSecondary"
+                href="https://github.com/mailauki"
+                rel="noreferrer"
+                target="_blank"
+              >
+                github.com/mailauki
+              </Anchor>
+            </>,
+            <>
+              Instagram:{' '}
+              <Anchor
+                key="me-instagram"
+                color="textSecondary"
+                href="https://www.instagram.com/julieuxdev"
+                rel="noreferrer"
+                target="_blank"
+              >
+                instagram.com/julieuxdev
+              </Anchor>
+            </>,
+            <Anchor
+              key="me-medium"
+              color="textSecondary"
+              href="https://medium.com/@julieuxdev/i-built-a-collection-tracker-for-infinity-nikki-because-the-game-wouldnt-tell-me-what-i-was-missing-95ffcf3b2109"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Behind the build — Medium article
+            </Anchor>,
+            <>
+              Contact:{' '}
+              <Anchor key="me-email" color="textSecondary" href="mailto:julie.ux.dev@gmail.com">
+                julie.ux.dev@gmail.com
+              </Anchor>
+            </>,
+          ]}
+        />
+      </Section>
 
-      <Stack component="section" spacing={1}>
-        <Typography component="h2" variant="h5">
-          Links &amp; Resources
-        </Typography>
-        <Typography color="textSecondary" sx={{ mt: 1 }} variant="subtitle2">
-          This project
-        </Typography>
-        <List dense sx={{ listStyle: 'disc', pl: 4 }}>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Anchor
-                  color="textSecondary"
-                  href="https://github.com/mailauki/infinity-nikki-tracker"
-                  rel="noreferrer"
-                  target="_blank"
-                  variant="body1"
-                >
-                  GitHub Repository
-                </Anchor>
-              }
+      <Section>
+        <SectionTitle>Features &amp; Pages</SectionTitle>
+        <SectionSubtitle>
+          Browse freely without an account, or sign in to save and track your own personal
+          collection. Filtering, sorting, and views are available either way — obtained and missing
+          filters unlock once you&apos;re signed in.
+        </SectionSubtitle>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+            gap: 2,
+            pt: 1.5,
+          }}
+        >
+          {featurePages.map((page) => (
+            <FeatureCard
+              key={page.title}
+              bullets={page.bullets}
+              subtitle={page.subtitle}
+              title={page.title}
             />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Anchor
-                  color="textSecondary"
-                  href="https://medium.com/@julieuxdev/i-built-a-collection-tracker-for-infinity-nikki-because-the-game-wouldnt-tell-me-what-i-was-missing-95ffcf3b2109"
-                  rel="noreferrer"
-                  target="_blank"
-                  variant="body1"
-                >
-                  Behind the build — Medium article
-                </Anchor>
-              }
-            />
-          </ListItem>
-        </List>
-        <Typography color="textSecondary" sx={{ mt: 1 }} variant="subtitle2">
-          Helpful resources
-        </Typography>
-        <List dense sx={{ listStyle: 'disc', pl: 4 }}>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Anchor
-                  color="textSecondary"
-                  href="https://infinitynikki.infoldgames.com/"
-                  rel="noreferrer"
-                  target="_blank"
-                  variant="body1"
-                >
-                  Infinity Nikki Official Website
-                </Anchor>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Anchor
-                  color="textSecondary"
-                  href="https://infinitynikki.fandom.com/"
-                  rel="noreferrer"
-                  target="_blank"
-                  variant="body1"
-                >
-                  Infinity Nikki Wiki
-                </Anchor>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Anchor
-                  color="textSecondary"
-                  href="https://www.miralandcollection.com/"
-                  rel="noreferrer"
-                  target="_blank"
-                  variant="body1"
-                >
-                  Miraland Collection
-                </Anchor>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Anchor
-                  color="textSecondary"
-                  href="https://infinitynikkilibrary.com/"
-                  rel="noreferrer"
-                  target="_blank"
-                  variant="body1"
-                >
-                  Infinity Nikki Library
-                </Anchor>
-              }
-            />
-          </ListItem>
-        </List>
-      </Stack>
+          ))}
+        </Box>
+      </Section>
 
-      <Stack component="section" spacing={1}>
-        <Typography component="h2" variant="h5">
-          Roadmap
-        </Typography>
-        <Typography color="textSecondary" variant="subtitle2">
-          Planned features and improvements:
-        </Typography>
-        <List dense sx={{ listStyle: 'disc', pl: 4 }}>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  Search — quickly find sets and variants by name
-                </Typography>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  Outfits — tracking support for outfit sets and evolutions
-                </Typography>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  Momo's Cloaks — tracking support for Momo's cloaks
-                </Typography>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  Custom Looks — support for creating custom outfit sets
-                </Typography>
-              }
-            />
-          </ListItem>
-        </List>
-      </Stack>
-
-      <Stack component="section" spacing={1}>
-        <Typography component="h2" variant="h5">
-          Collaborate
-        </Typography>
-        <Typography color="textSecondary" variant="body1">
+      <Section>
+        <SectionTitle>Links &amp; Resources</SectionTitle>
+        <SectionSubtitle>
           This project is open source. Contributions are welcome — whether it&apos;s fixing a bug,
           improving the UI, or adding new data.
-        </Typography>
-        <List dense sx={{ listStyle: 'disc', pl: 4 }}>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Anchor
-                  color="textSecondary"
-                  href="https://github.com/mailauki/infinity-nikki-tracker"
-                  rel="noreferrer"
-                  target="_blank"
-                  variant="body1"
-                >
-                  View the source on GitHub
-                </Anchor>
-              }
-            />
-          </ListItem>
-          <ListItem sx={{ display: 'list-item' }}>
-            <ListItemText
-              primary={
-                <Typography color="textSecondary" variant="body1">
-                  <Anchor
-                    color="textSecondary"
-                    href="https://github.com/mailauki/infinity-nikki-tracker/issues"
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    Open an issue
-                  </Anchor>{' '}
-                  for bugs or feature requests
-                </Typography>
-              }
-            />
-          </ListItem>
-        </List>
-      </Stack>
+        </SectionSubtitle>
+        <SectionList
+          bullets={[
+            <Anchor
+              key="github"
+              color="textSecondary"
+              href="https://github.com/mailauki/infinity-nikki-tracker"
+              rel="noreferrer"
+              target="_blank"
+            >
+              GitHub Repository
+            </Anchor>,
+            <Typography key="issue" color="textSecondary" component="span" variant="body1">
+              <Anchor
+                color="textSecondary"
+                href="https://github.com/mailauki/infinity-nikki-tracker/issues"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Open an issue
+              </Anchor>{' '}
+              for bugs or feature requests
+            </Typography>,
+          ]}
+        />
+        <SectionSubtitle>Helpful resources</SectionSubtitle>
+        <SectionList
+          bullets={[
+            <Anchor
+              key="official"
+              color="textSecondary"
+              href="https://infinitynikki.infoldgames.com/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Infinity Nikki Official Website
+            </Anchor>,
+            <Anchor
+              key="wiki"
+              color="textSecondary"
+              href="https://infinitynikki.fandom.com/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Infinity Nikki Wiki
+            </Anchor>,
+            <Anchor
+              key="miraland"
+              color="textSecondary"
+              href="https://www.miralandcollection.com/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Miraland Collection
+            </Anchor>,
+            <Anchor
+              key="library"
+              color="textSecondary"
+              href="https://infinitynikkilibrary.com/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Infinity Nikki Library
+            </Anchor>,
+          ]}
+        />
+      </Section>
 
-      <Typography color="textDisabled" variant="caption">
-        This is a fan-made project and is not affiliated with, endorsed by, or officially connected
-        to Papergames or the Infinity Nikki development team. All game content, names, and assets
-        are the property of their respective owners.
-      </Typography>
+      <Section>
+        <SectionTitle>Roadmap</SectionTitle>
+        <SectionSubtitle>Planned features and improvements:</SectionSubtitle>
+        <SectionList
+          bullets={[
+            'Search — quickly find sets and variants by name',
+            'Momo’s Cloaks — tracking support for Momo’s cloaks',
+          ]}
+        />
+      </Section>
+
+      <Container disableGutters maxWidth="sm">
+        <Typography color="textDisabled" variant="caption">
+          This is a fan-made project and is not affiliated with, endorsed by, or officially
+          connected to Papergames or the Infinity Nikki development team. All game content, names,
+          and assets are the property of their respective owners.
+        </Typography>
+      </Container>
     </Stack>
+  )
+}
+
+function Section({ children }: { children: React.ReactNode }) {
+  return (
+    <Stack component="section" spacing={1}>
+      {children}
+    </Stack>
+  )
+}
+
+function FeatureCard({
+  title,
+  subtitle,
+  bullets,
+}: {
+  title: string
+  subtitle: string
+  bullets: string[]
+}) {
+  return (
+    <Card sx={{ height: '100%' }} variant="outlined">
+      <CardContent>
+        <SectionTitle component="h3" variant="h6">
+          {title}
+        </SectionTitle>
+        <SectionSubtitle>{subtitle}</SectionSubtitle>
+        <SectionList bullets={bullets} />
+      </CardContent>
+    </Card>
+  )
+}
+
+function SectionTitle({
+  children,
+  component = 'h2',
+  variant = 'h5',
+}: {
+  children: React.ReactNode
+  component?: React.ElementType
+  variant?: 'h5' | 'h6'
+}) {
+  return (
+    <Typography component={component} variant={variant}>
+      {children}
+    </Typography>
+  )
+}
+
+function SectionSubtitle({ children }: { children: React.ReactNode }) {
+  return (
+    <Container disableGutters maxWidth="sm">
+      <Typography color="textSecondary" sx={{ mt: 1 }} variant="subtitle2">
+        {children}
+      </Typography>
+    </Container>
+  )
+}
+
+function SectionList({ bullets }: { bullets: React.ReactNode[] }) {
+  return (
+    <List dense sx={{ listStyle: 'disc', pl: 4 }}>
+      {bullets?.map((bullet, index) => (
+        <ListItem key={index} sx={{ display: 'list-item' }}>
+          <ListItemText
+            primary={
+              <Typography color="textSecondary" variant="body1">
+                {bullet}
+              </Typography>
+            }
+          />
+        </ListItem>
+      ))}
+    </List>
   )
 }
