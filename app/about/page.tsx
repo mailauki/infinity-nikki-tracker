@@ -8,7 +8,7 @@ import {
   Box,
   Card,
   CardContent,
-	Container,
+  Container,
 } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -97,6 +97,58 @@ export default function AboutPage() {
       </Section>
 
       <Section>
+        <SectionTitle>About me</SectionTitle>
+        <SectionSubtitle>
+          I&apos;m Julie Evans, a UX-focused developer. This tracker is a side project built with
+          Next.js, Supabase, and MUI — born out of playing the game and wanting a clearer view of my
+          own collection.
+        </SectionSubtitle>
+        <SectionList
+          bullets={[
+            <>
+              GitHub:{' '}
+              <Anchor
+                key="me-github"
+                color="textSecondary"
+                href="https://github.com/mailauki"
+                rel="noreferrer"
+                target="_blank"
+              >
+                github.com/mailauki
+              </Anchor>
+            </>,
+            <>
+              Instagram:{' '}
+              <Anchor
+                key="me-instagram"
+                color="textSecondary"
+                href="https://www.instagram.com/julieuxdev"
+                rel="noreferrer"
+                target="_blank"
+              >
+                instagram.com/julieuxdev
+              </Anchor>
+            </>,
+            <Anchor
+              key="me-medium"
+              color="textSecondary"
+              href="https://medium.com/@julieuxdev/i-built-a-collection-tracker-for-infinity-nikki-because-the-game-wouldnt-tell-me-what-i-was-missing-95ffcf3b2109"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Behind the build — Medium article
+            </Anchor>,
+            <>
+              Contact:{' '}
+              <Anchor key="me-email" color="textSecondary" href="mailto:julie.ux.dev@gmail.com">
+                julie.ux.dev@gmail.com
+              </Anchor>
+            </>,
+          ]}
+        />
+      </Section>
+
+      <Section>
         <SectionTitle>Features &amp; Pages</SectionTitle>
         <SectionSubtitle>
           Browse freely without an account, or sign in to save and track your own personal
@@ -124,7 +176,10 @@ export default function AboutPage() {
 
       <Section>
         <SectionTitle>Links &amp; Resources</SectionTitle>
-        <SectionSubtitle>This project</SectionSubtitle>
+        <SectionSubtitle>
+          This project is open source. Contributions are welcome — whether it&apos;s fixing a bug,
+          improving the UI, or adding new data.
+        </SectionSubtitle>
         <SectionList
           bullets={[
             <Anchor
@@ -136,15 +191,17 @@ export default function AboutPage() {
             >
               GitHub Repository
             </Anchor>,
-            <Anchor
-              key="medium"
-              color="textSecondary"
-              href="https://medium.com/@julieuxdev/i-built-a-collection-tracker-for-infinity-nikki-because-the-game-wouldnt-tell-me-what-i-was-missing-95ffcf3b2109"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Behind the build — Medium article
-            </Anchor>,
+            <Typography key="issue" color="textSecondary" component="span" variant="body1">
+              <Anchor
+                color="textSecondary"
+                href="https://github.com/mailauki/infinity-nikki-tracker/issues"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Open an issue
+              </Anchor>{' '}
+              for bugs or feature requests
+            </Typography>,
           ]}
         />
         <SectionSubtitle>Helpful resources</SectionSubtitle>
@@ -201,45 +258,13 @@ export default function AboutPage() {
         />
       </Section>
 
-      <Section>
-        <SectionTitle>Collaborate</SectionTitle>
-        <SectionSubtitle>
-          This project is open source. Contributions are welcome — whether it&apos;s fixing a bug,
-          improving the UI, or adding new data.
-        </SectionSubtitle>
-        <SectionList
-          bullets={[
-            <Anchor
-              key="source"
-              color="textSecondary"
-              href="https://github.com/mailauki/infinity-nikki-tracker"
-              rel="noreferrer"
-              target="_blank"
-            >
-              View the source on GitHub
-            </Anchor>,
-            <Typography key="issue" color="textSecondary" component="span" variant="body1">
-              <Anchor
-                color="textSecondary"
-                href="https://github.com/mailauki/infinity-nikki-tracker/issues"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Open an issue
-              </Anchor>{' '}
-              for bugs or feature requests
-            </Typography>,
-          ]}
-        />
-      </Section>
-
-			<Container disableGutters maxWidth='sm'>
-				<Typography color="textDisabled" variant="caption">
-					This is a fan-made project and is not affiliated with, endorsed by, or officially connected
-					to Papergames or the Infinity Nikki development team. All game content, names, and assets
-					are the property of their respective owners.
-				</Typography>
-			</Container>
+      <Container disableGutters maxWidth="sm">
+        <Typography color="textDisabled" variant="caption">
+          This is a fan-made project and is not affiliated with, endorsed by, or officially
+          connected to Papergames or the Infinity Nikki development team. All game content, names,
+          and assets are the property of their respective owners.
+        </Typography>
+      </Container>
     </Stack>
   )
 }
@@ -292,11 +317,11 @@ function SectionTitle({
 
 function SectionSubtitle({ children }: { children: React.ReactNode }) {
   return (
-		<Container disableGutters maxWidth='sm'>
-    <Typography color="textSecondary" sx={{ mt: 1 }} variant="subtitle2">
-      {children}
-    </Typography>
-		</Container>
+    <Container disableGutters maxWidth="sm">
+      <Typography color="textSecondary" sx={{ mt: 1 }} variant="subtitle2">
+        {children}
+      </Typography>
+    </Container>
   )
 }
 
