@@ -104,7 +104,7 @@ export default function SeasonsContent({
                     <LazyImage
                       image={season.image_url}
                       kind="media"
-                      sx={{ height: 160 }}
+                      sx={{ height: 160, mx: 1.5 }}
                       title={season.title}
                     />
                   )}
