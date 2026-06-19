@@ -1,16 +1,6 @@
-import {
-  Typography,
-  Link as Anchor,
-  Stack,
-  ListItem,
-  List,
-  ListItemText,
-  Box,
-  Card,
-  CardContent,
-  Container,
-} from '@mui/material'
+import { Typography, Link as Anchor, Stack, Box, Card, CardContent, Container } from '@mui/material'
 import { Metadata } from 'next'
+import { Section, SectionList, SectionSubtitle, SectionTitle } from '@/components/section'
 
 const featurePages = [
   {
@@ -269,14 +259,6 @@ export default function AboutPage() {
   )
 }
 
-function Section({ children }: { children: React.ReactNode }) {
-  return (
-    <Stack component="section" spacing={1}>
-      {children}
-    </Stack>
-  )
-}
-
 function FeatureCard({
   title,
   subtitle,
@@ -296,49 +278,5 @@ function FeatureCard({
         <SectionList bullets={bullets} />
       </CardContent>
     </Card>
-  )
-}
-
-function SectionTitle({
-  children,
-  component = 'h2',
-  variant = 'h5',
-}: {
-  children: React.ReactNode
-  component?: React.ElementType
-  variant?: 'h5' | 'h6'
-}) {
-  return (
-    <Typography component={component} variant={variant}>
-      {children}
-    </Typography>
-  )
-}
-
-function SectionSubtitle({ children }: { children: React.ReactNode }) {
-  return (
-    <Container disableGutters maxWidth="sm">
-      <Typography color="textSecondary" sx={{ mt: 1 }} variant="subtitle2">
-        {children}
-      </Typography>
-    </Container>
-  )
-}
-
-function SectionList({ bullets }: { bullets: React.ReactNode[] }) {
-  return (
-    <List dense sx={{ listStyle: 'disc', pl: 4 }}>
-      {bullets?.map((bullet, index) => (
-        <ListItem key={index} sx={{ display: 'list-item' }}>
-          <ListItemText
-            primary={
-              <Typography color="textSecondary" variant="body1">
-                {bullet}
-              </Typography>
-            }
-          />
-        </ListItem>
-      ))}
-    </List>
   )
 }
