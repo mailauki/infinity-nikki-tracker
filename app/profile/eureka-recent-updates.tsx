@@ -35,7 +35,8 @@ export default function EurekaRecentUpdates({ items }: { items: RecentObtained[]
               <ListItemButton component="a" href={`/eureka/${toSlug(item.eureka_sets!.title!)}`}>
                 <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
                   <LazyImage
-                    alt={item.eureka_sets?.title}
+                    alt={item.eureka_sets?.title ?? ''}
+                    kind="square"
                     size="md"
                     src={
                       item.eureka_sets?.eureka_variants.find(
