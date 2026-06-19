@@ -16,8 +16,7 @@ export default function OutfitSetSection({
   set: OutfitSet
   isLoggedIn: boolean
 }) {
-  const { filters, outfitSets, onBatchToggleObtained } = useOutfitData()
-  const isMissingFilter = filters.selectedObtainedFilter === 'missing'
+  const { outfitSets, onBatchToggleObtained } = useOutfitData()
 
   // `set.outfit_variants` is already filtered (e.g. the missing filter culls
   // obtained variants), so the progress chip must read the full, unfiltered
@@ -88,12 +87,10 @@ export default function OutfitSetSection({
             <Divider />
           </Box>
           {variants.map((variant) => (
-            <OutfitVariantCard
-              key={variant.id}
-              isLoggedIn={isLoggedIn}
-              isMissingFilter={isMissingFilter}
-              outfitVariant={variant}
-            />
+            // Within the grouped-by-set section, a toggled variant stays put
+            // under its set header even under the missing filter — only the
+            // flat (ungrouped) missing view culls obtained variants on toggle.
+            <OutfitVariantCard key={variant.id} isLoggedIn={isLoggedIn} outfitVariant={variant} />
           ))}
         </Fragment>
       )
