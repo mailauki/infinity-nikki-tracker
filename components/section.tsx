@@ -42,18 +42,20 @@ export function SectionList({
   ordered?: boolean
 }) {
   return (
-    <List dense sx={{ listStyle: ordered ? 'decimal' : 'disc', pl: 4 }}>
-      {bullets?.map((bullet, index) => (
-        <ListItem key={index} sx={{ display: 'list-item' }}>
-          <ListItemText
-            primary={
-              <Typography color="textSecondary" variant="body1">
-                {bullet}
-              </Typography>
-            }
-          />
-        </ListItem>
-      ))}
-    </List>
+    <Container disableGutters maxWidth="sm">
+      <List dense sx={{ listStyle: ordered ? 'decimal' : 'disc', pl: 4 }}>
+        {bullets?.map((bullet, index) => (
+          <ListItem key={index} sx={{ display: 'list-item' }}>
+            <ListItemText
+              primary={
+                <Typography color="textSecondary" variant="body1">
+                  {bullet}
+                </Typography>
+              }
+            />
+          </ListItem>
+        ))}
+      </List>
+    </Container>
   )
 }
