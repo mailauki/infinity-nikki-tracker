@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Stack, Typography, Chip, Container, IconButton, Tooltip } from '@mui/material'
+import { Link as Anchor, Stack, Typography, Chip, Container, IconButton, Tooltip } from '@mui/material'
 import { Collections } from '@mui/icons-material'
 import { OutfitSet } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
@@ -14,6 +14,7 @@ import OutfitCarousel from './outfit-carousel'
 import { resolveOutfitImage, useOutfitImageMode } from './outfit-image-mode-context'
 import { useOutfitData } from './outfit-context'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 
 export default function OutfitSetDetail({
   outfitSet,
@@ -33,6 +34,8 @@ export default function OutfitSetDetail({
     label_2,
     style,
     description,
+    season,
+    seasonCategory,
   } = outfitSet
   const { mode } = useOutfitImageMode()
   const { obtainedOutfit } = useOutfitData()
@@ -97,7 +100,7 @@ export default function OutfitSetDetail({
               <LazyImage
                 image={imageSrc || outfitSet.image_url || ''}
                 kind="media"
-                sx={{ width: '100%', maxWidth: 300, aspectRatio: '9 / 16' }}
+                sx={{ width: '100%', maxWidth: 260, aspectRatio: '9 / 16' }}
                 title={outfitSet.title}
               />
             )}
@@ -136,6 +139,13 @@ export default function OutfitSetDetail({
                   </IconButton>
                 </Tooltip>
               )}
+            </Stack>
+            <Stack
+              direction="row"
+              sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
+            >
+              <Anchor component={Link} href={`/outfits/seasons/${outfitSet.seasons}`} sx={{ cursor: 'pointer' }} underline='hover' variant="subtitle2">{season?.title}</Anchor>
+              <Typography variant="body1">{seasonCategory?.title}</Typography>
             </Stack>
             <Typography variant="body2">{description}</Typography>
           </Stack>

@@ -51,6 +51,8 @@ export type OutfitSet = Tables<'outfit_sets'> & {
   outfit_categories: OutfitCategory[]
   evolutions: Evolution[]
   carousel_images: CarouselImage[]
+  season: { title: string } | null
+  seasonCategory: { title: string } | null
 }
 
 export type OutfitSetRaw = Pick<

@@ -57,7 +57,7 @@ export default function OutfitEvolutionVariants({
 
   return (
     <Stack spacing={2} sx={{ flex: 1 }}>
-      <Toolbar disableGutters sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
+      <Toolbar disableGutters sx={{ alignItems: 'flex-end', justifyContent: 'space-between' }}>
         <ToggleButtonGroup
           exclusive
           disabled={evolutions.length === 0}
@@ -77,7 +77,6 @@ export default function OutfitEvolutionVariants({
             )
           })}
         </ToggleButtonGroup>
-        {/* {isLoggedIn && <ProgressChip obtained={obtained} size="sm" total={total} />} */}
         {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
       </Toolbar>
 
