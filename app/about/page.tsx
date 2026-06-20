@@ -245,7 +245,10 @@ export default function AboutPage() {
           <SectionList
             bullets={[
               'Search — quickly find sets and variants by name',
-              'Momo’s Cloaks — tracking support for Momo’s cloaks',
+              "Momo's Cloaks — tracking support for Momo's cloaks",
+              'Make-up Sets — tracking support for make-up sets',
+              'Favorites — save your favorite sets and pieces',
+              'Friends — follow friends to compare collection progress',
             ]}
           />
         </Section>
