@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { enqueueSnackbar } from 'notistack'
 
 import { applyObtainedKeys, buildObtainedKeySet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
@@ -145,6 +146,7 @@ export default function EurekaDataProvider({
     } catch (err) {
       console.error('Failed to toggle obtained eureka:', err)
       setObtainedEureka(saved)
+      enqueueSnackbar('Failed to update your collection. Please try again.', { variant: 'error' })
     }
   }
 
@@ -175,6 +177,7 @@ export default function EurekaDataProvider({
       } catch (err) {
         console.error('Failed to batch toggle obtained eureka:', err)
         setObtainedEureka(saved)
+        enqueueSnackbar('Failed to update your collection. Please try again.', { variant: 'error' })
         return
       }
     }

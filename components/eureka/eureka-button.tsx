@@ -6,6 +6,7 @@ import { EurekaVariant } from '@/lib/types/eureka'
 import { Card, CardActionArea, Chip } from '@mui/material'
 import CheckIcon from '@mui/icons-material/Check'
 import { useTransition } from 'react'
+import { enqueueSnackbar } from 'notistack'
 
 import EurekaSetImage from './eureka-set-image'
 import EurekaCardContent from './eureka-card-content'
@@ -46,9 +47,20 @@ export default function EurekaButton({
         }}
         onClick={() => {
           if (!isLoggedIn || isPending) return
-          startTransition(() =>
-            handleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
-          )
+          startTransition(async () => {
+            try {
+              await handleObtained(
+                eurekaVariant.eureka_set!,
+                eurekaVariant.category!,
+                eurekaVariant.color!
+              )
+            } catch (err) {
+              console.error('Failed to toggle obtained eureka:', err)
+              enqueueSnackbar('Failed to update your collection. Please try again.', {
+                variant: 'error',
+              })
+            }
+          })
         }}
       >
         <EurekaSetImage

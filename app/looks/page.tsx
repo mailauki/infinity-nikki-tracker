@@ -35,7 +35,7 @@ async function LooksContent() {
 
   async function handleDelete(id: string) {
     'use server'
-    await deleteLook(id)
+    return deleteLook(id)
   }
 
   return (

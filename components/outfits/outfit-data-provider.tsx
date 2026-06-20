@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, useTransition } from 'react'
+import { enqueueSnackbar } from 'notistack'
 import { createClient } from '@/lib/supabase/client'
 import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
@@ -167,6 +168,7 @@ export default function OutfitDataProvider({
     } catch (err) {
       console.error('Failed to toggle obtained outfit:', err)
       setObtainedOutfit(saved)
+      enqueueSnackbar('Failed to update your collection. Please try again.', { variant: 'error' })
     }
   }
 
@@ -205,6 +207,7 @@ export default function OutfitDataProvider({
       } catch (err) {
         console.error('Failed to batch toggle obtained outfit:', err)
         setObtainedOutfit(saved)
+        enqueueSnackbar('Failed to update your collection. Please try again.', { variant: 'error' })
         return
       }
     }
