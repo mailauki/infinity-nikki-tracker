@@ -11,6 +11,7 @@ import {
   Select,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
 import { Location } from '@/lib/types/outfit'
@@ -26,6 +27,7 @@ type SeasonRow = {
   location: string | null
   description: string | null
   image_url: string | null
+  alt_image_url: string | null
 }
 
 const FORM_ID = 'edit-season'
@@ -45,6 +47,7 @@ export default function EditSeasonForm({
   const [location, setLocation] = useState(season.location ?? '')
   const [description, setDescription] = useState(season.description ?? '')
   const [imageUrl, setImageUrl] = useState<string | null>(season.image_url)
+  const [altImageUrl, setAltImageUrl] = useState<string | null>(season.alt_image_url)
   const [editSlug, setEditSlug] = useState(false)
 
   const boundAction = editSeason.bind(null, season.slug, back)
@@ -128,15 +131,28 @@ export default function EditSeasonForm({
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <input name="image_url" type="hidden" value={imageUrl ?? ''} />
-        <ImageUpload
-          // caption="Season Image"
-          size="xl"
-          slug={season.slug}
-          table="seasons"
-          url={imageUrl}
-          onUpload={(url) => setImageUrl(url)}
-        />
+        <Stack spacing={1}>
+          <Typography variant="subtitle2">Season Images</Typography>
+          <input name="image_url" type="hidden" value={imageUrl ?? ''} />
+          <ImageUpload
+            caption="Default"
+            size="xl"
+            slug={season.slug}
+            table="seasons"
+            url={imageUrl}
+            onUpload={(url) => setImageUrl(url)}
+          />
+          <input name="alt_image_url" type="hidden" value={altImageUrl ?? ''} />
+          <ImageUpload
+            caption="Alternative"
+            column="alt_image_url"
+            size="xl"
+            slug={season.slug}
+            table="seasons"
+            url={altImageUrl}
+            onUpload={(url) => setAltImageUrl(url)}
+          />
+        </Stack>
       </Stack>
     </form>
   )
