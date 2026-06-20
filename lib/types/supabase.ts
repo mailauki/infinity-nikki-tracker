@@ -806,6 +806,7 @@ export type Database = {
       }
       seasons: {
         Row: {
+          alt_image_url: string | null
           created_at: string
           description: string | null
           id: number
@@ -815,6 +816,7 @@ export type Database = {
           title: string
         }
         Insert: {
+          alt_image_url?: string | null
           created_at?: string
           description?: string | null
           id?: number
@@ -824,6 +826,7 @@ export type Database = {
           title: string
         }
         Update: {
+          alt_image_url?: string | null
           created_at?: string
           description?: string | null
           id?: number

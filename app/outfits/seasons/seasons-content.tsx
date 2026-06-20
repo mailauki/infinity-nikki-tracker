@@ -14,6 +14,10 @@ import {
 } from '@mui/material'
 
 import { useOutfitData } from '@/components/outfits/outfit-context'
+import {
+  resolveOutfitImage,
+  useOutfitImageMode,
+} from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
 import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
@@ -29,6 +33,7 @@ export default function SeasonsContent({
   locations: Location[]
 }) {
   const { outfitSets } = useOutfitData()
+  const { mode } = useOutfitImageMode()
   const { sortOrder } = useSortOrder()
 
   // The sort button orders seasons by their index (id): 'new' = highest id
@@ -102,7 +107,12 @@ export default function SeasonsContent({
                   />
                   {season.image_url && (
                     <LazyImage
-                      image={season.image_url}
+                      image={
+                        resolveOutfitImage(mode, {
+                          image: season.image_url,
+                          alt: season.alt_image_url,
+                        }) ?? undefined
+                      }
                       kind="media"
                       sx={{ height: 160, mx: 1.5 }}
                       title={season.title}

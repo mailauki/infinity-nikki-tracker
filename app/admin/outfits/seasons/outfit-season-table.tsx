@@ -6,6 +6,8 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from 
 import { navLinksData } from '@/lib/nav-links'
 import { SeasonRaw } from '@/hooks/data/admin/seasons'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
+import ImageUpload from '@/components/forms/image-upload'
+import { Stack } from '@mui/material'
 
 type Row = SeasonRaw
 
@@ -14,7 +16,7 @@ interface OutfitSeasonTableProps {
 }
 
 export function OutfitSeasonTable({ rows: initialRows }: OutfitSeasonTableProps) {
-  const [rows] = useState<Row[]>(initialRows)
+  const [rows, setRows] = useState<Row[]>(initialRows)
   const editHref = (row: Row) =>
     `${navLinksData.admin.outfits.seasons.edit}/${row.slug}?back=${encodeURIComponent(navLinksData.admin.outfits.seasons.list)}`
 
@@ -39,6 +41,50 @@ export function OutfitSeasonTable({ rows: initialRows }: OutfitSeasonTableProps)
       headerName: 'ID',
       type: 'number',
       width: TABLE_ROW_HEIGHT,
+    },
+    {
+      field: 'image_url',
+      headerName: 'Image',
+      width: TABLE_ROW_HEIGHT,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Stack sx={{ py: 0.5, justifyContent: 'center' }}>
+          <ImageUpload
+            column="image_url"
+            size="sm"
+            slug={row.slug}
+            table="seasons"
+            url={row.image_url ?? null}
+            onUpload={(url) =>
+              setRows((prev) =>
+                prev.map((r) => (r.slug === row.slug ? { ...r, image_url: url } : r))
+              )
+            }
+          />
+        </Stack>
+      ),
+    },
+    {
+      field: 'alt_image_url',
+      headerName: 'Alt Image',
+      width: TABLE_ROW_HEIGHT,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Stack sx={{ py: 0.5, justifyContent: 'center' }}>
+          <ImageUpload
+            column="alt_image_url"
+            size="sm"
+            slug={row.slug}
+            table="seasons"
+            url={row.alt_image_url ?? null}
+            onUpload={(url) =>
+              setRows((prev) =>
+                prev.map((r) => (r.slug === row.slug ? { ...r, alt_image_url: url } : r))
+              )
+            }
+          />
+        </Stack>
+      ),
     },
     {
       field: 'title',

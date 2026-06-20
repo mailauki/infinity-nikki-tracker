@@ -20,13 +20,14 @@ export async function editSeason(
   const location = (formData.get('location') as string | null) || null
   const description = (formData.get('description') as string | null)?.trim() || null
   const image_url = (formData.get('image_url') as string | null) || null
+  const alt_image_url = (formData.get('alt_image_url') as string | null) || null
 
   if (!title) return { error: 'Title is required.' }
   if (!slug) return { error: 'Slug is required.' }
 
   const { error } = await supabase
     .from('seasons')
-    .update({ title, slug, location, description, image_url })
+    .update({ title, slug, location, description, image_url, alt_image_url })
     .eq('slug', currentSlug)
 
   if (error) return { error: error.message }
