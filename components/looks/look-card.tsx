@@ -19,6 +19,7 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
 import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
+import { enqueueSnackbar } from 'notistack'
 import type { CustomLook } from '@/lib/types/looks'
 
 export default function LookCard({
@@ -28,7 +29,7 @@ export default function LookCard({
 }: {
   look: CustomLook
   thumbnails: string[]
-  onDelete: (id: string) => void
+  onDelete: (id: string) => Promise<{ error?: string }>
 }) {
   const [deleting, setDeleting] = useState(false)
   const totalItems = look.eureka_variant_slugs.length + look.outfit_variant_slugs.length
@@ -41,7 +42,11 @@ export default function LookCard({
   async function handleDelete(e: React.MouseEvent) {
     e.preventDefault()
     setDeleting(true)
-    onDelete(look.id)
+    const result = await onDelete(look.id)
+    if (result?.error) {
+      setDeleting(false)
+      enqueueSnackbar('Failed to delete this look. Please try again.', { variant: 'error' })
+    }
   }
 
   return (
