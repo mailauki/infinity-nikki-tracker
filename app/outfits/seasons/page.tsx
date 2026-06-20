@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { Metadata } from 'next'
-import SeasonsToolBar from '@/components/outfits/seasons-toolbar'
+import SeasonsToolBar from '@/app/outfits/seasons/seasons-toolbar'
 import SeasonsLoading from './loading'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
