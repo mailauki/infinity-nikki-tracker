@@ -24,7 +24,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
-import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
 import CheckroomIcon from '@mui/icons-material/Checkroom'
 import WatchOutlinedIcon from '@mui/icons-material/WatchOutlined'
@@ -347,8 +346,11 @@ export default function LookBuilder({
     () => allVariants.filter((v) => selectedSlugs.has(v.slug)),
     [allVariants, selectedSlugs]
   )
+  const selectedPieces = selectedItems.filter((v) => v.type === 'outfit' && v.part === PIECES_PART)
+  const selectedAccessories = selectedItems.filter(
+    (v) => v.type === 'outfit' && v.part === ACCESSORIES_PART
+  )
   const selectedEureka = selectedItems.filter((v) => v.type === 'eureka')
-  const selectedOutfit = selectedItems.filter((v) => v.type === 'outfit')
 
   function handleSave() {
     if (!name.trim()) return
@@ -375,6 +377,38 @@ export default function LookBuilder({
 
   // ── Composer panel (right / top) ────────────────────────────────────────
   const saveLabel = initialLook ? 'Save changes' : 'Create look'
+
+  // One labelled group of selected-item chips, in tab order (Pieces /
+  // Accessories / Eureka).
+  function selectedSection(label: string, icon: React.ReactNode, items: FlatVariant[]) {
+    if (items.length === 0) return null
+    return (
+      <Stack spacing={0.5}>
+        <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
+          {icon}
+          <Typography color="textSecondary" variant="caption">
+            {label}
+          </Typography>
+        </Stack>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {items.map((v) => {
+            const detail = v.color ?? v.evolution
+            return (
+              <Chip
+                key={v.slug}
+                avatar={<Avatar src={v.image_url ?? undefined} />}
+                deleteIcon={<CloseIcon />}
+                label={`${toTitle(v.category)}${detail ? ` · ${toTitle(detail)}` : ''}`}
+                size="small"
+                variant="outlined"
+                onDelete={() => removeSlug(v.slug)}
+              />
+            )
+          })}
+        </Box>
+      </Stack>
+    )
+  }
   const composerPanel = (
     <Stack spacing={2} sx={{ minWidth: 0 }}>
       <TextField
@@ -403,52 +437,20 @@ export default function LookBuilder({
           {selectedItems.length} piece{selectedItems.length !== 1 ? 's' : ''} selected
         </Typography>
 
-        {selectedEureka.length > 0 && (
-          <Stack spacing={0.5}>
-            <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-              <DiamondOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-              <Typography color="textSecondary" variant="caption">
-                Eureka
-              </Typography>
-            </Stack>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selectedEureka.map((v) => (
-                <Chip
-                  key={v.slug}
-                  avatar={<Avatar src={v.image_url ?? undefined} />}
-                  deleteIcon={<CloseIcon />}
-                  label={`${toTitle(v.category)}${v.color ? ` · ${toTitle(v.color)}` : ''}`}
-                  size="small"
-                  variant="outlined"
-                  onDelete={() => removeSlug(v.slug)}
-                />
-              ))}
-            </Box>
-          </Stack>
+        {selectedSection(
+          'Pieces',
+          <CheckroomIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
+          selectedPieces
         )}
-
-        {selectedOutfit.length > 0 && (
-          <Stack spacing={0.5}>
-            <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-              <StyleOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-              <Typography color="textSecondary" variant="caption">
-                Outfit
-              </Typography>
-            </Stack>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-              {selectedOutfit.map((v) => (
-                <Chip
-                  key={v.slug}
-                  avatar={<Avatar src={v.image_url ?? undefined} />}
-                  deleteIcon={<CloseIcon />}
-                  label={`${toTitle(v.category)}${v.evolution ? ` · ${toTitle(v.evolution)}` : ''}`}
-                  size="small"
-                  variant="outlined"
-                  onDelete={() => removeSlug(v.slug)}
-                />
-              ))}
-            </Box>
-          </Stack>
+        {selectedSection(
+          'Accessories',
+          <WatchOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
+          selectedAccessories
+        )}
+        {selectedSection(
+          'Eureka',
+          <DiamondOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
+          selectedEureka
         )}
 
         {selectedItems.length === 0 && (
