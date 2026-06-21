@@ -50,15 +50,14 @@ export const navLinksData: {
   ],
   navSecondary: [
     {
+      title: 'Custom Looks',
+      url: '/looks',
+      image: '/icons/wardrobe.png',
+    },
+    {
       title: 'Profile',
       url: '/profile',
       icon: <AccountCircle />,
-      items: [
-        {
-          title: 'Custom Looks',
-          url: '/looks',
-        },
-      ],
       // items: [
       // {
       //   title: 'My Collection',
@@ -74,11 +73,6 @@ export const navLinksData: {
       // },
       // ],
     },
-    // {
-    //   title: 'Custom Looks',
-    //   url: '/looks',
-    //   icon: <AutoAwesome />,
-    // },
     {
       title: 'Settings',
       url: '/settings',
