@@ -32,11 +32,13 @@ import CategoryIcon from '@mui/icons-material/Category'
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import SaveIcon from '@mui/icons-material/Save'
 import { toTitle } from '@/lib/utils'
+import { categoryIconSrc } from '@/lib/look-utils'
 import LazyImage from '@/components/lazy-image'
 import type { FlatVariant, CustomLook } from '@/lib/types/looks'
 import type { EurekaCategory } from '@/lib/types/eureka'
 import type { OutfitCategory } from '@/lib/types/outfit'
 import { DRESS_SLUGS, isCategoryDisabled } from '@/components/filter/outfit-category-select'
+import ToggleIcon from '../toggle-icon'
 
 // Outfit categories carry a `part` that buckets them into these two groups.
 const PIECES_PART = 'Pieces'
@@ -125,7 +127,7 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
 type CategoryRowProps = {
   categorySlug: string
   categoryTitle: string
-  thumbnail: string | null
+  iconSrc?: string
   totalCount: number
   selectedCount: number
   disabled?: boolean
@@ -136,7 +138,7 @@ type CategoryRowProps = {
 function CategoryRow({
   categorySlug,
   categoryTitle,
-  thumbnail,
+  iconSrc,
   totalCount,
   selectedCount,
   disabled,
@@ -159,20 +161,22 @@ function CategoryRow({
         onClick={() => onSelect(categorySlug)}
       >
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
-          <Avatar
-            src={disabled ? undefined : (thumbnail ?? undefined)}
-            sx={{
-              width: 40,
-              height: 40,
-              bgcolor: 'surface.containerHighest',
-              color: disabled ? 'text.disabled' : undefined,
-              flexShrink: 0,
-              filter: disabled ? 'grayscale(1)' : undefined,
-            }}
-            variant="rounded"
-          >
-            {disabled ? <DoNotDisturbIcon fontSize="small" /> : <CategoryIcon fontSize="small" />}
-          </Avatar>
+          {disabled ? (
+            <Avatar
+              sx={{
+                width: 40,
+                height: 40,
+                bgcolor: 'surface.containerHighest',
+                color: 'text.disabled',
+                flexShrink: 0,
+              }}
+              variant="rounded"
+            >
+              <DoNotDisturbIcon fontSize="small" />
+            </Avatar>
+          ) : (
+            <ToggleIcon item={{ title: categoryTitle, image: iconSrc }} size="sm" />
+          )}
           <Stack sx={{ flex: 1, minWidth: 0 }}>
             <Typography
               noWrap
@@ -565,7 +569,6 @@ export default function LookBuilder({
             {filteredCategorySlugs.map((slug) => {
               const group = categoryGroups.get(slug)!
               const selectedCount = group.variants.filter((v) => selectedSlugs.has(v.slug)).length
-              const thumbnail = group.variants.find((v) => v.image_url)?.image_url ?? null
               const disabled =
                 tab === 'pieces' &&
                 isCategoryDisabled({ slug } as OutfitCategory, selectedOutfitCategorySlugs)
@@ -576,8 +579,8 @@ export default function LookBuilder({
                   categoryTitle={group.title}
                   disabled={disabled}
                   disabledReason={disabled ? outfitConflictReason : undefined}
+                  iconSrc={categoryIconSrc(slug)}
                   selectedCount={selectedCount}
-                  thumbnail={thumbnail}
                   totalCount={group.variants.length}
                   onSelect={setActiveCategorySlug}
                 />

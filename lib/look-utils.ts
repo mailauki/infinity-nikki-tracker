@@ -7,6 +7,43 @@ function categoryTitleMap(categories: { slug: string; title: string }[]) {
   return new Map(categories.map((c) => [c.slug, c.title]))
 }
 
+// Category slugs whose icon filename in public/icons/categories/ doesn't follow
+// the default `slug.replace(/_/g, '-')` rule. Slugs absent here and from the
+// folder (e.g. body_paint, eureka head/hands/feet) resolve to undefined.
+const CATEGORY_ICON_FILES: Record<string, string> = {
+  dress: 'dresses',
+  back_pieces: 'backpieces',
+}
+const CATEGORY_ICON_SLUGS = new Set([
+  'hair',
+  'outerwear',
+  'tops',
+  'bottoms',
+  'socks',
+  'shoes',
+  'hair_accessories',
+  'headwear',
+  'earrings',
+  'neckwear',
+  'bracelets',
+  'chokers',
+  'gloves',
+  'face_decorations',
+  'chest_accessories',
+  'pendants',
+  'rings',
+  'arm_decorations',
+  'handhelds',
+  ...Object.keys(CATEGORY_ICON_FILES),
+])
+
+/** Local icon path for a category slug, or undefined when no icon exists. */
+export function categoryIconSrc(slug: string): string | undefined {
+  if (!CATEGORY_ICON_SLUGS.has(slug)) return undefined
+  const file = CATEGORY_ICON_FILES[slug] ?? slug.replace(/_/g, '-')
+  return `/icons/categories/${file}.png`
+}
+
 export function flattenEurekaVariants(
   sets: EurekaSet[],
   categories: EurekaCategory[]
