@@ -32,6 +32,7 @@ import LazyImage from '@/components/lazy-image'
 import type { FlatVariant, CustomLook } from '@/lib/types/looks'
 import type { EurekaCategory } from '@/lib/types/eureka'
 import type { OutfitCategory } from '@/lib/types/outfit'
+import { isCategoryDisabled } from '@/components/filter/outfit-category-select'
 
 type SavePayload = {
   name: string
@@ -117,6 +118,7 @@ type CategoryRowProps = {
   thumbnail: string | null
   totalCount: number
   selectedCount: number
+  disabled?: boolean
   onSelect: (slug: string) => void
 }
 
@@ -126,11 +128,16 @@ function CategoryRow({
   thumbnail,
   totalCount,
   selectedCount,
+  disabled,
   onSelect,
 }: CategoryRowProps) {
   return (
     <Card variant="outlined">
-      <CardActionArea sx={{ px: 1.5, py: 1 }} onClick={() => onSelect(categorySlug)}>
+      <CardActionArea
+        disabled={disabled}
+        sx={{ px: 1.5, py: 1 }}
+        onClick={() => onSelect(categorySlug)}
+      >
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
           <Avatar
             src={thumbnail ?? undefined}
@@ -231,6 +238,16 @@ export default function LookBuilder({
 
   const currentVariants = tab === 'eureka' ? eurekaVariants : outfitVariants
   const currentCategories = tab === 'eureka' ? eurekaCategories : outfitCategories
+
+  // Outfit category slugs that currently have a selected piece. Drives the
+  // mutually-exclusive dress vs tops/bottoms rule in the Outfit tab.
+  const selectedOutfitCategorySlugs = useMemo(() => {
+    const slugs = new Set<string>()
+    for (const v of allVariants) {
+      if (v.type === 'outfit' && v.category && selectedSlugs.has(v.slug)) slugs.add(v.category)
+    }
+    return Array.from(slugs)
+  }, [allVariants, selectedSlugs])
 
   // Group variants by category, in canonical category order; drop empty categories.
   const categoryGroups = useMemo(() => {
@@ -482,11 +499,15 @@ export default function LookBuilder({
               const group = categoryGroups.get(slug)!
               const selectedCount = group.variants.filter((v) => selectedSlugs.has(v.slug)).length
               const thumbnail = group.variants.find((v) => v.image_url)?.image_url ?? null
+              const disabled =
+                tab === 'outfit' &&
+                isCategoryDisabled({ slug } as OutfitCategory, selectedOutfitCategorySlugs)
               return (
                 <CategoryRow
                   key={slug}
                   categorySlug={slug}
                   categoryTitle={group.title}
+                  disabled={disabled}
                   selectedCount={selectedCount}
                   thumbnail={thumbnail}
                   totalCount={group.variants.length}
