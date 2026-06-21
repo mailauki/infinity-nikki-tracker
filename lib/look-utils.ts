@@ -34,6 +34,7 @@ const CATEGORY_ICON_SLUGS = new Set([
   'rings',
   'arm_decorations',
   'handhelds',
+  'body_paint',
   ...Object.keys(CATEGORY_ICON_FILES),
 ])
 
