@@ -30,6 +30,8 @@ import SaveIcon from '@mui/icons-material/Save'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
 import type { FlatVariant, CustomLook } from '@/lib/types/looks'
+import type { EurekaCategory } from '@/lib/types/eureka'
+import type { OutfitCategory } from '@/lib/types/outfit'
 
 type SavePayload = {
   name: string
@@ -109,26 +111,26 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
   )
 }
 
-type SetRowProps = {
-  setSlug: string
-  setTitle: string
+type CategoryRowProps = {
+  categorySlug: string
+  categoryTitle: string
   thumbnail: string | null
   totalCount: number
   selectedCount: number
   onSelect: (slug: string) => void
 }
 
-function SetRow({
-  setSlug,
-  setTitle,
+function CategoryRow({
+  categorySlug,
+  categoryTitle,
   thumbnail,
   totalCount,
   selectedCount,
   onSelect,
-}: SetRowProps) {
+}: CategoryRowProps) {
   return (
     <Card variant="outlined">
-      <CardActionArea sx={{ px: 1.5, py: 1 }} onClick={() => onSelect(setSlug)}>
+      <CardActionArea sx={{ px: 1.5, py: 1 }} onClick={() => onSelect(categorySlug)}>
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
           <Avatar
             src={thumbnail ?? undefined}
@@ -139,7 +141,7 @@ function SetRow({
           </Avatar>
           <Stack sx={{ flex: 1, minWidth: 0 }}>
             <Typography noWrap sx={{ fontWeight: 500 }} variant="body2">
-              {setTitle}
+              {categoryTitle}
             </Typography>
             <Typography color="textSecondary" variant="caption">
               {totalCount} piece{totalCount !== 1 ? 's' : ''}
@@ -158,6 +160,8 @@ export default function LookBuilder({
   initialLook,
   eurekaVariants,
   outfitVariants,
+  eurekaCategories,
+  outfitCategories,
   onSave,
 }: {
   initialLook?: Pick<
@@ -166,6 +170,8 @@ export default function LookBuilder({
   >
   eurekaVariants: FlatVariant[]
   outfitVariants: FlatVariant[]
+  eurekaCategories: EurekaCategory[]
+  outfitCategories: OutfitCategory[]
   onSave: (data: SavePayload) => Promise<{ error?: string } | { id?: string }>
 }) {
   const router = useRouter()
@@ -182,57 +188,81 @@ export default function LookBuilder({
   )
   const [tab, setTab] = useState<'eureka' | 'outfit'>('eureka')
   const [search, setSearch] = useState('')
-  const [activeSetSlug, setActiveSetSlug] = useState<string | null>(null)
+  const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
-
-  function toggleSlug(slug: string) {
-    setSelectedSlugs((prev) => {
-      const next = new Set(prev)
-      if (next.has(slug)) next.delete(slug)
-      else next.add(slug)
-      return next
-    })
-  }
-
-  const currentVariants = tab === 'eureka' ? eurekaVariants : outfitVariants
-
-  // Group variants by set
-  const setGroups = useMemo(() => {
-    const map = new Map<
-      string,
-      { title: string; thumbnail: string | null; variants: FlatVariant[] }
-    >()
-    for (const v of currentVariants) {
-      if (!map.has(v.setSlug)) {
-        map.set(v.setSlug, {
-          title: v.setTitle,
-          thumbnail: v.image_url,
-          variants: [],
-        })
-      }
-      map.get(v.setSlug)!.variants.push(v)
-    }
-    return map
-  }, [currentVariants])
-
-  // Filter sets by search
-  const filteredSetSlugs = useMemo(() => {
-    const q = search.toLowerCase()
-    return Array.from(setGroups.keys()).filter((slug) =>
-      q ? setGroups.get(slug)!.title.toLowerCase().includes(q) : true
-    )
-  }, [setGroups, search])
-
-  const activeSetVariants = useMemo(() => {
-    if (!activeSetSlug) return []
-    return setGroups.get(activeSetSlug)?.variants ?? []
-  }, [setGroups, activeSetSlug])
 
   // Selected variants as FlatVariant (for chips in composer)
   const allVariants = useMemo(
     () => [...eurekaVariants, ...outfitVariants],
     [eurekaVariants, outfitVariants]
   )
+  // slug → FlatVariant lookup, used to resolve a slug's category/type on select
+  const variantBySlug = useMemo(() => new Map(allVariants.map((v) => [v.slug, v])), [allVariants])
+
+  // Toggle a piece. Selecting one auto-deselects any other selected piece in the
+  // same category and type (one piece per category, scoped per type).
+  function selectPiece(slug: string) {
+    setSelectedSlugs((prev) => {
+      const next = new Set(prev)
+      if (next.has(slug)) {
+        next.delete(slug)
+        return next
+      }
+      const picked = variantBySlug.get(slug)
+      if (picked) {
+        for (const s of next) {
+          const v = variantBySlug.get(s)
+          if (v && v.type === picked.type && v.category === picked.category) next.delete(s)
+        }
+      }
+      next.add(slug)
+      return next
+    })
+  }
+
+  // Plain deselect (no replacement) — used by composer chips.
+  function removeSlug(slug: string) {
+    setSelectedSlugs((prev) => {
+      const next = new Set(prev)
+      next.delete(slug)
+      return next
+    })
+  }
+
+  const currentVariants = tab === 'eureka' ? eurekaVariants : outfitVariants
+  const currentCategories = tab === 'eureka' ? eurekaCategories : outfitCategories
+
+  // Group variants by category, in canonical category order; drop empty categories.
+  const categoryGroups = useMemo(() => {
+    const map = new Map<string, { title: string; variants: FlatVariant[] }>()
+    for (const c of currentCategories) {
+      map.set(c.slug, { title: c.title, variants: [] })
+    }
+    for (const v of currentVariants) {
+      if (!v.category) continue
+      const group = map.get(v.category)
+      if (group) group.variants.push(v)
+      else map.set(v.category, { title: v.categoryTitle, variants: [v] })
+    }
+    for (const [slug, group] of map) {
+      if (group.variants.length === 0) map.delete(slug)
+    }
+    return map
+  }, [currentVariants, currentCategories])
+
+  // Filter categories by search
+  const filteredCategorySlugs = useMemo(() => {
+    const q = search.toLowerCase()
+    return Array.from(categoryGroups.keys()).filter((slug) =>
+      q ? categoryGroups.get(slug)!.title.toLowerCase().includes(q) : true
+    )
+  }, [categoryGroups, search])
+
+  const activeCategoryVariants = useMemo(() => {
+    if (!activeCategorySlug) return []
+    return categoryGroups.get(activeCategorySlug)?.variants ?? []
+  }, [categoryGroups, activeCategorySlug])
+
   const selectedItems = useMemo(
     () => allVariants.filter((v) => selectedSlugs.has(v.slug)),
     [allVariants, selectedSlugs]
@@ -310,7 +340,7 @@ export default function LookBuilder({
                   label={`${toTitle(v.category)}${v.color ? ` · ${toTitle(v.color)}` : ''}`}
                   size="small"
                   variant="outlined"
-                  onDelete={() => toggleSlug(v.slug)}
+                  onDelete={() => removeSlug(v.slug)}
                 />
               ))}
             </Box>
@@ -334,7 +364,7 @@ export default function LookBuilder({
                   label={`${toTitle(v.category)}${v.evolution ? ` · ${toTitle(v.evolution)}` : ''}`}
                   size="small"
                   variant="outlined"
-                  onDelete={() => toggleSlug(v.slug)}
+                  onDelete={() => removeSlug(v.slug)}
                 />
               ))}
             </Box>
@@ -370,7 +400,7 @@ export default function LookBuilder({
         value={tab}
         onChange={(_, v) => {
           setTab(v)
-          setActiveSetSlug(null)
+          setActiveCategorySlug(null)
           setSearch('')
         }}
       >
@@ -390,14 +420,14 @@ export default function LookBuilder({
         />
       </Tabs>
 
-      {activeSetSlug ? (
+      {activeCategorySlug ? (
         <Stack spacing={1.5}>
           <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-            <IconButton size="small" onClick={() => setActiveSetSlug(null)}>
+            <IconButton size="small" onClick={() => setActiveCategorySlug(null)}>
               <ArrowBackIcon fontSize="small" />
             </IconButton>
             <Typography sx={{ fontWeight: 500 }} variant="body2">
-              {setGroups.get(activeSetSlug)?.title}
+              {categoryGroups.get(activeCategorySlug)?.title}
             </Typography>
           </Stack>
           <Box
@@ -407,12 +437,12 @@ export default function LookBuilder({
               gap: 1,
             }}
           >
-            {activeSetVariants.map((v) => (
+            {activeCategoryVariants.map((v) => (
               <VariantCard
                 key={v.slug}
                 selected={selectedSlugs.has(v.slug)}
                 variant={v}
-                onToggle={toggleSlug}
+                onToggle={selectPiece}
               />
             ))}
           </Box>
@@ -421,7 +451,7 @@ export default function LookBuilder({
         <Stack spacing={1}>
           <TextField
             fullWidth
-            placeholder={`Search ${tab} sets…`}
+            placeholder={`Search ${tab} categories…`}
             size="small"
             slotProps={{
               input: {
@@ -443,24 +473,24 @@ export default function LookBuilder({
             onChange={(e) => setSearch(e.target.value)}
           />
           <Stack spacing={0.75}>
-            {filteredSetSlugs.length === 0 && (
+            {filteredCategorySlugs.length === 0 && (
               <Typography color="textSecondary" sx={{ py: 2, textAlign: 'center' }} variant="body2">
-                No sets found.
+                No categories found.
               </Typography>
             )}
-            {filteredSetSlugs.map((slug) => {
-              const group = setGroups.get(slug)!
+            {filteredCategorySlugs.map((slug) => {
+              const group = categoryGroups.get(slug)!
               const selectedCount = group.variants.filter((v) => selectedSlugs.has(v.slug)).length
               const thumbnail = group.variants.find((v) => v.image_url)?.image_url ?? null
               return (
-                <SetRow
+                <CategoryRow
                   key={slug}
+                  categorySlug={slug}
+                  categoryTitle={group.title}
                   selectedCount={selectedCount}
-                  setSlug={slug}
-                  setTitle={group.title}
                   thumbnail={thumbnail}
                   totalCount={group.variants.length}
-                  onSelect={setActiveSetSlug}
+                  onSelect={setActiveCategorySlug}
                 />
               )
             })}

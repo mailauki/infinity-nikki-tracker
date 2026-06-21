@@ -18,6 +18,7 @@ export type FlatVariant = {
   setTitle: string
   setSlug: string
   category: string
+  categoryTitle: string
   color?: string
   evolution?: string | null
   image_url: string | null

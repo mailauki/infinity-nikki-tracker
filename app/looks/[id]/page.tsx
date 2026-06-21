@@ -5,6 +5,8 @@ import { Skeleton, Stack, Typography } from '@mui/material'
 import { getUserID } from '@/hooks/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
+import { getEurekaCategories } from '@/hooks/data/eureka-categories'
+import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getCustomLook } from '@/hooks/data/custom-looks'
 import { flattenEurekaVariants, flattenOutfitVariants } from '@/lib/look-utils'
 import LookBuilder from '@/components/looks/look-builder'
@@ -30,16 +32,18 @@ async function EditLookContent({ params }: Props) {
   const user_id = await getUserID()
   if (!user_id) redirect('/login')
 
-  const [look, eurekaSets, outfitSets] = await Promise.all([
+  const [look, eurekaSets, outfitSets, eurekaCategories, outfitCategories] = await Promise.all([
     getCustomLook(id, user_id),
     getEurekaSets(),
     getOutfitSets(),
+    getEurekaCategories(),
+    getOutfitCategories(),
   ])
 
   if (!look) notFound()
 
-  const eurekaVariants = flattenEurekaVariants(eurekaSets ?? [])
-  const outfitVariants = flattenOutfitVariants(outfitSets ?? [])
+  const eurekaVariants = flattenEurekaVariants(eurekaSets ?? [], eurekaCategories)
+  const outfitVariants = flattenOutfitVariants(outfitSets ?? [], outfitCategories)
 
   async function handleUpdate(data: {
     name: string
@@ -58,8 +62,10 @@ async function EditLookContent({ params }: Props) {
       </NavBarToolbar>
 
       <LookBuilder
+        eurekaCategories={eurekaCategories}
         eurekaVariants={eurekaVariants}
         initialLook={look}
+        outfitCategories={outfitCategories}
         outfitVariants={outfitVariants}
         onSave={handleUpdate}
       />
