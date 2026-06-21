@@ -31,6 +31,7 @@ export function flattenOutfitVariants(
   categories: OutfitCategory[]
 ): FlatVariant[] {
   const titles = categoryTitleMap(categories)
+  const parts = new Map(categories.map((c) => [c.slug, c.part]))
   return sets.flatMap((set) =>
     set.outfit_variants.map((v) => ({
       slug: v.slug,
@@ -39,6 +40,7 @@ export function flattenOutfitVariants(
       setSlug: set.slug,
       category: v.outfit_category ?? '',
       categoryTitle: titles.get(v.outfit_category ?? '') ?? toTitle(v.outfit_category ?? ''),
+      part: parts.get(v.outfit_category ?? '') ?? undefined,
       evolution: v.evolution ?? undefined,
       image_url: v.image_url,
     }))

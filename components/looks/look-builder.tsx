@@ -26,6 +26,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
+import CheckroomIcon from '@mui/icons-material/Checkroom'
+import WatchOutlinedIcon from '@mui/icons-material/WatchOutlined'
 import CategoryIcon from '@mui/icons-material/Category'
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import SaveIcon from '@mui/icons-material/Save'
@@ -35,6 +37,12 @@ import type { FlatVariant, CustomLook } from '@/lib/types/looks'
 import type { EurekaCategory } from '@/lib/types/eureka'
 import type { OutfitCategory } from '@/lib/types/outfit'
 import { DRESS_SLUGS, isCategoryDisabled } from '@/components/filter/outfit-category-select'
+
+// Outfit categories carry a `part` that buckets them into these two groups.
+const PIECES_PART = 'Pieces'
+const ACCESSORIES_PART = 'Accessories'
+
+type TabKey = 'pieces' | 'accessories' | 'eureka'
 
 type SavePayload = {
   name: string
@@ -229,7 +237,7 @@ export default function LookBuilder({
         ...(initialLook?.outfit_variant_slugs ?? []),
       ])
   )
-  const [tab, setTab] = useState<'eureka' | 'outfit'>('eureka')
+  const [tab, setTab] = useState<TabKey>('pieces')
   const [search, setSearch] = useState('')
   const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -272,11 +280,19 @@ export default function LookBuilder({
     })
   }
 
-  const currentVariants = tab === 'eureka' ? eurekaVariants : outfitVariants
-  const currentCategories = tab === 'eureka' ? eurekaCategories : outfitCategories
+  const currentVariants = useMemo(() => {
+    if (tab === 'eureka') return eurekaVariants
+    const part = tab === 'pieces' ? PIECES_PART : ACCESSORIES_PART
+    return outfitVariants.filter((v) => v.part === part)
+  }, [tab, eurekaVariants, outfitVariants])
+  const currentCategories = useMemo(() => {
+    if (tab === 'eureka') return eurekaCategories
+    const part = tab === 'pieces' ? PIECES_PART : ACCESSORIES_PART
+    return outfitCategories.filter((c) => c.part === part)
+  }, [tab, eurekaCategories, outfitCategories])
 
   // Outfit category slugs that currently have a selected piece. Drives the
-  // mutually-exclusive dress vs tops/bottoms rule in the Outfit tab.
+  // mutually-exclusive dress vs tops/bottoms rule in the Pieces tab.
   const selectedOutfitCategorySlugs = useMemo(() => {
     const slugs = new Set<string>()
     for (const v of allVariants) {
@@ -458,25 +474,33 @@ export default function LookBuilder({
     <Stack spacing={1.5} sx={{ minWidth: 0 }}>
       <Tabs
         value={tab}
-        onChange={(_, v) => {
+        variant="fullWidth"
+        onChange={(_, v: TabKey) => {
           setTab(v)
           setActiveCategorySlug(null)
           setSearch('')
         }}
       >
         <Tab
+          icon={<CheckroomIcon fontSize="small" />}
+          iconPosition="start"
+          label="Pieces"
+          sx={{ minHeight: 40, minWidth: 0 }}
+          value="pieces"
+        />
+        <Tab
+          icon={<WatchOutlinedIcon fontSize="small" />}
+          iconPosition="start"
+          label="Accessories"
+          sx={{ minHeight: 40, minWidth: 0 }}
+          value="accessories"
+        />
+        <Tab
           icon={<DiamondOutlinedIcon fontSize="small" />}
           iconPosition="start"
           label="Eureka"
-          sx={{ minHeight: 40 }}
+          sx={{ minHeight: 40, minWidth: 0 }}
           value="eureka"
-        />
-        <Tab
-          icon={<StyleOutlinedIcon fontSize="small" />}
-          iconPosition="start"
-          label="Outfit"
-          sx={{ minHeight: 40 }}
-          value="outfit"
         />
       </Tabs>
 
@@ -511,7 +535,7 @@ export default function LookBuilder({
         <Stack spacing={1}>
           <TextField
             fullWidth
-            placeholder={`Search ${tab} categories…`}
+            placeholder="Search categories…"
             size="small"
             slotProps={{
               input: {
@@ -543,7 +567,7 @@ export default function LookBuilder({
               const selectedCount = group.variants.filter((v) => selectedSlugs.has(v.slug)).length
               const thumbnail = group.variants.find((v) => v.image_url)?.image_url ?? null
               const disabled =
-                tab === 'outfit' &&
+                tab === 'pieces' &&
                 isCategoryDisabled({ slug } as OutfitCategory, selectedOutfitCategorySlugs)
               return (
                 <CategoryRow
