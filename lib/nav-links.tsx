@@ -53,12 +53,12 @@ export const navLinksData: {
       title: 'Profile',
       url: '/profile',
       icon: <AccountCircle />,
-      // items: [
-      //   {
-      //     title: 'Custom Looks',
-      //     url: '/looks',
-      //   },
-      // ],
+      items: [
+        {
+          title: 'Custom Looks',
+          url: '/looks',
+        },
+      ],
       // items: [
       // {
       //   title: 'My Collection',

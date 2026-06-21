@@ -1,7 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Link as Anchor, Stack, Typography, Chip, Container, IconButton, Tooltip } from '@mui/material'
+import {
+  Link as Anchor,
+  Stack,
+  Typography,
+  Chip,
+  Container,
+  IconButton,
+  Tooltip,
+} from '@mui/material'
 import { Collections } from '@mui/icons-material'
 import { OutfitSet } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
@@ -144,7 +152,15 @@ export default function OutfitSetDetail({
               direction="row"
               sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
             >
-              <Anchor component={Link} href={`/outfits/seasons/${outfitSet.seasons}`} sx={{ cursor: 'pointer' }} underline='hover' variant="subtitle2">{season?.title}</Anchor>
+              <Anchor
+                component={Link}
+                href={`/outfits/seasons/${outfitSet.seasons}`}
+                sx={{ cursor: 'pointer' }}
+                underline="hover"
+                variant="subtitle2"
+              >
+                {season?.title}
+              </Anchor>
               <Typography variant="body1">{seasonCategory?.title}</Typography>
             </Stack>
             <Typography variant="body2">{description}</Typography>
