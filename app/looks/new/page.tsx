@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { Skeleton, Stack, Typography } from '@mui/material'
+import { Button, Skeleton, Stack, Typography } from '@mui/material'
 import { getUserID } from '@/hooks/user'
 import { createClient } from '@/lib/supabase/server'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
@@ -50,6 +50,11 @@ async function NewLookContent() {
     <>
       <NavBarToolbar>
         <Typography variant="subtitle2">New Look</Typography>
+        <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
+          <Button component="a" href={'/looks'} variant="outlined">
+            Cancel
+          </Button>
+        </Stack>
       </NavBarToolbar>
 
       <LookBuilder
