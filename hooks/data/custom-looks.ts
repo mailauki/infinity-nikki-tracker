@@ -24,6 +24,30 @@ export const getLookThumbnails = cache(
   }
 )
 
+// Maps each outfit variant slug used across the given looks to its category
+// `part` ("Pieces" | "Accessories"), so look cards can split the outfit count.
+export const getOutfitSlugParts = cache(
+  async (looks: CustomLook[]): Promise<Map<string, string>> => {
+    const supabase = await createClient()
+    const outfitSlugs = [...new Set(looks.flatMap((l) => l.outfit_variant_slugs))]
+    if (outfitSlugs.length === 0) return new Map()
+
+    const { data } = await supabase
+      .from('outfit_variants')
+      .select('slug, outfit_categories ( part )')
+      .in('slug', outfitSlugs)
+
+    return new Map(
+      (data ?? [])
+        .map((v): [string, string] | null => {
+          const part = (v.outfit_categories as { part: string } | null)?.part
+          return part ? [v.slug, part] : null
+        })
+        .filter((entry): entry is [string, string] => entry !== null)
+    )
+  }
+)
+
 export const getCustomLooks = cache(async (user_id: string): Promise<CustomLook[]> => {
   const supabase = await createClient()
   const { data } = await supabase

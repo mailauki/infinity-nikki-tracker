@@ -18,17 +18,22 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
-import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
+import CheckroomIcon from '@mui/icons-material/Checkroom'
+import WatchOutlinedIcon from '@mui/icons-material/WatchOutlined'
 import { enqueueSnackbar } from 'notistack'
 import type { CustomLook } from '@/lib/types/looks'
+
+export type LookCounts = { pieces: number; accessories: number; eureka: number }
 
 export default function LookCard({
   look,
   thumbnails,
+  counts,
   onDelete,
 }: {
   look: CustomLook
   thumbnails: string[]
+  counts: LookCounts
   onDelete: (id: string) => Promise<{ error?: string }>
 }) {
   const [deleting, setDeleting] = useState(false)
@@ -103,18 +108,26 @@ export default function LookCard({
             </Stack>
 
             <Stack direction="row" sx={{ gap: 0.75, flexWrap: 'wrap', alignItems: 'center' }}>
-              {look.eureka_variant_slugs.length > 0 && (
+              {counts.pieces > 0 && (
                 <Chip
-                  icon={<DiamondOutlinedIcon />}
-                  label={`${look.eureka_variant_slugs.length} eureka`}
+                  icon={<CheckroomIcon />}
+                  label={`${counts.pieces} piece${counts.pieces !== 1 ? 's' : ''}`}
                   size="small"
                   variant="outlined"
                 />
               )}
-              {look.outfit_variant_slugs.length > 0 && (
+              {counts.accessories > 0 && (
                 <Chip
-                  icon={<StyleOutlinedIcon />}
-                  label={`${look.outfit_variant_slugs.length} outfit`}
+                  icon={<WatchOutlinedIcon />}
+                  label={`${counts.accessories} accessor${counts.accessories !== 1 ? 'ies' : 'y'}`}
+                  size="small"
+                  variant="outlined"
+                />
+              )}
+              {counts.eureka > 0 && (
+                <Chip
+                  icon={<DiamondOutlinedIcon />}
+                  label={`${counts.eureka} eureka`}
                   size="small"
                   variant="outlined"
                 />

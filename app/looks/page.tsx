@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 import { Box, Skeleton, Stack, Typography } from '@mui/material'
 import { getUserID } from '@/hooks/user'
-import { getCustomLooks, getLookThumbnails } from '@/hooks/data/custom-looks'
+import { getCustomLooks, getLookThumbnails, getOutfitSlugParts } from '@/hooks/data/custom-looks'
 import { getProfile } from '@/hooks/data/user'
 import { FREE_LOOKS_LIMIT } from '@/lib/types/looks'
 import LookCard, { LooksLimitBanner } from '@/components/looks/look-card'
@@ -31,7 +31,10 @@ async function LooksContent() {
   const isPremium = profile?.is_premium ?? false
   const atLimit = !isPremium && looks.length >= FREE_LOOKS_LIMIT
 
-  const thumbMap = await getLookThumbnails(looks)
+  const [thumbMap, partMap] = await Promise.all([
+    getLookThumbnails(looks),
+    getOutfitSlugParts(looks),
+  ])
 
   async function handleDelete(id: string) {
     'use server'
@@ -62,9 +65,18 @@ async function LooksContent() {
                 .slice(0, 6)
                 .map((slug) => thumbMap.get(slug) ?? null)
                 .filter((url): url is string => !!url)
+              const accessories = look.outfit_variant_slugs.filter(
+                (slug) => partMap.get(slug) === 'Accessories'
+              ).length
+              const counts = {
+                pieces: look.outfit_variant_slugs.length - accessories,
+                accessories,
+                eureka: look.eureka_variant_slugs.length,
+              }
               return (
                 <LookCard
                   key={look.id}
+                  counts={counts}
                   look={look}
                   thumbnails={thumbnails}
                   onDelete={handleDelete}
