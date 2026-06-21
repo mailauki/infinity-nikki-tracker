@@ -6,6 +6,8 @@ export type CustomLook = Pick<
   | 'user_id'
   | 'name'
   | 'description'
+  | 'image_url'
+  | 'slug'
   | 'eureka_variant_slugs'
   | 'outfit_variant_slugs'
   | 'created_at'

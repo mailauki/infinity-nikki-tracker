@@ -53,7 +53,7 @@ export const getCustomLooks = cache(async (user_id: string): Promise<CustomLook[
   const { data } = await supabase
     .from('custom_looks')
     .select(
-      'id, user_id, name, description, eureka_variant_slugs, outfit_variant_slugs, created_at, updated_at'
+      'id, user_id, name, description, image_url, slug, eureka_variant_slugs, outfit_variant_slugs, created_at, updated_at'
     )
     .eq('user_id', user_id)
     .order('created_at', { ascending: false })
@@ -66,7 +66,7 @@ export const getCustomLook = cache(
     const { data } = await supabase
       .from('custom_looks')
       .select(
-        'id, user_id, name, description, eureka_variant_slugs, outfit_variant_slugs, created_at, updated_at'
+        'id, user_id, name, description, image_url, slug, eureka_variant_slugs, outfit_variant_slugs, created_at, updated_at'
       )
       .eq('id', id)
       .eq('user_id', user_id)
