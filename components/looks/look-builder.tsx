@@ -17,6 +17,7 @@ import {
   Tab,
   Tabs,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
@@ -26,13 +27,14 @@ import SearchIcon from '@mui/icons-material/Search'
 import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
 import CategoryIcon from '@mui/icons-material/Category'
+import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import SaveIcon from '@mui/icons-material/Save'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
 import type { FlatVariant, CustomLook } from '@/lib/types/looks'
 import type { EurekaCategory } from '@/lib/types/eureka'
 import type { OutfitCategory } from '@/lib/types/outfit'
-import { isCategoryDisabled } from '@/components/filter/outfit-category-select'
+import { DRESS_SLUGS, isCategoryDisabled } from '@/components/filter/outfit-category-select'
 
 type SavePayload = {
   name: string
@@ -119,6 +121,7 @@ type CategoryRowProps = {
   totalCount: number
   selectedCount: number
   disabled?: boolean
+  disabledReason?: string
   onSelect: (slug: string) => void
 }
 
@@ -129,10 +132,19 @@ function CategoryRow({
   totalCount,
   selectedCount,
   disabled,
+  disabledReason,
   onSelect,
 }: CategoryRowProps) {
-  return (
-    <Card variant="outlined">
+  const card = (
+    <Card
+      sx={{
+        opacity: disabled ? 0.55 : 1,
+        borderStyle: disabled ? 'dashed' : 'solid',
+        borderColor: disabled ? 'divider' : undefined,
+        transition: 'opacity 0.15s',
+      }}
+      variant="outlined"
+    >
       <CardActionArea
         disabled={disabled}
         sx={{ px: 1.5, py: 1 }}
@@ -140,27 +152,51 @@ function CategoryRow({
       >
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
           <Avatar
-            src={thumbnail ?? undefined}
-            sx={{ width: 40, height: 40, bgcolor: 'surface.containerHighest', flexShrink: 0 }}
+            src={disabled ? undefined : (thumbnail ?? undefined)}
+            sx={{
+              width: 40,
+              height: 40,
+              bgcolor: 'surface.containerHighest',
+              color: disabled ? 'text.disabled' : undefined,
+              flexShrink: 0,
+              filter: disabled ? 'grayscale(1)' : undefined,
+            }}
             variant="rounded"
           >
-            <CategoryIcon fontSize="small" />
+            {disabled ? <DoNotDisturbIcon fontSize="small" /> : <CategoryIcon fontSize="small" />}
           </Avatar>
           <Stack sx={{ flex: 1, minWidth: 0 }}>
-            <Typography noWrap sx={{ fontWeight: 500 }} variant="body2">
+            <Typography
+              noWrap
+              color={disabled ? 'textDisabled' : 'textPrimary'}
+              sx={{ fontWeight: 500 }}
+              variant="body2"
+            >
               {categoryTitle}
             </Typography>
             <Typography color="textSecondary" variant="caption">
-              {totalCount} piece{totalCount !== 1 ? 's' : ''}
+              {disabled
+                ? (disabledReason ?? 'Unavailable')
+                : `${totalCount} piece${totalCount !== 1 ? 's' : ''}`}
             </Typography>
           </Stack>
-          {selectedCount > 0 && (
+          {selectedCount > 0 && !disabled && (
             <Chip color="primary" label={selectedCount} size="small" sx={{ minWidth: 28 }} />
           )}
         </Stack>
       </CardActionArea>
     </Card>
   )
+
+  if (disabled && disabledReason) {
+    return (
+      <Tooltip placement="top" title={disabledReason}>
+        <span>{card}</span>
+      </Tooltip>
+    )
+  }
+
+  return card
 }
 
 export default function LookBuilder({
@@ -248,6 +284,13 @@ export default function LookBuilder({
     }
     return Array.from(slugs)
   }, [allVariants, selectedSlugs])
+
+  // Why outfit rows get disabled, given the current selection (same for every
+  // disabled row in a given state).
+  const hasDressSelected = selectedOutfitCategorySlugs.some((s) => DRESS_SLUGS.includes(s))
+  const outfitConflictReason = hasDressSelected
+    ? "Can't combine with a dress — remove the dress first"
+    : "Can't combine with tops or bottoms — remove them first"
 
   // Group variants by category, in canonical category order; drop empty categories.
   const categoryGroups = useMemo(() => {
@@ -508,6 +551,7 @@ export default function LookBuilder({
                   categorySlug={slug}
                   categoryTitle={group.title}
                   disabled={disabled}
+                  disabledReason={disabled ? outfitConflictReason : undefined}
                   selectedCount={selectedCount}
                   thumbnail={thumbnail}
                   totalCount={group.variants.length}
