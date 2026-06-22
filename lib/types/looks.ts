@@ -21,6 +21,7 @@ export type FlatVariant = {
   setSlug: string
   category: string
   categoryTitle: string
+  title?: string | null
   part?: string
   color?: string
   evolution?: string | null

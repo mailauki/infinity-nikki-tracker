@@ -78,6 +78,7 @@ export function flattenOutfitVariants(
       setSlug: set.slug,
       category: v.outfit_category ?? '',
       categoryTitle: titles.get(v.outfit_category ?? '') ?? toTitle(v.outfit_category ?? ''),
+      title: v.title,
       part: parts.get(v.outfit_category ?? '') ?? undefined,
       evolution: v.evolution ?? undefined,
       image_url: v.image_url,

@@ -58,6 +58,19 @@ type SavePayload = {
   outfit_variant_slugs: string[]
 }
 
+// Short detail caption for a selected variant: the eureka color, or the outfit
+// evolution (sans the set prefix; the unevolved "base" has none). Empty when
+// there's no distinguishing detail.
+function variantCaption(v: FlatVariant): string {
+  if (v.type === 'eureka') return v.color ? toTitle(v.color) : ''
+  if (!v.evolution) return ''
+  // Outfit evolution slugs look like `{setSlug}-{evolution}`; "base" is unevolved.
+  const evolution = v.evolution.startsWith(`${v.setSlug}-`)
+    ? v.evolution.slice(v.setSlug.length + 1)
+    : v.evolution
+  return evolution === 'base' ? '' : toTitle(evolution)
+}
+
 type VariantCardProps = {
   variant: FlatVariant
   selected: boolean
@@ -413,12 +426,8 @@ export default function LookBuilder({
         </Stack>
         <List dense disablePadding>
           {items.map((v) => {
-            const detail = v.color ?? v.evolution
-            const caption =
-              detail!.split('-')[1] !== 'base'
-                ? `${toTitle(detail!.split('-')[0])}: ${toTitle(detail!.split('-')[1])}`
-                : toTitle(detail!.split('-')[0])
-            // TODO: Change to outfit_variant title and use this caption as fallback
+            const caption = variantCaption(v)
+            const primary = v.title || caption || v.setTitle
             return (
               <ListItem
                 key={v.slug}
@@ -434,9 +443,9 @@ export default function LookBuilder({
                 }
               >
                 <ListItemAvatar>
-                  <LazyImage alt={caption} kind="square" size="sm" src={v.image_url ?? undefined} />
+                  <LazyImage alt={primary} kind="square" size="sm" src={v.image_url ?? undefined} />
                 </ListItemAvatar>
-                <ListItemText primary={caption} />
+                <ListItemText primary={primary} secondary={caption || undefined} />
               </ListItem>
             )
           })}
