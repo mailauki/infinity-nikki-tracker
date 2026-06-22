@@ -1,5 +1,6 @@
 import { getEvolutionsWithVariants } from '@/hooks/data/evolutions'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
+import { byTitleThenOrder } from '@/lib/utils'
 import { Suspense } from 'react'
 import OutfitEvolutionView from './outfit-evolution-view'
 
@@ -17,5 +18,7 @@ async function AdminView() {
     getOutfitCategories(),
   ])
 
-  return <OutfitEvolutionView evolutions={evolutions} outfitCategories={outfitCategories} />
+  const sortedEvolutions = [...evolutions].sort(byTitleThenOrder)
+
+  return <OutfitEvolutionView evolutions={sortedEvolutions} outfitCategories={outfitCategories} />
 }

@@ -44,6 +44,17 @@ export function bySlug(a: { slug: string | null }, b: { slug: string | null }) {
   return (a.slug ?? '').localeCompare(b.slug ?? '')
 }
 
+// Evolutions share a title across every stage of a set (title = set name), so
+// they sort by set title then by stage order (base → evo 1 → evo 2), grouping
+// each set's stages alphabetically and in sequence.
+export function byTitleThenOrder(
+  a: { title: string | null; order: number },
+  b: { title: string | null; order: number }
+) {
+  const titleCmp = (a.title ?? '').localeCompare(b.title ?? '')
+  return titleCmp !== 0 ? titleCmp : a.order - b.order
+}
+
 export function formatDate(dateString: string) {
   const date = new Date(dateString)
   const now = new Date()

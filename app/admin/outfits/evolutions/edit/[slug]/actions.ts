@@ -94,21 +94,18 @@ export async function editEvolution(
 
   if (formData.get('update_next') === 'true') {
     // Evolutions share a title across all stages of a set (title = set name), so
-    // order by id like the evolutions list/data hook — ordering by title would
-    // skip every sibling stage. Re-read id by the post-save slug.
-    const { data: saved } = await supabase
+    // "next" walks by (title, order) to match the list view — a single .gt()
+    // can't express that compound cursor, so order the full list and take the
+    // row after the just-saved one (by its post-save slug).
+    const { data: ordered } = await supabase
       .from('evolutions')
-      .select('id')
-      .eq('slug', newSlug)
-      .maybeSingle()
+      .select('slug, title, order')
+      .order('title', { ascending: true })
+      .order('order', { ascending: true })
 
-    const { data: next } = await supabase
-      .from('evolutions')
-      .select('slug')
-      .gt('id', saved?.id ?? 0)
-      .order('id', { ascending: true })
-      .limit(1)
-      .maybeSingle()
+    const rows = ordered ?? []
+    const currentIndex = rows.findIndex((e) => e.slug === newSlug)
+    const next = currentIndex >= 0 ? rows[currentIndex + 1] : undefined
 
     if (next?.slug) redirect(`${navLinksData.admin.outfits.evolutions.edit}/${next.slug}`)
     redirect(navLinksData.admin.outfits.evolutions.list)

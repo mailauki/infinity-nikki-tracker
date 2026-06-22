@@ -87,17 +87,17 @@ Notes:
 
 Per-entity mapping:
 
-| Entity          | actions.ts                                                     | table             | orderCol | edit base                                    |
-| --------------- | -------------------------------------------------------------- | ----------------- | -------- | -------------------------------------------- |
-| eureka sets     | `app/admin/eureka/sets/actions.ts`                             | `eureka_sets`     | `title`  | `navLinksData.admin.eureka.sets.edit`        |
-| eureka variants | `app/admin/eureka/variants/actions.ts`                         | `eureka_variants` | `slug`   | `navLinksData.admin.eureka.variants.edit`    |
-| trials          | `app/admin/eureka/trials/actions.ts`                           | `trials`          | `title`  | `navLinksData.admin.eureka.trials.edit`      |
-| outfit sets     | `app/admin/outfits/sets/actions.ts`                            | `outfit_sets`     | `title`  | `navLinksData.admin.outfits.sets.edit`       |
-| abilities       | `app/admin/outfits/abilities/new/actions.ts` (shared add+edit) | `abilities`       | `title`  | `navLinksData.admin.outfits.abilities.edit`  |
-| seasons         | `app/admin/outfits/seasons/new/actions.ts` (shared add+edit)   | `seasons`         | `title`  | `navLinksData.admin.outfits.seasons.edit`    |
-| evolutions      | `app/admin/outfits/evolutions/edit/[slug]/actions.ts`          | `evolutions`      | `id`     | `navLinksData.admin.outfits.evolutions.edit` |
+| Entity          | actions.ts                                                     | table             | orderCol         | edit base                                    |
+| --------------- | -------------------------------------------------------------- | ----------------- | ---------------- | -------------------------------------------- |
+| eureka sets     | `app/admin/eureka/sets/actions.ts`                             | `eureka_sets`     | `title`          | `navLinksData.admin.eureka.sets.edit`        |
+| eureka variants | `app/admin/eureka/variants/actions.ts`                         | `eureka_variants` | `slug`           | `navLinksData.admin.eureka.variants.edit`    |
+| trials          | `app/admin/eureka/trials/actions.ts`                           | `trials`          | `title`          | `navLinksData.admin.eureka.trials.edit`      |
+| outfit sets     | `app/admin/outfits/sets/actions.ts`                            | `outfit_sets`     | `title`          | `navLinksData.admin.outfits.sets.edit`       |
+| abilities       | `app/admin/outfits/abilities/new/actions.ts` (shared add+edit) | `abilities`       | `title`          | `navLinksData.admin.outfits.abilities.edit`  |
+| seasons         | `app/admin/outfits/seasons/new/actions.ts` (shared add+edit)   | `seasons`         | `title`          | `navLinksData.admin.outfits.seasons.edit`    |
+| evolutions      | `app/admin/outfits/evolutions/edit/[slug]/actions.ts`          | `evolutions`      | `(title, order)` | `navLinksData.admin.outfits.evolutions.edit` |
 
-> **Evolutions ordering note:** `evolutions.title` holds the _outfit set_ name, so every stage of a set shares one title. Ordering "next" by title would `.gt('title', …)` past all sibling stages and jump to the next set. Evolutions therefore order by `id` (matching the evolutions list/data hook in `hooks/data/evolutions.ts`), so the button walks a set's stages. The action re-reads the saved row's `id` by its post-save slug, then `.gt('id', savedId).order('id', …)`.
+> **Evolutions ordering note:** `evolutions.title` holds the _outfit set_ name, so every stage of a set shares one title. Evolutions order by `(title, order)` — grouping each set's stages alphabetically by set name, in stage sequence (base → evo 1 → evo 2). A single `.gt()` can't express that compound cursor, so the action orders the full evolutions list by `(title, order)` and takes the row immediately after the just-saved one (matched by its post-save slug). The list view sorts with the matching `byTitleThenOrder` comparator, and the evolutions DataGrid no longer pins `sortModel` to `id`.
 
 (Exact `actions.ts` paths for abilities/seasons to be confirmed during implementation — some entities colocate the edit action in the `new/actions.ts` file.)
 
