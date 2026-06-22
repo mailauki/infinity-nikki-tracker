@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { Avatar, Box, Container, IconButton, Stack, Tooltip, Typography } from '@mui/material'
+import { Box, Container, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { ChevronLeft, Edit as EditIcon } from '@mui/icons-material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import LazyImage from '@/components/lazy-image'
@@ -18,11 +18,13 @@ function PieceRow({ label, pieces }: { label: string; pieces: Piece[] }) {
       </Typography>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
         {pieces.map((p) => (
-          <Avatar
+          <LazyImage
             key={p.slug}
+            alt={p.slug}
+            kind="square"
+            size="lg"
             src={p.image_url ?? undefined}
-            sx={{ width: 48, height: 48, bgcolor: 'surface.containerHighest' }}
-            variant="rounded"
+            sx={{ bgcolor: 'surface.containerHighest' }}
           />
         ))}
       </Box>
