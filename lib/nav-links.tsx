@@ -39,13 +39,13 @@ export const navLinksData: {
         },
       ],
     },
-  ],
-  navSecondary: [
     {
       title: 'Custom Looks',
       url: '/looks',
       image: '/icons/wardrobe.png',
     },
+  ],
+  navSecondary: [
     {
       title: 'Profile',
       url: '/profile',

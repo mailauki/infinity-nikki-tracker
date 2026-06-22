@@ -72,6 +72,8 @@ function variantCaption(v: FlatVariant): string {
   const evolution = v.evolution.startsWith(`${v.setSlug}-`)
     ? v.evolution.slice(v.setSlug.length + 1)
     : v.evolution
+  const setName = evolution === 'base' ? v.setTitle : `${v.setTitle}: ${toTitle(evolution)}`
+  if (v.title) return setName
   return evolution === 'base' ? '' : toTitle(evolution)
 }
 
@@ -380,15 +382,33 @@ export default function LookBuilder({
     return categoryGroups.get(activeCategorySlug)?.variants ?? []
   }, [categoryGroups, activeCategorySlug])
 
+  // Category slug → its position in the DB id-ordered category list, so selected
+  // items can be sorted by their category's id.
+  const categoryOrder = useMemo(() => {
+    const order = new Map<string, number>()
+    eurekaCategories.forEach((c, i) => order.set(`eureka:${c.slug}`, i))
+    outfitCategories.forEach((c, i) => order.set(`outfit:${c.slug}`, i))
+    return order
+  }, [eurekaCategories, outfitCategories])
+
+  const sortByCategory = (items: FlatVariant[]) =>
+    [...items].sort(
+      (a, b) =>
+        (categoryOrder.get(`${a.type}:${a.category}`) ?? Infinity) -
+        (categoryOrder.get(`${b.type}:${b.category}`) ?? Infinity)
+    )
+
   const selectedItems = useMemo(
     () => allVariants.filter((v) => selectedSlugs.has(v.slug)),
     [allVariants, selectedSlugs]
   )
-  const selectedPieces = selectedItems.filter((v) => v.type === 'outfit' && v.part === PIECES_PART)
-  const selectedAccessories = selectedItems.filter(
-    (v) => v.type === 'outfit' && v.part === ACCESSORIES_PART
+  const selectedPieces = sortByCategory(
+    selectedItems.filter((v) => v.type === 'outfit' && v.part === PIECES_PART)
   )
-  const selectedEureka = selectedItems.filter((v) => v.type === 'eureka')
+  const selectedAccessories = sortByCategory(
+    selectedItems.filter((v) => v.type === 'outfit' && v.part === ACCESSORIES_PART)
+  )
+  const selectedEureka = sortByCategory(selectedItems.filter((v) => v.type === 'eureka'))
 
   function handleSave() {
     if (!name.trim()) return
