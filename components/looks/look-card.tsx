@@ -7,8 +7,10 @@ import {
   AvatarGroup,
   Card,
   CardActionArea,
+  CardActions,
   CardContent,
   Chip,
+  Divider,
   IconButton,
   Stack,
   Tooltip,
@@ -37,6 +39,7 @@ export default function LookCard({
   onDelete: (id: string) => Promise<{ error?: string }>
 }) {
   const [deleting, setDeleting] = useState(false)
+  const href = `/looks/${look.slug ?? look.id}`
   const totalItems = look.eureka_variant_slugs.length + look.outfit_variant_slugs.length
   const date = new Date(look.created_at).toLocaleDateString('en-US', {
     month: 'short',
@@ -64,7 +67,7 @@ export default function LookCard({
       }}
       variant="outlined"
     >
-      <CardActionArea component={Link} href={`/looks/${look.id}`} sx={{ flex: 1 }}>
+      <CardActionArea component={Link} href={href} sx={{ flex: 1 }}>
         <CardContent>
           <Stack spacing={1.5}>
             {thumbnails.length > 0 && (
@@ -77,7 +80,7 @@ export default function LookCard({
                     width: 40,
                     height: 40,
                     border: '2px solid',
-                    borderColor: 'surface.containerLowest',
+                    borderColor: 'surface.containerLow',
                   },
                 }}
               >
@@ -142,28 +145,29 @@ export default function LookCard({
         </CardContent>
       </CardActionArea>
 
-      <Stack
-        direction="row"
-        sx={{
-          px: 1,
-          pb: 1,
-          gap: 0.5,
-          justifyContent: 'flex-end',
-          borderTop: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Tooltip title="Edit">
-          <IconButton component={Link} href={`/looks/${look.id}`} size="small">
-            <EditOutlinedIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton disabled={deleting} size="small" onClick={handleDelete}>
-            <DeleteOutlineIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      </Stack>
+      <Divider variant="middle" />
+
+      <CardActions>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 0.5,
+            flexGrow: 1,
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Tooltip title="Edit">
+            <IconButton component={Link} href={href} size="small">
+              <EditOutlinedIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton disabled={deleting} size="small" onClick={handleDelete}>
+              <DeleteOutlineIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      </CardActions>
     </Card>
   )
 }

@@ -61,14 +61,14 @@ export const getCustomLooks = cache(async (user_id: string): Promise<CustomLook[
 })
 
 export const getCustomLook = cache(
-  async (id: string, user_id: string): Promise<CustomLook | null> => {
+  async (slug: string, user_id: string): Promise<CustomLook | null> => {
     const supabase = await createClient()
     const { data } = await supabase
       .from('custom_looks')
       .select(
         'id, user_id, name, description, image_url, slug, eureka_variant_slugs, outfit_variant_slugs, created_at, updated_at'
       )
-      .eq('id', id)
+      .eq('slug', slug)
       .eq('user_id', user_id)
       .single()
     return data ?? null

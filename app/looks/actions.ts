@@ -87,7 +87,7 @@ export async function updateLook(
   if (error) return { error: error.message }
 
   revalidatePath('/looks')
-  revalidatePath(`/looks/${id}`)
+  revalidatePath(`/looks/${slug}`)
   return {}
 }
 
