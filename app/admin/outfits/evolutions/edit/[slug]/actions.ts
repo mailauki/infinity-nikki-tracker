@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { toSlug } from '@/lib/utils'
 import { getUserRole } from '@/hooks/user'
+import { navLinksData } from '@/lib/nav-links'
 
 export async function editEvolution(
   currentSlug: string,
@@ -90,5 +91,26 @@ export async function editEvolution(
 
     return { savedTitle: subtitle, slug: newSlug, variants: variants ?? [] }
   }
+
+  if (formData.get('update_next') === 'true') {
+    const { data: saved } = await supabase
+      .from('evolutions')
+      .select('title')
+      .eq('slug', newSlug)
+      .maybeSingle()
+
+    const { data: next } = await supabase
+      .from('evolutions')
+      .select('slug')
+      .gt('title', saved?.title ?? '')
+      .order('title', { ascending: true })
+      .order('slug', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+
+    if (next?.slug) redirect(`${navLinksData.admin.outfits.evolutions.edit}/${next.slug}`)
+    redirect(navLinksData.admin.outfits.evolutions.list)
+  }
+
   redirect(backUrl)
 }
