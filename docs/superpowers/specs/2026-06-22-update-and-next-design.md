@@ -95,7 +95,9 @@ Per-entity mapping:
 | outfit sets     | `app/admin/outfits/sets/actions.ts`                            | `outfit_sets`     | `title`  | `navLinksData.admin.outfits.sets.edit`       |
 | abilities       | `app/admin/outfits/abilities/new/actions.ts` (shared add+edit) | `abilities`       | `title`  | `navLinksData.admin.outfits.abilities.edit`  |
 | seasons         | `app/admin/outfits/seasons/new/actions.ts` (shared add+edit)   | `seasons`         | `title`  | `navLinksData.admin.outfits.seasons.edit`    |
-| evolutions      | `app/admin/outfits/evolutions/edit/[slug]/actions.ts`          | `evolutions`      | `title`  | `navLinksData.admin.outfits.evolutions.edit` |
+| evolutions      | `app/admin/outfits/evolutions/edit/[slug]/actions.ts`          | `evolutions`      | `id`     | `navLinksData.admin.outfits.evolutions.edit` |
+
+> **Evolutions ordering note:** `evolutions.title` holds the _outfit set_ name, so every stage of a set shares one title. Ordering "next" by title would `.gt('title', …)` past all sibling stages and jump to the next set. Evolutions therefore order by `id` (matching the evolutions list/data hook in `hooks/data/evolutions.ts`), so the button walks a set's stages. The action re-reads the saved row's `id` by its post-save slug, then `.gt('id', savedId).order('id', …)`.
 
 (Exact `actions.ts` paths for abilities/seasons to be confirmed during implementation — some entities colocate the edit action in the `new/actions.ts` file.)
 
@@ -109,7 +111,7 @@ Add `showUpdateNext: true` to the existing `setFormConfig({ ... showUpdateOnly: 
 - **Duplicate titles:** `(title, slug)` ordering keeps the sequence stable and prevents looping; a same-title sibling may be skipped, accepted per above.
 - **Slug/title changed during this save:** query uses the post-save value, so it advances from where the item now sorts.
 - **Variants have no `title` column:** they order by `slug` (their identity), consistent with how the variant edit/add already key on slug.
-- **Evolutions edit re-saves in place and can change its own slug:** the next-query runs after the update using the saved title, so it still advances; the in-place client slug-sync logic only matters for `update_only`, not `update_next` (which navigates away).
+- **Evolutions edit re-saves in place and can change its own slug:** the next-query runs after the update using the saved `id`, so it still advances; the in-place client slug-sync logic only matters for `update_only`, not `update_next` (which navigates away). Evolutions order by `id`, not `title` — see the ordering note above.
 
 ## Out of scope
 
