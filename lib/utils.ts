@@ -29,6 +29,21 @@ export function toSlugVariant(eurekaSet: string, category: string, color: string
   return [eurekaSet, category, color].map((s) => toSlug(s)).join('-')
 }
 
+// Comparators that mirror the admin "Update & next item" navigation order
+// (next row by title, slug tie-break; by slug for variants), so list views
+// display items in the same sequence the button walks through.
+export function byTitleThenSlug(
+  a: { title: string | null; slug: string | null },
+  b: { title: string | null; slug: string | null }
+) {
+  const titleCmp = (a.title ?? '').localeCompare(b.title ?? '')
+  return titleCmp !== 0 ? titleCmp : (a.slug ?? '').localeCompare(b.slug ?? '')
+}
+
+export function bySlug(a: { slug: string | null }, b: { slug: string | null }) {
+  return (a.slug ?? '').localeCompare(b.slug ?? '')
+}
+
 export function formatDate(dateString: string) {
   const date = new Date(dateString)
   const now = new Date()

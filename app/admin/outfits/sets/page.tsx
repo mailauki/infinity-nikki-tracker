@@ -5,6 +5,7 @@ import { getAbilities } from '@/hooks/data/abilities'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
+import { byTitleThenSlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import OutfitSetView from './outfit-set-view'
 
@@ -28,12 +29,14 @@ async function AdminView() {
       getOutfitCategories(),
     ])
 
+  const sortedOutfitSets = [...outfitSets].sort(byTitleThenSlug)
+
   return (
     <OutfitSetView
       abilities={abilities}
       labels={labels}
       outfitCategories={outfitCategories}
-      outfitSets={outfitSets}
+      outfitSets={sortedOutfitSets}
       seasonCategories={seasonCategories}
       seasons={seasons}
       styles={styles}

@@ -2,6 +2,7 @@ import { getEurekaCategories } from '@/hooks/data/eureka-categories'
 import { getEurekaColors } from '@/hooks/data/eureka-colors'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getEurekaVariantsRaw } from '@/hooks/data/admin/eureka-variants'
+import { bySlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import EurekaVariantView from './eureka-variant-view'
 
@@ -21,12 +22,14 @@ async function AdminView() {
     getEurekaColors(),
   ])
 
+  const sortedEurekaVariants = [...eurekaVariants].sort(bySlug)
+
   return (
     <EurekaVariantView
       categories={categories}
       colors={colors}
       eurekaSets={eurekaSets}
-      eurekaVariants={eurekaVariants}
+      eurekaVariants={sortedEurekaVariants}
     />
   )
 }
