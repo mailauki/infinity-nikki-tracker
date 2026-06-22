@@ -86,13 +86,18 @@ export default function LookCard({
                 }}
               >
                 {thumbnails.map((url, i) => (
-                  <Avatar key={i} src={url} variant="rounded" />
+                  <Avatar
+                    key={i}
+                    src={url}
+                    sx={{ bgcolor: 'surface.containerHighest' }}
+                    variant="rounded"
+                  />
                 ))}
               </AvatarGroup>
             )}
 
             <Stack spacing={0.25}>
-              <Typography sx={{ fontWeight: 500 }} variant="subtitle2">
+              <Typography component="span" sx={{ fontWeight: 500 }} variant="subtitle1">
                 {look.name}
               </Typography>
               {look.description && (
