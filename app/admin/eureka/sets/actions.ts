@@ -177,5 +177,20 @@ export async function editEurekaSet(
   }
 
   if (formData.get('update_only') === 'true') return { savedTitle: title }
+
+  if (formData.get('update_next') === 'true') {
+    const { data: next } = await supabase
+      .from('eureka_sets')
+      .select('slug')
+      .gt('title', title)
+      .order('title', { ascending: true })
+      .order('slug', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+
+    if (next?.slug) redirect(`${navLinksData.admin.eureka.sets.edit}/${next.slug}`)
+    redirect(navLinksData.admin.eureka.sets.list)
+  }
+
   redirect(backUrl)
 }
