@@ -130,7 +130,7 @@ type CategoryRowProps = {
   categoryTitle: string
   iconSrc?: string
   totalCount: number
-  selectedCount: number
+  selectedLabel?: string
   disabled?: boolean
   disabledReason?: string
   onSelect: (slug: string) => void
@@ -141,7 +141,7 @@ function CategoryRow({
   categoryTitle,
   iconSrc,
   totalCount,
-  selectedCount,
+  selectedLabel,
   disabled,
   disabledReason,
   onSelect,
@@ -193,8 +193,13 @@ function CategoryRow({
                 : `${totalCount} piece${totalCount !== 1 ? 's' : ''}`}
             </Typography>
           </Stack>
-          {selectedCount > 0 && !disabled && (
-            <Chip color="primary" label={selectedCount} size="small" sx={{ minWidth: 28 }} />
+          {selectedLabel && !disabled && (
+            <Chip
+              color="primary"
+              label={selectedLabel}
+              size="small"
+              sx={{ maxWidth: 120, flexShrink: 0 }}
+            />
           )}
         </Stack>
       </CardActionArea>
@@ -588,7 +593,7 @@ export default function LookBuilder({
             )}
             {filteredCategorySlugs.map((slug) => {
               const group = categoryGroups.get(slug)!
-              const selectedCount = group.variants.filter((v) => selectedSlugs.has(v.slug)).length
+              const selectedVariant = group.variants.find((v) => selectedSlugs.has(v.slug))
               const disabled =
                 tab === 'pieces' &&
                 isCategoryDisabled({ slug } as OutfitCategory, selectedOutfitCategorySlugs)
@@ -600,7 +605,7 @@ export default function LookBuilder({
                   disabled={disabled}
                   disabledReason={disabled ? outfitConflictReason : undefined}
                   iconSrc={categoryIconSrc(slug)}
-                  selectedCount={selectedCount}
+                  selectedLabel={selectedVariant?.setTitle}
                   totalCount={group.variants.length}
                   onSelect={setActiveCategorySlug}
                 />
