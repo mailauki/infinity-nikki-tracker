@@ -11,12 +11,12 @@ yarn start        # Start production server
 yarn lint         # Run ESLint
 yarn lint:fix     # Run ESLint with auto-fix
 yarn format       # Format with Prettier
-yarn tsc --noEmit # Type-check without emitting
-npx npm-check-updates --format group        # Check outdated deps (Yarn 4 has no yarn outdated)
-npx npm-check-updates --format group -u     # Write updates to package.json
+yarn dlx tsc --noEmit                        # Type-check (no `tsc` package script — runs via dlx)
+npx npm-check-updates --format group         # Check outdated deps (Yarn 4 has no yarn outdated)
+npx npm-check-updates --format group -u      # Write updates to package.json
 ```
 
-Package manager: **Yarn** (not npm or pnpm).
+Package manager: **Yarn** (not npm or pnpm). Only `dev/build/start/lint/format/lint:fix` are package scripts.
 
 ## Environment Variables
 
@@ -25,178 +25,146 @@ Required in `.env.local`:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SERVICE_ROLE_KEY=          # server-only; used by API routes / webhooks
+NEXT_PUBLIC_SITE_URL=               # absolute base URL for redirects (falls back to VERCEL_URL)
+STRIPE_SECRET_KEY=
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_PRICE_ID=
+STRIPE_WEBHOOK_SECRET=
 ```
 
 ## Architecture
 
-**Infinity Nikki Tracker** — a Next.js 16 App Router app with Supabase backend for tracking in-game Eureka outfit collection progress.
+**Infinity Nikki Tracker** — a Next.js 16 App Router app with a Supabase backend for tracking in-game outfit collection progress. Two collection domains: **Outfits** (gacha/season outfits with Evolutions, Abilities, Seasons) and **Eureka** (craftable outfit sets with color/category Variants and Trials). Also supports user-created **Custom Looks**, per-user **Preferences**, public profiles (`/u/[username]`), and **Stripe** payments (support/coffee).
 
 ### Route Structure
 
-- `app/layout.tsx` — Root layout with MUI `ThemeProvider` + `InitColorSchemeScript` (Roboto font, system dark mode)
-- `app/(main)/` — Main app group with nav drawer layout (`NavDrawer`)
-  - `layout.tsx` — Wraps content in `NavDrawer` with `Suspense`/`NavSkeleton` fallback
-  - `page.tsx` — Home / hero
-  - `eureka/page.tsx` — Grid of all Eureka Sets with overall progress
-  - `eureka/loading.tsx` — Skeleton loading UI for the sets grid
-  - `eureka/[slug]/page.tsx` — Individual Eureka Set detail with realtime updates
-  - `eureka/missing/page.tsx` — Missing items view (auth required)
-  - `eureka/missing/loading.tsx` — Skeleton loading UI for the missing items view
-  - `eureka/trials/page.tsx` — Trials view
-  - `eureka/trials/loading.tsx` — Skeleton loading UI for the trials view
-  - `(admin)/layout.tsx` — Redirects non-admin users; wraps admin routes
-  - `(admin)/dashboard/page.tsx` — Admin dashboard: stat cards + recent lists (admin role required)
-  - `(admin)/eureka-set/page.tsx` — Full eureka sets table with edit buttons
-  - `(admin)/eureka-set/new/page.tsx` — Add new eureka set
-  - `(admin)/eureka-set/edit/[slug]/page.tsx` — Edit eureka set
-  - `(admin)/eureka-variant/page.tsx` — Full eureka variants table with edit buttons
-  - `(admin)/eureka-variant/new/page.tsx` — Add new eureka variant
-  - `(admin)/eureka-variant/edit/[slug]/page.tsx` — Edit eureka variant (slug-based routing)
-  - `(admin)/trial/page.tsx` — Full trials table with edit buttons
-  - `(admin)/trial/new/page.tsx` — Add new trial
-  - `(admin)/trial/edit/[slug]/page.tsx` — Edit trial (slug-based routing)
-  - `profile/page.tsx` — User profile management (auth required)
-  - `about/page.tsx` — About page
-- `app/auth/` — Auth pages
-  - `login/page.tsx`, `sign-up/page.tsx`, `sign-up-success/page.tsx`
-  - `forgot-password/page.tsx`, `update-password/page.tsx`
-  - `confirm/route.ts` — GET handler for email OTP verification (exchanges code for session)
-  - `error/page.tsx`
-- `app/(main)/eureka/actions.ts` — Server Action: `handleObtained(slug)` toggles obtained state
+Routes are **flat under `app/`** — there is no `(main)` or `(admin)` route group. The only group is `(auth)`. Admin lives at `app/admin/` (literal segment, not a group).
+
+- `app/layout.tsx` — Root layout: `InitColorSchemeScript` → `AppRouterCacheProvider` → `ThemeClientProvider` → `NavBarToolbarProvider` → `SnackbarAlertProvider`, with `NavDrawer`, `NavBar`, `PullToRefresh`, `Footer`, and Vercel `Analytics`
+- `app/page.tsx` — Home / hero
+- `app/(auth)/` — Auth pages: `login`, `sign-up`, `sign-up-success`, `forgot-password`, `update-password`, `auth/confirm/route.ts` (email OTP → session), `auth/error`
+- `app/outfits/` — Outfits domain (own `layout.tsx` wrapping `OutfitDataProvider`)
+  - `page.tsx`, `[slug]/page.tsx`, `actions.ts` (`handleObtainedOutfit`)
+  - `seasons/page.tsx`, `seasons/[slug]/page.tsx`
+- `app/eureka/` — Eureka domain (own `layout.tsx` wrapping `EurekaDataProvider` + `SortProvider`)
+  - `page.tsx`, `sets/page.tsx`, `[slug]/page.tsx`, `actions.ts` (`handleObtained`)
+  - `trials/page.tsx`, `trials/[slug]/page.tsx`
+- `app/looks/` — Custom Looks: `page.tsx`, `[slug]/page.tsx`, `new/page.tsx`, `edit/[slug]/page.tsx`, `actions.ts` (`createLook`, `updateLook`, `deleteLook`)
+- `app/profile/page.tsx`, `app/u/[username]/page.tsx` — own + public profiles
+- `app/settings/page.tsx` + `actions.ts`, `app/help/page.tsx`, `app/about/page.tsx`
+- `app/admin/` — Admin section (own `layout.tsx` redirects non-admins). Two sub-trees, each with `page.tsx` + `new` + `edit/[slug]` + colocated `actions.ts` and `loading.tsx`:
+  - `admin/eureka/{sets,variants,trials}/`
+  - `admin/outfits/{sets,evolutions,abilities,seasons}/`
+- `app/api/` — Route handlers:
+  - `eureka/bootstrap/route.ts` — single round-trip payload for the Eureka client provider
+  - `outfits/route.ts`, `obtained-outfit/route.ts` — Outfit data + toggle
+  - `preferences/route.ts` — user preferences fetch
+  - `stripe/checkout/route.ts`, `stripe/webhook/route.ts`
+- `app/actions/preferences.ts` — shared Server Actions for all preference writes (theme, filters, group/show toggles, sort, outfit/eureka view state)
 
 ### Middleware
 
-**`proxy.ts`** (root level) — exports `proxy()` and `config.matcher`. Calls `updateSession()` from `lib/supabase/proxy.ts` to refresh sessions on every request. Matches all paths except static files, images, and favicon. Note: `middleware.ts` is deprecated in Next.js 16; the correct convention is `proxy.ts` with `export function proxy()`. Do NOT create a `middleware.ts` alongside it — Next.js 16 throws a build error if both exist.
+**`proxy.ts`** (root level) — exports `async function proxy()` + `config.matcher`. Calls `updateSession()` from `lib/supabase/proxy.ts` to refresh sessions on every request. Matcher excludes static files, images, favicon, and `manifest.webmanifest` (the PWA manifest must stay publicly fetchable). Note: `middleware.ts` is deprecated in Next.js 16 — the convention is `proxy.ts` with `export function proxy()`. Do NOT add a `middleware.ts` alongside it; Next.js 16 errors if both exist.
+
+### Data Flow & State (key pattern)
+
+The app moved away from MUI realtime `postgres_changes` subscriptions to a **client data-provider + context** model:
+
+1. A domain `layout.tsx` reads `getUserID()` server-side and renders a client provider with `isLoggedIn`/`userId` props.
+2. The provider (`components/eureka/eureka-data-provider.tsx`, `components/outfits/outfit-data-provider.tsx`) `fetch`es its initial payload from an API route on mount — Eureka from `/api/eureka/bootstrap`, plus `/api/preferences`. The bootstrap route runs `await connection()` first so PPR doesn't prerender it (cookies would reject at build), then `Promise.all`s the React-`cache()`-deduped data hooks.
+3. The provider holds collection + filter state, exposes it via context (`eureka-context.tsx`, `outfit-context.tsx`), and calls Server Actions (`handleObtained`, `handleObtainedOutfit`, `app/actions/preferences.ts`) to persist toggles/filters. Optimistic updates use `useTransition` + `notistack` snackbars.
+
+`hooks/data/` holds the Supabase queries (React `cache()` or `use cache`, see Code Style). `hooks/eureka.ts` / `hooks/outfit.ts` hold pure transforms (`createEurekaSet`, `updateEurekaVariants`, `createOutfitSet`, `sortVariants`, `applyObtainedKeys`, `buildObtainedKeySet`, `isVariantObtained`, `isEvolutionVisible`, etc.). `hooks/count-obtained.ts` → `countObtained()`, `percent()`.
 
 ### Component Organization
 
-Components are grouped into subdirectories:
-
-- `components/navbar/` — nav-drawer, nav-extra, nav-footer, nav-main, nav-secondary, nav-skeleton, nav-tabs, nav-user, theme-switcher
-- `components/eureka/` — eureka-button, eureka-card, eureka-filter, eureka-set-card, eureka-table, category-image, category-item
-- `components/admin/` — admin-table (generic paginated table), eureka-set-table, eureka-variant-table, trial-table, stat-card
-- `components/realtime/` — realtime-eureka-set, realtime-eureka-filter
-- `components/profile/` — collection-stats, profile-view, profile-context
-- `components/forms/auth/` — login-form, sign-up-form, profile-form, forgot-password-form, update-password-form, avatar-preview, avatar-upload
-- `components/forms/` (root) — image-upload
-- `components/forms/eureka-set/` — add-eureka-set-form, edit-eureka-set-form
-- `components/forms/eureka-variant/` — add-eureka-variant-form, edit-eureka-variant-form
-- `components/forms/trial/` — add-trial-form, edit-trial-form
-- `components/` (root) — grid-container, hero, login-alert, logout-button, progress-chip, rarity-stars, view-all-button
-
-### Data Flow
-
-Server Components fetch via `hooks/data/` (React `cache()` wrapped), then pass to Client Components for interactivity:
-
-1. `hooks/data/` — Supabase queries split by domain:
-   - `eureka-sets.ts` — `getEurekaSets()`, `getEurekaSet(slug)`
-   - `trials.ts` — `getTrials()`
-   - `styles.ts` — `getStyles()`, `labels.ts` — `getLabels()`
-   - `categories.ts` — `getCategories()`, `colors.ts` — `getColors()`
-   - `obtained-eureka.ts` — `getObtained(user_id)`
-   - `user.ts` — `getAdminData()`, `getProfile(user_id)`
-   - `admin/eureka-sets.ts` — `getEurekaSetsRaw()`, `getEurekaSetRaw(slug)` (no `addEurekaSet` — mutations must not use `cache()`)
-   - `admin/eureka-variants.ts` — `getEurekaVariantsRaw()`, `getEurekaVariantRaw(slug)`
-   - `admin/trials.ts` — `getTrialRaw(slug)`
-2. `hooks/user.ts` — `getUserID()`, `getUserClaims()`, `getUserRole()` read auth claims server-side
-3. `hooks/eureka.ts` — Pure functions `createEurekaSet()`, `updateEurekaSet()`, and `updateEurekaVariants()` for transforming data
-4. `hooks/count-obtained.ts` — `countObtained()` and `percent()` utilities for progress calculation
-5. `app/(main)/eureka/actions.ts` — Server Action `handleObtained(slug)` toggles obtained state in Supabase
-
-### Realtime Pattern
-
-`components/realtime/realtime-eureka-set.tsx` is the canonical realtime pattern: server fetches initial data → passes as props → client subscribes to `postgres_changes` on the `obtained` table → local state updates trigger `updateEurekaSet()` recalculation.
-
-Auth state is propagated as an explicit `isLoggedIn: boolean` prop from Server Components down through `RealtimeEurekaSet` → `EurekaCard` and `EurekaButton`. The slug detail page sets this via `!!(user_id)`.
-
-### Nav System
-
-`lib/nav-links.tsx` — exports `navLinksData` object with `home`, `navMain`, `navSecondary`, and `navExtra` properties. `NavSecondaryLink` in `lib/types/props.ts` supports `adminOnly`, `exclusiveItems`, and `items` fields.
-
-- `adminOnly: true` — link is filtered out for non-admins in both the drawer and the user menu
-- `exclusiveItems: true` — nav tabs show only the matching sub-item when not at the section root (used by Eureka Sets, Eureka Variants)
-- All `navSecondary` links are visible in the drawer; drawer links show a `placement="right"` tooltip when collapsed
-- `nav-user.tsx` uses a `navIcon(url)` helper to render `fontSize="small"` icons in the user menu (Dashboard → `Dashboard`, Profile → `AccountCircle`, others → `ViewList`)
-- `nav-drawer.tsx` responsive behavior: below `sm`, closed drawer is fully hidden (width: 0); open drawer is full-width with AppBar hidden (`display: 'none'`) so the DrawerHeader close button is visible; at `sm`+ the drawer collapses to icon-only width (`calc(spacing(8) + 1px)`)
+- `components/navbar/` — nav-bar, nav-drawer, nav-section, nav-styled, nav-user, nav-footer, page-title, appbar-actions, auth-appbar, coffee-button, theme-switcher, navbar-toolbar(+context)
+- `components/eureka/` — eureka-data-provider, eureka-context, eureka-card(+content/+progress), eureka-set-card, eureka-color-set-card, eureka-variant-card, eureka-variant-grid, eureka-variant-color-filter, eureka-button, eureka-toolbar, eureka-set-image, category-image, category-item, filter-eureka, sets-content
+- `components/outfits/` — outfit-data-provider, outfit-context, outfit-set-card, outfit-set-detail, outfit-set-section, outfit-variant-card, outfit-evolution-variants, outfit-carousel, outfit-toolbar, filter-outfits, outfit-image-mode-context
+- `components/looks/` — look-builder, look-card, look-detail
+- `components/filter/` — per-control filter widgets (category/color/rarity/obtained/evolution/glowup toggles, sort toggles, select menus, filter-menu, filter-content-shim, density-toggle)
+- `components/admin/` — table-utils (DataGrid helpers: `LockedCell`, `useRowActions`), variant-image-cell
+- `components/forms/` — image-upload, carousel-image-upload, bug-report-form, feature-request-form; `forms/eureka-set/color-select`
+- `components/` (root) — grid-container, hero(+ctas), section, slug-toolbar, quick-access, pull-to-refresh, progress-chip, percent-label, rarity-stars, color-chip, color-theme-context, sort-context, theme-client-provider, snackbar-provider, lazy-image, toggle-icon, login-alert, logout-button, view-all-button, error-alert
 
 ### Admin Tables
 
-`components/admin/admin-table.tsx` — generic `'use client'` `AdminTable<T>` component with MUI `TablePagination` (default 20 rows, options 10/20/50/100). Accepts a `Column<T>[]` array with `header`, `cell`, `align`, and `cellSx` fields. Entity-specific table components (`eureka-set-table.tsx`, `eureka-variant-table.tsx`, `trial-table.tsx`) own their column definitions as `'use client'` components and accept plain serializable row data from Server Components — functions in `cell` are never passed across the RSC boundary.
-
-`components/admin/stat-card.tsx` — `StatCard` component used on the admin dashboard for entity counts with Add and View All links.
-
-`components/view-all-button.tsx` — shared "View all" button with arrow icon, used in both `DashboardList` and `StatCard`.
+Admin list pages use **`@mui/x-data-grid` (v9)** with inline row editing, not a custom table component. `components/admin/table-utils.tsx` provides shared helpers: `useRowActions()` (manages `GridRowModesModel` edit/save/cancel state) and `LockedCell` (links to the full edit form). Each admin list page is a Server Component that `Promise.all`s its data hooks inside a `Suspense` boundary and passes plain rows to a colocated `'use client'` `*-view.tsx` that owns the `GridColDef[]`. Full add/edit forms live under each `admin/.../{new,edit/[slug]}/` route with their own `actions.ts`.
 
 ### Role-Based Access
 
-`getUserRole()` fetches `profiles.role` server-side. Admin role is required to access the admin layout (redirects otherwise). The `isAdmin` boolean prop is passed down to `NavUser` (filters `adminOnly` nav links) and `ProfileForm` (shows admin chip or access request button).
+`getUserRole()` reads `profiles.role` server-side. `app/admin/layout.tsx` redirects non-admins. The `isAdmin` boolean prop flows down to nav (filters `adminOnly` links) and the data providers (`isAdmin` enables admin-only UI).
 
 ### Supabase Clients
 
 - `lib/supabase/server.ts` — `createClient()` for Server Components/Actions (cookie-based)
 - `lib/supabase/client.ts` — `createClient()` for Client Components (browser)
-- `lib/supabase/proxy.ts` — `updateSession()` middleware for session refresh
-- `lib/supabase/public.ts` — `createPublicClient()` cookie-free client; use inside `use cache` functions for public data (no `cookies()` allowed there)
+- `lib/supabase/proxy.ts` — `updateSession()` for session refresh in `proxy.ts`
+- `lib/supabase/public.ts` — `createPublicClient()` cookie-free client; use inside `use cache` functions (no `cookies()` allowed there)
 
 ### Key Database Tables
 
-- `eureka_sets` — Outfit set metadata (title, slug, rarity, style, label, trial, updated_at); FK: label → labels.title, style → styles.title, trial → trials.title; CHECK: rarity BETWEEN 2 AND 5
-- `eureka_variants` — Individual eureka items (eureka_set FK, color, category, image_url, default, slug, updated_at)
-- `categories` — Category lookup (title, image_url)
-- `colors` — Color lookup (title, image_url)
-- `styles` — Style lookup (title); UNIQUE on title; RLS: public read, admin write
-- `labels` — Label lookup (title); UNIQUE on title; RLS: public read, admin write
-- `obtained` — User collection records (user_id, eureka_set, category, color)
-- `trials` — Trial lookup (title, image_url, slug, created_at, updated_at)
-- `profiles` — User profiles (full_name, username, avatar_url, role: 'user' | 'admin')
+Outfit domain:
+
+- `outfit_sets` — title, slug, rarity, image_url, alt_image_url, description, style, label, ability, seasons (FK), season_category (FK), glowup_evolution
+- `outfit_variants`, `outfit_categories`, `outfit_set_carousel_images`
+- `evolutions`, `evolution_carousel_images` — outfit evolution stages (FK → outfit_sets)
+- `abilities` — outfit ability lookup
+- `seasons` — title, slug, image_url, alt_image_url, description, location (FK); `season_categories`
+- `obtained_outfit` — per-user outfit collection records
+- `locations` — location lookup
+
+Eureka domain:
+
+- `eureka_sets` — title, slug, rarity, style, label; CHECK rarity BETWEEN 2 AND 5
+- `eureka_variants` — eureka_set FK, eureka_category, eureka_color, image_url, alt_image_url, default, slug
+- `eureka_categories`, `eureka_colors` — lookups (renamed from `categories`/`colors`)
+- `eureka_set_trials` — join table eureka_sets ↔ trials
+- `trials` — title, slug, image_url
+- `obtained_eureka` — per-user eureka collection records (renamed from `obtained`)
+
+Shared / user:
+
+- `profiles` — full_name, username, avatar_url, role: 'user' | 'admin'
+- `custom_looks` — user-created looks: name, slug, description, image_url, `eureka_variant_slugs` text[], `outfit_variant_slugs` text[], user_id
+- `user_preferences` — per-user theme/color_theme/sort + eureka & outfit filter persistence (one row per user_id); `admin_preferences` — admin view mode
+- `styles`, `labels` — lookups; UNIQUE on title; RLS public read / admin write
+- DB also defines RPCs `is_admin`, `toggle_obtained`, `toggle_obtained_outfit`
 
 ### Slug Helpers
 
-`lib/utils.ts` exports slug utilities and the `cn()` helper:
-
-- `cn(...inputs)` — `clsx` + `tailwind-merge` class name helper
-- `toSlug(name)` — converts a name to a set slug (spaces → `_`, lowercase, trimmed)
-- `toSlugVariant(eurekaSet, category, color)` — builds a variant slug `{set}-{category}-{color}`
-- `toTitle(slug)` — converts a slug back to a display title (underscores/hyphens → spaces, title-cased)
-
-Eureka variant forms auto-generate the slug from the selected eureka set, category, and color via a `useEffect`. The slug field is read-only by default; an edit icon unlocks manual entry.
+`lib/utils.ts` exports `cn()` (clsx + tailwind-merge), `toSlug(name)` (spaces→`_`, lowercase), `toSlugVariant(set, category, color)` → `{set}-{category}-{color}`, and `toTitle(slug)`. Variant forms auto-generate the slug from set/category/color via `useEffect`; the slug field is read-only until an edit icon unlocks it.
 
 ### UI Stack
 
-- **MUI (Material UI) v7** — primary component library with CSS variables (`cssVariables: { colorSchemeSelector: 'class' }`) and built-in dark mode (`colorSchemes: { light, dark }`). `MuiCard` has `borderRadius: 12` override.
-- **Tailwind CSS** — utility classes for layout only (not MUI replacements; no shadcn/ui)
-- **MUI Icons (`@mui/icons-material`)** — icons throughout nav and admin components
-- **Lucide React** — additional icons in forms and UI components
-- **Not used:** shadcn/ui, Radix UI, Sonner, next-themes, class-variance-authority
+- **MUI (Material UI) v9** — primary component library, CSS variables (`cssVariables: { colorSchemeSelector: 'class' }`) + built-in dark mode (`colorSchemes: { light, dark }`)
+- **`@mui/x-data-grid` v9** — admin tables; **`@mui/x-charts` v9** — collection-stat charts
+- **notistack** — snackbar/toast notifications (`SnackbarAlertProvider`, `enqueueSnackbar`)
+- **Stripe** (`stripe` v22) — support payments via Checkout + webhook
+- **Tailwind CSS** — layout utilities only (not MUI replacements)
+- **MUI Icons** + **Lucide React** — icons
+- **Not used:** shadcn/ui, Radix UI, next-themes, class-variance-authority
 
 ### Theme
 
-`lib/theme.ts` configures the MUI theme with `responsiveFontSizes`. Mode-specific palette: light uses `lime[900]` (primary) / `pink[400]` (secondary), dark uses `lime[500]` (primary) / `pink[100]` (secondary). `InitColorSchemeScript attribute="class" defaultMode="system"` in root layout prevents SSR flicker — must match `ThemeProvider defaultMode`. Client Components checking dark mode must use `useColorScheme()` (not `useTheme().palette.mode`) — CSS variables mode doesn't trigger re-renders via `useTheme`. Pattern: `const { mode, systemMode } = useColorScheme(); const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'`. Requires `'use client'`.
+`lib/theme.ts` configures the MUI theme with `responsiveFontSizes`. Light uses `lime[900]`/`pink[400]`, dark uses `lime[500]`/`pink[100]`. `InitColorSchemeScript attribute="class" defaultMode="system"` (root layout) must match the `ThemeProvider defaultMode` to prevent SSR flicker. A user color-theme override is wired through `ThemeClientProvider` + `color-theme-context.tsx`. Client Components checking dark mode must use `useColorScheme()` (not `useTheme().palette.mode`) — CSS variables mode doesn't re-render via `useTheme`. Pattern: `const { mode, systemMode } = useColorScheme(); const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'`. Requires `'use client'`.
 
 ### Next.js Config
 
-`next.config.ts` enables:
-
-- `cacheComponents: true` — component-level caching
-- `turbopack.root` — set to parent directory for monorepo-style Turbopack resolution
-- `images.remotePatterns` — allows images from `static.wikia.nocookie.net/infinity-nikki/**`
-
-### Hooks
-
-- `hooks/data/` — Supabase queries split by domain (see Data Flow above)
-- `hooks/user.ts` — `getUserClaims()`, `getUserID()`, `getUserRole()` (all server-side, cached)
-- `hooks/eureka.ts` — `createEurekaSet()`, `updateEurekaSet()`, `updateEurekaVariants()` (pure data transforms)
-- `hooks/count-obtained.ts` — `countObtained(array)` → `{obtained, total}`, `percent(obtained, total)` → percentage string
+`next.config.ts`: `cacheComponents: true` (component-level caching / PPR), `turbopack.root` set to the parent dir, `images.remotePatterns` allows `static.wikia.nocookie.net/infinity-nikki/**` and the Supabase storage host.
 
 ## Claude Automations
 
 Configured in `.claude/settings.json`:
 
-- **PostToolUse hooks** — `yarn format && yarn lint:fix` + `yarn tsc --noEmit` run automatically after every Edit/Write
-- **PreToolUse hook** — blocks edits to `.env*` files
+- **PostToolUse hooks** — `yarn format && yarn lint:fix`, then `yarn tsc --noEmit` (head -20) run after every Edit/Write
+- **PreToolUse hook** — blocks edits to any `.env` file
 - **`/new-data-hook` skill** — scaffolds `hooks/data/` files with the correct `use cache` vs React `cache()` pattern
+- **`/format-fix` skill** — runs format/lint/tsc and fixes remaining issues
 - **`a11y-reviewer` subagent** — audits MUI components for WCAG 2.1 AA violations
-- **context7 MCP** — live docs for Next.js, MUI v7, and Supabase
+- Stripe skills (`stripe-best-practices`, `upgrade-stripe`) and `ui-ux-pro-max` are installed
+- Enabled plugins: frontend-design, github, commit-commands, typescript-lsp, claude-md-management, supabase, vercel
 
 ## Git & Deployment
 
@@ -233,21 +201,24 @@ Prettier config: no semicolons, single quotes, 2-space indent, 100 char print wi
 
 Path alias `@/` maps to the project root.
 
-Types are split across three files in `lib/types/`:
+Types live in `lib/types/`:
 
-- `eureka.ts` — domain types (all derived from `Tables<>`): `EurekaSet`, `EurekaSetRaw`, `EurekaVariant`, `EurekaVariantRaw`, `Category`, `Color`, `Style`, `Label`, `Trial`, `Obtained`, `Total`, `ObtainedCount`
-- `props.ts` — UI/nav types: `NavLink`, `CardSize` (`'sm' | 'md' | 'lg'`), `AvatarSize` (`'xs' | 'sm' | 'md' | 'lg' | 'xl'`), `CategoryType`
-- `dashboard.ts` — `DashboardTabsProps` only (uses `Tables<'eureka_sets'>`, `Tables<'eureka_variants'>`, `Trial`)
+- `supabase.ts` — generated DB types (`Tables<>`, `TablesInsert<>`, etc.) — the source of truth; regenerate, don't hand-edit
+- `eureka.ts` — Eureka domain types derived from `Tables<>` (`EurekaSet`, `EurekaVariant`, `EurekaCategory`, `EurekaColor`, `Trial`, `ObtainedEureka`, `UserPreferences`, …)
+- `outfit.ts` — Outfit domain types; `looks.ts` — Custom Looks types
+- `props.ts` — UI/nav types (`NavLink`, `CardSize`, `AvatarSize`, `CategoryFilter`, `ObtainedFilter`, sort enums)
 
-Note: `hooks/data/` files and `lib/theme.ts` use relative imports rather than the `@/` alias — grep both patterns when searching for type usages.
+Note: some `hooks/data/` files and `lib/theme.ts` use relative imports rather than `@/` — grep both patterns when searching for type usages.
 
-React `cache()` is for reads only — wrapping a mutation in `cache()` causes it to silently no-op on repeated calls with the same args. Mutations in `hooks/data/admin/` must NOT use `cache()`.
+React `cache()` is for reads only — wrapping a mutation in `cache()` makes it silently no-op on repeated calls with the same args. Mutations (in route `actions.ts` and `hooks/data/admin/`) must NOT use `cache()`.
 
-`use cache` vs React `cache()`: public lookup hooks (`getCategories`, `getColors`, `getStyles`, `getLabels`, `getTrials`) use `use cache` + `cacheLife` for cross-request caching via `createPublicClient()`. Auth-dependent hooks (`getEurekaSets`, `getObtained`, `getUserID`, etc.) must use React `cache()` — they call `cookies()` which is blocked inside `use cache`.
+`use cache` vs React `cache()`: public lookup hooks (e.g. `getEurekaCategories`, `getEurekaColors`, `getStyles`, `getLabels`, `getTrials`, `getSeasons`) use `use cache` + `cacheLife` for cross-request caching via `createPublicClient()`. Auth-dependent hooks (`getEurekaSets`, `getObtainedEureka`, `getUserID`, `getPreferences`, …) must use React `cache()` — they call `cookies()`, which is blocked inside `use cache`.
 
-`getUserID()` returns `null` for unauthenticated users — always guard before passing to `getObtained()` or any user-scoped query: `if (!user_id) return data`.
+API routes that read auth (e.g. `/api/eureka/bootstrap`) must call `await connection()` before reading cookies so PPR doesn't try to prerender them — keep it outside the try/catch so the prerender-abort signal propagates to React instead of being swallowed as a 500.
 
-`git add` with paths containing `[slug]` brackets fails in zsh due to glob expansion — always quote the path: `git add 'app/(main)/(admin)/eureka-set/edit/[slug]/page.tsx'`.
+`getUserID()` returns `null` for unauthenticated users — always guard before passing to user-scoped queries: `if (!user_id) return data`.
+
+`git add` with paths containing `[slug]` brackets fails in zsh due to glob expansion — always quote: `git add 'app/admin/eureka/sets/edit/[slug]/page.tsx'`.
 
 Avoid `useState` + `useEffect` for derived data — compute directly during render: `const derived = source.filter(...)`.
 
@@ -255,10 +226,12 @@ Prefer CSS grid `Box` over MUI `Grid` for responsive layouts: `<Box sx={{ displa
 
 `GridContainer`'s `sideContent` prop accepts falsy values — pass `isLoggedIn && <Component />` to conditionally hide the sidebar.
 
-MUI `Stack` does not accept layout shorthands (`justifyContent`, `alignItems`, etc.) as direct props in MUI v7 — always put them in `sx`. Causes a TypeScript build error otherwise.
+MUI `Stack` does not accept layout shorthands (`justifyContent`, `alignItems`, etc.) as direct props — always put them in `sx`. Causes a TypeScript build error otherwise.
 
 Hardcoded color strings derived from `useColorScheme()` (e.g. chart segment colors) need a `mounted` guard to avoid SSR/client hydration mismatches: `const [mounted, setMounted] = useState(false); useEffect(() => setMounted(true), []); const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'`.
 
-MUI X Charts `PieChart.onItemClick` receives `{ seriesId, dataIndex }` — add an `id` to each series object and match on `seriesId` to distinguish between series. `seriesIndex` does not exist on the event params.
+MUI X Charts `PieChart.onItemClick` receives `{ seriesId, dataIndex }` — add an `id` to each series object and match on `seriesId` to distinguish series. `seriesIndex` does not exist on the event params.
 
 `NavBarToolbarContext` (`components/navbar/navbar-toolbar-context.tsx`) carries `toolbarSlot`, `drawerOpen`, and `setDrawerOpen`. `NavDrawer` writes `drawerOpen` on mount and on toggle; `NavBar` reads it to apply `ml`/`width` that match the drawer's open/closed widths with matching transition easing.
+
+Outfit base evolution is stored as `{set}-base` in the DB but must be `null` for client code — resolve via `createOutfitSet()`, never inline.
