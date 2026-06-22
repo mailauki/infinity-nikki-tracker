@@ -3,6 +3,9 @@
 import { useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Alert,
   Avatar,
   Box,
@@ -44,6 +47,7 @@ import { DRESS_SLUGS, isCategoryDisabled } from '@/components/filter/outfit-cate
 import ToggleIcon from '../toggle-icon'
 import ImageUpload from '@/components/forms/image-upload'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import { ExpandMore } from '@mui/icons-material'
 
 // Outfit categories carry a `part` that buckets them into these two groups.
 const PIECES_PART = 'Pieces'
@@ -417,40 +421,51 @@ export default function LookBuilder({
   function selectedSection(label: string, icon: React.ReactNode, items: FlatVariant[]) {
     if (items.length === 0) return null
     return (
-      <Stack spacing={0.5}>
-        <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5 }}>
-          {icon}
-          <Typography color="textSecondary" variant="caption">
-            {label}
-          </Typography>
-        </Stack>
-        <List dense disablePadding>
-          {items.map((v) => {
-            const caption = variantCaption(v)
-            const primary = v.title || caption || v.setTitle
-            return (
-              <ListItem
-                key={v.slug}
-                secondaryAction={
-                  <IconButton
-                    aria-label="delete"
-                    edge="end"
-                    size="small"
-                    onClick={() => removeSlug(v.slug)}
-                  >
-                    <CloseIcon fontSize="small" />
-                  </IconButton>
-                }
-              >
-                <ListItemAvatar>
-                  <LazyImage alt={primary} kind="square" size="sm" src={v.image_url ?? undefined} />
-                </ListItemAvatar>
-                <ListItemText primary={primary} secondary={caption || undefined} />
-              </ListItem>
-            )
-          })}
-        </List>
-      </Stack>
+      <List
+        dense
+        disablePadding
+        subheader={
+          <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5, pb: 1, pt: 1.5 }}>
+            {icon}
+            <Typography color="textSecondary" variant="caption">
+              {label}
+            </Typography>
+          </Stack>
+        }
+      >
+        {items.map((v) => {
+          const caption = variantCaption(v)
+          const primary = v.title || v.setTitle
+          return (
+            <ListItem
+              key={v.slug}
+              disablePadding
+              secondaryAction={
+                <IconButton
+                  aria-label="delete"
+                  edge="end"
+                  size="small"
+                  onClick={() => removeSlug(v.slug)}
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+              }
+            >
+              <ListItemAvatar>
+                <LazyImage alt={primary} kind="square" size="sm" src={v.image_url ?? undefined} />
+              </ListItemAvatar>
+              <ListItemText disableTypography>
+                <Stack sx={{ height: 40 }}>
+                  <Typography component="span" variant="subtitle2">
+                    {primary}
+                  </Typography>
+                  <Typography variant="caption">{caption || undefined}</Typography>
+                </Stack>
+              </ListItemText>
+            </ListItem>
+          )
+        })}
+      </List>
     )
   }
   const composerPanel = (
@@ -495,24 +510,31 @@ export default function LookBuilder({
       )}
 
       <Stack spacing={1}>
-        <Typography color="textSecondary" variant="caption">
-          {selectedItems.length} piece{selectedItems.length !== 1 ? 's' : ''} selected
-        </Typography>
-
-        {selectedSection(
-          'Pieces',
-          <CheckroomIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
-          selectedPieces
-        )}
-        {selectedSection(
-          'Accessories',
-          <WatchOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
-          selectedAccessories
-        )}
-        {selectedSection(
-          'Eureka',
-          <DiamondOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
-          selectedEureka
+        {selectedItems.length > 0 && (
+          <Accordion disableGutters>
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              <Typography color="textSecondary" variant="caption">
+                {selectedItems.length} piece{selectedItems.length !== 1 ? 's' : ''} selected
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ pr: 0 }}>
+              {selectedSection(
+                'Pieces',
+                <CheckroomIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
+                selectedPieces
+              )}
+              {selectedSection(
+                'Accessories',
+                <WatchOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
+                selectedAccessories
+              )}
+              {selectedSection(
+                'Eureka',
+                <DiamondOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
+                selectedEureka
+              )}
+            </AccordionDetails>
+          </Accordion>
         )}
 
         {selectedItems.length === 0 && (
