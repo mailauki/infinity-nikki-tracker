@@ -8,6 +8,7 @@ interface FormConfig {
   pending: boolean
   showAddAnother?: boolean
   showUpdateOnly?: boolean
+  showUpdateNext?: boolean
   savedTitle?: string
 }
 
@@ -21,6 +22,7 @@ const FormContext = createContext<FormContextValue>({
   pending: false,
   showAddAnother: false,
   showUpdateOnly: false,
+  showUpdateNext: false,
   savedTitle: undefined,
   setFormConfig: () => {},
 })
@@ -32,6 +34,7 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     pending: false,
     showAddAnother: false,
     showUpdateOnly: false,
+    showUpdateNext: false,
     savedTitle: undefined,
   })
 

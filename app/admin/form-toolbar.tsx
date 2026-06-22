@@ -7,8 +7,16 @@ import { useEffect } from 'react'
 import { enqueueSnackbar } from 'notistack'
 
 export default function FormToolBar() {
-  const { formId, backUrl, pending, showAddAnother, showUpdateOnly, savedTitle, setFormConfig } =
-    useFormConfig()
+  const {
+    formId,
+    backUrl,
+    pending,
+    showAddAnother,
+    showUpdateOnly,
+    showUpdateNext,
+    savedTitle,
+    setFormConfig,
+  } = useFormConfig()
 
   useEffect(() => {
     if (!savedTitle) return
@@ -48,6 +56,18 @@ export default function FormToolBar() {
             variant="outlined"
           >
             {pending ? 'Saving...' : 'Update'}
+          </Button>
+        )}
+        {showUpdateNext && (
+          <Button
+            disabled={pending}
+            form={formId}
+            name="update_next"
+            type="submit"
+            value="true"
+            variant="outlined"
+          >
+            {pending ? 'Saving...' : 'Update & next item'}
           </Button>
         )}
         <Button disabled={pending} form={formId} type="submit" variant="contained">
