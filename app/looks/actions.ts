@@ -88,6 +88,7 @@ export async function updateLook(
 
   revalidatePath('/looks')
   revalidatePath(`/looks/${slug}`)
+  revalidatePath(`/looks/edit/${slug}`)
   return {}
 }
 

@@ -39,7 +39,9 @@ export default function LookCard({
   onDelete: (id: string) => Promise<{ error?: string }>
 }) {
   const [deleting, setDeleting] = useState(false)
-  const href = `/looks/${look.slug ?? look.id}`
+  const slug = look.slug ?? look.id
+  const href = `/looks/${slug}`
+  const editHref = `/looks/edit/${slug}`
   const totalItems = look.eureka_variant_slugs.length + look.outfit_variant_slugs.length
   const date = new Date(look.created_at).toLocaleDateString('en-US', {
     month: 'short',
@@ -157,7 +159,7 @@ export default function LookCard({
           }}
         >
           <Tooltip title="Edit">
-            <IconButton component={Link} href={href} size="small">
+            <IconButton component={Link} href={editHref} size="small">
               <EditOutlinedIcon fontSize="small" />
             </IconButton>
           </Tooltip>

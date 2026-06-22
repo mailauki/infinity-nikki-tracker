@@ -2,26 +2,39 @@ import { cache } from 'react'
 import { createClient } from '../../lib/supabase/server'
 import { CustomLook } from '../../lib/types/looks'
 
+async function resolveVariantThumbnails(
+  eurekaSlugs: string[],
+  outfitSlugs: string[]
+): Promise<Map<string, string | null>> {
+  const supabase = await createClient()
+  const [{ data: eurekaThumbs }, { data: outfitThumbs }] = await Promise.all([
+    eurekaSlugs.length > 0
+      ? supabase.from('eureka_variants').select('slug, image_url').in('slug', eurekaSlugs)
+      : Promise.resolve({ data: [] }),
+    outfitSlugs.length > 0
+      ? supabase.from('outfit_variants').select('slug, image_url').in('slug', outfitSlugs)
+      : Promise.resolve({ data: [] }),
+  ])
+
+  return new Map<string, string | null>([
+    ...(eurekaThumbs ?? []).map((v): [string, string | null] => [v.slug, v.image_url]),
+    ...(outfitThumbs ?? []).map((v): [string, string | null] => [v.slug, v.image_url]),
+  ])
+}
+
+// Card previews only show a handful of avatars, so cap at 4 slugs per type.
 export const getLookThumbnails = cache(
   async (looks: CustomLook[]): Promise<Map<string, string | null>> => {
-    const supabase = await createClient()
     const eurekaSlugs = [...new Set(looks.flatMap((l) => l.eureka_variant_slugs.slice(0, 4)))]
     const outfitSlugs = [...new Set(looks.flatMap((l) => l.outfit_variant_slugs.slice(0, 4)))]
-
-    const [{ data: eurekaThumbs }, { data: outfitThumbs }] = await Promise.all([
-      eurekaSlugs.length > 0
-        ? supabase.from('eureka_variants').select('slug, image_url').in('slug', eurekaSlugs)
-        : Promise.resolve({ data: [] }),
-      outfitSlugs.length > 0
-        ? supabase.from('outfit_variants').select('slug, image_url').in('slug', outfitSlugs)
-        : Promise.resolve({ data: [] }),
-    ])
-
-    return new Map<string, string | null>([
-      ...(eurekaThumbs ?? []).map((v): [string, string | null] => [v.slug, v.image_url]),
-      ...(outfitThumbs ?? []).map((v): [string, string | null] => [v.slug, v.image_url]),
-    ])
+    return resolveVariantThumbnails(eurekaSlugs, outfitSlugs)
   }
+)
+
+// The detail page shows every piece, so resolve all of a look's slugs.
+export const getAllLookThumbnails = cache(
+  async (look: CustomLook): Promise<Map<string, string | null>> =>
+    resolveVariantThumbnails(look.eureka_variant_slugs, look.outfit_variant_slugs)
 )
 
 // Maps each outfit variant slug used across the given looks to its category

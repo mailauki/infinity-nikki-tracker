@@ -1,84 +1,63 @@
 import { notFound, redirect } from 'next/navigation'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { Skeleton, Stack, Typography } from '@mui/material'
+import { Skeleton, Stack } from '@mui/material'
 import { getUserID } from '@/hooks/user'
-import { getEurekaSets } from '@/hooks/data/eureka-sets'
-import { getOutfitSets } from '@/hooks/data/outfit-sets'
-import { getEurekaCategories } from '@/hooks/data/eureka-categories'
-import { getOutfitCategories } from '@/hooks/data/outfit-categories'
-import { getCustomLook } from '@/hooks/data/custom-looks'
-import { flattenEurekaVariants, flattenOutfitVariants } from '@/lib/look-utils'
-import LookBuilder from '@/components/looks/look-builder'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
-import { updateLook } from '../actions'
+import { getAllLookThumbnails, getCustomLook, getOutfitSlugParts } from '@/hooks/data/custom-looks'
+import LookDetail from '@/components/looks/look-detail'
 
 type Props = { params: Promise<{ slug: string }> }
 
-export async function generateMetadata(): Promise<Metadata> {
-  return { title: `Edit Look` }
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const user_id = await getUserID()
+  if (!user_id) return { title: 'Look' }
+  const look = await getCustomLook(slug, user_id)
+  return { title: look?.name ?? 'Look' }
 }
 
-export default function EditLookPage({ params }: Props) {
+export default function LookPage({ params }: Props) {
   return (
-    <Suspense fallback={<BuilderLoading />}>
-      <EditLookContent params={params} />
+    <Suspense fallback={<DetailLoading />}>
+      <LookContent params={params} />
     </Suspense>
   )
 }
 
-async function EditLookContent({ params }: Props) {
+async function LookContent({ params }: Props) {
   const { slug } = await params
   const user_id = await getUserID()
   if (!user_id) redirect('/login')
 
-  const [look, eurekaSets, outfitSets, eurekaCategories, outfitCategories] = await Promise.all([
-    getCustomLook(slug, user_id),
-    getEurekaSets(),
-    getOutfitSets(),
-    getEurekaCategories(),
-    getOutfitCategories(),
-  ])
-
+  const look = await getCustomLook(slug, user_id)
   if (!look) notFound()
 
-  const eurekaVariants = flattenEurekaVariants(eurekaSets ?? [], eurekaCategories)
-  const outfitVariants = flattenOutfitVariants(outfitSets ?? [], outfitCategories)
+  const [thumbMap, partMap] = await Promise.all([
+    getAllLookThumbnails(look),
+    getOutfitSlugParts([look]),
+  ])
 
-  const lookId = look.id
-  async function handleUpdate(data: {
-    name: string
-    description: string | null
-    eureka_variant_slugs: string[]
-    outfit_variant_slugs: string[]
-  }) {
-    'use server'
-    return updateLook(lookId, data)
-  }
+  const toPiece = (s: string) => ({ slug: s, image_url: thumbMap.get(s) ?? null })
+  const accessories = look.outfit_variant_slugs.filter((s) => partMap.get(s) === 'Accessories')
+  const accessorySet = new Set(accessories)
+  const pieces = look.outfit_variant_slugs.filter((s) => !accessorySet.has(s))
 
   return (
-    <>
-      <NavBarToolbar>
-        <Typography variant="subtitle2">Edit Look</Typography>
-      </NavBarToolbar>
-
-      <LookBuilder
-        eurekaCategories={eurekaCategories}
-        eurekaVariants={eurekaVariants}
-        initialLook={look}
-        outfitCategories={outfitCategories}
-        outfitVariants={outfitVariants}
-        onSave={handleUpdate}
-      />
-    </>
+    <LookDetail
+      accessories={accessories.map(toPiece)}
+      eureka={look.eureka_variant_slugs.map(toPiece)}
+      href={look.slug ?? look.id}
+      look={look}
+      pieces={pieces.map(toPiece)}
+    />
   )
 }
 
-function BuilderLoading() {
+function DetailLoading() {
   return (
     <Stack spacing={2}>
       <Skeleton height={56} variant="rounded" />
-      <Skeleton height={400} variant="rounded" />
+      <Skeleton height={300} variant="rounded" />
     </Stack>
   )
 }

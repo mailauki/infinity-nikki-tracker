@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { Skeleton, Stack, Typography } from '@mui/material'
+import { Button, Skeleton, Stack, Typography } from '@mui/material'
 import { getUserID } from '@/hooks/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
@@ -11,9 +11,9 @@ import { getCustomLook } from '@/hooks/data/custom-looks'
 import { flattenEurekaVariants, flattenOutfitVariants } from '@/lib/look-utils'
 import LookBuilder from '@/components/looks/look-builder'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
-import { updateLook } from '../actions'
+import { updateLook } from '../../actions'
 
-type Props = { params: Promise<{ id: string }> }
+type Props = { params: Promise<{ slug: string }> }
 
 export async function generateMetadata(): Promise<Metadata> {
   return { title: `Edit Look` }
@@ -28,12 +28,12 @@ export default function EditLookPage({ params }: Props) {
 }
 
 async function EditLookContent({ params }: Props) {
-  const { id } = await params
+  const { slug } = await params
   const user_id = await getUserID()
   if (!user_id) redirect('/login')
 
   const [look, eurekaSets, outfitSets, eurekaCategories, outfitCategories] = await Promise.all([
-    getCustomLook(id, user_id),
+    getCustomLook(slug, user_id),
     getEurekaSets(),
     getOutfitSets(),
     getEurekaCategories(),
@@ -45,6 +45,7 @@ async function EditLookContent({ params }: Props) {
   const eurekaVariants = flattenEurekaVariants(eurekaSets ?? [], eurekaCategories)
   const outfitVariants = flattenOutfitVariants(outfitSets ?? [], outfitCategories)
 
+  const lookId = look.id
   async function handleUpdate(data: {
     name: string
     description: string | null
@@ -52,13 +53,18 @@ async function EditLookContent({ params }: Props) {
     outfit_variant_slugs: string[]
   }) {
     'use server'
-    return updateLook(id, data)
+    return updateLook(lookId, data)
   }
 
   return (
     <>
       <NavBarToolbar>
         <Typography variant="subtitle2">Edit Look</Typography>
+        <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
+          <Button component="a" href={`/looks/${look.slug ?? look.id}`} variant="outlined">
+            Cancel
+          </Button>
+        </Stack>
       </NavBarToolbar>
 
       <LookBuilder
