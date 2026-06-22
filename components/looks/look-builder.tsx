@@ -39,6 +39,7 @@ import type { OutfitCategory } from '@/lib/types/outfit'
 import { DRESS_SLUGS, isCategoryDisabled } from '@/components/filter/outfit-category-select'
 import ToggleIcon from '../toggle-icon'
 import ImageUpload from '@/components/forms/image-upload'
+import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 
 // Outfit categories carry a `part` that buckets them into these two groups.
 const PIECES_PART = 'Pieces'
@@ -217,6 +218,7 @@ export default function LookBuilder({
   outfitVariants,
   eurekaCategories,
   outfitCategories,
+  cancelHref = '/looks',
   onSave,
 }: {
   initialLook?: Pick<
@@ -233,6 +235,7 @@ export default function LookBuilder({
   outfitVariants: FlatVariant[]
   eurekaCategories: EurekaCategory[]
   outfitCategories: OutfitCategory[]
+  cancelHref?: string
   onSave: (data: SavePayload) => Promise<{ error?: string } | { id?: string }>
 }) {
   const router = useRouter()
@@ -481,17 +484,6 @@ export default function LookBuilder({
       </Stack>
 
       {saveError && <Alert severity="error">{saveError}</Alert>}
-
-      <Button
-        fullWidth
-        color="primary"
-        disabled={!name.trim() || isPending}
-        startIcon={<SaveIcon />}
-        variant="contained"
-        onClick={handleSave}
-      >
-        {isPending ? 'Saving…' : saveLabel}
-      </Button>
     </Stack>
   )
 
@@ -615,33 +607,53 @@ export default function LookBuilder({
   )
 
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', md: '1fr 340px' },
-        gap: 3,
-        alignItems: 'start',
-      }}
-    >
-      {/* On mobile, composer comes first */}
-      <Box sx={{ display: { xs: 'block', md: 'none' } }}>{composerPanel}</Box>
-      <Box sx={{ display: { xs: 'block', md: 'none' } }}>
-        <Divider />
-      </Box>
+    <>
+      <NavBarToolbar>
+        <Typography variant="subtitle2">{initialLook ? 'Edit Look' : 'New Look'}</Typography>
+        <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
+          <Button component="a" href={cancelHref} variant="outlined">
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            disabled={!name.trim() || isPending}
+            startIcon={<SaveIcon />}
+            variant="contained"
+            onClick={handleSave}
+          >
+            {isPending ? 'Saving…' : saveLabel}
+          </Button>
+        </Stack>
+      </NavBarToolbar>
 
-      {/* Picker (left on desktop, bottom on mobile) */}
-      {pickerPanel}
-
-      {/* Composer (right on desktop, hidden on mobile since it's at top) */}
       <Box
         sx={{
-          display: { xs: 'none', md: 'block' },
-          position: 'sticky',
-          top: 80,
+          display: 'grid',
+          gridTemplateColumns: { xs: '1fr', md: '1fr 340px' },
+          gap: 3,
+          alignItems: 'start',
         }}
       >
-        {composerPanel}
+        {/* On mobile, composer comes first */}
+        <Box sx={{ display: { xs: 'block', md: 'none' } }}>{composerPanel}</Box>
+        <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+          <Divider />
+        </Box>
+
+        {/* Picker (left on desktop, bottom on mobile) */}
+        {pickerPanel}
+
+        {/* Composer (right on desktop, hidden on mobile since it's at top) */}
+        <Box
+          sx={{
+            display: { xs: 'none', md: 'block' },
+            position: 'sticky',
+            top: 80,
+          }}
+        >
+          {composerPanel}
+        </Box>
       </Box>
-    </Box>
+    </>
   )
 }

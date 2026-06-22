@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { Button, Skeleton, Stack, Typography } from '@mui/material'
+import { Skeleton, Stack } from '@mui/material'
 import { getUserID } from '@/hooks/user'
 import { createClient } from '@/lib/supabase/server'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
@@ -12,7 +12,6 @@ import { getCustomLooks } from '@/hooks/data/custom-looks'
 import { FREE_LOOKS_LIMIT } from '@/lib/types/looks'
 import { flattenEurekaVariants, flattenOutfitVariants } from '@/lib/look-utils'
 import LookBuilder from '@/components/looks/look-builder'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { createLook } from '../actions'
 
 export const metadata: Metadata = { title: 'New Look' }
@@ -47,24 +46,13 @@ async function NewLookContent() {
   const outfitVariants = flattenOutfitVariants(outfitSets ?? [], outfitCategories)
 
   return (
-    <>
-      <NavBarToolbar>
-        <Typography variant="subtitle2">New Look</Typography>
-        <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
-          <Button component="a" href={'/looks'} variant="outlined">
-            Cancel
-          </Button>
-        </Stack>
-      </NavBarToolbar>
-
-      <LookBuilder
-        eurekaCategories={eurekaCategories}
-        eurekaVariants={eurekaVariants}
-        outfitCategories={outfitCategories}
-        outfitVariants={outfitVariants}
-        onSave={createLook}
-      />
-    </>
+    <LookBuilder
+      eurekaCategories={eurekaCategories}
+      eurekaVariants={eurekaVariants}
+      outfitCategories={outfitCategories}
+      outfitVariants={outfitVariants}
+      onSave={createLook}
+    />
   )
 }
 

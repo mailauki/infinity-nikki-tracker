@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { Button, Skeleton, Stack, Typography } from '@mui/material'
+import { Skeleton, Stack } from '@mui/material'
 import { getUserID } from '@/hooks/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
@@ -10,7 +10,6 @@ import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getCustomLook } from '@/hooks/data/custom-looks'
 import { flattenEurekaVariants, flattenOutfitVariants } from '@/lib/look-utils'
 import LookBuilder from '@/components/looks/look-builder'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { updateLook } from '../../actions'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -57,25 +56,15 @@ async function EditLookContent({ params }: Props) {
   }
 
   return (
-    <>
-      <NavBarToolbar>
-        <Typography variant="subtitle2">Edit Look</Typography>
-        <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
-          <Button component="a" href={`/looks/${look.slug ?? look.id}`} variant="outlined">
-            Cancel
-          </Button>
-        </Stack>
-      </NavBarToolbar>
-
-      <LookBuilder
-        eurekaCategories={eurekaCategories}
-        eurekaVariants={eurekaVariants}
-        initialLook={look}
-        outfitCategories={outfitCategories}
-        outfitVariants={outfitVariants}
-        onSave={handleUpdate}
-      />
-    </>
+    <LookBuilder
+      cancelHref={`/looks/${look.slug ?? look.id}`}
+      eurekaCategories={eurekaCategories}
+      eurekaVariants={eurekaVariants}
+      initialLook={look}
+      outfitCategories={outfitCategories}
+      outfitVariants={outfitVariants}
+      onSave={handleUpdate}
+    />
   )
 }
 
