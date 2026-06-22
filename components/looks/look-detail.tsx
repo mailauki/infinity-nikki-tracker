@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { Box, Container, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { ChevronLeft, Edit as EditIcon } from '@mui/icons-material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
@@ -54,11 +53,11 @@ export default function LookDetail({
           direction="row"
           sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
         >
-          <IconButton component={Link} href="/looks">
+          <IconButton href="/looks">
             <ChevronLeft />
           </IconButton>
           <Tooltip title="Edit">
-            <IconButton component={Link} href={`/looks/edit/${href}`}>
+            <IconButton href={`/looks/edit/${href}`}>
               <EditIcon />
             </IconButton>
           </Tooltip>

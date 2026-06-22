@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import {
   Avatar,
   AvatarGroup,
@@ -68,7 +67,7 @@ export default function LookCard({
       }}
       variant="outlined"
     >
-      <CardActionArea component={Link} href={href} sx={{ flex: 1 }}>
+      <CardActionArea href={href} sx={{ flex: 1 }}>
         <CardContent>
           <Stack spacing={1.5}>
             {thumbnails.length > 0 && (
@@ -163,7 +162,7 @@ export default function LookCard({
           }}
         >
           <Tooltip title="Edit">
-            <IconButton component={Link} href={editHref} size="small">
+            <IconButton href={editHref} size="small">
               <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
