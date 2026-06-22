@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
+import { navLinksData } from '@/lib/nav-links'
 
 export async function editSeason(
   currentSlug: string,
@@ -33,5 +34,20 @@ export async function editSeason(
   if (error) return { error: error.message }
 
   if (formData.get('update_only') === 'true') return { savedTitle: title }
+
+  if (formData.get('update_next') === 'true') {
+    const { data: next } = await supabase
+      .from('seasons')
+      .select('slug')
+      .gt('title', title)
+      .order('title', { ascending: true })
+      .order('slug', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+
+    if (next?.slug) redirect(`${navLinksData.admin.outfits.seasons.edit}/${next.slug}`)
+    redirect(navLinksData.admin.outfits.seasons.list)
+  }
+
   redirect(backUrl)
 }
