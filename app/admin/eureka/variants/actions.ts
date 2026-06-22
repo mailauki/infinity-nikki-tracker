@@ -67,5 +67,19 @@ export async function editEurekaVariant(
   if (error) return { error: error.message }
 
   if (formData.get('update_only') === 'true') return { savedTitle: slug }
+
+  if (formData.get('update_next') === 'true') {
+    const { data: next } = await supabase
+      .from('eureka_variants')
+      .select('slug')
+      .gt('slug', slug)
+      .order('slug', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+
+    if (next?.slug) redirect(`${navLinksData.admin.eureka.variants.edit}/${next.slug}`)
+    redirect(navLinksData.admin.eureka.variants.list)
+  }
+
   redirect(backUrl)
 }
