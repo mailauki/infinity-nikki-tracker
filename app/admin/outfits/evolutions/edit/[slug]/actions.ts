@@ -93,18 +93,20 @@ export async function editEvolution(
   }
 
   if (formData.get('update_next') === 'true') {
+    // Evolutions share a title across all stages of a set (title = set name), so
+    // order by id like the evolutions list/data hook — ordering by title would
+    // skip every sibling stage. Re-read id by the post-save slug.
     const { data: saved } = await supabase
       .from('evolutions')
-      .select('title')
+      .select('id')
       .eq('slug', newSlug)
       .maybeSingle()
 
     const { data: next } = await supabase
       .from('evolutions')
       .select('slug')
-      .gt('title', saved?.title ?? '')
-      .order('title', { ascending: true })
-      .order('slug', { ascending: true })
+      .gt('id', saved?.id ?? 0)
+      .order('id', { ascending: true })
       .limit(1)
       .maybeSingle()
 
