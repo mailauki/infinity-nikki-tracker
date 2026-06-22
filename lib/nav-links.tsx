@@ -25,10 +25,6 @@ export const navLinksData: {
           title: 'Seasons',
           url: '/outfits/seasons',
         },
-        // {
-        //   title: 'Sets',
-        //   url: '/outfits/sets',
-        // },
       ],
     },
     {
@@ -36,10 +32,6 @@ export const navLinksData: {
       url: '/eureka',
       image: '/icons/eureka.png',
       items: [
-        // {
-        //   title: 'Sets',
-        //   url: '/eureka/sets',
-        // },
         {
           title: 'Trials',
           url: '/eureka/trials',
@@ -47,38 +39,18 @@ export const navLinksData: {
         },
       ],
     },
+    {
+      title: 'Custom Looks',
+      url: '/looks',
+      image: '/icons/wardrobe.png',
+    },
   ],
   navSecondary: [
     {
       title: 'Profile',
       url: '/profile',
       icon: <AccountCircle />,
-      // items: [
-      //   {
-      //     title: 'Custom Looks',
-      //     url: '/looks',
-      //   },
-      // ],
-      // items: [
-      // {
-      //   title: 'My Collection',
-      //   url: '/profile/collection',
-      // },
-      // {
-      //   title: 'Missing',
-      //   url: '/profile/missing',
-      // },
-      // {
-      //   title: 'Custom Looks',
-      //   url: '/profile/custom-looks',
-      // },
-      // ],
     },
-    // {
-    //   title: 'Custom Looks',
-    //   url: '/looks',
-    //   icon: <AutoAwesome />,
-    // },
     {
       title: 'Settings',
       url: '/settings',

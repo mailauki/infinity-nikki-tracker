@@ -81,6 +81,7 @@ export type OutfitVariant = Pick<
   | 'outfit_set'
   | 'evolution'
   | 'outfit_category'
+  | 'title'
   | 'image_url'
   | 'alt_image_url'
   | 'default'

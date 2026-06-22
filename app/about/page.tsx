@@ -36,7 +36,7 @@ const featurePages = [
     ],
   },
   {
-    title: 'Custom Looks (TBD)',
+    title: 'Custom Looks',
     subtitle: 'Build and save your own outfit combinations from Eureka and outfit pieces.',
     bullets: [
       'Mix and match pieces into a saved look, with thumbnail previews',
@@ -245,10 +245,12 @@ export default function AboutPage() {
           <SectionList
             bullets={[
               'Search — quickly find sets and variants by name',
+              'Outfit Pieces — tracking support for pieces not part of any outfit sets',
+              'Make-up Sets — tracking support for make-up sets and pieces',
               "Momo's Cloaks — tracking support for Momo's cloaks",
-              'Make-up Sets — tracking support for make-up sets',
               'Favorites — save your favorite sets and pieces',
               'Friends — follow friends to compare collection progress',
+              'Sharing — shareable links to your looks and collection',
             ]}
           />
         </Section>

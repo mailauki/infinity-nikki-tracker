@@ -33,7 +33,7 @@ export const getEvolutionsWithVariants = cache(async () => {
     .select(
       `
       ${EVOLUTION_SELECT},
-      outfit_variants ( id, slug, outfit_set, evolution, outfit_category, image_url, alt_image_url, default )
+      outfit_variants ( id, slug, outfit_set, evolution, outfit_category, title, image_url, alt_image_url, default )
     `
     )
     .order('id', { ascending: true })

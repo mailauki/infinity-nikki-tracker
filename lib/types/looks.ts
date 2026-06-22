@@ -6,6 +6,8 @@ export type CustomLook = Pick<
   | 'user_id'
   | 'name'
   | 'description'
+  | 'image_url'
+  | 'slug'
   | 'eureka_variant_slugs'
   | 'outfit_variant_slugs'
   | 'created_at'
@@ -18,9 +20,12 @@ export type FlatVariant = {
   setTitle: string
   setSlug: string
   category: string
+  categoryTitle: string
+  title?: string | null
+  part?: string
   color?: string
   evolution?: string | null
   image_url: string | null
 }
 
-export const FREE_LOOKS_LIMIT = 5
+export const FREE_LOOKS_LIMIT = 10

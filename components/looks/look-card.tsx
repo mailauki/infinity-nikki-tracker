@@ -1,37 +1,45 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import {
   Avatar,
   AvatarGroup,
   Card,
   CardActionArea,
+  CardActions,
   CardContent,
   Chip,
+  Divider,
   IconButton,
   Stack,
   Tooltip,
   Typography,
 } from '@mui/material'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
-import StyleOutlinedIcon from '@mui/icons-material/StyleOutlined'
+import CheckroomIcon from '@mui/icons-material/Checkroom'
+import WatchOutlinedIcon from '@mui/icons-material/WatchOutlined'
 import { enqueueSnackbar } from 'notistack'
 import type { CustomLook } from '@/lib/types/looks'
+
+export type LookCounts = { pieces: number; accessories: number; eureka: number }
 
 export default function LookCard({
   look,
   thumbnails,
+  counts,
   onDelete,
 }: {
   look: CustomLook
   thumbnails: string[]
+  counts: LookCounts
   onDelete: (id: string) => Promise<{ error?: string }>
 }) {
   const [deleting, setDeleting] = useState(false)
+  const slug = look.slug ?? look.id
+  const href = `/looks/${slug}`
+  const editHref = `/looks/edit/${slug}`
   const totalItems = look.eureka_variant_slugs.length + look.outfit_variant_slugs.length
   const date = new Date(look.created_at).toLocaleDateString('en-US', {
     month: 'short',
@@ -59,7 +67,7 @@ export default function LookCard({
       }}
       variant="outlined"
     >
-      <CardActionArea component={Link} href={`/looks/${look.id}`} sx={{ flex: 1 }}>
+      <CardActionArea href={href} sx={{ flex: 1 }}>
         <CardContent>
           <Stack spacing={1.5}>
             {thumbnails.length > 0 && (
@@ -72,18 +80,23 @@ export default function LookCard({
                     width: 40,
                     height: 40,
                     border: '2px solid',
-                    borderColor: 'surface.containerLowest',
+                    borderColor: 'surface.containerLow',
                   },
                 }}
               >
                 {thumbnails.map((url, i) => (
-                  <Avatar key={i} src={url} variant="rounded" />
+                  <Avatar
+                    key={i}
+                    src={url}
+                    sx={{ bgcolor: 'surface.containerHighest' }}
+                    variant="rounded"
+                  />
                 ))}
               </AvatarGroup>
             )}
 
             <Stack spacing={0.25}>
-              <Typography sx={{ fontWeight: 500 }} variant="subtitle2">
+              <Typography component="span" sx={{ fontWeight: 500 }} variant="subtitle1">
                 {look.name}
               </Typography>
               {look.description && (
@@ -103,18 +116,26 @@ export default function LookCard({
             </Stack>
 
             <Stack direction="row" sx={{ gap: 0.75, flexWrap: 'wrap', alignItems: 'center' }}>
-              {look.eureka_variant_slugs.length > 0 && (
+              {counts.pieces > 0 && (
                 <Chip
-                  icon={<DiamondOutlinedIcon />}
-                  label={`${look.eureka_variant_slugs.length} eureka`}
+                  icon={<CheckroomIcon />}
+                  label={`${counts.pieces} piece${counts.pieces !== 1 ? 's' : ''}`}
                   size="small"
                   variant="outlined"
                 />
               )}
-              {look.outfit_variant_slugs.length > 0 && (
+              {counts.accessories > 0 && (
                 <Chip
-                  icon={<StyleOutlinedIcon />}
-                  label={`${look.outfit_variant_slugs.length} outfit`}
+                  icon={<WatchOutlinedIcon />}
+                  label={`${counts.accessories} accessor${counts.accessories !== 1 ? 'ies' : 'y'}`}
+                  size="small"
+                  variant="outlined"
+                />
+              )}
+              {counts.eureka > 0 && (
+                <Chip
+                  icon={<DiamondOutlinedIcon />}
+                  label={`${counts.eureka} eureka`}
                   size="small"
                   variant="outlined"
                 />
@@ -129,28 +150,29 @@ export default function LookCard({
         </CardContent>
       </CardActionArea>
 
-      <Stack
-        direction="row"
-        sx={{
-          px: 1,
-          pb: 1,
-          gap: 0.5,
-          justifyContent: 'flex-end',
-          borderTop: '1px solid',
-          borderColor: 'divider',
-        }}
-      >
-        <Tooltip title="Edit">
-          <IconButton component={Link} href={`/looks/${look.id}`} size="small">
-            <EditOutlinedIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton disabled={deleting} size="small" onClick={handleDelete}>
-            <DeleteOutlineIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      </Stack>
+      <Divider variant="middle" />
+
+      <CardActions>
+        <Stack
+          direction="row"
+          sx={{
+            gap: 0.5,
+            flexGrow: 1,
+            justifyContent: 'flex-end',
+          }}
+        >
+          <Tooltip title="Edit">
+            <IconButton href={editHref} size="small">
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton disabled={deleting} size="small" onClick={handleDelete}>
+              <DeleteIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      </CardActions>
     </Card>
   )
 }

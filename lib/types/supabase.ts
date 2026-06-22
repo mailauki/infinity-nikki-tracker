@@ -64,8 +64,10 @@ export type Database = {
           description: string | null
           eureka_variant_slugs: string[]
           id: string
+          image_url: string | null
           name: string
           outfit_variant_slugs: string[]
+          slug: string | null
           updated_at: string | null
           user_id: string
         }
@@ -74,8 +76,10 @@ export type Database = {
           description?: string | null
           eureka_variant_slugs?: string[]
           id?: string
+          image_url?: string | null
           name: string
           outfit_variant_slugs?: string[]
+          slug?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -84,8 +88,10 @@ export type Database = {
           description?: string | null
           eureka_variant_slugs?: string[]
           id?: string
+          image_url?: string | null
           name?: string
           outfit_variant_slugs?: string[]
+          slug?: string | null
           updated_at?: string | null
           user_id?: string
         }

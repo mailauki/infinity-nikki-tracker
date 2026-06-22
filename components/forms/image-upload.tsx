@@ -33,6 +33,7 @@ export default function ImageUpload({
     | 'evolutions'
     | 'abilities'
     | 'seasons'
+    | 'custom_looks'
   slug: string | undefined
   onUpload: (url: string) => void
   caption?: string
@@ -95,7 +96,7 @@ export default function ImageUpload({
           '&:hover .upload-overlay': { opacity: 1 },
         }}
       >
-        <Stack sx={{ alignItems: 'center' }}>
+        <Stack sx={{ alignItems: 'center', pt: 1 }}>
           <Avatar
             alt="Image preview"
             size={size}
