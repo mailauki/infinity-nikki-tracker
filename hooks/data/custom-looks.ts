@@ -12,13 +12,21 @@ async function resolveVariantThumbnails(
       ? supabase.from('eureka_variants').select('slug, image_url').in('slug', eurekaSlugs)
       : Promise.resolve({ data: [] }),
     outfitSlugs.length > 0
-      ? supabase.from('outfit_variants').select('slug, image_url').in('slug', outfitSlugs)
+      ? supabase
+          .from('outfit_variants')
+          .select('slug, image_url, alt_image_url')
+          .in('slug', outfitSlugs)
       : Promise.resolve({ data: [] }),
   ])
 
   return new Map<string, string | null>([
     ...(eurekaThumbs ?? []).map((v): [string, string | null] => [v.slug, v.image_url]),
-    ...(outfitThumbs ?? []).map((v): [string, string | null] => [v.slug, v.image_url]),
+    // Outfit cards/thumbnails prefer the alt image (cleaner crop), falling back
+    // to the main image.
+    ...(outfitThumbs ?? []).map((v): [string, string | null] => [
+      v.slug,
+      v.alt_image_url ?? v.image_url,
+    ]),
   ])
 }
 
