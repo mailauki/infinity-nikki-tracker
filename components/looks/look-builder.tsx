@@ -38,6 +38,7 @@ import type { EurekaCategory } from '@/lib/types/eureka'
 import type { OutfitCategory } from '@/lib/types/outfit'
 import { DRESS_SLUGS, isCategoryDisabled } from '@/components/filter/outfit-category-select'
 import ToggleIcon from '../toggle-icon'
+import ImageUpload from '@/components/forms/image-upload'
 
 // Outfit categories carry a `part` that buckets them into these two groups.
 const PIECES_PART = 'Pieces'
@@ -220,7 +221,13 @@ export default function LookBuilder({
 }: {
   initialLook?: Pick<
     CustomLook,
-    'id' | 'name' | 'description' | 'eureka_variant_slugs' | 'outfit_variant_slugs'
+    | 'id'
+    | 'name'
+    | 'description'
+    | 'image_url'
+    | 'slug'
+    | 'eureka_variant_slugs'
+    | 'outfit_variant_slugs'
   >
   eurekaVariants: FlatVariant[]
   outfitVariants: FlatVariant[]
@@ -233,6 +240,7 @@ export default function LookBuilder({
 
   const [name, setName] = useState(initialLook?.name ?? '')
   const [description, setDescription] = useState(initialLook?.description ?? '')
+  const [imageUrl, setImageUrl] = useState(initialLook?.image_url ?? null)
   const [selectedSlugs, setSelectedSlugs] = useState<Set<string>>(
     () =>
       new Set([
@@ -431,6 +439,18 @@ export default function LookBuilder({
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
+
+      {initialLook?.slug && (
+        <ImageUpload
+          caption="Cover image"
+          column="image_url"
+          size="lg"
+          slug={initialLook.slug}
+          table="custom_looks"
+          url={imageUrl}
+          onUpload={setImageUrl}
+        />
+      )}
 
       <Stack spacing={1}>
         <Typography color="textSecondary" variant="caption">

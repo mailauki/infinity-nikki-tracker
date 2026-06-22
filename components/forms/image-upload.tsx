@@ -33,6 +33,7 @@ export default function ImageUpload({
     | 'evolutions'
     | 'abilities'
     | 'seasons'
+    | 'custom_looks'
   slug: string | undefined
   onUpload: (url: string) => void
   caption?: string
