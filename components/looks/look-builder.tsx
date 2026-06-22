@@ -455,6 +455,12 @@ export default function LookBuilder({
         />
       )}
 
+      {!initialLook && (
+        <Alert severity="info">
+          A cover image can be added after saving — edit the look to upload one.
+        </Alert>
+      )}
+
       <Stack spacing={1}>
         <Typography color="textSecondary" variant="caption">
           {selectedItems.length} piece{selectedItems.length !== 1 ? 's' : ''} selected
