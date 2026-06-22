@@ -28,4 +28,4 @@ export type FlatVariant = {
   image_url: string | null
 }
 
-export const FREE_LOOKS_LIMIT = 5
+export const FREE_LOOKS_LIMIT = 10

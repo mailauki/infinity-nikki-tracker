@@ -40,6 +40,7 @@ import SaveIcon from '@mui/icons-material/Save'
 import { toTitle } from '@/lib/utils'
 import { categoryIconSrc } from '@/lib/look-utils'
 import LazyImage from '@/components/lazy-image'
+import { FREE_LOOKS_LIMIT } from '@/lib/types/looks'
 import type { FlatVariant, CustomLook } from '@/lib/types/looks'
 import type { EurekaCategory } from '@/lib/types/eureka'
 import type { OutfitCategory } from '@/lib/types/outfit'
@@ -423,7 +424,9 @@ export default function LookBuilder({
       })
       if ('error' in result && result.error) {
         if (result.error === 'free_limit_reached') {
-          setSaveError("You've reached the 5-look limit for free accounts. Upgrade to save more.")
+          setSaveError(
+            `You've reached the ${FREE_LOOKS_LIMIT}-look limit for free accounts. Upgrade to save more.`
+          )
         } else {
           setSaveError(result.error)
         }
