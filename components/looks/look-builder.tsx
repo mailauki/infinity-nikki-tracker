@@ -13,6 +13,10 @@ import {
   Divider,
   IconButton,
   InputAdornment,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
   Stack,
   Tab,
   Tabs,
@@ -198,7 +202,8 @@ function CategoryRow({
               color="primary"
               label={selectedLabel}
               size="small"
-              sx={{ maxWidth: 120, flexShrink: 0 }}
+              sx={{ maxWidth: 140, flexShrink: 0 }}
+              variant="outlined"
             />
           )}
         </Stack>
@@ -406,22 +411,36 @@ export default function LookBuilder({
             {label}
           </Typography>
         </Stack>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+        <List dense disablePadding>
           {items.map((v) => {
             const detail = v.color ?? v.evolution
+            const caption =
+              detail!.split('-')[1] !== 'base'
+                ? `${toTitle(detail!.split('-')[0])}: ${toTitle(detail!.split('-')[1])}`
+                : toTitle(detail!.split('-')[0])
+            // TODO: Change to outfit_variant title and use this caption as fallback
             return (
-              <Chip
+              <ListItem
                 key={v.slug}
-                avatar={<Avatar src={v.image_url ?? undefined} />}
-                deleteIcon={<CloseIcon />}
-                label={`${toTitle(v.category)}${detail ? ` · ${toTitle(detail)}` : ''}`}
-                size="small"
-                variant="outlined"
-                onDelete={() => removeSlug(v.slug)}
-              />
+                secondaryAction={
+                  <IconButton
+                    aria-label="delete"
+                    edge="end"
+                    size="small"
+                    onClick={() => removeSlug(v.slug)}
+                  >
+                    <CloseIcon fontSize="small" />
+                  </IconButton>
+                }
+              >
+                <ListItemAvatar>
+                  <LazyImage alt={caption} kind="square" size="sm" src={v.image_url ?? undefined} />
+                </ListItemAvatar>
+                <ListItemText primary={caption} />
+              </ListItem>
             )
           })}
-        </Box>
+        </List>
       </Stack>
     )
   }
