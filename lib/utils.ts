@@ -15,6 +15,7 @@ export function toSlug(name: string) {
     .replace(/[^a-z0-9 -]/g, '')
     .replace(/['‘’]/g, '')
     .replace(/\s+/g, '_')
+    .replace(/-+/g, '_')
     .replace(/_+/g, '_')
 }
 
@@ -25,9 +26,7 @@ export function toTitle(slug: string) {
 }
 
 export function toSlugVariant(eurekaSet: string, category: string, color: string) {
-  return [eurekaSet, category, color]
-    .map((s) => s.trim().toLowerCase().replace(/\s+/g, '_'))
-    .join('-')
+  return [eurekaSet, category, color].map((s) => toSlug(s)).join('-')
 }
 
 export function formatDate(dateString: string) {

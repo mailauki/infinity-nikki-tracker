@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Avatar, Box, Container, IconButton, Stack, Tooltip, Typography } from '@mui/material'
-import { ChevronLeft, EditOutlined } from '@mui/icons-material'
+import { ChevronLeft, Edit as EditIcon } from '@mui/icons-material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import LazyImage from '@/components/lazy-image'
 import type { CustomLook } from '@/lib/types/looks'
@@ -57,7 +57,7 @@ export default function LookDetail({
           </IconButton>
           <Tooltip title="Edit">
             <IconButton component={Link} href={`/looks/edit/${href}`}>
-              <EditOutlined />
+              <EditIcon />
             </IconButton>
           </Tooltip>
         </Stack>

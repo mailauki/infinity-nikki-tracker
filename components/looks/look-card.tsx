@@ -17,8 +17,7 @@ import {
   Typography,
 } from '@mui/material'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline'
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined'
+import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
 import CheckroomIcon from '@mui/icons-material/Checkroom'
 import WatchOutlinedIcon from '@mui/icons-material/WatchOutlined'
@@ -160,12 +159,12 @@ export default function LookCard({
         >
           <Tooltip title="Edit">
             <IconButton component={Link} href={editHref} size="small">
-              <EditOutlinedIcon fontSize="small" />
+              <EditIcon fontSize="small" />
             </IconButton>
           </Tooltip>
           <Tooltip title="Delete">
             <IconButton disabled={deleting} size="small" onClick={handleDelete}>
-              <DeleteOutlineIcon fontSize="small" />
+              <DeleteIcon fontSize="small" />
             </IconButton>
           </Tooltip>
         </Stack>
