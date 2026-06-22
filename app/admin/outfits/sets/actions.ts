@@ -419,5 +419,18 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
 
     return { savedTitle: title, variants: variants ?? [] }
   }
+  if (formData.get('update_next') === 'true') {
+    const { data: next } = await supabase
+      .from('outfit_sets')
+      .select('slug')
+      .gt('title', title)
+      .order('title', { ascending: true })
+      .order('slug', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+
+    if (next?.slug) redirect(`${navLinksData.admin.outfits.sets.edit}/${next.slug}`)
+    redirect(navLinksData.admin.outfits.sets.list)
+  }
   redirect(backUrl)
 }
