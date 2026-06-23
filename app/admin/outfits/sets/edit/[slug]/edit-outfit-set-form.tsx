@@ -49,7 +49,7 @@ type OutfitVariantRow = Pick<
   | 'updated_at'
 >
 import ImageUpload from '@/components/forms/image-upload'
-import CarouselImageUpload from '@/components/forms/carousel-image-upload'
+import CarouselImageUpload from '@/app/admin/outfits/carousel-image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editOutfitSet } from '../../actions'
 import EvolutionEditor from '../../evolution-editor'

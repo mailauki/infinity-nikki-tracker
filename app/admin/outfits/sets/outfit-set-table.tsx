@@ -29,7 +29,7 @@ import { Style, Label } from '@/lib/types/eureka'
 import RarityStars from '@/components/rarity-stars'
 import { updateOutfitSet } from '@/app/admin/actions'
 import ImageUpload from '@/components/forms/image-upload'
-import { categoryImageColumns } from '@/components/admin/variant-image-cell'
+import { categoryImageColumns } from '@/app/admin/outfits/variant-image-cell'
 import { useAdminView } from '@/app/admin/admin-view-context'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 

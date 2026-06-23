@@ -18,7 +18,7 @@ import { updateEurekaFilters, updateGroupBySet, updateShowByColor } from '@/app/
 import { handleObtained } from '@/app/eureka/actions'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 
-import { DEFAULT_FILTERS, EurekaDataContext, FilterState } from './eureka-context'
+import { DEFAULT_FILTERS, EurekaDataContext, FilterState } from '@/components/eureka/eureka-context'
 
 async function fetchJson<T>(url: string): Promise<T> {
   const r = await fetch(url)

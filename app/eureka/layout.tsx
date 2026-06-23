@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { getUserID } from '@/hooks/user'
-import EurekaDataProvider from '@/components/eureka/eureka-data-provider'
+import EurekaDataProvider from './eureka-data-provider'
 import { SortProvider } from '@/components/sort-context'
 
 async function EurekaProviders({ children }: { children: React.ReactNode }) {

@@ -2,7 +2,7 @@ import { countObtained, percent } from '@/hooks/count-obtained'
 import { AvatarSize, CategoryType } from '@/lib/types/props'
 import { EurekaCategory, EurekaColor, EurekaVariant } from '@/lib/types/eureka'
 import { Chip } from '@mui/material'
-import EurekaCardProgress from './eureka-card-progress'
+import EurekaCardProgress from '@/app/eureka/trials/eureka-card-progress'
 import CategoryImage from './category-image'
 
 export function CategoryItem({

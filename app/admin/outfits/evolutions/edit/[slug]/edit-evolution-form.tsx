@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useState } from 'react'
 import { Alert, Box, Stack, TextField, Typography } from '@mui/material'
 import ImageUpload from '@/components/forms/image-upload'
-import CarouselImageUpload from '@/components/forms/carousel-image-upload'
+import CarouselImageUpload from '@/app/admin/outfits/carousel-image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { CarouselImage } from '@/lib/types/outfit'
 import { editEvolution } from './actions'

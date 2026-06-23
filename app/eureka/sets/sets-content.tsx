@@ -7,7 +7,7 @@ import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { useSortOrder } from '@/components/sort-context'
 import { GRID_COLUMNS_CONTAINER, GRID_CONTAINER } from '@/lib/types/props'
-import EurekaColorSetCard from '@/components/eureka/eureka-color-set-card'
+import EurekaColorSetCard from '@/app/eureka/eureka-color-set-card'
 import ProgressChip from '@/components/progress-chip'
 import { countObtained } from '@/hooks/count-obtained'
 

@@ -11,7 +11,7 @@ import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getCustomLooks } from '@/hooks/data/custom-looks'
 import { FREE_LOOKS_LIMIT } from '@/lib/types/looks'
 import { flattenEurekaVariants, flattenOutfitVariants } from '@/lib/look-utils'
-import LookBuilder from '@/components/looks/look-builder'
+import LookBuilder from '@/app/looks/look-builder'
 import { createLook } from '../actions'
 
 export const metadata: Metadata = { title: 'New Look' }

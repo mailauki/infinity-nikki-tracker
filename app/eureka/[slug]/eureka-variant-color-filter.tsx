@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { Box, Stack } from '@mui/material'
 import { GRID_COLUMNS_CONTAINER, GRID_CONTAINER } from '@/lib/types/props'
 import type { EurekaColor, EurekaVariant } from '@/lib/types/eureka'
-import EurekaVariantCard from './eureka-variant-card'
-import ColorChip from '../color-chip'
-import { useEurekaData } from './eureka-context'
+import EurekaVariantCard from '@/app/eureka/eureka-variant-card'
+import ColorChip from './color-chip'
+import { useEurekaData } from '@/components/eureka/eureka-context'
 import { isVariantObtained } from '@/hooks/eureka'
 
 export default function EurekaVariantColorFilter({

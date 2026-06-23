@@ -1,8 +1,8 @@
 import { Suspense } from 'react'
 import { Metadata } from 'next'
-import FilterEureka from '@/components/eureka/filter-eureka'
+import FilterEureka from './filter-eureka'
 import EurekaLoading from './loading'
-import EurekaToolBar from '@/components/eureka/eureka-toolbar'
+import EurekaToolBar from './eureka-toolbar'
 
 export const metadata: Metadata = {
   title: 'Eureka Sets',

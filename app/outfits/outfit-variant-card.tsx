@@ -6,8 +6,8 @@ import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-mate
 import { OutfitVariant } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
-import { useOutfitData } from './outfit-context'
-import { useOutfitImageMode } from './outfit-image-mode-context'
+import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 
 export default function OutfitVariantCard({
   outfitVariant,

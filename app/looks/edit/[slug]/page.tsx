@@ -9,7 +9,7 @@ import { getEurekaCategories } from '@/hooks/data/eureka-categories'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getCustomLook } from '@/hooks/data/custom-looks'
 import { flattenEurekaVariants, flattenOutfitVariants } from '@/lib/look-utils'
-import LookBuilder from '@/components/looks/look-builder'
+import LookBuilder from '@/app/looks/look-builder'
 import { updateLook } from '../../actions'
 
 type Props = { params: Promise<{ slug: string }> }

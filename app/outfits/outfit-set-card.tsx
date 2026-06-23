@@ -5,13 +5,16 @@ import { Evolution, OutfitSet } from '@/lib/types/outfit'
 import { isGlowup } from '@/hooks/outfit'
 import { RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { Box, Card, CardActionArea, Grow, IconButton, Stack, Typography } from '@mui/material'
-import RarityStars from '../rarity-stars'
+import RarityStars from '@/components/rarity-stars'
 import Link from 'next/link'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
-import { resolveOutfitImage, useOutfitImageMode } from './outfit-image-mode-context'
-import ToggleIcon from '../toggle-icon'
-import ProgressChip from '../progress-chip'
+import {
+  resolveOutfitImage,
+  useOutfitImageMode,
+} from '@/components/outfits/outfit-image-mode-context'
+import ToggleIcon from '@/components/toggle-icon'
+import ProgressChip from '@/components/progress-chip'
 
 export default function OutfitSetCard({
   set,

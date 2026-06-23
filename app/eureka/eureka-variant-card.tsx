@@ -5,7 +5,7 @@ import { toTitle } from '@/lib/utils'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { Box, Card, Grow, IconButton, Stack, Typography } from '@mui/material'
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
-import { useEurekaData } from './eureka-context'
+import { useEurekaData } from '@/components/eureka/eureka-context'
 import LazyImage from '@/components/lazy-image'
 
 export default function EurekaVariantCard({
