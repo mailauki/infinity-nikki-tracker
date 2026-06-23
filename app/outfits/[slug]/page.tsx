@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { getOutfitSet } from '@/hooks/data/outfit-sets'
 import type { Metadata } from 'next'
-import OutfitSetDetail from '@/components/outfits/outfit-set-detail'
+import OutfitSetDetail from './outfit-set-detail'
 
 type Props = {
   params: Promise<{ slug: string }>

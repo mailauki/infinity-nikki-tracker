@@ -4,7 +4,7 @@ import { EurekaSet } from '@/lib/types/eureka'
 import { Box, Card, CardActionArea, Stack, Typography } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
 import { Category } from '@mui/icons-material'
-import RarityStars from '../rarity-stars'
+import RarityStars from '@/components/rarity-stars'
 
 export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
   const { slug, title, image_url, rarity, eureka_variants } = eurekaSet

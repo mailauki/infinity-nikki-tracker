@@ -19,8 +19,11 @@ import SlugToolBar from '@/components/slug-toolbar'
 import LazyImage from '@/components/lazy-image'
 import OutfitEvolutionVariants from './outfit-evolution-variants'
 import OutfitCarousel from './outfit-carousel'
-import { resolveOutfitImage, useOutfitImageMode } from './outfit-image-mode-context'
-import { useOutfitData } from './outfit-context'
+import {
+  resolveOutfitImage,
+  useOutfitImageMode,
+} from '@/components/outfits/outfit-image-mode-context'
+import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 

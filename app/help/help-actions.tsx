@@ -1,7 +1,7 @@
 'use client'
 
-import BugReportForm from '@/components/forms/bug-report-form'
-import FeatureRequestForm from '@/components/forms/feature-request-form'
+import BugReportForm from './bug-report-form'
+import FeatureRequestForm from './feature-request-form'
 import { AddComment, BugReport, Coffee, GitHub } from '@mui/icons-material'
 import {
   Box,

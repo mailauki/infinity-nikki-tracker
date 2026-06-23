@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 
 import { CardSize, Percentage } from '@/lib/types/props'
-import PercentLabel from '../percent-label'
+import PercentLabel from '@/components/percent-label'
 
 export default function EurekaCardProgress({
   percentage,

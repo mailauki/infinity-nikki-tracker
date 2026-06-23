@@ -14,7 +14,7 @@ import {
   DATA_GRID_DEFAULTS,
   LockedCell,
   useRowActions,
-} from '@/components/admin/table-utils'
+} from '@/app/admin/eureka/table-utils'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 
 type Row = EurekaVariantRaw

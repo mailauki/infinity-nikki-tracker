@@ -1,6 +1,6 @@
 import { CardContent, Stack, Typography } from '@mui/material'
 
-import RarityStars from '../rarity-stars'
+import RarityStars from '@/components/rarity-stars'
 import { CardSize } from '@/lib/types/props'
 
 export default function EurekaCardContent({

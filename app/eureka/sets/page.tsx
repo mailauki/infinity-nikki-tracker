@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { Metadata } from 'next'
 import { Stack } from '@mui/material'
 
-import SetsContent from '@/components/eureka/sets-content'
+import SetsContent from './sets-content'
 import TrialsToolBar from '@/app/eureka/trials/trials-tool-bar'
 
 export const metadata: Metadata = {

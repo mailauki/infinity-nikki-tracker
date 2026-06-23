@@ -8,8 +8,8 @@ import CheckIcon from '@mui/icons-material/Check'
 import { useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 
-import EurekaSetImage from './eureka-set-image'
-import EurekaCardContent from './eureka-card-content'
+import EurekaSetImage from '@/app/eureka/trials/eureka-set-image'
+import EurekaCardContent from '@/app/eureka/trials/eureka-card-content'
 import { CardSize } from '@/lib/types/props'
 
 export default function EurekaButton({

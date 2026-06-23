@@ -5,8 +5,8 @@ import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import FilterMenu from '@/components/filter/filter-menu'
 import { SortButton } from '@/components/navbar/appbar-actions'
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
-import { useOutfitData } from './outfit-context'
-import { useOutfitImageMode } from './outfit-image-mode-context'
+import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 
 export default function OutfitToolBar({
   showFilters = true,

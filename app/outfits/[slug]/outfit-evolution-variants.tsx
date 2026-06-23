@@ -4,8 +4,8 @@ import { Box, Stack, ToggleButton, ToggleButtonGroup, Toolbar } from '@mui/mater
 import { OutfitSet } from '@/lib/types/outfit'
 import { isGlowup, evolutionSortKey } from '@/hooks/outfit'
 import ProgressChip from '@/components/progress-chip'
-import OutfitVariantCard from './outfit-variant-card'
-import { useOutfitData } from './outfit-context'
+import OutfitVariantCard from '@/app/outfits/outfit-variant-card'
+import { useOutfitData } from '@/components/outfits/outfit-context'
 
 export default function OutfitEvolutionVariants({
   outfitSet,

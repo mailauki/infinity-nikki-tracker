@@ -3,7 +3,7 @@ import { EurekaColor, EurekaSet } from '@/lib/types/eureka'
 import { Box, Card, LinearProgress, Stack, Typography } from '@mui/material'
 import { Category } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
-import RarityStars from '../rarity-stars'
+import RarityStars from '@/components/rarity-stars'
 
 export default function EurekaColorSetCard({
   eurekaSet,

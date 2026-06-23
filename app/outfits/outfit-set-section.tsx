@@ -6,7 +6,7 @@ import { Box, Button, Divider, IconButton, Stack } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
 import ProgressChip from '@/components/progress-chip'
-import { useOutfitData } from './outfit-context'
+import { useOutfitData } from '@/components/outfits/outfit-context'
 import OutfitVariantCard from './outfit-variant-card'
 
 export default function OutfitSetSection({

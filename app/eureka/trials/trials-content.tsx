@@ -16,7 +16,7 @@ import {
 } from '@mui/material'
 
 import LazyImage from '@/components/lazy-image'
-import EurekaCard from '@/components/eureka/eureka-card'
+import EurekaCard from './eureka-card'
 import { ViewAllButton } from '@/components/view-all-button'
 import ErrorAlert from '@/components/error-alert'
 import { useEurekaData } from '@/components/eureka/eureka-context'

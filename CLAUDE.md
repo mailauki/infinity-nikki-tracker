@@ -72,25 +72,35 @@ Routes are **flat under `app/`** — there is no `(main)` or `(admin)` route gro
 The app moved away from MUI realtime `postgres_changes` subscriptions to a **client data-provider + context** model:
 
 1. A domain `layout.tsx` reads `getUserID()` server-side and renders a client provider with `isLoggedIn`/`userId` props.
-2. The provider (`components/eureka/eureka-data-provider.tsx`, `components/outfits/outfit-data-provider.tsx`) `fetch`es its initial payload from an API route on mount — Eureka from `/api/eureka/bootstrap`, plus `/api/preferences`. The bootstrap route runs `await connection()` first so PPR doesn't prerender it (cookies would reject at build), then `Promise.all`s the React-`cache()`-deduped data hooks.
+2. The provider (`app/eureka/eureka-data-provider.tsx`, `app/outfits/outfit-data-provider.tsx`) `fetch`es its initial payload from an API route on mount — Eureka from `/api/eureka/bootstrap`, plus `/api/preferences`. The bootstrap route runs `await connection()` first so PPR doesn't prerender it (cookies would reject at build), then `Promise.all`s the React-`cache()`-deduped data hooks.
 3. The provider holds collection + filter state, exposes it via context (`eureka-context.tsx`, `outfit-context.tsx`), and calls Server Actions (`handleObtained`, `handleObtainedOutfit`, `app/actions/preferences.ts`) to persist toggles/filters. Optimistic updates use `useTransition` + `notistack` snackbars.
 
 `hooks/data/` holds the Supabase queries (React `cache()` or `use cache`, see Code Style). `hooks/eureka.ts` / `hooks/outfit.ts` hold pure transforms (`createEurekaSet`, `updateEurekaVariants`, `createOutfitSet`, `sortVariants`, `applyObtainedKeys`, `buildObtainedKeySet`, `isVariantObtained`, `isEvolutionVisible`, etc.). `hooks/count-obtained.ts` → `countObtained()`, `percent()`.
 
 ### Component Organization
 
+**Colocation rule:** a component whose entire (transitive) consumer set lives under one route subtree is colocated as a flat `.tsx` file beside that route's `page.tsx` — not under `components/`. (Next.js only treats `page`/`layout`/`route`/`loading`/`error` as special segments; any other `.tsx` in a route folder is a plain module.) `components/` holds only genuinely shared code: anything imported by 2+ unrelated routes, the root layout, or a global Server Action (`app/actions/preferences.ts`). When adding a component, place it next to its page if single-route; promote it to `components/` only when a second route starts importing it.
+
+Colocated, by route:
+
+- `app/eureka/` — eureka-data-provider, eureka-toolbar, filter-eureka, eureka-color-set-card, eureka-variant-card; `sets/sets-content`; `[slug]/{eureka-variant-color-filter, color-chip}`; `trials/{eureka-card, eureka-card-content, eureka-card-progress, eureka-set-image}`; `trials/[slug]/eureka-set-card`
+- `app/outfits/` — outfit-data-provider, filter-outfits, outfit-toolbar, outfit-set-card, outfit-set-section, outfit-variant-card; `[slug]/{outfit-set-detail, outfit-carousel, outfit-evolution-variants}`
+- `app/looks/` — look-builder, look-card; `[slug]/look-detail`
+- `app/help/` — bug-report-form, feature-request-form
+- `app/admin/eureka/table-utils.tsx` (DataGrid helpers: `LockedCell`, `useRowActions`); `app/admin/outfits/{variant-image-cell, carousel-image-upload}`. Each admin sub-tree also colocates its `*-table.tsx` list views and `{new,edit/[slug]}/*-form.tsx` forms next to their pages.
+
+Shared, under `components/`:
+
 - `components/navbar/` — nav-bar, nav-drawer, nav-section, nav-styled, nav-user, nav-footer, page-title, appbar-actions, auth-appbar, coffee-button, theme-switcher, navbar-toolbar(+context)
-- `components/eureka/` — eureka-data-provider, eureka-context, eureka-card(+content/+progress), eureka-set-card, eureka-color-set-card, eureka-variant-card, eureka-variant-grid, eureka-variant-color-filter, eureka-button, eureka-toolbar, eureka-set-image, category-image, category-item, filter-eureka, sets-content
-- `components/outfits/` — outfit-data-provider, outfit-context, outfit-set-card, outfit-set-detail, outfit-set-section, outfit-variant-card, outfit-evolution-variants, outfit-carousel, outfit-toolbar, filter-outfits, outfit-image-mode-context
-- `components/looks/` — look-builder, look-card, look-detail
+- `components/eureka/` — eureka-context (the rest of the eureka files are colocated; `eureka-button`, `eureka-variant-grid`, `category-image`, `category-item` remain here but are currently unreferenced)
+- `components/outfits/` — outfit-context, outfit-image-mode-context
 - `components/filter/` — per-control filter widgets (category/color/rarity/obtained/evolution/glowup toggles, sort toggles, select menus, filter-menu, filter-content-shim, density-toggle)
-- `components/admin/` — table-utils (DataGrid helpers: `LockedCell`, `useRowActions`), variant-image-cell
-- `components/forms/` — image-upload, carousel-image-upload, bug-report-form, feature-request-form; `forms/eureka-set/color-select`
-- `components/` (root) — grid-container, hero(+ctas), section, slug-toolbar, quick-access, pull-to-refresh, progress-chip, percent-label, rarity-stars, color-chip, color-theme-context, sort-context, theme-client-provider, snackbar-provider, lazy-image, toggle-icon, login-alert, logout-button, view-all-button, error-alert
+- `components/forms/` — image-upload; `forms/eureka-set/color-select`
+- `components/` (root) — grid-container, hero(+ctas), section, slug-toolbar, quick-access, pull-to-refresh, progress-chip, percent-label, rarity-stars, color-theme-context, sort-context, theme-client-provider, snackbar-provider, lazy-image, toggle-icon, login-alert, logout-button, view-all-button, error-alert
 
 ### Admin Tables
 
-Admin list pages use **`@mui/x-data-grid` (v9)** with inline row editing, not a custom table component. `components/admin/table-utils.tsx` provides shared helpers: `useRowActions()` (manages `GridRowModesModel` edit/save/cancel state) and `LockedCell` (links to the full edit form). Each admin list page is a Server Component that `Promise.all`s its data hooks inside a `Suspense` boundary and passes plain rows to a colocated `'use client'` `*-view.tsx` that owns the `GridColDef[]`. Full add/edit forms live under each `admin/.../{new,edit/[slug]}/` route with their own `actions.ts`.
+Admin list pages use **`@mui/x-data-grid` (v9)** with inline row editing, not a custom table component. `app/admin/eureka/table-utils.tsx` provides shared helpers: `useRowActions()` (manages `GridRowModesModel` edit/save/cancel state) and `LockedCell` (links to the full edit form). Each admin list page is a Server Component that `Promise.all`s its data hooks inside a `Suspense` boundary and passes plain rows to a colocated `'use client'` `*-view.tsx` that owns the `GridColDef[]`. Full add/edit forms live under each `admin/.../{new,edit/[slug]}/` route with their own `actions.ts`.
 
 ### Role-Based Access
 

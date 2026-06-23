@@ -4,7 +4,7 @@ import { Suspense } from 'react'
 import { Skeleton, Stack } from '@mui/material'
 import { getUserID } from '@/hooks/user'
 import { getAllLookThumbnails, getCustomLook, getOutfitSlugParts } from '@/hooks/data/custom-looks'
-import LookDetail from '@/components/looks/look-detail'
+import LookDetail from './look-detail'
 
 type Props = { params: Promise<{ slug: string }> }
 

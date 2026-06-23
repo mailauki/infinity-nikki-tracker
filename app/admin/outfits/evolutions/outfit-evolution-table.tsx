@@ -7,7 +7,7 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from 
 import { navLinksData } from '@/lib/nav-links'
 import { Evolution, OutfitCategory } from '@/lib/types/outfit'
 import ImageUpload from '@/components/forms/image-upload'
-import { categoryImageColumns } from '@/components/admin/variant-image-cell'
+import { categoryImageColumns } from '@/app/admin/outfits/variant-image-cell'
 import { useAdminView } from '@/app/admin/admin-view-context'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 

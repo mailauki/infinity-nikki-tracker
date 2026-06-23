@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { Metadata } from 'next'
-import OutfitToolBar from '@/components/outfits/outfit-toolbar'
-import FilterOutfits from '@/components/outfits/filter-outfits'
+import OutfitToolBar from './outfit-toolbar'
+import FilterOutfits from './filter-outfits'
 import OutfitsLoading from './loading'
 import { Alert } from '@mui/material'
 
