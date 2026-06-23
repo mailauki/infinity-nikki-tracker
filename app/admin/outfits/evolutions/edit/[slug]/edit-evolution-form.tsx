@@ -79,6 +79,7 @@ export default function EditEvolutionForm({
       backUrl: back ?? navLinksData.admin.outfits.evolutions.list,
       pending,
       showUpdateOnly: true,
+      showUpdateNext: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, back])

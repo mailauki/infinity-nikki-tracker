@@ -59,6 +59,7 @@ export default function EditSeasonForm({
       backUrl: back ?? navLinksData.admin.outfits.seasons.list,
       pending,
       showUpdateOnly: true,
+      showUpdateNext: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, back])

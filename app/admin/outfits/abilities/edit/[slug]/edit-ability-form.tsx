@@ -32,6 +32,7 @@ export default function EditAbilityForm({ ability, back }: { ability: AbilityRow
       backUrl: back ?? navLinksData.admin.outfits.abilities.list,
       pending,
       showUpdateOnly: true,
+      showUpdateNext: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, back])

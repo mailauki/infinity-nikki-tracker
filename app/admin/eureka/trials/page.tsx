@@ -1,5 +1,6 @@
 import { getTrials } from '@/hooks/data/trials'
 import { getLocations } from '@/hooks/data/locations'
+import { byTitleThenSlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import TrialView from './trial-view'
 
@@ -13,5 +14,6 @@ export default function TrialsAdminPage() {
 
 async function AdminView() {
   const [trials, locations] = await Promise.all([getTrials(), getLocations()])
-  return <TrialView locations={locations} trials={trials} />
+  const sortedTrials = [...trials].sort(byTitleThenSlug)
+  return <TrialView locations={locations} trials={sortedTrials} />
 }

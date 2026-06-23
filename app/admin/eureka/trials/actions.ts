@@ -58,5 +58,20 @@ export async function editTrial(id: number, backUrl: string, _: unknown, formDat
   if (error) return { error: error.message }
 
   if (formData.get('update_only') === 'true') return { savedTitle: title }
+
+  if (formData.get('update_next') === 'true') {
+    const { data: next } = await supabase
+      .from('trials')
+      .select('slug')
+      .gt('title', title)
+      .order('title', { ascending: true })
+      .order('slug', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+
+    if (next?.slug) redirect(`${navLinksData.admin.eureka.trials.edit}/${next.slug}`)
+    redirect(navLinksData.admin.eureka.trials.list)
+  }
+
   redirect(backUrl)
 }

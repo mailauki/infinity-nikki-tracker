@@ -167,7 +167,6 @@ export function OutfitEvolutionTable({
       getRowId={(row) => row.id}
       initialState={{
         pagination: { paginationModel: { pageSize: 15 } },
-        sorting: { sortModel: [{ field: 'id', sort: 'asc' }] },
       }}
       pageSizeOptions={[6, 8, 15, 20, 30, 50, 100]}
       rowHeight={TABLE_ROW_HEIGHT}

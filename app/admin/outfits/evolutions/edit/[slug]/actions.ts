@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { toSlug } from '@/lib/utils'
 import { getUserRole } from '@/hooks/user'
+import { navLinksData } from '@/lib/nav-links'
 
 export async function editEvolution(
   currentSlug: string,
@@ -90,5 +91,28 @@ export async function editEvolution(
 
     return { savedTitle: subtitle, slug: newSlug, variants: variants ?? [] }
   }
+
+  if (formData.get('update_next') === 'true') {
+    // Evolutions share a title across all stages of a set (title = set name), so
+    // "next" walks by (title, order) to match the list view — a single .gt()
+    // can't express that compound cursor, so order the full list and take the
+    // row after the just-saved one (by its post-save slug). Exclude {set}-base
+    // rows: the list hides them (their data lives on the outfit set form), so
+    // navigation must skip them too.
+    const { data: ordered } = await supabase
+      .from('evolutions')
+      .select('slug, title, order')
+      .neq('subtitle', 'base')
+      .order('title', { ascending: true })
+      .order('order', { ascending: true })
+
+    const rows = ordered ?? []
+    const currentIndex = rows.findIndex((e) => e.slug === newSlug)
+    const next = currentIndex >= 0 ? rows[currentIndex + 1] : undefined
+
+    if (next?.slug) redirect(`${navLinksData.admin.outfits.evolutions.edit}/${next.slug}`)
+    redirect(navLinksData.admin.outfits.evolutions.list)
+  }
+
   redirect(backUrl)
 }
