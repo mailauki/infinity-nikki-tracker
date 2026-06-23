@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
 import { navLinksData } from '@/lib/nav-links'
+import { evolutionSortKey } from '@/hooks/outfit'
 
 export async function editEvolution(
   currentSlug: string,
@@ -78,30 +79,34 @@ export async function editEvolution(
   }
 
   if (formData.get('update_only') === 'true') {
-    const { data: variants } = await supabase
-      .from('outfit_variants')
-      .select(
-        'id, slug, outfit_category, image_url, alt_image_url, title, description, default, updated_at'
-      )
-      .eq('outfit_set', currentSlug)
-      .order('id', { ascending: true })
+    const [{ data: saved }, { data: variants }] = await Promise.all([
+      supabase.from('outfit_sets').select('title').eq('slug', currentSlug).maybeSingle(),
+      supabase
+        .from('outfit_variants')
+        .select(
+          'id, slug, outfit_category, image_url, alt_image_url, title, description, default, updated_at'
+        )
+        .eq('outfit_set', currentSlug)
+        .order('id', { ascending: true }),
+    ])
 
-    return { savedTitle: currentSlug, slug: currentSlug, variants: variants ?? [] }
+    return { savedTitle: saved?.title ?? currentSlug, slug: currentSlug, variants: variants ?? [] }
   }
 
   if (formData.get('update_next') === 'true') {
-    // Evolutions share a title across all stages of a set (title = set name), so
-    // "next" walks by (base_set, order) to match the list view — order the full
-    // list and take the row after the just-saved one. All rows here have
-    // base_set IS NOT NULL since we filter to evolution rows only.
+    // "next" walks by (base_set, evolutionSortKey) to match the list view, which
+    // sorts glow-ups (order 0) LAST. .order() can't express that, so fetch the
+    // evolution rows and sort client-side. All rows have base_set IS NOT NULL.
     const { data: ordered } = await supabase
       .from('outfit_sets')
       .select('slug, base_set, "order"')
       .not('base_set', 'is', null)
-      .order('base_set', { ascending: true })
-      .order('order', { ascending: true })
 
-    const rows = ordered ?? []
+    const rows = [...(ordered ?? [])].sort(
+      (a, b) =>
+        (a.base_set ?? '').localeCompare(b.base_set ?? '') ||
+        evolutionSortKey(a) - evolutionSortKey(b)
+    )
     const currentIndex = rows.findIndex((e) => e.slug === currentSlug)
     const next = currentIndex >= 0 ? rows[currentIndex + 1] : undefined
 
