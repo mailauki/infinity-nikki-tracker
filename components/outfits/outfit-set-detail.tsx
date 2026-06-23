@@ -51,10 +51,7 @@ export default function OutfitSetDetail({
   const outfit_variants = rawVariants.map((v) => ({
     ...v,
     obtained: obtainedOutfit.some(
-      (o) =>
-        o.outfit_set === v.outfit_set &&
-        o.outfit_category === v.outfit_category &&
-        o.evolution === v.evolution
+      (o) => o.outfit_set === v.outfit_set && o.outfit_category === v.outfit_category
     ),
   }))
 

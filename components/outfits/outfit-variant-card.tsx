@@ -27,21 +27,13 @@ export default function OutfitVariantCard({
     (mode === 'alt' && outfitVariant.alt_image_url) || outfitVariant.image_url || undefined
 
   function onToggle() {
-    onToggleObtained(
-      outfitVariant.outfit_set!,
-      outfitVariant.outfit_category!,
-      // Base variants carry the concrete {set}-base slug; fall back defensively.
-      outfitVariant.evolution ?? `${outfitVariant.outfit_set}-base`
-    )
+    onToggleObtained(outfitVariant.outfit_set!, outfitVariant.outfit_category!)
     if (isMissingFilter) {
       setExiting(true)
     }
   }
 
   const categoryLabel = toTitle(outfitVariant.outfit_category ?? '')
-  const isBaseVariant =
-    !outfitVariant.evolution || outfitVariant.evolution === `${outfitVariant.outfit_set}-base`
-  const evolutionLabel = isBaseVariant ? 'Base' : toTitle(outfitVariant.evolution!.split('-')[1])
 
   return (
     <Grow in={!exiting} timeout={300}>
@@ -74,7 +66,7 @@ export default function OutfitVariantCard({
             }}
           >
             <Typography color="textSecondary" variant="caption">
-              {categoryLabel} • {evolutionLabel}
+              {categoryLabel}
             </Typography>
           </Stack>
           <Box sx={{ position: 'absolute', top: 4, right: 4 }}>

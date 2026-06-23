@@ -137,34 +137,20 @@ export default function OutfitDataProvider({
     }
   }
 
-  const handleToggleObtained = async (
-    outfit_set: string,
-    outfit_category: string,
-    evolution: string
-  ) => {
+  const handleToggleObtained = async (outfit_set: string, outfit_category: string) => {
     const saved = obtainedOutfit
     const isObtained = obtainedOutfit.some(
-      (o) =>
-        o.outfit_set === outfit_set &&
-        o.outfit_category === outfit_category &&
-        o.evolution === evolution
+      (o) => o.outfit_set === outfit_set && o.outfit_category === outfit_category
     )
     if (isObtained) {
       setObtainedOutfit((prev) =>
-        prev.filter(
-          (o) =>
-            !(
-              o.outfit_set === outfit_set &&
-              o.outfit_category === outfit_category &&
-              o.evolution === evolution
-            )
-        )
+        prev.filter((o) => !(o.outfit_set === outfit_set && o.outfit_category === outfit_category))
       )
     } else {
-      setObtainedOutfit((prev) => [...prev, { id: -1, outfit_set, outfit_category, evolution }])
+      setObtainedOutfit((prev) => [...prev, { id: -1, outfit_set, outfit_category }])
     }
     try {
-      await handleObtainedOutfit(outfit_set, outfit_category, evolution)
+      await handleObtainedOutfit(outfit_set, outfit_category)
     } catch (err) {
       console.error('Failed to toggle obtained outfit:', err)
       setObtainedOutfit(saved)
@@ -173,17 +159,14 @@ export default function OutfitDataProvider({
   }
 
   const handleBatchToggleObtained = async (
-    variants: Array<{ outfit_set: string; outfit_category: string; evolution: string | null }>,
+    variants: Array<{ outfit_set: string; outfit_category: string }>,
     targetObtained: boolean
   ) => {
     const saved = obtainedOutfit
     const matches = (
-      o: { outfit_set: string; outfit_category: string; evolution: string | null },
-      v: { outfit_set: string; outfit_category: string; evolution: string | null }
-    ) =>
-      o.outfit_set === v.outfit_set &&
-      o.outfit_category === v.outfit_category &&
-      o.evolution === v.evolution
+      o: { outfit_set: string; outfit_category: string },
+      v: { outfit_set: string; outfit_category: string }
+    ) => o.outfit_set === v.outfit_set && o.outfit_category === v.outfit_category
 
     if (targetObtained) {
       setObtainedOutfit((prev) => {
@@ -198,12 +181,7 @@ export default function OutfitDataProvider({
 
     for (const v of variants) {
       try {
-        // Client uses null for base variants; the DB stores the concrete {set}-base slug.
-        await handleObtainedOutfit(
-          v.outfit_set,
-          v.outfit_category,
-          v.evolution ?? `${v.outfit_set}-base`
-        )
+        await handleObtainedOutfit(v.outfit_set, v.outfit_category)
       } catch (err) {
         console.error('Failed to batch toggle obtained outfit:', err)
         setObtainedOutfit(saved)
@@ -252,8 +230,6 @@ export default function OutfitDataProvider({
           filter: `user_id=eq.${userId}`,
         },
         (payload) => {
-          // Base variants carry the concrete {set}-base slug end-to-end, so the
-          // incoming row matches placeholders directly without normalization.
           const incoming = payload.new as ObtainedOutfit
           setObtainedOutfit((prev) => {
             const withoutPlaceholder = prev.filter(
@@ -261,8 +237,7 @@ export default function OutfitDataProvider({
                 !(
                   o.id === -1 &&
                   o.outfit_set === incoming.outfit_set &&
-                  o.outfit_category === incoming.outfit_category &&
-                  o.evolution === incoming.evolution
+                  o.outfit_category === incoming.outfit_category
                 )
             )
             if (withoutPlaceholder.some((o) => o.id === incoming.id)) return prev

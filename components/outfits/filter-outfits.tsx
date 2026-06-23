@@ -7,7 +7,7 @@ import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
 import { GRID_CONTAINER, OUTFIT_GRID_COLUMNS_CONTAINER } from '@/lib/types/props'
-import { isEvolutionVisible, matchesObtainedFilter } from '@/hooks/outfit'
+import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
 import OutfitVariantCard from './outfit-variant-card'
 import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
@@ -123,33 +123,36 @@ export default function FilterOutfits() {
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => {
-      const orderBySlug = new Map(set.evolutions.map((e) => [e.slug, e.order]))
-      const baseEvoSlug = `${set.slug}-base`
+      const baseSlug = set.slug
+      // Map each state slug to its display order for the selectedEvolution filter.
+      const orderByStateSlug = new Map<string, number>([
+        [baseSlug, 1],
+        ...set.evolutions.map((e) => [e.slug, e.order] as [string, number]),
+      ])
       // Variants in scope for this set after the structural filters (evolution
       // visibility + evolution order). The group-level obtained state is judged
       // over these — the FULL group — so it reflects true set progress rather
       // than the category-filtered subset.
       const scopedVariants = set.outfit_variants
-        .filter((v) =>
-          isEvolutionVisible({
-            evolutionSlug: v.evolution,
-            baseSlug: baseEvoSlug,
-            glowupSlug: set.glowup_evolution,
+        .filter((v) => {
+          const evo = set.evolutions.find((e) => e.slug === v.outfit_set) ?? null
+          return isEvolutionVisible({
+            stateSlug: v.outfit_set,
+            baseSlug,
+            isGlowupState: !!evo && isGlowup(evo),
             hideEvolutions,
             hideGlowups,
           })
-        )
+        })
         .filter(
-          (v) =>
-            !selectedEvolution ||
-            (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
+          (v) => !selectedEvolution || orderByStateSlug.get(v.outfit_set) === selectedEvolution
         )
       // Group-level obtained filter: drop whole evolution groups whose full-group
       // state doesn't match the selected missing / obtained state.
       const inMatchingGroup =
         groupLevelObtained && selectedObtainedFilter
           ? scopedVariants.filter((v) => {
-              const group = scopedVariants.filter((g) => g.evolution === v.evolution)
+              const group = scopedVariants.filter((g) => g.outfit_set === v.outfit_set)
               return matchesObtainedFilter(group, selectedObtainedFilter)
             })
           : scopedVariants
@@ -235,18 +238,17 @@ export default function FilterOutfits() {
         <Box sx={GRID_CONTAINER}>
           <Box sx={OUTFIT_GRID_SX}>
             {filteredSets.flatMap((set) => {
-              // Base variants carry the concrete {set}-base slug end-to-end.
-              const baseEvoSlug = `${set.slug}-base`
+              const baseSlug = set.slug
               // Render the base set plus each evolution as its own card.
               return [null, ...set.evolutions].map((evolution) => {
-                const evolutionKey = evolution?.slug ?? baseEvoSlug
-                const variants = set.outfit_variants.filter((v) => v.evolution === evolutionKey)
+                const stateSlug = evolution?.slug ?? baseSlug
+                const variants = set.outfit_variants.filter((v) => v.outfit_set === stateSlug)
                 if (variants.length === 0) return null
                 const allObtained = variants.every((v) => v.obtained === true)
                 const obtained = variants.filter((v) => v.obtained === true).length
                 return (
                   <OutfitSetCard
-                    key={`${set.id}-${evolutionKey}`}
+                    key={`${set.id}-${stateSlug}`}
                     evolution={evolution}
                     isLoggedIn={isLoggedIn}
                     isMissingFilter={selectedObtainedFilter === 'missing'}
@@ -254,9 +256,9 @@ export default function FilterOutfits() {
                     set={set}
                     shouldHide={
                       !isEvolutionVisible({
-                        evolutionSlug: evolutionKey,
-                        baseSlug: baseEvoSlug,
-                        glowupSlug: set.glowup_evolution,
+                        stateSlug,
+                        baseSlug,
+                        isGlowupState: !!evolution && isGlowup(evolution),
                         hideEvolutions,
                         hideGlowups,
                       })
@@ -268,7 +270,6 @@ export default function FilterOutfits() {
                         .map((v) => ({
                           outfit_set: v.outfit_set!,
                           outfit_category: v.outfit_category!,
-                          evolution: v.evolution,
                         }))
                       onBatchToggleObtained(toToggle, !allObtained)
                     }}

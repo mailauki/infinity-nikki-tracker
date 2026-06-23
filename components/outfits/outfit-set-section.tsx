@@ -23,25 +23,23 @@ export default function OutfitSetSection({
   // group from context to show the true obtained-out-of-total percentage.
   const fullSet = outfitSets.find((s) => s.id === set.id) ?? set
 
-  // Base variants carry the concrete {set}-base slug end-to-end.
-  const baseEvoSlug = `${set.slug}-base`
+  // The base state slug is the set's own slug; each evolution has its own slug.
+  const baseSlug = set.slug
 
   // Render the base group plus each evolution group as its own header + cards.
   return [null, ...set.evolutions]
     .map((evolution) => {
-      const evolutionKey = evolution?.slug ?? baseEvoSlug
-      const inEvolution = (v: { evolution: string | null }) => v.evolution === evolutionKey
-      const variants = set.outfit_variants.filter(inEvolution)
+      const stateSlug = evolution?.slug ?? baseSlug
+      const inState = (v: { outfit_set: string }) => v.outfit_set === stateSlug
+      const variants = set.outfit_variants.filter(inState)
       if (variants.length === 0) return null
 
       const href = evolution
         ? `/outfits/${evolution.slug.replace('-', '?evolution=')}`
         : `/outfits/${set.slug}`
-      const title = evolution
-        ? `${set.title}: ${toTitle(evolution.subtitle ?? evolution.slug)}`
-        : set.title
+      const title = evolution ? `${set.title}: ${toTitle(evolution.title)}` : set.title
 
-      const groupVariants = fullSet.outfit_variants.filter(inEvolution)
+      const groupVariants = fullSet.outfit_variants.filter(inState)
       const obtained = groupVariants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
       const allObtained = groupVariants.length > 0 && obtained === groupVariants.length
 
@@ -53,13 +51,12 @@ export default function OutfitSetSection({
           .map((v) => ({
             outfit_set: v.outfit_set!,
             outfit_category: v.outfit_category!,
-            evolution: v.evolution,
           }))
         onBatchToggleObtained(toToggle, !allObtained)
       }
 
       return (
-        <Fragment key={evolutionKey}>
+        <Fragment key={stateSlug}>
           <Box sx={{ gridColumn: '1 / -1', mt: 1 }}>
             <Stack
               direction="row"

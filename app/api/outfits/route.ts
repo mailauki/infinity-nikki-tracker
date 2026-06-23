@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
+import { ObtainedOutfit, OutfitSet } from '@/lib/types/outfit'
 import { createOutfitSet, updateOutfitSet } from '@/hooks/outfit'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getEvolutions } from '@/hooks/data/evolutions'
@@ -12,10 +12,19 @@ export async function GET() {
   const { data: outfitSets, error } = await supabase
     .from('outfit_sets')
     .select(
-      `id, slug, title, description, rarity, style, label, label_2, ability, image_url, alt_image_url, glowup_evolution, seasons, season_category, updated_at, outfit_variants ( id, slug, outfit_set, evolution, outfit_category, image_url, alt_image_url, default ), outfit_set_carousel_images ( id, image_url, sort_order )`
+      `
+      id, slug, title, description, rarity, style, label, label_2, ability,
+      image_url, alt_image_url, "order", base_set, seasons, season_category, updated_at,
+      season:seasons!outfit_sets_seasons_fkey ( title ),
+      seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
+      outfit_variants ( id, slug, outfit_set, outfit_category, title, image_url, alt_image_url, default ),
+      outfit_set_carousel_images ( id, image_url, sort_order )
+      `
     )
+    .is('base_set', null)
     .order('id', { ascending: true })
     .order('id', { referencedTable: 'outfit_variants', ascending: true })
+    .order('sort_order', { referencedTable: 'outfit_set_carousel_images', ascending: true })
 
   if (error) {
     console.error('Failed to fetch outfit sets:', error)
@@ -29,7 +38,7 @@ export async function GET() {
       outfitSet: {
         ...outfitSet,
         carousel_images: outfitSet.outfit_set_carousel_images ?? [],
-      } as unknown as Omit<OutfitSet, 'created_at' | 'outfit_categories' | 'evolutions'>,
+      },
       outfitCategories,
       evolutions,
     })
@@ -45,9 +54,6 @@ export async function GET() {
 
   let obtainedOutfit: ObtainedOutfit[]
   try {
-    // Reads every page (PostgREST caps a single response at 1000 rows). Base
-    // variants carry the concrete {set}-base slug end-to-end, matching what
-    // createOutfitSet leaves on base variants — so obtained rows match directly.
     obtainedOutfit = await getObtainedOutfit(user.id)
   } catch (obtainedError) {
     const message =

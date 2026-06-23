@@ -2,12 +2,10 @@
 
 import { Box, Stack, ToggleButton, ToggleButtonGroup, Toolbar } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
+import { isGlowup, evolutionSortKey } from '@/hooks/outfit'
 import ProgressChip from '@/components/progress-chip'
 import OutfitVariantCard from './outfit-variant-card'
 import { useOutfitData } from './outfit-context'
-
-// Sentinel for the "Base" toggle, since the Base evolution has no slug.
-const BASE = 'base'
 
 export default function OutfitEvolutionVariants({
   outfitSet,
@@ -17,40 +15,38 @@ export default function OutfitEvolutionVariants({
 }: {
   outfitSet: OutfitSet
   isLoggedIn: boolean
-  // `null` selection means "show all evolutions".
+  // `null` selection means "show all evolutions (states)".
   selected: string | null
   onSelect: (next: string | null) => void
 }) {
   const { obtainedOutfit } = useOutfitData()
   const { evolutions, outfit_variants: rawVariants } = outfitSet
 
-  // Base variants carry the concrete {set}-base slug end-to-end.
-  const baseEvoSlug = `${outfitSet.slug}-base`
+  // Base state slug = the set's own slug; each evolution carries its own slug.
+  const baseSlug = outfitSet.slug
 
   const outfit_variants = rawVariants.map((v) => ({
     ...v,
     obtained: obtainedOutfit.some(
-      (o) =>
-        o.outfit_set === v.outfit_set &&
-        o.outfit_category === v.outfit_category &&
-        o.evolution === v.evolution
+      (o) => o.outfit_set === v.outfit_set && o.outfit_category === v.outfit_category
     ),
   }))
 
-  // Sort by evolution order, with the base evolution first.
-  const evolutionOrder = new Map(evolutions.map((e) => [e.slug, e.order]))
-  const orderOf = (slug: string | null) =>
-    slug === baseEvoSlug ? -Infinity : (evolutionOrder.get(slug ?? '') ?? Infinity)
+  // Sort variants by the display order of their state: base first, then
+  // evolutions in order (1, 2, …), glow-up last (order = 0 → Infinity key).
+  const stateOrder = new Map<string, number>([
+    [baseSlug, -Infinity],
+    ...evolutions.map((e) => [e.slug, evolutionSortKey(e)] as [string, number]),
+  ])
+  const orderOf = (stateSlug: string) => stateOrder.get(stateSlug) ?? Infinity
 
   const variants = (
     selected === null
       ? outfit_variants
-      : outfit_variants.filter((v) =>
-          selected === BASE ? v.evolution === baseEvoSlug : v.evolution === selected
-        )
+      : outfit_variants.filter((v) => v.outfit_set === (selected ?? baseSlug))
   )
     .slice()
-    .sort((a, b) => orderOf(a.evolution) - orderOf(b.evolution))
+    .sort((a, b) => orderOf(a.outfit_set) - orderOf(b.outfit_set))
 
   const obtained = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
   const total = variants.length
@@ -67,12 +63,12 @@ export default function OutfitEvolutionVariants({
           onChange={(_, next) => onSelect(next)}
         >
           {[null, ...evolutions].map((evolution) => {
-            const value = evolution?.slug ?? BASE
-            const isGlowup = !!evolution && evolution.slug === outfitSet.glowup_evolution
+            const value = evolution?.slug ?? baseSlug
+            const glowup = !!evolution && isGlowup(evolution)
             return (
               <ToggleButton key={value} value={value}>
-                {isGlowup && '✦ '}
-                {evolution?.subtitle ? evolution.subtitle : 'Base'}
+                {glowup && '✦ '}
+                {evolution ? evolution.title : 'Base'}
               </ToggleButton>
             )
           })}

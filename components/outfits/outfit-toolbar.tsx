@@ -4,7 +4,7 @@ import { Stack, Typography } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import FilterMenu from '@/components/filter/filter-menu'
 import { SortButton } from '@/components/navbar/appbar-actions'
-import { isEvolutionVisible, matchesObtainedFilter } from '@/hooks/outfit'
+import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
 import { useOutfitData } from './outfit-context'
 import { useOutfitImageMode } from './outfit-image-mode-context'
 
@@ -34,32 +34,34 @@ export default function OutfitToolBar({
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .map((set) => {
-      const orderBySlug = new Map(set.evolutions.map((e) => [e.slug, e.order]))
-      const baseEvoSlug = `${set.slug}-base`
+      const baseSlug = set.slug
+      const orderByStateSlug = new Map<string, number>([
+        [baseSlug, 1],
+        ...set.evolutions.map((e) => [e.slug, e.order] as [string, number]),
+      ])
       // Group-level obtained state is judged over the FULL group (after only the
       // structural filters), so the category filter narrows display without
       // affecting completion — mirrors filter-outfits.
       const scoped = baseEvolutionOnly
-        ? set.outfit_variants.filter((v) => v.evolution === baseEvoSlug)
+        ? set.outfit_variants.filter((v) => v.outfit_set === baseSlug)
         : set.outfit_variants
-            .filter((v) =>
-              isEvolutionVisible({
-                evolutionSlug: v.evolution,
-                baseSlug: baseEvoSlug,
-                glowupSlug: set.glowup_evolution,
+            .filter((v) => {
+              const evo = set.evolutions.find((e) => e.slug === v.outfit_set) ?? null
+              return isEvolutionVisible({
+                stateSlug: v.outfit_set,
+                baseSlug,
+                isGlowupState: !!evo && isGlowup(evo),
                 hideEvolutions,
                 hideGlowups,
               })
-            )
+            })
             .filter(
-              (v) =>
-                !selectedEvolution ||
-                (!!v.evolution && orderBySlug.get(v.evolution) === selectedEvolution)
+              (v) => !selectedEvolution || orderByStateSlug.get(v.outfit_set) === selectedEvolution
             )
       const inMatchingGroup =
         groupLevelObtained && selectedObtainedFilter
           ? scoped.filter((v) => {
-              const group = scoped.filter((g) => g.evolution === v.evolution)
+              const group = scoped.filter((g) => g.outfit_set === v.outfit_set)
               return matchesObtainedFilter(group, selectedObtainedFilter)
             })
           : scoped
@@ -90,7 +92,7 @@ export default function OutfitToolBar({
     if (groupLevelObtained && density === 'compact') return filtered.length
     if (density === 'standard') {
       return filtered.reduce((sum, set) => {
-        const groupKeys = new Set(set.outfit_variants.map((v) => v.evolution))
+        const groupKeys = new Set(set.outfit_variants.map((v) => v.outfit_set))
         return sum + groupKeys.size
       }, 0)
     }

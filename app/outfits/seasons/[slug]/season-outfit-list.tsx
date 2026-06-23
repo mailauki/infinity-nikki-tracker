@@ -2,7 +2,7 @@
 
 import { List, ListSubheader, Typography } from '@mui/material'
 import { OutfitSet, SeasonCategory } from '@/lib/types/outfit'
-import { isEvolutionVisible } from '@/hooks/outfit'
+import { isEvolutionVisible, isGlowup } from '@/hooks/outfit'
 import { useSeasonFilter } from './season-filter-context'
 import OutfitSetListItem, { OutfitSetListEntry } from './outfit-set-item'
 
@@ -16,28 +16,28 @@ export function expandSet(
   hideEvolutions: boolean,
   hideGlowups: boolean
 ): OutfitSetListEntry[] {
-  const baseEvoSlug = `${set.slug}-base`
+  const baseSlug = set.slug
 
   const entries: OutfitSetListEntry[] = [
     {
-      key: baseEvoSlug,
+      key: baseSlug,
       set,
       evolution: null,
-      variants: set.outfit_variants.filter((v) => v.evolution === baseEvoSlug),
+      variants: set.outfit_variants.filter((v) => v.outfit_set === baseSlug),
     },
   ]
 
   for (const evolution of set.evolutions) {
     const visible = isEvolutionVisible({
-      evolutionSlug: evolution.slug,
-      baseSlug: baseEvoSlug,
-      glowupSlug: set.glowup_evolution,
+      stateSlug: evolution.slug,
+      baseSlug,
+      isGlowupState: isGlowup(evolution),
       hideEvolutions,
       hideGlowups,
     })
     if (!visible) continue
 
-    const variants = set.outfit_variants.filter((v) => v.evolution === evolution.slug)
+    const variants = set.outfit_variants.filter((v) => v.outfit_set === evolution.slug)
     if (variants.length === 0) continue
 
     entries.push({
@@ -45,7 +45,7 @@ export function expandSet(
       set,
       evolution,
       variants,
-      isGlowup: set.glowup_evolution === evolution.slug,
+      isGlowup: isGlowup(evolution),
     })
   }
 
