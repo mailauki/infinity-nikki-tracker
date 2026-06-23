@@ -292,88 +292,6 @@ export type Database = {
           },
         ]
       }
-      evolution_carousel_images: {
-        Row: {
-          created_at: string | null
-          evolution: string
-          id: number
-          image_url: string
-          sort_order: number
-        }
-        Insert: {
-          created_at?: string | null
-          evolution: string
-          id?: number
-          image_url: string
-          sort_order?: number
-        }
-        Update: {
-          created_at?: string | null
-          evolution?: string
-          id?: number
-          image_url?: string
-          sort_order?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "evolution_carousel_images_evolution_fkey"
-            columns: ["evolution"]
-            isOneToOne: false
-            referencedRelation: "evolutions"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
-      evolutions: {
-        Row: {
-          alt_image_url: string | null
-          created_at: string
-          description: string | null
-          id: number
-          image_url: string | null
-          order: number
-          outfit_set: string
-          slug: string
-          subtitle: string | null
-          title: string
-          updated_at: string | null
-        }
-        Insert: {
-          alt_image_url?: string | null
-          created_at?: string
-          description?: string | null
-          id?: number
-          image_url?: string | null
-          order: number
-          outfit_set: string
-          slug: string
-          subtitle?: string | null
-          title: string
-          updated_at?: string | null
-        }
-        Update: {
-          alt_image_url?: string | null
-          created_at?: string
-          description?: string | null
-          id?: number
-          image_url?: string | null
-          order?: number
-          outfit_set?: string
-          slug?: string
-          subtitle?: string | null
-          title?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "evolutions_outfit_set_fkey"
-            columns: ["outfit_set"]
-            isOneToOne: false
-            referencedRelation: "outfit_sets"
-            referencedColumns: ["slug"]
-          },
-        ]
-      }
       labels: {
         Row: {
           created_at: string
@@ -468,7 +386,6 @@ export type Database = {
       obtained_outfit: {
         Row: {
           created_at: string
-          evolution: string | null
           id: number
           outfit_category: string
           outfit_set: string
@@ -476,7 +393,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          evolution?: string | null
           id?: number
           outfit_category: string
           outfit_set: string
@@ -484,7 +400,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          evolution?: string | null
           id?: number
           outfit_category?: string
           outfit_set?: string
@@ -496,13 +411,6 @@ export type Database = {
             columns: ["outfit_category"]
             isOneToOne: false
             referencedRelation: "outfit_categories"
-            referencedColumns: ["slug"]
-          },
-          {
-            foreignKeyName: "obtained_outfit_evolution_fkey"
-            columns: ["evolution"]
-            isOneToOne: false
-            referencedRelation: "evolutions"
             referencedColumns: ["slug"]
           },
           {
@@ -577,13 +485,14 @@ export type Database = {
         Row: {
           ability: string | null
           alt_image_url: string | null
+          base_set: string | null
           created_at: string | null
           description: string | null
-          glowup_evolution: string | null
           id: number
           image_url: string | null
           label: string | null
           label_2: string | null
+          order: number
           rarity: number
           season_category: string | null
           seasons: string | null
@@ -595,13 +504,14 @@ export type Database = {
         Insert: {
           ability?: string | null
           alt_image_url?: string | null
+          base_set?: string | null
           created_at?: string | null
           description?: string | null
-          glowup_evolution?: string | null
           id?: number
           image_url?: string | null
           label?: string | null
           label_2?: string | null
+          order: number
           rarity: number
           season_category?: string | null
           seasons?: string | null
@@ -613,13 +523,14 @@ export type Database = {
         Update: {
           ability?: string | null
           alt_image_url?: string | null
+          base_set?: string | null
           created_at?: string | null
           description?: string | null
-          glowup_evolution?: string | null
           id?: number
           image_url?: string | null
           label?: string | null
           label_2?: string | null
+          order?: number
           rarity?: number
           season_category?: string | null
           seasons?: string | null
@@ -637,10 +548,10 @@ export type Database = {
             referencedColumns: ["slug"]
           },
           {
-            foreignKeyName: "outfit_sets_glowup_evolution_fkey"
-            columns: ["glowup_evolution"]
+            foreignKeyName: "outfit_sets_base_set_fkey"
+            columns: ["base_set"]
             isOneToOne: false
-            referencedRelation: "evolutions"
+            referencedRelation: "outfit_sets"
             referencedColumns: ["slug"]
           },
           {
@@ -686,7 +597,6 @@ export type Database = {
           created_at: string | null
           default: boolean
           description: string | null
-          evolution: string | null
           id: number
           image_url: string | null
           outfit_category: string | null
@@ -700,7 +610,6 @@ export type Database = {
           created_at?: string | null
           default?: boolean
           description?: string | null
-          evolution?: string | null
           id?: number
           image_url?: string | null
           outfit_category?: string | null
@@ -714,7 +623,6 @@ export type Database = {
           created_at?: string | null
           default?: boolean
           description?: string | null
-          evolution?: string | null
           id?: number
           image_url?: string | null
           outfit_category?: string | null
@@ -724,13 +632,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "outfit_variants_evolution_fkey"
-            columns: ["evolution"]
-            isOneToOne: false
-            referencedRelation: "evolutions"
-            referencedColumns: ["slug"]
-          },
           {
             foreignKeyName: "outfit_variants_outfit_category_fkey"
             columns: ["outfit_category"]
@@ -1016,11 +917,7 @@ export type Database = {
         Returns: undefined
       }
       toggle_obtained_outfit: {
-        Args: {
-          p_evolution: string
-          p_outfit_category: string
-          p_outfit_set: string
-        }
+        Args: { p_outfit_category: string; p_outfit_set: string }
         Returns: undefined
       }
     }
