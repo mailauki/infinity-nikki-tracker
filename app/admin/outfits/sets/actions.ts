@@ -81,6 +81,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
     }
 
     // Set the glow-up sibling's order to 0 after all sibling rows exist.
+    // glowupEvolutionOrder is a 1-based UI draft order; null/0 both mean "none".
     if (glowupEvolutionOrder) {
       const glowupDraft = evolutionDrafts.find((d) => d.order === glowupEvolutionOrder)
       if (glowupDraft) {

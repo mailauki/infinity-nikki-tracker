@@ -78,10 +78,12 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
     .order('id', { ascending: true })
 
   // Build evolution drafts from sibling rows (base_set = slug).
-  // The glow-up sibling has order = 0 in the DB (a marker, not a position).
-  // Reconstruct 1-based sequential UI orders by sorting siblings by slug (stable).
+  // The glow-up sibling has order = 0 in the DB (a marker, not a position), and
+  // displays last. Sort siblings by their saved DB order (0 => last) so the form
+  // shows them in the sequence the admin set, then reassign 1-based UI orders.
   const glowupEvo = evolutions.find((e) => e.order === 0)
-  const sortedEvos = [...evolutions].sort((a, b) => a.slug.localeCompare(b.slug))
+  const orderKey = (o: number) => (o === 0 ? Infinity : o)
+  const sortedEvos = [...evolutions].sort((a, b) => orderKey(a.order) - orderKey(b.order))
   const initialDrafts: EvolutionDraft[] = sortedEvos.map((e, i) => ({
     subtitle: e.title,
     order: i + 1,
