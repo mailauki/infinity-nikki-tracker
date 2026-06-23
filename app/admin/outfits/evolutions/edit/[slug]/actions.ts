@@ -2,13 +2,12 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { toSlug } from '@/lib/utils'
 import { getUserRole } from '@/hooks/user'
 import { navLinksData } from '@/lib/nav-links'
 
 export async function editEvolution(
   currentSlug: string,
-  outfitSet: string,
+  baseSet: string,
   backUrl: string,
   _: unknown,
   formData: FormData
@@ -18,18 +17,16 @@ export async function editEvolution(
 
   const supabase = await createClient()
 
-  const subtitle = (formData.get('subtitle') as string | null)?.trim() ?? ''
   const description = (formData.get('description') as string | null)?.trim() || null
-  const newSlug = `${outfitSet}-${toSlug(subtitle)}`
 
   const { error } = await supabase
-    .from('evolutions')
-    .update({ subtitle, description, slug: newSlug })
+    .from('outfit_sets')
+    .update({ description })
     .eq('slug', currentSlug)
 
   if (error) return { error: error.message }
 
-  // Update variant images from hidden inputs (ON UPDATE CASCADE already updated variant slugs)
+  // Update variant images from hidden inputs
   const variantImageEntries = [...formData.entries()].filter(
     ([key]) => key.startsWith('variant_image_') && !key.startsWith('variant_alt_image_')
   )
@@ -86,28 +83,26 @@ export async function editEvolution(
       .select(
         'id, slug, outfit_category, image_url, alt_image_url, title, description, default, updated_at'
       )
-      .eq('evolution', newSlug)
+      .eq('outfit_set', currentSlug)
       .order('id', { ascending: true })
 
-    return { savedTitle: subtitle, slug: newSlug, variants: variants ?? [] }
+    return { savedTitle: currentSlug, slug: currentSlug, variants: variants ?? [] }
   }
 
   if (formData.get('update_next') === 'true') {
     // Evolutions share a title across all stages of a set (title = set name), so
-    // "next" walks by (title, order) to match the list view — a single .gt()
-    // can't express that compound cursor, so order the full list and take the
-    // row after the just-saved one (by its post-save slug). Exclude {set}-base
-    // rows: the list hides them (their data lives on the outfit set form), so
-    // navigation must skip them too.
+    // "next" walks by (base_set, order) to match the list view — order the full
+    // list and take the row after the just-saved one. All rows here have
+    // base_set IS NOT NULL since we filter to evolution rows only.
     const { data: ordered } = await supabase
-      .from('evolutions')
-      .select('slug, title, order')
-      .neq('subtitle', 'base')
-      .order('title', { ascending: true })
+      .from('outfit_sets')
+      .select('slug, base_set, "order"')
+      .not('base_set', 'is', null)
+      .order('base_set', { ascending: true })
       .order('order', { ascending: true })
 
     const rows = ordered ?? []
-    const currentIndex = rows.findIndex((e) => e.slug === newSlug)
+    const currentIndex = rows.findIndex((e) => e.slug === currentSlug)
     const next = currentIndex >= 0 ? rows[currentIndex + 1] : undefined
 
     if (next?.slug) redirect(`${navLinksData.admin.outfits.evolutions.edit}/${next.slug}`)
