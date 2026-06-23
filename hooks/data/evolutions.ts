@@ -2,24 +2,32 @@ import { cache } from 'react'
 import { Evolution } from '@/lib/types/outfit'
 import { createClient } from '@/lib/supabase/server'
 
+// Columns shared by all evolution queries (outfit_sets rows with base_set IS NOT NULL).
+// "order" is a reserved word in Postgres — always quoted in select strings.
 const EVOLUTION_SELECT = `
-  id, slug, title, subtitle, description, order, outfit_set, image_url, alt_image_url,
-  evolution_carousel_images ( id, image_url, sort_order )
+  id, slug, title, "order", base_set, description, image_url, alt_image_url,
+  style, label, label_2, ability, seasons, season_category, rarity, updated_at,
+  season:seasons!outfit_sets_seasons_fkey ( title ),
+  seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
+  outfit_set_carousel_images ( id, image_url, sort_order )
 `
 
 export const getEvolutions = cache(async () => {
   const supabase = await createClient()
 
   const { data: evolutions } = await supabase
-    .from('evolutions')
+    .from('outfit_sets')
     .select(EVOLUTION_SELECT)
-    .order('id', { ascending: true })
-    .order('sort_order', { referencedTable: 'evolution_carousel_images', ascending: true })
+    .not('base_set', 'is', null)
+    .order('order', { ascending: true })
 
   return (evolutions ?? []).map((e) => ({
     ...e,
-    carousel_images: e.evolution_carousel_images ?? [],
-  })) as Evolution[]
+    outfit_variants: [],
+    outfit_categories: [],
+    evolutions: [],
+    carousel_images: e.outfit_set_carousel_images ?? [],
+  })) as unknown as Evolution[]
 })
 
 // Admin-only: embeds each evolution's variants for the evolutions admin table's
@@ -29,35 +37,41 @@ export const getEvolutionsWithVariants = cache(async () => {
   const supabase = await createClient()
 
   const { data: evolutions } = await supabase
-    .from('evolutions')
+    .from('outfit_sets')
     .select(
       `
       ${EVOLUTION_SELECT},
-      outfit_variants ( id, slug, outfit_set, evolution, outfit_category, title, image_url, alt_image_url, default )
+      outfit_variants ( id, slug, outfit_set, outfit_category, title, image_url, alt_image_url, default )
     `
     )
-    .order('id', { ascending: true })
-    .order('sort_order', { referencedTable: 'evolution_carousel_images', ascending: true })
+    .not('base_set', 'is', null)
+    .order('order', { ascending: true })
+    .order('sort_order', { referencedTable: 'outfit_set_carousel_images', ascending: true })
 
   return (evolutions ?? []).map((e) => ({
     ...e,
-    carousel_images: e.evolution_carousel_images ?? [],
+    outfit_categories: [],
+    evolutions: [],
+    carousel_images: e.outfit_set_carousel_images ?? [],
     outfit_variants: e.outfit_variants ?? [],
-  })) as Evolution[]
+  })) as unknown as Evolution[]
 })
 
 export const getEvolutionsBySet = cache(async (outfitSetSlug: string) => {
   const supabase = await createClient()
 
   const { data: evolutions } = await supabase
-    .from('evolutions')
+    .from('outfit_sets')
     .select(EVOLUTION_SELECT)
-    .eq('outfit_set', outfitSetSlug)
-    .order('id', { ascending: true })
-    .order('sort_order', { referencedTable: 'evolution_carousel_images', ascending: true })
+    .eq('base_set', outfitSetSlug)
+    .order('order', { ascending: true })
+    .order('sort_order', { referencedTable: 'outfit_set_carousel_images', ascending: true })
 
   return (evolutions ?? []).map((e) => ({
     ...e,
-    carousel_images: e.evolution_carousel_images ?? [],
-  })) as Evolution[]
+    outfit_variants: [],
+    outfit_categories: [],
+    evolutions: [],
+    carousel_images: e.outfit_set_carousel_images ?? [],
+  })) as unknown as Evolution[]
 })
