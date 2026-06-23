@@ -45,9 +45,14 @@ A row is a top-level **set** iff `base_set IS NULL`. The `/outfits` grid, the ad
 
 ### Constraints
 
+- **Drop `outfit_sets_title_key` (unique on `title`).** Evolution subtitles repeat across sets (e.g. "New Bud"), so a merged table cannot keep `title` globally unique. Identity stays on `slug` (still unique). This mirrors `20260603000001`, which dropped the same constraint on the `evolutions` table. (Verified: no FK references `outfit_sets(title)` and no app code looks sets up by title.)
 - `unique (base_set, "order") where base_set is not null` — one row per (set, position); enforces a single glow-up (`order = 0`) and single base linkage per evolution position.
 - `base_set` self-FK `on update cascade`.
 - Existing lookup FKs (`style`, `label`, `ability`, `seasons`, `season_category`, …) now also apply to evolution/glow-up rows, which carry copied values that already satisfy them.
+
+### Trigger column dependency
+
+The existing `trg_enforce_base_variant_default` trigger fires `before insert or update of "evolution", "default"`, so it has a column dependency on `outfit_variants.evolution`. The migration must **drop the trigger before dropping the `evolution` column**, then recreate it (firing on `outfit_set`/`default`) after the order-based function is in place.
 
 ## Reference re-pointing (FKs)
 
@@ -63,12 +68,13 @@ Today a variant has both `outfit_set` (→ set) and `evolution` (nullable, → e
 
 ### `obtained_outfit` — collapse two FK columns into one
 
-Today: `(user_id, outfit_set, outfit_category, evolution-nullable)` with two partial unique indexes (`…_with_evo`, `…_no_evo`). Collapse so `outfit_set` holds the **state slug**:
+Today: `(user_id, outfit_set, outfit_category, evolution-nullable)` with two partial unique indexes (`…_with_evo`, `…_no_evo`). **Data reality (verified against production):** `evolution` is never null — base obtained rows store `evolution = '{set}-base'` (4535 rows) and evolution rows store `evolution = '{set}-{sub}'` (3028 rows); zero rows have `evolution IS NULL`. Collapse so `outfit_set` holds the **state slug**:
 
-- base obtained (`evolution IS NULL`): `outfit_set` already `= {set}` — unchanged.
-- evolution obtained (`evolution = '{set}-{sub}'`): set `outfit_set = evolution`.
-- **Drop `obtained_outfit.evolution`**, drop both partial indexes, add `unique (user_id, outfit_set, outfit_category)`.
+- For every row: `outfit_set = evolution`, but **strip the `-base` suffix for base rows** so they land on the clean `{set}` slug (base rows keep clean slugs). Do this in one statement (a `CASE`), not two passes — an intermediate `{set}-base` value would violate the `outfit_set` FK.
+- **Drop `obtained_outfit.evolution`**, drop both partial indexes, add `unique (user_id, outfit_set, outfit_category)`. (Verified: zero duplicate `(user_id, outfit_set, outfit_category)` groups after collapse.)
 - `toggle_obtained_outfit(p_outfit_set, p_outfit_category)` — drop the `p_evolution` parameter.
+
+`outfit_variants` collapses identically: `outfit_set = evolution`, stripping `-base` for base variants, in one statement.
 
 ### Carousel — merge into one table
 
