@@ -233,7 +233,7 @@ export default function FilterMenu() {
     const hasActiveFilters =
       selectedOutfitSet ||
       selectedOutfitCategory.length > 0 ||
-      selectedEvolution ||
+      selectedEvolution !== null ||
       selectedObtainedFilter ||
       selectedRarity ||
       !outfitGroupBySet ||

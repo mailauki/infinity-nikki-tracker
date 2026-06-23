@@ -82,9 +82,9 @@ export default function OutfitDataProvider({
           selectedOutfitCategory: prefs.outfit_category_filter
             ? prefs.outfit_category_filter.split(',').filter(Boolean)
             : [],
-          selectedEvolution: prefs.outfit_evolution_filter
-            ? Number(prefs.outfit_evolution_filter)
-            : null,
+          // Stored as a string ('0' for glow-up), so check for null, not falsiness.
+          selectedEvolution:
+            prefs.outfit_evolution_filter !== null ? Number(prefs.outfit_evolution_filter) : null,
           selectedRarity: prefs.outfit_rarity_filter ? Number(prefs.outfit_rarity_filter) : null,
           // 'in-progress' is no longer a selectable filter; normalize any legacy
           // persisted value to null so it doesn't apply an invisible filter.
@@ -203,9 +203,9 @@ export default function OutfitDataProvider({
         outfit_category_filter: filters.selectedOutfitCategory.length
           ? filters.selectedOutfitCategory.join(',')
           : null,
-        outfit_evolution_filter: filters.selectedEvolution
-          ? String(filters.selectedEvolution)
-          : null,
+        // selectedEvolution can be 0 (glow-up), so persist on null — not falsiness.
+        outfit_evolution_filter:
+          filters.selectedEvolution !== null ? String(filters.selectedEvolution) : null,
         outfit_rarity_filter: filters.selectedRarity ? String(filters.selectedRarity) : null,
         outfit_obtained_filter: filters.selectedObtainedFilter,
       })
