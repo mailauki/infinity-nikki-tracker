@@ -30,7 +30,7 @@ export default function OutfitSetList({
           image_url={row.image_url ?? undefined}
           list="admin/outfits/sets"
           slug={row.slug ?? undefined}
-          subheader={row.evolutions?.map((e) => e.subtitle).join(', ') || '—'}
+          subheader={row.evolutions?.map((e) => e.title).join(', ') || '—'}
           title={row.title}
           updated_at={row.updated_at}
         />

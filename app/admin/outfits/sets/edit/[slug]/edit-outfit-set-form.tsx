@@ -41,7 +41,6 @@ type OutfitVariantRow = Pick<
   | 'slug'
   | 'outfit_set'
   | 'outfit_category'
-  | 'evolution'
   | 'image_url'
   | 'alt_image_url'
   | 'title'
@@ -110,9 +109,9 @@ export default function EditOutfitSetForm({
   const [setImage, setSetImage] = useState<string | null>(outfitSet.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(outfitSet.alt_image_url ?? null)
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>(initialCarouselImages)
-  // Base variants use the {set_slug}-base evolution slug (never null) after migration.
-  const baseEvoSlug = `${outfitSet.slug}-base`
-  const isBaseVariant = (v: OutfitVariantRow) => v.evolution === baseEvoSlug || v.default === true
+  // Base variants are those whose outfit_set matches the base slug (order = 1, base_set = null).
+  const baseSlug = outfitSet.slug ?? ''
+  const isBaseVariant = (v: OutfitVariantRow) => v.outfit_set === baseSlug
   const [variantRows, setVariantRows] = useState<OutfitVariantRow[]>(
     initialVariants.filter(isBaseVariant)
   )

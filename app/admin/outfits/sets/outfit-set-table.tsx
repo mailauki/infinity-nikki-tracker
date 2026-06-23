@@ -45,7 +45,7 @@ interface OutfitSetTableProps {
   outfitCategories: OutfitCategory[]
 }
 
-const LOCKED_FIELDS = ['slug', 'variant_images', 'evolutions', 'glowup_evolution', 'updated_at']
+const LOCKED_FIELDS = ['slug', 'variant_images', 'evolutions', 'glowup', 'updated_at']
 
 function LockedCell({ children, href }: { children: React.ReactNode; href: string }) {
   return (
@@ -208,7 +208,7 @@ export function OutfitSetTable({
           outfitCategories,
           getVariant: (row, categorySlug) =>
             row.outfit_variants.find(
-              (v) => v.evolution === `${row.slug}-base` && v.outfit_category === categorySlug
+              (v) => v.outfit_set === row.slug && v.outfit_category === categorySlug
             ) ?? null,
           onUpload: (row, variantId, column, url) =>
             setRows((prev) =>
@@ -339,7 +339,7 @@ export function OutfitSetTable({
           <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', py: 0.5 }}>
             {row.evolutions?.length
               ? row.evolutions.map((e: Evolution) => (
-                  <Chip key={e.slug} label={e.subtitle} size="small" />
+                  <Chip key={e.slug} label={e.title} size="small" />
                 ))
               : '—'}
           </Box>
@@ -352,13 +352,13 @@ export function OutfitSetTable({
       },
     },
     {
-      field: 'glowup_evolution',
+      field: 'glowup',
       headerName: 'Glow-Up',
       width: 160,
       sortable: false,
-      renderCell: ({ row, value }: GridRenderCellParams<Row>) => {
-        const evo = row.evolutions?.find((e: Evolution) => e.slug === value)
-        const content = <span>{evo ? evo.subtitle : '—'}</span>
+      renderCell: ({ row }: GridRenderCellParams<Row>) => {
+        const evo = row.evolutions?.find((e: Evolution) => e.order === 0)
+        const content = <span>{evo ? evo.title : '—'}</span>
         return isEditing(row.id) ? <LockedCell href={editHref(row)}>{content}</LockedCell> : content
       },
     },
