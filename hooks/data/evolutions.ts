@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 // "order" is a reserved word in Postgres — always quoted in select strings.
 const EVOLUTION_SELECT = `
   id, slug, title, "order", base_set, description, image_url, alt_image_url,
-  style, label, label_2, ability, seasons, season_category, rarity, updated_at,
+  style, label, label_2, ability, seasons, season_category, rarity, created_at, updated_at,
   season:seasons!outfit_sets_seasons_fkey ( title ),
   seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
   outfit_set_carousel_images ( id, image_url, sort_order )
