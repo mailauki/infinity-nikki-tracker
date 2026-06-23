@@ -1,6 +1,6 @@
 'use client'
 
-import { Looks3, Looks4, Looks5, LooksOne, LooksTwo } from '@mui/icons-material'
+import { AutoAwesome, Looks3, Looks4, Looks5, LooksOne, LooksTwo } from '@mui/icons-material'
 import { FormControl, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
 
 const EVOLUTION_ORDERS = [
@@ -23,6 +23,8 @@ export default function EvolutionOrderToggle({
   disabled?: boolean
 }) {
   const orders = EVOLUTION_ORDERS.filter((e) => availableOrders.includes(e.order))
+  // Glow-up evolutions are stored as order 0; show the toggle only when some set has one.
+  const hasGlowup = availableOrders.includes(0)
 
   return (
     <FormControl>
@@ -41,6 +43,13 @@ export default function EvolutionOrderToggle({
             </ToggleButton>
           </Tooltip>
         ))}
+        {hasGlowup && (
+          <Tooltip title="Glow-up">
+            <ToggleButton aria-label="Glow-up" value={0}>
+              <AutoAwesome />
+            </ToggleButton>
+          </Tooltip>
+        )}
       </ToggleButtonGroup>
     </FormControl>
   )
