@@ -23,7 +23,7 @@ export default function CarouselImageUpload({
   onChange,
 }: {
   slug: string
-  table: 'outfit_set_carousel_images' | 'evolution_carousel_images'
+  table: 'outfit_set_carousel_images'
   images: CarouselImage[]
   onChange: (images: CarouselImage[]) => void
 }) {
@@ -48,26 +48,14 @@ export default function CarouselImageUpload({
       const { data } = supabase.storage.from('images').getPublicUrl(filePath)
       const nextOrder = images.length > 0 ? Math.max(...images.map((i) => i.sort_order)) + 1 : 0
 
-      let inserted: CarouselImage
-      if (table === 'outfit_set_carousel_images') {
-        const { data: row, error } = await supabase
-          .from('outfit_set_carousel_images')
-          .insert({ outfit_set: slug, image_url: data.publicUrl, sort_order: nextOrder })
-          .select('id, image_url, sort_order')
-          .single()
-        if (error) throw error
-        inserted = row
-      } else {
-        const { data: row, error } = await supabase
-          .from('evolution_carousel_images')
-          .insert({ evolution: slug, image_url: data.publicUrl, sort_order: nextOrder })
-          .select('id, image_url, sort_order')
-          .single()
-        if (error) throw error
-        inserted = row
-      }
+      const { data: row, error } = await supabase
+        .from('outfit_set_carousel_images')
+        .insert({ outfit_set: slug, image_url: data.publicUrl, sort_order: nextOrder })
+        .select('id, image_url, sort_order')
+        .single()
+      if (error) throw error
 
-      onChange([...images, inserted])
+      onChange([...images, row])
     } catch {
       enqueueSnackbar('Error uploading gallery image!', { variant: 'error' })
     } finally {

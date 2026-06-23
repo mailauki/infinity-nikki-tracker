@@ -12,15 +12,8 @@ import { Tables } from '@/lib/types/supabase'
 import { toTitle } from '@/lib/utils'
 
 type EvolutionRow = Pick<
-  Tables<'evolutions'>,
-  | 'slug'
-  | 'title'
-  | 'subtitle'
-  | 'description'
-  | 'order'
-  | 'outfit_set'
-  | 'image_url'
-  | 'alt_image_url'
+  Tables<'outfit_sets'>,
+  'slug' | 'title' | 'description' | 'order' | 'base_set' | 'image_url' | 'alt_image_url'
 >
 
 type VariantRow = Pick<
@@ -50,7 +43,6 @@ export default function EditEvolutionForm({
   back: string
 }) {
   const { setFormConfig } = useFormConfig()
-  const [subtitle, setSubtitle] = useState(evolution.subtitle ?? '')
   const [description, setDescription] = useState(evolution.description ?? '')
   const [imageUrl, setImageUrl] = useState<string | null>(evolution.image_url ?? null)
   const [altImageUrl, setAltImageUrl] = useState<string | null>(evolution.alt_image_url ?? null)
@@ -70,7 +62,7 @@ export default function EditEvolutionForm({
     Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.description ?? '']))
   )
 
-  const boundAction = editEvolution.bind(null, currentSlug, evolution.outfit_set, back)
+  const boundAction = editEvolution.bind(null, currentSlug, evolution.base_set ?? '', back)
   const [state, action, pending] = useActionState(boundAction, null)
 
   useEffect(() => {
@@ -115,15 +107,7 @@ export default function EditEvolutionForm({
         {state?.error && <Alert severity="error">{state.error}</Alert>}
 
         <TextField disabled label="Set Title" value={evolution.title} />
-
-        <TextField
-          required
-          label="Subtitle"
-          name="subtitle"
-          slotProps={{ htmlInput: { maxLength: 100 } }}
-          value={subtitle}
-          onChange={(e) => setSubtitle(e.target.value)}
-        />
+        <TextField disabled label="Base Set" value={evolution.base_set ?? ''} />
 
         <TextField
           multiline
@@ -139,7 +123,7 @@ export default function EditEvolutionForm({
           <CarouselImageUpload
             images={carouselImages}
             slug={currentSlug}
-            table="evolution_carousel_images"
+            table="outfit_set_carousel_images"
             onChange={setCarouselImages}
           />
         </Stack>
@@ -151,7 +135,7 @@ export default function EditEvolutionForm({
               caption="Default"
               size="lg"
               slug={evolution.slug}
-              table="evolutions"
+              table="outfit_sets"
               url={imageUrl}
               onUpload={(url) => setImageUrl(url)}
             />
@@ -160,7 +144,7 @@ export default function EditEvolutionForm({
               column="alt_image_url"
               size="lg"
               slug={evolution.slug}
-              table="evolutions"
+              table="outfit_sets"
               url={altImageUrl}
               onUpload={(url) => setAltImageUrl(url)}
             />

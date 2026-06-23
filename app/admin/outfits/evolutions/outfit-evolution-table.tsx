@@ -60,7 +60,7 @@ export function OutfitEvolutionTable({
             column="image_url"
             size="sm"
             slug={row.slug}
-            table="evolutions"
+            table="outfit_sets"
             url={row.image_url ?? null}
             onUpload={(url) =>
               setRows((prev) =>
@@ -82,7 +82,7 @@ export function OutfitEvolutionTable({
             column="alt_image_url"
             size="sm"
             slug={row.slug}
-            table="evolutions"
+            table="outfit_sets"
             url={row.alt_image_url ?? null}
             onUpload={(url) =>
               setRows((prev) =>
@@ -117,17 +117,11 @@ export function OutfitEvolutionTable({
       : []),
     {
       field: 'title',
-      headerName: 'Set Title',
+      headerName: 'Title',
       width: 200,
       renderCell: ({ value }: GridRenderCellParams<Row>) => (
         <span style={{ fontWeight: 500 }}>{value}</span>
       ),
-    },
-    {
-      field: 'subtitle',
-      headerName: 'Subtitle',
-      width: 220,
-      valueFormatter: (value: string | null) => value ?? '—',
     },
     {
       field: 'order',
@@ -143,8 +137,8 @@ export function OutfitEvolutionTable({
       valueFormatter: (value: string | null) => value ?? '—',
     },
     {
-      field: 'outfit_set',
-      headerName: 'Outfit Set',
+      field: 'base_set',
+      headerName: 'Base Set',
       width: 180,
       renderCell: ({ value }: GridRenderCellParams<Row>) => (
         <span style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{value}</span>

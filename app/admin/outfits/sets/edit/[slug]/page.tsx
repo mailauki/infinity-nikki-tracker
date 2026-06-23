@@ -36,9 +36,10 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
     .select(
-      'id, slug, title, description, rarity, style, label, label_2, ability, seasons, season_category, image_url, alt_image_url, glowup_evolution, updated_at'
+      'id, slug, title, description, rarity, style, label, label_2, ability, seasons, season_category, image_url, alt_image_url, "order", base_set, updated_at'
     )
     .eq('slug', slug)
+    .is('base_set', null)
     .single()
 
   if (!outfitSet || !outfitSet.slug) notFound()
@@ -71,22 +72,28 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: variantRows } = await supabase
     .from('outfit_variants')
     .select(
-      'id, slug, outfit_set, outfit_category, evolution, image_url, alt_image_url, title, description, default, updated_at'
+      'id, slug, outfit_set, outfit_category, image_url, alt_image_url, title, description, default, updated_at'
     )
     .eq('outfit_set', outfitSet.slug)
     .order('id', { ascending: true })
 
-  // Exclude base evolution (subtitle === 'base') from the editor; it is auto-managed.
-  // DB orders are bumped by 1 relative to the 1-based UI, so subtract 1 for display.
-  const nonBaseEvolutions = evolutions.filter((e) => e.subtitle !== 'base')
-  const initialDrafts: EvolutionDraft[] = nonBaseEvolutions.map((e) => ({
-    subtitle: e.subtitle ?? '',
-    order: e.order - 1,
+  // Build evolution drafts from sibling rows (base_set = slug).
+  // The glow-up sibling has order = 0 in the DB (a marker, not a position), and
+  // displays last. Sort siblings by their saved DB order (0 => last) so the form
+  // shows them in the sequence the admin set, then reassign 1-based UI orders.
+  const glowupEvo = evolutions.find((e) => e.order === 0)
+  const orderKey = (o: number) => (o === 0 ? Infinity : o)
+  const sortedEvos = [...evolutions].sort((a, b) => orderKey(a.order) - orderKey(b.order))
+  const initialDrafts: EvolutionDraft[] = sortedEvos.map((e, i) => ({
+    subtitle: e.title,
+    order: i + 1,
     existingSlug: e.slug,
   }))
 
-  const glowupEvo = nonBaseEvolutions.find((e) => e.slug === outfitSet.glowup_evolution)
-  const initialGlowupEvolutionOrder: number | '' = glowupEvo ? glowupEvo.order - 1 : ''
+  // The glow-up is the sibling whose order === 0; find its 1-based UI position.
+  const initialGlowupEvolutionOrder: number | '' = glowupEvo
+    ? (initialDrafts.find((d) => d.existingSlug === glowupEvo.slug)?.order ?? '')
+    : ''
 
   const initialCategorySelect = [
     ...new Set((variantRows ?? []).map((v) => v.outfit_category).filter(Boolean)),

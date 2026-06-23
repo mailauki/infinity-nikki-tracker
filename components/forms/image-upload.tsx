@@ -30,7 +30,6 @@ export default function ImageUpload({
     | 'outfit_variants'
     | 'trials'
     | 'outfit_sets'
-    | 'evolutions'
     | 'abilities'
     | 'seasons'
     | 'custom_looks'

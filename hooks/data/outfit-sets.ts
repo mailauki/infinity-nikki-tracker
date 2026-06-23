@@ -25,17 +25,17 @@ export const getOutfitSets = cache(async () => {
       ability,
       seasons,
       season_category,
+      "order",
+      base_set,
       season:seasons!outfit_sets_seasons_fkey ( title ),
       seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
       image_url,
       alt_image_url,
-      glowup_evolution,
       updated_at,
       outfit_variants (
         id,
         slug,
         outfit_set,
-        evolution,
         outfit_category,
         title,
         image_url,
@@ -49,6 +49,7 @@ export const getOutfitSets = cache(async () => {
       )
     `
     )
+    .is('base_set', null)
     .order('id', { ascending: true })
     .order('id', { referencedTable: 'outfit_variants', ascending: true })
     .order('sort_order', { referencedTable: 'outfit_set_carousel_images', ascending: true })
@@ -93,17 +94,17 @@ export const getOutfitSet = cache(async (slug: string) => {
       ability,
       seasons,
       season_category,
+      "order",
+      base_set,
       season:seasons!outfit_sets_seasons_fkey ( title ),
       seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
       image_url,
       alt_image_url,
-      glowup_evolution,
       updated_at,
       outfit_variants (
         id,
         slug,
         outfit_set,
-        evolution,
         outfit_category,
         title,
         image_url,

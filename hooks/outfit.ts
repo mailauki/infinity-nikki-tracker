@@ -20,43 +20,56 @@ export function matchesObtainedFilter(
   return filter === 'obtained' ? fullyObtained : !fullyObtained
 }
 
-// Decide whether a variant's evolution should be visible given the independent
-// "hide evolutions" and "hide glowups" toggles. The base set is always shown;
-// the glowup (the evolution matching set.glowup_evolution) is governed solely by
-// hideGlowups, and every other (non-base, non-glowup) evolution solely by
-// hideEvolutions — so the two toggles never affect each other.
-export function isEvolutionVisible({
-  evolutionSlug,
-  baseSlug,
-  glowupSlug,
-  hideEvolutions,
-  hideGlowups,
-}: {
-  evolutionSlug: string | null
-  baseSlug: string
-  glowupSlug: string | null
-  hideEvolutions: boolean
-  hideGlowups: boolean
-}): boolean {
-  if (evolutionSlug === baseSlug) return true
-  if (glowupSlug && evolutionSlug === glowupSlug) return !hideGlowups
-  return !hideEvolutions
+export function isGlowup(row: { order: number }): boolean {
+  return row.order === 0
+}
+
+// Display order: base (1) -> evolutions (2,3,...) -> glow-up (0, last).
+export function evolutionSortKey(row: { order: number }): number {
+  return row.order === 0 ? Infinity : row.order
+}
+
+export function isBaseRow(row: { base_set: string | null }): boolean {
+  return row.base_set === null
 }
 
 export function sortOutfitVariants(
   variants: OutfitVariant[],
-  defaultEvolutionSlug: string | null | undefined,
+  defaultStateSlug: string | null | undefined,
   categoryOrder: string[]
 ): OutfitVariant[] {
   return [...variants].sort((a, b) => {
-    if (a.evolution === defaultEvolutionSlug && b.evolution !== defaultEvolutionSlug) return -1
-    if (b.evolution === defaultEvolutionSlug && a.evolution !== defaultEvolutionSlug) return 1
-    if (a.evolution !== b.evolution) return 0
+    if (a.outfit_set === defaultStateSlug && b.outfit_set !== defaultStateSlug) return -1
+    if (b.outfit_set === defaultStateSlug && a.outfit_set !== defaultStateSlug) return 1
+    if (a.outfit_set !== b.outfit_set) return 0
     return (
       categoryOrder.indexOf(a.outfit_category ?? '') -
       categoryOrder.indexOf(b.outfit_category ?? '')
     )
   })
+}
+
+// Decide whether a variant's evolution should be visible given the independent
+// "hide evolutions" and "hide glowups" toggles. The base state is always shown;
+// the glow-up state is governed solely by hideGlowups, and every other
+// (non-base, non-glowup) evolution solely by hideEvolutions — so the two
+// toggles never affect each other.
+export function isEvolutionVisible({
+  stateSlug,
+  baseSlug,
+  isGlowupState,
+  hideEvolutions,
+  hideGlowups,
+}: {
+  stateSlug: string | null
+  baseSlug: string
+  isGlowupState: boolean
+  hideEvolutions: boolean
+  hideGlowups: boolean
+}): boolean {
+  if (stateSlug === baseSlug) return true
+  if (isGlowupState) return !hideGlowups
+  return !hideEvolutions
 }
 
 export function createOutfitSet({
@@ -68,34 +81,27 @@ export function createOutfitSet({
   outfitCategories: OutfitCategory[] | null
   evolutions: Evolution[] | null
 }): OutfitSet {
-  const glowupEvolutionSlug = outfitSet.glowup_evolution ?? null
   const categoryOrder = (outfitCategories ?? []).map((c) => c.slug)
+  const baseSlug = outfitSet.slug
 
-  // Base variants carry the concrete {set}-base evolution slug end-to-end; the
-  // base evolution itself (subtitle === 'base') is excluded from the evolution
-  // list because it is rendered as the default group, not a selectable evolution.
-  const baseEvoSlug = `${outfitSet.slug}-base`
-
-  const evolutionSlugs = [...new Set(outfitSet.outfit_variants.map((v) => v.evolution))]
-  const resolvedEvolutions = evolutionSlugs
-    .flatMap((slug) =>
-      slug && slug !== baseEvoSlug ? (evolutions?.filter((e) => e.slug === slug) ?? []) : []
-    )
-    .sort((a, b) => a.order - b.order)
+  // Evolutions of this set = rows whose base_set points back to it, in display order.
+  const resolvedEvolutions = (evolutions ?? [])
+    .filter((e) => e.base_set === baseSlug)
+    .sort((a, b) => evolutionSortKey(a) - evolutionSortKey(b))
 
   return {
     ...outfitSet,
     image_url:
       outfitSet.image_url ??
       outfitSet.outfit_variants.find(
-        (v) => v.evolution === baseEvoSlug && v.outfit_category === 'hair'
+        (v) => v.outfit_set === baseSlug && v.outfit_category === 'hair'
       )?.image_url ??
-      outfitSet.outfit_variants.find((v) => v.evolution === baseEvoSlug)?.image_url,
+      outfitSet.outfit_variants.find((v) => v.outfit_set === baseSlug)?.image_url,
     outfit_categories: outfitCategories ?? [],
     evolutions: resolvedEvolutions,
     outfit_variants: sortOutfitVariants(
       outfitSet.outfit_variants as OutfitVariant[],
-      glowupEvolutionSlug,
+      baseSlug,
       categoryOrder
     ),
   } as OutfitSet
@@ -113,10 +119,7 @@ export function updateOutfitSet({
     outfit_variants: outfitSet.outfit_variants.map((variant) => ({
       ...variant,
       obtained: !!obtainedOutfit?.find(
-        (o) =>
-          variant.outfit_set === o.outfit_set &&
-          variant.outfit_category === o.outfit_category &&
-          variant.evolution === o.evolution
+        (o) => variant.outfit_set === o.outfit_set && variant.outfit_category === o.outfit_category
       ),
     })) as OutfitVariant[],
   } as OutfitSet
@@ -132,10 +135,7 @@ export function updateOutfitVariants({
   return outfitVariants.map((variant) => ({
     ...variant,
     obtained: !!obtainedOutfit?.find(
-      (o) =>
-        variant.outfit_set === o.outfit_set &&
-        variant.outfit_category === o.outfit_category &&
-        variant.evolution === o.evolution
+      (o) => variant.outfit_set === o.outfit_set && variant.outfit_category === o.outfit_category
     ),
   })) as OutfitVariant[]
 }

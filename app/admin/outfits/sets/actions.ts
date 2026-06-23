@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { toSlug, toSlugVariant } from '@/lib/utils'
+import { toSlug } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { getUserRole } from '@/hooks/user'
 import { EvolutionDraft } from '@/lib/types/outfit'
@@ -37,6 +37,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
 
   if (!rarity) return { error: 'Rarity is required.' }
 
+  // Insert the base outfit_sets row (order = 1, base_set = null).
   const { error } = await supabase.from('outfit_sets').insert([
     {
       title,
@@ -49,6 +50,8 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
       ability,
       seasons,
       season_category,
+      order: 1,
+      base_set: null,
     },
   ])
 
@@ -58,74 +61,57 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
     await supabase.from('outfit_sets').delete().eq('slug', slug)
   }
 
-  const baseEvoSlug = `${slug}-base`
-
-  // Always insert the base evolution (order = 1); user-defined evolutions start at order = 2.
-  const { error: baseEvoError } = await supabase.from('evolutions').insert({
-    slug: baseEvoSlug,
-    title,
-    subtitle: 'base',
-    order: 1,
-    outfit_set: slug,
-  })
-  if (baseEvoError) {
-    await rollback()
-    return { error: 'Failed to save base evolution. The set was not created — please try again.' }
-  }
+  // Build sibling evolution rows (base_set = slug, order from draft + 1 to shift past base).
+  // Shared set-level fields are copied from the base row so siblings stay in sync.
+  const sharedFields = { rarity, style, ability, seasons, season_category, label, label_2 }
 
   if (evolutionDrafts.length > 0) {
-    // Draft orders are 1-based from the UI; shift by +1 because base takes order = 1.
     const evolutionRows = evolutionDrafts.map((draft) => ({
       slug: `${slug}-${toSlug(draft.subtitle)}`,
-      title,
-      subtitle: draft.subtitle,
+      title: draft.subtitle,
       order: draft.order + 1,
-      outfit_set: slug,
+      base_set: slug,
+      ...sharedFields,
     }))
-    const { error: evoError } = await supabase.from('evolutions').insert(evolutionRows)
+
+    const { error: evoError } = await supabase.from('outfit_sets').insert(evolutionRows)
     if (evoError) {
       await rollback()
       return { error: 'Failed to save evolutions. The set was not created — please try again.' }
     }
 
+    // Set the glow-up sibling's order to 0 after all sibling rows exist.
+    // glowupEvolutionOrder is a 1-based UI draft order; null/0 both mean "none".
+    if (glowupEvolutionOrder) {
+      const glowupDraft = evolutionDrafts.find((d) => d.order === glowupEvolutionOrder)
+      if (glowupDraft) {
+        const glowupSlug = `${slug}-${toSlug(glowupDraft.subtitle)}`
+        await supabase.from('outfit_sets').update({ order: 0 }).eq('slug', glowupSlug)
+      }
+    }
+
     if (outfitCategories.length > 0) {
-      const baseEvoVariants = outfitCategories.map((cat) => ({
+      // Base variants point at the base slug; evolution variants point at the evolution slug.
+      const baseVariants = outfitCategories.map((cat) => ({
         outfit_set: slug,
         outfit_category: cat.slug,
-        evolution: baseEvoSlug,
         slug: `${slug}-${cat.slug}`,
         default: true,
       }))
       const evoVariants = evolutionRows.flatMap((evo) =>
         outfitCategories.map((cat) => ({
-          outfit_set: slug,
+          outfit_set: evo.slug,
           outfit_category: cat.slug,
-          evolution: evo.slug,
-          slug: toSlugVariant(slug, cat.slug, evo.slug),
+          slug: `${evo.slug}-${cat.slug}`,
           default: false,
         }))
       )
       const { error: variantError } = await supabase
         .from('outfit_variants')
-        .insert([...baseEvoVariants, ...evoVariants])
+        .insert([...baseVariants, ...evoVariants])
       if (variantError) {
         await rollback()
         return { error: 'Failed to save variants. The set was not created — please try again.' }
-      }
-
-      if (glowupEvolutionOrder) {
-        const targetSubtitle = evolutionDrafts.find(
-          (d) => d.order === glowupEvolutionOrder
-        )?.subtitle
-        const glowupSlug = targetSubtitle
-          ? (evolutionRows.find((e) => e.subtitle === targetSubtitle)?.slug ?? null)
-          : null
-        if (glowupSlug) {
-          await supabase
-            .from('outfit_sets')
-            .update({ glowup_evolution: glowupSlug })
-            .eq('slug', slug)
-        }
       }
     }
   } else if (outfitCategories.length > 0) {
@@ -133,7 +119,6 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
     const variants = outfitCategories.map((cat) => ({
       outfit_set: slug,
       outfit_category: cat.slug,
-      evolution: baseEvoSlug,
       slug: `${slug}-${cat.slug}`,
       default: true,
     }))
@@ -179,7 +164,7 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
 
   if (!rarity) return { error: 'Rarity is required.' }
 
-  // Capture the previous slug so we can carry variant images across a slug rename
+  // Capture the previous slug so we can carry variant slugs across a rename.
   const { data: existingSet } = await supabase
     .from('outfit_sets')
     .select('slug')
@@ -187,44 +172,31 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     .single()
   const previousSlug = existingSet?.slug ?? slug
 
+  // Shared set-level fields copied onto all sibling evolution rows on every edit.
+  const sharedFields = { rarity, style, ability, seasons, season_category, label, label_2 }
+
+  // Update the base row.
   const { error } = await supabase
     .from('outfit_sets')
     .update({
       title,
       slug,
       description,
-      rarity,
-      style,
-      label,
-      label_2,
-      ability,
-      seasons,
-      season_category,
+      ...sharedFields,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
 
   if (error) return { error: error.message }
 
-  const baseEvoSlug = `${slug}-base`
-
+  // If the base slug changed, rename base variant slugs (not FK-cascaded).
   if (previousSlug !== slug) {
-    // Rename the base evolution slug (CASCADE on outfit_variants.evolution FK updates
-    // all variant evolution references automatically).
-    const { error: baseEvoRenameError } = await supabase
-      .from('evolutions')
-      .update({ slug: baseEvoSlug })
-      .eq('slug', `${previousSlug}-base`)
-    if (baseEvoRenameError) return { error: baseEvoRenameError.message }
-
-    // Rename base variant slugs (slug field is not FK-cascaded; update manually).
-    const { data: renameVariants } = await supabase
+    const { data: baseVariants } = await supabase
       .from('outfit_variants')
       .select('slug, outfit_category')
       .eq('outfit_set', slug)
-      .eq('evolution', baseEvoSlug)
 
-    for (const v of renameVariants ?? []) {
+    for (const v of baseVariants ?? []) {
       if (v.slug !== `${previousSlug}-${v.outfit_category}`) continue
       const { error: renameError } = await supabase
         .from('outfit_variants')
@@ -234,93 +206,106 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     }
   }
 
-  // Always keep the base evolution title in sync with the set title.
-  const { error: baseEvoTitleError } = await supabase
-    .from('evolutions')
-    .update({ title })
-    .eq('outfit_set', slug)
-    .eq('subtitle', 'base')
-  if (baseEvoTitleError) return { error: baseEvoTitleError.message }
-
-  // Load non-base evolutions for diff (base is always preserved).
+  // Load existing sibling evolution rows for diff.
   const { data: currentEvolutions } = await supabase
-    .from('evolutions')
-    .select('slug, order, subtitle')
-    .eq('outfit_set', slug)
-    .neq('subtitle', 'base')
+    .from('outfit_sets')
+    .select('slug, "order"')
+    .eq('base_set', slug)
 
-  const currentSlugs = (currentEvolutions ?? []).map((e) => e.slug)
+  const currentEvoSlugs = (currentEvolutions ?? []).map((e) => e.slug)
   const submittedExistingSlugs = evolutionDrafts
     .filter((d) => d.existingSlug)
     .map((d) => d.existingSlug as string)
 
-  // Delete removed evolutions (cascade removes their variants; obtained SET NULL)
-  const deletedSlugs = currentSlugs.filter((s) => !submittedExistingSlugs.includes(s))
+  // Delete removed sibling evolutions (cascade removes their variants; obtained SET NULL).
+  const deletedSlugs = currentEvoSlugs.filter((s) => !submittedExistingSlugs.includes(s))
   if (deletedSlugs.length > 0) {
     const { error: deleteError } = await supabase
-      .from('evolutions')
+      .from('outfit_sets')
       .delete()
       .in('slug', deletedSlugs)
     if (deleteError) return { error: deleteError.message }
   }
 
-  // Update existing evolutions (draft orders are 1-based UI; +1 shifts past base at order 1).
+  // Determine which draft is the glow-up so we can set its order to 0.
+  const glowupDraft = evolutionDrafts.find((d) => d.order === glowupEvolutionOrder)
+  const glowupSlug = glowupDraft ? `${slug}-${toSlug(glowupDraft.subtitle)}` : null
+
+  // Update existing sibling evolutions.
   const updatedDrafts = evolutionDrafts.filter((d) => d.existingSlug)
+
+  // Two-phase to avoid a transient unique(base_set, "order") collision: the index
+  // is non-deferrable, so reordering siblings one statement at a time can briefly
+  // duplicate an order value. First park every updated sibling at a unique negative
+  // order (which never collides with the real 0/2/3… values), then set finals.
+  for (let i = 0; i < updatedDrafts.length; i++) {
+    const { error: parkError } = await supabase
+      .from('outfit_sets')
+      .update({ order: -(i + 1) })
+      .eq('slug', updatedDrafts[i].existingSlug as string)
+    if (parkError) return { error: parkError.message }
+  }
+
   for (const draft of updatedDrafts) {
     const newEvoSlug = `${slug}-${toSlug(draft.subtitle)}`
+    const isGlowup = glowupSlug === newEvoSlug
     const { error: updateError } = await supabase
-      .from('evolutions')
+      .from('outfit_sets')
       .update({
         slug: newEvoSlug,
-        title,
-        subtitle: draft.subtitle,
-        order: draft.order + 1,
-        outfit_set: slug,
+        title: draft.subtitle,
+        order: isGlowup ? 0 : draft.order + 1,
+        base_set: slug,
+        ...sharedFields,
       })
       .eq('slug', draft.existingSlug as string)
     if (updateError) return { error: updateError.message }
   }
 
-  // Insert new evolutions
+  // Insert new sibling evolutions.
   const newDrafts = evolutionDrafts.filter((d) => !d.existingSlug)
   if (newDrafts.length > 0) {
-    const newEvoRows = newDrafts.map((draft) => ({
-      slug: `${slug}-${toSlug(draft.subtitle)}`,
-      title,
-      subtitle: draft.subtitle,
-      order: draft.order + 1,
-      outfit_set: slug,
-    }))
-    const { error: evoError } = await supabase.from('evolutions').insert(newEvoRows)
+    const newEvoRows = newDrafts.map((draft) => {
+      const newEvoSlug = `${slug}-${toSlug(draft.subtitle)}`
+      const isGlowup = glowupSlug === newEvoSlug
+      return {
+        slug: newEvoSlug,
+        title: draft.subtitle,
+        order: isGlowup ? 0 : draft.order + 1,
+        base_set: slug,
+        ...sharedFields,
+      }
+    })
+    const { error: evoError } = await supabase.from('outfit_sets').insert(newEvoRows)
     if (evoError) return { error: evoError.message }
   }
 
-  // Sync variants: diff DB state against (evolutions × categories), including base.
+  // Sync variants: diff DB state against (state slugs × categories).
+  // Each state is either the base (outfit_set = slug) or a sibling (outfit_set = evo slug).
   if (outfitCategories.length > 0) {
     const { data: finalEvolutions } = await supabase
-      .from('evolutions')
-      .select('slug, subtitle')
-      .eq('outfit_set', slug)
-      .neq('subtitle', 'base')
+      .from('outfit_sets')
+      .select('slug')
+      .eq('base_set', slug)
 
-    // Base always first, then user-defined evolutions.
-    const evolutionSlugs: string[] = [baseEvoSlug, ...(finalEvolutions ?? []).map((e) => e.slug)]
+    // State slugs: base slug first, then all sibling slugs.
+    const stateSlugs: string[] = [slug, ...(finalEvolutions ?? []).map((e) => e.slug)]
 
-    const expectedVariants = evolutionSlugs.flatMap((evo) =>
+    const expectedVariants = stateSlugs.flatMap((stateSlug) =>
       outfitCategories.map((cat) => ({
-        outfit_set: slug,
+        outfit_set: stateSlug,
         outfit_category: cat.slug,
-        evolution: evo,
-        slug: evo === baseEvoSlug ? `${slug}-${cat.slug}` : toSlugVariant(slug, cat.slug, evo),
-        default: evo === baseEvoSlug,
+        slug: `${stateSlug}-${cat.slug}`,
+        default: stateSlug === slug,
       }))
     )
     const expectedSlugs = new Set(expectedVariants.map((v) => v.slug))
 
+    // Fetch all variants for base and all sibling slugs.
     const { data: currentVariants } = await supabase
       .from('outfit_variants')
-      .select('slug, outfit_category, evolution')
-      .eq('outfit_set', slug)
+      .select('slug, outfit_set, outfit_category')
+      .in('outfit_set', stateSlugs)
 
     const currentSlugsInDB = new Set((currentVariants ?? []).map((v) => v.slug))
 
@@ -338,31 +323,25 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
       const { error: deleteError } = await supabase
         .from('outfit_variants')
         .delete()
-        .eq('outfit_set', slug)
         .in('slug', toDelete)
       if (deleteError) return { error: deleteError.message }
     }
   } else {
-    // No categories selected — remove all variants
+    // No categories selected — remove all variants for base and siblings.
+    const { data: finalEvolutions } = await supabase
+      .from('outfit_sets')
+      .select('slug')
+      .eq('base_set', slug)
+    const stateSlugs = [slug, ...(finalEvolutions ?? []).map((e) => e.slug)]
     const { error: deleteAllError } = await supabase
       .from('outfit_variants')
       .delete()
-      .eq('outfit_set', slug)
+      .in('outfit_set', stateSlugs)
     if (deleteAllError) return { error: deleteAllError.message }
   }
 
-  // Update glowup_evolution on the set
-  const targetSubtitle = evolutionDrafts.find((d) => d.order === glowupEvolutionOrder)?.subtitle
-  const glowupSlug =
-    glowupEvolutionOrder && targetSubtitle ? `${slug}-${toSlug(targetSubtitle)}` || null : null
-  const { error: glowupError } = await supabase
-    .from('outfit_sets')
-    .update({ glowup_evolution: glowupSlug })
-    .eq('id', id)
-  if (glowupError) return { error: glowupError.message }
-
   // Resolve a submitted variant input key back to its current DB slug, carrying
-  // the slug across a set rename (variant_image_ / variant_title_ / etc.).
+  // the slug across a base set rename (variant_image_ / variant_title_ / etc.).
   const resolveVariantSlug = (submittedSlug: string) =>
     previousSlug !== slug && submittedSlug.startsWith(`${previousSlug}-`)
       ? submittedSlug.replace(`${previousSlug}-`, `${slug}-`)
@@ -411,10 +390,9 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     const { data: variants } = await supabase
       .from('outfit_variants')
       .select(
-        'id, slug, outfit_set, outfit_category, evolution, image_url, alt_image_url, title, description, default, updated_at'
+        'id, slug, outfit_set, outfit_category, image_url, alt_image_url, title, description, default, updated_at'
       )
       .eq('outfit_set', slug)
-      .eq('evolution', baseEvoSlug)
       .order('id', { ascending: true })
 
     return { savedTitle: title, variants: variants ?? [] }
@@ -423,6 +401,7 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     const { data: next } = await supabase
       .from('outfit_sets')
       .select('slug')
+      .is('base_set', null)
       .gt('title', title)
       .order('title', { ascending: true })
       .order('slug', { ascending: true })

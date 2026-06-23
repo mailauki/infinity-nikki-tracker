@@ -64,18 +64,17 @@ type SavePayload = {
 }
 
 // Short detail caption for a selected variant: the eureka color, or the outfit
-// evolution (sans the set prefix; the unevolved "base" has none). Empty when
-// there's no distinguishing detail.
+// evolution (sans the set prefix). Base variants have no evolution slug
+// (v.evolution is undefined) and return empty. Empty when there's no detail.
 function variantCaption(v: FlatVariant): string {
   if (v.type === 'eureka') return v.color ? toTitle(v.color) : ''
   if (!v.evolution) return ''
-  // Outfit evolution slugs look like `{setSlug}-{evolution}`; "base" is unevolved.
+  // Outfit evolution slugs look like `{setSlug}-{evolutionSuffix}`.
   const evolution = v.evolution.startsWith(`${v.setSlug}-`)
     ? v.evolution.slice(v.setSlug.length + 1)
     : v.evolution
-  const setName = evolution === 'base' ? v.setTitle : `${v.setTitle}: ${toTitle(evolution)}`
-  if (v.title) return setName
-  return evolution === 'base' ? '' : toTitle(evolution)
+  if (v.title) return `${v.setTitle}: ${toTitle(evolution)}`
+  return toTitle(evolution)
 }
 
 type VariantCardProps = {

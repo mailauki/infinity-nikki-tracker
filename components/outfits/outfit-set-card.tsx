@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Evolution, OutfitSet } from '@/lib/types/outfit'
+import { isGlowup } from '@/hooks/outfit'
 import { RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { Box, Card, CardActionArea, Grow, IconButton, Stack, Typography } from '@mui/material'
 import RarityStars from '../rarity-stars'
@@ -60,16 +61,14 @@ export default function OutfitSetCard({
   const href = evolution
     ? `/outfits/${evolution.slug.replace('-', '?evolution=')}`
     : `/outfits/${set.slug}`
-  const title = evolution
-    ? `${set.title}: ${toTitle(evolution.subtitle ?? evolution.slug)}`
-    : set.title
+  const title = evolution ? `${set.title}: ${toTitle(evolution.title)}` : set.title
 
   const imageSrc = evolution
     ? resolveOutfitImage(mode, { image: evolution.image_url, alt: evolution.alt_image_url })
     : resolveOutfitImage(mode, { image: set.image_url, alt: set.alt_image_url })
   const showingAlt = mode === 'alt' && !!(evolution ? evolution.alt_image_url : set.alt_image_url)
 
-  const glowup = set.glowup_evolution === evolution?.slug
+  const glowup = !!evolution && isGlowup(evolution)
 
   return (
     <Grow unmountOnExit in={grown && !exiting} timeout={300}>

@@ -42,13 +42,16 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
     supabase
       .from('outfit_sets')
       .select('slug, title, image_url, created_at')
+      .is('base_set', null)
       .not('created_at', 'is', null)
       .order('created_at', { ascending: false, nullsFirst: false })
       .limit(limit),
     supabase
-      .from('evolutions')
+      .from('outfit_sets')
       .select('slug, title, image_url, created_at')
-      .order('created_at', { ascending: false })
+      .not('base_set', 'is', null)
+      .not('created_at', 'is', null)
+      .order('created_at', { ascending: false, nullsFirst: false })
       .limit(limit),
   ])
 
@@ -127,12 +130,14 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
     supabase
       .from('outfit_sets')
       .select('slug, title, image_url, updated_at')
+      .is('base_set', null)
       .not('updated_at', 'is', null)
       .order('updated_at', { ascending: false, nullsFirst: false })
       .limit(limit),
     supabase
-      .from('evolutions')
+      .from('outfit_sets')
       .select('slug, title, image_url, updated_at')
+      .not('base_set', 'is', null)
       .not('updated_at', 'is', null)
       .order('updated_at', { ascending: false, nullsFirst: false })
       .limit(limit),

@@ -31,9 +31,7 @@ export default function OutfitSetListItem({
   const total = variants.length
   const obtained = variants.reduce((sum, variant) => sum + (variant.obtained ? 1 : 0), 0)
 
-  const title = evolution
-    ? `${set.title}: ${toTitle(evolution.subtitle ?? evolution.slug)}`
-    : set.title
+  const title = evolution ? `${set.title}: ${toTitle(evolution.title)}` : set.title
   // Evolution detail is reached via the set page with an ?evolution= param,
   // matching the outfits grid cards (slug `{set}-{evo}` → `{set}?evolution={evo}`).
   const href = evolution

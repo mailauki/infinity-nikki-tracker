@@ -80,7 +80,9 @@ export function flattenOutfitVariants(
       categoryTitle: titles.get(v.outfit_category ?? '') ?? toTitle(v.outfit_category ?? ''),
       title: v.title,
       part: parts.get(v.outfit_category ?? '') ?? undefined,
-      evolution: v.evolution ?? undefined,
+      // Derive the evolution label from outfit_set: null when this is the base
+      // state (variant belongs to the base row), otherwise the evolution slug.
+      evolution: v.outfit_set !== set.slug ? v.outfit_set : undefined,
       image_url: v.image_url,
     }))
   )

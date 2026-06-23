@@ -42,9 +42,10 @@ async function EditEvolution({
   const supabase = await createClient()
 
   const { data: evolution } = await supabase
-    .from('evolutions')
-    .select('slug, title, subtitle, description, order, outfit_set, image_url, alt_image_url')
+    .from('outfit_sets')
+    .select('slug, title, description, "order", base_set, image_url, alt_image_url')
     .eq('slug', slug)
+    .not('base_set', 'is', null)
     .single()
 
   if (!evolution) notFound()
@@ -55,12 +56,12 @@ async function EditEvolution({
       .select(
         'id, slug, outfit_category, image_url, alt_image_url, title, description, default, updated_at'
       )
-      .eq('evolution', slug)
+      .eq('outfit_set', slug)
       .order('id', { ascending: true }),
     supabase
-      .from('evolution_carousel_images')
+      .from('outfit_set_carousel_images')
       .select('id, image_url, sort_order')
-      .eq('evolution', slug)
+      .eq('outfit_set', slug)
       .order('sort_order', { ascending: true })
       .then((r) => r.data ?? []),
   ])

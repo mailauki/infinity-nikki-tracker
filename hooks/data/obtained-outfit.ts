@@ -11,7 +11,7 @@ export const getObtainedOutfit = cache(async (user_id: UUID | string) => {
   return fetchAllRows<ObtainedOutfit>((from, to) =>
     supabase
       .from('obtained_outfit')
-      .select('id, outfit_set, outfit_category, evolution')
+      .select('id, outfit_set, outfit_category')
       .eq('user_id', user_id)
       .order('id', { ascending: true })
       .range(from, to)
@@ -28,11 +28,9 @@ export const getRecentObtainedOutfit = cache(async (user_id: UUID | string) => {
 				id,
 				outfit_set,
 				outfit_category,
-				evolution,
 				created_at,
-				outfit_sets ( title, outfit_variants ( image_url, outfit_category, evolution ) ),
-				outfit_categories ( title ),
-				evolutions ( title )
+				outfit_sets ( title, outfit_variants ( image_url, outfit_category ) ),
+				outfit_categories ( title )
 			`
     )
     .eq('user_id', user_id)
