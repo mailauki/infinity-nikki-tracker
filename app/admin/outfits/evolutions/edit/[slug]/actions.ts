@@ -96,10 +96,13 @@ export async function editEvolution(
     // Evolutions share a title across all stages of a set (title = set name), so
     // "next" walks by (title, order) to match the list view — a single .gt()
     // can't express that compound cursor, so order the full list and take the
-    // row after the just-saved one (by its post-save slug).
+    // row after the just-saved one (by its post-save slug). Exclude {set}-base
+    // rows: the list hides them (their data lives on the outfit set form), so
+    // navigation must skip them too.
     const { data: ordered } = await supabase
       .from('evolutions')
       .select('slug, title, order')
+      .neq('subtitle', 'base')
       .order('title', { ascending: true })
       .order('order', { ascending: true })
 
