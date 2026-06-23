@@ -17,13 +17,20 @@ export const getEvolutions = cache(async () => {
 
   const { data: evolutions } = await supabase
     .from('outfit_sets')
-    .select(EVOLUTION_SELECT)
+    .select(
+      `
+      ${EVOLUTION_SELECT},
+      outfit_variants (
+        id, slug, outfit_set, outfit_category, title, image_url, alt_image_url, default
+      )
+    `
+    )
     .not('base_set', 'is', null)
     .order('order', { ascending: true })
 
   return (evolutions ?? []).map((e) => ({
     ...e,
-    outfit_variants: [],
+    outfit_variants: e.outfit_variants ?? [],
     outfit_categories: [],
     evolutions: [],
     carousel_images: e.outfit_set_carousel_images ?? [],

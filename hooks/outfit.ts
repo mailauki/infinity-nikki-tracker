@@ -89,21 +89,24 @@ export function createOutfitSet({
     .filter((e) => e.base_set === baseSlug)
     .sort((a, b) => evolutionSortKey(a) - evolutionSortKey(b))
 
+  // The base row's embed carries only base-state variants (outfit_set = baseSlug).
+  // Each evolution sibling carries its own variants (outfit_set = its slug). Merge
+  // them so consumers can group `outfit_variants` by state slug (base + each evo).
+  const allVariants = [
+    ...outfitSet.outfit_variants,
+    ...resolvedEvolutions.flatMap((e) => e.outfit_variants ?? []),
+  ]
+
   return {
     ...outfitSet,
     image_url:
       outfitSet.image_url ??
-      outfitSet.outfit_variants.find(
-        (v) => v.outfit_set === baseSlug && v.outfit_category === 'hair'
-      )?.image_url ??
-      outfitSet.outfit_variants.find((v) => v.outfit_set === baseSlug)?.image_url,
+      allVariants.find((v) => v.outfit_set === baseSlug && v.outfit_category === 'hair')
+        ?.image_url ??
+      allVariants.find((v) => v.outfit_set === baseSlug)?.image_url,
     outfit_categories: outfitCategories ?? [],
     evolutions: resolvedEvolutions,
-    outfit_variants: sortOutfitVariants(
-      outfitSet.outfit_variants as OutfitVariant[],
-      baseSlug,
-      categoryOrder
-    ),
+    outfit_variants: sortOutfitVariants(allVariants as OutfitVariant[], baseSlug, categoryOrder),
   } as OutfitSet
 }
 
