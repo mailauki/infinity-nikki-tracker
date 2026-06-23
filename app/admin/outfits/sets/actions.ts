@@ -233,6 +233,19 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
 
   // Update existing sibling evolutions.
   const updatedDrafts = evolutionDrafts.filter((d) => d.existingSlug)
+
+  // Two-phase to avoid a transient unique(base_set, "order") collision: the index
+  // is non-deferrable, so reordering siblings one statement at a time can briefly
+  // duplicate an order value. First park every updated sibling at a unique negative
+  // order (which never collides with the real 0/2/3… values), then set finals.
+  for (let i = 0; i < updatedDrafts.length; i++) {
+    const { error: parkError } = await supabase
+      .from('outfit_sets')
+      .update({ order: -(i + 1) })
+      .eq('slug', updatedDrafts[i].existingSlug as string)
+    if (parkError) return { error: parkError.message }
+  }
+
   for (const draft of updatedDrafts) {
     const newEvoSlug = `${slug}-${toSlug(draft.subtitle)}`
     const isGlowup = glowupSlug === newEvoSlug

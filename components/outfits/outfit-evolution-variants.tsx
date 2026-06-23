@@ -41,9 +41,7 @@ export default function OutfitEvolutionVariants({
   const orderOf = (stateSlug: string) => stateOrder.get(stateSlug) ?? Infinity
 
   const variants = (
-    selected === null
-      ? outfit_variants
-      : outfit_variants.filter((v) => v.outfit_set === (selected ?? baseSlug))
+    selected === null ? outfit_variants : outfit_variants.filter((v) => v.outfit_set === selected)
   )
     .slice()
     .sort((a, b) => orderOf(a.outfit_set) - orderOf(b.outfit_set))
