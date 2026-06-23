@@ -14,8 +14,7 @@ export async function GET() {
   }
 
   try {
-    // Reads every page (PostgREST caps a single response at 1000 rows). Base
-    // variants carry the concrete {outfit_set}-base slug end-to-end.
+    // Reads every page (PostgREST caps a single response at 1000 rows).
     const obtainedOutfit = await getObtainedOutfit(user.id)
     return NextResponse.json(obtainedOutfit)
   } catch (error) {
