@@ -16,24 +16,6 @@ export type Location = Pick<Tables<'locations'>, 'slug' | 'title'>
 
 export type OutfitCategory = Pick<Tables<'outfit_categories'>, 'slug' | 'title' | 'part'>
 
-export type Evolution = Pick<
-  Tables<'evolutions'>,
-  | 'id'
-  | 'slug'
-  | 'title'
-  | 'subtitle'
-  | 'description'
-  | 'order'
-  | 'outfit_set'
-  | 'image_url'
-  | 'alt_image_url'
-> & {
-  carousel_images: CarouselImage[]
-  // Populated only by admin hooks that embed variants (e.g. the evolutions
-  // admin table); the public/data pipeline leaves this undefined.
-  outfit_variants?: OutfitVariant[]
-}
-
 export type EvolutionDraft = {
   subtitle: string
   order: number
@@ -55,6 +37,10 @@ export type OutfitSet = Tables<'outfit_sets'> & {
   seasonCategory: { title: string } | null
 }
 
+// An evolution is now just an outfit_sets row with base_set IS NOT NULL
+// (i.e. order >= 2 for regular evolutions, order = 0 for glow-ups).
+export type Evolution = OutfitSet
+
 export type OutfitSetRaw = Pick<
   Tables<'outfit_sets'>,
   | 'id'
@@ -70,7 +56,8 @@ export type OutfitSetRaw = Pick<
   | 'season_category'
   | 'image_url'
   | 'alt_image_url'
-  | 'glowup_evolution'
+  | 'order'
+  | 'base_set'
   | 'updated_at'
 >
 
@@ -79,7 +66,6 @@ export type OutfitVariant = Pick<
   | 'id'
   | 'slug'
   | 'outfit_set'
-  | 'evolution'
   | 'outfit_category'
   | 'title'
   | 'image_url'
@@ -89,21 +75,19 @@ export type OutfitVariant = Pick<
 
 export type ObtainedOutfit = Pick<
   Tables<'obtained_outfit'>,
-  'id' | 'outfit_set' | 'outfit_category' | 'evolution'
+  'id' | 'outfit_set' | 'outfit_category'
 >
 
 export type RecentObtainedOutfit = Pick<
   Tables<'obtained_outfit'>,
-  'id' | 'outfit_set' | 'outfit_category' | 'evolution' | 'created_at'
+  'id' | 'outfit_set' | 'outfit_category' | 'created_at'
 > & {
   outfit_sets: {
     title: string
     outfit_variants: {
       image_url: string | null
       outfit_category: string | null
-      evolution: string | null
     }[]
   } | null
   outfit_categories: { title: string } | null
-  evolutions: { title: string } | null
 }
