@@ -16,6 +16,7 @@ import {
 import { alpha } from '@mui/material/styles'
 import { PieChart } from '@mui/x-charts/PieChart'
 import { percent } from '@/hooks/count-obtained'
+import { isGlowup } from '@/hooks/outfit'
 import { OutfitSet, Season } from '@/lib/types/outfit'
 import PercentLabel from '@/components/percent-label'
 import ProgressChip from '@/components/progress-chip'
@@ -436,18 +437,18 @@ export default function OutfitCollectionCharts({
   const variantsObtained = allVariants.filter((v) => v.obtained).length
   const variantsTotal = allVariants.length
 
-  // A set is complete when its base evolution variants are all obtained
-  // (mirrors ProfileStats' outfit-set count).
+  // A set is complete when its base-state variants are all obtained. Base
+  // variants are owned by the base outfit_sets row (outfit_set === set.slug).
   const setsObtained = outfitSets.filter((set) =>
-    isComplete(set.outfit_variants.filter((v) => v.evolution === `${set.slug}-base`))
+    isComplete(set.outfit_variants.filter((v) => v.outfit_set === set.slug))
   ).length
 
   // Non-glow-up evolutions across all sets (base is already excluded from
   // set.evolutions by createOutfitSet).
   const evolutionGroups = outfitSets.flatMap((set) =>
     set.evolutions
-      .filter((evolution) => evolution.slug !== set.glowup_evolution)
-      .map((evolution) => set.outfit_variants.filter((v) => v.evolution === evolution.slug))
+      .filter((evolution) => !isGlowup(evolution))
+      .map((evolution) => set.outfit_variants.filter((v) => v.outfit_set === evolution.slug))
   )
   const evolutionsTotal = evolutionGroups.length
   const evolutionsObtained = evolutionGroups.filter(isComplete).length
@@ -455,8 +456,11 @@ export default function OutfitCollectionCharts({
   // Glow-up groups across sets that have a glow-up evolution with variants;
   // a glow-up is complete when all its variants are obtained.
   const glowupGroups = outfitSets
-    .filter((set) => set.glowup_evolution)
-    .map((set) => set.outfit_variants.filter((v) => v.evolution === set.glowup_evolution))
+    .filter((set) => set.evolutions.some(isGlowup))
+    .map((set) => {
+      const glowup = set.evolutions.find(isGlowup)
+      return set.outfit_variants.filter((v) => v.outfit_set === glowup?.slug)
+    })
     .filter((variants) => variants.length > 0)
   const glowupsTotal = glowupGroups.length
   const glowupsObtained = glowupGroups.filter(isComplete).length

@@ -201,8 +201,8 @@ export function OutfitSetTable({
     },
     // One column per category, toggled by the toolbar. The set row represents
     // the base look, so each cell shows the base variant for that category (base
-    // variants carry the {set}-base evolution slug). Categories the set doesn't
-    // use render locked.
+    // variants have outfit_set === set.slug). Categories the set doesn't use
+    // render locked.
     ...(showVariantColumns
       ? categoryImageColumns<Row>({
           outfitCategories,

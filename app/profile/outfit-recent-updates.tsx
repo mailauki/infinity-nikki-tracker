@@ -40,18 +40,14 @@ export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOu
                     size="md"
                     src={
                       item.outfit_sets?.outfit_variants.find(
-                        (v) =>
-                          v.outfit_category === item.outfit_category &&
-                          v.evolution === item.evolution
+                        (v) => v.outfit_category === item.outfit_category
                       )?.image_url ?? undefined
                     }
                   />
                 </ListItemAvatar>
                 <ListItemText
                   primary={item.outfit_sets?.title ?? toTitle(item.outfit_set ?? '')}
-                  secondary={[item.outfit_categories?.title, item.evolutions?.title]
-                    .filter(Boolean)
-                    .join(' • ')}
+                  secondary={item.outfit_categories?.title ?? undefined}
                   slotProps={{
                     primary: { variant: 'body2' },
                     secondary: { variant: 'caption' },
