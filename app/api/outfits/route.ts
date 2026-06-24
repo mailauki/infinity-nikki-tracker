@@ -14,7 +14,7 @@ export async function GET() {
     .select(
       `
       id, slug, title, description, rarity, style, label, label_2, ability,
-      image_url, alt_image_url, "order", base_set, seasons, season_category, updated_at,
+      image_url, alt_image_url, "order", base_set, handheld_base_only, seasons, season_category, updated_at,
       season:seasons!outfit_sets_seasons_fkey ( title ),
       seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
       outfit_variants ( id, slug, outfit_set, outfit_category, title, image_url, alt_image_url, default ),

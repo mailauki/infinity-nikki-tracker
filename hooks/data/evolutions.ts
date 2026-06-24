@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 // Columns shared by all evolution queries (outfit_sets rows with base_set IS NOT NULL).
 // "order" is a reserved word in Postgres — always quoted in select strings.
 const EVOLUTION_SELECT = `
-  id, slug, title, "order", base_set, description, image_url, alt_image_url,
+  id, slug, title, "order", base_set, handheld_base_only, description, image_url, alt_image_url,
   style, label, label_2, ability, seasons, season_category, rarity, created_at, updated_at,
   season:seasons!outfit_sets_seasons_fkey ( title ),
   seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
