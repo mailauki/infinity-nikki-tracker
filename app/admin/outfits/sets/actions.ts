@@ -34,6 +34,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
   const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
     slug: string
   }[]
+  const handheldBaseOnly = formData.get('handheld_base_only') === 'true'
 
   if (!rarity) return { error: 'Rarity is required.' }
 
@@ -50,6 +51,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
       ability,
       seasons,
       season_category,
+      handheld_base_only: handheldBaseOnly,
       order: 1,
       base_set: null,
     },
@@ -99,12 +101,14 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
         default: true,
       }))
       const evoVariants = evolutionRows.flatMap((evo) =>
-        outfitCategories.map((cat) => ({
-          outfit_set: evo.slug,
-          outfit_category: cat.slug,
-          slug: `${evo.slug}-${cat.slug}`,
-          default: false,
-        }))
+        outfitCategories
+          .filter((cat) => !(handheldBaseOnly && cat.slug === 'handhelds'))
+          .map((cat) => ({
+            outfit_set: evo.slug,
+            outfit_category: cat.slug,
+            slug: `${evo.slug}-${cat.slug}`,
+            default: false,
+          }))
       )
       const { error: variantError } = await supabase
         .from('outfit_variants')
@@ -161,6 +165,7 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
   const outfitCategories = JSON.parse((formData.get('outfit_categories') as string) || '[]') as {
     slug: string
   }[]
+  const handheldBaseOnly = formData.get('handheld_base_only') === 'true'
 
   if (!rarity) return { error: 'Rarity is required.' }
 
@@ -183,6 +188,7 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
       slug,
       description,
       ...sharedFields,
+      handheld_base_only: handheldBaseOnly,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
@@ -292,12 +298,14 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     const stateSlugs: string[] = [slug, ...(finalEvolutions ?? []).map((e) => e.slug)]
 
     const expectedVariants = stateSlugs.flatMap((stateSlug) =>
-      outfitCategories.map((cat) => ({
-        outfit_set: stateSlug,
-        outfit_category: cat.slug,
-        slug: `${stateSlug}-${cat.slug}`,
-        default: stateSlug === slug,
-      }))
+      outfitCategories
+        .filter((cat) => !(handheldBaseOnly && stateSlug !== slug && cat.slug === 'handhelds'))
+        .map((cat) => ({
+          outfit_set: stateSlug,
+          outfit_category: cat.slug,
+          slug: `${stateSlug}-${cat.slug}`,
+          default: stateSlug === slug,
+        }))
     )
     const expectedSlugs = new Set(expectedVariants.map((v) => v.slug))
 
