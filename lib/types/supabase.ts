@@ -488,6 +488,7 @@ export type Database = {
           base_set: string | null
           created_at: string | null
           description: string | null
+          handheld_base_only: boolean
           id: number
           image_url: string | null
           label: string | null
@@ -507,6 +508,7 @@ export type Database = {
           base_set?: string | null
           created_at?: string | null
           description?: string | null
+          handheld_base_only?: boolean
           id?: number
           image_url?: string | null
           label?: string | null
@@ -526,6 +528,7 @@ export type Database = {
           base_set?: string | null
           created_at?: string | null
           description?: string | null
+          handheld_base_only?: boolean
           id?: number
           image_url?: string | null
           label?: string | null

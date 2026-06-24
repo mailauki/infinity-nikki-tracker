@@ -6,6 +6,7 @@ import {
   Box,
   Chip,
   FormControl,
+  FormControlLabel,
   FormLabel,
   IconButton,
   InputAdornment,
@@ -16,6 +17,7 @@ import {
   Select,
   SelectChangeEvent,
   Stack,
+  Switch,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -63,6 +65,7 @@ export default function AddOutfitSetForm({
   const [evolutionDrafts, setEvolutionDrafts] = useState<EvolutionDraft[]>([])
   const [glowupEvolutionOrder, setGlowupEvolutionOrder] = useState<number | ''>('')
   const [categorySelect, setCategorySelect] = useState<string[]>([])
+  const [handheldBaseOnly, setHandheldBaseOnly] = useState(false)
   const [editSlug, setEditSlug] = useState(false)
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {
@@ -113,6 +116,7 @@ export default function AddOutfitSetForm({
       setEvolutionDrafts([])
       setGlowupEvolutionOrder('')
       setCategorySelect([])
+      setHandheldBaseOnly(false)
       setEditSlug(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -331,6 +335,18 @@ export default function AddOutfitSetForm({
           </Select>
         </FormControl>
 
+        {categorySelect.includes('handhelds') && evolutionDrafts.length > 0 && (
+          <FormControlLabel
+            control={
+              <Switch
+                checked={handheldBaseOnly}
+                onChange={(e) => setHandheldBaseOnly(e.target.checked)}
+              />
+            }
+            label="Handhelds exclusive to base set"
+          />
+        )}
+
         <EvolutionEditor
           glowupEvolutionOrder={glowupEvolutionOrder}
           maxEvolutions={maxEvolutions}
@@ -345,6 +361,7 @@ export default function AddOutfitSetForm({
 
         <input name="evolution_drafts" type="hidden" value={JSON.stringify(evolutionDrafts)} />
         <input name="glowup_evolution_order" type="hidden" value={glowupEvolutionOrder} />
+        <input name="handheld_base_only" type="hidden" value={handheldBaseOnly ? 'true' : ''} />
         <input
           name="outfit_categories"
           type="hidden"
