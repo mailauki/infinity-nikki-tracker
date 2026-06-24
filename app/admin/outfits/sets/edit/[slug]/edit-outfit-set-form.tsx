@@ -6,6 +6,7 @@ import {
   Box,
   Chip,
   FormControl,
+  FormControlLabel,
   FormLabel,
   IconButton,
   InputAdornment,
@@ -16,6 +17,7 @@ import {
   Select,
   SelectChangeEvent,
   Stack,
+  Switch,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -69,6 +71,7 @@ export default function EditOutfitSetForm({
   outfitCategories,
   initialDrafts = [],
   initialGlowupEvolutionOrder = '',
+  initialHandheldBaseOnly = false,
   initialCategorySelect = [],
   initialVariants = [],
   initialCarouselImages = [],
@@ -83,6 +86,7 @@ export default function EditOutfitSetForm({
   outfitCategories: OutfitCategory[]
   initialDrafts?: EvolutionDraft[]
   initialGlowupEvolutionOrder?: number | ''
+  initialHandheldBaseOnly?: boolean
   initialCategorySelect?: string[]
   initialVariants?: OutfitVariantRow[]
   initialCarouselImages?: CarouselImage[]
@@ -106,6 +110,7 @@ export default function EditOutfitSetForm({
     initialGlowupEvolutionOrder
   )
   const [categorySelect, setCategorySelect] = useState<string[]>(initialCategorySelect)
+  const [handheldBaseOnly, setHandheldBaseOnly] = useState(initialHandheldBaseOnly)
   const [setImage, setSetImage] = useState<string | null>(outfitSet.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(outfitSet.alt_image_url ?? null)
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>(initialCarouselImages)
@@ -407,6 +412,18 @@ export default function EditOutfitSetForm({
           </Select>
         </FormControl>
 
+        {categorySelect.includes('handhelds') && evolutionDrafts.length > 0 && (
+          <FormControlLabel
+            control={
+              <Switch
+                checked={handheldBaseOnly}
+                onChange={(e) => setHandheldBaseOnly(e.target.checked)}
+              />
+            }
+            label="Handhelds exclusive to base set"
+          />
+        )}
+
         <EvolutionEditor
           glowupEvolutionOrder={glowupEvolutionOrder}
           initialDrafts={initialDrafts}
@@ -514,6 +531,7 @@ export default function EditOutfitSetForm({
 
         <input name="evolution_drafts" type="hidden" value={JSON.stringify(evolutionDrafts)} />
         <input name="glowup_evolution_order" type="hidden" value={glowupEvolutionOrder} />
+        <input name="handheld_base_only" type="hidden" value={handheldBaseOnly ? 'true' : ''} />
         <input
           name="outfit_categories"
           type="hidden"

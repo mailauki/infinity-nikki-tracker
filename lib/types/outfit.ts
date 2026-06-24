@@ -58,6 +58,7 @@ export type OutfitSetRaw = Pick<
   | 'alt_image_url'
   | 'order'
   | 'base_set'
+  | 'handheld_base_only'
   | 'updated_at'
 >
 
