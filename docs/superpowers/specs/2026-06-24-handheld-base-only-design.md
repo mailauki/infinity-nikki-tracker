@@ -24,7 +24,10 @@ states.
   heuristics.
 - **Existing evolution-state handheld variants:** **deleted on save** when the
   toggle is on. This rides the edit action's existing expected-vs-DB variant
-  diff; obtained records resolve via the existing FK `SET NULL`/cascade behavior.
+  diff. `obtained_outfit` has **no** FK to `outfit_variants` (only to
+  `outfit_sets`/`outfit_categories`), so deleting a variant does not cascade to
+  obtained records — `editOutfitSet` therefore deletes the now-orphaned
+  `obtained_outfit` rows keyed `(evolution slug, 'handhelds')` explicitly.
 
 ## Scope
 
@@ -73,9 +76,11 @@ the existing data-driven variant model.
 ## Risk / behavior to confirm
 
 Flipping the toggle on is **destructive at form-save time**: existing
-evolution-state handheld variants — and their `obtained_outfit` records via FK
-`SET NULL` — are dropped when the form is saved. This matches the chosen
-"delete on save" behavior; there is no separate confirmation dialog.
+evolution-state handheld variants are dropped when the form is saved, and
+`editOutfitSet` explicitly deletes the matching `obtained_outfit` rows
+`(evolution slug, 'handhelds')` (no FK cascade exists for this — see Decisions).
+This matches the chosen "delete on save" behavior; there is no separate
+confirmation dialog.
 
 ## Affected files
 

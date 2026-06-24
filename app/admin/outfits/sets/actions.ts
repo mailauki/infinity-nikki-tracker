@@ -348,6 +348,28 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     if (deleteAllError) return { error: deleteAllError.message }
   }
 
+  // When handhelds are base-only, the evolution-state handheld variants were
+  // dropped above (either by the diff or the delete-all path). obtained_outfit
+  // has no FK to outfit_variants (only to outfit_sets/outfit_categories), so
+  // deleting those variants leaves any obtained record keyed
+  // (evolution slug, 'handhelds') orphaned. Clean them up regardless of which
+  // variant-sync branch ran.
+  if (handheldBaseOnly) {
+    const { data: evolutionRows } = await supabase
+      .from('outfit_sets')
+      .select('slug')
+      .eq('base_set', slug)
+    const evolutionSlugs = (evolutionRows ?? []).map((e) => e.slug)
+    if (evolutionSlugs.length > 0) {
+      const { error: obtainedError } = await supabase
+        .from('obtained_outfit')
+        .delete()
+        .in('outfit_set', evolutionSlugs)
+        .eq('outfit_category', 'handhelds')
+      if (obtainedError) return { error: obtainedError.message }
+    }
+  }
+
   // Resolve a submitted variant input key back to its current DB slug, carrying
   // the slug across a base set rename (variant_image_ / variant_title_ / etc.).
   const resolveVariantSlug = (submittedSlug: string) =>
