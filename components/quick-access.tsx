@@ -5,6 +5,7 @@ import {
   Box,
   Card,
   CardActionArea,
+  CardContent,
   CardHeader,
   Stack,
   Typography,
@@ -71,15 +72,16 @@ export function QuickAccess() {
                 </Stack>
               </Box>
               <CardHeader
-                avatar={
+                disableTypography
+								avatar={
                   <Avatar
                     alt={title}
                     src={image}
                     sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
                   />
                 }
-                subheader={subtitle}
-                title={title}
+								subheader={<Typography variant='body2'>{subtitle}</Typography>}
+                title={<Typography component='span' variant='subtitle2'>{title}</Typography>}
               />
             </CardActionArea>
           </Card>

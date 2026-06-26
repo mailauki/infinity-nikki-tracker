@@ -126,16 +126,9 @@ function FilterDrawer({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <IconButton onClick={() => toggleDrawer(!filterOpen)}>
+      <IconButton color={filterOpen ? 'primary' : 'default'} onClick={() => toggleDrawer(!filterOpen)}>
         <FilterList />
       </IconButton>
-      {/* <NavBarToolbar>
-        <Stack direction="row" sx={{ flexGrow: 1, justifyContent: 'flex-end' }}>
-          <IconButton onClick={() => toggleDrawer(!filterOpen)}>
-						<FilterList />
-					</IconButton>
-        </Stack>
-			</NavBarToolbar> */}
 
       <MuiDrawer
         anchor="right"
