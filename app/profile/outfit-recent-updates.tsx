@@ -30,35 +30,42 @@ export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOu
       />
       <CardContent>
         <List disablePadding>
-          {items.map((item) => (
-            <ListItem key={item.id} disablePadding>
-              <ListItemButton component="a" href={`/outfits/${item.outfit_set}`}>
-                <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
-                  <LazyImage
-                    alt={item.outfit_sets?.title ?? toTitle(item.outfit_set ?? '')}
-                    kind="square"
-                    size="md"
-                    src={
-                      item.outfit_sets?.outfit_variants.find(
-                        (v) => v.outfit_category === item.outfit_category
-                      )?.image_url ?? undefined
+          {items.map((item) => {
+            const variant = item.outfit_sets?.outfit_variants.find(
+              (v) => v.outfit_category === item.outfit_category
+            )
+            const setTitle = item.outfit_sets?.title ?? toTitle(item.outfit_set ?? '')
+
+            return (
+              <ListItem key={item.id} disablePadding>
+                <ListItemButton component="a" href={`/outfits/${item.outfit_set}`}>
+                  <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
+                    <LazyImage
+                      alt={setTitle}
+                      kind="square"
+                      size="md"
+                      src={variant?.image_url ?? undefined}
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={variant?.title ?? setTitle}
+                    secondary={
+                      variant?.title
+                        ? `${setTitle} • ${item.outfit_categories?.title}`
+                        : item.outfit_categories?.title
                     }
+                    slotProps={{
+                      primary: { variant: 'body2' },
+                      secondary: { variant: 'caption' },
+                    }}
                   />
-                </ListItemAvatar>
-                <ListItemText
-                  primary={item.outfit_sets?.title ?? toTitle(item.outfit_set ?? '')}
-                  secondary={item.outfit_categories?.title ?? undefined}
-                  slotProps={{
-                    primary: { variant: 'body2' },
-                    secondary: { variant: 'caption' },
-                  }}
-                />
-                <Typography color="text.secondary" variant="caption">
-                  {formatDate(item.created_at)}
-                </Typography>
-              </ListItemButton>
-            </ListItem>
-          ))}
+                  <Typography color="text.secondary" variant="caption">
+                    {formatDate(item.created_at)}
+                  </Typography>
+                </ListItemButton>
+              </ListItem>
+            )
+          })}
         </List>
       </CardContent>
     </Card>

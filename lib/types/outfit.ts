@@ -88,6 +88,7 @@ export type RecentObtainedOutfit = Pick<
     outfit_variants: {
       image_url: string | null
       outfit_category: string | null
+      title: string | null
     }[]
   } | null
   outfit_categories: { title: string } | null

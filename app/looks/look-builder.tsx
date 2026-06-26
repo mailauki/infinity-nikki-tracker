@@ -63,18 +63,14 @@ type SavePayload = {
   outfit_variant_slugs: string[]
 }
 
-// Short detail caption for a selected variant: the eureka color, or the outfit
-// evolution (sans the set prefix). Base variants have no evolution slug
-// (v.evolution is undefined) and return empty. Empty when there's no detail.
+// Detail caption for a selected variant, matching the VariantCard label format.
+// Eureka always shows `color • category`. Outfits carry the set title for
+// context when a variant title is the primary, otherwise lead with the category.
 function variantCaption(v: FlatVariant): string {
-  if (v.type === 'eureka') return v.color ? toTitle(v.color) : ''
-  if (!v.evolution) return ''
-  // Outfit evolution slugs look like `{setSlug}-{evolutionSuffix}`.
-  const evolution = v.evolution.startsWith(`${v.setSlug}-`)
-    ? v.evolution.slice(v.setSlug.length + 1)
-    : v.evolution
-  if (v.title) return `${v.setTitle}: ${toTitle(evolution)}`
-  return toTitle(evolution)
+  if (v.type === 'eureka') {
+    return v.color ? `${toTitle(v.color)} • ${v.categoryTitle}` : v.categoryTitle
+  }
+  return v.title ? `${v.setTitle} • ${v.categoryTitle}` : v.categoryTitle
 }
 
 type VariantCardProps = {
@@ -84,10 +80,16 @@ type VariantCardProps = {
 }
 
 function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
-  const label =
-    variant.type === 'eureka'
-      ? `${toTitle(variant.category)}${variant.color ? ` · ${toTitle(variant.color)}` : ''}`
-      : `${toTitle(variant.category)}${variant.evolution ? ` · ${toTitle(variant.evolution)}` : ''}`
+  // Eureka always shows `color • category`. Outfits lead with the variant
+  // title when present, otherwise fall back to `set title • category`.
+  let label: string
+  if (variant.type === 'eureka') {
+    label = variant.color
+      ? `${toTitle(variant.color)} • ${variant.categoryTitle}`
+      : variant.categoryTitle
+  } else {
+    label = variant.title ? variant.title : `${variant.setTitle} • ${variant.categoryTitle}`
+  }
 
   return (
     <Card
@@ -106,7 +108,7 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
             <LazyImage
               alt={variant.slug}
               color="transparent"
-              size="md"
+              size="lg"
               src={variant.image_url ?? undefined}
               sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
             >
@@ -119,7 +121,7 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
                   position: 'absolute',
                   bottom: -4,
                   right: -4,
-                  fontSize: 18,
+                  fontSize: 22,
                   bgcolor: 'surface.containerLowest',
                   borderRadius: '50%',
                 }}
@@ -132,7 +134,7 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
             sx={{
               fontSize: '0.65rem',
               lineHeight: 1.2,
-              maxWidth: 72,
+              maxWidth: 94,
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
@@ -457,7 +459,7 @@ export default function LookBuilder({
       >
         {items.map((v) => {
           const caption = variantCaption(v)
-          const primary = v.title || v.setTitle
+          const primary = v.title ?? v.setTitle
           return (
             <ListItem
               key={v.slug}
@@ -618,7 +620,7 @@ export default function LookBuilder({
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
               gap: 1,
             }}
           >
