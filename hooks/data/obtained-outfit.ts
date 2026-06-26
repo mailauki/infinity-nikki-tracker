@@ -29,7 +29,7 @@ export const getRecentObtainedOutfit = cache(async (user_id: UUID | string) => {
 				outfit_set,
 				outfit_category,
 				created_at,
-				outfit_sets ( title, outfit_variants ( image_url, outfit_category ) ),
+				outfit_sets ( title, outfit_variants ( image_url, outfit_category, title ) ),
 				outfit_categories ( title )
 			`
     )
