@@ -41,18 +41,15 @@ export default function OutfitSetListItem({
     ? evolution.alt_image_url || evolution.image_url
     : set.alt_image_url || set.image_url
 
-	const badgeContent = evolution && (
-		<Box sx={{ display: 'flex' }}>
-			{isGlowup ? (
-				<ToggleIcon item={{ title: 'glowup', image: '/icons/glowup.png' }} size="xs" />
-			) : (
-				<ToggleIcon
-					item={{ title: 'evolution', image: '/icons/evolution.png' }}
-					size="xs"
-				/>
-			)}
-		</Box>
-	)
+  const badgeContent = evolution && (
+    <Box sx={{ display: 'flex' }}>
+      {isGlowup ? (
+        <ToggleIcon item={{ title: 'glowup', image: '/icons/glowup.png' }} size="xs" />
+      ) : (
+        <ToggleIcon item={{ title: 'evolution', image: '/icons/evolution.png' }} size="xs" />
+      )}
+    </Box>
+  )
 
   return (
     <ListItem disablePadding sx={{ borderRadius: 3 }}>
@@ -60,7 +57,11 @@ export default function OutfitSetListItem({
         <CardHeader
           disableTypography
           action={isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
-          avatar={<Badge badgeContent={badgeContent}><LazyImage alt={title} kind="square" size="md" src={image || ''} /></Badge>}
+          avatar={
+            <Badge badgeContent={badgeContent}>
+              <LazyImage alt={title} kind="square" size="md" src={image || ''} />
+            </Badge>
+          }
           subheader={<RarityStars rarity={set.rarity} />}
           sx={{
             '& .MuiCardHeader-content': {
