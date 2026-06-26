@@ -23,6 +23,11 @@ interface SortContextValue {
   // "Default Sort" toggle, which only ever sort by date.
   sortOrder: SortOrder
   toggleSort: () => void
+  // Restore axis to 'date' and direction to the configured default. Used by the
+  // filter menu "Reset".
+  resetSort: () => void
+  // Whether the current sort differs from its defaults (drives the Reset button).
+  isSortDefault: boolean
 }
 
 export const SortContext = createContext<SortContextValue>({
@@ -32,6 +37,8 @@ export const SortContext = createContext<SortContextValue>({
   setSortAxis: () => {},
   sortOrder: 'new',
   toggleSort: () => {},
+  resetSort: () => {},
+  isSortDefault: true,
 })
 
 const SORT_AXES: SortAxis[] = ['date', 'rarity', 'progress', 'title']
@@ -78,6 +85,23 @@ export function SortProvider({
     if (isLoggedIn) startTransition(() => updateSortAxis(axis))
   }
 
+  const defaultDir = orderToDir(defaultOrder)
+
+  // Restore both axis and direction to their defaults, persisting for logged-in
+  // users in one transition.
+  const resetSort = () => {
+    setSortAxisState('date')
+    setSortDir(defaultDir)
+    if (isLoggedIn) {
+      startTransition(() => {
+        updateSortAxis('date')
+        updateSortDir(defaultDir)
+      })
+    }
+  }
+
+  const isSortDefault = sortAxis === 'date' && sortDir === defaultDir
+
   return (
     <SortContext.Provider
       value={{
@@ -87,6 +111,8 @@ export function SortProvider({
         setSortAxis,
         sortOrder: dirToOrder(sortDir),
         toggleSort: toggleSortDir,
+        resetSort,
+        isSortDefault,
       }}
     >
       {children}

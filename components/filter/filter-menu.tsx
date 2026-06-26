@@ -36,6 +36,7 @@ import EvolutionToggle from './evolution-toggle'
 import SortOutfitToggle from './sort-outfit-toggle'
 import DensityToggle from './density-toggle'
 import { useOutfitImageMode } from '../outfits/outfit-image-mode-context'
+import { useSortOrder } from '../sort-context'
 import OutfitCategorySelect from './outfit-category-select'
 import EvolutionOrderToggle from './evolution-order-toggle'
 import GlowupToggle from './glowup-toggle'
@@ -126,16 +127,12 @@ function FilterDrawer({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <IconButton onClick={() => toggleDrawer(!filterOpen)}>
+      <IconButton
+        color={filterOpen ? 'primary' : 'default'}
+        onClick={() => toggleDrawer(!filterOpen)}
+      >
         <FilterList />
       </IconButton>
-      {/* <NavBarToolbar>
-        <Stack direction="row" sx={{ flexGrow: 1, justifyContent: 'flex-end' }}>
-          <IconButton onClick={() => toggleDrawer(!filterOpen)}>
-						<FilterList />
-					</IconButton>
-        </Stack>
-			</NavBarToolbar> */}
 
       <MuiDrawer
         anchor="right"
@@ -213,6 +210,7 @@ export default function FilterMenu() {
   } = useOutfitData()
 
   const { density, mode: imageMode, reset: resetImageMode } = useOutfitImageMode()
+  const { resetSort, isSortDefault } = useSortOrder()
 
   const isOutfits = pathname.startsWith('/outfits')
 
@@ -245,6 +243,15 @@ export default function FilterMenu() {
     const handleClearAll = () => {
       onClearOutfitFilters()
       resetImageMode()
+    }
+
+    // "Reset" restores only the view controls — density, image mode, and sort —
+    // to their defaults, leaving the filter selections intact.
+    const hasViewChanges = density !== 'standard' || imageMode !== 'image' || !isSortDefault
+
+    const handleReset = () => {
+      resetImageMode()
+      resetSort()
     }
 
     const availableOrders = [
@@ -334,6 +341,11 @@ export default function FilterMenu() {
           <Divider sx={{ mx: 2, mt: 2 }} />
           <ListItem>
             <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
+              {hasViewChanges && (
+                <Button color="secondary" variant="outlined" onClick={handleReset}>
+                  Reset
+                </Button>
+              )}
               {hasActiveFilters && (
                 <Button color="secondary" variant="outlined" onClick={handleClearAll}>
                   Clear all
