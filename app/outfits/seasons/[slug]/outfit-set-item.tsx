@@ -47,7 +47,7 @@ export default function OutfitSetListItem({
         <CardHeader
           disableTypography
           action={isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
-          avatar={<LazyImage alt={title} kind="square" size='md' src={image || ''} />}
+          avatar={<LazyImage alt={title} kind="square" size="md" src={image || ''} />}
           subheader={<RarityStars rarity={set.rarity} />}
           sx={{
             '& .MuiCardHeader-content': {
@@ -66,7 +66,7 @@ export default function OutfitSetListItem({
               <Typography component="span" variant="subtitle1">
                 {title}
               </Typography>
-							{evolution && (
+              {evolution && (
                 <Box sx={{ display: 'flex' }}>
                   {isGlowup ? (
                     <ToggleIcon item={{ title: 'glowup', image: '/icons/glowup.png' }} size="xs" />

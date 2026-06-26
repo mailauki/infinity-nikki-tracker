@@ -73,15 +73,19 @@ export function QuickAccess() {
               </Box>
               <CardHeader
                 disableTypography
-								avatar={
+                avatar={
                   <Avatar
                     alt={title}
                     src={image}
                     sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
                   />
                 }
-								subheader={<Typography variant='body2'>{subtitle}</Typography>}
-                title={<Typography component='span' variant='subtitle2'>{title}</Typography>}
+                subheader={<Typography variant="body2">{subtitle}</Typography>}
+                title={
+                  <Typography component="span" variant="subtitle2">
+                    {title}
+                  </Typography>
+                }
               />
             </CardActionArea>
           </Card>

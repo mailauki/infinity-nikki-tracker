@@ -80,7 +80,11 @@ export default function AdminRecentsList({
                     </LazyImage>
                   </ListItemAvatar>
                   <ListItemText
-                    primary={row.type === 'Evolutions' ? `${toTitle(row.slug.split('-')[0])}: ${row.title}` : row.title}
+                    primary={
+                      row.type === 'Evolutions'
+                        ? `${toTitle(row.slug.split('-')[0])}: ${row.title}`
+                        : row.title
+                    }
                     secondary={row.type}
                     slotProps={{
                       primary: { variant: 'body2' },

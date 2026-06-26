@@ -126,7 +126,10 @@ function FilterDrawer({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <IconButton color={filterOpen ? 'primary' : 'default'} onClick={() => toggleDrawer(!filterOpen)}>
+      <IconButton
+        color={filterOpen ? 'primary' : 'default'}
+        onClick={() => toggleDrawer(!filterOpen)}
+      >
         <FilterList />
       </IconButton>
 

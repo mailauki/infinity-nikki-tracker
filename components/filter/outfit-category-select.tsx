@@ -6,12 +6,15 @@ import {
   Checkbox,
   Chip,
   FormControl,
+  IconButton,
+  InputAdornment,
   InputLabel,
   ListItemText,
   MenuItem,
   Select,
   SelectChangeEvent,
 } from '@mui/material'
+import { Clear } from '@mui/icons-material'
 import { toTitle } from '@/lib/utils'
 import { MENU_PROPS } from '@/lib/types/props'
 
@@ -74,6 +77,24 @@ export default function OutfitCategorySelect({
           multiple
           MenuProps={MENU_PROPS}
           aria-label="Category"
+          endAdornment={
+            selectedSlugs.length > 0 && (
+              <InputAdornment position="end" sx={{ mr: 3 }}>
+                <IconButton
+                  aria-label="Clear categories"
+                  edge="end"
+                  size="small"
+                  onClick={() =>
+                    onCategoryChange({
+                      target: { value: [], name: name ?? '' },
+                    } as unknown as SelectChangeEvent<string[]>)
+                  }
+                >
+                  <Clear fontSize="small" />
+                </IconButton>
+              </InputAdornment>
+            )
+          }
           id="outfit-category-select"
           label="Category"
           labelId="outfit-category-select-label"
