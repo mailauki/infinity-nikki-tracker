@@ -28,7 +28,12 @@ export default function CategoryToggle({
 }) {
   return (
     <FormControl>
-      <Typography component={FormLabel} id="category-buttons-group-label" variant="overline">
+      <Typography
+        component={FormLabel}
+        id="category-buttons-group-label"
+        sx={{ fontSize: 'overline.fontSize', pb: 0.5 }}
+        variant="overline"
+      >
         Category
       </Typography>
       <ToggleButtonGroup
