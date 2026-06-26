@@ -5,7 +5,7 @@ import RarityStars from '@/components/rarity-stars'
 import ToggleIcon from '@/components/toggle-icon'
 import { Evolution, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
-import { Box, CardActionArea, CardHeader, ListItem, Stack, Typography } from '@mui/material'
+import { Badge, Box, CardActionArea, CardHeader, ListItem, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
 
 // A single list row: either the base set (evolution === null) or one of its
@@ -41,13 +41,26 @@ export default function OutfitSetListItem({
     ? evolution.alt_image_url || evolution.image_url
     : set.alt_image_url || set.image_url
 
+	const badgeContent = evolution && (
+		<Box sx={{ display: 'flex' }}>
+			{isGlowup ? (
+				<ToggleIcon item={{ title: 'glowup', image: '/icons/glowup.png' }} size="xs" />
+			) : (
+				<ToggleIcon
+					item={{ title: 'evolution', image: '/icons/evolution.png' }}
+					size="xs"
+				/>
+			)}
+		</Box>
+	)
+
   return (
     <ListItem disablePadding sx={{ borderRadius: 3 }}>
       <CardActionArea component={Link} href={href}>
         <CardHeader
           disableTypography
           action={isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
-          avatar={<LazyImage alt={title} kind="square" size="md" src={image || ''} />}
+          avatar={<Badge badgeContent={badgeContent}><LazyImage alt={title} kind="square" size="md" src={image || ''} /></Badge>}
           subheader={<RarityStars rarity={set.rarity} />}
           sx={{
             '& .MuiCardHeader-content': {
@@ -66,18 +79,6 @@ export default function OutfitSetListItem({
               <Typography component="span" variant="subtitle1">
                 {title}
               </Typography>
-              {evolution && (
-                <Box sx={{ display: 'flex' }}>
-                  {isGlowup ? (
-                    <ToggleIcon item={{ title: 'glowup', image: '/icons/glowup.png' }} size="xs" />
-                  ) : (
-                    <ToggleIcon
-                      item={{ title: 'evolution', image: '/icons/evolution.png' }}
-                      size="xs"
-                    />
-                  )}
-                </Box>
-              )}
             </Stack>
           }
         />
