@@ -66,7 +66,7 @@ export default function OutfitVariantCard({
             }}
           >
             <Typography color="textSecondary" variant="caption">
-              {categoryLabel}
+              {outfitVariant.title ? outfitVariant.title : categoryLabel}
             </Typography>
           </Stack>
           <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
