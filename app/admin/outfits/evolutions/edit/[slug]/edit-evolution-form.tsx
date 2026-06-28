@@ -9,7 +9,7 @@ import { CarouselImage } from '@/lib/types/outfit'
 import { editEvolution } from './actions'
 import { navLinksData } from '@/lib/nav-links'
 import { Tables } from '@/lib/types/supabase'
-import { toTitle } from '@/lib/utils'
+import OutfitVariantImageCard from '@/components/outfits/outfit-variant-image-card'
 
 type EvolutionRow = Pick<
   Tables<'outfit_sets'>,
@@ -160,64 +160,26 @@ export default function EditEvolutionForm({
               {variantRows
                 .filter((v) => v.slug)
                 .map((v) => (
-                  <Stack key={v.slug} spacing={1}>
-                    <Typography variant="caption">
-                      {(v.outfit_category && toTitle(v.outfit_category)) ?? v.slug}
-                    </Typography>
-                    <Stack direction="row" spacing={1}>
-                      <input
-                        name={`variant_image_${v.slug}`}
-                        type="hidden"
-                        value={variantImages[v.slug!] ?? ''}
-                      />
-                      <ImageUpload
-                        caption={(v.outfit_category && toTitle(v.outfit_category)) ?? undefined}
-                        slug={v.slug ?? undefined}
-                        table="outfit_variants"
-                        url={variantImages[v.slug!] ?? null}
-                        onUpload={(url) =>
-                          setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))
-                        }
-                      />
-                      <input
-                        name={`variant_alt_image_${v.slug}`}
-                        type="hidden"
-                        value={variantAltImages[v.slug!] ?? ''}
-                      />
-                      <ImageUpload
-                        caption={
-                          (v.outfit_category && `Alt ${toTitle(v.outfit_category)}`) ?? undefined
-                        }
-                        column="alt_image_url"
-                        slug={v.slug ?? undefined}
-                        table="outfit_variants"
-                        url={variantAltImages[v.slug!] ?? null}
-                        onUpload={(url) =>
-                          setVariantAltImages((prev) => ({ ...prev, [v.slug!]: url }))
-                        }
-                      />
-                    </Stack>
-                    <TextField
-                      label="Title"
-                      name={`variant_title_${v.slug}`}
-                      size="small"
-                      value={variantTitles[v.slug!] ?? ''}
-                      onChange={(e) =>
-                        setVariantTitles((prev) => ({ ...prev, [v.slug!]: e.target.value }))
-                      }
-                    />
-                    <TextField
-                      multiline
-                      label="Description"
-                      minRows={2}
-                      name={`variant_description_${v.slug}`}
-                      size="small"
-                      value={variantDescriptions[v.slug!] ?? ''}
-                      onChange={(e) =>
-                        setVariantDescriptions((prev) => ({ ...prev, [v.slug!]: e.target.value }))
-                      }
-                    />
-                  </Stack>
+                  <OutfitVariantImageCard
+                    key={v.id}
+                    altImage={variantAltImages[v.slug!] ?? null}
+                    description={variantDescriptions[v.slug!] ?? ''}
+                    image={variantImages[v.slug!] ?? null}
+                    title={variantTitles[v.slug!] ?? ''}
+                    variant={v}
+                    onAltImageChange={(url) =>
+                      setVariantAltImages((prev) => ({ ...prev, [v.slug!]: url }))
+                    }
+                    onDescriptionChange={(value) =>
+                      setVariantDescriptions((prev) => ({ ...prev, [v.slug!]: value }))
+                    }
+                    onImageChange={(url) =>
+                      setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))
+                    }
+                    onTitleChange={(value) =>
+                      setVariantTitles((prev) => ({ ...prev, [v.slug!]: value }))
+                    }
+                  />
                 ))}
             </Box>
           </Stack>
