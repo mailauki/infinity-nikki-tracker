@@ -18,7 +18,7 @@ import { Clear } from '@mui/icons-material'
 import { toTitle } from '@/lib/utils'
 import { MENU_PROPS } from '@/lib/types/props'
 
-export const DRESS_SLUGS = ['dress']
+export const DRESS_SLUGS = ['dresses']
 export const SEPARATES_SLUGS = ['tops', 'bottoms']
 
 function toSlugArray(selectedSlugs: string | string[] | null): string[] {

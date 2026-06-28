@@ -11,11 +11,11 @@ function categoryTitleMap(categories: { slug: string; title: string }[]) {
 // the default `slug.replace(/_/g, '-')` rule. Slugs absent here and from the
 // folder (e.g. body_paint, eureka head/hands/feet) resolve to undefined.
 const CATEGORY_ICON_FILES: Record<string, string> = {
-  dress: 'dresses',
   back_pieces: 'backpieces',
 }
 const CATEGORY_ICON_SLUGS = new Set([
   'hair',
+  'dresses',
   'outerwear',
   'tops',
   'bottoms',
