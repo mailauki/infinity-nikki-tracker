@@ -56,7 +56,9 @@ type OutfitVariantRow = Pick<
   | 'alt_image_url'
   | 'title'
   | 'description'
->
+> & {
+  outfit_categories: Pick<Tables<'outfit_categories'>, 'id'> | null
+}
 
 const FORM_ID = 'edit-outfit-set'
 
@@ -470,7 +472,11 @@ export default function EditOutfitSetForm({
             <Box
               sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
             >
-              {variantRows
+              {[...variantRows]
+                .sort(
+                  (a, b) =>
+                    (a.outfit_categories?.id ?? Infinity) - (b.outfit_categories?.id ?? Infinity)
+                )
                 .filter((v) => v.slug)
                 .map((v) => (
                   <OutfitVariantImageCard

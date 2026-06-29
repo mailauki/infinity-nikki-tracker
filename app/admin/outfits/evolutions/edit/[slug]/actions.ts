@@ -84,7 +84,7 @@ export async function editEvolution(
       supabase
         .from('outfit_variants')
         .select(
-          'id, slug, outfit_category, image_url, alt_image_url, title, description, default, updated_at'
+          'id, slug, outfit_category, image_url, alt_image_url, title, description, default, updated_at, outfit_categories ( id )'
         )
         .eq('outfit_set', currentSlug)
         .order('id', { ascending: true }),
