@@ -87,6 +87,7 @@ export const navLinksData: {
           { title: 'Evolutions', url: '/admin/outfits/evolutions' },
           { title: 'Abilities', url: '/admin/outfits/abilities' },
           { title: 'Seasons', url: '/admin/outfits/seasons' },
+          { title: 'Season Categories', url: '/admin/outfits/season-categories' },
         ],
       },
       {
@@ -149,6 +150,12 @@ export const navLinksData: {
         list: '/admin/outfits/variants',
         add: '/admin/outfits/variants/new',
         edit: '/admin/outfits/variants/edit',
+      },
+      seasonCategories: {
+        title: 'Season Categories',
+        list: '/admin/outfits/season-categories',
+        add: '/admin/outfits/season-categories/new',
+        edit: '/admin/outfits/season-categories/edit',
       },
     },
   },
