@@ -13,6 +13,13 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
 
   const outfit_set = (formData.get('outfit_set') as string | null) || null
   const outfit_category = (formData.get('outfit_category') as string | null) || null
+  const seasons = (formData.get('seasons') as string | null) || null
+  const season_category = (formData.get('season_category') as string | null) || null
+  const rarityRaw = parseInt(formData.get('rarity') as string)
+  const rarity = isNaN(rarityRaw) ? null : rarityRaw
+  const style = (formData.get('style') as string | null) || null
+  const label = (formData.get('label') as string | null) || null
+  const label_2 = (formData.get('label_2') as string | null) || null
   const title = (formData.get('title') as string | null)?.trim() || null
   const description = (formData.get('description') as string | null)?.trim() || null
   const isDefault = formData.get('default') === 'true'
@@ -24,6 +31,12 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
     {
       outfit_set,
       outfit_category,
+      seasons,
+      season_category,
+      rarity,
+      style,
+      label,
+      label_2,
       title,
       description,
       default: isDefault,
@@ -50,6 +63,13 @@ export async function editOutfitVariant(
 
   const outfit_set = (formData.get('outfit_set') as string | null) || null
   const outfit_category = (formData.get('outfit_category') as string | null) || null
+  const seasons = (formData.get('seasons') as string | null) || null
+  const season_category = (formData.get('season_category') as string | null) || null
+  const rarityRaw = parseInt(formData.get('rarity') as string)
+  const rarity = isNaN(rarityRaw) ? null : rarityRaw
+  const style = (formData.get('style') as string | null) || null
+  const label = (formData.get('label') as string | null) || null
+  const label_2 = (formData.get('label_2') as string | null) || null
   const title = (formData.get('title') as string | null)?.trim() || null
   const description = (formData.get('description') as string | null)?.trim() || null
   const isDefault = formData.get('default') === 'true'
@@ -62,6 +82,12 @@ export async function editOutfitVariant(
     .update({
       outfit_set,
       outfit_category,
+      seasons,
+      season_category,
+      rarity,
+      style,
+      label,
+      label_2,
       title,
       description,
       default: isDefault,
