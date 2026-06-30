@@ -21,7 +21,6 @@ const SELECT = `
   updated_at,
   outfit_sets ( title ),
   outfit_categories ( title ),
-  seasons ( title ),
   season_categories ( title )
 `
 
