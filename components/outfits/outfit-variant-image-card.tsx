@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Card, CardContent, CardHeader, Stack, TextField } from '@mui/material'
+import { Card, CardContent, CardHeader, Stack, TextField } from '@mui/material'
 import { toTitle } from '@/lib/utils'
 import { Tables } from '@/lib/types/supabase'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
@@ -53,20 +53,21 @@ export default function OutfitVariantImageCard({
         sx={{ pb: 0 }}
         title={categoryTitle ?? variant.slug}
       />
-      <CardContent sx={{ pt: 0 }}>
+      <CardContent>
         <Stack spacing={1.5}>
-          <Box sx={{ pb: 1 }}>
-            <ImageUploadPair
-              altImage={altImage}
-              hiddenInputName={`variant_image_${variant.slug}`}
-              image={image}
-              size="lg"
-              slug={slug}
-              table="outfit_variants"
-              onAltImageChange={onAltImageChange}
-              onImageChange={onImageChange}
-            />
-          </Box>
+          {/* hiddenInputName lets the set form's action re-apply this image under the
+              variant's new slug if the set is renamed in the same submit (see
+              app/admin/outfits/sets/actions.ts variant_image_ loop). */}
+          <ImageUploadPair
+            altImage={altImage}
+            hiddenInputName={`variant_image_${variant.slug}`}
+            image={image}
+            size="lg"
+            slug={slug}
+            table="outfit_variants"
+            onAltImageChange={onAltImageChange}
+            onImageChange={onImageChange}
+          />
           <TextField
             label="Title"
             name={`variant_title_${variant.slug}`}
