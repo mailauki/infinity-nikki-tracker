@@ -123,15 +123,16 @@ export default function AddOutfitVariantForm({
         {state?.error && <Alert severity="error">{state.error}</Alert>}
 
         <FormControl>
-          <InputLabel>Outfit Set</InputLabel>
+          <InputLabel shrink>Outfit Set</InputLabel>
           <Select
+            displayEmpty
             MenuProps={MENU_PROPS}
             label="Outfit Set"
             name="outfit_set"
             value={outfitSet}
             onChange={(e) => setOutfitSet(e.target.value)}
           >
-            <MenuItem value="">— None (standalone piece) —</MenuItem>
+            <MenuItem value="">— Standalone piece —</MenuItem>
             {outfitSets
               .filter((s) => s.base_set === null)
               .map((set) => (
@@ -265,6 +266,7 @@ export default function AddOutfitVariantForm({
         </FormControl>
 
         <TextField
+          required={!outfitSet}
           label="Title"
           name="title"
           value={title}
