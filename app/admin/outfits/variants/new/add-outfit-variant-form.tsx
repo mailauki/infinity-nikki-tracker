@@ -3,19 +3,28 @@
 import { useActionState, useEffect, useState } from 'react'
 import {
   Alert,
+  Box,
+  Chip,
   FormControl,
   FormControlLabel,
+  FormLabel,
   IconButton,
   InputAdornment,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
   Stack,
   Switch,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from '@mui/material'
-import { Edit, EditOff } from '@mui/icons-material'
+import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
 import { OutfitCategory, OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
+import { Label, Style } from '@/lib/types/eureka'
+import RarityToggle from '@/components/filter/rarity-toggle'
 import { useFormConfig } from '@/app/admin/form-context'
 import { addOutfitVariant } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
@@ -29,17 +38,24 @@ export default function AddOutfitVariantForm({
   outfitCategories,
   seasons,
   seasonCategories,
+  styles,
+  labels,
 }: {
   outfitSets: OutfitSetRaw[]
   outfitCategories: OutfitCategory[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
+  styles: Style[]
+  labels: Label[]
 }) {
   const { setFormConfig } = useFormConfig()
   const [outfitSet, setOutfitSet] = useState('')
   const [outfitCategory, setOutfitCategory] = useState('')
   const [season, setSeason] = useState('')
   const [seasonCategory, setSeasonCategory] = useState('')
+  const [rarity, setRarity] = useState<number | ''>('')
+  const [style, setStyle] = useState('')
+  const [labelSelect, setLabelSelect] = useState<string[]>([])
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [isDefault, setIsDefault] = useState(false)
@@ -57,6 +73,19 @@ export default function AddOutfitVariantForm({
       }
     }
   }, [outfitSet, outfitCategory, title, editSlug])
+
+  useEffect(() => {
+    const set = outfitSets.find((s) => s.slug === outfitSet)
+    if (set) {
+      if (typeof set.rarity === 'number') setRarity(set.rarity)
+      setStyle(set.style ?? '')
+      setLabelSelect([set.label, set.label_2].filter(Boolean) as string[])
+    } else {
+      setRarity('')
+      setStyle('')
+      setLabelSelect([])
+    }
+  }, [outfitSet]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const [state, action, pending] = useActionState(addOutfitVariant, null)
 
@@ -77,6 +106,9 @@ export default function AddOutfitVariantForm({
       setOutfitCategory('')
       setSeason('')
       setSeasonCategory('')
+      setRarity('')
+      setStyle('')
+      setLabelSelect([])
       setTitle('')
       setDescription('')
       setIsDefault(false)
@@ -161,6 +193,74 @@ export default function AddOutfitVariantForm({
                 {sc.title}
               </MenuItem>
             ))}
+          </Select>
+        </FormControl>
+
+        <input name="rarity" type="hidden" value={rarity} />
+        <RarityToggle
+          selectedRarity={typeof rarity === 'number' ? rarity : null}
+          onRarityChange={(_e, value) => setRarity(value ?? '')}
+        />
+
+        <FormControl>
+          <Typography component={FormLabel} id="variant-style-label" variant="overline">
+            Style
+          </Typography>
+          <input name="style" type="hidden" value={style} />
+          <ToggleButtonGroup
+            exclusive
+            aria-labelledby="variant-style-label"
+            value={style || null}
+            onChange={(_, value) => setStyle(value ?? '')}
+          >
+            {styles.map((s) => (
+              <ToggleButton key={s.slug} sx={{ py: 1.25 }} value={s.slug}>
+                {s.title}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        </FormControl>
+
+        <input name="label" type="hidden" value={labelSelect[0] ?? ''} />
+        <input name="label_2" type="hidden" value={labelSelect[1] ?? ''} />
+        <FormControl>
+          <InputLabel>Labels</InputLabel>
+          <Select
+            multiple
+            MenuProps={MENU_PROPS}
+            input={<OutlinedInput label="Labels" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((s) => {
+                  const lbl = labels.find((l) => l.slug === s)
+                  return <Chip key={s} label={lbl?.title ?? s} size="small" />
+                })}
+              </Box>
+            )}
+            value={labelSelect}
+            onChange={(e) => {
+              const { value } = e.target
+              const next = typeof value === 'string' ? value.split(',') : value
+              if (next.length <= 2) setLabelSelect(next)
+            }}
+          >
+            {labels.map((l) => {
+              const selected = labelSelect.includes(l.slug)
+              return (
+                <MenuItem
+                  key={l.slug}
+                  disabled={!selected && labelSelect.length >= 2}
+                  value={l.slug}
+                >
+                  {selected ? (
+                    <CheckBox fontSize="small" sx={{ mr: 1 }} />
+                  ) : (
+                    <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
+                  )}
+                  {l.title}
+                </MenuItem>
+              )
+            })}
           </Select>
         </FormControl>
 

@@ -4,6 +4,8 @@ import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { getStyles } from '@/hooks/data/styles'
+import { getLabels } from '@/hooks/data/labels'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -22,19 +24,24 @@ export default function NewOutfitVariantPage() {
 }
 
 async function NewOutfitVariant() {
-  const [outfitSets, outfitCategories, seasons, seasonCategories] = await Promise.all([
-    getOutfitSetsRaw(),
-    getOutfitCategories(),
-    getSeasons(),
-    getSeasonCategories(),
-  ])
+  const [outfitSets, outfitCategories, seasons, seasonCategories, styles, labels] =
+    await Promise.all([
+      getOutfitSetsRaw(),
+      getOutfitCategories(),
+      getSeasons(),
+      getSeasonCategories(),
+      getStyles(),
+      getLabels(),
+    ])
 
   return (
     <AddOutfitVariantForm
+      labels={labels}
       outfitCategories={outfitCategories}
       outfitSets={outfitSets}
       seasonCategories={seasonCategories}
       seasons={seasons}
+      styles={styles}
     />
   )
 }
