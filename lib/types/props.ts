@@ -36,6 +36,7 @@ export type AdminLinks = {
     abilities: AdminLink
     seasons: AdminLink
     variants: AdminLink
+    seasonCategories: AdminLink
   }
 }
 

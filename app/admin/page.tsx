@@ -13,6 +13,7 @@ import { getEvolutions } from '@/hooks/data/evolutions'
 import { getAbilities } from '@/hooks/data/abilities'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getOutfitVariantsRaw } from '@/hooks/data/admin/outfit-variants'
+import { getSeasonCategories } from '@/hooks/data/season-categories'
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -35,6 +36,7 @@ async function AdminContent() {
     evolutions,
     abilities,
     seasons,
+    seasonCategories,
     role,
     recentlyAdded,
     recentlyEdited,
@@ -46,6 +48,7 @@ async function AdminContent() {
     getEvolutions(),
     getAbilities(),
     getSeasons(),
+    getSeasonCategories(),
     getUserRole(),
     getRecentlyAdded(),
     getRecentlyEdited(),
@@ -91,6 +94,12 @@ async function AdminContent() {
           count={seasons?.length ?? 0}
           listHref={navLinksData.admin.outfits.seasons.list}
           title="Seasons"
+        />
+        <StatCard
+          addHref={isAdmin ? navLinksData.admin.outfits.seasonCategories.add : undefined}
+          count={seasonCategories?.length ?? 0}
+          listHref={navLinksData.admin.outfits.seasonCategories.list}
+          title="Season Categories"
         />
         <StatCard
           addHref={isAdmin ? navLinksData.admin.eureka.sets.add : undefined}
