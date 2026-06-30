@@ -49,7 +49,7 @@ const FILTER_STORAGE_KEY = 'filter-drawer-open'
 
 const openedMixin = (theme: Theme): CSSObject => ({
   height: 'calc(100vh - 100px)',
-  borderColor: 'transparent',
+  border: 0,
   borderRadius: '30px',
   // marginRight: 20,
   marginTop: 80,
@@ -64,7 +64,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
 
 const closedMixin = (theme: Theme): CSSObject => ({
   height: 'calc(100vh - 100px)',
-  borderColor: 'transparent',
+  border: 0,
   borderRadius: '30px',
   // marginRight: 20,
   marginTop: 80,

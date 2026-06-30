@@ -271,7 +271,8 @@ export const baseThemeOptions: ThemeOptions = {
     },
     MuiCard: {
       defaultProps: {
-        elevation: 0,
+        variant: 'filled',
+        elevation: 1,
       },
       styleOverrides: {
         root: {
@@ -444,6 +445,13 @@ export const baseThemeOptions: ThemeOptions = {
       styleOverrides: {
         root: {
           variants: filledPaperVariants,
+        },
+      },
+    },
+    MuiDrawer: {
+      defaultProps: {
+        slotProps: {
+          paper: { variant: 'filled', surface: 'main' },
         },
       },
     },

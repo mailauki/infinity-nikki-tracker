@@ -30,9 +30,9 @@ export default function EurekaVariantCard({
   return (
     <Grow in={!exiting} timeout={300}>
       <Card
+        elevation={eurekaVariant.obtained ? 1 : 3}
         sx={{
           minWidth: 'fit-content',
-          bgcolor: eurekaVariant.obtained ? 'surface.containerLow' : 'surface.containerHighest',
         }}
       >
         <Box sx={{ position: 'relative', height: '100%' }}>

@@ -21,7 +21,7 @@ export const NAV_DRAWER_WIDTH = 240
 
 const openedMixin = (theme: Theme): CSSObject => ({
   height: 'calc(100vh - 40px)',
-  borderColor: 'transparent',
+  border: 0,
   borderRadius: '30px',
   margin: 20,
   marginRight: 0,
@@ -35,7 +35,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
 
 const closedMixin = (theme: Theme): CSSObject => ({
   height: 'calc(100vh - 40px)',
-  borderColor: 'transparent',
+  border: 0,
   borderRadius: '30px',
   margin: 20,
   marginRight: 0,
