@@ -12,6 +12,7 @@ import { navLinksData } from '@/lib/nav-links'
 import { getEvolutions } from '@/hooks/data/evolutions'
 import { getAbilities } from '@/hooks/data/abilities'
 import { getSeasons } from '@/hooks/data/seasons'
+import { getOutfitVariantsRaw } from '@/hooks/data/admin/outfit-variants'
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -30,6 +31,7 @@ async function AdminContent() {
     eurekaSets,
     { eurekaVariants, trials },
     outfitSets,
+    outfitVariants,
     evolutions,
     abilities,
     seasons,
@@ -40,6 +42,7 @@ async function AdminContent() {
     getEurekaSets(),
     getAdminData(),
     getOutfitSets(),
+    getOutfitVariantsRaw(),
     getEvolutions(),
     getAbilities(),
     getSeasons(),
@@ -64,6 +67,12 @@ async function AdminContent() {
           count={outfitSets?.length ?? 0}
           listHref={navLinksData.admin.outfits.sets.list}
           title="Outfit Sets"
+        />
+        <StatCard
+          addHref={isAdmin ? navLinksData.admin.outfits.variants.add : undefined}
+          count={outfitVariants?.length ?? 0}
+          listHref={navLinksData.admin.outfits.variants.list}
+          title="Outfit Variants"
         />
         <StatCard
           addHref={undefined}

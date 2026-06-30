@@ -83,6 +83,7 @@ export const navLinksData: {
         image: '/icons/outfits.png',
         items: [
           { title: 'Sets', url: '/admin/outfits/sets' },
+          { title: 'Variants', url: '/admin/outfits/variants' },
           { title: 'Evolutions', url: '/admin/outfits/evolutions' },
           { title: 'Abilities', url: '/admin/outfits/abilities' },
           { title: 'Seasons', url: '/admin/outfits/seasons' },
@@ -142,6 +143,12 @@ export const navLinksData: {
         list: '/admin/outfits/seasons',
         add: '/admin/outfits/seasons/new',
         edit: '/admin/outfits/seasons/edit',
+      },
+      variants: {
+        title: 'Outfit Variants',
+        list: '/admin/outfits/variants',
+        add: '/admin/outfits/variants/new',
+        edit: '/admin/outfits/variants/edit',
       },
     },
   },

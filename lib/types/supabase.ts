@@ -603,7 +603,7 @@ export type Database = {
           id: number
           image_url: string | null
           outfit_category: string | null
-          outfit_set: string
+          outfit_set: string | null
           slug: string
           title: string | null
           updated_at: string | null
@@ -616,7 +616,7 @@ export type Database = {
           id?: number
           image_url?: string | null
           outfit_category?: string | null
-          outfit_set: string
+          outfit_set?: string | null
           slug: string
           title?: string | null
           updated_at?: string | null
@@ -629,7 +629,7 @@ export type Database = {
           id?: number
           image_url?: string | null
           outfit_category?: string | null
-          outfit_set?: string
+          outfit_set?: string | null
           slug?: string
           title?: string | null
           updated_at?: string | null
