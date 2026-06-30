@@ -9,7 +9,8 @@ The "Default + Alternative" two-`ImageUpload` row is duplicated in three places,
 1. **Set Images** — `app/admin/outfits/sets/edit/[slug]/edit-outfit-set-form.tsx` (~L438–456),
    `table="outfit_sets"`, `size="xl"`, captions `"Default"` / `"Alternative"`.
 2. **Evolution Set Images** — `app/admin/outfits/evolutions/edit/[slug]/edit-evolution-form.tsx`
-   (~L135–153), `table="outfit_sets"`, `size="lg"`, captions `"Default"` / `"Alternative"`.
+   (~L135–153), `table="outfit_sets"`, currently `size="lg"` (will change to `size="xl"` to match
+   Set Images), captions `"Default"` / `"Alternative"`.
 3. **Variant card** — `components/outfits/outfit-variant-image-card.tsx` (~L58–77),
    `table="outfit_variants"`, `size="lg"`. Emits a hidden
    `<input name={`variant*image*${slug}`}>` before the default upload so the server action reads
@@ -108,7 +109,7 @@ is still used for the card header; only the upload captions change.
 <ImageUploadPair
   altImage={altImageUrl}
   image={imageUrl}
-  size="lg"
+  size="xl"
   slug={evolution.slug}
   table="outfit_sets"
   onAltImageChange={setAltImageUrl}
@@ -129,5 +130,6 @@ assignable to `(url: string) => void` — no change needed there.
 
 - `yarn dlx tsc --noEmit` clean; `yarn lint` clean.
 - Visually confirm all three sections render identically: Default/Alt uploads, the new consistent
-  captions, the correct sizes (`xl` set images, `lg` evolution + variant), and that the variant
+  captions, the correct sizes (`xl` for both set-image rows, `lg` for the variant card), and that
+  the variant
   card's hidden input still submits the image on save.
