@@ -13,10 +13,12 @@ export default function OutfitVariantCard({
   outfitVariant,
   isLoggedIn,
   isMissingFilter = false,
+  disableToggle = false,
 }: {
   outfitVariant: OutfitVariant
   isLoggedIn: boolean
   isMissingFilter?: boolean
+  disableToggle?: boolean
 }) {
   const { onToggleObtained } = useOutfitData()
   const { mode } = useOutfitImageMode()
@@ -70,7 +72,7 @@ export default function OutfitVariantCard({
             </Typography>
           </Stack>
           <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
-            {isLoggedIn && (
+            {isLoggedIn && !disableToggle && (
               <IconButton
                 aria-label={outfitVariant.obtained ? 'Mark as not obtained' : 'Mark as obtained'}
                 onClick={onToggle}
