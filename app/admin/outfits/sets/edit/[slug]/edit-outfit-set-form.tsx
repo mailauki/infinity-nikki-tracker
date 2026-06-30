@@ -36,7 +36,7 @@ import {
 } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import { Tables } from '@/lib/types/supabase'
-import ImageUpload from '@/components/forms/image-upload'
+import ImageUploadPair from '@/components/forms/image-upload-pair'
 import CarouselImageUpload from '@/app/admin/outfits/carousel-image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editOutfitSet } from '../../actions'
@@ -435,25 +435,15 @@ export default function EditOutfitSetForm({
 
         <Stack spacing={1}>
           <Typography variant="subtitle2">Set Images</Typography>
-          <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between' }}>
-            <ImageUpload
-              caption="Default"
-              size="xl"
-              slug={outfitSet.slug}
-              table="outfit_sets"
-              url={setImage}
-              onUpload={(url) => setSetImage(url)}
-            />
-            <ImageUpload
-              caption="Alternative"
-              column="alt_image_url"
-              size="xl"
-              slug={outfitSet.slug}
-              table="outfit_sets"
-              url={altSetImage}
-              onUpload={(url) => setAltSetImage(url)}
-            />
-          </Stack>
+          <ImageUploadPair
+            altImage={altSetImage}
+            image={setImage}
+            size="xl"
+            slug={outfitSet.slug}
+            table="outfit_sets"
+            onAltImageChange={setAltSetImage}
+            onImageChange={setSetImage}
+          />
         </Stack>
 
         <Stack spacing={1}>
