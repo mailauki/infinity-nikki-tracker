@@ -15,24 +15,31 @@ import {
   TextField,
 } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
-import { OutfitCategory, OutfitSetRaw } from '@/lib/types/outfit'
+import { OutfitCategory, OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { useFormConfig } from '@/app/admin/form-context'
 import { addOutfitVariant } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
 import { MENU_PROPS } from '@/lib/types/props'
+import { toSlug } from '@/lib/utils'
 
 const FORM_ID = 'add-outfit-variant'
 
 export default function AddOutfitVariantForm({
   outfitSets,
   outfitCategories,
+  seasons,
+  seasonCategories,
 }: {
   outfitSets: OutfitSetRaw[]
   outfitCategories: OutfitCategory[]
+  seasons: Season[]
+  seasonCategories: SeasonCategory[]
 }) {
   const { setFormConfig } = useFormConfig()
   const [outfitSet, setOutfitSet] = useState('')
   const [outfitCategory, setOutfitCategory] = useState('')
+  const [season, setSeason] = useState('')
+  const [seasonCategory, setSeasonCategory] = useState('')
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [isDefault, setIsDefault] = useState(false)
@@ -41,10 +48,15 @@ export default function AddOutfitVariantForm({
 
   useEffect(() => {
     if (!editSlug) {
-      const parts = [outfitSet, outfitCategory].filter(Boolean)
-      setSlug(parts.length > 0 ? parts.join('-') : '')
+      if (outfitSet) {
+        const parts = [outfitSet, outfitCategory].filter(Boolean)
+        setSlug(parts.length > 0 ? parts.join('-') : '')
+      } else {
+        const parts = [toSlug(title), outfitCategory].filter(Boolean)
+        setSlug(parts.length > 0 ? parts.join('-') : '')
+      }
     }
-  }, [outfitSet, outfitCategory, editSlug])
+  }, [outfitSet, outfitCategory, title, editSlug])
 
   const [state, action, pending] = useActionState(addOutfitVariant, null)
 
@@ -63,6 +75,8 @@ export default function AddOutfitVariantForm({
       setFormConfig({ savedTitle: state.savedTitle })
       setOutfitSet('')
       setOutfitCategory('')
+      setSeason('')
+      setSeasonCategory('')
       setTitle('')
       setDescription('')
       setIsDefault(false)
@@ -114,6 +128,42 @@ export default function AddOutfitVariantForm({
           </Select>
         </FormControl>
 
+        <FormControl>
+          <InputLabel>Season</InputLabel>
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Season"
+            name="seasons"
+            value={season}
+            onChange={(e) => setSeason(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {seasons.map((s) => (
+              <MenuItem key={s.slug} value={s.slug}>
+                {s.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl>
+          <InputLabel>Season Category</InputLabel>
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Season Category"
+            name="season_category"
+            value={seasonCategory}
+            onChange={(e) => setSeasonCategory(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {seasonCategories.map((sc) => (
+              <MenuItem key={sc.slug} value={sc.slug}>
+                {sc.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
         <TextField
           label="Title"
           name="title"
@@ -134,7 +184,11 @@ export default function AddOutfitVariantForm({
         <TextField
           required
           disabled={!editSlug}
-          helperText="Auto-generated from outfit set and category — edit if needed"
+          helperText={
+            outfitSet
+              ? 'Auto-generated from outfit set and category — edit if needed'
+              : 'Auto-generated from title and category — edit if needed'
+          }
           label="Slug"
           slotProps={{
             htmlInput: { style: { fontFamily: 'monospace' } },

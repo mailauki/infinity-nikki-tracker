@@ -15,7 +15,7 @@ import {
   TextField,
 } from '@mui/material'
 import { Edit, EditOff } from '@mui/icons-material'
-import { OutfitCategory, OutfitSetRaw, OutfitVariantRaw } from '@/lib/types/outfit'
+import { OutfitCategory, OutfitSetRaw, OutfitVariantRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editOutfitVariant } from '../../actions'
 import { MENU_PROPS } from '@/lib/types/props'
@@ -27,16 +27,22 @@ export default function EditOutfitVariantForm({
   variant,
   outfitSets,
   outfitCategories,
+  seasons,
+  seasonCategories,
   back,
 }: {
   variant: OutfitVariantRaw
   outfitSets: OutfitSetRaw[]
   outfitCategories: OutfitCategory[]
+  seasons: Season[]
+  seasonCategories: SeasonCategory[]
   back: string
 }) {
   const { setFormConfig } = useFormConfig()
   const [outfitSet, setOutfitSet] = useState(variant.outfit_set ?? '')
   const [outfitCategory, setOutfitCategory] = useState(variant.outfit_category ?? '')
+  const [season, setSeason] = useState(variant.seasons ?? '')
+  const [seasonCategory, setSeasonCategory] = useState(variant.season_category ?? '')
   const [title, setTitle] = useState(variant.title ?? '')
   const [description, setDescription] = useState(variant.description ?? '')
   const [imageUrl, setImageUrl] = useState<string | null>(variant.image_url)
@@ -102,6 +108,42 @@ export default function EditOutfitVariantForm({
             {outfitCategories.map((c) => (
               <MenuItem key={c.slug} value={c.slug}>
                 {c.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl>
+          <InputLabel>Season</InputLabel>
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Season"
+            name="seasons"
+            value={season}
+            onChange={(e) => setSeason(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {seasons.map((s) => (
+              <MenuItem key={s.slug} value={s.slug}>
+                {s.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl>
+          <InputLabel>Season Category</InputLabel>
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Season Category"
+            name="season_category"
+            value={seasonCategory}
+            onChange={(e) => setSeasonCategory(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {seasonCategories.map((sc) => (
+              <MenuItem key={sc.slug} value={sc.slug}>
+                {sc.title}
               </MenuItem>
             ))}
           </Select>

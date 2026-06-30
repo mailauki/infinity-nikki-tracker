@@ -77,6 +77,8 @@ export type OutfitVariant = Pick<
 export type OutfitVariantRaw = Tables<'outfit_variants'> & {
   outfit_sets: { title: string } | null
   outfit_categories: { title: string | null } | null
+  seasons: { title: string } | null
+  season_categories: { title: string | null } | null
 }
 
 export type ObtainedOutfit = Pick<

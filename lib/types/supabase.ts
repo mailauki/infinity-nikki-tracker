@@ -604,6 +604,8 @@ export type Database = {
           image_url: string | null
           outfit_category: string | null
           outfit_set: string | null
+          season_category: string | null
+          seasons: string | null
           slug: string
           title: string | null
           updated_at: string | null
@@ -617,6 +619,8 @@ export type Database = {
           image_url?: string | null
           outfit_category?: string | null
           outfit_set?: string | null
+          season_category?: string | null
+          seasons?: string | null
           slug: string
           title?: string | null
           updated_at?: string | null
@@ -630,6 +634,8 @@ export type Database = {
           image_url?: string | null
           outfit_category?: string | null
           outfit_set?: string | null
+          season_category?: string | null
+          seasons?: string | null
           slug?: string
           title?: string | null
           updated_at?: string | null
@@ -647,6 +653,20 @@ export type Database = {
             columns: ["outfit_set"]
             isOneToOne: false
             referencedRelation: "outfit_sets"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outfit_variants_seasons_fkey"
+            columns: ["seasons"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "outfit_variants_season_category_fkey"
+            columns: ["season_category"]
+            isOneToOne: false
+            referencedRelation: "season_categories"
             referencedColumns: ["slug"]
           },
         ]

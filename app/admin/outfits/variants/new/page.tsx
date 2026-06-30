@@ -2,6 +2,8 @@ import { Suspense } from 'react'
 import AddOutfitVariantForm from './add-outfit-variant-form'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
+import { getSeasons } from '@/hooks/data/seasons'
+import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -20,10 +22,19 @@ export default function NewOutfitVariantPage() {
 }
 
 async function NewOutfitVariant() {
-  const [outfitSets, outfitCategories] = await Promise.all([
+  const [outfitSets, outfitCategories, seasons, seasonCategories] = await Promise.all([
     getOutfitSetsRaw(),
     getOutfitCategories(),
+    getSeasons(),
+    getSeasonCategories(),
   ])
 
-  return <AddOutfitVariantForm outfitCategories={outfitCategories} outfitSets={outfitSets} />
+  return (
+    <AddOutfitVariantForm
+      outfitCategories={outfitCategories}
+      outfitSets={outfitSets}
+      seasonCategories={seasonCategories}
+      seasons={seasons}
+    />
+  )
 }
