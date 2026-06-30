@@ -32,6 +32,7 @@ export default function ImageUpload({
     | 'outfit_sets'
     | 'abilities'
     | 'seasons'
+    | 'season_categories'
     | 'custom_looks'
   slug: string | undefined
   onUpload: (url: string) => void
