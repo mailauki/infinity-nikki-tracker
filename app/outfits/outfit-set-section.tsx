@@ -30,7 +30,7 @@ export default function OutfitSetSection({
   return [null, ...set.evolutions]
     .map((evolution) => {
       const stateSlug = evolution?.slug ?? baseSlug
-      const inState = (v: { outfit_set: string }) => v.outfit_set === stateSlug
+      const inState = (v: { outfit_set: string | null }) => v.outfit_set === stateSlug
       const variants = set.outfit_variants.filter(inState)
       if (variants.length === 0) return null
 

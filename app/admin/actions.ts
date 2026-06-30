@@ -75,6 +75,28 @@ export async function updateEurekaVariant(
   return data
 }
 
+export async function updateOutfitVariant(
+  id: number,
+  fields: {
+    outfit_set?: string | null
+    outfit_category?: string | null
+    title?: string | null
+    default?: boolean
+  }
+) {
+  await requireAdmin()
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('outfit_variants')
+    .update({ ...fields, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw new Error(error.message)
+  return data
+}
+
 export async function updateOutfitSet(
   id: number,
   fields: {

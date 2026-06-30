@@ -148,7 +148,7 @@ export default function FilterOutfits() {
           // selectedEvolution is null for "any" and 0 for glow-up, so compare to
           // null explicitly — `!selectedEvolution` would treat glow-up as no filter.
           (v) =>
-            selectedEvolution === null || orderByStateSlug.get(v.outfit_set) === selectedEvolution
+            selectedEvolution === null || orderByStateSlug.get(v.outfit_set ?? '') === selectedEvolution
         )
       // Group-level obtained filter: drop whole evolution groups whose full-group
       // state doesn't match the selected missing / obtained state.

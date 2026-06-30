@@ -60,7 +60,7 @@ export default function OutfitToolBar({
               // null explicitly — `!selectedEvolution` would treat glow-up as no filter.
               (v) =>
                 selectedEvolution === null ||
-                orderByStateSlug.get(v.outfit_set) === selectedEvolution
+                orderByStateSlug.get(v.outfit_set ?? '') === selectedEvolution
             )
       const inMatchingGroup =
         groupLevelObtained && selectedObtainedFilter

@@ -44,7 +44,7 @@ export default function OutfitEvolutionVariants({
     selected === null ? outfit_variants : outfit_variants.filter((v) => v.outfit_set === selected)
   )
     .slice()
-    .sort((a, b) => orderOf(a.outfit_set) - orderOf(b.outfit_set))
+    .sort((a, b) => orderOf(a.outfit_set ?? '') - orderOf(b.outfit_set ?? ''))
 
   const obtained = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
   const total = variants.length
