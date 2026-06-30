@@ -9,6 +9,10 @@ import {
   Container,
   IconButton,
   Tooltip,
+	Card,
+	CardContent,
+	CardMedia,
+	Box,
 } from '@mui/material'
 import { Collections } from '@mui/icons-material'
 import { OutfitSet } from '@/lib/types/outfit'
@@ -93,8 +97,9 @@ export default function OutfitSetDetail({
       <SlugToolBar isAdmin={isAdmin} />
       <Stack useFlexGap direction="row" spacing={2} sx={{ flexWrap: 'wrap' }}>
         <Container disableGutters fixed maxWidth="xs">
-          <Stack spacing={2} sx={{ alignItems: 'center' }}>
-            {showCarousel && hasCarousel ? (
+					<Card elevation={0} sx={{ minWidth: 300, minHeight: 'fit-content' }}>
+						<Stack spacing={1.5} sx={{ alignItems: 'center', pt: 1 }}>
+						{showCarousel && hasCarousel ? (
               <OutfitCarousel images={carouselImages} title={outfitSet.title} />
             ) : null}
             {(!showCarousel || !hasCarousel) && showingAlt && (
@@ -112,6 +117,9 @@ export default function OutfitSetDetail({
                 title={outfitSet.title}
               />
             )}
+						</Stack>
+						<CardContent>
+							<Stack spacing={1.5}>
             <Stack
               direction="row"
               sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
@@ -161,10 +169,12 @@ export default function OutfitSetDetail({
               >
                 {season?.title}
               </Anchor>
-              <Typography variant="body1">{seasonCategory?.title}</Typography>
+              <Typography sx={{ textAlign: 'right' }} variant="body1">{seasonCategory?.title}</Typography>
             </Stack>
             <Typography variant="body2">{description}</Typography>
-          </Stack>
+						</Stack>
+						</CardContent>
+					</Card>
         </Container>
 
         <OutfitEvolutionVariants
