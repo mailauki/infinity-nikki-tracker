@@ -1,9 +1,9 @@
 'use client'
 
-import { Card, CardContent, CardHeader, Stack, TextField } from '@mui/material'
+import { Box, Card, CardContent, CardHeader, Stack, TextField } from '@mui/material'
 import { toTitle } from '@/lib/utils'
 import { Tables } from '@/lib/types/supabase'
-import ImageUpload from '@/components/forms/image-upload'
+import ImageUploadPair from '@/components/forms/image-upload-pair'
 import ToggleIcon from '@/components/toggle-icon'
 import { categoryIconSrc } from '@/lib/look-utils'
 
@@ -55,26 +55,18 @@ export default function OutfitVariantImageCard({
       />
       <CardContent sx={{ pt: 0 }}>
         <Stack spacing={1.5}>
-          <input name={`variant_image_${variant.slug}`} type="hidden" value={image ?? ''} />
-          <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between', pb: 1 }}>
-            <ImageUpload
-              caption={categoryTitle}
+          <Box sx={{ pb: 1 }}>
+            <ImageUploadPair
+              altImage={altImage}
+              hiddenInputName={`variant_image_${variant.slug}`}
+              image={image}
               size="lg"
               slug={slug}
               table="outfit_variants"
-              url={image}
-              onUpload={onImageChange}
+              onAltImageChange={onAltImageChange}
+              onImageChange={onImageChange}
             />
-            <ImageUpload
-              caption={categoryTitle && `Alt ${categoryTitle}`}
-              column="alt_image_url"
-              size="lg"
-              slug={slug}
-              table="outfit_variants"
-              url={altImage}
-              onUpload={onAltImageChange}
-            />
-          </Stack>
+          </Box>
           <TextField
             label="Title"
             name={`variant_title_${variant.slug}`}
