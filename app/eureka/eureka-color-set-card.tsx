@@ -22,12 +22,8 @@ export default function EurekaColorSetCard({
 
   return (
     <Card
-      data-active={percentage === 100 ? '' : undefined}
       sx={{
         minWidth: 'fit-content',
-        '&[data-active]': {
-          backgroundColor: 'surface.lowest',
-        },
       }}
     >
       <Box sx={{ position: 'relative' }}>

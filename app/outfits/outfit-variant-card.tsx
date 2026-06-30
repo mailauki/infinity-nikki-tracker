@@ -38,9 +38,9 @@ export default function OutfitVariantCard({
   return (
     <Grow in={!exiting} timeout={300}>
       <Card
+        elevation={outfitVariant.obtained ? 3 : 1}
         sx={{
           minWidth: 'fit-content',
-          bgcolor: outfitVariant.obtained ? 'surface.containerLow' : 'surface.containerHighest',
         }}
       >
         <Box sx={{ position: 'relative', height: '100%' }}>

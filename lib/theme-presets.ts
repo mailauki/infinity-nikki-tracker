@@ -1,5 +1,4 @@
 import { alpha } from '@mui/material/styles'
-import { blueGrey } from '@mui/material/colors'
 import { ColorTheme } from './types/eureka'
 
 export interface ColorThemePreset {
@@ -216,8 +215,6 @@ export function buildColorSchemes(preset: ColorThemePreset) {
         tertiary: { main: light.tertiary },
         neutral: { main: '#877371' },
         success: { main: '#695E2F' },
-        error: { main: '#BA1A1A' },
-        info: { main: blueGrey[600] },
         background: { default: light.background, paper: light.background },
         text: light.text,
         divider: light.divider,
@@ -248,8 +245,6 @@ export function buildColorSchemes(preset: ColorThemePreset) {
         tertiary: { main: dark.tertiary },
         neutral: { main: '#D5BAB6' },
         success: { main: '#D5C68E' },
-        error: { main: '#FFB4AB' },
-        info: { main: blueGrey[400] },
         background: { default: dark.background, paper: dark.background },
         text: dark.text,
         divider: dark.divider,

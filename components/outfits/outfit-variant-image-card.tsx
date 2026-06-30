@@ -38,7 +38,7 @@ export default function OutfitVariantImageCard({
   const categoryTitle = variant.outfit_category ? toTitle(variant.outfit_category) : undefined
 
   return (
-    <Card sx={{ bgcolor: 'surface.containerLowest' }} variant="outlined">
+    <Card>
       <CardHeader
         avatar={
           <ToggleIcon

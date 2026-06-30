@@ -1,5 +1,5 @@
 'use client'
-import { alpha, createTheme, type ThemeOptions } from '@mui/material/styles'
+import { alpha, createTheme, type Theme, type ThemeOptions } from '@mui/material/styles'
 import { AvatarSize } from './types/props'
 import { toggleButtonGroupClasses } from '@mui/material'
 
@@ -8,6 +8,56 @@ const toggleButtonEdgeStyle = {
   borderRadius: '6px',
   '&.Mui-disabled': { borderColor: 'transparent' },
 } as const
+
+// M3 Filled Paper: resting-only filled surfaces selected by either the numeric
+// `elevation` (M3 0-5 ladder) or the named `surface` prop. Both resolve to the
+// active color scheme via theme.vars (CSS variables) so they switch with dark mode.
+type FilledSurfaceTone =
+  | 'main'
+  | 'dim'
+  | 'bright'
+  | 'containerLowest'
+  | 'containerLow'
+  | 'container'
+  | 'containerHigh'
+  | 'containerHighest'
+
+const restingFilled = { border: 0, boxShadow: 'none' } as const
+
+const filledElevationTone: Record<number, FilledSurfaceTone> = {
+  0: 'containerLowest',
+  1: 'containerLow',
+  2: 'container',
+  3: 'containerHigh',
+  4: 'containerHigh',
+  5: 'containerHighest',
+}
+
+const filledSurfaceTone: Record<'base' | 'main' | 'dim' | 'bright', FilledSurfaceTone> = {
+  base: 'main',
+  main: 'main',
+  dim: 'dim',
+  bright: 'bright',
+}
+
+const filledPaperVariants = [
+  // numeric M3 elevation ladder (0-5)
+  ...Object.entries(filledElevationTone).map(([elevation, tone]) => ({
+    props: { variant: 'filled' as const, elevation: Number(elevation) },
+    style: ({ theme }: { theme: Theme }) => ({
+      ...restingFilled,
+      backgroundColor: theme.vars?.palette.surface[tone] ?? theme.palette.surface[tone],
+    }),
+  })),
+  // named M3 surface roles (ordered after elevation so `surface` wins when both set)
+  ...Object.entries(filledSurfaceTone).map(([surface, tone]) => ({
+    props: { variant: 'filled' as const, surface: surface as 'base' | 'main' | 'dim' | 'bright' },
+    style: ({ theme }: { theme: Theme }) => ({
+      ...restingFilled,
+      backgroundColor: theme.vars?.palette.surface[tone] ?? theme.palette.surface[tone],
+    }),
+  })),
+]
 
 declare module '@mui/material/Avatar' {
   interface AvatarOwnProps {
@@ -29,6 +79,10 @@ declare module '@mui/material/ToggleButtonGroup' {
 declare module '@mui/material/Paper' {
   interface PaperOwnProps {
     color?: 'surface'
+    surface?: 'base' | 'main' | 'dim' | 'bright'
+  }
+  interface PaperPropsVariantOverrides {
+    filled: true
   }
 }
 
@@ -187,6 +241,9 @@ export const baseThemeOptions: ThemeOptions = {
       textTransform: 'uppercase' as const,
     },
   },
+  shape: {
+    borderRadius: 8,
+  },
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -214,7 +271,8 @@ export const baseThemeOptions: ThemeOptions = {
     },
     MuiCard: {
       defaultProps: {
-        elevation: 0,
+        variant: 'filled',
+        elevation: 1,
       },
       styleOverrides: {
         root: {
@@ -381,6 +439,20 @@ export const baseThemeOptions: ThemeOptions = {
     MuiAccordion: {
       defaultProps: {
         elevation: 0,
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          variants: filledPaperVariants,
+        },
+      },
+    },
+    MuiDrawer: {
+      defaultProps: {
+        slotProps: {
+          paper: { variant: 'filled', surface: 'main' },
+        },
       },
     },
   },
