@@ -15,6 +15,16 @@ import FileUploadIcon from '@mui/icons-material/FileUpload'
 import { AvatarSize } from '@/lib/types/props'
 import { enqueueSnackbar } from 'notistack'
 
+export type ImageUploadTable =
+  | 'eureka_variants'
+  | 'outfit_variants'
+  | 'trials'
+  | 'outfit_sets'
+  | 'abilities'
+  | 'seasons'
+  | 'season_categories'
+  | 'custom_looks'
+
 export default function ImageUpload({
   url,
   table,
@@ -25,15 +35,7 @@ export default function ImageUpload({
   size = 'md',
 }: {
   url: string | null
-  table:
-    | 'eureka_variants'
-    | 'outfit_variants'
-    | 'trials'
-    | 'outfit_sets'
-    | 'abilities'
-    | 'seasons'
-    | 'season_categories'
-    | 'custom_looks'
+  table: ImageUploadTable
   slug: string | undefined
   onUpload: (url: string) => void
   caption?: string
@@ -84,7 +86,7 @@ export default function ImageUpload({
   }
 
   return (
-    <Card sx={{ minWidth: 'fit-content', flexGrow: 1 }}>
+    <Card sx={{ minWidth: 'fit-content', flexGrow: 1 }} variant="outlined">
       <CardActionArea
         component="label"
         sx={{
