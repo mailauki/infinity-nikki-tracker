@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useState } from 'react'
 import { Alert, Box, Stack, TextField, Typography } from '@mui/material'
-import ImageUpload from '@/components/forms/image-upload'
+import ImageUploadPair from '@/components/forms/image-upload-pair'
 import CarouselImageUpload from '@/app/admin/outfits/carousel-image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { CarouselImage } from '@/lib/types/outfit'
@@ -132,25 +132,15 @@ export default function EditEvolutionForm({
 
         <Stack spacing={1}>
           <Typography variant="subtitle2">Evolution Set Images</Typography>
-          <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between' }}>
-            <ImageUpload
-              caption="Default"
-              size="lg"
-              slug={evolution.slug}
-              table="outfit_sets"
-              url={imageUrl}
-              onUpload={(url) => setImageUrl(url)}
-            />
-            <ImageUpload
-              caption="Alternative"
-              column="alt_image_url"
-              size="lg"
-              slug={evolution.slug}
-              table="outfit_sets"
-              url={altImageUrl}
-              onUpload={(url) => setAltImageUrl(url)}
-            />
-          </Stack>
+          <ImageUploadPair
+            altImage={altImageUrl}
+            image={imageUrl}
+            size="xl"
+            slug={evolution.slug}
+            table="outfit_sets"
+            onAltImageChange={setAltImageUrl}
+            onImageChange={setImageUrl}
+          />
         </Stack>
 
         {variantRows.length > 0 && (
