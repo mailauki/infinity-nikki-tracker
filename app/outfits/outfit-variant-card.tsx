@@ -38,7 +38,7 @@ export default function OutfitVariantCard({
   return (
     <Grow in={!exiting} timeout={300}>
       <Card
-        elevation={outfitVariant.obtained ? 1 : 3}
+        elevation={outfitVariant.obtained ? 3 : 1}
         sx={{
           minWidth: 'fit-content',
         }}

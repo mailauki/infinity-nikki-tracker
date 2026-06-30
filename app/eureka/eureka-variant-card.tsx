@@ -30,7 +30,7 @@ export default function EurekaVariantCard({
   return (
     <Grow in={!exiting} timeout={300}>
       <Card
-        elevation={eurekaVariant.obtained ? 1 : 3}
+        elevation={eurekaVariant.obtained ? 3 : 1}
         sx={{
           minWidth: 'fit-content',
         }}
