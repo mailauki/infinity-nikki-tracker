@@ -11,8 +11,6 @@ import {
   Tooltip,
   Card,
   CardContent,
-  CardMedia,
-  Box,
 } from '@mui/material'
 import { Collections } from '@mui/icons-material'
 import { OutfitSet } from '@/lib/types/outfit'
