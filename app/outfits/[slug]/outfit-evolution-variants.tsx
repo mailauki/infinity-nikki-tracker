@@ -51,7 +51,7 @@ export default function OutfitEvolutionVariants({
 
   return (
     <Stack spacing={2} sx={{ flex: 1 }}>
-      <Stack direction='row' sx={{ alignItems: 'flex-end', justifyContent: 'space-between'  }}>
+      <Stack direction="row" sx={{ alignItems: 'flex-end', justifyContent: 'space-between' }}>
         <ToggleButtonGroup
           exclusive
           disabled={!selected && evolutions.length === 0}
