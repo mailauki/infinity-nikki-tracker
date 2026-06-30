@@ -11,6 +11,7 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  ListSubheader,
   MenuItem,
   OutlinedInput,
   Select,
@@ -133,13 +134,42 @@ export default function AddOutfitVariantForm({
             onChange={(e) => setOutfitSet(e.target.value)}
           >
             <MenuItem value="">— Standalone piece —</MenuItem>
-            {outfitSets
-              .filter((s) => s.base_set === null)
-              .map((set) => (
-                <MenuItem key={set.id} value={set.slug ?? ''}>
-                  {set.title}
-                </MenuItem>
-              ))}
+            {(() => {
+              const baseSets = outfitSets
+                .filter((s) => s.base_set === null)
+                .sort((a, b) => (a.title ?? '').localeCompare(b.title ?? ''))
+              const evosByBase = outfitSets
+                .filter((s) => s.base_set !== null)
+                .reduce<Record<string, typeof outfitSets>>((acc, s) => {
+                  const key = s.base_set!
+                  acc[key] = acc[key] ?? []
+                  acc[key].push(s)
+                  return acc
+                }, {})
+              return baseSets.flatMap((base) => {
+                const evos = (evosByBase[base.slug ?? ''] ?? []).sort(
+                  (a, b) => (a.order ?? 0) - (b.order ?? 0)
+                )
+                if (evos.length === 0) {
+                  return [
+                    <MenuItem key={base.slug} value={base.slug ?? ''}>
+                      {base.title}
+                    </MenuItem>,
+                  ]
+                }
+                return [
+                  <ListSubheader key={`header-${base.slug}`}>{base.title}</ListSubheader>,
+                  <MenuItem key={base.slug} sx={{ pl: 3 }} value={base.slug ?? ''}>
+                    {base.title}
+                  </MenuItem>,
+                  ...evos.map((evo) => (
+                    <MenuItem key={evo.slug} sx={{ pl: 3 }} value={evo.slug ?? ''}>
+                      {evo.title}
+                    </MenuItem>
+                  )),
+                ]
+              })
+            })()}
           </Select>
         </FormControl>
 
