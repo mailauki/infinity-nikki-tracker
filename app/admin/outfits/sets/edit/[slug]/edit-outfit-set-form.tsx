@@ -438,7 +438,7 @@ export default function EditOutfitSetForm({
           <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between' }}>
             <ImageUpload
               caption="Default"
-              size="lg"
+              size="xl"
               slug={outfitSet.slug}
               table="outfit_sets"
               url={setImage}
@@ -447,7 +447,7 @@ export default function EditOutfitSetForm({
             <ImageUpload
               caption="Alternative"
               column="alt_image_url"
-              size="lg"
+              size="xl"
               slug={outfitSet.slug}
               table="outfit_sets"
               url={altSetImage}

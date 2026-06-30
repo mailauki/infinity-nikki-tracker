@@ -5,6 +5,7 @@ import { toTitle } from '@/lib/utils'
 import { Tables } from '@/lib/types/supabase'
 import ImageUpload from '@/components/forms/image-upload'
 import ToggleIcon from '@/components/toggle-icon'
+import { categoryIconSrc } from '@/lib/look-utils'
 
 type OutfitVariantRow = Pick<
   Tables<'outfit_variants'>,
@@ -44,7 +45,7 @@ export default function OutfitVariantImageCard({
           <ToggleIcon
             item={{
               title: variant.outfit_category || '',
-              image_url: `/icons/categories/${variant.outfit_category?.replace('_', '-')}.png`,
+              image_url: categoryIconSrc(variant.outfit_category || ''),
             }}
             size="xs"
           />
@@ -58,6 +59,7 @@ export default function OutfitVariantImageCard({
           <Stack direction="row" spacing={1} sx={{ justifyContent: 'space-between', pb: 1 }}>
             <ImageUpload
               caption={categoryTitle}
+              size="lg"
               slug={slug}
               table="outfit_variants"
               url={image}
@@ -66,6 +68,7 @@ export default function OutfitVariantImageCard({
             <ImageUpload
               caption={categoryTitle && `Alt ${categoryTitle}`}
               column="alt_image_url"
+              size="lg"
               slug={slug}
               table="outfit_variants"
               url={altImage}
