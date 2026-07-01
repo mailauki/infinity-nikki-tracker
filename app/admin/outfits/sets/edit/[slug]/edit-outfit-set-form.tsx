@@ -7,9 +7,6 @@ import {
   Chip,
   FormControl,
   FormControlLabel,
-  FormLabel,
-  IconButton,
-  InputAdornment,
   InputLabel,
   ListSubheader,
   MenuItem,
@@ -19,12 +16,10 @@ import {
   Stack,
   Switch,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
   Typography,
 } from '@mui/material'
 import { toSlug } from '@/lib/utils'
-import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
+import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
 import {
   Ability,
   CarouselImage,
@@ -37,11 +32,13 @@ import {
 import { Label, Style } from '@/lib/types/eureka'
 import { Tables } from '@/lib/types/supabase'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
+import SlugField from '@/components/forms/slug-field'
+import RarityField from '@/components/forms/rarity-field'
+import ToggleField from '@/components/forms/toggle-field'
 import CarouselImageUpload from '@/app/admin/outfits/carousel-image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editOutfitSet } from '../../actions'
 import EvolutionEditor from '../../evolution-editor'
-import RarityToggle from '@/components/filter/rarity-toggle'
 import { DRESS_SLUGS, SEPARATES_SLUGS } from '@/components/filter/outfit-category-select'
 import { MENU_PROPS } from '@/lib/types/props'
 import OutfitVariantImageCard from '@/components/outfits/outfit-variant-image-card'
@@ -105,7 +102,6 @@ export default function EditOutfitSetForm({
   const [ability, setAbility] = useState(outfitSet.ability ?? '')
   const [season, setSeason] = useState(outfitSet.seasons ?? '')
   const [seasonCategory, setSeasonCategory] = useState(outfitSet.season_category ?? '')
-  const [editSlug, setEditSlug] = useState(false)
   const [evolutionDrafts, setEvolutionDrafts] = useState<EvolutionDraft[]>(initialDrafts)
   const [glowupEvolutionOrder, setGlowupEvolutionOrder] = useState<number | ''>(
     initialGlowupEvolutionOrder
@@ -212,52 +208,22 @@ export default function EditOutfitSetForm({
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <input name="slug" type="hidden" value={slug} />
-        <TextField
+        <SlugField
           required
-          disabled={!editSlug}
           helperText="Used in the URL — edit with caution"
-          label="Slug"
-          slotProps={{
-            htmlInput: { style: { fontFamily: 'monospace' } },
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setEditSlug(!editSlug)}>
-                    {editSlug ? <EditOff /> : <Edit />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
           value={slug}
-          onChange={(e) => setSlug(e.target.value)}
+          onChange={setSlug}
         />
 
-        <input name="rarity" type="hidden" value={rarity} />
-        <RarityToggle
-          selectedRarity={typeof rarity === 'number' ? rarity : null}
-          onRarityChange={(_e, value) => setRarity(value ?? '')}
-        />
+        <RarityField value={rarity} onChange={setRarity} />
 
-        <FormControl>
-          <Typography component={FormLabel} id="style-buttons-group-label" variant="overline">
-            Style
-          </Typography>
-          <input name="style" type="hidden" value={style} />
-          <ToggleButtonGroup
-            exclusive
-            aria-labelledby="style-buttons-group-label"
-            value={style || null}
-            onChange={(_, value) => setStyle(value ?? '')}
-          >
-            {styles.map((s) => (
-              <ToggleButton key={s.slug} sx={{ py: 1.25 }} value={s.slug}>
-                {s.title}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </FormControl>
+        <ToggleField
+          label="Style"
+          name="style"
+          options={styles}
+          value={style}
+          onChange={setStyle}
+        />
 
         <input name="label" type="hidden" value={labelSelect[0] ?? ''} />
         <input name="label_2" type="hidden" value={labelSelect[1] ?? ''} />

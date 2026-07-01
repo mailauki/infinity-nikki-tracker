@@ -4,11 +4,9 @@ import { useActionState, useEffect, useState } from 'react'
 import {
   Alert,
   Box,
+  Button,
   Chip,
   FormControl,
-  FormLabel,
-  IconButton,
-  InputAdornment,
   InputLabel,
   ListItemAvatar,
   ListItemText,
@@ -19,21 +17,18 @@ import {
   SelectChangeEvent,
   Stack,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
 } from '@mui/material'
 import { ColorLens } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
 import { toSlug } from '@/lib/utils'
-import { Edit, EditOff } from '@mui/icons-material'
 import { EurekaCategory, EurekaColor, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from '@/components/forms/eureka-set/color-select'
-import RarityToggle from '@/components/filter/rarity-toggle'
+import SlugField from '@/components/forms/slug-field'
+import RarityField from '@/components/forms/rarity-field'
+import ToggleField from '@/components/forms/toggle-field'
 import { useFormConfig } from '@/app/admin/form-context'
 import { addEurekaSet } from '../actions'
 import { navLinksData } from '@/lib/nav-links'
-import { Button } from '@mui/material'
 import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'add-eureka-set'
@@ -59,7 +54,7 @@ export default function AddEurekaSetForm({
   const [label, setLabel] = useState('')
   const [description, setDescription] = useState('')
   const [selectedTrials, setSelectedTrials] = useState<string[]>([])
-  const [editSlug, setEditSlug] = useState(false)
+  const [slugEdited, setSlugEdited] = useState(false)
   const [colorSelect, setColorSelect] = useState<string[]>([])
   const [defaultColor, setDefaultColor] = useState('')
 
@@ -83,7 +78,7 @@ export default function AddEurekaSetForm({
 
   function handleTitleChange(value: string) {
     setTitle(value)
-    if (!editSlug) setSlug(toSlug(value))
+    if (!slugEdited) setSlug(toSlug(value))
   }
 
   const [state, action, pending] = useActionState(addEurekaSet, null)
@@ -108,7 +103,7 @@ export default function AddEurekaSetForm({
       setLabel('')
       setDescription('')
       setSelectedTrials([])
-      setEditSlug(false)
+      setSlugEdited(false)
       setColorSelect([])
       setDefaultColor('')
     }
@@ -127,26 +122,12 @@ export default function AddEurekaSetForm({
           onChange={(e) => handleTitleChange(e.target.value)}
         />
 
-        <input name="slug" type="hidden" value={slug} />
-        <TextField
+        <SlugField
           required
-          disabled={!editSlug}
           helperText="Auto-generated from name — edit if needed"
-          label="Slug"
-          slotProps={{
-            htmlInput: { style: { fontFamily: 'monospace' } },
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setEditSlug(!editSlug)}>
-                    {editSlug ? <EditOff /> : <Edit />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
           value={slug}
-          onChange={(e) => setSlug(e.target.value)}
+          onChange={setSlug}
+          onUserEdit={() => setSlugEdited(true)}
         />
 
         <TextField
@@ -158,30 +139,15 @@ export default function AddEurekaSetForm({
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <input name="rarity" type="hidden" value={rarity} />
-        <RarityToggle
-          selectedRarity={typeof rarity === 'number' ? rarity : null}
-          onRarityChange={(_e, value) => setRarity(value ?? '')}
-        />
+        <RarityField value={rarity} onChange={setRarity} />
 
-        <FormControl>
-          <Typography component={FormLabel} id="style-buttons-group-label" variant="overline">
-            Style
-          </Typography>
-          <input name="style" type="hidden" value={style} />
-          <ToggleButtonGroup
-            exclusive
-            aria-labelledby="style-buttons-group-label"
-            value={style || null}
-            onChange={(_, value) => setStyle(value ?? '')}
-          >
-            {styles.map((s) => (
-              <ToggleButton key={s.slug} sx={{ py: 1.25 }} value={s.slug}>
-                {s.title}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </FormControl>
+        <ToggleField
+          label="Style"
+          name="style"
+          options={styles}
+          value={style}
+          onChange={setStyle}
+        />
 
         <FormControl>
           <InputLabel>Label</InputLabel>
