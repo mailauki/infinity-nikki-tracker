@@ -60,7 +60,26 @@ export default function ImageUpload({
       const file = event.target.files[0]
       if (!slug) throw new Error('Cannot upload image: record has no slug yet.')
       const fileExt = file.name.split('.').pop()
-      const filePath = `${table}/${slug}/${crypto.randomUUID()}.${fileExt}`
+      // Stable path per record+column so a re-upload overwrites the same object
+      // instead of orphaning the previous one. Default and alt live in the same
+      // slug folder but differ by `column` (image_url vs alt_image_url).
+      const folder = `${table}/${slug}`
+      const filePath = `${folder}/${column}.${fileExt}`
+
+      // Remove the object this column currently points at (if any) before the new
+      // upload, so we don't orphan it. This covers the legacy UUID-named files and
+      // a stable file whose extension is changing. We key off the current DB value
+      // (`url`) rather than listing the folder, because default and alt share the
+      // folder and only the DB columns say which object belonged to which.
+      let prevPath: string | undefined
+      try {
+        if (url) prevPath = decodeURIComponent(new URL(url).pathname).split('/images/')[1]
+      } catch {
+        prevPath = undefined
+      }
+      if (prevPath && prevPath !== filePath) {
+        await supabase.storage.from('images').remove([prevPath])
+      }
 
       const { error: uploadError } = await supabase.storage
         .from('images')
@@ -69,15 +88,18 @@ export default function ImageUpload({
       if (uploadError) throw uploadError
 
       const { data } = supabase.storage.from('images').getPublicUrl(filePath)
+      // The public URL is stable across re-uploads, so bust the CDN/browser
+      // cache with the upload time — otherwise the replaced image looks unchanged.
+      const publicUrl = `${data.publicUrl}?v=${Date.now()}`
 
       const { error: dbError } = await supabase
         .from(table)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .update({ [column]: data.publicUrl } as any)
+        .update({ [column]: publicUrl } as any)
         .eq('slug', slug)
       if (dbError) throw dbError
 
-      onUpload(data.publicUrl)
+      onUpload(publicUrl)
     } catch {
       enqueueSnackbar('Error uploading image!', { variant: 'error' })
     } finally {

@@ -27,12 +27,22 @@ const SELECT = `
 export const getOutfitVariantsRaw = cache(async () => {
   const supabase = await createClient()
 
-  const { data: outfitVariants } = await supabase
-    .from('outfit_variants')
-    .select(SELECT)
-    .order('id', { ascending: false })
+  // Paginate — PostgREST caps at 1000 rows and there are ~6k variants, so a
+  // single select would silently drop most of them from the admin table.
+  const all: OutfitVariantRaw[] = []
+  const PAGE = 1000
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from('outfit_variants')
+      .select(SELECT)
+      .order('id', { ascending: false })
+      .range(from, from + PAGE - 1)
+    if (error) throw error
+    all.push(...((data ?? []) as OutfitVariantRaw[]))
+    if (!data || data.length < PAGE) break
+  }
 
-  return (outfitVariants ?? []) as OutfitVariantRaw[]
+  return all
 })
 
 export const getOutfitVariantRaw = cache(async (slug: string) => {

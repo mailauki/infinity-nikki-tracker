@@ -62,7 +62,7 @@ export default function AdminRecentsToggle({ title, item, tab, onItemChange, onT
               onItemChange(v)
             }}
           >
-            {currentTab?.items?.map((i) => (
+            {currentTab?.items?.slice(0, 3).map((i) => (
               <ToggleButton key={i.title} size="small" value={i.title}>
                 {i.title}
               </ToggleButton>

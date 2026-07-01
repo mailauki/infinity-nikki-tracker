@@ -5,55 +5,50 @@ import { getUserID } from '../user'
 import { getOutfitCategories } from './outfit-categories'
 import { getEvolutions } from './evolutions'
 import { getObtainedOutfit } from './obtained-outfit'
+import { getOutfitVariantsBySet } from './outfit-variants'
 import { createOutfitSet, updateOutfitSet } from '../outfit'
 
 export const getOutfitSets = cache(async () => {
   const supabase = await createClient()
 
-  const { data: outfitSets } = await supabase
-    .from('outfit_sets')
-    .select(
-      `
-      id,
-      slug,
-      title,
-      description,
-      rarity,
-      style,
-      label,
-      label_2,
-      ability,
-      seasons,
-      season_category,
-      "order",
-      base_set,
-      handheld_base_only,
-      season:seasons!outfit_sets_seasons_fkey ( title ),
-      seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
-      image_url,
-      alt_image_url,
-      updated_at,
-      outfit_variants (
+  // Variants injected from the paginated grouped fetch — a PostgREST embed caps
+  // at 1000 rows and would drop most of the ~6k variants.
+  const [{ data: outfitSets }, variantsBySet] = await Promise.all([
+    supabase
+      .from('outfit_sets')
+      .select(
+        `
         id,
         slug,
-        outfit_set,
-        outfit_category,
         title,
+        description,
+        rarity,
+        style,
+        label,
+        label_2,
+        ability,
+        seasons,
+        season_category,
+        "order",
+        base_set,
+        handheld_base_only,
+        season:seasons!outfit_sets_seasons_fkey ( title ),
+        seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
         image_url,
         alt_image_url,
-        default
-      ),
-      outfit_set_carousel_images (
-        id,
-        image_url,
-        sort_order
+        updated_at,
+        outfit_set_carousel_images (
+          id,
+          image_url,
+          sort_order
+        )
+      `
       )
-    `
-    )
-    .is('base_set', null)
-    .order('id', { ascending: true })
-    .order('id', { referencedTable: 'outfit_variants', ascending: true })
-    .order('sort_order', { referencedTable: 'outfit_set_carousel_images', ascending: true })
+      .is('base_set', null)
+      .order('id', { ascending: true })
+      .order('sort_order', { referencedTable: 'outfit_set_carousel_images', ascending: true }),
+    getOutfitVariantsBySet(),
+  ])
 
   const outfitCategories = await getOutfitCategories()
   const evolutions = await getEvolutions()
@@ -62,6 +57,7 @@ export const getOutfitSets = cache(async () => {
     createOutfitSet({
       outfitSet: {
         ...outfitSet,
+        outfit_variants: variantsBySet.get(outfitSet.slug) ?? [],
         carousel_images: outfitSet.outfit_set_carousel_images ?? [],
       },
       outfitCategories,

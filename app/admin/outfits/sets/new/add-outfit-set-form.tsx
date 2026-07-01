@@ -7,9 +7,6 @@ import {
   Chip,
   FormControl,
   FormControlLabel,
-  FormLabel,
-  IconButton,
-  InputAdornment,
   InputLabel,
   ListSubheader,
   MenuItem,
@@ -19,15 +16,14 @@ import {
   Stack,
   Switch,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
 } from '@mui/material'
 import { toSlug } from '@/lib/utils'
-import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
+import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
 import { Ability, EvolutionDraft, OutfitCategory, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
-import RarityToggle from '@/components/filter/rarity-toggle'
+import SlugField from '@/components/forms/slug-field'
+import RarityField from '@/components/forms/rarity-field'
+import ToggleField from '@/components/forms/toggle-field'
 import { DRESS_SLUGS, SEPARATES_SLUGS } from '@/components/filter/outfit-category-select'
 import { useFormConfig } from '@/app/admin/form-context'
 import { addOutfitSet } from '../actions'
@@ -66,7 +62,7 @@ export default function AddOutfitSetForm({
   const [glowupEvolutionOrder, setGlowupEvolutionOrder] = useState<number | ''>('')
   const [categorySelect, setCategorySelect] = useState<string[]>([])
   const [handheldBaseOnly, setHandheldBaseOnly] = useState(false)
-  const [editSlug, setEditSlug] = useState(false)
+  const [slugEdited, setSlugEdited] = useState(false)
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {
     const { value } = e.target
@@ -86,7 +82,7 @@ export default function AddOutfitSetForm({
 
   function handleTitleChange(value: string) {
     setTitle(value)
-    if (!editSlug) setSlug(toSlug(value))
+    if (!slugEdited) setSlug(toSlug(value))
   }
 
   const [state, action, pending] = useActionState(addOutfitSet, null)
@@ -117,7 +113,7 @@ export default function AddOutfitSetForm({
       setGlowupEvolutionOrder('')
       setCategorySelect([])
       setHandheldBaseOnly(false)
-      setEditSlug(false)
+      setSlugEdited(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -134,52 +130,23 @@ export default function AddOutfitSetForm({
           onChange={(e) => handleTitleChange(e.target.value)}
         />
 
-        <input name="slug" type="hidden" value={slug} />
-        <TextField
+        <SlugField
           required
-          disabled={!editSlug}
           helperText="Auto-generated from name — edit if needed"
-          label="Slug"
-          slotProps={{
-            htmlInput: { style: { fontFamily: 'monospace' } },
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setEditSlug(!editSlug)}>
-                    {editSlug ? <EditOff /> : <Edit />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
           value={slug}
-          onChange={(e) => setSlug(e.target.value)}
+          onChange={setSlug}
+          onUserEdit={() => setSlugEdited(true)}
         />
 
-        <input name="rarity" type="hidden" value={rarity} />
-        <RarityToggle
-          selectedRarity={typeof rarity === 'number' ? rarity : null}
-          onRarityChange={(_e, value) => setRarity(value ?? '')}
-        />
+        <RarityField value={rarity} onChange={setRarity} />
 
-        <FormControl>
-          <Typography component={FormLabel} id="style-buttons-group-label" variant="overline">
-            Style
-          </Typography>
-          <input name="style" type="hidden" value={style} />
-          <ToggleButtonGroup
-            exclusive
-            aria-labelledby="style-buttons-group-label"
-            value={style || null}
-            onChange={(_, value) => setStyle(value ?? '')}
-          >
-            {styles.map((s) => (
-              <ToggleButton key={s.slug} sx={{ py: 1.25 }} value={s.slug}>
-                {s.title}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </FormControl>
+        <ToggleField
+          label="Style"
+          name="style"
+          options={styles}
+          value={style}
+          onChange={setStyle}
+        />
 
         <input name="label" type="hidden" value={labelSelect[0] ?? ''} />
         <input name="label_2" type="hidden" value={labelSelect[1] ?? ''} />

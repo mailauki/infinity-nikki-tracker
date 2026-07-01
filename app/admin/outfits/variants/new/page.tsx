@@ -1,13 +1,16 @@
 import { Suspense } from 'react'
-import AddOutfitVariantForm from './add-outfit-variant-form'
+import { Stack } from '@mui/material'
+import { Metadata } from 'next'
+import { navLinksData } from '@/lib/nav-links'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
-import { Stack } from '@mui/material'
-import { Metadata } from 'next'
+import EntityForm from '@/app/admin/entity-form'
+import { outfitVariantFields } from '../fields'
+import { addOutfitVariant } from '../actions'
 
 export const metadata: Metadata = {
   title: 'Add Outfit Variant',
@@ -35,13 +38,21 @@ async function NewOutfitVariant() {
     ])
 
   return (
-    <AddOutfitVariantForm
-      labels={labels}
-      outfitCategories={outfitCategories}
-      outfitSets={outfitSets}
-      seasonCategories={seasonCategories}
-      seasons={seasons}
-      styles={styles}
+    <EntityForm
+      showAddAnother
+      action={addOutfitVariant}
+      backUrl={navLinksData.admin.outfits.variants.list}
+      fields={outfitVariantFields('add', {
+        outfitSets,
+        outfitCategories,
+        seasons,
+        seasonCategories,
+        styles,
+        labels,
+      })}
+      formId="add-outfit-variant"
+      lookups={{ outfitCategories, seasons, seasonCategories, styles }}
+      mode="add"
     />
   )
 }

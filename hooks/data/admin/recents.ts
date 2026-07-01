@@ -14,6 +14,28 @@ export type RecentAdminItem = {
 
 const backDashboard = `?back=${encodeURIComponent('/admin')}`
 
+// The eureka set thumbnail is its default head variant's image (default variant
+// as fallback), matching createEurekaSet / the eureka slug page. The set rows
+// themselves have no image_url column, so resolve it from eureka_variants.
+async function eurekaSetImages(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  setSlugs: string[]
+): Promise<Map<string, string | null>> {
+  const map = new Map<string, string | null>()
+  if (setSlugs.length === 0) return map
+  const { data } = await supabase
+    .from('eureka_variants')
+    .select('eureka_set, category, image_url, default')
+    .in('eureka_set', setSlugs)
+    .eq('default', true)
+  for (const slug of setSlugs) {
+    const defaults = (data ?? []).filter((v) => v.eureka_set === slug)
+    const head = defaults.find((v) => v.category === 'head')
+    map.set(slug, (head ?? defaults[0])?.image_url ?? null)
+  }
+  return map
+}
+
 export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem[]> => {
   const supabase = await createClient()
 
@@ -22,6 +44,7 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
     { data: eurekaVariants },
     { data: trials },
     { data: outfitSets },
+    { data: outfitVariants },
     { data: evolutions },
   ] = await Promise.all([
     supabase
@@ -47,6 +70,12 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       .order('created_at', { ascending: false, nullsFirst: false })
       .limit(limit),
     supabase
+      .from('outfit_variants')
+      .select('slug, title, image_url, created_at')
+      .not('created_at', 'is', null)
+      .order('created_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
       .from('outfit_sets')
       .select('slug, title, image_url, created_at')
       .not('base_set', 'is', null)
@@ -55,11 +84,16 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       .limit(limit),
   ])
 
+  const eurekaImages = await eurekaSetImages(
+    supabase,
+    (eurekaSets ?? []).map((s) => s.slug)
+  )
+
   return [
     ...(eurekaSets ?? []).map((s) => ({
       slug: s.slug,
       title: s.title,
-      image_url: null,
+      image_url: eurekaImages.get(s.slug) ?? null,
       type: navLinksData.admin.eureka.sets.title,
       editHref: `${navLinksData.admin.eureka.sets.edit}/${s.slug}${backDashboard}`,
       date: s.created_at,
@@ -88,6 +122,14 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}${backDashboard}`,
       date: o.created_at!,
     })),
+    ...(outfitVariants ?? []).map((v) => ({
+      slug: v.slug,
+      title: v.title ?? toTitle(v.slug),
+      image_url: v.image_url,
+      type: navLinksData.admin.outfits.variants.title,
+      editHref: `${navLinksData.admin.outfits.variants.edit}/${v.slug}${backDashboard}`,
+      date: v.created_at,
+    })),
     ...(evolutions ?? []).map((e) => ({
       slug: e.slug,
       title: e.title,
@@ -107,6 +149,7 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
     { data: eurekaVariants },
     { data: trials },
     { data: outfitSets },
+    { data: outfitVariants },
     { data: evolutions },
   ] = await Promise.all([
     supabase
@@ -135,6 +178,12 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       .order('updated_at', { ascending: false, nullsFirst: false })
       .limit(limit),
     supabase
+      .from('outfit_variants')
+      .select('slug, title, image_url, updated_at')
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
       .from('outfit_sets')
       .select('slug, title, image_url, updated_at')
       .not('base_set', 'is', null)
@@ -143,11 +192,16 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       .limit(limit),
   ])
 
+  const eurekaImages = await eurekaSetImages(
+    supabase,
+    (eurekaSets ?? []).map((s) => s.slug)
+  )
+
   return [
     ...(eurekaSets ?? []).map((s) => ({
       slug: s.slug,
       title: s.title,
-      image_url: null,
+      image_url: eurekaImages.get(s.slug) ?? null,
       type: navLinksData.admin.eureka.sets.title,
       editHref: `${navLinksData.admin.eureka.sets.edit}/${s.slug}${backDashboard}`,
       date: s.updated_at!,
@@ -175,6 +229,14 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       type: navLinksData.admin.outfits.sets.title,
       editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}${backDashboard}`,
       date: o.updated_at!,
+    })),
+    ...(outfitVariants ?? []).map((v) => ({
+      slug: v.slug,
+      title: v.title ?? toTitle(v.slug),
+      image_url: v.image_url,
+      type: navLinksData.admin.outfits.variants.title,
+      editHref: `${navLinksData.admin.outfits.variants.edit}/${v.slug}${backDashboard}`,
+      date: v.updated_at!,
     })),
     ...(evolutions ?? []).map((e) => ({
       slug: e.slug,

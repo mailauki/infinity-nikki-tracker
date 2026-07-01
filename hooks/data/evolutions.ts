@@ -1,6 +1,7 @@
 import { cache } from 'react'
 import { Evolution } from '@/lib/types/outfit'
 import { createClient } from '@/lib/supabase/server'
+import { getOutfitVariantsBySet } from './outfit-variants'
 
 // Columns shared by all evolution queries (outfit_sets rows with base_set IS NOT NULL).
 // "order" is a reserved word in Postgres — always quoted in select strings.
@@ -15,22 +16,20 @@ const EVOLUTION_SELECT = `
 export const getEvolutions = cache(async () => {
   const supabase = await createClient()
 
-  const { data: evolutions } = await supabase
-    .from('outfit_sets')
-    .select(
-      `
-      ${EVOLUTION_SELECT},
-      outfit_variants (
-        id, slug, outfit_set, outfit_category, title, image_url, alt_image_url, default
-      )
-    `
-    )
-    .not('base_set', 'is', null)
-    .order('order', { ascending: true })
+  // Variants injected from the paginated grouped fetch — a PostgREST embed caps
+  // at 1000 rows and would drop most evolution variants.
+  const [{ data: evolutions }, variantsBySet] = await Promise.all([
+    supabase
+      .from('outfit_sets')
+      .select(EVOLUTION_SELECT)
+      .not('base_set', 'is', null)
+      .order('order', { ascending: true }),
+    getOutfitVariantsBySet(),
+  ])
 
   return (evolutions ?? []).map((e) => ({
     ...e,
-    outfit_variants: e.outfit_variants ?? [],
+    outfit_variants: variantsBySet.get(e.slug) ?? [],
     outfit_categories: [],
     evolutions: [],
     carousel_images: e.outfit_set_carousel_images ?? [],

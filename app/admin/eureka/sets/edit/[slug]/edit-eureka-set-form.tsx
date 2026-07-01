@@ -7,9 +7,6 @@ import {
   Button,
   Chip,
   FormControl,
-  FormLabel,
-  IconButton,
-  InputAdornment,
   InputLabel,
   ListItemAvatar,
   ListItemText,
@@ -20,14 +17,10 @@ import {
   SelectChangeEvent,
   Stack,
   TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
 } from '@mui/material'
-import { ColorLens } from '@mui/icons-material'
+import { CheckBox, CheckBoxOutlineBlank, ColorLens } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
 import { toSlug, toTitle } from '@/lib/utils'
-import { CheckBox, CheckBoxOutlineBlank, Edit, EditOff } from '@mui/icons-material'
 import {
   EurekaCategory,
   EurekaColor,
@@ -38,7 +31,9 @@ import {
   Trial,
 } from '@/lib/types/eureka'
 import ColorSelect from '@/components/forms/eureka-set/color-select'
-import RarityToggle from '@/components/filter/rarity-toggle'
+import SlugField from '@/components/forms/slug-field'
+import RarityField from '@/components/forms/rarity-field'
+import ToggleField from '@/components/forms/toggle-field'
 import ImageUpload from '@/components/forms/image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { editEurekaSet } from '../../actions'
@@ -79,7 +74,6 @@ export default function EditEurekaSetForm({
   const [selectedTrials, setSelectedTrials] = useState<string[]>(
     eurekaSet.eureka_set_trials?.map((t) => t.trial) ?? []
   )
-  const [editSlug, setEditSlug] = useState(false)
   const [colorSelect, setColorSelect] = useState<string[]>(initialColors)
   const [defaultColor, setDefaultColor] = useState(initialDefaultColor)
   const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
@@ -138,26 +132,11 @@ export default function EditEurekaSetForm({
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <input name="slug" type="hidden" value={slug} />
-        <TextField
+        <SlugField
           required
-          disabled={!editSlug}
           helperText="Used in the URL — edit with caution"
-          label="Slug"
-          slotProps={{
-            htmlInput: { style: { fontFamily: 'monospace' } },
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setEditSlug(!editSlug)}>
-                    {editSlug ? <EditOff /> : <Edit />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
           value={slug}
-          onChange={(e) => setSlug(e.target.value)}
+          onChange={setSlug}
         />
 
         <TextField
@@ -169,30 +148,15 @@ export default function EditEurekaSetForm({
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <input name="rarity" type="hidden" value={rarity} />
-        <RarityToggle
-          selectedRarity={typeof rarity === 'number' ? rarity : null}
-          onRarityChange={(_e, value) => setRarity(value ?? '')}
-        />
+        <RarityField value={rarity} onChange={setRarity} />
 
-        <FormControl>
-          <Typography component={FormLabel} id="style-buttons-group-label" variant="overline">
-            Style
-          </Typography>
-          <input name="style" type="hidden" value={style} />
-          <ToggleButtonGroup
-            exclusive
-            aria-labelledby="style-buttons-group-label"
-            value={style || null}
-            onChange={(_, value) => setStyle(value ?? '')}
-          >
-            {styles.map((s) => (
-              <ToggleButton key={s.slug} sx={{ py: 1.25 }} value={s.slug}>
-                {s.title}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </FormControl>
+        <ToggleField
+          label="Style"
+          name="style"
+          options={styles}
+          value={style}
+          onChange={setStyle}
+        />
 
         <FormControl>
           <InputLabel>Label</InputLabel>
