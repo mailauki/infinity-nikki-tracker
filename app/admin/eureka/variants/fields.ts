@@ -42,6 +42,9 @@ export function eurekaVariantFields(
       type: 'slug',
       name: 'slug',
       required: true,
+      // eureka variants track their slug live in edit mode too (the original
+      // form re-derived on set/category/color change).
+      deriveOnEdit: true,
       // Only regenerate once all three parts are present; otherwise keep the
       // current slug (matches the original form, which never cleared it).
       slugFrom: (v) =>

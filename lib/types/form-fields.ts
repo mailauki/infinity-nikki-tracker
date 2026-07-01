@@ -51,6 +51,13 @@ interface SlugField extends BaseField {
    * builds a composite (e.g. `toSlugVariant(set, category, color)`).
    */
   slugFrom?: string | ((values: FieldValues) => string)
+  /**
+   * Auto-derive the slug in edit mode too. Off by default: an existing record's
+   * slug is a stable identifier (and image-storage key), so editing other
+   * fields must not silently rewrite it. Opt in only where the slug is meant to
+   * track its sources live (e.g. eureka variants).
+   */
+  deriveOnEdit?: boolean
 }
 
 interface SelectField extends BaseField {

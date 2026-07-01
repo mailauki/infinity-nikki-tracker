@@ -118,14 +118,18 @@ export default function EntityForm({
   const slugField = useMemo(() => fields.find((f) => f.type === 'slug'), [fields])
 
   // Auto-derive the slug from its source(s) until the user edits it manually.
+  // In edit mode the slug is a stable identifier (and image-storage key), so we
+  // only re-derive when the field explicitly opts in via `deriveOnEdit` —
+  // otherwise editing other fields would silently rewrite an existing slug.
   useEffect(() => {
     if (!slugField || slugField.type !== 'slug' || slugEdited) return
+    if (mode === 'edit' && !slugField.deriveOnEdit) return
     const next =
       typeof slugField.slugFrom === 'function'
         ? slugField.slugFrom(values)
         : toSlug(String(values[slugField.slugFrom ?? 'title'] ?? ''))
     if (next !== values[slugField.name]) setValue(slugField.name, next)
-  }, [values, slugEdited, slugField])
+  }, [values, slugEdited, slugField, mode])
 
   // Push config into the shared FormContext that FormToolbar reads.
   useEffect(() => {
