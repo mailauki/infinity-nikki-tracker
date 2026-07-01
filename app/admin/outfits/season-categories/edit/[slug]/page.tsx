@@ -4,7 +4,9 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { navLinksData } from '@/lib/nav-links'
 import { getSeasonCategoryRaw } from '@/hooks/data/admin/season-categories'
-import EditSeasonCategoryForm from './edit-season-category-form'
+import EntityForm from '@/app/admin/entity-form'
+import { seasonCategoryFields } from '../../fields'
+import { editSeasonCategory } from './actions'
 
 export const metadata: Metadata = {
   title: 'Edit Season Category',
@@ -43,5 +45,21 @@ async function EditSeasonCategory({
 
   if (!category) notFound()
 
-  return <EditSeasonCategoryForm back={back} category={category} />
+  return (
+    <EntityForm
+      showUpdateNext
+      showUpdateOnly
+      action={editSeasonCategory.bind(null, category.slug, back)}
+      backUrl={back}
+      fields={seasonCategoryFields('edit')}
+      formId="edit-season-category"
+      initialValues={{
+        title: category.title,
+        slug: category.slug,
+        description: category.description ?? '',
+        image_url: category.image_url,
+      }}
+      mode="edit"
+    />
+  )
 }

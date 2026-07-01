@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import EditOutfitVariantForm from './edit-outfit-variant-form'
+import { Stack } from '@mui/material'
+import { Metadata } from 'next'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getOutfitVariantRaw } from '@/hooks/data/admin/outfit-variants'
@@ -8,8 +9,9 @@ import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
-import { Stack } from '@mui/material'
-import { Metadata } from 'next'
+import EntityForm from '@/app/admin/entity-form'
+import { outfitVariantFields } from '../../fields'
+import { editOutfitVariant } from '../../actions'
 
 export const metadata: Metadata = {
   title: 'Edit Outfit Variant',
@@ -45,16 +47,40 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
 
   if (!variant) notFound()
 
+  const back = '/admin/outfits/variants'
+
   return (
-    <EditOutfitVariantForm
-      back="/admin/outfits/variants"
-      labels={labels}
-      outfitCategories={outfitCategories}
-      outfitSets={outfitSets}
-      seasonCategories={seasonCategories}
-      seasons={seasons}
-      styles={styles}
-      variant={variant}
+    <EntityForm
+      showUpdateNext
+      showUpdateOnly
+      action={editOutfitVariant.bind(null, variant.id, back)}
+      backUrl={back}
+      fields={outfitVariantFields('edit', {
+        outfitSets,
+        outfitCategories,
+        seasons,
+        seasonCategories,
+        styles,
+        labels,
+      })}
+      formId="edit-outfit-variant"
+      initialValues={{
+        outfit_set: variant.outfit_set ?? '',
+        outfit_category: variant.outfit_category ?? '',
+        seasons: variant.seasons ?? '',
+        season_category: variant.season_category ?? '',
+        rarity: variant.rarity ?? '',
+        style: variant.style ?? '',
+        label: variant.label ?? '',
+        label_2: variant.label_2 ?? '',
+        title: variant.title ?? '',
+        description: variant.description ?? '',
+        slug: variant.slug,
+        image_url: variant.image_url,
+        default: variant.default,
+      }}
+      lookups={{ outfitCategories, seasons, seasonCategories, styles }}
+      mode="edit"
     />
   )
 }

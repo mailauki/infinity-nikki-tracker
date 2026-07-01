@@ -1,10 +1,13 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { createClient } from '@/lib/supabase/server'
-import EditEurekaVariantForm from './edit-eureka-variant-form'
-import { getAdminData } from '@/hooks/data/user'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
+import { createClient } from '@/lib/supabase/server'
+import { getAdminData } from '@/hooks/data/user'
+import { toSlugVariant } from '@/lib/utils'
+import EntityForm from '@/app/admin/entity-form'
+import { eurekaVariantFields } from '../../fields'
+import { editEurekaVariant } from '../../actions'
 
 export const metadata: Metadata = {
   title: 'Edit Eureka Variant',
@@ -30,24 +33,39 @@ async function EditEurekaVariant({ params }: { params: Promise<{ slug: string }>
 
   const { data: variant } = await supabase
     .from('eureka_variants')
-    .select(
-      'id, eureka_set, category, color, image_url, default, slug, updated_at, eureka_sets ( title ), eureka_categories ( title ), eureka_colors ( title )'
-    )
+    .select('id, eureka_set, category, color, image_url, default, slug')
     .eq('slug', slug)
     .single()
 
   if (!variant) notFound()
 
   const { eurekaSets, categories, colors, eurekaVariants } = await getAdminData()
+  const back = '/admin/eureka/variants'
 
   return (
-    <EditEurekaVariantForm
-      back="/admin/eureka/variants"
-      categories={categories ?? []}
-      colors={colors ?? []}
-      eurekaSets={eurekaSets ?? []}
-      variant={variant}
-      variants={eurekaVariants ?? []}
+    <EntityForm
+      showUpdateNext
+      showUpdateOnly
+      action={editEurekaVariant.bind(null, variant.id, back)}
+      backUrl={back}
+      fields={eurekaVariantFields('edit', eurekaVariants ?? [], variant.id)}
+      formId="edit-eureka-variant"
+      initialValues={{
+        eureka_set: variant.eureka_set ?? '',
+        category: variant.category ?? '',
+        color: variant.color ?? '',
+        slug:
+          variant.slug ??
+          toSlugVariant(variant.eureka_set ?? '', variant.category ?? '', variant.color ?? ''),
+        image_url: variant.image_url,
+        default: variant.default,
+      }}
+      lookups={{
+        eurekaSets: eurekaSets ?? [],
+        categories: categories ?? [],
+        colors: colors ?? [],
+      }}
+      mode="edit"
     />
   )
 }

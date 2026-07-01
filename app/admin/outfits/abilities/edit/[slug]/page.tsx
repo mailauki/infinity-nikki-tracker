@@ -4,13 +4,15 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { navLinksData } from '@/lib/nav-links'
 import { getAbilityRaw } from '@/hooks/data/admin/abilities'
-import EditAbilityForm from './edit-ability-form'
+import EntityForm from '@/app/admin/entity-form'
+import { abilityFields } from '../../fields'
+import { editAbility } from './actions'
 
 export const metadata: Metadata = {
   title: 'Edit Ability',
 }
 
-export default async function EditAbilityPage({
+export default function EditAbilityPage({
   params,
   searchParams,
 }: {
@@ -43,5 +45,20 @@ async function EditAbility({
 
   if (!ability) notFound()
 
-  return <EditAbilityForm ability={ability} back={back} />
+  return (
+    <EntityForm
+      showUpdateNext
+      showUpdateOnly
+      action={editAbility.bind(null, ability.slug, back)}
+      backUrl={back}
+      fields={abilityFields('edit')}
+      formId="edit-ability"
+      initialValues={{
+        title: ability.title,
+        slug: ability.slug,
+        image_url: ability.image_url,
+      }}
+      mode="edit"
+    />
+  )
 }
