@@ -66,6 +66,8 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
   // Build sibling evolution rows (base_set = slug, order from draft + 1 to shift past base).
   // Shared set-level fields are copied from the base row so siblings stay in sync.
   const sharedFields = { rarity, style, ability, seasons, season_category, label, label_2 }
+  // Subset that also exists on outfit_variants (no `ability` column there).
+  const variantSharedFields = { rarity, style, seasons, season_category, label, label_2 }
 
   if (evolutionDrafts.length > 0) {
     const evolutionRows = evolutionDrafts.map((draft) => ({
@@ -99,6 +101,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
         outfit_category: cat.slug,
         slug: `${slug}-${cat.slug}`,
         default: true,
+        ...variantSharedFields,
       }))
       const evoVariants = evolutionRows.flatMap((evo) =>
         outfitCategories
@@ -108,6 +111,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
             outfit_category: cat.slug,
             slug: `${evo.slug}-${cat.slug}`,
             default: false,
+            ...variantSharedFields,
           }))
       )
       const { error: variantError } = await supabase
@@ -125,6 +129,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
       outfit_category: cat.slug,
       slug: `${slug}-${cat.slug}`,
       default: true,
+      ...variantSharedFields,
     }))
     const { error: variantError } = await supabase.from('outfit_variants').insert(variants)
     if (variantError) {
@@ -179,6 +184,8 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
 
   // Shared set-level fields copied onto all sibling evolution rows on every edit.
   const sharedFields = { rarity, style, ability, seasons, season_category, label, label_2 }
+  // Subset that also exists on outfit_variants (no `ability` column there).
+  const variantSharedFields = { rarity, style, seasons, season_category, label, label_2 }
 
   // Update the base row.
   const { error } = await supabase
@@ -305,6 +312,10 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
           outfit_category: cat.slug,
           slug: `${stateSlug}-${cat.slug}`,
           default: stateSlug === slug,
+          // Inherit the set's fields so newly-synced variants aren't left null
+          // (variants read rarity/style/label from the set at display time, but
+          // storing them keeps the variant edit form and data consistent).
+          ...variantSharedFields,
         }))
     )
     const expectedSlugs = new Set(expectedVariants.map((v) => v.slug))
