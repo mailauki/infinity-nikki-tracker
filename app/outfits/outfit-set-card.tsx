@@ -83,7 +83,7 @@ export default function OutfitSetCard({
             <LazyImage
               image={imageSrc || set.image_url || ''}
               kind="media"
-              sx={{ width: '100%', aspectRatio: '9 / 16' }}
+              sx={{ width: '100%', aspectRatio: '2 / 3' }}
               title={title}
             />
           )}
