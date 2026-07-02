@@ -11,7 +11,7 @@ export default function ImageUploadPair({
   altImage,
   onImageChange,
   onAltImageChange,
-  size = 'md',
+  size = 'lg',
   hiddenInputName,
 }: {
   table: ImageUploadTable
