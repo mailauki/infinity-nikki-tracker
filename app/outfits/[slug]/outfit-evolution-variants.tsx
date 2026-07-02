@@ -27,9 +27,7 @@ export default function OutfitEvolutionVariants({
 
   const outfit_variants = rawVariants.map((v) => ({
     ...v,
-    obtained: obtainedOutfit.some(
-      (o) => o.outfit_set === v.outfit_set && o.outfit_category === v.outfit_category
-    ),
+    obtained: obtainedOutfit.some((o) => o.outfit_variant === v.slug),
   }))
 
   // Sort variants by the display order of their state: base first, then

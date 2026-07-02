@@ -389,6 +389,7 @@ export type Database = {
           id: number
           outfit_category: string
           outfit_set: string
+          outfit_variant: string
           user_id: string
         }
         Insert: {
@@ -396,6 +397,7 @@ export type Database = {
           id?: number
           outfit_category: string
           outfit_set: string
+          outfit_variant: string
           user_id: string
         }
         Update: {
@@ -403,6 +405,7 @@ export type Database = {
           id?: number
           outfit_category?: string
           outfit_set?: string
+          outfit_variant?: string
           user_id?: string
         }
         Relationships: [
@@ -418,6 +421,13 @@ export type Database = {
             columns: ["outfit_set"]
             isOneToOne: false
             referencedRelation: "outfit_sets"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "obtained_outfit_variant_fkey"
+            columns: ["outfit_variant"]
+            isOneToOne: false
+            referencedRelation: "outfit_variants"
             referencedColumns: ["slug"]
           },
         ]
@@ -654,15 +664,15 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "outfit_variants_label_fkey"
-            columns: ["label"]
+            foreignKeyName: "outfit_variants_label_2_fkey"
+            columns: ["label_2"]
             isOneToOne: false
             referencedRelation: "labels"
             referencedColumns: ["slug"]
           },
           {
-            foreignKeyName: "outfit_variants_label_2_fkey"
-            columns: ["label_2"]
+            foreignKeyName: "outfit_variants_label_fkey"
+            columns: ["label"]
             isOneToOne: false
             referencedRelation: "labels"
             referencedColumns: ["slug"]
@@ -973,7 +983,11 @@ export type Database = {
         Returns: undefined
       }
       toggle_obtained_outfit: {
-        Args: { p_outfit_category: string; p_outfit_set: string }
+        Args: {
+          p_outfit_category: string
+          p_outfit_set: string
+          p_outfit_variant: string
+        }
         Returns: undefined
       }
     }

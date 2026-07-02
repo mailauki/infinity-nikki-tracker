@@ -1,6 +1,5 @@
 'use client'
-import { Alert, Box, Button, Divider, Skeleton, Stack, Typography } from '@mui/material'
-import { ChevronRight } from '@mui/icons-material'
+import { Alert, Box, Divider, Skeleton, Stack, Typography } from '@mui/material'
 
 import ErrorAlert from '@/components/error-alert'
 import LoginAlert from '@/components/login-alert'
@@ -53,7 +52,6 @@ function VariantCardSkeleton() {
 export default function FilterOutfits() {
   const {
     outfitSets,
-    standaloneVariants,
     isLoggedIn,
     isLoading,
     isError,
@@ -204,16 +202,6 @@ export default function FilterOutfits() {
       return (sortDir === 'asc' ? cmp : -cmp) || a.id! - b.id!
     })
 
-  // Standalone variants: only shown in compact view. Only category and set
-  // filters apply — they have no evolution, rarity, or obtained status.
-  const filteredStandalone = selectedOutfitSet
-    ? []
-    : standaloneVariants.filter(
-        (v) =>
-          selectedOutfitCategory.length === 0 ||
-          (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category ?? ''))
-      )
-
   function renderSetVariants(set: (typeof filteredSets)[number]) {
     return set.outfit_variants.map((variant) => (
       <OutfitVariantCard
@@ -239,7 +227,7 @@ export default function FilterOutfits() {
         </Alert>
       )}
 
-      {filteredSets.length === 0 && filteredStandalone.length === 0 && (
+      {filteredSets.length === 0 && (
         <Stack sx={{ py: 8, alignItems: 'center', justifyContent: 'center' }}>
           <Typography color="textSecondary" variant="h6">
             No results
@@ -286,6 +274,7 @@ export default function FilterOutfits() {
                         .map((v) => ({
                           outfit_set: v.outfit_set!,
                           outfit_category: v.outfit_category!,
+                          outfit_variant: v.slug,
                         }))
                       onBatchToggleObtained(toToggle, !allObtained)
                     }}
@@ -297,7 +286,7 @@ export default function FilterOutfits() {
         </Box>
       )}
 
-      {(filteredSets.length > 0 || filteredStandalone.length > 0) && density === 'compact' && (
+      {filteredSets.length > 0 && density === 'compact' && (
         <Box sx={GRID_CONTAINER}>
           <Box sx={OUTFIT_GRID_SX}>
             {groupBySet ? (
@@ -305,40 +294,9 @@ export default function FilterOutfits() {
                 {filteredSets.map((set) => (
                   <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
                 ))}
-                {filteredStandalone.length > 0 && (
-                  <>
-                    <Box sx={{ gridColumn: '1 / -1', mt: 1 }}>
-                      <Stack
-                        direction="row"
-                        sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
-                      >
-												<Button color="inherit" endIcon={<ChevronRight />} href={'/outfits/standalone-pieces'} size="small">Standalone pieces</Button>
-                      </Stack>
-                      <Divider />
-                    </Box>
-                    {filteredStandalone.map((variant) => (
-                      <OutfitVariantCard
-                        key={variant.id}
-                        disableToggle
-                        isLoggedIn={isLoggedIn}
-                        outfitVariant={variant}
-                      />
-                    ))}
-                  </>
-                )}
               </>
             ) : (
-              <>
-                {filteredSets.flatMap((set) => renderSetVariants(set))}
-                {filteredStandalone.map((variant) => (
-                  <OutfitVariantCard
-                    key={variant.id}
-                    disableToggle
-                    isLoggedIn={isLoggedIn}
-                    outfitVariant={variant}
-                  />
-                ))}
-              </>
+              <>{filteredSets.flatMap((set) => renderSetVariants(set))}</>
             )}
           </Box>
         </Box>

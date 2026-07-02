@@ -29,7 +29,7 @@ export default function OutfitVariantCard({
     (mode === 'alt' && outfitVariant.alt_image_url) || outfitVariant.image_url || undefined
 
   function onToggle() {
-    onToggleObtained(outfitVariant.outfit_set!, outfitVariant.outfit_category!)
+    onToggleObtained(outfitVariant.outfit_set!, outfitVariant.outfit_category!, outfitVariant.slug)
     if (isMissingFilter) {
       setExiting(true)
     }

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 import { createClient } from '@/lib/supabase/client'
-import { OutfitCategory, OutfitSet, OutfitVariant, ObtainedOutfit } from '@/lib/types/outfit'
+import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
 import { UserPreferences } from '@/lib/types/eureka'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
@@ -39,7 +39,6 @@ export default function OutfitDataProvider({
   children: React.ReactNode
 }) {
   const [outfitSets, setOutfitSets] = useState<OutfitSet[]>([])
-  const [standaloneVariants, setStandaloneVariants] = useState<OutfitVariant[]>([])
   const [outfitCategories, setOutfitCategories] = useState<OutfitCategory[]>([])
   const [obtainedOutfit, setObtainedOutfit] = useState<ObtainedOutfit[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -56,10 +55,9 @@ export default function OutfitDataProvider({
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
-    fetchJson<{ outfitSets: OutfitSet[]; standaloneVariants: OutfitVariant[] }>('/api/outfits')
-      .then(({ outfitSets: sets, standaloneVariants: standalone }) => {
+    fetchJson<{ outfitSets: OutfitSet[] }>('/api/outfits')
+      .then(({ outfitSets: sets }) => {
         setOutfitSets(sets)
-        setStandaloneVariants(standalone)
         if (sets.length > 0) {
           setOutfitCategories(sets[0].outfit_categories)
         }
@@ -143,20 +141,23 @@ export default function OutfitDataProvider({
     }
   }
 
-  const handleToggleObtained = async (outfit_set: string, outfit_category: string) => {
+  const handleToggleObtained = async (
+    outfit_set: string,
+    outfit_category: string,
+    outfit_variant: string
+  ) => {
     const saved = obtainedOutfit
-    const isObtained = obtainedOutfit.some(
-      (o) => o.outfit_set === outfit_set && o.outfit_category === outfit_category
-    )
+    const isObtained = obtainedOutfit.some((o) => o.outfit_variant === outfit_variant)
     if (isObtained) {
-      setObtainedOutfit((prev) =>
-        prev.filter((o) => !(o.outfit_set === outfit_set && o.outfit_category === outfit_category))
-      )
+      setObtainedOutfit((prev) => prev.filter((o) => o.outfit_variant !== outfit_variant))
     } else {
-      setObtainedOutfit((prev) => [...prev, { id: -1, outfit_set, outfit_category }])
+      setObtainedOutfit((prev) => [
+        ...prev,
+        { id: -1, outfit_set, outfit_category, outfit_variant },
+      ])
     }
     try {
-      await handleObtainedOutfit(outfit_set, outfit_category)
+      await handleObtainedOutfit(outfit_set, outfit_category, outfit_variant)
     } catch (err) {
       console.error('Failed to toggle obtained outfit:', err)
       setObtainedOutfit(saved)
@@ -165,29 +166,31 @@ export default function OutfitDataProvider({
   }
 
   const handleBatchToggleObtained = async (
-    variants: Array<{ outfit_set: string; outfit_category: string }>,
+    variants: Array<{
+      outfit_set: string
+      outfit_category: string
+      outfit_variant: string
+    }>,
     targetObtained: boolean
   ) => {
     const saved = obtainedOutfit
-    const matches = (
-      o: { outfit_set: string; outfit_category: string },
-      v: { outfit_set: string; outfit_category: string }
-    ) => o.outfit_set === v.outfit_set && o.outfit_category === v.outfit_category
 
     if (targetObtained) {
       setObtainedOutfit((prev) => {
         const toAdd = variants
-          .filter((v) => !prev.some((o) => matches(o, v)))
+          .filter((v) => !prev.some((o) => o.outfit_variant === v.outfit_variant))
           .map((v) => ({ id: -1, ...v }))
         return [...prev, ...toAdd]
       })
     } else {
-      setObtainedOutfit((prev) => prev.filter((o) => !variants.some((v) => matches(o, v))))
+      setObtainedOutfit((prev) =>
+        prev.filter((o) => !variants.some((v) => o.outfit_variant === v.outfit_variant))
+      )
     }
 
     for (const v of variants) {
       try {
-        await handleObtainedOutfit(v.outfit_set, v.outfit_category)
+        await handleObtainedOutfit(v.outfit_set, v.outfit_category, v.outfit_variant)
       } catch (err) {
         console.error('Failed to batch toggle obtained outfit:', err)
         setObtainedOutfit(saved)
@@ -239,12 +242,7 @@ export default function OutfitDataProvider({
           const incoming = payload.new as ObtainedOutfit
           setObtainedOutfit((prev) => {
             const withoutPlaceholder = prev.filter(
-              (o) =>
-                !(
-                  o.id === -1 &&
-                  o.outfit_set === incoming.outfit_set &&
-                  o.outfit_category === incoming.outfit_category
-                )
+              (o) => !(o.id === -1 && o.outfit_variant === incoming.outfit_variant)
             )
             if (withoutPlaceholder.some((o) => o.id === incoming.id)) return prev
             return [...withoutPlaceholder, incoming]
@@ -279,7 +277,6 @@ export default function OutfitDataProvider({
     <OutfitDataContext.Provider
       value={{
         outfitSets: outfitSetsWithObtained,
-        standaloneVariants,
         obtainedOutfit,
         outfitCategories,
         isLoggedIn,

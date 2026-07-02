@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext } from 'react'
-import { OutfitCategory, OutfitSet, OutfitVariant, ObtainedOutfit } from '@/lib/types/outfit'
+import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
 
 export interface OutfitFilterState {
@@ -14,7 +14,6 @@ export interface OutfitFilterState {
 
 interface OutfitDataContextValue {
   outfitSets: OutfitSet[]
-  standaloneVariants: OutfitVariant[]
   obtainedOutfit: ObtainedOutfit[]
   outfitCategories: OutfitCategory[]
   isLoggedIn: boolean
@@ -32,9 +31,13 @@ interface OutfitDataContextValue {
   filters: OutfitFilterState
   onFiltersChange: (updates: Partial<OutfitFilterState>) => void
   onClearFilters: () => void
-  onToggleObtained: (outfit_set: string, outfit_category: string) => void
+  onToggleObtained: (outfit_set: string, outfit_category: string, outfit_variant: string) => void
   onBatchToggleObtained: (
-    variants: Array<{ outfit_set: string; outfit_category: string }>,
+    variants: Array<{
+      outfit_set: string
+      outfit_category: string
+      outfit_variant: string
+    }>,
     targetObtained: boolean
   ) => void
 }
@@ -49,7 +52,6 @@ export const DEFAULT_OUTFIT_FILTERS: OutfitFilterState = {
 
 export const OutfitDataContext = createContext<OutfitDataContextValue>({
   outfitSets: [],
-  standaloneVariants: [],
   obtainedOutfit: [],
   outfitCategories: [],
   isLoggedIn: false,

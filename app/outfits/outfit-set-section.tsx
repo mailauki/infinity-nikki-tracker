@@ -51,6 +51,7 @@ export default function OutfitSetSection({
           .map((v) => ({
             outfit_set: v.outfit_set!,
             outfit_category: v.outfit_category!,
+            outfit_variant: v.slug,
           }))
         onBatchToggleObtained(toToggle, !allObtained)
       }
