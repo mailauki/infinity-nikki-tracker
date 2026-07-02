@@ -270,7 +270,7 @@ function MediaImage({ image, sx, ...props }: CardMediaProps<'div'>) {
       )}
       <CardMedia
         image={retrySrc}
-        sx={[{ borderRadius: 3, height: '100%', opacity: loaded || !image ? 1 : 0 }, darkDim]}
+        sx={[{ borderRadius: 1.5, height: '100%', opacity: loaded || !image ? 1 : 0 }, darkDim]}
         {...props}
       />
     </Box>
