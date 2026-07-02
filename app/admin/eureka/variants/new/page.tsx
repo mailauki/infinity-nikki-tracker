@@ -4,7 +4,6 @@ import { Metadata } from 'next'
 import { navLinksData } from '@/lib/nav-links'
 import { getAdminData } from '@/hooks/data/user'
 import EntityForm from '@/app/admin/entity-form'
-import { eurekaVariantFields } from '../fields'
 import { addEurekaVariant } from '../actions'
 
 export const metadata: Metadata = {
@@ -29,8 +28,9 @@ async function NewEurekaVariant() {
       showAddAnother
       action={addEurekaVariant}
       backUrl={navLinksData.admin.eureka.variants.list}
-      fields={eurekaVariantFields('add', eurekaVariants ?? [])}
+      builderData={{ eurekaVariants: eurekaVariants ?? [] }}
       formId="add-eureka-variant"
+      formKind="eurekaVariant"
       lookups={{
         eurekaSets: eurekaSets ?? [],
         categories: categories ?? [],

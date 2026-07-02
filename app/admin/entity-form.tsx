@@ -21,12 +21,19 @@ import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
 import { toSlug } from '@/lib/utils'
 import { MENU_PROPS } from '@/lib/types/props'
 import { FieldConfig, FieldLookups, FieldOption, FieldValues } from '@/lib/types/form-fields'
+import { OutfitSetRaw } from '@/lib/types/outfit'
+import { Label } from '@/lib/types/eureka'
 import { useFormConfig } from '@/app/admin/form-context'
+import { buildFields, BuilderData, FormKind } from '@/app/admin/build-fields'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
 import ImageUpload from '@/components/forms/image-upload'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
+import {
+  GroupedOutfitSetSelect,
+  LabelPairSelect,
+} from '@/app/admin/outfits/variants/variant-custom-fields'
 
 /** Result shapes the admin server actions return (they otherwise redirect). */
 type ActionState =
@@ -81,7 +88,8 @@ function resolveBool(
 export default function EntityForm({
   mode,
   formId,
-  fields,
+  formKind,
+  builderData,
   action,
   backUrl,
   initialValues,
@@ -93,7 +101,8 @@ export default function EntityForm({
 }: {
   mode: 'add' | 'edit'
   formId: string
-  fields: FieldConfig[]
+  formKind: FormKind
+  builderData?: BuilderData
   action: EntityAction
   backUrl: string
   initialValues?: FieldValues
@@ -104,6 +113,15 @@ export default function EntityForm({
   maxWidth?: Breakpoint
 }) {
   const { setFormConfig } = useFormConfig()
+  // Field builders emit function-valued props, so they must run on the client.
+  // We build here (not in the server page) to keep those closures off the wire.
+  const fields = useMemo(
+    () => buildFields(formKind, mode, builderData),
+    // builderData is a fresh literal each render; key on its stable members so
+    // fields (and everything derived from it) doesn't churn every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [formKind, mode, builderData?.eurekaVariants, builderData?.currentId]
+  )
   const [values, setValues] = useState<FieldValues>(() => buildInitialValues(fields, initialValues))
   const [slugEdited, setSlugEdited] = useState(false)
 
@@ -353,7 +371,25 @@ export default function EntityForm({
       }
 
       case 'custom':
-        return field.render(values, setValue, { mode, lookups })
+        switch (field.component) {
+          case 'groupedOutfitSet':
+            return (
+              <GroupedOutfitSetSelect
+                mode={mode}
+                outfitSets={(lookups.outfitSets ?? []) as unknown as OutfitSetRaw[]}
+                setValue={setValue}
+                values={values}
+              />
+            )
+          case 'labelPair':
+            return (
+              <LabelPairSelect
+                labels={(lookups.labels ?? []) as unknown as Label[]}
+                setValue={setValue}
+                values={values}
+              />
+            )
+        }
     }
   }
 

@@ -1,3 +1,5 @@
+'use client'
+
 import { FieldConfig } from '@/lib/types/form-fields'
 
 export function abilityFields(mode: 'add' | 'edit'): FieldConfig[] {

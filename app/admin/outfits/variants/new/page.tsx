@@ -9,7 +9,6 @@ import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import EntityForm from '@/app/admin/entity-form'
-import { outfitVariantFields } from '../fields'
 import { addOutfitVariant } from '../actions'
 
 export const metadata: Metadata = {
@@ -42,16 +41,9 @@ async function NewOutfitVariant() {
       showAddAnother
       action={addOutfitVariant}
       backUrl={navLinksData.admin.outfits.variants.list}
-      fields={outfitVariantFields('add', {
-        outfitSets,
-        outfitCategories,
-        seasons,
-        seasonCategories,
-        styles,
-        labels,
-      })}
       formId="add-outfit-variant"
-      lookups={{ outfitCategories, seasons, seasonCategories, styles }}
+      formKind="outfitVariant"
+      lookups={{ outfitSets, outfitCategories, seasons, seasonCategories, styles, labels }}
       mode="add"
     />
   )

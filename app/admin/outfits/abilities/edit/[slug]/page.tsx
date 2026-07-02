@@ -5,7 +5,6 @@ import { Metadata } from 'next'
 import { navLinksData } from '@/lib/nav-links'
 import { getAbilityRaw } from '@/hooks/data/admin/abilities'
 import EntityForm from '@/app/admin/entity-form'
-import { abilityFields } from '../../fields'
 import { editAbility } from './actions'
 
 export const metadata: Metadata = {
@@ -51,8 +50,8 @@ async function EditAbility({
       showUpdateOnly
       action={editAbility.bind(null, ability.slug, back)}
       backUrl={back}
-      fields={abilityFields('edit')}
       formId="edit-ability"
+      formKind="ability"
       initialValues={{
         title: ability.title,
         slug: ability.slug,

@@ -10,7 +10,6 @@ import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import EntityForm from '@/app/admin/entity-form'
-import { outfitVariantFields } from '../../fields'
 import { editOutfitVariant } from '../../actions'
 
 export const metadata: Metadata = {
@@ -55,15 +54,8 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
       showUpdateOnly
       action={editOutfitVariant.bind(null, variant.id, back)}
       backUrl={back}
-      fields={outfitVariantFields('edit', {
-        outfitSets,
-        outfitCategories,
-        seasons,
-        seasonCategories,
-        styles,
-        labels,
-      })}
       formId="edit-outfit-variant"
+      formKind="outfitVariant"
       initialValues={{
         outfit_set: variant.outfit_set ?? '',
         outfit_category: variant.outfit_category ?? '',
@@ -79,7 +71,7 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
         image_url: variant.image_url,
         default: variant.default,
       }}
-      lookups={{ outfitCategories, seasons, seasonCategories, styles }}
+      lookups={{ outfitSets, outfitCategories, seasons, seasonCategories, styles, labels }}
       mode="edit"
     />
   )

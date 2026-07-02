@@ -1,4 +1,3 @@
-import { ReactNode } from 'react'
 import { AvatarSize } from '@/lib/types/props'
 import { ImageUploadTable } from '@/components/forms/image-upload'
 
@@ -10,12 +9,6 @@ export type FieldOption = { slug: string; title: string | null; [key: string]: u
 
 /** Lookup data passed to the engine, indexed by a field's `optionsKey`. */
 export type FieldLookups = Record<string, FieldOption[]>
-
-/** Context handed to a `custom` field's render function. */
-export interface FieldRenderContext {
-  mode: 'add' | 'edit'
-  lookups: FieldLookups
-}
 
 /**
  * Shared props on every field. The function-valued escape hatches let simple
@@ -106,13 +99,18 @@ interface ToggleField extends BaseField {
   optionsKey: string
 }
 
+/** Names of the client-side custom field components EntityForm knows how to render. */
+export type CustomFieldComponent = 'groupedOutfitSet' | 'labelPair'
+
 interface CustomField extends BaseField {
   type: 'custom'
-  render: (
-    values: FieldValues,
-    setValue: (name: string, value: unknown) => void,
-    ctx: FieldRenderContext
-  ) => ReactNode
+  /**
+   * A `custom` field must stay serializable so `fields.tsx` can be built in a
+   * Server Component and passed to the client `EntityForm`. Instead of a render
+   * closure (a function can't cross the RSC boundary), it names a component that
+   * `EntityForm` maps to the real client component.
+   */
+  component: CustomFieldComponent
 }
 
 export type FieldConfig =
