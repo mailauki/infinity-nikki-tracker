@@ -4,7 +4,7 @@ import { OutfitVariant } from '@/lib/types/outfit'
 
 // Columns the public pipeline needs for each variant (mirrors the old embed).
 const PUBLIC_VARIANT_SELECT =
-  'id, slug, outfit_set, outfit_category, title, image_url, alt_image_url, default'
+  'id, slug, outfit_set, outfit_category, title, image_url, alt_image_url, default, rarity'
 
 // PostgREST returns at most 1000 rows per request (and caps embedded rows the
 // same way), so fetching outfit_variants via a join on outfit_sets silently
