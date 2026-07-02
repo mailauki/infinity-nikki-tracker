@@ -193,17 +193,27 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
   // Subset that also exists on outfit_variants (no `ability` column there).
   const variantSharedFields = { rarity, style, seasons, season_category, label, label_2 }
 
+  // The standalone-pieces set exposes only title/slug/description/images in its
+  // edit form (its other set-level fields are hidden and meaningless), so persist
+  // only those — never overwrite its cosmetic fields with the now-absent inputs
+  // (rarity is NOT NULL and would fail).
+  const isStandaloneSet = slug === STANDALONE_PIECES_SLUG || previousSlug === STANDALONE_PIECES_SLUG
+
   // Update the base row.
   const { error } = await supabase
     .from('outfit_sets')
-    .update({
-      title,
-      slug,
-      description,
-      ...sharedFields,
-      handheld_base_only: handheldBaseOnly,
-      updated_at: new Date().toISOString(),
-    })
+    .update(
+      isStandaloneSet
+        ? { title, slug, description, updated_at: new Date().toISOString() }
+        : {
+            title,
+            slug,
+            description,
+            ...sharedFields,
+            handheld_base_only: handheldBaseOnly,
+            updated_at: new Date().toISOString(),
+          }
+    )
     .eq('id', id)
 
   if (error) return { error: error.message }
