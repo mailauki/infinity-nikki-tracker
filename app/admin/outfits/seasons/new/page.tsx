@@ -4,7 +4,6 @@ import { Metadata } from 'next'
 import { navLinksData } from '@/lib/nav-links'
 import { getLocations } from '@/hooks/data/locations'
 import EntityForm from '@/app/admin/entity-form'
-import { seasonFields } from '../fields'
 import { addSeason } from './actions'
 
 export const metadata: Metadata = {
@@ -29,8 +28,8 @@ async function NewSeason() {
       showAddAnother
       action={addSeason}
       backUrl={navLinksData.admin.outfits.seasons.list}
-      fields={seasonFields('add')}
       formId="add-season"
+      formKind="season"
       lookups={{ locations }}
       mode="add"
     />

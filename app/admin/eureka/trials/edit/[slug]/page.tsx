@@ -6,7 +6,6 @@ import { getTrialRaw } from '@/hooks/data/admin/trials'
 import { getLocations } from '@/hooks/data/locations'
 import { toSlug } from '@/lib/utils'
 import EntityForm from '@/app/admin/entity-form'
-import { trialFields } from '../../fields'
 import { editTrial } from '../../actions'
 
 export const metadata: Metadata = {
@@ -36,8 +35,8 @@ async function EditTrial({ params }: { params: Promise<{ slug: string }> }) {
       showUpdateOnly
       action={editTrial.bind(null, trial.id, back)}
       backUrl={back}
-      fields={trialFields('edit')}
       formId="edit-trial"
+      formKind="trial"
       initialValues={{
         title: trial.title,
         slug: trial.slug ?? toSlug(trial.title),

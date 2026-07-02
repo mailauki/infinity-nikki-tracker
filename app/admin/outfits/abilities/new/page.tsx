@@ -3,7 +3,6 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { navLinksData } from '@/lib/nav-links'
 import EntityForm from '@/app/admin/entity-form'
-import { abilityFields } from '../fields'
 import { addAbility } from './actions'
 
 export const metadata: Metadata = {
@@ -18,8 +17,8 @@ export default function NewAbilityPage() {
           showAddAnother
           action={addAbility}
           backUrl={navLinksData.admin.outfits.abilities.list}
-          fields={abilityFields('add')}
           formId="add-ability"
+          formKind="ability"
           mode="add"
         />
       </Stack>

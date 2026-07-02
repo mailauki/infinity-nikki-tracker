@@ -1,8 +1,7 @@
+'use client'
+
 import { FieldConfig, FieldValues } from '@/lib/types/form-fields'
 import { toSlug } from '@/lib/utils'
-import { OutfitSetRaw, Season, SeasonCategory, OutfitCategory } from '@/lib/types/outfit'
-import { Label, Style } from '@/lib/types/eureka'
-import { GroupedOutfitSetSelect, LabelPairSelect } from './variant-custom-fields'
 
 function deriveSlug(v: FieldValues): string {
   const category = String(v.outfit_category ?? '')
@@ -12,29 +11,12 @@ function deriveSlug(v: FieldValues): string {
   return [toSlug(String(v.title ?? '')), category].filter(Boolean).join('-')
 }
 
-export function outfitVariantFields(
-  mode: 'add' | 'edit',
-  lookups: {
-    outfitSets: OutfitSetRaw[]
-    outfitCategories: OutfitCategory[]
-    seasons: Season[]
-    seasonCategories: SeasonCategory[]
-    styles: Style[]
-    labels: Label[]
-  }
-): FieldConfig[] {
+export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
   return [
     {
       type: 'custom',
       name: 'outfit_set',
-      render: (values, setValue) => (
-        <GroupedOutfitSetSelect
-          mode={mode}
-          outfitSets={lookups.outfitSets}
-          setValue={setValue}
-          values={values}
-        />
-      ),
+      component: 'groupedOutfitSet',
     },
     { type: 'select', name: 'outfit_category', label: 'Category', optionsKey: 'outfitCategories' },
     { type: 'select', name: 'seasons', label: 'Season', optionsKey: 'seasons' },
@@ -49,9 +31,7 @@ export function outfitVariantFields(
     {
       type: 'custom',
       name: 'label',
-      render: (values, setValue) => (
-        <LabelPairSelect labels={lookups.labels} setValue={setValue} values={values} />
-      ),
+      component: 'labelPair',
     },
     { type: 'text', name: 'title', label: 'Title', required: (v) => !v.outfit_set },
     { type: 'textarea', name: 'description', label: 'Description' },

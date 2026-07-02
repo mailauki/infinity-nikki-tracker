@@ -1,3 +1,5 @@
+'use client'
+
 import { FieldConfig } from '@/lib/types/form-fields'
 
 export function seasonFields(mode: 'add' | 'edit'): FieldConfig[] {

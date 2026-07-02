@@ -6,7 +6,6 @@ import { navLinksData } from '@/lib/nav-links'
 import { getSeasonRaw } from '@/hooks/data/admin/seasons'
 import { getLocations } from '@/hooks/data/locations'
 import EntityForm from '@/app/admin/entity-form'
-import { seasonFields } from '../../fields'
 import { editSeason } from './actions'
 
 export const metadata: Metadata = {
@@ -52,8 +51,8 @@ async function EditSeason({
       showUpdateOnly
       action={editSeason.bind(null, season.slug, back)}
       backUrl={back}
-      fields={seasonFields('edit')}
       formId="edit-season"
+      formKind="season"
       initialValues={{
         title: season.title,
         slug: season.slug,

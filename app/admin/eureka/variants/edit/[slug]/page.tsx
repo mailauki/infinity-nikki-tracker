@@ -6,7 +6,6 @@ import { createClient } from '@/lib/supabase/server'
 import { getAdminData } from '@/hooks/data/user'
 import { toSlugVariant } from '@/lib/utils'
 import EntityForm from '@/app/admin/entity-form'
-import { eurekaVariantFields } from '../../fields'
 import { editEurekaVariant } from '../../actions'
 
 export const metadata: Metadata = {
@@ -48,8 +47,9 @@ async function EditEurekaVariant({ params }: { params: Promise<{ slug: string }>
       showUpdateOnly
       action={editEurekaVariant.bind(null, variant.id, back)}
       backUrl={back}
-      fields={eurekaVariantFields('edit', eurekaVariants ?? [], variant.id)}
+      builderData={{ eurekaVariants: eurekaVariants ?? [], currentId: variant.id }}
       formId="edit-eureka-variant"
+      formKind="eurekaVariant"
       initialValues={{
         eureka_set: variant.eureka_set ?? '',
         category: variant.category ?? '',

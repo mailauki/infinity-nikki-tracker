@@ -1,3 +1,5 @@
+'use client'
+
 import { FieldConfig, FieldOption, FieldValues } from '@/lib/types/form-fields'
 import { toSlugVariant } from '@/lib/utils'
 import { EurekaVariantRaw } from '@/lib/types/eureka'
