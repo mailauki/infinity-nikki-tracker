@@ -12,6 +12,8 @@ import OutfitVariantCard from './outfit-variant-card'
 import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
 
+const STANDALONE_SLUG = 'standalone-pieces'
+
 // Column counts respond to the CONTENT width, not the viewport, so the grid
 // reflows when the filter panel opens and narrows the content area. Each grid is
 // wrapped in GRID_CONTAINER (an inline-size container); OUTFIT_GRID_SX switches
@@ -121,7 +123,15 @@ export default function FilterOutfits() {
 
   const filteredSets = outfitSets
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
-    .filter((set) => !selectedRarity || set.rarity === selectedRarity)
+    .filter((set) => {
+      if (!selectedRarity) return true
+      // Standalone is a mixed bag: keep it if any of its pieces match the rarity.
+      // Every other set has a single set-level rarity.
+      if (set.slug === STANDALONE_SLUG) {
+        return set.outfit_variants.some((v) => v.rarity === selectedRarity)
+      }
+      return set.rarity === selectedRarity
+    })
     .map((set) => {
       const baseSlug = set.slug
       // Map each state slug to its display order for the selectedEvolution filter.
@@ -175,10 +185,20 @@ export default function FilterOutfits() {
           if (selectedObtainedFilter === 'missing') return v.obtained !== true
           return true
         })
+        // Standalone is a mixed bag: when a rarity is selected, show only the
+        // matching pieces. Other sets are single-rarity, so this is a no-op for them.
+        .filter(
+          (v) => !selectedRarity || set.slug !== STANDALONE_SLUG || v.rarity === selectedRarity
+        )
       return { ...set, outfit_variants: culledVariants }
     })
     .filter((set) => set.outfit_variants.length > 0)
     .sort((a, b) => {
+      // Standalone Pieces is a catch-all bucket — always render it dead last,
+      // regardless of sort axis or direction. Only one standalone set exists,
+      // so both-standalone never happens.
+      if (a.slug === STANDALONE_SLUG) return 1
+      if (b.slug === STANDALONE_SLUG) return -1
       const progress = (s: (typeof filteredSets)[number]) => {
         const total = s.outfit_variants.length
         return total === 0 ? 0 : s.outfit_variants.filter((v) => v.obtained).length / total
