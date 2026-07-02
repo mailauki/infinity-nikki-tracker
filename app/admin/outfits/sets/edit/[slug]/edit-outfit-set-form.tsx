@@ -113,6 +113,7 @@ export default function EditOutfitSetForm({
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>(initialCarouselImages)
   // Base variants are those whose outfit_set matches the base slug (order = 1, base_set = null).
   const baseSlug = outfitSet.slug ?? ''
+  const isStandalone = outfitSet.slug === 'standalone-pieces'
   const isBaseVariant = (v: OutfitVariantRow) => v.outfit_set === baseSlug
   const [variantRows, setVariantRows] = useState<OutfitVariantRow[]>(
     initialVariants.filter(isBaseVariant)
@@ -215,58 +216,62 @@ export default function EditOutfitSetForm({
           onChange={setSlug}
         />
 
-        <RarityField value={rarity} onChange={setRarity} />
+        {!isStandalone && <RarityField value={rarity} onChange={setRarity} />}
 
-        <ToggleField
-          label="Style"
-          name="style"
-          options={styles}
-          value={style}
-          onChange={setStyle}
-        />
+        {!isStandalone && (
+          <>
+            <ToggleField
+              label="Style"
+              name="style"
+              options={styles}
+              value={style}
+              onChange={setStyle}
+            />
 
-        <input name="label" type="hidden" value={labelSelect[0] ?? ''} />
-        <input name="label_2" type="hidden" value={labelSelect[1] ?? ''} />
-        <FormControl>
-          <InputLabel>Labels</InputLabel>
-          <Select
-            multiple
-            MenuProps={MENU_PROPS}
-            input={<OutlinedInput label="Labels" />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((s) => {
-                  const lbl = labels.find((l) => l.slug === s)
-                  return <Chip key={s} label={lbl?.title ?? s} size="small" />
+            <input name="label" type="hidden" value={labelSelect[0] ?? ''} />
+            <input name="label_2" type="hidden" value={labelSelect[1] ?? ''} />
+            <FormControl>
+              <InputLabel>Labels</InputLabel>
+              <Select
+                multiple
+                MenuProps={MENU_PROPS}
+                input={<OutlinedInput label="Labels" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((s) => {
+                      const lbl = labels.find((l) => l.slug === s)
+                      return <Chip key={s} label={lbl?.title ?? s} size="small" />
+                    })}
+                  </Box>
+                )}
+                value={labelSelect}
+                onChange={(e) => {
+                  const { value } = e.target
+                  const next = typeof value === 'string' ? value.split(',') : value
+                  if (next.length <= 2) setLabelSelect(next)
+                }}
+              >
+                {labels.map((l) => {
+                  const selected = labelSelect.includes(l.slug)
+                  return (
+                    <MenuItem
+                      key={l.slug}
+                      disabled={!selected && labelSelect.length >= 2}
+                      value={l.slug}
+                    >
+                      {selected ? (
+                        <CheckBox fontSize="small" sx={{ mr: 1 }} />
+                      ) : (
+                        <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
+                      )}
+                      {l.title}
+                    </MenuItem>
+                  )
                 })}
-              </Box>
-            )}
-            value={labelSelect}
-            onChange={(e) => {
-              const { value } = e.target
-              const next = typeof value === 'string' ? value.split(',') : value
-              if (next.length <= 2) setLabelSelect(next)
-            }}
-          >
-            {labels.map((l) => {
-              const selected = labelSelect.includes(l.slug)
-              return (
-                <MenuItem
-                  key={l.slug}
-                  disabled={!selected && labelSelect.length >= 2}
-                  value={l.slug}
-                >
-                  {selected ? (
-                    <CheckBox fontSize="small" sx={{ mr: 1 }} />
-                  ) : (
-                    <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
-                  )}
-                  {l.title}
-                </MenuItem>
-              )
-            })}
-          </Select>
-        </FormControl>
+              </Select>
+            </FormControl>
+          </>
+        )}
 
         <TextField
           multiline
@@ -277,127 +282,136 @@ export default function EditOutfitSetForm({
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        <FormControl>
-          <InputLabel>Ability</InputLabel>
-          <Select
-            MenuProps={MENU_PROPS}
-            label="Ability"
-            name="ability"
-            value={ability}
-            onChange={(e) => setAbility(e.target.value)}
-          >
-            <MenuItem value="">—</MenuItem>
-            {abilities.map((a) => (
-              <MenuItem key={a.slug} value={a.slug}>
-                {a.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl>
-          <InputLabel>Season</InputLabel>
-          <Select
-            MenuProps={MENU_PROPS}
-            label="Season"
-            name="seasons"
-            value={season}
-            onChange={(e) => setSeason(e.target.value)}
-          >
-            <MenuItem value="">—</MenuItem>
-            {seasons.map((s) => (
-              <MenuItem key={s.slug} value={s.slug}>
-                {s.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl>
-          <InputLabel>Season Category</InputLabel>
-          <Select
-            MenuProps={MENU_PROPS}
-            label="Season Category"
-            name="season_category"
-            value={seasonCategory}
-            onChange={(e) => setSeasonCategory(e.target.value)}
-          >
-            <MenuItem value="">—</MenuItem>
-            {seasonCategories.map((sc) => (
-              <MenuItem key={sc.slug} value={sc.slug}>
-                {sc.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <FormControl>
-          <InputLabel>Categories</InputLabel>
-          <Select
-            multiple
-            MenuProps={MENU_PROPS}
-            input={<OutlinedInput label="Categories" />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((s) => {
-                  const cat = outfitCategories.find((c) => c.slug === s)
-                  return <Chip key={s} label={cat?.title ?? s} size="small" />
-                })}
-              </Box>
-            )}
-            value={categorySelect}
-            onChange={handleCategoryChange}
-          >
-            {Object.entries(
-              outfitCategories.reduce<Record<string, typeof outfitCategories>>(
-                (groups, cat) => ({ ...groups, [cat.part]: [...(groups[cat.part] ?? []), cat] }),
-                {}
-              )
-            ).flatMap(([part, cats]) => [
-              <ListSubheader key={part} sx={{ textTransform: 'capitalize' }}>
-                {part}
-              </ListSubheader>,
-              ...cats.map((c) => {
-                const selected = categorySelect.includes(c.slug)
-                const conflicting =
-                  (DRESS_SLUGS.includes(c.slug) &&
-                    categorySelect.some((s) => SEPARATES_SLUGS.includes(s))) ||
-                  (SEPARATES_SLUGS.includes(c.slug) &&
-                    categorySelect.some((s) => DRESS_SLUGS.includes(s)))
-                return (
-                  <MenuItem key={c.slug} disabled={!selected && conflicting} value={c.slug}>
-                    {selected ? (
-                      <CheckBox fontSize="small" sx={{ mr: 1 }} />
-                    ) : (
-                      <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
-                    )}
-                    {c.title}
+        {!isStandalone && (
+          <>
+            <FormControl>
+              <InputLabel>Ability</InputLabel>
+              <Select
+                MenuProps={MENU_PROPS}
+                label="Ability"
+                name="ability"
+                value={ability}
+                onChange={(e) => setAbility(e.target.value)}
+              >
+                <MenuItem value="">—</MenuItem>
+                {abilities.map((a) => (
+                  <MenuItem key={a.slug} value={a.slug}>
+                    {a.title}
                   </MenuItem>
-                )
-              }),
-            ])}
-          </Select>
-        </FormControl>
+                ))}
+              </Select>
+            </FormControl>
 
-        {categorySelect.includes('handhelds') && evolutionDrafts.length > 0 && (
-          <FormControlLabel
-            control={
-              <Switch
-                checked={handheldBaseOnly}
-                onChange={(e) => setHandheldBaseOnly(e.target.checked)}
+            <FormControl>
+              <InputLabel>Season</InputLabel>
+              <Select
+                MenuProps={MENU_PROPS}
+                label="Season"
+                name="seasons"
+                value={season}
+                onChange={(e) => setSeason(e.target.value)}
+              >
+                <MenuItem value="">—</MenuItem>
+                {seasons.map((s) => (
+                  <MenuItem key={s.slug} value={s.slug}>
+                    {s.title}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl>
+              <InputLabel>Season Category</InputLabel>
+              <Select
+                MenuProps={MENU_PROPS}
+                label="Season Category"
+                name="season_category"
+                value={seasonCategory}
+                onChange={(e) => setSeasonCategory(e.target.value)}
+              >
+                <MenuItem value="">—</MenuItem>
+                {seasonCategories.map((sc) => (
+                  <MenuItem key={sc.slug} value={sc.slug}>
+                    {sc.title}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <FormControl>
+              <InputLabel>Categories</InputLabel>
+              <Select
+                multiple
+                MenuProps={MENU_PROPS}
+                input={<OutlinedInput label="Categories" />}
+                renderValue={(selected) => (
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {selected.map((s) => {
+                      const cat = outfitCategories.find((c) => c.slug === s)
+                      return <Chip key={s} label={cat?.title ?? s} size="small" />
+                    })}
+                  </Box>
+                )}
+                value={categorySelect}
+                onChange={handleCategoryChange}
+              >
+                {Object.entries(
+                  outfitCategories.reduce<Record<string, typeof outfitCategories>>(
+                    (groups, cat) => ({
+                      ...groups,
+                      [cat.part]: [...(groups[cat.part] ?? []), cat],
+                    }),
+                    {}
+                  )
+                ).flatMap(([part, cats]) => [
+                  <ListSubheader key={part} sx={{ textTransform: 'capitalize' }}>
+                    {part}
+                  </ListSubheader>,
+                  ...cats.map((c) => {
+                    const selected = categorySelect.includes(c.slug)
+                    const conflicting =
+                      (DRESS_SLUGS.includes(c.slug) &&
+                        categorySelect.some((s) => SEPARATES_SLUGS.includes(s))) ||
+                      (SEPARATES_SLUGS.includes(c.slug) &&
+                        categorySelect.some((s) => DRESS_SLUGS.includes(s)))
+                    return (
+                      <MenuItem key={c.slug} disabled={!selected && conflicting} value={c.slug}>
+                        {selected ? (
+                          <CheckBox fontSize="small" sx={{ mr: 1 }} />
+                        ) : (
+                          <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
+                        )}
+                        {c.title}
+                      </MenuItem>
+                    )
+                  }),
+                ])}
+              </Select>
+            </FormControl>
+
+            {categorySelect.includes('handhelds') && evolutionDrafts.length > 0 && (
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={handheldBaseOnly}
+                    onChange={(e) => setHandheldBaseOnly(e.target.checked)}
+                  />
+                }
+                label="Handhelds exclusive to base set"
               />
-            }
-            label="Handhelds exclusive to base set"
-          />
+            )}
+          </>
         )}
 
-        <EvolutionEditor
-          glowupEvolutionOrder={glowupEvolutionOrder}
-          initialDrafts={initialDrafts}
-          maxEvolutions={maxEvolutions}
-          onChange={setEvolutionDrafts}
-          onGlowupChange={setGlowupEvolutionOrder}
-        />
+        {!isStandalone && (
+          <EvolutionEditor
+            glowupEvolutionOrder={glowupEvolutionOrder}
+            initialDrafts={initialDrafts}
+            maxEvolutions={maxEvolutions}
+            onChange={setEvolutionDrafts}
+            onGlowupChange={setGlowupEvolutionOrder}
+          />
+        )}
 
         <Stack spacing={1}>
           <Typography variant="subtitle2">Set Images</Typography>
@@ -412,15 +426,17 @@ export default function EditOutfitSetForm({
           />
         </Stack>
 
-        <Stack spacing={1}>
-          <Typography variant="subtitle2">Gallery Images</Typography>
-          <CarouselImageUpload
-            images={carouselImages}
-            slug={outfitSet.slug ?? ''}
-            table="outfit_set_carousel_images"
-            onChange={setCarouselImages}
-          />
-        </Stack>
+        {!isStandalone && (
+          <Stack spacing={1}>
+            <Typography variant="subtitle2">Gallery Images</Typography>
+            <CarouselImageUpload
+              images={carouselImages}
+              slug={outfitSet.slug ?? ''}
+              table="outfit_set_carousel_images"
+              onChange={setCarouselImages}
+            />
+          </Stack>
+        )}
 
         {variantRows.length > 0 && (
           <Stack spacing={1}>
@@ -460,14 +476,18 @@ export default function EditOutfitSetForm({
           </Stack>
         )}
 
-        <input name="evolution_drafts" type="hidden" value={JSON.stringify(evolutionDrafts)} />
-        <input name="glowup_evolution_order" type="hidden" value={glowupEvolutionOrder} />
-        <input name="handheld_base_only" type="hidden" value={handheldBaseOnly ? 'true' : ''} />
-        <input
-          name="outfit_categories"
-          type="hidden"
-          value={JSON.stringify(categorySelect.map((s) => ({ slug: s })))}
-        />
+        {!isStandalone && (
+          <>
+            <input name="evolution_drafts" type="hidden" value={JSON.stringify(evolutionDrafts)} />
+            <input name="glowup_evolution_order" type="hidden" value={glowupEvolutionOrder} />
+            <input name="handheld_base_only" type="hidden" value={handheldBaseOnly ? 'true' : ''} />
+            <input
+              name="outfit_categories"
+              type="hidden"
+              value={JSON.stringify(categorySelect.map((s) => ({ slug: s })))}
+            />
+          </>
+        )}
       </Stack>
     </form>
   )
