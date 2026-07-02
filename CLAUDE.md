@@ -11,7 +11,7 @@ yarn start        # Start production server
 yarn lint         # Run ESLint
 yarn lint:fix     # Run ESLint with auto-fix
 yarn format       # Format with Prettier
-yarn dlx tsc --noEmit                        # Type-check (no `tsc` package script — runs via dlx)
+yarn tsc --noEmit                            # Type-check (runs the local TypeScript binary; NOT `yarn dlx tsc`, which fetches a bogus placeholder package)
 npx npm-check-updates --format group         # Check outdated deps (Yarn 4 has no yarn outdated)
 npx npm-check-updates --format group -u      # Write updates to package.json
 ```
