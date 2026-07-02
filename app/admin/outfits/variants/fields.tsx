@@ -3,9 +3,18 @@
 import { FieldConfig, FieldValues } from '@/lib/types/form-fields'
 import { toSlug } from '@/lib/utils'
 
+const STANDALONE_SLUG = 'standalone-pieces'
+
+// A "bag" set (standalone or no set) derives its slug from title + category so
+// multiple pieces in the same category don't collide (e.g. `silverplume-hair`).
+// A real base/evolution set derives from set + category (e.g. `moonlit-dress-hair`).
+function isBagSet(v: FieldValues): boolean {
+  return !v.outfit_set || v.outfit_set === STANDALONE_SLUG
+}
+
 function deriveSlug(v: FieldValues): string {
   const category = String(v.outfit_category ?? '')
-  if (v.outfit_set) {
+  if (!isBagSet(v)) {
     return [String(v.outfit_set), category].filter(Boolean).join('-')
   }
   return [toSlug(String(v.title ?? '')), category].filter(Boolean).join('-')
@@ -33,7 +42,7 @@ export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
       name: 'label',
       component: 'labelPair',
     },
-    { type: 'text', name: 'title', label: 'Title', required: (v) => !v.outfit_set },
+    { type: 'text', name: 'title', label: 'Title', required: (v) => isBagSet(v) },
     { type: 'textarea', name: 'description', label: 'Description' },
     {
       type: 'slug',

@@ -16,6 +16,8 @@ import { Label } from '@/lib/types/eureka'
 import { FieldValues } from '@/lib/types/form-fields'
 import { MENU_PROPS } from '@/lib/types/props'
 
+const STANDALONE_SLUG = 'standalone-pieces'
+
 /**
  * Outfit-set picker grouped by base → evolution, matching the standalone
  * ordering the original form used. Selecting a set back-fills rarity, style,
@@ -34,9 +36,23 @@ export function GroupedOutfitSetSelect({
   outfitSets: OutfitSetRaw[]
   mode: 'add' | 'edit'
 }) {
-  const value = String(values.outfit_set ?? '')
+  // In add mode, default the picker to the Standalone Pieces bag. Edit mode uses
+  // the variant's own saved set (which may be any set, including standalone).
+  const value = String(values.outfit_set ?? (mode === 'add' ? STANDALONE_SLUG : ''))
 
   function applyBackfill(nextSlug: string) {
+    // Standalone is a mixed bag: each piece carries its own rarity/style/labels,
+    // so selecting it must NOT back-fill set-level fields. Treat it like the old
+    // empty option — clear inherited fields in add mode, leave them in edit mode.
+    if (nextSlug === STANDALONE_SLUG) {
+      if (mode === 'add') {
+        setValue('rarity', '')
+        setValue('style', '')
+        setValue('label', '')
+        setValue('label_2', '')
+      }
+      return
+    }
     const set = outfitSets.find((s) => s.slug === nextSlug)
     if (set) {
       setValue('rarity', typeof set.rarity === 'number' ? set.rarity : '')
@@ -54,7 +70,7 @@ export function GroupedOutfitSetSelect({
   }
 
   const baseSets = outfitSets
-    .filter((s) => s.base_set === null)
+    .filter((s) => s.base_set === null && s.slug !== STANDALONE_SLUG)
     .sort((a, b) => (a.title ?? '').localeCompare(b.title ?? ''))
   const evosByBase = outfitSets
     .filter((s) => s.base_set !== null)
@@ -79,7 +95,7 @@ export function GroupedOutfitSetSelect({
           applyBackfill(e.target.value)
         }}
       >
-        <MenuItem value="">— Standalone piece —</MenuItem>
+        <MenuItem value={STANDALONE_SLUG}>Standalone Pieces</MenuItem>
         {baseSets.flatMap((base) => {
           const evos = (evosByBase[base.slug ?? ''] ?? []).sort(
             (a, b) => (a.order ?? 0) - (b.order ?? 0)

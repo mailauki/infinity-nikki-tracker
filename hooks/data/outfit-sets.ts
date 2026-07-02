@@ -107,7 +107,8 @@ export const getOutfitSet = cache(async (slug: string) => {
         title,
         image_url,
         alt_image_url,
-        default
+        default,
+        rarity
       ),
       outfit_set_carousel_images (
         id,

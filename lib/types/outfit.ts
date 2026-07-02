@@ -72,6 +72,7 @@ export type OutfitVariant = Pick<
   | 'image_url'
   | 'alt_image_url'
   | 'default'
+  | 'rarity'
 > & { obtained?: boolean }
 
 export type OutfitVariantRaw = Tables<'outfit_variants'> & {
