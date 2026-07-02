@@ -178,8 +178,6 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
   }[]
   const handheldBaseOnly = formData.get('handheld_base_only') === 'true'
 
-  if (!rarity) return { error: 'Rarity is required.' }
-
   // Capture the previous slug so we can carry variant slugs across a rename.
   const { data: existingSet } = await supabase
     .from('outfit_sets')
@@ -188,16 +186,38 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     .single()
   const previousSlug = existingSet?.slug ?? slug
 
-  // Shared set-level fields copied onto all sibling evolution rows on every edit.
-  const sharedFields = { rarity, style, ability, seasons, season_category, label, label_2 }
-  // Subset that also exists on outfit_variants (no `ability` column there).
-  const variantSharedFields = { rarity, style, seasons, season_category, label, label_2 }
-
   // The standalone-pieces set exposes only title/slug/description/images in its
   // edit form (its other set-level fields are hidden and meaningless), so persist
   // only those — never overwrite its cosmetic fields with the now-absent inputs
   // (rarity is NOT NULL and would fail).
   const isStandaloneSet = slug === STANDALONE_PIECES_SLUG || previousSlug === STANDALONE_PIECES_SLUG
+
+  if (!rarity && !isStandaloneSet) return { error: 'Rarity is required.' }
+
+  // Below this point rarity is only read via sharedFields/variantSharedFields, which
+  // are only ever spread into non-standalone-set rows (evolutions/variants) — the
+  // guard above already ensures rarity is non-null whenever isStandaloneSet is false.
+  const nonStandaloneRarity = rarity as number
+
+  // Shared set-level fields copied onto all sibling evolution rows on every edit.
+  const sharedFields = {
+    rarity: nonStandaloneRarity,
+    style,
+    ability,
+    seasons,
+    season_category,
+    label,
+    label_2,
+  }
+  // Subset that also exists on outfit_variants (no `ability` column there).
+  const variantSharedFields = {
+    rarity: nonStandaloneRarity,
+    style,
+    seasons,
+    season_category,
+    label,
+    label_2,
+  }
 
   // Update the base row.
   const { error } = await supabase
