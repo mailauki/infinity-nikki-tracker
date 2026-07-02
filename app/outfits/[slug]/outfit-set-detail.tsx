@@ -111,7 +111,7 @@ export default function OutfitSetDetail({
                 <LazyImage
                   image={imageSrc || outfitSet.image_url || ''}
                   kind="media"
-                  sx={{ width: '100%', maxWidth: 260, aspectRatio: '9 / 16' }}
+                  sx={{ width: '100%', maxWidth: 260, aspectRatio: '2 / 3' }}
                   title={outfitSet.title}
                 />
               )}

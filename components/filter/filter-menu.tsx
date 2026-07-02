@@ -214,16 +214,23 @@ export default function FilterMenu() {
 
   const isOutfits = pathname.startsWith('/outfits')
 
+  // Category filtering only applies in compact view. Density can settle on
+  // 'standard' after the toggle handler runs (e.g. hydrated from saved
+  // preferences), so reconcile here too: clear any category selection whenever
+  // density is standard. Idempotent — only fires an update when a selection
+  // is actually present.
+  const { selectedOutfitCategory } = outfitFilters
+  React.useEffect(() => {
+    if (isOutfits && density === 'standard' && selectedOutfitCategory.length > 0) {
+      onOutfitFiltersChange({ selectedOutfitCategory: [] })
+    }
+  }, [isOutfits, density, selectedOutfitCategory, onOutfitFiltersChange])
+
   if (!FILTER_PAGES.includes(pathname)) return null
 
   if (isOutfits) {
-    const {
-      selectedOutfitSet,
-      selectedOutfitCategory,
-      selectedEvolution,
-      selectedObtainedFilter,
-      selectedRarity,
-    } = outfitFilters
+    const { selectedOutfitSet, selectedEvolution, selectedObtainedFilter, selectedRarity } =
+      outfitFilters
 
     // "Clear all" resets every control in this drawer, so it should appear when
     // any of them is non-default — the filters, the grouping/evolution toggles,
@@ -262,7 +269,16 @@ export default function FilterMenu() {
       <FilterDrawer>
         <List>
           <ListItem>
-            <DensityToggle />
+            <DensityToggle
+              onDensityChange={(next) => {
+                // Category filtering only applies in compact view; clear the
+                // selection when switching back to standard so it isn't retained
+                // while the (disabled) control is hidden from effect.
+                if (next === 'standard' && selectedOutfitCategory.length > 0) {
+                  onOutfitFiltersChange({ selectedOutfitCategory: [] })
+                }
+              }}
+            />
           </ListItem>
           <ListItem>
             <SortAxisToggle />

@@ -9,7 +9,11 @@ const IMAGE_MODE_LABEL = {
   alt: 'Showing alternate image',
 } as const
 
-export default function DensityToggle() {
+export default function DensityToggle({
+  onDensityChange,
+}: {
+  onDensityChange?: (density: OutfitDensity) => void
+}) {
   const { mode, cycleMode, density, setDensity } = useOutfitImageMode()
 
   return (
@@ -22,7 +26,11 @@ export default function DensityToggle() {
         exclusive
         aria-label="View density"
         value={density}
-        onChange={(_e, value: OutfitDensity | null) => value && setDensity(value)}
+        onChange={(_e, value: OutfitDensity | null) => {
+          if (!value) return
+          setDensity(value)
+          onDensityChange?.(value)
+        }}
       >
         <ToggleButton sx={{ py: 0.75 }} value="standard">
           <ViewModule fontSize="small" sx={{ mr: 0.5 }} />
