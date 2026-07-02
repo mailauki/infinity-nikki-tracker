@@ -32,7 +32,7 @@ export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOu
         <List disablePadding>
           {items.map((item) => {
             const variant = item.outfit_sets?.outfit_variants.find(
-              (v) => v.outfit_category === item.outfit_category
+              (v) => v.slug === item.outfit_variant
             )
             const setTitle = item.outfit_sets?.title ?? toTitle(item.outfit_set ?? '')
 

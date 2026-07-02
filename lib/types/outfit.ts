@@ -87,11 +87,12 @@ export type ObtainedOutfit = Pick<
 
 export type RecentObtainedOutfit = Pick<
   Tables<'obtained_outfit'>,
-  'id' | 'outfit_set' | 'outfit_category' | 'created_at'
+  'id' | 'outfit_set' | 'outfit_category' | 'outfit_variant' | 'created_at'
 > & {
   outfit_sets: {
     title: string
     outfit_variants: {
+      slug: string
       image_url: string | null
       outfit_category: string | null
       title: string | null
