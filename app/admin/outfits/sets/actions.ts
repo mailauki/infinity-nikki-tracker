@@ -7,6 +7,12 @@ import { navLinksData } from '@/lib/nav-links'
 import { getUserRole } from '@/hooks/user'
 import { EvolutionDraft } from '@/lib/types/outfit'
 
+// The standalone-pieces set holds individually-authored variants (many per
+// category, own slugs) managed via the standalone-variant admin — its variants
+// are NOT generated from (state × category), so the set-edit variant-sync must
+// skip it or it deletes every real piece as "unexpected".
+const STANDALONE_PIECES_SLUG = 'standalone-pieces'
+
 export async function addOutfitSet(_: unknown, formData: FormData) {
   const role = await getUserRole()
   if (role !== 'admin') return { error: 'Forbidden' }
@@ -293,9 +299,20 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     if (evoError) return { error: evoError.message }
   }
 
+  // The standalone-pieces set is a container of individually-authored variants
+  // (many per category, with their own slugs like `silverplume-hair`) managed via
+  // the standalone-variant admin — NOT generated from (state × category). The
+  // variant-sync below assumes one generated `{state}-{category}` variant per
+  // category and would delete every real standalone piece as "unexpected". Skip
+  // sync entirely for this set; its variants are never derived from set fields.
+  const isManualVariantSet =
+    slug === STANDALONE_PIECES_SLUG || previousSlug === STANDALONE_PIECES_SLUG
+
   // Sync variants: diff DB state against (state slugs × categories).
   // Each state is either the base (outfit_set = slug) or a sibling (outfit_set = evo slug).
-  if (outfitCategories.length > 0) {
+  if (isManualVariantSet) {
+    // No-op: leave the manually-authored variants untouched.
+  } else if (outfitCategories.length > 0) {
     const { data: finalEvolutions } = await supabase
       .from('outfit_sets')
       .select('slug')
