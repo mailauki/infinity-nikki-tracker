@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 import { createClient } from '@/lib/supabase/client'
-import { OutfitCategory, OutfitSet, OutfitVariant, ObtainedOutfit } from '@/lib/types/outfit'
+import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
 import { UserPreferences } from '@/lib/types/eureka'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
@@ -39,7 +39,6 @@ export default function OutfitDataProvider({
   children: React.ReactNode
 }) {
   const [outfitSets, setOutfitSets] = useState<OutfitSet[]>([])
-  const [standaloneVariants, setStandaloneVariants] = useState<OutfitVariant[]>([])
   const [outfitCategories, setOutfitCategories] = useState<OutfitCategory[]>([])
   const [obtainedOutfit, setObtainedOutfit] = useState<ObtainedOutfit[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -56,10 +55,9 @@ export default function OutfitDataProvider({
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
-    fetchJson<{ outfitSets: OutfitSet[]; standaloneVariants: OutfitVariant[] }>('/api/outfits')
-      .then(({ outfitSets: sets, standaloneVariants: standalone }) => {
+    fetchJson<{ outfitSets: OutfitSet[] }>('/api/outfits')
+      .then(({ outfitSets: sets }) => {
         setOutfitSets(sets)
-        setStandaloneVariants(standalone)
         if (sets.length > 0) {
           setOutfitCategories(sets[0].outfit_categories)
         }
@@ -279,7 +277,6 @@ export default function OutfitDataProvider({
     <OutfitDataContext.Provider
       value={{
         outfitSets: outfitSetsWithObtained,
-        standaloneVariants,
         obtainedOutfit,
         outfitCategories,
         isLoggedIn,

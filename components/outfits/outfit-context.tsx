@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext } from 'react'
-import { OutfitCategory, OutfitSet, OutfitVariant, ObtainedOutfit } from '@/lib/types/outfit'
+import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
 
 export interface OutfitFilterState {
@@ -14,7 +14,6 @@ export interface OutfitFilterState {
 
 interface OutfitDataContextValue {
   outfitSets: OutfitSet[]
-  standaloneVariants: OutfitVariant[]
   obtainedOutfit: ObtainedOutfit[]
   outfitCategories: OutfitCategory[]
   isLoggedIn: boolean
@@ -53,7 +52,6 @@ export const DEFAULT_OUTFIT_FILTERS: OutfitFilterState = {
 
 export const OutfitDataContext = createContext<OutfitDataContextValue>({
   outfitSets: [],
-  standaloneVariants: [],
   obtainedOutfit: [],
   outfitCategories: [],
   isLoggedIn: false,

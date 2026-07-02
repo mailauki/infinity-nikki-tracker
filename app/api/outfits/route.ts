@@ -49,14 +49,12 @@ export async function GET() {
     })
   ) as OutfitSet[]
 
-  const standaloneVariants = variantsBySet.get('') ?? []
-
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return NextResponse.json({ outfitSets: outfits, standaloneVariants })
+    return NextResponse.json({ outfitSets: outfits })
   }
 
   let obtainedOutfit: ObtainedOutfit[]
@@ -72,5 +70,5 @@ export async function GET() {
     updateOutfitSet({ outfitSet, obtainedOutfit })
   )
 
-  return NextResponse.json({ outfitSets: outfitsWithObtained, standaloneVariants })
+  return NextResponse.json({ outfitSets: outfitsWithObtained })
 }
