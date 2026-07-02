@@ -1,5 +1,5 @@
 'use client'
-import { Alert, Box, Divider, Skeleton, Stack, Typography } from '@mui/material'
+import { Alert, Box, Button, Divider, Skeleton, Stack, Typography } from '@mui/material'
 import { ChevronRight } from '@mui/icons-material'
 
 import ErrorAlert from '@/components/error-alert'
@@ -150,7 +150,8 @@ export default function FilterOutfits() {
           // selectedEvolution is null for "any" and 0 for glow-up, so compare to
           // null explicitly — `!selectedEvolution` would treat glow-up as no filter.
           (v) =>
-            selectedEvolution === null || orderByStateSlug.get(v.outfit_set ?? '') === selectedEvolution
+            selectedEvolution === null ||
+            orderByStateSlug.get(v.outfit_set ?? '') === selectedEvolution
         )
       // Group-level obtained filter: drop whole evolution groups whose full-group
       // state doesn't match the selected missing / obtained state.
@@ -311,12 +312,7 @@ export default function FilterOutfits() {
                         direction="row"
                         sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
                       >
-                        <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5, pl: 0.5 }}>
-                          <ChevronRight fontSize="small" sx={{ color: 'text.secondary' }} />
-                          <Typography color="textSecondary" variant="body2">
-                            Standalone pieces
-                          </Typography>
-                        </Stack>
+												<Button color="inherit" endIcon={<ChevronRight />} href={'/outfits/standalone-pieces'} size="small">Standalone pieces</Button>
                       </Stack>
                       <Divider />
                     </Box>
