@@ -3,7 +3,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { getUserID } from '@/hooks/user'
 
-export async function handleObtainedOutfit(outfit_set: string, outfit_category: string) {
+export async function handleObtainedOutfit(
+  outfit_set: string,
+  outfit_category: string,
+  outfit_variant: string
+) {
   const user_id = await getUserID()
   if (!user_id) throw new Error('Not authenticated')
 
@@ -12,6 +16,7 @@ export async function handleObtainedOutfit(outfit_set: string, outfit_category: 
   const { error } = await supabase.rpc('toggle_obtained_outfit', {
     p_outfit_set: outfit_set,
     p_outfit_category: outfit_category,
+    p_outfit_variant: outfit_variant,
   })
 
   if (error) {

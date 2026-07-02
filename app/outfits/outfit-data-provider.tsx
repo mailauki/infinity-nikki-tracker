@@ -159,7 +159,7 @@ export default function OutfitDataProvider({
       ])
     }
     try {
-      await handleObtainedOutfit(outfit_set, outfit_category)
+      await handleObtainedOutfit(outfit_set, outfit_category, outfit_variant)
     } catch (err) {
       console.error('Failed to toggle obtained outfit:', err)
       setObtainedOutfit(saved)
@@ -176,24 +176,23 @@ export default function OutfitDataProvider({
     targetObtained: boolean
   ) => {
     const saved = obtainedOutfit
-    const matches = (o: string, v: string) => o === v
 
     if (targetObtained) {
       setObtainedOutfit((prev) => {
         const toAdd = variants
-          .filter((v) => !prev.some((o) => matches(o.outfit_variant, v.outfit_variant)))
+          .filter((v) => !prev.some((o) => o.outfit_variant === v.outfit_variant))
           .map((v) => ({ id: -1, ...v }))
         return [...prev, ...toAdd]
       })
     } else {
       setObtainedOutfit((prev) =>
-        prev.filter((o) => !variants.some((v) => matches(o.outfit_variant, v.outfit_variant)))
+        prev.filter((o) => !variants.some((v) => o.outfit_variant === v.outfit_variant))
       )
     }
 
     for (const v of variants) {
       try {
-        await handleObtainedOutfit(v.outfit_set, v.outfit_category)
+        await handleObtainedOutfit(v.outfit_set, v.outfit_category, v.outfit_variant)
       } catch (err) {
         console.error('Failed to batch toggle obtained outfit:', err)
         setObtainedOutfit(saved)
@@ -245,12 +244,7 @@ export default function OutfitDataProvider({
           const incoming = payload.new as ObtainedOutfit
           setObtainedOutfit((prev) => {
             const withoutPlaceholder = prev.filter(
-              (o) =>
-                !(
-                  o.id === -1 &&
-                  o.outfit_set === incoming.outfit_set &&
-                  o.outfit_category === incoming.outfit_category
-                )
+              (o) => !(o.id === -1 && o.outfit_variant === incoming.outfit_variant)
             )
             if (withoutPlaceholder.some((o) => o.id === incoming.id)) return prev
             return [...withoutPlaceholder, incoming]
