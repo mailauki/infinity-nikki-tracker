@@ -120,7 +120,7 @@ export default function ImageUpload({
           '&:hover .upload-overlay': { opacity: 1 },
         }}
       >
-        <Stack sx={{ alignItems: 'center', pt: 1 }}>
+        <Stack sx={{ alignItems: 'center', pt: 1, px: 1 }}>
           <Avatar
             alt="Image preview"
             size={size}

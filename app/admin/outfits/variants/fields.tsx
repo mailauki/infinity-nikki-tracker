@@ -46,7 +46,7 @@ export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
           : 'Auto-generated from outfit set (or title) and category — edit if needed',
     },
     ...(mode === 'edit'
-      ? [{ type: 'image', name: 'image_url', table: 'outfit_variants' } as FieldConfig]
+      ? [{ type: 'imagePair', name: 'image_url', table: 'outfit_variants' } as FieldConfig]
       : []),
     { type: 'switch', name: 'default', label: 'Default variant' },
   ]
