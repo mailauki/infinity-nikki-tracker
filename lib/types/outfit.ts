@@ -82,7 +82,7 @@ export type OutfitVariantRaw = Tables<'outfit_variants'> & {
 
 export type ObtainedOutfit = Pick<
   Tables<'obtained_outfit'>,
-  'id' | 'outfit_set' | 'outfit_category'
+  'id' | 'outfit_set' | 'outfit_category' | 'outfit_variant'
 >
 
 export type RecentObtainedOutfit = Pick<

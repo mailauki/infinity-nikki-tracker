@@ -11,7 +11,7 @@ export const getObtainedOutfit = cache(async (user_id: UUID | string) => {
   return fetchAllRows<ObtainedOutfit>((from, to) =>
     supabase
       .from('obtained_outfit')
-      .select('id, outfit_set, outfit_category')
+      .select('id, outfit_set, outfit_category, outfit_variant')
       .eq('user_id', user_id)
       .order('id', { ascending: true })
       .range(from, to)

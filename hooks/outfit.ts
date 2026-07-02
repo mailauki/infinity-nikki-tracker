@@ -121,9 +121,7 @@ export function updateOutfitSet({
     ...outfitSet,
     outfit_variants: outfitSet.outfit_variants.map((variant) => ({
       ...variant,
-      obtained: !!obtainedOutfit?.find(
-        (o) => variant.outfit_set === o.outfit_set && variant.outfit_category === o.outfit_category
-      ),
+      obtained: !!obtainedOutfit?.find((o) => o.outfit_variant === variant.slug),
     })) as OutfitVariant[],
   } as OutfitSet
 }
@@ -137,8 +135,6 @@ export function updateOutfitVariants({
 }): OutfitVariant[] {
   return outfitVariants.map((variant) => ({
     ...variant,
-    obtained: !!obtainedOutfit?.find(
-      (o) => variant.outfit_set === o.outfit_set && variant.outfit_category === o.outfit_category
-    ),
+    obtained: !!obtainedOutfit?.find((o) => o.outfit_variant === variant.slug),
   })) as OutfitVariant[]
 }

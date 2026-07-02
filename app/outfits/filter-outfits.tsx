@@ -286,6 +286,7 @@ export default function FilterOutfits() {
                         .map((v) => ({
                           outfit_set: v.outfit_set!,
                           outfit_category: v.outfit_category!,
+                          outfit_variant: v.slug,
                         }))
                       onBatchToggleObtained(toToggle, !allObtained)
                     }}
@@ -312,7 +313,14 @@ export default function FilterOutfits() {
                         direction="row"
                         sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
                       >
-												<Button color="inherit" endIcon={<ChevronRight />} href={'/outfits/standalone-pieces'} size="small">Standalone pieces</Button>
+                        <Button
+                          color="inherit"
+                          endIcon={<ChevronRight />}
+                          href={'/outfits/standalone-pieces'}
+                          size="small"
+                        >
+                          Standalone pieces
+                        </Button>
                       </Stack>
                       <Divider />
                     </Box>
