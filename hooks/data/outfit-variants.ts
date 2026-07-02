@@ -27,9 +27,10 @@ async function fetchAllOutfitVariants(): Promise<OutfitVariant[]> {
 }
 
 /**
- * All outfit variants grouped by their `outfit_set` slug (base or evolution).
- * Variants with a null `outfit_set` (standalone pieces) are grouped under ''.
- * Use this to inject variants into sets/evolutions instead of the capped embed.
+ * All outfit variants grouped by their `outfit_set` slug (base, evolution, or
+ * `standalone-pieces` for the standalone bag). Use this to inject variants into
+ * sets/evolutions instead of the capped embed. The `?? ''` fallback is vestigial:
+ * a NULL `outfit_set` no longer occurs (migrated to `standalone-pieces`).
  */
 export const getOutfitVariantsBySet = cache(async (): Promise<Map<string, OutfitVariant[]>> => {
   const variants = await fetchAllOutfitVariants()
