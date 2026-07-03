@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Card, Grow, IconButton, Stack, Typography } from '@mui/material'
+import { Box, Card, CardHeader, Grow, IconButton, Stack } from '@mui/material'
 import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { OutfitVariant } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
+import ToggleIcon from '@/components/toggle-icon'
+import { categoryIconSrc } from '@/lib/look-utils'
 
 export default function OutfitVariantCard({
   outfitVariant,
@@ -42,45 +44,49 @@ export default function OutfitVariantCard({
       <Card
         elevation={outfitVariant.obtained ? 3 : 1}
         sx={{
-          minWidth: 'fit-content',
+          position: 'relative',
+          flexGrow: 1,
         }}
       >
-        <Box sx={{ position: 'relative', height: '100%' }}>
-          <Stack sx={{ pt: 1, alignItems: 'center' }}>
-            <LazyImage
-              alt={outfitVariant.slug || 'Outfit Variant'}
-              color="transparent"
-              size="lg"
-              src={imageSrc}
-              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-            >
-              <Category fontSize="inherit" />
-            </LazyImage>
-          </Stack>
-          <Stack
-            direction="row"
-            sx={{
-              py: 0.75,
-              px: 1.25,
-              my: 0,
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
+        <Stack sx={{ pt: 1, alignItems: 'center' }}>
+          <LazyImage
+            alt={outfitVariant.slug || 'Outfit Variant'}
+            color="transparent"
+            size="lg"
+            src={imageSrc}
+            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
           >
-            <Typography color="textSecondary" variant="caption">
-              {outfitVariant.title ? outfitVariant.title : categoryLabel}
-            </Typography>
-          </Stack>
-          <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
-            {isLoggedIn && !disableToggle && (
+            <Category fontSize="inherit" />
+          </LazyImage>
+        </Stack>
+        <CardHeader
+          action={
+            isLoggedIn &&
+            !disableToggle && (
               <IconButton
                 aria-label={outfitVariant.obtained ? 'Mark as not obtained' : 'Mark as obtained'}
                 onClick={onToggle}
               >
                 {outfitVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
               </IconButton>
-            )}
-          </Box>
+            )
+          }
+          slotProps={{
+            title: { variant: 'subtitle2', noWrap: true },
+            subheader: { variant: 'caption' },
+          }}
+          subheader={categoryLabel}
+          sx={{ pr: 1, '& .MuiCardHeader-content': { maxWidth: 'calc(100% - 40px)' } }}
+          title={outfitVariant.title && outfitVariant.title}
+        />
+        <Box sx={{ position: 'absolute', top: 12, left: 12 }}>
+          <ToggleIcon
+            item={{
+              title: categoryLabel,
+              image: categoryIconSrc(outfitVariant.outfit_category || ''),
+            }}
+            size="xs"
+          />
         </Box>
       </Card>
     </Grow>
