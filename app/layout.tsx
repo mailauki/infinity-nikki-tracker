@@ -6,6 +6,7 @@ import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import ThemeClientProvider from '@/components/theme-client-provider'
 import { CssBaseline, Stack, Toolbar } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Suspense } from 'react'
 import Footer from '@/components/navbar/nav-footer'
 import NavBar from '@/components/navbar/nav-bar'
@@ -111,6 +112,7 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
             </FilterContentShim>
           </Stack>
           <Analytics />
+          <SpeedInsights />
         </SnackbarAlertProvider>
       </NavBarToolbarProvider>
     </ThemeClientProvider>
