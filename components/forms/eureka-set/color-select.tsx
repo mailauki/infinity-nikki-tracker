@@ -17,6 +17,7 @@ import {
 } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
 import { MENU_PROPS } from '@/lib/types/props'
+import { colorIconSrc } from '@/lib/look-utils'
 
 function getStyles(color: string, colorSelect: readonly string[], theme: Theme) {
   return {
@@ -55,12 +56,7 @@ export default function ColorSelect({
               <Chip
                 key={slug}
                 icon={
-                  <LazyImage
-                    alt={slug}
-                    color="transparent"
-                    size="xs"
-                    src={colors.find((color) => color.slug === slug)!.image_url!}
-                  >
+                  <LazyImage alt={slug} color="transparent" size="xs" src={colorIconSrc(slug)}>
                     <ColorLens fontSize="inherit" />
                   </LazyImage>
                 }
@@ -97,7 +93,7 @@ export default function ColorSelect({
                     alt={color.title || color.slug}
                     color="transparent"
                     size="xs"
-                    src={color.image_url!}
+                    src={colorIconSrc(color.slug)}
                   >
                     <ColorLens fontSize="inherit" />
                   </LazyImage>

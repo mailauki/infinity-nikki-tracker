@@ -21,6 +21,7 @@ import {
 import { ColorLens } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
 import { toSlug } from '@/lib/utils'
+import { colorIconSrc } from '@/lib/look-utils'
 import { EurekaCategory, EurekaColor, Label, Style, Trial } from '@/lib/types/eureka'
 import ColorSelect from '@/components/forms/eureka-set/color-select'
 import SlugField from '@/components/forms/slug-field'
@@ -238,12 +239,7 @@ export default function AddEurekaSetForm({
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   <Chip
                     icon={
-                      <LazyImage
-                        alt={slug}
-                        color="transparent"
-                        size="xs"
-                        src={color?.image_url ?? ''}
-                      >
+                      <LazyImage alt={slug} color="transparent" size="xs" src={colorIconSrc(slug)}>
                         <ColorLens fontSize="inherit" />
                       </LazyImage>
                     }
@@ -265,7 +261,7 @@ export default function AddEurekaSetForm({
                       alt={color?.title ?? slug}
                       color="transparent"
                       size="xs"
-                      src={color?.image_url ?? ''}
+                      src={colorIconSrc(slug)}
                     >
                       <ColorLens fontSize="inherit" />
                     </LazyImage>
