@@ -3,10 +3,8 @@
 import { useState } from 'react'
 import { toTitle } from '@/lib/utils'
 import { EurekaVariant } from '@/lib/types/eureka'
-import { Box, Card, Grow, IconButton, Stack, Typography } from '@mui/material'
-import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { useEurekaData } from '@/components/eureka/eureka-context'
-import LazyImage from '@/components/lazy-image'
+import VariantCard from '@/components/variant-card'
 
 export default function EurekaVariantCard({
   eurekaVariant,
@@ -27,50 +25,18 @@ export default function EurekaVariantCard({
     }
   }
 
+  const subtitle = `${toTitle(eurekaVariant.category ?? '')} • ${toTitle(eurekaVariant.color ?? '')}`
+
   return (
-    <Grow in={!exiting} timeout={300}>
-      <Card
-        elevation={eurekaVariant.obtained ? 3 : 1}
-        sx={{
-          minWidth: 'fit-content',
-        }}
-      >
-        <Box sx={{ position: 'relative', height: '100%' }}>
-          <Stack sx={{ pt: 1, alignItems: 'center' }}>
-            <LazyImage
-              optimized
-              alt={eurekaVariant.slug || 'Eureka Variant'}
-              color="transparent"
-              size="lg"
-              src={eurekaVariant.image_url!}
-              sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-            >
-              <Category fontSize="inherit" />
-            </LazyImage>
-          </Stack>
-          <Stack
-            direction="row"
-            sx={{
-              py: 0.75,
-              px: 1.25,
-              my: 0,
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <Typography color="textSecondary" variant="caption">
-              {toTitle(eurekaVariant.category ?? '')} • {toTitle(eurekaVariant.color ?? '')}
-            </Typography>
-          </Stack>
-          <Box sx={{ position: 'absolute', top: 4, right: 4 }}>
-            {isLoggedIn && (
-              <IconButton onClick={onToggle}>
-                {eurekaVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
-              </IconButton>
-            )}
-          </Box>
-        </Box>
-      </Card>
-    </Grow>
+    <VariantCard
+      optimized
+      imageAlt={eurekaVariant.slug || 'Eureka Variant'}
+      imageSrc={eurekaVariant.image_url}
+      in={!exiting}
+      isLoggedIn={isLoggedIn}
+      obtained={!!eurekaVariant.obtained}
+      subtitle={subtitle}
+      onToggle={onToggle}
+    />
   )
 }

@@ -1,15 +1,13 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Card, CardHeader, Grow, IconButton, Stack } from '@mui/material'
-import { Category, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 import { OutfitVariant } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
-import LazyImage from '@/components/lazy-image'
+import { categoryIconSrc } from '@/lib/look-utils'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import ToggleIcon from '@/components/toggle-icon'
-import { categoryIconSrc } from '@/lib/look-utils'
+import VariantCard from '@/components/variant-card'
 
 export default function OutfitVariantCard({
   outfitVariant,
@@ -40,55 +38,25 @@ export default function OutfitVariantCard({
   const categoryLabel = toTitle(outfitVariant.outfit_category ?? '')
 
   return (
-    <Grow in={!exiting} timeout={300}>
-      <Card
-        elevation={outfitVariant.obtained ? 3 : 1}
-        sx={{
-          position: 'relative',
-          flexGrow: 1,
-        }}
-      >
-        <Stack sx={{ pt: 1, alignItems: 'center' }}>
-          <LazyImage
-            alt={outfitVariant.slug || 'Outfit Variant'}
-            color="transparent"
-            size="lg"
-            src={imageSrc}
-            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-          >
-            <Category fontSize="inherit" />
-          </LazyImage>
-        </Stack>
-        <CardHeader
-          action={
-            isLoggedIn &&
-            !disableToggle && (
-              <IconButton
-                aria-label={outfitVariant.obtained ? 'Mark as not obtained' : 'Mark as obtained'}
-                onClick={onToggle}
-              >
-                {outfitVariant.obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
-              </IconButton>
-            )
-          }
-          slotProps={{
-            title: { variant: 'subtitle2', noWrap: true },
-            subheader: { variant: 'caption' },
+    <VariantCard
+      disableToggle={disableToggle}
+      imageAlt={outfitVariant.slug || 'Outfit Variant'}
+      imageSrc={imageSrc}
+      in={!exiting}
+      isLoggedIn={isLoggedIn}
+      obtained={!!outfitVariant.obtained}
+      subtitle={categoryLabel}
+      title={outfitVariant.title || undefined}
+      topLeft={
+        <ToggleIcon
+          item={{
+            title: categoryLabel,
+            image: categoryIconSrc(outfitVariant.outfit_category || ''),
           }}
-          subheader={categoryLabel}
-          sx={{ pr: 1, '& .MuiCardHeader-content': { maxWidth: 'calc(100% - 40px)' } }}
-          title={outfitVariant.title && outfitVariant.title}
+          size="xs"
         />
-        <Box sx={{ position: 'absolute', top: 12, left: 12 }}>
-          <ToggleIcon
-            item={{
-              title: categoryLabel,
-              image: categoryIconSrc(outfitVariant.outfit_category || ''),
-            }}
-            size="xs"
-          />
-        </Box>
-      </Card>
-    </Grow>
+      }
+      onToggle={onToggle}
+    />
   )
 }
