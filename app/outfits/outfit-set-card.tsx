@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 import { Evolution, OutfitSet } from '@/lib/types/outfit'
 import { isGlowup } from '@/hooks/outfit'
 import { toTitle } from '@/lib/utils'
@@ -69,6 +69,15 @@ export default function OutfitSetCard({
 
   const glowup = !!evolution && isGlowup(evolution)
 
+  let topLeftBadge: ReactNode = undefined
+  if (glowup) {
+    topLeftBadge = <ToggleIcon item={{ title: 'glowup', image: '/icons/glowup.png' }} size="xs" />
+  } else if (evolution) {
+    topLeftBadge = (
+      <ToggleIcon item={{ title: 'evolution', image: '/icons/evolution.png' }} size="xs" />
+    )
+  }
+
   return (
     <SetCard
       unmountOnExit
@@ -80,13 +89,7 @@ export default function OutfitSetCard({
       rarity={set.rarity}
       showAlt={showAlt}
       title={title}
-      topLeft={
-        evolution && !glowup ? (
-          <ToggleIcon item={{ title: 'evolution', image: '/icons/evolution.png' }} size="xs" />
-        ) : glowup ? (
-          <ToggleIcon item={{ title: 'glowup', image: '/icons/glowup.png' }} size="xs" />
-        ) : undefined
-      }
+      topLeft={topLeftBadge}
       topRight={
         isLoggedIn ? <ProgressChip obtained={obtained} total={total} variant="parts" /> : undefined
       }
