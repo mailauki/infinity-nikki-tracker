@@ -58,7 +58,7 @@ export default function VariantCard({
         }
         slotProps={{
           title: { variant: 'subtitle2', noWrap: true },
-          subheader: { variant: 'caption' },
+          subheader: { variant: 'caption', noWrap: true },
         }}
         subheader={subtitle}
         sx={{ pr: 1, '& .MuiCardHeader-content': { maxWidth: 'calc(100% - 40px)' } }}
