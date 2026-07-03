@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Stack, ToggleButton, ToggleButtonGroup, Toolbar } from '@mui/material'
+import { Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
 import { isGlowup, evolutionSortKey } from '@/hooks/outfit'
 import ProgressChip from '@/components/progress-chip'
@@ -12,14 +12,19 @@ export default function OutfitEvolutionVariants({
   isLoggedIn,
   selected,
   onSelect,
+  // Standalone-pieces is a container of individually-authored variants with no
+  // real evolution states, so its toggle filters by outfit category instead.
+  isStandalone = false,
 }: {
   outfitSet: OutfitSet
   isLoggedIn: boolean
-  // `null` selection means "show all evolutions (states)".
+  // `null` selection means "show all". Otherwise an evolution state slug, or —
+  // in standalone mode — an outfit_category slug.
   selected: string | null
   onSelect: (next: string | null) => void
+  isStandalone?: boolean
 }) {
-  const { obtainedOutfit } = useOutfitData()
+  const { obtainedOutfit, outfitCategories } = useOutfitData()
   const { evolutions, outfit_variants: rawVariants } = outfitSet
 
   // Base state slug = the set's own slug; each evolution carries its own slug.
@@ -30,6 +35,13 @@ export default function OutfitEvolutionVariants({
     obtained: obtainedOutfit.some((o) => o.outfit_variant === v.slug),
   }))
 
+  // Category mode (standalone) filters/sorts by outfit_category using the
+  // canonical category order; evolution mode filters/sorts by state slug.
+  const categoryOrder = outfitCategories.map((c) => c.slug)
+  const presentCategories = outfitCategories.filter((c) =>
+    outfit_variants.some((v) => v.outfit_category === c.slug)
+  )
+
   // Sort variants by the display order of their state: base first, then
   // evolutions in order (1, 2, …), glow-up last (order = 0 → Infinity key).
   const stateOrder = new Map<string, number>([
@@ -38,11 +50,15 @@ export default function OutfitEvolutionVariants({
   ])
   const orderOf = (stateSlug: string) => stateOrder.get(stateSlug) ?? Infinity
 
-  const variants = (
-    selected === null ? outfit_variants : outfit_variants.filter((v) => v.outfit_set === selected)
-  )
+  const matchesSelected = (v: (typeof outfit_variants)[number]) =>
+    isStandalone ? v.outfit_category === selected : v.outfit_set === selected
+
+  const sortKey = (v: (typeof outfit_variants)[number]) =>
+    isStandalone ? categoryOrder.indexOf(v.outfit_category ?? '') : orderOf(v.outfit_set ?? '')
+
+  const variants = (selected === null ? outfit_variants : outfit_variants.filter(matchesSelected))
     .slice()
-    .sort((a, b) => orderOf(a.outfit_set ?? '') - orderOf(b.outfit_set ?? ''))
+    .sort((a, b) => sortKey(a) - sortKey(b))
 
   const obtained = variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
   const total = variants.length
@@ -50,25 +66,42 @@ export default function OutfitEvolutionVariants({
   return (
     <Stack spacing={2} sx={{ flex: 1 }}>
       <Stack direction="row" sx={{ alignItems: 'flex-end', justifyContent: 'space-between' }}>
-        <ToggleButtonGroup
-          exclusive
-          disabled={!selected && evolutions.length === 0}
-          size="small"
-          sx={{ flexWrap: 'wrap' }}
-          value={selected}
-          onChange={(_, next) => onSelect(next)}
-        >
-          {[null, ...evolutions].map((evolution) => {
-            const value = evolution?.slug ?? baseSlug
-            const glowup = !!evolution && isGlowup(evolution)
-            return (
-              <ToggleButton key={value} value={value}>
-                {glowup && '✦ '}
-                {evolution ? evolution.title : 'Base'}
+        {isStandalone ? (
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            sx={{ flexWrap: 'wrap' }}
+            value={selected}
+            onChange={(_, next) => onSelect(next)}
+          >
+            <ToggleButton value={null as unknown as string}>All</ToggleButton>
+            {presentCategories.map((category) => (
+              <ToggleButton key={category.slug} value={category.slug}>
+                {category.title}
               </ToggleButton>
-            )
-          })}
-        </ToggleButtonGroup>
+            ))}
+          </ToggleButtonGroup>
+        ) : (
+          <ToggleButtonGroup
+            exclusive
+            disabled={!selected && evolutions.length === 0}
+            size="small"
+            sx={{ flexWrap: 'wrap' }}
+            value={selected}
+            onChange={(_, next) => onSelect(next)}
+          >
+            {[null, ...evolutions].map((evolution) => {
+              const value = evolution?.slug ?? baseSlug
+              const glowup = !!evolution && isGlowup(evolution)
+              return (
+                <ToggleButton key={value} value={value}>
+                  {glowup && '✦ '}
+                  {evolution ? evolution.title : 'Base'}
+                </ToggleButton>
+              )
+            })}
+          </ToggleButtonGroup>
+        )}
         {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
       </Stack>
 
