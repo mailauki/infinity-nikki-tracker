@@ -46,6 +46,24 @@ export function categoryIconSrc(slug: string): string | undefined {
   return `/icons/categories/${slug.replace(/_/g, '-')}.png`
 }
 
+// Every eureka color slug that has an icon in public/icons/categories/.
+const COLOR_ICON_SLUGS = new Set([
+  'blue',
+  'green',
+  'iridescent',
+  'pink',
+  'purple',
+  'red',
+  'white',
+  'yellow',
+])
+
+/** Local icon path for a color slug, or undefined when no icon exists. */
+export function colorIconSrc(slug: string): string | undefined {
+  if (!COLOR_ICON_SLUGS.has(slug)) return undefined
+  return `/icons/categories/${slug}.png`
+}
+
 export function flattenEurekaVariants(
   sets: EurekaSet[],
   categories: EurekaCategory[]

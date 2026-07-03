@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
 import { MENU_PROPS } from '@/lib/types/props'
+import { colorIconSrc } from '@/lib/look-utils'
 
 export default function ColorSelect({
   colors,
@@ -55,7 +56,7 @@ export default function ColorSelect({
                   alt={color.title || color.slug}
                   color="transparent"
                   size="xs"
-                  src={color.image_url!}
+                  src={colorIconSrc(color.slug)}
                 >
                   <ColorLens fontSize="inherit" />
                 </LazyImage>

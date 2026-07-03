@@ -21,6 +21,7 @@ import {
 import { CheckBox, CheckBoxOutlineBlank, ColorLens } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
 import { toSlug, toTitle } from '@/lib/utils'
+import { colorIconSrc } from '@/lib/look-utils'
 import {
   EurekaCategory,
   EurekaColor,
@@ -255,12 +256,7 @@ export default function EditEurekaSetForm({
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                   <Chip
                     icon={
-                      <LazyImage
-                        alt={slug}
-                        color="transparent"
-                        size="xs"
-                        src={color?.image_url ?? ''}
-                      >
+                      <LazyImage alt={slug} color="transparent" size="xs" src={colorIconSrc(slug)}>
                         <ColorLens fontSize="inherit" />
                       </LazyImage>
                     }
@@ -282,7 +278,7 @@ export default function EditEurekaSetForm({
                       alt={color?.title ?? slug}
                       color="transparent"
                       size="xs"
-                      src={color?.image_url ?? ''}
+                      src={colorIconSrc(slug)}
                     >
                       <ColorLens fontSize="inherit" />
                     </LazyImage>
