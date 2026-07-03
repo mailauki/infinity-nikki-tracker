@@ -46,7 +46,7 @@ export default function SetCard({
       unmountOnExit={unmountOnExit}
       onExited={onExited}
     >
-      <CardActionArea component={Link} href={href}>
+      <CardActionArea aria-label={`${title} — rarity ${rarity}`} component={Link} href={href}>
         {showAlt ? (
           <LazyImage alt={title} kind="square" src={imageSrc} />
         ) : (

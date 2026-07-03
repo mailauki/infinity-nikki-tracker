@@ -17,7 +17,7 @@ export function CollectionToggle({
 }) {
   if (!show) return null
   return (
-    <IconButton aria-label={label} onClick={onToggle}>
+    <IconButton aria-label={label} aria-pressed={obtained} onClick={onToggle}>
       {obtained ? <TaskAlt /> : <RadioButtonUncheckedOutlined />}
     </IconButton>
   )
