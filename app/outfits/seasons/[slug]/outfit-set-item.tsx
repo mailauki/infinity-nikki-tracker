@@ -44,9 +44,9 @@ export default function OutfitSetListItem({
   const badgeContent = evolution && (
     <Box sx={{ display: 'flex' }}>
       {isGlowup ? (
-        <ToggleIcon item={{ title: 'glowup', image: '/icons/glowup.png' }} size="xs" />
+        <ToggleIcon image="/icons/glowup.png" size="xs" title="glowup" />
       ) : (
-        <ToggleIcon item={{ title: 'evolution', image: '/icons/evolution.png' }} size="xs" />
+        <ToggleIcon image="/icons/evolution.png" size="xs" title="evolution" />
       )}
     </Box>
   )
