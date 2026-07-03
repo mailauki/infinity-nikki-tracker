@@ -18,15 +18,14 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: workspaceRoot,
   },
-  // headers: async () => [
-  //   {
-  //     // Prevent Safari from caching Turbopack dev chunks, which causes
-  //     // ChunkLoadError reload loops when chunks are invalidated during development
-  //     source: '/_next/static/chunks/:path*',
-  //     headers: [{ key: 'Cache-Control', value: 'no-store' }],
-  //   },
-  // ],
   images: {
+    // Vercel's image optimizer (/_next/image) returns 402
+    // OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED in production once the plan's
+    // image-optimization quota is exhausted, so every optimized variant thumbnail
+    // 404s in the browser while the source files serve fine (200) from Supabase.
+    // Bypass the optimizer: next/image emits a plain <img> with the original src.
+    // The `optimized` prop on the eureka cards becomes a harmless no-op.
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     // Grid thumbnails render at Avatar sizes (xs 24 … xl 140, see lib/theme.ts);
     // these candidates cover those at 1x/2x DPR so srcset picks a small file.
