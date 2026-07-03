@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { OutfitVariant } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
-import { categoryIconSrc } from '@/lib/look-utils'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import ToggleIcon from '@/components/toggle-icon'
@@ -47,15 +46,7 @@ export default function OutfitVariantCard({
       obtained={!!outfitVariant.obtained}
       subtitle={categoryLabel}
       title={outfitVariant.title || undefined}
-      topLeft={
-        <ToggleIcon
-          item={{
-            title: categoryLabel,
-            image: categoryIconSrc(outfitVariant.outfit_category || ''),
-          }}
-          size="xs"
-        />
-      }
+      topLeft={<ToggleIcon category={outfitVariant.outfit_category ?? ''} size="xs" />}
       onToggle={onToggle}
     />
   )

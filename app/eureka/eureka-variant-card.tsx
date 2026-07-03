@@ -5,6 +5,7 @@ import { toTitle } from '@/lib/utils'
 import { EurekaVariant } from '@/lib/types/eureka'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import VariantCard from '@/components/variant-card'
+import ToggleIcon from '@/components/toggle-icon'
 
 export default function EurekaVariantCard({
   eurekaVariant,
@@ -25,8 +26,6 @@ export default function EurekaVariantCard({
     }
   }
 
-  const subtitle = `${toTitle(eurekaVariant.category ?? '')} • ${toTitle(eurekaVariant.color ?? '')}`
-
   return (
     <VariantCard
       optimized
@@ -35,7 +34,9 @@ export default function EurekaVariantCard({
       in={!exiting}
       isLoggedIn={isLoggedIn}
       obtained={!!eurekaVariant.obtained}
-      subtitle={subtitle}
+      subtitle={toTitle(eurekaVariant.category ?? '')}
+      title={toTitle(eurekaVariant.color ?? '')}
+      topLeft={<ToggleIcon category={eurekaVariant.category ?? ''} size="xs" />}
       onToggle={onToggle}
     />
   )

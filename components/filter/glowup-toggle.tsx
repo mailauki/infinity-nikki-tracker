@@ -19,11 +19,7 @@ export default function GlowupToggle({
         value="hideGlowups"
         onChange={onHideGlowupsChange}
       >
-        <ToggleIcon
-          isSelected={hideGlowups}
-          item={{ title: 'glowup', image: '/icons/glowup.png' }}
-          size="xs"
-        />
+        <ToggleIcon image="/icons/glowup.png" isSelected={hideGlowups} size="xs" title="glowup" />
       </ToggleButton>
     </Tooltip>
   )

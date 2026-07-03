@@ -49,7 +49,7 @@ export default function CategoryToggle({
           return (
             <Tooltip key={category.slug} title={category.title}>
               <ToggleButton sx={{ py: 0.75 }} value={category.slug}>
-                <ToggleIcon disabled={disabled} isSelected={isSelected} item={category} />
+                <ToggleIcon category={category.slug} disabled={disabled} isSelected={isSelected} />
               </ToggleButton>
             </Tooltip>
           )

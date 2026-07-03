@@ -39,7 +39,12 @@ export default function AdminRecentsToggle({ title, item, tab, onItemChange, onT
           >
             {navLinksData.admin.tabs.map((t) => (
               <ToggleButton key={t.title} size="small" value={t.title}>
-                <ToggleIcon isSelected={tab === t.title} item={t} size="xs" />
+                <ToggleIcon
+                  image={t.image}
+                  isSelected={tab === t.title}
+                  size="xs"
+                  title={t.title}
+                />
               </ToggleButton>
             ))}
           </ToggleButtonGroup>
