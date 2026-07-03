@@ -19,9 +19,10 @@ export default function EvolutionToggle({
         onChange={onHideEvolutionsChange}
       >
         <ToggleIcon
+          image="/icons/evolution.png"
           isSelected={hideEvolutions}
-          item={{ title: 'evolution', image: '/icons/evolution.png' }}
           size="xs"
+          title="evolution"
         />
       </ToggleButton>
     </Tooltip>

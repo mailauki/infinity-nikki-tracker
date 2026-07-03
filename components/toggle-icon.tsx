@@ -4,20 +4,24 @@ import { useColorScheme } from '@mui/material'
 import { useEffect, useState } from 'react'
 import LazyImage from '@/components/lazy-image'
 import { Category as CategoryIcon } from '@mui/icons-material'
-
-interface ToggleItem {
-  title: string
-  image?: string
-  image_url?: string | null
-}
+import { categoryIconSrc } from '@/lib/look-utils'
+import { toTitle } from '@/lib/utils'
 
 export default function ToggleIcon({
-  item,
+  category,
+  title,
+  image,
+  imageUrl,
   isSelected = false,
   disabled,
   size = 'sm',
 }: {
-  item: ToggleItem
+  // When set, the title and icon are derived from the category slug.
+  category?: string
+  // Otherwise pass a fixed icon directly (e.g. glowup/evolution/nav tabs).
+  title?: string
+  image?: string
+  imageUrl?: string | null
   isSelected?: boolean
   disabled?: boolean
   size?: AvatarSize
@@ -30,11 +34,14 @@ export default function ToggleIcon({
   const opacity = disabled ? 'opacity(0.3)' : null
   const filter = [brightness, opacity].filter(Boolean).join(' ') || 'none'
 
+  const resolvedTitle = category ? toTitle(category) : (title ?? '')
+  const resolvedSrc = category ? categoryIconSrc(category) : (image ?? imageUrl ?? undefined)
+
   return (
     <LazyImage
-      alt={item.title}
+      alt={resolvedTitle}
       size={size}
-      src={item.image ?? item.image_url ?? undefined}
+      src={resolvedSrc}
       sx={{
         backgroundColor: 'transparent',
         filter,

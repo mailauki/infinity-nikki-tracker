@@ -7,12 +7,10 @@ function categoryTitleMap(categories: { slug: string; title: string }[]) {
   return new Map(categories.map((c) => [c.slug, c.title]))
 }
 
-// Category slugs whose icon filename in public/icons/categories/ doesn't follow
-// the default `slug.replace(/_/g, '-')` rule. Slugs absent here and from the
-// folder (e.g. body_paint, eureka head/hands/feet) resolve to undefined.
-const CATEGORY_ICON_FILES: Record<string, string> = {
-  back_pieces: 'backpieces',
-}
+// Every real category slug (outfit + eureka) that has an icon in
+// public/icons/categories/. The file name is the slug with underscores
+// swapped for hyphens (e.g. back_pieces -> back-pieces.png). Slugs absent
+// here (non-categories) resolve to undefined.
 const CATEGORY_ICON_SLUGS = new Set([
   'hair',
   'dresses',
@@ -35,14 +33,17 @@ const CATEGORY_ICON_SLUGS = new Set([
   'arm_decorations',
   'handhelds',
   'body_paint',
-  ...Object.keys(CATEGORY_ICON_FILES),
+  'back_pieces',
+  // eureka categories
+  'head',
+  'hands',
+  'feet',
 ])
 
 /** Local icon path for a category slug, or undefined when no icon exists. */
 export function categoryIconSrc(slug: string): string | undefined {
   if (!CATEGORY_ICON_SLUGS.has(slug)) return undefined
-  const file = CATEGORY_ICON_FILES[slug] ?? slug.replace(/_/g, '-')
-  return `/icons/categories/${file}.png`
+  return `/icons/categories/${slug.replace(/_/g, '-')}.png`
 }
 
 export function flattenEurekaVariants(

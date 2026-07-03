@@ -101,7 +101,7 @@ export default function NavSection({
                       src={item.image}
                       sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
                     />
-                    {/* <ToggleIcon item={item} /> */}
+                    {/* <ToggleIcon title={item.title} image={item.image} /> */}
                   </ListItemAvatar>
                 ) : (
                   <ListItemIcon

@@ -5,7 +5,6 @@ import { toTitle } from '@/lib/utils'
 import { Tables } from '@/lib/types/supabase'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
 import ToggleIcon from '@/components/toggle-icon'
-import { categoryIconSrc } from '@/lib/look-utils'
 
 type OutfitVariantRow = Pick<
   Tables<'outfit_variants'>,
@@ -41,15 +40,7 @@ export default function OutfitVariantImageCard({
   return (
     <Card>
       <CardHeader
-        avatar={
-          <ToggleIcon
-            item={{
-              title: variant.outfit_category || '',
-              image_url: categoryIconSrc(variant.outfit_category || ''),
-            }}
-            size="xs"
-          />
-        }
+        avatar={<ToggleIcon category={variant.outfit_category ?? ''} size="xs" />}
         sx={{ pb: 0 }}
         title={categoryTitle ?? variant.slug}
       />

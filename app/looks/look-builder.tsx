@@ -8,10 +8,12 @@ import {
   AccordionSummary,
   Alert,
   Avatar,
+  Badge,
   Box,
   Button,
   Card,
   CardActionArea,
+  CardHeader,
   Chip,
   Divider,
   IconButton,
@@ -28,7 +30,6 @@ import {
   Typography,
 } from '@mui/material'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import CloseIcon from '@mui/icons-material/Close'
 import SearchIcon from '@mui/icons-material/Search'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
@@ -38,7 +39,6 @@ import CategoryIcon from '@mui/icons-material/Category'
 import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import SaveIcon from '@mui/icons-material/Save'
 import { toTitle } from '@/lib/utils'
-import { categoryIconSrc } from '@/lib/look-utils'
 import LazyImage from '@/components/lazy-image'
 import { FREE_LOOKS_LIMIT } from '@/lib/types/looks'
 import type { FlatVariant, CustomLook } from '@/lib/types/looks'
@@ -48,7 +48,7 @@ import { DRESS_SLUGS, isCategoryDisabled } from '@/components/filter/outfit-cate
 import ToggleIcon from '@/components/toggle-icon'
 import ImageUpload from '@/components/forms/image-upload'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
-import { ExpandMore } from '@mui/icons-material'
+import { ExpandMore, TaskAlt } from '@mui/icons-material'
 
 // Outfit categories carry a `part` that buckets them into these two groups.
 const PIECES_PART = 'Pieces'
@@ -92,19 +92,30 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
   }
 
   return (
-    <Card
-      sx={{
-        outline: selected ? '2px solid' : '1px solid',
-        outlineColor: selected ? 'primary.main' : 'transparent',
-        bgcolor: selected ? 'surface.containerLow' : 'surface.containerHighest',
-        transition: 'all 0.15s',
-        position: 'relative',
-        minWidth: 0,
-      }}
-    >
-      <CardActionArea sx={{ p: 0.75 }} onClick={() => onToggle(variant.slug)}>
-        <Stack sx={{ alignItems: 'center', gap: 0.5 }}>
-          <Box sx={{ position: 'relative' }}>
+    <Card>
+      <CardActionArea
+        data-active={selected ? '' : undefined}
+        sx={{
+          '&[data-active]': {
+            backgroundColor: 'action.selected',
+            '&:hover': {
+              backgroundColor: 'action.selectedHover',
+            },
+          },
+        }}
+        onClick={() => onToggle(variant.slug)}
+      >
+        <Stack sx={{ pt: 1, alignItems: 'center' }}>
+          <Badge
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            badgeContent={<TaskAlt fontSize="small" />}
+            color="primary"
+            invisible={!selected}
+            sx={{ '& .MuiBadge-badge': { px: 0.25, py: 1.5, borderRadius: 40 } }}
+          >
             <LazyImage
               alt={variant.slug}
               color="transparent"
@@ -114,37 +125,17 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
             >
               <CategoryIcon fontSize="inherit" />
             </LazyImage>
-            {selected && (
-              <CheckCircleIcon
-                color="primary"
-                sx={{
-                  position: 'absolute',
-                  bottom: -4,
-                  right: -4,
-                  fontSize: 22,
-                  bgcolor: 'surface.containerLowest',
-                  borderRadius: '50%',
-                }}
-              />
-            )}
-          </Box>
-          <Typography
-            align="center"
-            color="textSecondary"
-            sx={{
-              fontSize: '0.65rem',
-              lineHeight: 1.2,
-              maxWidth: 94,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              width: '100%',
-            }}
-            variant="caption"
-          >
-            {label}
-          </Typography>
+          </Badge>
         </Stack>
+        <CardHeader
+          slotProps={{
+            title: { variant: 'subtitle2', noWrap: true },
+            subheader: { variant: 'caption', noWrap: true },
+          }}
+          subheader={variant.setTitle}
+          sx={{ p: 1.5, '& .MuiCardHeader-content': { maxWidth: '100%' } }}
+          title={label}
+        />
       </CardActionArea>
     </Card>
   )
@@ -153,7 +144,6 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
 type CategoryRowProps = {
   categorySlug: string
   categoryTitle: string
-  iconSrc?: string
   totalCount: number
   selectedLabel?: string
   disabled?: boolean
@@ -164,7 +154,6 @@ type CategoryRowProps = {
 function CategoryRow({
   categorySlug,
   categoryTitle,
-  iconSrc,
   totalCount,
   selectedLabel,
   disabled,
@@ -201,7 +190,7 @@ function CategoryRow({
               <DoNotDisturbIcon fontSize="small" />
             </Avatar>
           ) : (
-            <ToggleIcon item={{ title: categoryTitle, image: iconSrc }} size="sm" />
+            <ToggleIcon category={categorySlug} size="sm" />
           )}
           <Stack sx={{ flex: 1, minWidth: 0 }}>
             <Typography
@@ -220,7 +209,7 @@ function CategoryRow({
           </Stack>
           {selectedLabel && !disabled && (
             <Chip
-              color="primary"
+              color="success"
               label={selectedLabel}
               size="small"
               sx={{ maxWidth: 140, flexShrink: 0 }}
@@ -620,7 +609,7 @@ export default function LookBuilder({
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
               gap: 1,
             }}
           >
@@ -678,7 +667,6 @@ export default function LookBuilder({
                   categoryTitle={group.title}
                   disabled={disabled}
                   disabledReason={disabled ? outfitConflictReason : undefined}
-                  iconSrc={categoryIconSrc(slug)}
                   selectedLabel={selectedVariant?.setTitle}
                   totalCount={group.variants.length}
                   onSelect={setActiveCategorySlug}

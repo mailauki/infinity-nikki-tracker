@@ -71,11 +71,9 @@ export default function OutfitSetCard({
 
   let topLeftBadge: ReactNode = undefined
   if (glowup) {
-    topLeftBadge = <ToggleIcon item={{ title: 'glowup', image: '/icons/glowup.png' }} size="xs" />
+    topLeftBadge = <ToggleIcon image="/icons/glowup.png" size="xs" title="glowup" />
   } else if (evolution) {
-    topLeftBadge = (
-      <ToggleIcon item={{ title: 'evolution', image: '/icons/evolution.png' }} size="xs" />
-    )
+    topLeftBadge = <ToggleIcon image="/icons/evolution.png" size="xs" title="evolution" />
   }
 
   return (
