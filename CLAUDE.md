@@ -162,7 +162,7 @@ Shared / user:
 
 ### Next.js Config
 
-`next.config.ts`: `cacheComponents: true` (component-level caching / PPR), `turbopack.root` set to the parent dir, `images.remotePatterns` allows `static.wikia.nocookie.net/infinity-nikki/**` and the Supabase storage host.
+`next.config.ts`: `cacheComponents: true` (component-level caching / PPR), `turbopack.root` set to the parent dir, `images.remotePatterns` allows the Supabase storage host (`ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/object/public/images/**`). `images.unoptimized: true` bypasses Vercel's `/_next/image` optimizer — it returns `402 OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED` in production once the plan's image-optimization quota is exhausted, which broke every optimized thumbnail while the source files served fine (200) from Supabase; `next/image` now emits a plain `<img>` and the `optimized` prop on the eureka cards is a no-op.
 
 ## Claude Automations
 
