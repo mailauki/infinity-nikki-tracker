@@ -6,6 +6,7 @@ import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getLocations } from '@/hooks/data/locations'
 import SeasonsContent from '@/app/outfits/seasons/seasons-content'
+import PageShell from '@/components/page-shell'
 
 export const metadata: Metadata = {
   title: 'Outfits by Season',
@@ -21,13 +22,15 @@ export default async function SeasonsPage() {
   return (
     <>
       <SeasonsToolBar count={seasons.length} />
-      <Suspense fallback={<SeasonsLoading />}>
-        <SeasonsContent
-          locations={locations}
-          seasonCategories={seasonCategories}
-          seasons={seasons}
-        />
-      </Suspense>
+      <PageShell>
+        <Suspense fallback={<SeasonsLoading />}>
+          <SeasonsContent
+            locations={locations}
+            seasonCategories={seasonCategories}
+            seasons={seasons}
+          />
+        </Suspense>
+      </PageShell>
     </>
   )
 }

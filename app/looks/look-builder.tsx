@@ -48,6 +48,7 @@ import { DRESS_SLUGS, isCategoryDisabled } from '@/components/filter/outfit-cate
 import ToggleIcon from '@/components/toggle-icon'
 import ImageUpload from '@/components/forms/image-upload'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import PageShell from '@/components/page-shell'
 import { ExpandMore, TaskAlt } from '@mui/icons-material'
 
 // Outfit categories carry a `part` that buckets them into these two groups.
@@ -699,34 +700,36 @@ export default function LookBuilder({
         </Stack>
       </NavBarToolbar>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '1fr 340px' },
-          gap: 3,
-          alignItems: 'start',
-        }}
-      >
-        {/* On mobile, composer comes first */}
-        <Box sx={{ display: { xs: 'block', md: 'none' } }}>{composerPanel}</Box>
-        <Box sx={{ display: { xs: 'block', md: 'none' } }}>
-          <Divider />
-        </Box>
-
-        {/* Picker (left on desktop, bottom on mobile) */}
-        {pickerPanel}
-
-        {/* Composer (right on desktop, hidden on mobile since it's at top) */}
+      <PageShell maxWidth="wide">
         <Box
           sx={{
-            display: { xs: 'none', md: 'block' },
-            position: 'sticky',
-            top: 80,
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '1fr 340px' },
+            gap: 3,
+            alignItems: 'start',
           }}
         >
-          {composerPanel}
+          {/* On mobile, composer comes first */}
+          <Box sx={{ display: { xs: 'block', md: 'none' } }}>{composerPanel}</Box>
+          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
+            <Divider />
+          </Box>
+
+          {/* Picker (left on desktop, bottom on mobile) */}
+          {pickerPanel}
+
+          {/* Composer (right on desktop, hidden on mobile since it's at top) */}
+          <Box
+            sx={{
+              display: { xs: 'none', md: 'block' },
+              position: 'sticky',
+              top: 80,
+            }}
+          >
+            {composerPanel}
+          </Box>
         </Box>
-      </Box>
+      </PageShell>
     </>
   )
 }

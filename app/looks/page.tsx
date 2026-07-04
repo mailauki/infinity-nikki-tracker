@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { Box, Skeleton, Stack, Typography } from '@mui/material'
+import { Box, Skeleton, Typography } from '@mui/material'
 import { getUserID } from '@/hooks/user'
 import { getCustomLooks, getLookThumbnails, getOutfitSlugParts } from '@/hooks/data/custom-looks'
 import { getProfile } from '@/hooks/data/user'
@@ -11,6 +11,7 @@ import LookCard, { LooksLimitBanner } from './look-card'
 import { deleteLook } from './actions'
 import LooksToolbar from './looks-toolbar'
 import LooksEmptyState from './looks-empty-state'
+import PageShell from '@/components/page-shell'
 
 export const metadata: Metadata = { title: 'Custom Looks' }
 
@@ -45,7 +46,7 @@ async function LooksContent() {
     <>
       <LooksToolbar atLimit={atLimit} />
 
-      <Stack spacing={2}>
+      <PageShell maxWidth="wide">
         {!isPremium && looks.length > 0 && (
           <LooksLimitBanner count={looks.length} limit={FREE_LOOKS_LIMIT} />
         )}
@@ -94,7 +95,7 @@ async function LooksContent() {
             </Link>
           </Typography>
         )}
-      </Stack>
+      </PageShell>
     </>
   )
 }

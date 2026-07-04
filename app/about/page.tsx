@@ -1,6 +1,7 @@
-import { Typography, Link as Anchor, Stack, Box, Card, CardContent, Container } from '@mui/material'
+import { Typography, Link as Anchor, Box, Card, CardContent, Container } from '@mui/material'
 import { Metadata } from 'next'
 import { Section, SectionList, SectionSubtitle, SectionTitle } from '@/components/section'
+import PageShell from '@/components/page-shell'
 
 const featurePages = [
   {
@@ -68,202 +69,199 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <Container maxWidth="md">
-      {/* Containers limit width for better readability - consider adding to layout */}
-      <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-        <Section>
-          <SectionTitle>What is this?</SectionTitle>
-          <SectionSubtitle>
-            A fan-made collection tracker for{' '}
+    <PageShell maxWidth="md">
+      <Section>
+        <SectionTitle>What is this?</SectionTitle>
+        <SectionSubtitle>
+          A fan-made collection tracker for{' '}
+          <Anchor
+            color="textSecondary"
+            href="https://infinitynikki.infoldgames.com/"
+            rel="noreferrer"
+            target="_blank"
+          >
+            Infinity Nikki
+          </Anchor>{' '}
+          — see your Eureka sets and variants at a glance, track your progress, and know exactly
+          what you&apos;re still missing.
+        </SectionSubtitle>
+      </Section>
+
+      <Section>
+        <SectionTitle>About me</SectionTitle>
+        <SectionSubtitle>
+          I&apos;m Julie Evans, a UX-focused developer. This tracker is a side project built with
+          Next.js, Supabase, and MUI — born out of playing the game and wanting a clearer view of my
+          own collection.
+        </SectionSubtitle>
+        <SectionList
+          bullets={[
+            <>
+              GitHub:{' '}
+              <Anchor
+                key="me-github"
+                color="textSecondary"
+                href="https://github.com/mailauki"
+                rel="noreferrer"
+                target="_blank"
+              >
+                github.com/mailauki
+              </Anchor>
+            </>,
+            <>
+              Instagram:{' '}
+              <Anchor
+                key="me-instagram"
+                color="textSecondary"
+                href="https://www.instagram.com/julieuxdev"
+                rel="noreferrer"
+                target="_blank"
+              >
+                instagram.com/julieuxdev
+              </Anchor>
+            </>,
             <Anchor
+              key="me-medium"
+              color="textSecondary"
+              href="https://medium.com/@julieuxdev/i-built-a-collection-tracker-for-infinity-nikki-because-the-game-wouldnt-tell-me-what-i-was-missing-95ffcf3b2109"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Behind the build — Medium article
+            </Anchor>,
+            <>
+              Contact:{' '}
+              <Anchor key="me-email" color="textSecondary" href="mailto:julie.ux.dev@gmail.com">
+                julie.ux.dev@gmail.com
+              </Anchor>
+            </>,
+          ]}
+        />
+      </Section>
+
+      <Section>
+        <SectionTitle>Features &amp; Pages</SectionTitle>
+        <SectionSubtitle>
+          Browse freely without an account, or sign in to save and track your own personal
+          collection. Filtering, sorting, and views are available either way — obtained and missing
+          filters unlock once you&apos;re signed in.
+        </SectionSubtitle>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+            gap: 2,
+            pt: 1.5,
+          }}
+        >
+          {featurePages.map((page) => (
+            <FeatureCard
+              key={page.title}
+              bullets={page.bullets}
+              subtitle={page.subtitle}
+              title={page.title}
+            />
+          ))}
+        </Box>
+      </Section>
+
+      <Section>
+        <SectionTitle>Links &amp; Resources</SectionTitle>
+        <SectionSubtitle>
+          This project is open source. Contributions are welcome — whether it&apos;s fixing a bug,
+          improving the UI, or adding new data.
+        </SectionSubtitle>
+        <SectionList
+          bullets={[
+            <Anchor
+              key="github"
+              color="textSecondary"
+              href="https://github.com/mailauki/infinity-nikki-tracker"
+              rel="noreferrer"
+              target="_blank"
+            >
+              GitHub Repository
+            </Anchor>,
+            <Typography key="issue" color="textSecondary" component="span" variant="body1">
+              <Anchor
+                color="textSecondary"
+                href="https://github.com/mailauki/infinity-nikki-tracker/issues"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Open an issue
+              </Anchor>{' '}
+              for bugs or feature requests
+            </Typography>,
+          ]}
+        />
+        <SectionSubtitle>Helpful resources</SectionSubtitle>
+        <SectionList
+          bullets={[
+            <Anchor
+              key="official"
               color="textSecondary"
               href="https://infinitynikki.infoldgames.com/"
               rel="noreferrer"
               target="_blank"
             >
-              Infinity Nikki
-            </Anchor>{' '}
-            — see your Eureka sets and variants at a glance, track your progress, and know exactly
-            what you&apos;re still missing.
-          </SectionSubtitle>
-        </Section>
+              Infinity Nikki Official Website
+            </Anchor>,
+            <Anchor
+              key="wiki"
+              color="textSecondary"
+              href="https://infinitynikki.fandom.com/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Infinity Nikki Wiki
+            </Anchor>,
+            <Anchor
+              key="miraland"
+              color="textSecondary"
+              href="https://www.miralandcollection.com/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Miraland Collection
+            </Anchor>,
+            <Anchor
+              key="library"
+              color="textSecondary"
+              href="https://infinitynikkilibrary.com/"
+              rel="noreferrer"
+              target="_blank"
+            >
+              Infinity Nikki Library
+            </Anchor>,
+          ]}
+        />
+      </Section>
 
-        <Section>
-          <SectionTitle>About me</SectionTitle>
-          <SectionSubtitle>
-            I&apos;m Julie Evans, a UX-focused developer. This tracker is a side project built with
-            Next.js, Supabase, and MUI — born out of playing the game and wanting a clearer view of
-            my own collection.
-          </SectionSubtitle>
-          <SectionList
-            bullets={[
-              <>
-                GitHub:{' '}
-                <Anchor
-                  key="me-github"
-                  color="textSecondary"
-                  href="https://github.com/mailauki"
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  github.com/mailauki
-                </Anchor>
-              </>,
-              <>
-                Instagram:{' '}
-                <Anchor
-                  key="me-instagram"
-                  color="textSecondary"
-                  href="https://www.instagram.com/julieuxdev"
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  instagram.com/julieuxdev
-                </Anchor>
-              </>,
-              <Anchor
-                key="me-medium"
-                color="textSecondary"
-                href="https://medium.com/@julieuxdev/i-built-a-collection-tracker-for-infinity-nikki-because-the-game-wouldnt-tell-me-what-i-was-missing-95ffcf3b2109"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Behind the build — Medium article
-              </Anchor>,
-              <>
-                Contact:{' '}
-                <Anchor key="me-email" color="textSecondary" href="mailto:julie.ux.dev@gmail.com">
-                  julie.ux.dev@gmail.com
-                </Anchor>
-              </>,
-            ]}
-          />
-        </Section>
+      <Section>
+        <SectionTitle>Roadmap</SectionTitle>
+        <SectionSubtitle>Planned features and improvements:</SectionSubtitle>
+        <SectionList
+          bullets={[
+            'Search — quickly find sets and variants by name',
+            'Outfit Pieces — tracking support for pieces not part of any outfit sets',
+            'Make-up Sets — tracking support for make-up sets and pieces',
+            "Momo's Cloaks — tracking support for Momo's cloaks",
+            'Favorites — save your favorite sets and pieces',
+            'Friends — follow friends to compare collection progress',
+            'Sharing — shareable links to your looks and collection',
+          ]}
+        />
+      </Section>
 
-        <Section>
-          <SectionTitle>Features &amp; Pages</SectionTitle>
-          <SectionSubtitle>
-            Browse freely without an account, or sign in to save and track your own personal
-            collection. Filtering, sorting, and views are available either way — obtained and
-            missing filters unlock once you&apos;re signed in.
-          </SectionSubtitle>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-              gap: 2,
-              pt: 1.5,
-            }}
-          >
-            {featurePages.map((page) => (
-              <FeatureCard
-                key={page.title}
-                bullets={page.bullets}
-                subtitle={page.subtitle}
-                title={page.title}
-              />
-            ))}
-          </Box>
-        </Section>
-
-        <Section>
-          <SectionTitle>Links &amp; Resources</SectionTitle>
-          <SectionSubtitle>
-            This project is open source. Contributions are welcome — whether it&apos;s fixing a bug,
-            improving the UI, or adding new data.
-          </SectionSubtitle>
-          <SectionList
-            bullets={[
-              <Anchor
-                key="github"
-                color="textSecondary"
-                href="https://github.com/mailauki/infinity-nikki-tracker"
-                rel="noreferrer"
-                target="_blank"
-              >
-                GitHub Repository
-              </Anchor>,
-              <Typography key="issue" color="textSecondary" component="span" variant="body1">
-                <Anchor
-                  color="textSecondary"
-                  href="https://github.com/mailauki/infinity-nikki-tracker/issues"
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  Open an issue
-                </Anchor>{' '}
-                for bugs or feature requests
-              </Typography>,
-            ]}
-          />
-          <SectionSubtitle>Helpful resources</SectionSubtitle>
-          <SectionList
-            bullets={[
-              <Anchor
-                key="official"
-                color="textSecondary"
-                href="https://infinitynikki.infoldgames.com/"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Infinity Nikki Official Website
-              </Anchor>,
-              <Anchor
-                key="wiki"
-                color="textSecondary"
-                href="https://infinitynikki.fandom.com/"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Infinity Nikki Wiki
-              </Anchor>,
-              <Anchor
-                key="miraland"
-                color="textSecondary"
-                href="https://www.miralandcollection.com/"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Miraland Collection
-              </Anchor>,
-              <Anchor
-                key="library"
-                color="textSecondary"
-                href="https://infinitynikkilibrary.com/"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Infinity Nikki Library
-              </Anchor>,
-            ]}
-          />
-        </Section>
-
-        <Section>
-          <SectionTitle>Roadmap</SectionTitle>
-          <SectionSubtitle>Planned features and improvements:</SectionSubtitle>
-          <SectionList
-            bullets={[
-              'Search — quickly find sets and variants by name',
-              'Outfit Pieces — tracking support for pieces not part of any outfit sets',
-              'Make-up Sets — tracking support for make-up sets and pieces',
-              "Momo's Cloaks — tracking support for Momo's cloaks",
-              'Favorites — save your favorite sets and pieces',
-              'Friends — follow friends to compare collection progress',
-              'Sharing — shareable links to your looks and collection',
-            ]}
-          />
-        </Section>
-
-        <Container disableGutters maxWidth="sm">
-          <Typography color="textDisabled" variant="caption">
-            This is a fan-made project and is not affiliated with, endorsed by, or officially
-            connected to Papergames or the Infinity Nikki development team. All game content, names,
-            and assets are the property of their respective owners.
-          </Typography>
-        </Container>
-      </Stack>
-    </Container>
+      <Container disableGutters maxWidth="sm">
+        <Typography color="textDisabled" variant="caption">
+          This is a fan-made project and is not affiliated with, endorsed by, or officially
+          connected to Papergames or the Infinity Nikki development team. All game content, names,
+          and assets are the property of their respective owners.
+        </Typography>
+      </Container>
+    </PageShell>
   )
 }
 

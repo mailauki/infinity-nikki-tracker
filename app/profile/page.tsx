@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { redirect } from 'next/navigation'
 import { Suspense } from 'react'
-import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import ProfileLoading from './loading'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
@@ -18,6 +17,7 @@ import PremiumUpgrade from './premium-upgrade'
 import EurekaStats from './eureka-stats'
 import OutfitStats from './outfit-stats'
 import StatsToggle from './stats-toggle'
+import PageShell from '@/components/page-shell'
 
 export const metadata: Metadata = {
   title: 'Profile',
@@ -62,7 +62,7 @@ async function UserDetails() {
   return (
     <>
       <ProfileToolbar isAdmin={role === 'admin'} />
-      <Stack spacing={2}>
+      <PageShell maxWidth="md">
         <ProfileCard
           avatar_url={profile?.avatar_url ?? null}
           fullname={profile?.display_name ?? null}
@@ -91,7 +91,7 @@ async function UserDetails() {
             />
           }
         />
-      </Stack>
+      </PageShell>
     </>
   )
 }
