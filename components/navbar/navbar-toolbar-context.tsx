@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 
 type NavBarToolbarContextType = {
   toolbarSlot: HTMLDivElement | null
@@ -21,9 +22,6 @@ export const NavBarToolbarContext = React.createContext<NavBarToolbarContextType
 export const NavDrawerContext = React.createContext<NavDrawerContextType | null>(null)
 export const SidebarContext = React.createContext<SidebarContextType | null>(null)
 
-const DRAWER_STORAGE_KEY = 'nav-drawer-open'
-const SIDEBAR_STORAGE_KEY = 'sidebar-open'
-
 export function NavBarToolbarProvider({ children }: { children: React.ReactNode }) {
   const [toolbarSlot, setToolbarSlot] = React.useState<HTMLDivElement | null>(null)
   const [drawerOpen, setDrawerOpen] = React.useState(false)
@@ -31,7 +29,7 @@ export function NavBarToolbarProvider({ children }: { children: React.ReactNode 
 
   // Read persisted state after mount to avoid an SSR/client hydration mismatch.
   React.useEffect(() => {
-    setDrawerOpen(localStorage.getItem(DRAWER_STORAGE_KEY) === 'true')
+    setDrawerOpen(localStorage.getItem(NAV_DRAWER_STORAGE_KEY) === 'true')
     setSidebarOpen(localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true')
   }, [])
 

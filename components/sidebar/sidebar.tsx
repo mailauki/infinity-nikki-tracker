@@ -12,9 +12,7 @@ import {
 } from '@mui/material'
 import { Close, FilterList } from '@mui/icons-material'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
-
-export const DEFAULT_SIDEBAR_WIDTH = 400
-const SIDEBAR_STORAGE_KEY = 'sidebar-open'
+import { DEFAULT_SIDEBAR_WIDTH, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 
 const openedMixin = (theme: Theme, width: number): CSSObject => ({
   height: 'calc(100vh - 100px)',

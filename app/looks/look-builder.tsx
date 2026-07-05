@@ -51,6 +51,7 @@ import PageShell from '@/components/page-shell'
 import { ExpandMore, TaskAlt } from '@mui/icons-material'
 import Sidebar from '@/components/sidebar/sidebar'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
+import { SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import TuneIcon from '@mui/icons-material/Tune'
 
 // Outfit categories carry a `part` that buckets them into these two groups.
@@ -266,13 +267,14 @@ export default function LookBuilder({
   const { setSidebarOpen } = useSidebar()
 
   // For a brand-new look, force the sidebar open so the (required) name field is
-  // visible. We also persist 'sidebar-open'=true because the provider (root layout)
-  // reads localStorage in its own post-mount effect that can run AFTER this child
-  // effect and would otherwise clobber the open state back to the persisted value.
+  // visible. We also persist SIDEBAR_STORAGE_KEY=true because the provider (root
+  // layout) reads localStorage in its own post-mount effect that can run AFTER this
+  // child effect and would otherwise clobber the open state back to the persisted
+  // value.
   // On edit, initialLook is set, so we leave the persisted open/closed state alone.
   useEffect(() => {
     if (!initialLook) {
-      localStorage.setItem('sidebar-open', 'true')
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, 'true')
       setSidebarOpen(true)
     }
   }, [initialLook, setSidebarOpen])
