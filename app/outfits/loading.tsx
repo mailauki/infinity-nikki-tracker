@@ -1,36 +1,28 @@
-import { Box, Divider, Skeleton, Stack } from '@mui/material'
-import { GRID_CONTAINER, OUTFIT_GRID_COLUMNS_CONTAINER } from '@/lib/types/props'
+import { Box, Skeleton, Stack } from '@mui/material'
+import CardGrid, { CardGridHeader } from '@/components/card-grid'
 
 function GroupSkeleton() {
   return (
-    <Box sx={GRID_CONTAINER}>
-      <Stack
-        direction="row"
-        sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
-      >
-        <Skeleton height={28} variant="text" width={120} />
-        <Skeleton height={24} variant="rounded" width={60} />
-      </Stack>
-      <Divider sx={{ mb: 2 }} />
-      <Box
-        sx={{
-          display: 'grid',
-          ...OUTFIT_GRID_COLUMNS_CONTAINER,
-          gap: { xs: 1, sm: 1.5, md: 2 },
-        }}
-      >
-        {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton
-            key={i}
-            height={0}
-            style={{ paddingBottom: '133%' }}
-            sx={{ borderRadius: 1 }}
-            variant="rectangular"
-            width="100%"
-          />
-        ))}
-      </Box>
-    </Box>
+    <CardGrid
+      columns="outfit"
+      header={
+        <CardGridHeader
+          actions={<Skeleton height={24} variant="rounded" width={60} />}
+          title={<Skeleton height={28} variant="text" width={120} />}
+        />
+      }
+    >
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Skeleton
+          key={i}
+          height={0}
+          style={{ paddingBottom: '133%' }}
+          sx={{ borderRadius: 1 }}
+          variant="rectangular"
+          width="100%"
+        />
+      ))}
+    </CardGrid>
   )
 }
 

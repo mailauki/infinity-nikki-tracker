@@ -1,14 +1,14 @@
 import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 
-import { Box, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import type { Metadata } from 'next'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getTrial } from '@/hooks/data/trials'
 import { getUserRole } from '@/hooks/user'
 import EurekaSetCard from './eureka-set-card'
 import LazyImage from '@/components/lazy-image'
-import { GRID_COLUMNS_CONTAINER, GRID_CONTAINER } from '@/lib/types/props'
+import CardGrid from '@/components/card-grid'
 import SlugToolBar from '@/components/slug-toolbar'
 import PageShell from '@/components/page-shell'
 
@@ -52,20 +52,11 @@ async function Trial({ slug }: { slug: string }) {
       <PageShell>
         <LazyImage image={trial.image_url!} kind="media" sx={{ height: 360 }} title={trial.title} />
         <Typography variant="body2">{trial.description}</Typography>
-        <Box sx={GRID_CONTAINER}>
-          <Box
-            sx={{
-              display: 'grid',
-              ...GRID_COLUMNS_CONTAINER,
-              gap: { xs: 1, sm: 1.5, md: 2 },
-              py: 0,
-            }}
-          >
-            {trialSets.map((eurekaSet) => (
-              <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />
-            ))}
-          </Box>
-        </Box>
+        <CardGrid sx={{ py: 0 }}>
+          {trialSets.map((eurekaSet) => (
+            <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />
+          ))}
+        </CardGrid>
       </PageShell>
     </>
   )

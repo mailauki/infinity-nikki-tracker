@@ -1,9 +1,10 @@
 'use client'
 
-import { Box, Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { Stack, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { OutfitSet } from '@/lib/types/outfit'
 import { isGlowup, evolutionSortKey } from '@/hooks/outfit'
 import ProgressChip from '@/components/progress-chip'
+import CardGrid from '@/components/card-grid'
 import OutfitVariantCard from '@/app/outfits/outfit-variant-card'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 
@@ -105,9 +106,8 @@ export default function OutfitEvolutionVariants({
         {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
       </Stack>
 
-      <Box
-        sx={{
-          display: 'grid',
+      <CardGrid
+        columns={{
           gridTemplateColumns: {
             xs: 'repeat(2, 1fr)',
             sm: 'repeat(3, 1fr)',
@@ -115,13 +115,12 @@ export default function OutfitEvolutionVariants({
             lg: 'repeat(4, 1fr)',
             xl: 'repeat(5, 1fr)',
           },
-          gap: { xs: 1, sm: 1.5, md: 2 },
         }}
       >
         {variants.map((variant) => (
           <OutfitVariantCard key={variant.id} isLoggedIn={isLoggedIn} outfitVariant={variant} />
         ))}
-      </Box>
+      </CardGrid>
     </Stack>
   )
 }

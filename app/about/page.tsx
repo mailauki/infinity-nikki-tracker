@@ -1,7 +1,8 @@
-import { Typography, Link as Anchor, Box, Card, CardContent, Container } from '@mui/material'
+import { Typography, Link as Anchor, Card, CardContent, Container } from '@mui/material'
 import { Metadata } from 'next'
 import { Section, SectionList, SectionSubtitle, SectionTitle } from '@/components/section'
 import PageShell from '@/components/page-shell'
+import { SimpleGrid } from '@/components/card-grid'
 
 const featurePages = [
   {
@@ -146,14 +147,7 @@ export default function AboutPage() {
           collection. Filtering, sorting, and views are available either way — obtained and missing
           filters unlock once you&apos;re signed in.
         </SectionSubtitle>
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-            gap: 2,
-            pt: 1.5,
-          }}
-        >
+        <SimpleGrid columns={{ xs: '1fr', sm: '1fr 1fr' }} sx={{ pt: 1.5 }}>
           {featurePages.map((page) => (
             <FeatureCard
               key={page.title}
@@ -162,7 +156,7 @@ export default function AboutPage() {
               title={page.title}
             />
           ))}
-        </Box>
+        </SimpleGrid>
       </Section>
 
       <Section>

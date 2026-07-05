@@ -1,4 +1,5 @@
-import { Box, Card, CardContent, CardHeader, Skeleton, Stack } from '@mui/material'
+import { Card, CardContent, CardHeader, Skeleton, Stack } from '@mui/material'
+import { SimpleGrid } from '@/components/card-grid'
 
 function ProfileHeaderSkeleton() {
   return (
@@ -59,17 +60,11 @@ export default function ProfileLoading() {
   return (
     <Stack spacing={3} sx={{ flexGrow: 1 }}>
       <ProfileHeaderSkeleton />
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr 1fr', md: '1fr 1fr 1fr' },
-          gap: 2,
-        }}
-      >
+      <SimpleGrid columns={{ xs: '1fr 1fr', md: '1fr 1fr 1fr' }}>
         {Array.from({ length: 6 }).map((_, i) => (
           <StatCardSkeleton key={i} />
         ))}
-      </Box>
+      </SimpleGrid>
       <RecentUpdatesSkeleton />
     </Stack>
   )

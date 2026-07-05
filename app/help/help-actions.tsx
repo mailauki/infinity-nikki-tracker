@@ -16,6 +16,7 @@ import {
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
+import { SimpleGrid } from '@/components/card-grid'
 
 export default function HelpActions() {
   const [featureOpen, setFeatureOpen] = useState(false)
@@ -26,13 +27,7 @@ export default function HelpActions() {
       <Typography sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="overline">
         Helpful Links
       </Typography>
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { sm: '1fr', md: '1fr 1fr' },
-          columnGap: 2,
-        }}
-      >
+      <SimpleGrid columns={{ sm: '1fr', md: '1fr 1fr' }} gap={0} sx={{ columnGap: 2 }}>
         <List disablePadding>
           <ListItem disableGutters>
             <ListItemButton onClick={() => setFeatureOpen(true)}>
@@ -84,7 +79,7 @@ export default function HelpActions() {
             </ListItemButton>
           </ListItem>
         </List>
-      </Box>
+      </SimpleGrid>
 
       <Dialog fullWidth maxWidth="sm" open={featureOpen} onClose={() => setFeatureOpen(false)}>
         <DialogTitle>Feature Request</DialogTitle>

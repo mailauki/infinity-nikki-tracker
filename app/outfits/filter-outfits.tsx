@@ -6,23 +6,13 @@ import LoginAlert from '@/components/login-alert'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
-import { GRID_CONTAINER, OUTFIT_GRID_COLUMNS_CONTAINER } from '@/lib/types/props'
+import CardGrid from '@/components/card-grid'
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
 import OutfitVariantCard from './outfit-variant-card'
 import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
 
 const STANDALONE_SLUG = 'standalone-pieces'
-
-// Column counts respond to the CONTENT width, not the viewport, so the grid
-// reflows when the filter panel opens and narrows the content area. Each grid is
-// wrapped in GRID_CONTAINER (an inline-size container); OUTFIT_GRID_SX switches
-// column count at container-width thresholds matching MUI's breakpoints.
-const OUTFIT_GRID_SX = {
-  display: 'grid',
-  gap: 2,
-  ...OUTFIT_GRID_COLUMNS_CONTAINER,
-}
 
 function GroupHeaderSkeleton() {
   return (
@@ -87,14 +77,10 @@ export default function FilterOutfits() {
 
   if (isLoading) {
     return (
-      <Box sx={{ flexGrow: 1, py: 3, ...GRID_CONTAINER }}>
-        <Skeleton height={20} sx={{ mt: 2, mb: 0.5 }} variant="text" width={100} />
-        <Box
-          sx={{
-            display: 'grid',
-            ...OUTFIT_GRID_COLUMNS_CONTAINER,
-            gap: { xs: 1, sm: 1.5, md: 2 },
-          }}
+      <Box sx={{ flexGrow: 1, py: 3 }}>
+        <CardGrid
+          columns="outfit"
+          header={<Skeleton height={20} sx={{ mt: 2, mb: 0.5 }} variant="text" width={100} />}
         >
           <GroupHeaderSkeleton />
           {Array.from({ length: 5 }).map((_, i) => (
@@ -108,7 +94,7 @@ export default function FilterOutfits() {
           {Array.from({ length: 3 }).map((_, i) => (
             <VariantCardSkeleton key={i} />
           ))}
-        </Box>
+        </CardGrid>
       </Box>
     )
   }
@@ -259,67 +245,63 @@ export default function FilterOutfits() {
       )}
 
       {filteredSets.length > 0 && density === 'standard' && (
-        <Box sx={GRID_CONTAINER}>
-          <Box sx={OUTFIT_GRID_SX}>
-            {filteredSets.flatMap((set) => {
-              const baseSlug = set.slug
-              // Render the base set plus each evolution as its own card.
-              return [null, ...set.evolutions].map((evolution) => {
-                const stateSlug = evolution?.slug ?? baseSlug
-                const variants = set.outfit_variants.filter((v) => v.outfit_set === stateSlug)
-                if (variants.length === 0) return null
-                const allObtained = variants.every((v) => v.obtained === true)
-                const obtained = variants.filter((v) => v.obtained === true).length
-                return (
-                  <OutfitSetCard
-                    key={`${set.id}-${stateSlug}`}
-                    evolution={evolution}
-                    isLoggedIn={isLoggedIn}
-                    isMissingFilter={selectedObtainedFilter === 'missing'}
-                    obtained={obtained}
-                    set={set}
-                    shouldHide={
-                      !isEvolutionVisible({
-                        stateSlug,
-                        baseSlug,
-                        isGlowupState: !!evolution && isGlowup(evolution),
-                        hideEvolutions,
-                        hideGlowups,
-                      })
-                    }
-                    total={variants.length}
-                    onToggle={() => {
-                      const toToggle = variants
-                        .filter((v) => v.obtained === allObtained)
-                        .map((v) => ({
-                          outfit_set: v.outfit_set!,
-                          outfit_category: v.outfit_category!,
-                          outfit_variant: v.slug,
-                        }))
-                      onBatchToggleObtained(toToggle, !allObtained)
-                    }}
-                  />
-                )
-              })
-            })}
-          </Box>
-        </Box>
+        <CardGrid columns="outfit" gap={2}>
+          {filteredSets.flatMap((set) => {
+            const baseSlug = set.slug
+            // Render the base set plus each evolution as its own card.
+            return [null, ...set.evolutions].map((evolution) => {
+              const stateSlug = evolution?.slug ?? baseSlug
+              const variants = set.outfit_variants.filter((v) => v.outfit_set === stateSlug)
+              if (variants.length === 0) return null
+              const allObtained = variants.every((v) => v.obtained === true)
+              const obtained = variants.filter((v) => v.obtained === true).length
+              return (
+                <OutfitSetCard
+                  key={`${set.id}-${stateSlug}`}
+                  evolution={evolution}
+                  isLoggedIn={isLoggedIn}
+                  isMissingFilter={selectedObtainedFilter === 'missing'}
+                  obtained={obtained}
+                  set={set}
+                  shouldHide={
+                    !isEvolutionVisible({
+                      stateSlug,
+                      baseSlug,
+                      isGlowupState: !!evolution && isGlowup(evolution),
+                      hideEvolutions,
+                      hideGlowups,
+                    })
+                  }
+                  total={variants.length}
+                  onToggle={() => {
+                    const toToggle = variants
+                      .filter((v) => v.obtained === allObtained)
+                      .map((v) => ({
+                        outfit_set: v.outfit_set!,
+                        outfit_category: v.outfit_category!,
+                        outfit_variant: v.slug,
+                      }))
+                    onBatchToggleObtained(toToggle, !allObtained)
+                  }}
+                />
+              )
+            })
+          })}
+        </CardGrid>
       )}
 
       {filteredSets.length > 0 && density === 'compact' && (
-        <Box sx={GRID_CONTAINER}>
-          <Box sx={OUTFIT_GRID_SX}>
-            {groupBySet ? (
-              <>
-                {filteredSets.map((set) => (
-                  <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
-                ))}
-              </>
-            ) : (
-              <>{filteredSets.flatMap((set) => renderSetVariants(set))}</>
-            )}
-          </Box>
-        </Box>
+        <CardGrid columns="outfit" gap={2}>
+          {groupBySet ? (
+            <>
+              {filteredSets.map((set) => (
+                <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
+              ))}
+            </>
+          ) : (
+            <>{filteredSets.flatMap((set) => renderSetVariants(set))}</>
+          )}
+        </CardGrid>
       )}
     </>
   )
