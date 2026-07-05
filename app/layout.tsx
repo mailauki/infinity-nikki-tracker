@@ -12,7 +12,7 @@ import Footer from '@/components/navbar/nav-footer'
 import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
 import NavDrawer from '@/components/navbar/nav-drawer'
-import FilterContentShim from '@/components/filter/filter-content-shim'
+import SidebarContentShim from '@/components/sidebar/sidebar-content-shim'
 import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
 import SnackbarAlertProvider from '@/components/snackbar-provider'
 import { connection } from 'next/server'
@@ -95,7 +95,7 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
             <Suspense fallback={null}>
               <NavDrawer />
             </Suspense>
-            <FilterContentShim>
+            <SidebarContentShim>
               <Suspense>
                 <NavBar />
               </Suspense>
@@ -109,7 +109,7 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
                 {children}
               </Stack>
               <Footer />
-            </FilterContentShim>
+            </SidebarContentShim>
           </Stack>
           <Analytics />
           <SpeedInsights />
