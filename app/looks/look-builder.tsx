@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Accordion,
@@ -15,7 +15,6 @@ import {
   CardActionArea,
   CardHeader,
   Chip,
-  Divider,
   IconButton,
   InputAdornment,
   List,
@@ -50,6 +49,9 @@ import ImageUpload from '@/components/forms/image-upload'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import PageShell from '@/components/page-shell'
 import { ExpandMore, TaskAlt } from '@mui/icons-material'
+import Sidebar from '@/components/sidebar/sidebar'
+import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
+import TuneIcon from '@mui/icons-material/Tune'
 
 // Outfit categories carry a `part` that buckets them into these two groups.
 const PIECES_PART = 'Pieces'
@@ -261,6 +263,16 @@ export default function LookBuilder({
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const { setSidebarOpen } = useSidebar()
+
+  // For a brand-new look, open the sidebar on mount so the (required) name field
+  // is visible — the Save button in the toolbar is disabled until the look is
+  // named, and the name field lives inside the sidebar. Runs after the provider's
+  // post-mount localStorage read, so it isn't clobbered. On edit, respect the
+  // persisted open/closed state (the look already has a name).
+  useEffect(() => {
+    if (!initialLook) setSidebarOpen(true)
+  }, [initialLook, setSidebarOpen])
 
   const [name, setName] = useState(initialLook?.name ?? '')
   const [description, setDescription] = useState(initialLook?.description ?? '')
@@ -698,38 +710,15 @@ export default function LookBuilder({
             {isPending ? 'Saving…' : saveLabel}
           </Button>
         </Stack>
+        <Sidebar
+          icon={<TuneIcon />}
+          title={<Typography variant="subtitle2">Look details</Typography>}
+        >
+          {composerPanel}
+        </Sidebar>
       </NavBarToolbar>
 
-      <PageShell maxWidth="wide">
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: '1fr 340px' },
-            gap: 3,
-            alignItems: 'start',
-          }}
-        >
-          {/* On mobile, composer comes first */}
-          <Box sx={{ display: { xs: 'block', md: 'none' } }}>{composerPanel}</Box>
-          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
-            <Divider />
-          </Box>
-
-          {/* Picker (left on desktop, bottom on mobile) */}
-          {pickerPanel}
-
-          {/* Composer (right on desktop, hidden on mobile since it's at top) */}
-          <Box
-            sx={{
-              display: { xs: 'none', md: 'block' },
-              position: 'sticky',
-              top: 80,
-            }}
-          >
-            {composerPanel}
-          </Box>
-        </Box>
-      </PageShell>
+      <PageShell maxWidth="wide">{pickerPanel}</PageShell>
     </>
   )
 }
