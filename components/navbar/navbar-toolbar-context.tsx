@@ -3,11 +3,6 @@
 import * as React from 'react'
 import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 
-type NavBarToolbarContextType = {
-  toolbarSlot: HTMLDivElement | null
-  setToolbarSlot: (el: HTMLDivElement | null) => void
-}
-
 type NavDrawerContextType = {
   drawerOpen: boolean
   setDrawerOpen: (open: boolean) => void
@@ -18,12 +13,10 @@ type SidebarContextType = {
   setSidebarOpen: (open: boolean) => void
 }
 
-export const NavBarToolbarContext = React.createContext<NavBarToolbarContextType | null>(null)
 export const NavDrawerContext = React.createContext<NavDrawerContextType | null>(null)
 export const SidebarContext = React.createContext<SidebarContextType | null>(null)
 
-export function NavBarToolbarProvider({ children }: { children: React.ReactNode }) {
-  const [toolbarSlot, setToolbarSlot] = React.useState<HTMLDivElement | null>(null)
+export function DrawerStateProvider({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = React.useState(false)
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
 
@@ -36,28 +29,20 @@ export function NavBarToolbarProvider({ children }: { children: React.ReactNode 
   return (
     <NavDrawerContext.Provider value={{ drawerOpen, setDrawerOpen }}>
       <SidebarContext.Provider value={{ sidebarOpen, setSidebarOpen }}>
-        <NavBarToolbarContext.Provider value={{ toolbarSlot, setToolbarSlot }}>
-          {children}
-        </NavBarToolbarContext.Provider>
+        {children}
       </SidebarContext.Provider>
     </NavDrawerContext.Provider>
   )
 }
 
-export function useNavBarToolbar() {
-  const ctx = React.useContext(NavBarToolbarContext)
-  if (!ctx) throw new Error('useNavBarToolbar must be used within NavBarToolbarProvider')
-  return ctx
-}
-
 export function useNavDrawer() {
   const ctx = React.useContext(NavDrawerContext)
-  if (!ctx) throw new Error('useNavDrawer must be used within NavBarToolbarProvider')
+  if (!ctx) throw new Error('useNavDrawer must be used within DrawerStateProvider')
   return ctx
 }
 
 export function useSidebar() {
   const ctx = React.useContext(SidebarContext)
-  if (!ctx) throw new Error('useSidebar must be used within NavBarToolbarProvider')
+  if (!ctx) throw new Error('useSidebar must be used within DrawerStateProvider')
   return ctx
 }
