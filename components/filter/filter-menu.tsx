@@ -3,23 +3,18 @@
 import * as React from 'react'
 import {
   Button,
-  CSSObject,
   Divider,
-  Drawer as MuiDrawer,
-  IconButton,
   List,
   ListItem,
   SelectChangeEvent,
   Stack,
-  styled,
-  Theme,
-  Toolbar,
   Typography,
 } from '@mui/material'
-import { Close, FilterList } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
 
-import { useFilterDrawer } from '../navbar/navbar-toolbar-context'
+import { useSidebar } from '../navbar/navbar-toolbar-context'
+import Sidebar from '@/components/sidebar/sidebar'
+import { sidebarConfigFor } from '@/lib/sidebar-registry'
 
 import { useEurekaData } from '../eureka/eureka-context'
 import { useOutfitData } from '../outfits/outfit-context'
@@ -42,134 +37,15 @@ import EvolutionOrderToggle from './evolution-order-toggle'
 import GlowupToggle from './glowup-toggle'
 import SortAxisToggle from './sort-axis-toggle'
 
-export const FILTER_PAGES = ['/eureka', '/outfits']
-
-export const FILTER_DRAWER_WIDTH = 400
-const FILTER_STORAGE_KEY = 'filter-drawer-open'
-
-const openedMixin = (theme: Theme): CSSObject => ({
-  height: 'calc(100vh - 100px)',
-  border: 0,
-  borderRadius: '30px',
-  // marginRight: 20,
-  marginTop: 80,
-  marginBottom: 20,
-  width: FILTER_DRAWER_WIDTH,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: 'hidden',
-})
-
-const closedMixin = (theme: Theme): CSSObject => ({
-  height: 'calc(100vh - 100px)',
-  border: 0,
-  borderRadius: '30px',
-  // marginRight: 20,
-  marginTop: 80,
-  marginBottom: 20,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: 'hidden',
-  width: 0,
-})
-
-const PermanentDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme }) => ({
-    width: FILTER_DRAWER_WIDTH,
-    flexShrink: 0,
-    whiteSpace: 'nowrap',
-    boxSizing: 'border-box',
-    variants: [
-      {
-        props: ({ open }) => open,
-        style: {
-          ...openedMixin(theme),
-          '& .MuiDrawer-paper': openedMixin(theme),
-        },
-      },
-      {
-        props: ({ open }) => !open,
-        style: {
-          ...closedMixin(theme),
-          '& .MuiDrawer-paper': closedMixin(theme),
-        },
-      },
-    ],
-  })
-)
-
-// Shared shell: a temporary overlay drawer below `sm` and a permanent,
-// content-pushing drawer at `sm`+, mirroring the nav-drawer split. The body
-// (filter controls) is passed as children so both branches reuse it.
-function FilterDrawer({ children }: { children: React.ReactNode }) {
-  const { filterOpen, setFilterOpen } = useFilterDrawer()
-
-  function toggleDrawer(value: boolean) {
-    setFilterOpen(value)
-    localStorage.setItem(FILTER_STORAGE_KEY, String(value))
-  }
-
-  const header = (
-    <>
-      <Toolbar>
-        <Stack direction="row" sx={{ flex: 1, justifyContent: 'flex-end', mt: 0.5 }}>
-          <IconButton onClick={() => toggleDrawer(false)}>
-            <Close />
-          </IconButton>
-        </Stack>
-      </Toolbar>
-    </>
-  )
-
-  return (
-    <>
-      <IconButton
-        color={filterOpen ? 'primary' : 'default'}
-        onClick={() => toggleDrawer(!filterOpen)}
-      >
-        <FilterList />
-      </IconButton>
-
-      <MuiDrawer
-        anchor="right"
-        open={filterOpen}
-        slotProps={{ root: { disableScrollLock: true } }}
-        sx={{
-          display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { width: '100%' },
-        }}
-        variant="temporary"
-        onClose={() => setFilterOpen(false)}
-      >
-        {header}
-        {children}
-      </MuiDrawer>
-      <PermanentDrawer
-        anchor="right"
-        open={filterOpen}
-        sx={{ display: { xs: 'none', sm: 'block' } }}
-        variant="permanent"
-      >
-        {header}
-        {children}
-      </PermanentDrawer>
-    </>
-  )
-}
-
 export default function FilterMenu() {
   const pathname = usePathname()
-  const { setFilterOpen } = useFilterDrawer()
+  const { setSidebarOpen } = useSidebar()
 
   // Persisted close used by the Apply / Close buttons inside the panel body,
-  // matching the toggle in FilterDrawer.
+  // matching the toggle in Sidebar.
   const closeFilter = () => {
-    setFilterOpen(false)
-    localStorage.setItem(FILTER_STORAGE_KEY, 'false')
+    setSidebarOpen(false)
+    localStorage.setItem('sidebar-open', 'false')
   }
 
   const {
@@ -226,7 +102,7 @@ export default function FilterMenu() {
     }
   }, [isOutfits, density, selectedOutfitCategory, onOutfitFiltersChange])
 
-  if (!FILTER_PAGES.includes(pathname)) return null
+  if (!sidebarConfigFor(pathname)) return null
 
   if (isOutfits) {
     const { selectedOutfitSet, selectedEvolution, selectedObtainedFilter, selectedRarity } =
@@ -266,7 +142,7 @@ export default function FilterMenu() {
     ].sort((a, b) => a - b)
 
     return (
-      <FilterDrawer>
+      <Sidebar>
         <List>
           <ListItem>
             <DensityToggle
@@ -373,7 +249,7 @@ export default function FilterMenu() {
             </Stack>
           </ListItem>
         </List>
-      </FilterDrawer>
+      </Sidebar>
     )
   }
 
@@ -422,7 +298,7 @@ export default function FilterMenu() {
     showByColor
 
   return (
-    <FilterDrawer>
+    <Sidebar>
       <List>
         <ListItem sx={{ gap: 1 }}>
           <SortEurekaToggle groupBySet={groupBySet} onGroupBySetChange={onGroupBySetChange} />
@@ -478,6 +354,6 @@ export default function FilterMenu() {
           </Stack>
         </ListItem>
       </List>
-    </FilterDrawer>
+    </Sidebar>
   )
 }
