@@ -265,13 +265,16 @@ export default function LookBuilder({
   const [isPending, startTransition] = useTransition()
   const { setSidebarOpen } = useSidebar()
 
-  // For a brand-new look, open the sidebar on mount so the (required) name field
-  // is visible — the Save button in the toolbar is disabled until the look is
-  // named, and the name field lives inside the sidebar. Runs after the provider's
-  // post-mount localStorage read, so it isn't clobbered. On edit, respect the
-  // persisted open/closed state (the look already has a name).
+  // For a brand-new look, force the sidebar open so the (required) name field is
+  // visible. We also persist 'sidebar-open'=true because the provider (root layout)
+  // reads localStorage in its own post-mount effect that can run AFTER this child
+  // effect and would otherwise clobber the open state back to the persisted value.
+  // On edit, initialLook is set, so we leave the persisted open/closed state alone.
   useEffect(() => {
-    if (!initialLook) setSidebarOpen(true)
+    if (!initialLook) {
+      localStorage.setItem('sidebar-open', 'true')
+      setSidebarOpen(true)
+    }
   }, [initialLook, setSidebarOpen])
 
   const [name, setName] = useState(initialLook?.name ?? '')
