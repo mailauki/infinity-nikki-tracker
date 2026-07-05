@@ -12,36 +12,36 @@ type NavDrawerContextType = {
   setDrawerOpen: (open: boolean) => void
 }
 
-type FilterDrawerContextType = {
-  filterOpen: boolean
-  setFilterOpen: (open: boolean) => void
+type SidebarContextType = {
+  sidebarOpen: boolean
+  setSidebarOpen: (open: boolean) => void
 }
 
 export const NavBarToolbarContext = React.createContext<NavBarToolbarContextType | null>(null)
 export const NavDrawerContext = React.createContext<NavDrawerContextType | null>(null)
-export const FilterDrawerContext = React.createContext<FilterDrawerContextType | null>(null)
+export const SidebarContext = React.createContext<SidebarContextType | null>(null)
 
 const DRAWER_STORAGE_KEY = 'nav-drawer-open'
-const FILTER_STORAGE_KEY = 'filter-drawer-open'
+const SIDEBAR_STORAGE_KEY = 'sidebar-open'
 
 export function NavBarToolbarProvider({ children }: { children: React.ReactNode }) {
   const [toolbarSlot, setToolbarSlot] = React.useState<HTMLDivElement | null>(null)
   const [drawerOpen, setDrawerOpen] = React.useState(false)
-  const [filterOpen, setFilterOpen] = React.useState(false)
+  const [sidebarOpen, setSidebarOpen] = React.useState(false)
 
   // Read persisted state after mount to avoid an SSR/client hydration mismatch.
   React.useEffect(() => {
     setDrawerOpen(localStorage.getItem(DRAWER_STORAGE_KEY) === 'true')
-    setFilterOpen(localStorage.getItem(FILTER_STORAGE_KEY) === 'true')
+    setSidebarOpen(localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true')
   }, [])
 
   return (
     <NavDrawerContext.Provider value={{ drawerOpen, setDrawerOpen }}>
-      <FilterDrawerContext.Provider value={{ filterOpen, setFilterOpen }}>
+      <SidebarContext.Provider value={{ sidebarOpen, setSidebarOpen }}>
         <NavBarToolbarContext.Provider value={{ toolbarSlot, setToolbarSlot }}>
           {children}
         </NavBarToolbarContext.Provider>
-      </FilterDrawerContext.Provider>
+      </SidebarContext.Provider>
     </NavDrawerContext.Provider>
   )
 }
@@ -58,8 +58,8 @@ export function useNavDrawer() {
   return ctx
 }
 
-export function useFilterDrawer() {
-  const ctx = React.useContext(FilterDrawerContext)
-  if (!ctx) throw new Error('useFilterDrawer must be used within NavBarToolbarProvider')
+export function useSidebar() {
+  const ctx = React.useContext(SidebarContext)
+  if (!ctx) throw new Error('useSidebar must be used within NavBarToolbarProvider')
   return ctx
 }
