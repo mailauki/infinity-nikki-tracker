@@ -2,18 +2,18 @@
 
 import * as React from 'react'
 import { usePathname } from 'next/navigation'
-import { useNavDrawer, useFilterDrawer } from './navbar-toolbar-context'
+import { useNavDrawer, useSidebar } from './navbar-toolbar-context'
 import { AppBar, Toolbar, useTheme } from '@mui/material'
-import { FILTER_DRAWER_WIDTH, FILTER_PAGES } from '@/components/filter/filter-menu'
+import { sidebarConfigFor } from '@/lib/sidebar-registry'
 import { NAV_DRAWER_WIDTH } from './nav-drawer'
 
 export default function NavBarToolbar({ children }: { children: React.ReactNode }) {
   const { drawerOpen } = useNavDrawer()
-  const { filterOpen } = useFilterDrawer()
+  const { sidebarOpen } = useSidebar()
   const pathname = usePathname()
   const theme = useTheme()
-  const filterPushed = filterOpen && FILTER_PAGES.includes(pathname)
-  const filterInset = filterPushed ? `${FILTER_DRAWER_WIDTH}px` : '0px'
+  const sidebarConfig = sidebarConfigFor(pathname)
+  const filterInset = sidebarOpen && sidebarConfig ? `${sidebarConfig.width}px` : '0px'
   const navInset = drawerOpen
     ? `calc(${NAV_DRAWER_WIDTH}px) - 21px`
     : `calc(${theme.spacing(10)} + 21px)`
