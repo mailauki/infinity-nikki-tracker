@@ -1,9 +1,9 @@
-import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
 import SettingsTabs from '@/app/settings/settings-tabs'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { createClient } from '@/lib/supabase/server'
+import PageShell from '@/components/page-shell'
 
 export const metadata: Metadata = {
   title: 'Settings',
@@ -36,13 +36,13 @@ async function SettingsContent() {
   }
 
   return (
-    <Stack spacing={3} sx={{ flexGrow: 1 }}>
+    <PageShell disableVerticalPadding maxWidth="md">
       <SettingsTabs
         isAdmin={role === 'admin'}
         isLoggedIn={!!user_id}
         isPremium={isPremium}
         user={user}
       />
-    </Stack>
+    </PageShell>
   )
 }

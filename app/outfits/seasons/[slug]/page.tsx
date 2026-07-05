@@ -10,6 +10,7 @@ import SlugToolBar from '@/components/slug-toolbar'
 import { SeasonFilterProvider } from './season-filter-context'
 import SeasonOutfitList from './season-outfit-list'
 import SeasonProgress from './season-progress'
+import PageShell from '@/components/page-shell'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -42,7 +43,7 @@ export default async function SeasonPage({ params }: Props) {
   return (
     <SeasonFilterProvider>
       <SlugToolBar isAdmin={false} />
-      <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+      <PageShell>
         <LazyImage
           image={season.image_url!}
           kind="media"
@@ -62,7 +63,7 @@ export default async function SeasonPage({ params }: Props) {
           seasonCategories={seasonCategories}
           seasonSets={seasonSets}
         />
-      </Stack>
+      </PageShell>
     </SeasonFilterProvider>
   )
 }

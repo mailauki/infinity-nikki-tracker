@@ -4,6 +4,7 @@ import { Box, Container, IconButton, Stack, Tooltip, Typography } from '@mui/mat
 import { ChevronLeft, Edit as EditIcon } from '@mui/icons-material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import LazyImage from '@/components/lazy-image'
+import PageShell from '@/components/page-shell'
 import type { CustomLook } from '@/lib/types/looks'
 
 type Piece = { slug: string; image_url: string | null }
@@ -64,42 +65,44 @@ export default function LookDetail({
         </Stack>
       </NavBarToolbar>
 
-      <Stack useFlexGap direction="row" spacing={3} sx={{ flexWrap: 'wrap' }}>
-        <Container disableGutters fixed maxWidth="xs">
-          <Stack spacing={2}>
-            {look.image_url && (
-              <LazyImage
-                image={look.image_url}
-                kind="media"
-                sx={{ width: '100%', maxWidth: 260, aspectRatio: '9 / 16' }}
-                title={look.name}
-              />
-            )}
-            <Stack spacing={0.5}>
-              <Typography variant="h6">{look.name}</Typography>
-              {look.description && (
-                <Typography color="textSecondary" variant="body2">
-                  {look.description}
-                </Typography>
+      <PageShell maxWidth="md">
+        <Stack useFlexGap direction="row" spacing={3} sx={{ flexWrap: 'wrap' }}>
+          <Container disableGutters fixed maxWidth="xs">
+            <Stack spacing={2}>
+              {look.image_url && (
+                <LazyImage
+                  image={look.image_url}
+                  kind="media"
+                  sx={{ width: '100%', maxWidth: 260, aspectRatio: '9 / 16' }}
+                  title={look.name}
+                />
               )}
-              <Typography color="textSecondary" variant="caption">
-                {total} piece{total !== 1 ? 's' : ''}
-              </Typography>
+              <Stack spacing={0.5}>
+                <Typography variant="h6">{look.name}</Typography>
+                {look.description && (
+                  <Typography color="textSecondary" variant="body2">
+                    {look.description}
+                  </Typography>
+                )}
+                <Typography color="textSecondary" variant="caption">
+                  {total} piece{total !== 1 ? 's' : ''}
+                </Typography>
+              </Stack>
             </Stack>
-          </Stack>
-        </Container>
+          </Container>
 
-        <Stack spacing={2} sx={{ flex: 1, minWidth: 240 }}>
-          <PieceRow label="Pieces" pieces={pieces} />
-          <PieceRow label="Accessories" pieces={accessories} />
-          <PieceRow label="Eureka" pieces={eureka} />
-          {total === 0 && (
-            <Typography color="textSecondary" variant="body2">
-              This look has no pieces yet.
-            </Typography>
-          )}
+          <Stack spacing={2} sx={{ flex: 1, minWidth: 240 }}>
+            <PieceRow label="Pieces" pieces={pieces} />
+            <PieceRow label="Accessories" pieces={accessories} />
+            <PieceRow label="Eureka" pieces={eureka} />
+            {total === 0 && (
+              <Typography color="textSecondary" variant="body2">
+                This look has no pieces yet.
+              </Typography>
+            )}
+          </Stack>
         </Stack>
-      </Stack>
+      </PageShell>
     </>
   )
 }

@@ -24,6 +24,7 @@ import { useSortOrder } from '@/components/sort-context'
 import { EurekaSet, Total } from '@/lib/types/eureka'
 import ProgressChip from '@/components/progress-chip'
 import { countObtained } from '@/hooks/count-obtained'
+import { SimpleGrid } from '@/components/card-grid'
 
 export default function TrialsContent() {
   const { eurekaSets, trials, isLoggedIn, isLoading, isError } = useEurekaData()
@@ -35,11 +36,11 @@ export default function TrialsContent() {
 
   if (isLoading) {
     return (
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+      <SimpleGrid columns={{ xs: '1fr', md: '1fr 1fr' }}>
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} height={320} sx={{ borderRadius: 1 }} variant="rectangular" />
         ))}
-      </Box>
+      </SimpleGrid>
     )
   }
 
@@ -67,11 +68,11 @@ export default function TrialsContent() {
       {realmGroups.map(([realm, group]) => (
         <Box key={realm}>
           <ListSubheader sx={{ bgcolor: 'surface.containerLowest' }}>{realm}</ListSubheader>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+          <SimpleGrid columns={{ xs: '1fr', md: '1fr 1fr' }}>
             {group.map((trial) => (
               <TrialCard key={trial.title} isLoggedIn={isLoggedIn} trial={trial as Total} />
             ))}
-          </Box>
+          </SimpleGrid>
         </Box>
       ))}
     </Stack>

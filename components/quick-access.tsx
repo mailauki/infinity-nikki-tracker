@@ -14,6 +14,7 @@ import {
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import LazyImage from './lazy-image'
+import { SimpleGrid } from './card-grid'
 
 const cards = [
   {
@@ -41,13 +42,7 @@ export function QuickAccess() {
       <Typography sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="overline">
         Quick Access
       </Typography>
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-          gap: 2,
-        }}
-      >
+      <SimpleGrid columns={{ xs: '1fr', sm: '1fr 1fr' }}>
         {cards.map(({ title, subtitle, href, image }) => (
           <Card key={href}>
             <CardActionArea component={Link} href={href} sx={{ height: '100%' }}>
@@ -90,7 +85,7 @@ export function QuickAccess() {
             </CardActionArea>
           </Card>
         ))}
-      </Box>
+      </SimpleGrid>
     </Box>
   )
 }

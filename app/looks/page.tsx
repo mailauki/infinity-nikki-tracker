@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { Box, Skeleton, Stack, Typography } from '@mui/material'
+import { Skeleton, Typography } from '@mui/material'
 import { getUserID } from '@/hooks/user'
 import { getCustomLooks, getLookThumbnails, getOutfitSlugParts } from '@/hooks/data/custom-looks'
 import { getProfile } from '@/hooks/data/user'
@@ -11,6 +11,8 @@ import LookCard, { LooksLimitBanner } from './look-card'
 import { deleteLook } from './actions'
 import LooksToolbar from './looks-toolbar'
 import LooksEmptyState from './looks-empty-state'
+import PageShell from '@/components/page-shell'
+import { SimpleGrid } from '@/components/card-grid'
 
 export const metadata: Metadata = { title: 'Custom Looks' }
 
@@ -45,7 +47,7 @@ async function LooksContent() {
     <>
       <LooksToolbar atLimit={atLimit} />
 
-      <Stack spacing={2}>
+      <PageShell maxWidth="wide">
         {!isPremium && looks.length > 0 && (
           <LooksLimitBanner count={looks.length} limit={FREE_LOOKS_LIMIT} />
         )}
@@ -53,13 +55,7 @@ async function LooksContent() {
         {looks.length === 0 ? (
           <LooksEmptyState />
         ) : (
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-              gap: 2,
-            }}
-          >
+          <SimpleGrid columns={{ xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }}>
             {looks.map((look) => {
               const thumbnails = [...look.eureka_variant_slugs, ...look.outfit_variant_slugs]
                 .slice(0, 6)
@@ -83,7 +79,7 @@ async function LooksContent() {
                 />
               )
             })}
-          </Box>
+          </SimpleGrid>
         )}
 
         {atLimit && (
@@ -94,23 +90,17 @@ async function LooksContent() {
             </Link>
           </Typography>
         )}
-      </Stack>
+      </PageShell>
     </>
   )
 }
 
 function LooksLoading() {
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-        gap: 2,
-      }}
-    >
+    <SimpleGrid columns={{ xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' }}>
       {[...Array(3)].map((_, i) => (
         <Skeleton key={i} height={180} variant="rounded" />
       ))}
-    </Box>
+    </SimpleGrid>
   )
 }

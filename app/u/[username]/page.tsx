@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Stack, Typography, Chip, Card, CardContent, Box, Divider } from '@mui/material'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import AvatarPreview from '@/app/settings/avatar-preview'
+import PageShell from '@/components/page-shell'
 
 type Props = { params: Promise<{ username: string }> }
 
@@ -58,7 +59,7 @@ async function ProfileView({ params }: Props) {
   ]
 
   return (
-    <Stack spacing={3} sx={{ maxWidth: 480, mx: 'auto', py: 2 }}>
+    <PageShell maxWidth="xs">
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
         <AvatarPreview size="xl" url={profile.avatar_url} />
         <Stack spacing={0.5}>
@@ -111,6 +112,6 @@ async function ProfileView({ params }: Props) {
           ))}
         </Box>
       </Stack>
-    </Stack>
+    </PageShell>
   )
 }

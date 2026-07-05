@@ -12,6 +12,7 @@ import RarityStars from '@/components/rarity-stars'
 import { countObtained } from '@/hooks/count-obtained'
 import ProgressChip from '@/components/progress-chip'
 import SlugToolBar from '@/components/slug-toolbar'
+import PageShell from '@/components/page-shell'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -60,7 +61,7 @@ async function EurekaSet({ slug }: { slug: string }) {
   return (
     <>
       <SlugToolBar isAdmin={isAdmin} />
-      <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
+      <PageShell>
         <Stack spacing={1}>
           <Stack direction="row" sx={{ flex: 1, justifyContent: 'space-between' }}>
             <Stack sx={{ pt: 1, alignItems: 'center' }}>
@@ -125,7 +126,7 @@ async function EurekaSet({ slug }: { slug: string }) {
           eureka_variants={eureka_variants}
           isLoggedIn={isLoggedIn}
         />
-      </Stack>
+      </PageShell>
     </>
   )
 }
