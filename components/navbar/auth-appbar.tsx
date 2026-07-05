@@ -1,15 +1,12 @@
 'use client'
 
-import { AppBar, Stack, Toolbar, useColorScheme } from '@mui/material'
+import { useIsDarkMode } from '@/hooks/use-is-dark-mode'
+import { AppBar, Stack, Toolbar } from '@mui/material'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
 
 export default function AuthAppBar() {
-  const { mode, systemMode } = useColorScheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
+  const isDarkMode = useIsDarkMode()
 
   return (
     <AppBar color="transparent" elevation={0} position="absolute">

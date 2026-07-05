@@ -1,3 +1,4 @@
+import { useIsDarkMode } from '@/hooks/use-is-dark-mode'
 import { NavLink } from '@/lib/types/props'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import {
@@ -12,11 +13,10 @@ import {
   Stack,
   ToggleButton,
   Tooltip,
-  useColorScheme,
 } from '@mui/material'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { SparkleIcon } from '../rarity-stars'
 
@@ -29,10 +29,7 @@ export default function NavSection({
   open?: boolean
   onClose?: () => void
 }) {
-  const { mode, systemMode } = useColorScheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
+  const isDarkMode = useIsDarkMode()
   const pathname = usePathname()
 
   const visibleItems = items.filter((item) => !item.adminOnly)
