@@ -15,6 +15,11 @@ type NavDrawerContextType = {
 type SidebarContextType = {
   sidebarOpen: boolean
   setSidebarOpen: (open: boolean) => void
+  portalTarget: HTMLElement | null
+  setPortalTarget: (el: HTMLElement | null) => void
+  hasBody: boolean
+  registerBody: () => void
+  unregisterBody: () => void
 }
 
 export const NavBarToolbarContext = React.createContext<NavBarToolbarContextType | null>(null)
@@ -28,6 +33,11 @@ export function NavBarToolbarProvider({ children }: { children: React.ReactNode 
   const [toolbarSlot, setToolbarSlot] = React.useState<HTMLDivElement | null>(null)
   const [drawerOpen, setDrawerOpen] = React.useState(false)
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
+  const [portalTarget, setPortalTarget] = React.useState<HTMLElement | null>(null)
+  const [bodyCount, setBodyCount] = React.useState(0)
+  const registerBody = React.useCallback(() => setBodyCount((n) => n + 1), [])
+  const unregisterBody = React.useCallback(() => setBodyCount((n) => Math.max(0, n - 1)), [])
+  const hasBody = bodyCount > 0
 
   // Read persisted state after mount to avoid an SSR/client hydration mismatch.
   React.useEffect(() => {
@@ -37,7 +47,17 @@ export function NavBarToolbarProvider({ children }: { children: React.ReactNode 
 
   return (
     <NavDrawerContext.Provider value={{ drawerOpen, setDrawerOpen }}>
-      <SidebarContext.Provider value={{ sidebarOpen, setSidebarOpen }}>
+      <SidebarContext.Provider
+        value={{
+          sidebarOpen,
+          setSidebarOpen,
+          portalTarget,
+          setPortalTarget,
+          hasBody,
+          registerBody,
+          unregisterBody,
+        }}
+      >
         <NavBarToolbarContext.Provider value={{ toolbarSlot, setToolbarSlot }}>
           {children}
         </NavBarToolbarContext.Provider>
