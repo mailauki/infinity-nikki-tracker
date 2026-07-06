@@ -49,7 +49,7 @@ import ImageUpload from '@/components/forms/image-upload'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import PageShell from '@/components/page-shell'
 import { ExpandMore, TaskAlt } from '@mui/icons-material'
-import Sidebar from '@/components/sidebar/sidebar'
+import SidebarBody from '@/components/sidebar/sidebar-body'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import TuneIcon from '@mui/icons-material/Tune'
 
@@ -263,7 +263,7 @@ export default function LookBuilder({
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const { setSidebarOpen } = useSidebar()
+  const { sidebarOpen, setSidebarOpen } = useSidebar()
 
   // For a brand-new look, force the sidebar open so the (required) name field is
   // visible. We also persist 'sidebar-open'=true because the provider (root layout)
@@ -713,13 +713,19 @@ export default function LookBuilder({
             {isPending ? 'Saving…' : saveLabel}
           </Button>
         </Stack>
-        <Sidebar
-          icon={<TuneIcon />}
-          title={<Typography variant="subtitle2">Look details</Typography>}
+        <IconButton
+          color={sidebarOpen ? 'primary' : 'default'}
+          onClick={() => {
+            const next = !sidebarOpen
+            setSidebarOpen(next)
+            localStorage.setItem('sidebar-open', String(next))
+          }}
         >
-          {composerPanel}
-        </Sidebar>
+          <TuneIcon />
+        </IconButton>
       </NavBarToolbar>
+
+      <SidebarBody>{composerPanel}</SidebarBody>
 
       <PageShell maxWidth="wide">{pickerPanel}</PageShell>
     </>
