@@ -6,19 +6,20 @@ import { HeroCTAs } from '@/components/hero-ctas'
 import { getUserID } from '@/hooks/user'
 import HelpActions from './help/help-actions'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import PageShell from '@/components/page-shell'
 
 export default function HomePage() {
   return (
-    <>
-      <Hero />
+    <PageShell disableVerticalPadding>
       <NavBarToolbar>
         <Suspense>
           <HomeCTAs />
         </Suspense>
       </NavBarToolbar>
+      <Hero />
       <QuickAccess />
       <HelpActions />
-    </>
+    </PageShell>
   )
 }
 

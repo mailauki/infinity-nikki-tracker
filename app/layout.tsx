@@ -12,7 +12,7 @@ import Footer from '@/components/navbar/nav-footer'
 import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
 import NavDrawer from '@/components/navbar/nav-drawer'
-import FilterContentShim from '@/components/filter/filter-content-shim'
+import SidebarShell from '@/components/sidebar/sidebar-shell'
 import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
 import SnackbarAlertProvider from '@/components/snackbar-provider'
 import { connection } from 'next/server'
@@ -95,21 +95,21 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
             <Suspense fallback={null}>
               <NavDrawer />
             </Suspense>
-            <FilterContentShim>
-              <Suspense>
-                <NavBar />
-              </Suspense>
-              <Toolbar sx={{ mb: 2 }} />
-              <Toolbar sx={{ mb: 2 }} />
-              {/* ^ Toolbar spacers for NavBar and NavBarToolbar */}
-              <Suspense>
-                <PullToRefresh />
-              </Suspense>
-              <Stack component="main" sx={{ flex: 1, p: 2 }}>
+            <Suspense>
+              <NavBar />
+            </Suspense>
+            <Stack sx={{ flexDirection: 'row', flexGrow: 1, minWidth: 0 }}>
+              <Stack component="main" sx={{ flexGrow: 1, minWidth: 0 }}>
+                <Toolbar sx={{ mb: 2 }} />
+                {/* ^ single spacer for the fixed NavBar; NavBarToolbar is sticky/in-flow */}
+                <Suspense>
+                  <PullToRefresh />
+                </Suspense>
                 {children}
+                <Footer />
               </Stack>
-              <Footer />
-            </FilterContentShim>
+              <SidebarShell />
+            </Stack>
           </Stack>
           <Analytics />
           <SpeedInsights />

@@ -1,48 +1,22 @@
 'use client'
 
 import * as React from 'react'
-import { usePathname } from 'next/navigation'
-import { useNavDrawer, useFilterDrawer } from './navbar-toolbar-context'
-import { AppBar, Toolbar, useTheme } from '@mui/material'
-import { FILTER_DRAWER_WIDTH, FILTER_PAGES } from '@/components/filter/filter-menu'
-import { NAV_DRAWER_WIDTH } from './nav-drawer'
+import { AppBar, Toolbar } from '@mui/material'
 
 export default function NavBarToolbar({ children }: { children: React.ReactNode }) {
-  const { drawerOpen } = useNavDrawer()
-  const { filterOpen } = useFilterDrawer()
-  const pathname = usePathname()
-  const theme = useTheme()
-  const filterPushed = filterOpen && FILTER_PAGES.includes(pathname)
-  const filterInset = filterPushed ? `${FILTER_DRAWER_WIDTH}px` : '0px'
-  const navInset = drawerOpen
-    ? `calc(${NAV_DRAWER_WIDTH}px) - 21px`
-    : `calc(${theme.spacing(10)} + 21px)`
   return (
     <AppBar
       color="transparent"
       component="div"
-      position="fixed"
+      position="sticky"
       sx={{
         borderColor: 'transparent',
-        pointerEvents: 'none',
-        ml: { xs: 0, sm: navInset },
-        mr: { xs: 0, sm: filterInset },
-        width: {
-          xs: '100%',
-          sm: `calc(100% - ${navInset} - ${filterInset})`,
-        },
-        transition: (theme) =>
-          theme.transitions.create(['margin-left', 'margin-right', 'width'], {
-            easing: theme.transitions.easing.sharp,
-            duration: drawerOpen
-              ? theme.transitions.duration.enteringScreen
-              : theme.transitions.duration.leavingScreen,
-          }),
+        top: 80,
+        zIndex: (theme) => theme.zIndex.appBar,
       }}
       variant="outlined"
     >
-      <Toolbar sx={{ mb: 2 }} />
-      <Toolbar sx={{ mb: 2, pointerEvents: 'auto' }}>{children}</Toolbar>
+      <Toolbar>{children}</Toolbar>
     </AppBar>
   )
 }

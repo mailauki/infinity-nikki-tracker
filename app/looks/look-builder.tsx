@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Accordion,
@@ -13,9 +13,9 @@ import {
   Button,
   Card,
   CardActionArea,
+  CardContent,
   CardHeader,
   Chip,
-  Divider,
   IconButton,
   InputAdornment,
   List,
@@ -50,6 +50,9 @@ import ImageUpload from '@/components/forms/image-upload'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import PageShell from '@/components/page-shell'
 import { ExpandMore, TaskAlt } from '@mui/icons-material'
+import SidebarBody from '@/components/sidebar/sidebar-body'
+import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
+import TuneIcon from '@mui/icons-material/Tune'
 
 // Outfit categories carry a `part` that buckets them into these two groups.
 const PIECES_PART = 'Pieces'
@@ -261,6 +264,19 @@ export default function LookBuilder({
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const { sidebarOpen, setSidebarOpen } = useSidebar()
+
+  // For a brand-new look, force the sidebar open so the (required) name field is
+  // visible. We also persist 'sidebar-open'=true because the provider (root layout)
+  // reads localStorage in its own post-mount effect that can run AFTER this child
+  // effect and would otherwise clobber the open state back to the persisted value.
+  // On edit, initialLook is set, so we leave the persisted open/closed state alone.
+  useEffect(() => {
+    if (!initialLook) {
+      localStorage.setItem('sidebar-open', 'true')
+      setSidebarOpen(true)
+    }
+  }, [initialLook, setSidebarOpen])
 
   const [name, setName] = useState(initialLook?.name ?? '')
   const [description, setDescription] = useState(initialLook?.description ?? '')
@@ -483,45 +499,49 @@ export default function LookBuilder({
     )
   }
   const composerPanel = (
-    <Stack spacing={2} sx={{ minWidth: 0 }}>
-      <TextField
-        fullWidth
-        required
-        label="Look name"
-        placeholder="e.g. Moonlit Wanderer"
-        size="small"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <TextField
-        fullWidth
-        multiline
-        label="Description"
-        maxRows={3}
-        minRows={2}
-        placeholder="Optional notes about this look…"
-        size="small"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+    <Stack sx={{ minWidth: 0 }}>
+      <CardContent>
+        <Stack spacing={2}>
+          <TextField
+            fullWidth
+            required
+            label="Look name"
+            placeholder="e.g. Moonlit Wanderer"
+            size="small"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            fullWidth
+            multiline
+            label="Description"
+            maxRows={3}
+            minRows={2}
+            placeholder="Optional notes about this look…"
+            size="small"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
 
-      {initialLook?.slug && (
-        <ImageUpload
-          caption="Cover image"
-          column="image_url"
-          size="lg"
-          slug={initialLook.slug}
-          table="custom_looks"
-          url={imageUrl}
-          onUpload={setImageUrl}
-        />
-      )}
+          {initialLook?.slug && (
+            <ImageUpload
+              caption="Cover image"
+              column="image_url"
+              size="lg"
+              slug={initialLook.slug}
+              table="custom_looks"
+              url={imageUrl}
+              onUpload={setImageUrl}
+            />
+          )}
 
-      {!initialLook && (
-        <Alert severity="info">
-          A cover image can be added after saving — edit the look to upload one.
-        </Alert>
-      )}
+          {!initialLook && (
+            <Alert severity="info">
+              A cover image can be added after saving — edit the look to upload one.
+            </Alert>
+          )}
+        </Stack>
+      </CardContent>
 
       <Stack spacing={1}>
         {selectedItems.length > 0 && (
@@ -697,38 +717,23 @@ export default function LookBuilder({
           >
             {isPending ? 'Saving…' : saveLabel}
           </Button>
+          <IconButton
+            color={sidebarOpen ? 'primary' : 'default'}
+            onClick={() => {
+              const next = !sidebarOpen
+              setSidebarOpen(next)
+              localStorage.setItem('sidebar-open', String(next))
+            }}
+          >
+            <TuneIcon />
+          </IconButton>
         </Stack>
       </NavBarToolbar>
 
-      <PageShell maxWidth="wide">
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: '1fr 340px' },
-            gap: 3,
-            alignItems: 'start',
-          }}
-        >
-          {/* On mobile, composer comes first */}
-          <Box sx={{ display: { xs: 'block', md: 'none' } }}>{composerPanel}</Box>
-          <Box sx={{ display: { xs: 'block', md: 'none' } }}>
-            <Divider />
-          </Box>
+      <SidebarBody>{composerPanel}</SidebarBody>
 
-          {/* Picker (left on desktop, bottom on mobile) */}
-          {pickerPanel}
-
-          {/* Composer (right on desktop, hidden on mobile since it's at top) */}
-          <Box
-            sx={{
-              display: { xs: 'none', md: 'block' },
-              position: 'sticky',
-              top: 80,
-            }}
-          >
-            {composerPanel}
-          </Box>
-        </Box>
+      <PageShell disableVerticalPadding maxWidth="wide">
+        {pickerPanel}
       </PageShell>
     </>
   )
