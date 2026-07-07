@@ -16,8 +16,7 @@ import NavSection from './nav-section'
 import { navLinksData } from '@/lib/nav-links'
 import { MenuOpen, Menu } from '@mui/icons-material'
 import { useNavDrawer } from './navbar-toolbar-context'
-
-export const NAV_DRAWER_WIDTH = 240
+import { NAV_DRAWER_WIDTH, NAV_DRAWER_STORAGE_KEY } from '@/lib/layout-constants'
 
 const openedMixin = (theme: Theme): CSSObject => ({
   height: 'calc(100vh - 40px)',
@@ -86,15 +85,13 @@ const navContent = (open: boolean, onClose: () => void) => (
   </Stack>
 )
 
-const DRAWER_STORAGE_KEY = 'nav-drawer-open'
-
 function NavDrawer() {
   const theme = useTheme()
   const { drawerOpen: open, setDrawerOpen } = useNavDrawer()
 
   function toggleDrawer(value: boolean) {
     setDrawerOpen(value)
-    localStorage.setItem(DRAWER_STORAGE_KEY, String(value))
+    localStorage.setItem(NAV_DRAWER_STORAGE_KEY, String(value))
   }
 
   return (

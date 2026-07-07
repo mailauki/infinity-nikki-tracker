@@ -16,6 +16,7 @@ import { usePathname } from 'next/navigation'
 
 import { useSidebar } from '../navbar/navbar-toolbar-context'
 import SidebarBody from '@/components/sidebar/sidebar-body'
+import { SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 
 import { useEurekaData } from '../eureka/eureka-context'
 import { useOutfitData } from '../outfits/outfit-context'
@@ -46,7 +47,7 @@ export default function FilterMenu() {
   // matching the toggle in Sidebar.
   const closeFilter = () => {
     setSidebarOpen(false)
-    localStorage.setItem('sidebar-open', 'false')
+    localStorage.setItem(SIDEBAR_STORAGE_KEY, 'false')
   }
 
   const {
@@ -147,7 +148,7 @@ export default function FilterMenu() {
           onClick={() => {
             const next = !sidebarOpen
             setSidebarOpen(next)
-            localStorage.setItem('sidebar-open', String(next))
+            localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next))
           }}
         >
           <FilterList />
@@ -315,7 +316,7 @@ export default function FilterMenu() {
         onClick={() => {
           const next = !sidebarOpen
           setSidebarOpen(next)
-          localStorage.setItem('sidebar-open', String(next))
+          localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next))
         }}
       >
         <FilterList />

@@ -13,7 +13,7 @@ import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
 import NavDrawer from '@/components/navbar/nav-drawer'
 import SidebarShell from '@/components/sidebar/sidebar-shell'
-import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
+import { DrawerStateProvider } from '@/components/navbar/navbar-toolbar-context'
 import SnackbarAlertProvider from '@/components/snackbar-provider'
 import { connection } from 'next/server'
 import type { ColorTheme } from '@/lib/types/eureka'
@@ -82,7 +82,7 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
   return (
     <ThemeClientProvider colorTheme={colorTheme}>
       <CssBaseline />
-      <NavBarToolbarProvider>
+      <DrawerStateProvider>
         <SnackbarAlertProvider>
           <Stack
             direction="row"
@@ -114,7 +114,7 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
           <Analytics />
           <SpeedInsights />
         </SnackbarAlertProvider>
-      </NavBarToolbarProvider>
+      </DrawerStateProvider>
     </ThemeClientProvider>
   )
 }

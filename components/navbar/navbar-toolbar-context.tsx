@@ -1,11 +1,7 @@
 'use client'
 
 import * as React from 'react'
-
-type NavBarToolbarContextType = {
-  toolbarSlot: HTMLDivElement | null
-  setToolbarSlot: (el: HTMLDivElement | null) => void
-}
+import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 
 type NavDrawerContextType = {
   drawerOpen: boolean
@@ -22,15 +18,10 @@ type SidebarContextType = {
   unregisterBody: () => void
 }
 
-export const NavBarToolbarContext = React.createContext<NavBarToolbarContextType | null>(null)
 export const NavDrawerContext = React.createContext<NavDrawerContextType | null>(null)
 export const SidebarContext = React.createContext<SidebarContextType | null>(null)
 
-const DRAWER_STORAGE_KEY = 'nav-drawer-open'
-const SIDEBAR_STORAGE_KEY = 'sidebar-open'
-
-export function NavBarToolbarProvider({ children }: { children: React.ReactNode }) {
-  const [toolbarSlot, setToolbarSlot] = React.useState<HTMLDivElement | null>(null)
+export function DrawerStateProvider({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = React.useState(false)
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
   const [portalTarget, setPortalTarget] = React.useState<HTMLElement | null>(null)
@@ -41,7 +32,7 @@ export function NavBarToolbarProvider({ children }: { children: React.ReactNode 
 
   // Read persisted state after mount to avoid an SSR/client hydration mismatch.
   React.useEffect(() => {
-    setDrawerOpen(localStorage.getItem(DRAWER_STORAGE_KEY) === 'true')
+    setDrawerOpen(localStorage.getItem(NAV_DRAWER_STORAGE_KEY) === 'true')
     setSidebarOpen(localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true')
   }, [])
 
@@ -58,28 +49,20 @@ export function NavBarToolbarProvider({ children }: { children: React.ReactNode 
           unregisterBody,
         }}
       >
-        <NavBarToolbarContext.Provider value={{ toolbarSlot, setToolbarSlot }}>
-          {children}
-        </NavBarToolbarContext.Provider>
+        {children}
       </SidebarContext.Provider>
     </NavDrawerContext.Provider>
   )
 }
 
-export function useNavBarToolbar() {
-  const ctx = React.useContext(NavBarToolbarContext)
-  if (!ctx) throw new Error('useNavBarToolbar must be used within NavBarToolbarProvider')
-  return ctx
-}
-
 export function useNavDrawer() {
   const ctx = React.useContext(NavDrawerContext)
-  if (!ctx) throw new Error('useNavDrawer must be used within NavBarToolbarProvider')
+  if (!ctx) throw new Error('useNavDrawer must be used within DrawerStateProvider')
   return ctx
 }
 
 export function useSidebar() {
   const ctx = React.useContext(SidebarContext)
-  if (!ctx) throw new Error('useSidebar must be used within NavBarToolbarProvider')
+  if (!ctx) throw new Error('useSidebar must be used within DrawerStateProvider')
   return ctx
 }
