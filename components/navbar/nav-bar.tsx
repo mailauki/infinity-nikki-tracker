@@ -2,22 +2,16 @@
 
 import { AppBar, Toolbar } from '@mui/material'
 import { alpha, useTheme } from '@mui/material/styles'
-import { usePathname } from 'next/navigation'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '@/components/color-theme-context'
 import PageTitle from './page-title'
-import { useNavDrawer, useSidebar } from './navbar-toolbar-context'
+import { useNavDrawer } from './navbar-toolbar-context'
 import { NavUser } from './nav-user'
-import { sidebarConfigFor } from '@/lib/sidebar-registry'
 import { NAV_DRAWER_WIDTH } from './nav-drawer'
 
 export default function NavBar() {
   const { drawerOpen } = useNavDrawer()
-  const { sidebarOpen } = useSidebar()
-  const pathname = usePathname()
   const theme = useTheme()
-  const sidebarConfig = sidebarConfigFor(pathname)
-  const filterInset = sidebarOpen && sidebarConfig ? `${sidebarConfig.width}px` : '0px'
   const navInset = drawerOpen
     ? `calc(${NAV_DRAWER_WIDTH}px) - 21px`
     : `calc(${theme.spacing(10)} + 21px)`
@@ -45,10 +39,9 @@ export default function NavBar() {
         WebkitBackdropFilter: 'blur(8px)',
         maskImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%)',
         ml: { xs: 0, sm: navInset },
-        mr: { xs: 0, sm: filterInset },
         width: {
           xs: '100%',
-          sm: `calc(100% - ${navInset} - ${filterInset})`,
+          sm: `calc(100% - ${navInset})`,
         },
         transition: theme.transitions.create(['margin-left', 'margin-right', 'width'], {
           easing: theme.transitions.easing.sharp,
