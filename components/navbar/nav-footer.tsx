@@ -10,10 +10,12 @@ export default function Footer() {
       component="footer"
       position="relative"
       sx={{
-        borderColor: 'transparent',
+        border: 0,
         backgroundColor: 'surface.containerLowest',
         py: 2,
         my: 3,
+        flexGrow: 1,
+        justifyContent: 'flex-end',
       }}
       variant="outlined"
     >
@@ -21,7 +23,7 @@ export default function Footer() {
         <Stack
           direction="row"
           spacing={3}
-          sx={{ flex: 1, mx: 1, alignItems: 'center', justifyContent: 'center' }}
+          sx={{ flexGrow: 1, mx: 1, alignItems: 'center', justifyContent: 'center' }}
         >
           <Typography color="textDisabled" variant="caption">
             &copy; 2026 mailauki

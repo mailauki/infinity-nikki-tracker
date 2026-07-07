@@ -1,20 +1,13 @@
 'use client'
 
 import { AppBar, Toolbar } from '@mui/material'
-import { alpha, useTheme } from '@mui/material/styles'
+import { alpha } from '@mui/material/styles'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '@/components/color-theme-context'
 import PageTitle from './page-title'
-import { useNavDrawer } from './navbar-toolbar-context'
 import { NavUser } from './nav-user'
-import { NAV_DRAWER_WIDTH } from './nav-drawer'
 
 export default function NavBar() {
-  const { drawerOpen } = useNavDrawer()
-  const theme = useTheme()
-  const navInset = drawerOpen
-    ? `calc(${NAV_DRAWER_WIDTH}px) - 21px`
-    : `calc(${theme.spacing(10)} + 21px)`
   const { colorTheme } = useColorTheme()
 
   // Build the surface gradient for both schemes and let MUI's CSS-variables
@@ -38,17 +31,6 @@ export default function NavBar() {
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         maskImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%)',
-        ml: { xs: 0, sm: navInset },
-        width: {
-          xs: '100%',
-          sm: `calc(100% - ${navInset})`,
-        },
-        transition: theme.transitions.create(['margin-left', 'margin-right', 'width'], {
-          easing: theme.transitions.easing.sharp,
-          duration: drawerOpen
-            ? theme.transitions.duration.enteringScreen
-            : theme.transitions.duration.leavingScreen,
-        }),
       })}
       variant="outlined"
     >

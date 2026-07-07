@@ -4,7 +4,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Noto_Sans_JP, Roboto } from 'next/font/google'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import ThemeClientProvider from '@/components/theme-client-provider'
-import { Box, CssBaseline, Stack, Toolbar } from '@mui/material'
+import { CssBaseline, Stack, Toolbar } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Suspense } from 'react'
@@ -95,22 +95,20 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
             <Suspense fallback={null}>
               <NavDrawer />
             </Suspense>
-            <Stack sx={{ flex: 1, minWidth: 0 }}>
-              <Suspense>
-                <NavBar />
-              </Suspense>
-              <Toolbar sx={{ mb: 2 }} />
-              {/* ^ single spacer for the fixed NavBar; NavBarToolbar is sticky/in-flow */}
-              <Suspense>
-                <PullToRefresh />
-              </Suspense>
-              <Box sx={{ display: 'flex', flex: 1, minWidth: 0 }}>
-                <Stack component="main" sx={{ flex: 1, minWidth: 0, p: 2 }}>
-                  {children}
-                </Stack>
-                <SidebarShell />
-              </Box>
-              <Footer />
+            <Suspense>
+              <NavBar />
+            </Suspense>
+            <Stack sx={{ flexDirection: 'row', flexGrow: 1, minWidth: 0 }}>
+              <Stack component="main" sx={{ flexGrow: 1, minWidth: 0 }}>
+                <Toolbar sx={{ mb: 2 }} />
+                {/* ^ single spacer for the fixed NavBar; NavBarToolbar is sticky/in-flow */}
+                <Suspense>
+                  <PullToRefresh />
+                </Suspense>
+                {children}
+                <Footer />
+              </Stack>
+              <SidebarShell />
             </Stack>
           </Stack>
           <Analytics />

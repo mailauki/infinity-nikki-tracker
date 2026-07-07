@@ -37,14 +37,17 @@ export default function PageShell({
   children,
   maxWidth = 'full',
   sideContent,
-  spacing = 3,
+  spacing = 2,
   disableVerticalPadding = false,
   sx,
 }: PageShellProps) {
   const cap = WIDTH_MAP[maxWidth]
 
   const main = (
-    <Stack spacing={spacing} sx={{ flexGrow: 1, minWidth: 0, py: disableVerticalPadding ? 0 : 3 }}>
+    <Stack
+      spacing={spacing}
+      sx={{ flexGrow: 1, minWidth: 0, py: disableVerticalPadding ? 0 : 2, px: 2 }}
+    >
       {children}
     </Stack>
   )

@@ -23,6 +23,7 @@ const openedMixin = (theme: Theme): CSSObject => ({
   borderRadius: '30px',
   marginTop: 80,
   marginBottom: 20,
+  marginRight: 20,
   width: DEFAULT_SIDEBAR_WIDTH,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -37,6 +38,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
   borderRadius: '30px',
   marginTop: 80,
   marginBottom: 20,
+  marginRight: 0,
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,

@@ -13,6 +13,7 @@ import {
   Button,
   Card,
   CardActionArea,
+  CardContent,
   CardHeader,
   Chip,
   IconButton,
@@ -498,45 +499,49 @@ export default function LookBuilder({
     )
   }
   const composerPanel = (
-    <Stack spacing={2} sx={{ minWidth: 0 }}>
-      <TextField
-        fullWidth
-        required
-        label="Look name"
-        placeholder="e.g. Moonlit Wanderer"
-        size="small"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <TextField
-        fullWidth
-        multiline
-        label="Description"
-        maxRows={3}
-        minRows={2}
-        placeholder="Optional notes about this look…"
-        size="small"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+    <Stack sx={{ minWidth: 0 }}>
+      <CardContent>
+        <Stack spacing={2}>
+          <TextField
+            fullWidth
+            required
+            label="Look name"
+            placeholder="e.g. Moonlit Wanderer"
+            size="small"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            fullWidth
+            multiline
+            label="Description"
+            maxRows={3}
+            minRows={2}
+            placeholder="Optional notes about this look…"
+            size="small"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
 
-      {initialLook?.slug && (
-        <ImageUpload
-          caption="Cover image"
-          column="image_url"
-          size="lg"
-          slug={initialLook.slug}
-          table="custom_looks"
-          url={imageUrl}
-          onUpload={setImageUrl}
-        />
-      )}
+          {initialLook?.slug && (
+            <ImageUpload
+              caption="Cover image"
+              column="image_url"
+              size="lg"
+              slug={initialLook.slug}
+              table="custom_looks"
+              url={imageUrl}
+              onUpload={setImageUrl}
+            />
+          )}
 
-      {!initialLook && (
-        <Alert severity="info">
-          A cover image can be added after saving — edit the look to upload one.
-        </Alert>
-      )}
+          {!initialLook && (
+            <Alert severity="info">
+              A cover image can be added after saving — edit the look to upload one.
+            </Alert>
+          )}
+        </Stack>
+      </CardContent>
 
       <Stack spacing={1}>
         {selectedItems.length > 0 && (
@@ -712,22 +717,24 @@ export default function LookBuilder({
           >
             {isPending ? 'Saving…' : saveLabel}
           </Button>
+          <IconButton
+            color={sidebarOpen ? 'primary' : 'default'}
+            onClick={() => {
+              const next = !sidebarOpen
+              setSidebarOpen(next)
+              localStorage.setItem('sidebar-open', String(next))
+            }}
+          >
+            <TuneIcon />
+          </IconButton>
         </Stack>
-        <IconButton
-          color={sidebarOpen ? 'primary' : 'default'}
-          onClick={() => {
-            const next = !sidebarOpen
-            setSidebarOpen(next)
-            localStorage.setItem('sidebar-open', String(next))
-          }}
-        >
-          <TuneIcon />
-        </IconButton>
       </NavBarToolbar>
 
       <SidebarBody>{composerPanel}</SidebarBody>
 
-      <PageShell maxWidth="wide">{pickerPanel}</PageShell>
+      <PageShell disableVerticalPadding maxWidth="wide">
+        {pickerPanel}
+      </PageShell>
     </>
   )
 }

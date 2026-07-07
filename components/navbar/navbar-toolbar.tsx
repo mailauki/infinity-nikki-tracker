@@ -16,7 +16,7 @@ export default function NavBarToolbar({ children }: { children: React.ReactNode 
       }}
       variant="outlined"
     >
-      <Toolbar sx={{ mb: 2 }}>{children}</Toolbar>
+      <Toolbar>{children}</Toolbar>
     </AppBar>
   )
 }
