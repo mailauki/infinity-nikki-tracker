@@ -51,6 +51,7 @@ import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import PageShell from '@/components/page-shell'
 import { ExpandMore, TaskAlt } from '@mui/icons-material'
 import SidebarBody from '@/components/sidebar/sidebar-body'
+import { SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import TuneIcon from '@mui/icons-material/Tune'
 
@@ -273,7 +274,7 @@ export default function LookBuilder({
   // On edit, initialLook is set, so we leave the persisted open/closed state alone.
   useEffect(() => {
     if (!initialLook) {
-      localStorage.setItem('sidebar-open', 'true')
+      localStorage.setItem(SIDEBAR_STORAGE_KEY, 'true')
       setSidebarOpen(true)
     }
   }, [initialLook, setSidebarOpen])
@@ -722,7 +723,7 @@ export default function LookBuilder({
             onClick={() => {
               const next = !sidebarOpen
               setSidebarOpen(next)
-              localStorage.setItem('sidebar-open', String(next))
+              localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next))
             }}
           >
             <TuneIcon />
