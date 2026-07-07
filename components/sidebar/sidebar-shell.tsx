@@ -69,24 +69,25 @@ const PermanentDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !=
 // a <SidebarBody> (hasBody). Publishes its content node as the portal target so the
 // page body (rendered under its own data providers) can portal in.
 //
-// Portal-target correctness: only ONE `<div ref={contentRef}>` exists. It is
+// Portal-target correctness: only ONE `<div ref={setTargetNode}>` exists. It is
 // rendered inside whichever drawer is currently active for the viewport
-// (temporary below `sm`, permanent at `sm`+), chosen by `useMediaQuery`. Because
-// only one drawer is shown at a time, the single ref reattaches to the visible
-// drawer's node on breakpoint change, and the layout effect re-publishes it.
+// (temporary below `sm`, permanent at `sm`+), chosen by `useMediaQuery`. A callback
+// ref (not a ref + effect) publishes the node, because MUI's temporary drawer
+// unmounts its children entirely while closed — the target only exists in the DOM
+// once the drawer is open, and a callback ref fires exactly on attach/detach
+// regardless of that timing or breakpoint changes.
 export default function SidebarShell() {
   const { sidebarOpen, setSidebarOpen, setPortalTarget, hasBody } = useSidebar()
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  const contentRef = React.useRef<HTMLDivElement | null>(null)
 
-  // Re-publish the target whenever the active drawer (breakpoint) changes, so the
-  // portal always points at the mounted node. `isMobile` in the dep array forces
-  // the effect to re-run after the ref reattaches to the other drawer.
-  React.useLayoutEffect(() => {
-    setPortalTarget(contentRef.current)
-    return () => setPortalTarget(null)
-  }, [setPortalTarget, isMobile])
+  // Callback ref: publishes the target node the moment it attaches (and null when it
+  // detaches). This is robust to MUI's temporary drawer mounting/unmounting its
+  // children on open/close and to breakpoint changes — no effect timing to get wrong.
+  const setTargetNode = React.useCallback(
+    (node: HTMLDivElement | null) => setPortalTarget(node),
+    [setPortalTarget]
+  )
 
   const header = (
     <Toolbar>
@@ -101,7 +102,7 @@ export default function SidebarShell() {
     </Toolbar>
   )
 
-  const target = <div ref={contentRef} />
+  const target = <div ref={setTargetNode} />
 
   // The drawer opens/pushes only when a body is present and the sidebar is open.
   const open = hasBody && sidebarOpen
