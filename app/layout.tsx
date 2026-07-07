@@ -4,7 +4,7 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Noto_Sans_JP, Roboto } from 'next/font/google'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import ThemeClientProvider from '@/components/theme-client-provider'
-import { CssBaseline, Stack, Toolbar } from '@mui/material'
+import { Box, CssBaseline, Stack, Toolbar } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Suspense } from 'react'
@@ -12,7 +12,7 @@ import Footer from '@/components/navbar/nav-footer'
 import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
 import NavDrawer from '@/components/navbar/nav-drawer'
-import SidebarContentShim from '@/components/sidebar/sidebar-content-shim'
+import SidebarShell from '@/components/sidebar/sidebar-shell'
 import { NavBarToolbarProvider } from '@/components/navbar/navbar-toolbar-context'
 import SnackbarAlertProvider from '@/components/snackbar-provider'
 import { connection } from 'next/server'
@@ -95,21 +95,23 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
             <Suspense fallback={null}>
               <NavDrawer />
             </Suspense>
-            <SidebarContentShim>
+            <Stack sx={{ flex: 1, minWidth: 0 }}>
               <Suspense>
                 <NavBar />
               </Suspense>
               <Toolbar sx={{ mb: 2 }} />
-              <Toolbar sx={{ mb: 2 }} />
-              {/* ^ Toolbar spacers for NavBar and NavBarToolbar */}
+              {/* ^ single spacer for the fixed NavBar; NavBarToolbar is sticky/in-flow */}
               <Suspense>
                 <PullToRefresh />
               </Suspense>
-              <Stack component="main" sx={{ flex: 1, p: 2 }}>
-                {children}
-              </Stack>
+              <Box sx={{ display: 'flex', flex: 1, minWidth: 0 }}>
+                <Stack component="main" sx={{ flex: 1, minWidth: 0, p: 2 }}>
+                  {children}
+                </Stack>
+                <SidebarShell />
+              </Box>
               <Footer />
-            </SidebarContentShim>
+            </Stack>
           </Stack>
           <Analytics />
           <SpeedInsights />
