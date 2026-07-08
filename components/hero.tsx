@@ -6,10 +6,10 @@ export async function Hero() {
       <CardMedia
         alt="Infinity Nikki Hero Image"
         component="img"
-        height="450"
         image="/hero.jpg"
-        loading="eager"
-        sx={{ borderRadius: 2 }}
+				loading="eager"
+        sx={{ height: 240, borderRadius: 2 }}
+        title="Infinity Nikki Hero Image"
       />
       <ImageListItemBar
         position="bottom"
