@@ -4,6 +4,7 @@ import * as React from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Box, CircularProgress, Fab, Slide, Tooltip } from '@mui/material'
 import { KeyboardArrowUp } from '@mui/icons-material'
+import { navToolbarStackTop } from '@/lib/layout-constants'
 
 const PULL_THRESHOLD = 80
 
@@ -82,17 +83,24 @@ export default function PullToRefresh() {
 
   return (
     <>
-      {/* Pull indicator */}
+      {/* Pull indicator — fixed just below the sticky toolbar, layered above it */}
       <Slide unmountOnExit direction="down" in={pullDistance > 0 || isRefreshing}>
         <Box
-          sx={{
+          sx={(theme) => ({
+            position: 'fixed',
+            // Anchor below the sticky NavBarToolbar's full stack height, matched
+            // to its responsive Toolbar breakpoints via navToolbarStackTop.
+            ...navToolbarStackTop,
+            left: 0,
+            right: 0,
+            zIndex: theme.zIndex.appBar + 1,
             display: 'flex',
             justifyContent: 'center',
             pt: 1,
             pb: 0.5,
             transform: `translateY(${pullDistance}px)`,
             transition: pullDistance === 0 ? 'transform 0.3s ease' : 'none',
-          }}
+          })}
         >
           <CircularProgress
             size={24}
