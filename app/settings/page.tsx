@@ -36,7 +36,7 @@ async function SettingsContent() {
   }
 
   return (
-    <PageShell disableVerticalPadding maxWidth="md">
+    <PageShell maxWidth="md">
       <SettingsTabs
         isAdmin={role === 'admin'}
         isLoggedIn={!!user_id}

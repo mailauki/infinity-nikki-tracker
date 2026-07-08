@@ -4,12 +4,11 @@ import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
 import { Noto_Sans_JP, Roboto } from 'next/font/google'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import ThemeClientProvider from '@/components/theme-client-provider'
-import { CssBaseline, Stack, Toolbar } from '@mui/material'
+import { CssBaseline, Stack } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Suspense } from 'react'
 import Footer from '@/components/navbar/nav-footer'
-import NavBar from '@/components/navbar/nav-bar'
 import PullToRefresh from '@/components/pull-to-refresh'
 import NavDrawer from '@/components/navbar/nav-drawer'
 import SidebarShell from '@/components/sidebar/sidebar-shell'
@@ -97,17 +96,14 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
             <Suspense fallback={null}>
               <NavDrawer />
             </Suspense>
-            {/* <Suspense>
-              <NavBar />
-            </Suspense> */}
-						<Suspense>
-							<PageTitle />
-							<NavUser />
-						</Suspense>
+            <Suspense>
+              <PageTitle />
+              <NavUser />
+            </Suspense>
             <Stack sx={{ flexDirection: 'row', flexGrow: 1, minWidth: 0 }}>
               <Stack component="main" sx={{ flexGrow: 1, minWidth: 0 }}>
-                {/* <Toolbar sx={{ mb: 2 }} /> */}
-                {/* ^ single spacer for the fixed NavBar; NavBarToolbar is sticky/in-flow */}
+                {/* No spacer here: PageTitle/NavUser are fixed and NavBarToolbar
+                    supplies its own top spacer so the sticky header sits at top: 0. */}
                 <Suspense>
                   <PullToRefresh />
                 </Suspense>

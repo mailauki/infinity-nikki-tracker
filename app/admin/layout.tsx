@@ -16,9 +16,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <FormProvider>
         <FormToolBar />
         <AdminGuard>
-					<PageShell>
-						<Stack spacing={2}>{children}</Stack>
-					</PageShell>
+          <PageShell>
+            <Stack spacing={2}>{children}</Stack>
+          </PageShell>
         </AdminGuard>
       </FormProvider>
     </Suspense>

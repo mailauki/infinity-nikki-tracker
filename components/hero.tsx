@@ -7,7 +7,7 @@ export async function Hero() {
         alt="Infinity Nikki Hero Image"
         component="img"
         image="/hero.jpg"
-				loading="eager"
+        loading="eager"
         sx={{ height: 240, borderRadius: 2 }}
         title="Infinity Nikki Hero Image"
       />

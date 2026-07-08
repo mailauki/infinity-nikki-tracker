@@ -102,7 +102,7 @@ export function NavUser() {
         position: 'fixed',
         top: 24,
         right: 18,
-				zIndex: (theme) => theme.zIndex.appBar + 1,
+        zIndex: (theme) => theme.zIndex.appBar + 1,
       }}
     >
       <Tooltip placement="bottom-end" title="Open menu">

@@ -22,8 +22,6 @@ export interface PageShellProps {
   sideContent?: React.ReactNode
   /** Vertical spacing between direct children of the main column. Default 3. */
   spacing?: number
-  /** Disable the baked-in vertical padding (py). Default false. */
-  disableVerticalPadding?: boolean
   /** Escape hatch for one-off overrides on the outer wrapper. */
   sx?: SxProps<Theme>
 }
@@ -43,10 +41,7 @@ export default function PageShell({
   const cap = WIDTH_MAP[maxWidth]
 
   const main = (
-    <Stack
-      spacing={spacing}
-      sx={{ flexGrow: 1, minWidth: 0, px: 2 }}
-    >
+    <Stack spacing={spacing} sx={{ flexGrow: 1, minWidth: 0, px: 2 }}>
       {children}
     </Stack>
   )
