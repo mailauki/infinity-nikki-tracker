@@ -10,7 +10,7 @@ import PageShell from '@/components/page-shell'
 
 export default function HomePage() {
   return (
-    <PageShell disableVerticalPadding>
+    <PageShell>
       <NavBarToolbar>
         <Suspense>
           <HomeCTAs />

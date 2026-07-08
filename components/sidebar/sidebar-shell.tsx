@@ -92,10 +92,10 @@ export default function SidebarShell() {
   )
 
   const header = (
-    <Toolbar>
+    <Toolbar disableGutters>
       <Stack
         direction="row"
-        sx={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', mt: 0.5 }}
+        sx={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', mt: 0.5, mr: 1 }}
       >
         <IconButton onClick={() => setSidebarOpen(false)}>
           <Close />

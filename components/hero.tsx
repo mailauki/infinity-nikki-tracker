@@ -6,10 +6,9 @@ export async function Hero() {
       <CardMedia
         alt="Infinity Nikki Hero Image"
         component="img"
-        height="450"
         image="/hero.jpg"
         loading="eager"
-        sx={{ borderRadius: 2 }}
+        sx={{ height: 240, borderRadius: 2 }}
       />
       <ImageListItemBar
         position="bottom"
@@ -32,7 +31,7 @@ export async function Hero() {
             'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
         }}
         title={
-          <Typography noWrap component="h1" sx={{ textAlign: 'center' }} variant="h3">
+          <Typography noWrap component="h1" sx={{ textAlign: 'center', pb: 0.25 }} variant="h3">
             Infinity Nikki Tracker
           </Typography>
         }
