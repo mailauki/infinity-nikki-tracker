@@ -47,6 +47,7 @@ export default function PageTitle() {
         left: 0,
         right: 0,
         zIndex: (theme) => theme.zIndex.appBar + 1,
+        pointerEvents: 'none',
       }}
     >
       <Typography component="h1" sx={{ fontSize: 'subtitle2.fontSize' }} variant="overline">

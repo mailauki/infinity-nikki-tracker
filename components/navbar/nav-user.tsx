@@ -79,7 +79,15 @@ export function NavUser() {
 
   if (userId === undefined) {
     return (
-      <Box sx={{ position: 'absolute', top: 24, right: 18 }}>
+      <Box
+        sx={{
+          flexGrow: 0,
+          position: 'fixed',
+          top: 24,
+          right: 18,
+          zIndex: (theme) => theme.zIndex.appBar + 2,
+        }}
+      >
         <Skeleton height={40} variant="circular" width={40} />
       </Box>
     )
@@ -87,7 +95,14 @@ export function NavUser() {
 
   if (!userId) {
     return (
-      <Box sx={{ position: 'absolute', top: 16, right: 12, zIndex: (theme) => theme.zIndex.fab }}>
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 24,
+          right: 18,
+          zIndex: (theme) => theme.zIndex.appBar + 2,
+        }}
+      >
         <Button color="inherit" href="/login">
           Login
         </Button>
@@ -102,7 +117,7 @@ export function NavUser() {
         position: 'fixed',
         top: 24,
         right: 18,
-        zIndex: (theme) => theme.zIndex.appBar + 1,
+        zIndex: (theme) => theme.zIndex.appBar + 2,
       }}
     >
       <Tooltip placement="bottom-end" title="Open menu">
