@@ -31,6 +31,7 @@ export default function NavBar() {
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         maskImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%)',
+				zIndex: theme.zIndex.appBar + 1
       })}
       variant="outlined"
     >

@@ -19,6 +19,8 @@ import { connection } from 'next/server'
 import type { ColorTheme } from '@/lib/types/eureka'
 import { getUserID } from '@/hooks/user'
 import { getPreferences } from '@/hooks/data/preferences'
+import { NavUser } from '@/components/navbar/nav-user'
+import PageTitle from '@/components/navbar/page-title'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -95,12 +97,16 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
             <Suspense fallback={null}>
               <NavDrawer />
             </Suspense>
-            <Suspense>
+            {/* <Suspense>
               <NavBar />
-            </Suspense>
+            </Suspense> */}
+						<Suspense>
+							<PageTitle />
+							<NavUser />
+						</Suspense>
             <Stack sx={{ flexDirection: 'row', flexGrow: 1, minWidth: 0 }}>
               <Stack component="main" sx={{ flexGrow: 1, minWidth: 0 }}>
-                <Toolbar sx={{ mb: 2 }} />
+                {/* <Toolbar sx={{ mb: 2 }} /> */}
                 {/* ^ single spacer for the fixed NavBar; NavBarToolbar is sticky/in-flow */}
                 <Suspense>
                   <PullToRefresh />

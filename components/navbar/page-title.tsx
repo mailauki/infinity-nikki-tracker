@@ -2,7 +2,7 @@
 
 import { navLinksData } from '@/lib/nav-links'
 import { toTitle } from '@/lib/utils'
-import { Typography } from '@mui/material'
+import { Toolbar, Typography } from '@mui/material'
 import { usePathname } from 'next/navigation'
 
 export default function PageTitle() {
@@ -36,8 +36,22 @@ export default function PageTitle() {
   const pageTitle = prefix ? `${prefix} ${bestMatch?.title ?? baseTitle}` : baseTitle
 
   return (
-    <Typography component="h1" sx={{ fontSize: 'subtitle2.fontSize' }} variant="overline">
-      {pageTitle}
-    </Typography>
+		<Toolbar
+			component='header'
+			sx={{
+				alignItems: 'flex-end',
+				justifyContent: 'center',
+				mb: 2,
+				width: '100vw',
+				position: 'fixed',
+				top: 0,
+				left: 0,
+				zIndex: (theme) => theme.zIndex.appBar + 1,
+			}}
+		>
+			<Typography component="h1" sx={{ fontSize: 'subtitle2.fontSize' }} variant="overline">
+				{pageTitle}
+			</Typography>
+		</Toolbar>
   )
 }

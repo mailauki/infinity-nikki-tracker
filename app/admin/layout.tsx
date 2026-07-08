@@ -8,6 +8,7 @@ import { AdminViewProvider } from './admin-view-context'
 import AdminToolBar from './admin-toolbar'
 import { getAdminPreferences } from '@/hooks/data/preferences'
 import AdminToggleToolbar from './admin-toggle-toolbar'
+import PageShell from '@/components/page-shell'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -15,7 +16,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <FormProvider>
         <FormToolBar />
         <AdminGuard>
-          <Stack spacing={2}>{children}</Stack>
+					<PageShell>
+						<Stack spacing={2}>{children}</Stack>
+					</PageShell>
         </AdminGuard>
       </FormProvider>
     </Suspense>

@@ -733,7 +733,7 @@ export default function LookBuilder({
 
       <SidebarBody>{composerPanel}</SidebarBody>
 
-      <PageShell disableVerticalPadding maxWidth="wide">
+      <PageShell maxWidth="wide">
         {pickerPanel}
       </PageShell>
     </>

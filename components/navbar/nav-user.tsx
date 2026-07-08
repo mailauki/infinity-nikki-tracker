@@ -87,7 +87,7 @@ export function NavUser() {
 
   if (!userId) {
     return (
-      <Box sx={{ position: 'absolute', top: 16, right: 12 }}>
+      <Box sx={{ position: 'absolute', top: 16, right: 12, zIndex: (theme) => theme.zIndex.fab }}>
         <Button color="inherit" href="/login">
           Login
         </Button>
@@ -99,10 +99,10 @@ export function NavUser() {
     <Box
       sx={{
         flexGrow: 0,
-        position: 'absolute',
+        position: 'fixed',
         top: 24,
         right: 18,
-        zIndex: (theme) => theme.zIndex.drawer + 1,
+				zIndex: (theme) => theme.zIndex.appBar + 1,
       }}
     >
       <Tooltip placement="bottom-end" title="Open menu">

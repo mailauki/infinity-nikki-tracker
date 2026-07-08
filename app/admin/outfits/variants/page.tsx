@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function OutfitVariantsAdminPage() {
   return (
     <Suspense>
-      <AdminView />
+			<AdminView />
     </Suspense>
   )
 }
