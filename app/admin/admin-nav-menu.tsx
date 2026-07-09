@@ -4,9 +4,11 @@ import { navLinksData } from '@/lib/nav-links'
 import { ExpandMore } from '@mui/icons-material'
 import { Button, Menu, MenuItem, Stack } from '@mui/material'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import React from 'react'
 
 export default function AdminNavMenu() {
+	const pathname = usePathname()
   const id = React.useId()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [openTitle, setOpenTitle] = React.useState<string | null>(null)
@@ -40,6 +42,7 @@ export default function AdminNavMenu() {
         )
       })}
       <Menu
+				disableScrollLock
         anchorEl={anchorEl}
         id={`${id}-menu`}
         open={Boolean(anchorEl && openSection)}
@@ -51,7 +54,7 @@ export default function AdminNavMenu() {
         onClose={handleClose}
       >
         {openSection?.items?.map((tab) => (
-          <MenuItem key={tab.title} component={Link} href={tab.url} onClick={handleClose}>
+          <MenuItem key={tab.title} component={Link} href={tab.url} selected={tab.url === pathname} onClick={handleClose}>
             {tab.title}
           </MenuItem>
         ))}
