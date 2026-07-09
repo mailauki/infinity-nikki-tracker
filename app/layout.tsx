@@ -91,6 +91,7 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
               minHeight: '100vh',
               backgroundColor: 'surface.containerLowest',
               alignItems: 'flex-start',
+              overflowX: 'clip',
             }}
           >
             <Suspense fallback={null}>
@@ -102,8 +103,6 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
             </Suspense>
             <Stack sx={{ flexDirection: 'row', flexGrow: 1, minWidth: 0 }}>
               <Stack component="main" sx={{ flexGrow: 1, minWidth: 0 }}>
-                {/* No spacer here: PageTitle/NavUser are fixed and NavBarToolbar
-                    supplies its own top spacer so the sticky header sits at top: 0. */}
                 <Suspense>
                   <PullToRefresh />
                 </Suspense>

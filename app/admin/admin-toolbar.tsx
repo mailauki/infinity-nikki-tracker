@@ -2,10 +2,12 @@
 
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { Stack } from '@mui/material'
-import AdminNavTabs from './admin-nav-tabs'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import { useFormConfig } from '@/app/admin/form-context'
+import AdminNavMenu from './admin-nav-menu'
+import AdminVariantColumnsToggle from './admin-variant-columns-toggle'
+import AdminViewToggle from './admin-view-toggle'
 
 export default function AdminToolBar() {
   const pathname = usePathname()
@@ -36,11 +38,13 @@ export default function AdminToolBar() {
           flex: 1,
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: 1,
-          borderColor: 'divider',
         }}
       >
-        <AdminNavTabs />
+        <AdminNavMenu />
+        <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
+          <AdminVariantColumnsToggle />
+          {pathname !== '/admin' && <AdminViewToggle />}
+        </Stack>
       </Stack>
     </NavBarToolbar>
   )
