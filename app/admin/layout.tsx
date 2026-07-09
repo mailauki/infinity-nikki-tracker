@@ -7,7 +7,6 @@ import { Stack } from '@mui/material'
 import { AdminViewProvider } from './admin-view-context'
 import AdminToolBar from './admin-toolbar'
 import { getAdminPreferences } from '@/hooks/data/preferences'
-import AdminToggleToolbar from './admin-toggle-toolbar'
 import PageShell from '@/components/page-shell'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -34,7 +33,6 @@ async function AdminGuard({ children }: { children: React.ReactNode }) {
   return (
     <AdminViewProvider initialView={initialView} userId={user_id ?? ''}>
       <AdminToolBar />
-      <AdminToggleToolbar />
       {children}
     </AdminViewProvider>
   )

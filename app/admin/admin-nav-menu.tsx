@@ -1,14 +1,14 @@
 'use client'
 
 import { navLinksData } from '@/lib/nav-links'
-import { ExpandMore } from '@mui/icons-material'
-import { Button, Menu, MenuItem, Stack } from '@mui/material'
+import { AdminPanelSettings, ChevronLeft, ExpandMore } from '@mui/icons-material'
+import { Button, IconButton, Menu, MenuItem, Stack } from '@mui/material'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
 
 export default function AdminNavMenu() {
-	const pathname = usePathname()
+  const pathname = usePathname()
   const id = React.useId()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
   const [openTitle, setOpenTitle] = React.useState<string | null>(null)
@@ -22,6 +22,9 @@ export default function AdminNavMenu() {
 
   return (
     <Stack direction="row" spacing={1}>
+      <IconButton color={pathname === '/admin' ? 'primary' : 'default'} component="a" href="/admin">
+        {pathname === '/admin' ? <AdminPanelSettings /> : <ChevronLeft />}
+      </IconButton>
       {navLinksData.admin.tabs.map((section) => {
         const isOpen = openTitle === section.title
         return (
@@ -30,6 +33,7 @@ export default function AdminNavMenu() {
             aria-controls={isOpen ? `${id}-menu` : undefined}
             aria-expanded={isOpen}
             aria-haspopup="true"
+            color="secondary"
             endIcon={<ExpandMore />}
             id={`${id}-${section.title}-button`}
             onClick={(event) => {
@@ -42,7 +46,7 @@ export default function AdminNavMenu() {
         )
       })}
       <Menu
-				disableScrollLock
+        disableScrollLock
         anchorEl={anchorEl}
         id={`${id}-menu`}
         open={Boolean(anchorEl && openSection)}
@@ -54,7 +58,13 @@ export default function AdminNavMenu() {
         onClose={handleClose}
       >
         {openSection?.items?.map((tab) => (
-          <MenuItem key={tab.title} component={Link} href={tab.url} selected={tab.url === pathname} onClick={handleClose}>
+          <MenuItem
+            key={tab.title}
+            component={Link}
+            href={tab.url}
+            selected={tab.url === pathname}
+            onClick={handleClose}
+          >
             {tab.title}
           </MenuItem>
         ))}
