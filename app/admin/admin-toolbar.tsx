@@ -2,10 +2,10 @@
 
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { Stack } from '@mui/material'
-import AdminNavTabs from './admin-nav-tabs'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import { useFormConfig } from '@/app/admin/form-context'
+import AdminNavMenu from './admin-nav-menu'
 
 export default function AdminToolBar() {
   const pathname = usePathname()
@@ -36,11 +36,9 @@ export default function AdminToolBar() {
           flex: 1,
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: 1,
-          borderColor: 'divider',
         }}
       >
-        <AdminNavTabs />
+        <AdminNavMenu />
       </Stack>
     </NavBarToolbar>
   )
