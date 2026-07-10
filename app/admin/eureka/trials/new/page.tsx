@@ -1,7 +1,6 @@
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { Suspense } from 'react'
-import { navLinksData } from '@/lib/nav-links'
 import { getLocations } from '@/hooks/data/locations'
 import EntityForm from '@/app/admin/entity-form'
 import { addTrial } from '../actions'
@@ -27,7 +26,6 @@ async function NewTrial() {
     <EntityForm
       showAddAnother
       action={addTrial}
-      backUrl={navLinksData.admin.eureka.trials.list}
       formId="add-trial"
       formKind="trial"
       lookups={{ locations }}

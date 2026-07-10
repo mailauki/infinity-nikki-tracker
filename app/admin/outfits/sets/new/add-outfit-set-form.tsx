@@ -27,7 +27,6 @@ import ToggleField from '@/components/forms/toggle-field'
 import { DRESS_SLUGS, SEPARATES_SLUGS } from '@/components/filter/outfit-category-select'
 import { useFormConfig } from '@/app/admin/form-context'
 import { addOutfitSet } from '../actions'
-import { navLinksData } from '@/lib/nav-links'
 import EvolutionEditor from '../evolution-editor'
 import { MENU_PROPS } from '@/lib/types/props'
 
@@ -90,7 +89,6 @@ export default function AddOutfitSetForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.admin.outfits.sets.list,
       pending,
       showAddAnother: true,
     })

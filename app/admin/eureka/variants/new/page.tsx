@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { navLinksData } from '@/lib/nav-links'
 import { getAdminData } from '@/hooks/data/user'
 import EntityForm from '@/app/admin/entity-form'
 import { addEurekaVariant } from '../actions'
@@ -27,7 +26,6 @@ async function NewEurekaVariant() {
     <EntityForm
       showAddAnother
       action={addEurekaVariant}
-      backUrl={navLinksData.admin.eureka.variants.list}
       builderData={{ eurekaVariants: eurekaVariants ?? [] }}
       formId="add-eureka-variant"
       formKind="eurekaVariant"

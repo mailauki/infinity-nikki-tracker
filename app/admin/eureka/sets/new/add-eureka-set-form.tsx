@@ -29,7 +29,6 @@ import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
 import { useFormConfig } from '@/app/admin/form-context'
 import { addEurekaSet } from '../actions'
-import { navLinksData } from '@/lib/nav-links'
 import { MENU_PROPS } from '@/lib/types/props'
 
 const FORM_ID = 'add-eureka-set'
@@ -87,7 +86,6 @@ export default function AddEurekaSetForm({
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: navLinksData.admin.eureka.sets.list,
       pending,
       showAddAnother: true,
     })
