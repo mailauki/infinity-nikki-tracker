@@ -73,7 +73,6 @@ export default function EditOutfitSetForm({
   initialCategorySelect = [],
   initialVariants = [],
   initialCarouselImages = [],
-  back,
 }: {
   outfitSet: OutfitSetRaw
   styles: Style[]
@@ -88,7 +87,6 @@ export default function EditOutfitSetForm({
   initialCategorySelect?: string[]
   initialVariants?: OutfitVariantRow[]
   initialCarouselImages?: CarouselImage[]
-  back: string
 }) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState(outfitSet.title)
@@ -159,19 +157,18 @@ export default function EditOutfitSetForm({
   const maxEvolutionsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
   const maxEvolutions = typeof rarity === 'number' ? (maxEvolutionsByRarity[rarity] ?? 5) : 5
 
-  const boundAction = editOutfitSet.bind(null, outfitSet.id, back)
+  const boundAction = editOutfitSet.bind(null, outfitSet.id)
   const [state, action, pending] = useActionState(boundAction, null)
 
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: back,
       pending,
       showUpdateOnly: true,
       showUpdateNext: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending, back])
+  }, [pending])
 
   useEffect(() => {
     if (state && 'savedTitle' in state && !('error' in state)) {

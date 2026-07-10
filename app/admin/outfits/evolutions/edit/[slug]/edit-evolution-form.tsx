@@ -7,7 +7,6 @@ import CarouselImageUpload from '@/app/admin/outfits/carousel-image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { CarouselImage } from '@/lib/types/outfit'
 import { editEvolution } from './actions'
-import { navLinksData } from '@/lib/nav-links'
 import { Tables } from '@/lib/types/supabase'
 import OutfitVariantImageCard from '@/components/outfits/outfit-variant-image-card'
 
@@ -37,12 +36,10 @@ export default function EditEvolutionForm({
   evolution,
   variants,
   initialCarouselImages = [],
-  back,
 }: {
   evolution: EvolutionRow
   variants: VariantRow[]
   initialCarouselImages?: CarouselImage[]
-  back: string
 }) {
   const { setFormConfig } = useFormConfig()
   const [description, setDescription] = useState(evolution.description ?? '')
@@ -64,19 +61,18 @@ export default function EditEvolutionForm({
     Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.description ?? '']))
   )
 
-  const boundAction = editEvolution.bind(null, currentSlug, evolution.base_set ?? '', back)
+  const boundAction = editEvolution.bind(null, currentSlug, evolution.base_set ?? '')
   const [state, action, pending] = useActionState(boundAction, null)
 
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: back ?? navLinksData.admin.outfits.evolutions.list,
       pending,
       showUpdateOnly: true,
       showUpdateNext: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending, back])
+  }, [pending])
 
   useEffect(() => {
     if (state && 'savedTitle' in state && !('error' in state)) {
