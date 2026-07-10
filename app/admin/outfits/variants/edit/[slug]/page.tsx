@@ -46,14 +46,11 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
 
   if (!variant) notFound()
 
-  const back = '/admin/outfits/variants'
-
   return (
     <EntityForm
       showUpdateNext
       showUpdateOnly
-      action={editOutfitVariant.bind(null, variant.id, back)}
-      backUrl={back}
+      action={editOutfitVariant.bind(null, variant.id)}
       formId="edit-outfit-variant"
       formKind="outfitVariant"
       initialValues={{

@@ -39,14 +39,12 @@ async function EditEurekaVariant({ params }: { params: Promise<{ slug: string }>
   if (!variant) notFound()
 
   const { eurekaSets, categories, colors, eurekaVariants } = await getAdminData()
-  const back = '/admin/eureka/variants'
 
   return (
     <EntityForm
       showUpdateNext
       showUpdateOnly
-      action={editEurekaVariant.bind(null, variant.id, back)}
-      backUrl={back}
+      action={editEurekaVariant.bind(null, variant.id)}
       builderData={{ eurekaVariants: eurekaVariants ?? [], currentId: variant.id }}
       formId="edit-eureka-variant"
       formKind="eurekaVariant"
