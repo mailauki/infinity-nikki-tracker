@@ -2,14 +2,13 @@
 
 import { Button, Stack } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
-import { useFormConfig } from './form-context'
+import { ADMIN_DASHBOARD, useFormConfig } from './form-context'
 import { useEffect } from 'react'
 import { enqueueSnackbar } from 'notistack'
 
 export default function FormToolBar() {
   const {
     formId,
-    backUrl,
     pending,
     showAddAnother,
     showUpdateOnly,
@@ -31,7 +30,7 @@ export default function FormToolBar() {
   return (
     <NavBarToolbar>
       <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
-        <Button component="a" href={backUrl} variant="outlined">
+        <Button component="a" href={ADMIN_DASHBOARD} variant="outlined">
           Cancel
         </Button>
         {showAddAnother && (

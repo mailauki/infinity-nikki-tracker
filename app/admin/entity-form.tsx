@@ -91,7 +91,6 @@ export default function EntityForm({
   formKind,
   builderData,
   action,
-  backUrl,
   initialValues,
   lookups = {},
   showAddAnother,
@@ -104,7 +103,6 @@ export default function EntityForm({
   formKind: FormKind
   builderData?: BuilderData
   action: EntityAction
-  backUrl: string
   initialValues?: FieldValues
   lookups?: FieldLookups
   showAddAnother?: boolean
@@ -151,9 +149,9 @@ export default function EntityForm({
 
   // Push config into the shared FormContext that FormToolbar reads.
   useEffect(() => {
-    setFormConfig({ formId, backUrl, pending, showAddAnother, showUpdateOnly, showUpdateNext })
+    setFormConfig({ formId, pending, showAddAnother, showUpdateOnly, showUpdateNext })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending, backUrl])
+  }, [pending])
 
   // React to the action result: reset on add-another, surface savedTitle on edit.
   useEffect(() => {

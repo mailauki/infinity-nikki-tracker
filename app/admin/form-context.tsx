@@ -2,9 +2,10 @@
 
 import { createContext, useCallback, useContext, useState } from 'react'
 
+export const ADMIN_DASHBOARD = '/admin'
+
 interface FormConfig {
   formId: string
-  backUrl: string
   pending: boolean
   showAddAnother?: boolean
   showUpdateOnly?: boolean
@@ -18,7 +19,6 @@ interface FormContextValue extends FormConfig {
 
 const FormContext = createContext<FormContextValue>({
   formId: '',
-  backUrl: '',
   pending: false,
   showAddAnother: false,
   showUpdateOnly: false,
@@ -30,7 +30,6 @@ const FormContext = createContext<FormContextValue>({
 export function FormProvider({ children }: { children: React.ReactNode }) {
   const [config, setConfig] = useState<FormConfig>({
     formId: '',
-    backUrl: '',
     pending: false,
     showAddAnother: false,
     showUpdateOnly: false,
