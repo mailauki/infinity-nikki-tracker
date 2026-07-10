@@ -52,7 +52,6 @@ export default function EditEurekaSetForm({
   initialColors,
   initialDefaultColor = '',
   initialVariants = [],
-  back,
 }: {
   eurekaSet: EurekaSetRaw
   trials: Trial[]
@@ -63,7 +62,6 @@ export default function EditEurekaSetForm({
   initialColors: string[]
   initialDefaultColor?: string
   initialVariants?: EurekaVariant[]
-  back: string
 }) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState(eurekaSet.title)
@@ -100,19 +98,18 @@ export default function EditEurekaSetForm({
   }
 
   const originalTrials = eurekaSet.eureka_set_trials.map((t) => t.trial)
-  const boundAction = editEurekaSet.bind(null, eurekaSet.id, initialColors, back)
+  const boundAction = editEurekaSet.bind(null, eurekaSet.id, initialColors)
   const [state, action, pending] = useActionState(boundAction, null)
 
   useEffect(() => {
     setFormConfig({
       formId: FORM_ID,
-      backUrl: back,
       pending,
       showUpdateOnly: true,
       showUpdateNext: true,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending, back])
+  }, [pending])
 
   useEffect(() => {
     if (state && 'savedTitle' in state && !('error' in state)) {

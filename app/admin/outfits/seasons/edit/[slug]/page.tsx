@@ -2,7 +2,6 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { navLinksData } from '@/lib/nav-links'
 import { getSeasonRaw } from '@/hooks/data/admin/seasons'
 import { getLocations } from '@/hooks/data/locations'
 import EntityForm from '@/app/admin/entity-form'
@@ -12,34 +11,18 @@ export const metadata: Metadata = {
   title: 'Edit Season',
 }
 
-export default async function EditSeasonPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string }>
-  searchParams: Promise<{ back?: string }>
-}) {
+export default async function EditSeasonPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <Suspense>
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-        <EditSeason params={params} searchParams={searchParams} />
+        <EditSeason params={params} />
       </Stack>
     </Suspense>
   )
 }
 
-async function EditSeason({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string }>
-  searchParams: Promise<{ back?: string }>
-}) {
+async function EditSeason({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const { back: backParam } = await searchParams
-  const back = backParam?.startsWith('/admin/')
-    ? backParam
-    : navLinksData.admin.outfits.seasons.list
 
   const [season, locations] = await Promise.all([getSeasonRaw(slug), getLocations()])
 
@@ -49,8 +32,7 @@ async function EditSeason({
     <EntityForm
       showUpdateNext
       showUpdateOnly
-      action={editSeason.bind(null, season.slug, back)}
-      backUrl={back}
+      action={editSeason.bind(null, season.slug)}
       formId="edit-season"
       formKind="season"
       initialValues={{

@@ -26,7 +26,6 @@ export default async function EditEurekaSetPage({ params }: { params: Promise<{ 
 
 async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const back = '/admin/eureka/sets'
 
   const supabase = await createClient()
 
@@ -60,7 +59,6 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
 
   return (
     <EditEurekaSetForm
-      back={back}
       categories={categories ?? []}
       colors={colors ?? []}
       eurekaSet={eurekaSet}

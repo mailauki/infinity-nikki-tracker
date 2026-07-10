@@ -17,8 +17,7 @@ interface OutfitSeasonCategoryTableProps {
 
 export function OutfitSeasonCategoryTable({ rows: initialRows }: OutfitSeasonCategoryTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
-  const editHref = (row: Row) =>
-    `${navLinksData.admin.outfits.seasonCategories.edit}/${row.slug}?back=${encodeURIComponent(navLinksData.admin.outfits.seasonCategories.list)}`
+  const editHref = (row: Row) => `${navLinksData.admin.outfits.seasonCategories.edit}/${row.slug}`
 
   const columns: GridColDef<Row>[] = [
     {

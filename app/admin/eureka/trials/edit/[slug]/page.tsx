@@ -27,14 +27,11 @@ async function EditTrial({ params }: { params: Promise<{ slug: string }> }) {
   const [trial, locations] = await Promise.all([getTrialRaw(slug), getLocations()])
   if (!trial) notFound()
 
-  const back = '/admin/eureka/trials'
-
   return (
     <EntityForm
       showUpdateNext
       showUpdateOnly
-      action={editTrial.bind(null, trial.id, back)}
-      backUrl={back}
+      action={editTrial.bind(null, trial.id)}
       formId="edit-trial"
       formKind="trial"
       initialValues={{

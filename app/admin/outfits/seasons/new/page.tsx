@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { navLinksData } from '@/lib/nav-links'
 import { getLocations } from '@/hooks/data/locations'
 import EntityForm from '@/app/admin/entity-form'
 import { addSeason } from './actions'
@@ -27,7 +26,6 @@ async function NewSeason() {
     <EntityForm
       showAddAnother
       action={addSeason}
-      backUrl={navLinksData.admin.outfits.seasons.list}
       formId="add-season"
       formKind="season"
       lookups={{ locations }}

@@ -17,8 +17,7 @@ interface OutfitAbilityTableProps {
 
 export function OutfitAbilityTable({ rows: initialRows }: OutfitAbilityTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
-  const editHref = (row: Row) =>
-    `${navLinksData.admin.outfits.abilities.edit}/${row.slug}?back=${encodeURIComponent(navLinksData.admin.outfits.abilities.list)}`
+  const editHref = (row: Row) => `${navLinksData.admin.outfits.abilities.edit}/${row.slug}`
 
   const columns: GridColDef<Row>[] = [
     {

@@ -5,11 +5,11 @@ import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
 import { navLinksData } from '@/lib/nav-links'
 import { evolutionSortKey } from '@/hooks/outfit'
+import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 
 export async function editEvolution(
   currentSlug: string,
   baseSet: string,
-  backUrl: string,
   _: unknown,
   formData: FormData
 ) {
@@ -114,5 +114,5 @@ export async function editEvolution(
     redirect(navLinksData.admin.outfits.evolutions.list)
   }
 
-  redirect(backUrl)
+  redirect(ADMIN_DASHBOARD)
 }

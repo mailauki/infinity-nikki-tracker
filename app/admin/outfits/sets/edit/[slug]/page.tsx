@@ -29,7 +29,6 @@ export default async function EditOutfitSetPage({ params }: { params: Promise<{ 
 
 async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const back = '/admin/outfits/sets'
 
   const supabase = await createClient()
 
@@ -102,7 +101,6 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   return (
     <EditOutfitSetForm
       abilities={abilities}
-      back={back}
       initialCarouselImages={carouselRows}
       initialCategorySelect={initialCategorySelect}
       initialDrafts={initialDrafts}

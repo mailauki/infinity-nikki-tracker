@@ -19,7 +19,6 @@ export default function AdminToolBar() {
     if (mounted.current && !isFormRoute && formId) {
       setFormConfig({
         formId: '',
-        backUrl: '',
         pending: false,
         showAddAnother: false,
         showUpdateOnly: false,

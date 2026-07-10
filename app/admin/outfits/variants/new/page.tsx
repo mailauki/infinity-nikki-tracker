@@ -1,7 +1,6 @@
 import { Suspense } from 'react'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { navLinksData } from '@/lib/nav-links'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getSeasons } from '@/hooks/data/seasons'
@@ -40,7 +39,6 @@ async function NewOutfitVariant() {
     <EntityForm
       showAddAnother
       action={addOutfitVariant}
-      backUrl={navLinksData.admin.outfits.variants.list}
       formId="add-outfit-variant"
       formKind="outfitVariant"
       lookups={{ outfitSets, outfitCategories, seasons, seasonCategories, styles, labels }}

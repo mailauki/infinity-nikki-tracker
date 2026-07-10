@@ -4,40 +4,23 @@ import { createClient } from '@/lib/supabase/server'
 import EditEvolutionForm from './edit-evolution-form'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { navLinksData } from '@/lib/nav-links'
 
 export const metadata: Metadata = {
   title: 'Edit Evolution',
 }
 
-export default async function EditEvolutionPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string }>
-  searchParams: Promise<{ back?: string }>
-}) {
+export default async function EditEvolutionPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
     <Suspense>
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-        <EditEvolution params={params} searchParams={searchParams} />
+        <EditEvolution params={params} />
       </Stack>
     </Suspense>
   )
 }
 
-async function EditEvolution({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string }>
-  searchParams: Promise<{ back?: string }>
-}) {
+async function EditEvolution({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const { back: backParam } = await searchParams
-  const back = backParam?.startsWith('/admin/')
-    ? backParam
-    : navLinksData.admin.outfits.evolutions.list
 
   const supabase = await createClient()
 
@@ -68,7 +51,6 @@ async function EditEvolution({
 
   return (
     <EditEvolutionForm
-      back={back}
       evolution={evolution}
       initialCarouselImages={carouselRows}
       variants={variantRows ?? []}

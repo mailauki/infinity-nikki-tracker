@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { toSlug } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
+import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 import { getUserRole } from '@/hooks/user'
 import { EvolutionDraft } from '@/lib/types/outfit'
 
@@ -146,10 +147,10 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
 
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: title }
-  redirect(navLinksData.admin.outfits.sets.list)
+  redirect(ADMIN_DASHBOARD)
 }
 
-export async function editOutfitSet(id: number, backUrl: string, _: unknown, formData: FormData) {
+export async function editOutfitSet(id: number, _: unknown, formData: FormData) {
   const role = await getUserRole()
   if (role !== 'admin') return { error: 'Forbidden' }
 
@@ -499,5 +500,5 @@ export async function editOutfitSet(id: number, backUrl: string, _: unknown, for
     if (next?.slug) redirect(`${navLinksData.admin.outfits.sets.edit}/${next.slug}`)
     redirect(navLinksData.admin.outfits.sets.list)
   }
-  redirect(backUrl)
+  redirect(ADMIN_DASHBOARD)
 }
