@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { toSlugVariant } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
+import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 import { getUserRole } from '@/hooks/user'
 
 export async function addEurekaSet(_: unknown, formData: FormData) {
@@ -65,13 +66,12 @@ export async function addEurekaSet(_: unknown, formData: FormData) {
 
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: title }
-  redirect(navLinksData.admin.eureka.sets.list)
+  redirect(ADMIN_DASHBOARD)
 }
 
 export async function editEurekaSet(
   id: number,
   initialColors: string[],
-  backUrl: string,
   _: unknown,
   formData: FormData
 ) {
@@ -192,5 +192,5 @@ export async function editEurekaSet(
     redirect(navLinksData.admin.eureka.sets.list)
   }
 
-  redirect(backUrl)
+  redirect(ADMIN_DASHBOARD)
 }

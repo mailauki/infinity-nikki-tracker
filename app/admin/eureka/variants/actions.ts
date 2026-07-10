@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { toSlugVariant } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
+import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 import { getUserRole } from '@/hooks/user'
 
 export async function addEurekaVariant(_: unknown, formData: FormData) {
@@ -28,15 +29,10 @@ export async function addEurekaVariant(_: unknown, formData: FormData) {
   if (error) return { error: error.message }
 
   if (formData.get('add_another') === 'true') return { addAnother: true as const, savedTitle: slug }
-  redirect(navLinksData.admin.eureka.variants.list)
+  redirect(ADMIN_DASHBOARD)
 }
 
-export async function editEurekaVariant(
-  id: number,
-  backUrl: string,
-  _: unknown,
-  formData: FormData
-) {
+export async function editEurekaVariant(id: number, _: unknown, formData: FormData) {
   const role = await getUserRole()
   if (role !== 'admin') return { error: 'Forbidden' }
 
@@ -81,5 +77,5 @@ export async function editEurekaVariant(
     redirect(navLinksData.admin.eureka.variants.list)
   }
 
-  redirect(backUrl)
+  redirect(ADMIN_DASHBOARD)
 }

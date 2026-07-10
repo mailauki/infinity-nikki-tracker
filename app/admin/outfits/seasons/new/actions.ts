@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
-import { navLinksData } from '@/lib/nav-links'
+import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 import { toSlug } from '@/lib/utils'
 
 export async function addSeason(_: unknown, formData: FormData) {
@@ -30,5 +30,5 @@ export async function addSeason(_: unknown, formData: FormData) {
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: title }
 
-  redirect(navLinksData.admin.outfits.seasons.list)
+  redirect(ADMIN_DASHBOARD)
 }
