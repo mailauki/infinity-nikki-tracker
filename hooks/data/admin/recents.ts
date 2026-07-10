@@ -12,8 +12,6 @@ export type RecentAdminItem = {
   date: string | null
 }
 
-const backDashboard = `?back=${encodeURIComponent('/admin')}`
-
 // The eureka set thumbnail is its default head variant's image (default variant
 // as fallback), matching createEurekaSet / the eureka slug page. The set rows
 // themselves have no image_url column, so resolve it from eureka_variants.
@@ -95,7 +93,7 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       title: s.title,
       image_url: eurekaImages.get(s.slug) ?? null,
       type: navLinksData.admin.eureka.sets.title,
-      editHref: `${navLinksData.admin.eureka.sets.edit}/${s.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.eureka.sets.edit}/${s.slug}`,
       date: s.created_at,
     })),
     ...(eurekaVariants ?? []).map((v) => ({
@@ -103,7 +101,7 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       title: toTitle(v.slug),
       image_url: v.image_url,
       type: navLinksData.admin.eureka.variants.title,
-      editHref: `${navLinksData.admin.eureka.variants.edit}/${v.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.eureka.variants.edit}/${v.slug}`,
       date: v.created_at,
     })),
     ...(trials ?? []).map((t) => ({
@@ -111,7 +109,7 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       title: t.title,
       image_url: t.image_url,
       type: navLinksData.admin.eureka.trials.title,
-      editHref: `${navLinksData.admin.eureka.trials.edit}/${t.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.eureka.trials.edit}/${t.slug}`,
       date: t.created_at,
     })),
     ...(outfitSets ?? []).map((o) => ({
@@ -119,7 +117,7 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       title: o.title,
       image_url: o.image_url,
       type: navLinksData.admin.outfits.sets.title,
-      editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}`,
       date: o.created_at!,
     })),
     ...(outfitVariants ?? []).map((v) => ({
@@ -127,7 +125,7 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       title: v.title ?? toTitle(v.slug),
       image_url: v.image_url,
       type: navLinksData.admin.outfits.variants.title,
-      editHref: `${navLinksData.admin.outfits.variants.edit}/${v.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.outfits.variants.edit}/${v.slug}`,
       date: v.created_at,
     })),
     ...(evolutions ?? []).map((e) => ({
@@ -135,7 +133,7 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       title: e.title,
       image_url: e.image_url,
       type: navLinksData.admin.outfits.evolutions.title,
-      editHref: `${navLinksData.admin.outfits.evolutions.edit}/${e.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.outfits.evolutions.edit}/${e.slug}`,
       date: e.created_at,
     })),
   ]
@@ -203,7 +201,7 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       title: s.title,
       image_url: eurekaImages.get(s.slug) ?? null,
       type: navLinksData.admin.eureka.sets.title,
-      editHref: `${navLinksData.admin.eureka.sets.edit}/${s.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.eureka.sets.edit}/${s.slug}`,
       date: s.updated_at!,
     })),
     ...(eurekaVariants ?? []).map((v) => ({
@@ -211,7 +209,7 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       title: toTitle(v.slug),
       image_url: v.image_url,
       type: navLinksData.admin.eureka.variants.title,
-      editHref: `${navLinksData.admin.eureka.variants.edit}/${v.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.eureka.variants.edit}/${v.slug}`,
       date: v.updated_at!,
     })),
     ...(trials ?? []).map((t) => ({
@@ -219,7 +217,7 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       title: t.title,
       image_url: t.image_url,
       type: navLinksData.admin.eureka.trials.title,
-      editHref: `${navLinksData.admin.eureka.trials.edit}/${t.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.eureka.trials.edit}/${t.slug}`,
       date: t.updated_at!,
     })),
     ...(outfitSets ?? []).map((o) => ({
@@ -227,7 +225,7 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       title: o.title,
       image_url: o.image_url,
       type: navLinksData.admin.outfits.sets.title,
-      editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}`,
       date: o.updated_at!,
     })),
     ...(outfitVariants ?? []).map((v) => ({
@@ -235,7 +233,7 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       title: v.title ?? toTitle(v.slug),
       image_url: v.image_url,
       type: navLinksData.admin.outfits.variants.title,
-      editHref: `${navLinksData.admin.outfits.variants.edit}/${v.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.outfits.variants.edit}/${v.slug}`,
       date: v.updated_at!,
     })),
     ...(evolutions ?? []).map((e) => ({
@@ -243,7 +241,7 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       title: e.title,
       image_url: e.image_url,
       type: navLinksData.admin.outfits.evolutions.title,
-      editHref: `${navLinksData.admin.outfits.evolutions.edit}/${e.slug}${backDashboard}`,
+      editHref: `${navLinksData.admin.outfits.evolutions.edit}/${e.slug}`,
       date: e.updated_at!,
     })),
   ]

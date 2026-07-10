@@ -24,8 +24,7 @@ export function OutfitEvolutionTable({
 }: OutfitEvolutionTableProps) {
   const { showVariantColumns } = useAdminView()
   const [rows, setRows] = useState<Row[]>(initialRows)
-  const editHref = (row: Row) =>
-    `${navLinksData.admin.outfits.evolutions.edit}/${row.slug}?back=${encodeURIComponent(navLinksData.admin.outfits.evolutions.list)}`
+  const editHref = (row: Row) => `${navLinksData.admin.outfits.evolutions.edit}/${row.slug}`
 
   const columns: GridColDef<Row>[] = [
     {
