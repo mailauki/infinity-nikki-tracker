@@ -4,13 +4,9 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
 import { navLinksData } from '@/lib/nav-links'
+import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 
-export async function editSeason(
-  currentSlug: string,
-  backUrl: string,
-  _: unknown,
-  formData: FormData
-) {
+export async function editSeason(currentSlug: string, _: unknown, formData: FormData) {
   const role = await getUserRole()
   if (role !== 'admin') return { error: 'Forbidden' }
 
@@ -49,5 +45,5 @@ export async function editSeason(
     redirect(navLinksData.admin.outfits.seasons.list)
   }
 
-  redirect(backUrl)
+  redirect(ADMIN_DASHBOARD)
 }

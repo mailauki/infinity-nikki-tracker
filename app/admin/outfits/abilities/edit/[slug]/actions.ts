@@ -4,13 +4,9 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
 import { navLinksData } from '@/lib/nav-links'
+import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 
-export async function editAbility(
-  currentSlug: string,
-  backUrl: string,
-  _: unknown,
-  formData: FormData
-) {
+export async function editAbility(currentSlug: string, _: unknown, formData: FormData) {
   const role = await getUserRole()
   if (role !== 'admin') return { error: 'Forbidden' }
 
@@ -42,5 +38,5 @@ export async function editAbility(
     redirect(navLinksData.admin.outfits.abilities.list)
   }
 
-  redirect(backUrl)
+  redirect(ADMIN_DASHBOARD)
 }
