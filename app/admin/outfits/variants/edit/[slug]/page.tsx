@@ -4,11 +4,12 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
-import { getOutfitVariantRaw } from '@/hooks/data/admin/outfit-variants'
+import { getOutfitVariantRaw, getBaseVariantTitle } from '@/hooks/data/admin/outfit-variants'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
+import { deriveGlowupVariantTitle, isGlowup } from '@/hooks/outfit'
 import EntityForm from '@/app/admin/entity-form'
 import { editOutfitVariant } from '../../actions'
 
@@ -46,6 +47,23 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
 
   if (!variant) notFound()
 
+  // For a glow-up variant with no stored title, pre-fill the Title field with
+  // "{base variant title}: {glow-up set title}". Persisted only when the admin
+  // saves — nothing is written here.
+  let prefillTitle = variant.title ?? ''
+  const glowupSet = outfitSets.find((s) => s.slug === variant.outfit_set)
+  if (!prefillTitle.trim() && glowupSet && isGlowup(glowupSet) && glowupSet.base_set) {
+    const baseVariantTitle = await getBaseVariantTitle(
+      glowupSet.base_set,
+      variant.outfit_category ?? ''
+    )
+    prefillTitle =
+      deriveGlowupVariantTitle({
+        baseVariantTitle,
+        glowupSetTitle: glowupSet.title,
+      }) ?? ''
+  }
+
   return (
     <EntityForm
       showUpdateNext
@@ -62,7 +80,7 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
         style: variant.style ?? '',
         label: variant.label ?? '',
         label_2: variant.label_2 ?? '',
-        title: variant.title ?? '',
+        title: prefillTitle,
         description: variant.description ?? '',
         slug: variant.slug,
         image_url: variant.image_url,

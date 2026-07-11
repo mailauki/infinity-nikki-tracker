@@ -29,6 +29,23 @@ export function evolutionSortKey(row: { order: number }): number {
   return row.order === 0 ? Infinity : row.order
 }
 
+// Derived default title for a glow-up variant with no stored title:
+// "{base variant title}: {glow-up set title}", e.g. "Gifted Sunlight: Light Pursuer".
+// Returns null when the base variant has no usable title (or the glow-up set has
+// no title) — callers then leave the variant title untouched.
+export function deriveGlowupVariantTitle({
+  baseVariantTitle,
+  glowupSetTitle,
+}: {
+  baseVariantTitle: string | null | undefined
+  glowupSetTitle: string | null | undefined
+}): string | null {
+  const base = baseVariantTitle?.trim()
+  const glowup = glowupSetTitle?.trim()
+  if (!base || !glowup) return null
+  return `${base}: ${glowup}`
+}
+
 export function isBaseRow(row: { base_set: string | null }): boolean {
   return row.base_set === null
 }
@@ -92,10 +109,36 @@ export function createOutfitSet({
   // The base row's embed carries only base-state variants (outfit_set = baseSlug).
   // Each evolution sibling carries its own variants (outfit_set = its slug). Merge
   // them so consumers can group `outfit_variants` by state slug (base + each evo).
-  const allVariants = [
-    ...outfitSet.outfit_variants,
-    ...resolvedEvolutions.flatMap((e) => e.outfit_variants ?? []),
-  ]
+  const baseVariants = outfitSet.outfit_variants
+
+  // Map each base-state category to its (non-empty) variant title, so a glow-up
+  // variant can inherit "{base title}: {glow-up set title}" when it has none.
+  const baseTitleByCategory = new Map<string, string>()
+  for (const v of baseVariants) {
+    const title = v.title?.trim()
+    if (v.outfit_set === baseSlug && v.outfit_category && title) {
+      baseTitleByCategory.set(v.outfit_category, title)
+    }
+  }
+
+  // Glow-up state slug -> that glow-up set's title.
+  const glowupTitleBySlug = new Map<string, string | null>()
+  for (const e of resolvedEvolutions) {
+    if (isGlowup(e)) glowupTitleBySlug.set(e.slug, e.title)
+  }
+
+  const withDerivedTitles = resolvedEvolutions.flatMap((e) =>
+    (e.outfit_variants ?? []).map((v) => {
+      if (v.title?.trim() || !glowupTitleBySlug.has(v.outfit_set ?? '')) return v
+      const derived = deriveGlowupVariantTitle({
+        baseVariantTitle: baseTitleByCategory.get(v.outfit_category ?? ''),
+        glowupSetTitle: glowupTitleBySlug.get(v.outfit_set ?? ''),
+      })
+      return derived ? { ...v, title: derived } : v
+    })
+  )
+
+  const allVariants = [...baseVariants, ...withDerivedTitles]
 
   return {
     ...outfitSet,
