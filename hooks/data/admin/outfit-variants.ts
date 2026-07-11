@@ -56,3 +56,21 @@ export const getOutfitVariantRaw = cache(async (slug: string) => {
 
   return (outfitVariant ?? null) as OutfitVariantRaw | null
 })
+
+// Base-set variant title for a given category — used to pre-fill a glow-up
+// variant's title in the admin edit form.
+export const getBaseVariantTitle = cache(
+  async (baseSetSlug: string, outfitCategory: string): Promise<string | null> => {
+    const supabase = await createClient()
+
+    const { data } = await supabase
+      .from('outfit_variants')
+      .select('title')
+      .eq('outfit_set', baseSetSlug)
+      .eq('outfit_category', outfitCategory)
+      .maybeSingle()
+
+    const title = data?.title?.trim()
+    return title ? title : null
+  }
+)
