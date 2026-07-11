@@ -29,6 +29,23 @@ export function evolutionSortKey(row: { order: number }): number {
   return row.order === 0 ? Infinity : row.order
 }
 
+// Derived default title for a glow-up variant with no stored title:
+// "{base variant title}: {glow-up set title}", e.g. "Gifted Sunlight: Light Pursuer".
+// Returns null when the base variant has no usable title (or the glow-up set has
+// no title) — callers then leave the variant title untouched.
+export function deriveGlowupVariantTitle({
+  baseVariantTitle,
+  glowupSetTitle,
+}: {
+  baseVariantTitle: string | null | undefined
+  glowupSetTitle: string | null | undefined
+}): string | null {
+  const base = baseVariantTitle?.trim()
+  const glowup = glowupSetTitle?.trim()
+  if (!base || !glowup) return null
+  return `${base}: ${glowup}`
+}
+
 export function isBaseRow(row: { base_set: string | null }): boolean {
   return row.base_set === null
 }
