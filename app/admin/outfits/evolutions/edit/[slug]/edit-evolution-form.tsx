@@ -9,6 +9,7 @@ import { CarouselImage } from '@/lib/types/outfit'
 import { editEvolution } from './actions'
 import { Tables } from '@/lib/types/supabase'
 import OutfitVariantImageCard from '@/components/outfits/outfit-variant-image-card'
+import { deriveGlowupVariantTitle, isGlowup } from '@/hooks/outfit'
 
 type EvolutionRow = Pick<
   Tables<'outfit_sets'>,
@@ -32,13 +33,39 @@ type VariantRow = Pick<
 
 const FORM_ID = 'edit-evolution'
 
+// Seed each variant's title, defaulting an empty title to the derived glow-up
+// title ("{base title}: {glow-up set title}") when this is a glow-up evolution and
+// the base set has a same-category title. A stored title always wins.
+function buildVariantTitles(
+  rows: VariantRow[],
+  evolution: EvolutionRow,
+  baseTitleByCategory: Record<string, string>
+): Record<string, string> {
+  const derivable = isGlowup(evolution)
+  return Object.fromEntries(
+    rows
+      .filter((v) => v.slug)
+      .map((v) => {
+        const stored = v.title ?? ''
+        if (stored.trim() || !derivable) return [v.slug, stored]
+        const derived = deriveGlowupVariantTitle({
+          baseVariantTitle: baseTitleByCategory[v.outfit_category ?? ''],
+          glowupSetTitle: evolution.title,
+        })
+        return [v.slug, derived ?? stored]
+      })
+  )
+}
+
 export default function EditEvolutionForm({
   evolution,
   variants,
+  baseTitleByCategory = {},
   initialCarouselImages = [],
 }: {
   evolution: EvolutionRow
   variants: VariantRow[]
+  baseTitleByCategory?: Record<string, string>
   initialCarouselImages?: CarouselImage[]
 }) {
   const { setFormConfig } = useFormConfig()
@@ -54,8 +81,8 @@ export default function EditEvolutionForm({
   const [variantAltImages, setVariantAltImages] = useState<Record<string, string | null>>(
     Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.alt_image_url]))
   )
-  const [variantTitles, setVariantTitles] = useState<Record<string, string>>(
-    Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.title ?? '']))
+  const [variantTitles, setVariantTitles] = useState<Record<string, string>>(() =>
+    buildVariantTitles(variants, evolution, baseTitleByCategory)
   )
   const [variantDescriptions, setVariantDescriptions] = useState<Record<string, string>>(
     Object.fromEntries(variants.filter((v) => v.slug).map((v) => [v.slug, v.description ?? '']))
@@ -89,9 +116,7 @@ export default function EditEvolutionForm({
         setVariantAltImages(
           Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.alt_image_url]))
         )
-        setVariantTitles(
-          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.title ?? '']))
-        )
+        setVariantTitles(buildVariantTitles(fresh, evolution, baseTitleByCategory))
         setVariantDescriptions(
           Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.description ?? '']))
         )

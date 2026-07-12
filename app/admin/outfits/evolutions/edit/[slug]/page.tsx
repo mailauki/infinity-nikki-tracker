@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import EditEvolutionForm from './edit-evolution-form'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
+import { isGlowup } from '@/hooks/outfit'
 
 export const metadata: Metadata = {
   title: 'Edit Evolution',
@@ -49,8 +50,23 @@ async function EditEvolution({ params }: { params: Promise<{ slug: string }> }) 
       .then((r) => r.data ?? []),
   ])
 
+  // For a glow-up evolution, map each base-set category to its variant title so the
+  // form can default an empty variant title to "{base title}: {glow-up set title}".
+  const baseTitleByCategory: Record<string, string> = {}
+  if (isGlowup(evolution) && evolution.base_set) {
+    const { data: baseVariants } = await supabase
+      .from('outfit_variants')
+      .select('outfit_category, title')
+      .eq('outfit_set', evolution.base_set)
+    for (const v of baseVariants ?? []) {
+      const title = v.title?.trim()
+      if (v.outfit_category && title) baseTitleByCategory[v.outfit_category] = title
+    }
+  }
+
   return (
     <EditEvolutionForm
+      baseTitleByCategory={baseTitleByCategory}
       evolution={evolution}
       initialCarouselImages={carouselRows}
       variants={variantRows ?? []}
