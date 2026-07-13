@@ -13,6 +13,7 @@ import {
 import ImageIcon from '@mui/icons-material/Image'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import { AvatarSize } from '@/lib/types/props'
+import { fileToWebp } from '@/lib/image-to-webp'
 import { enqueueSnackbar } from 'notistack'
 
 export type ImageUploadTable =
@@ -57,14 +58,15 @@ export default function ImageUpload({
         throw new Error('You must select an image to upload.')
       }
 
-      const file = event.target.files[0]
       if (!slug) throw new Error('Cannot upload image: record has no slug yet.')
-      const fileExt = file.name.split('.').pop()
+      // Re-encode to WebP so every object in the bucket has a consistent
+      // `.webp` extension and content type.
+      const file = await fileToWebp(event.target.files[0], column)
       // Stable path per record+column so a re-upload overwrites the same object
       // instead of orphaning the previous one. Default and alt live in the same
       // slug folder but differ by `column` (image_url vs alt_image_url).
       const folder = `${table}/${slug}`
-      const filePath = `${folder}/${column}.${fileExt}`
+      const filePath = `${folder}/${column}.webp`
 
       // Remove the object this column currently points at (if any) before the new
       // upload, so we don't orphan it. This covers the legacy UUID-named files and
@@ -83,7 +85,7 @@ export default function ImageUpload({
 
       const { error: uploadError } = await supabase.storage
         .from('images')
-        .upload(filePath, file, { upsert: true })
+        .upload(filePath, file, { upsert: true, contentType: 'image/webp' })
 
       if (uploadError) throw uploadError
 

@@ -56,3 +56,5 @@ supabase/.temp/
 .playwright-mcp/
 
 certificates
+# Migration backup (one-off WebP migration script output)
+bucket-backup/

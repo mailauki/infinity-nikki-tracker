@@ -15,6 +15,7 @@ import {
 import { AddPhotoAlternate, Delete } from '@mui/icons-material'
 import { enqueueSnackbar } from 'notistack'
 import { CarouselImage } from '@/lib/types/outfit'
+import { fileToWebp } from '@/lib/image-to-webp'
 
 export default function CarouselImageUpload({
   slug,
@@ -36,13 +37,14 @@ export default function CarouselImageUpload({
       setUploading(true)
       if (!event.target.files || event.target.files.length === 0) return
 
-      const file = event.target.files[0]
-      const fileExt = file.name.split('.').pop()
-      const filePath = `${table}/${slug}/${crypto.randomUUID()}.${fileExt}`
+      // Re-encode to WebP so every gallery object has a consistent `.webp`
+      // extension and content type.
+      const file = await fileToWebp(event.target.files[0], crypto.randomUUID())
+      const filePath = `${table}/${slug}/${file.name}`
 
       const { error: uploadError } = await supabase.storage
         .from('images')
-        .upload(filePath, file, { upsert: false })
+        .upload(filePath, file, { upsert: false, contentType: 'image/webp' })
       if (uploadError) throw uploadError
 
       const { data } = supabase.storage.from('images').getPublicUrl(filePath)
