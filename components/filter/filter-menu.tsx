@@ -107,6 +107,20 @@ export default function FilterMenu() {
   // is actually present.
   const { selectedOutfitCategory } = outfitFilters
   const { selectedEvolution: selectedEvolutionForReconcile } = outfitFilters
+
+  // Whether an evolution order is currently shown, per the show-toggles. Base is
+  // order 1, glow-up is order 0, everything else is a regular evolution. Shared
+  // by `availableOrders` (which orders the toggle offers) and the reconciliation
+  // effect below (which clears a selection whose category was just hidden).
+  const isOrderShown = React.useCallback(
+    (order: number) => {
+      if (order === 1) return showBase
+      if (order === 0) return showGlowups
+      return showEvolutions
+    },
+    [showBase, showEvolutions, showGlowups]
+  )
+
   React.useEffect(() => {
     if (isOutfits && density === 'standard' && selectedOutfitCategory.length > 0) {
       onOutfitFiltersChange({ selectedOutfitCategory: [] })
@@ -116,23 +130,11 @@ export default function FilterMenu() {
   React.useEffect(() => {
     if (!isOutfits) return
     const orderVisible =
-      selectedEvolutionForReconcile === null ||
-      (selectedEvolutionForReconcile === 1
-        ? showBase
-        : selectedEvolutionForReconcile === 0
-          ? showGlowups
-          : showEvolutions)
+      selectedEvolutionForReconcile === null || isOrderShown(selectedEvolutionForReconcile)
     if (!orderVisible) {
       onOutfitFiltersChange({ selectedEvolution: null })
     }
-  }, [
-    isOutfits,
-    selectedEvolutionForReconcile,
-    showBase,
-    showEvolutions,
-    showGlowups,
-    onOutfitFiltersChange,
-  ])
+  }, [isOutfits, selectedEvolutionForReconcile, isOrderShown, onOutfitFiltersChange])
 
   if (isOutfits) {
     const {
@@ -180,9 +182,7 @@ export default function FilterMenu() {
       1, // base is always a possible order
       ...new Set(outfitSets.flatMap((s) => s.evolutions).map((e) => e.order)),
     ]
-    const availableOrders = allOrders
-      .filter((o) => (o === 1 ? showBase : o === 0 ? showGlowups : showEvolutions))
-      .sort((a, b) => a - b)
+    const availableOrders = allOrders.filter(isOrderShown).sort((a, b) => a - b)
 
     return (
       <>
