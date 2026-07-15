@@ -252,12 +252,12 @@ export default function FilterMenu() {
                   />
                   <Stack direction="row" spacing={1}>
                     <EvolutionToggle
-                      disabled={selectedEvolution === 1}
+                      disabled={Boolean(selectedEvolution)}
                       hideEvolutions={hideEvolutions}
                       onHideEvolutionsChange={onHideEvolutionsChange}
                     />
                     <GlowupToggle
-                      disabled={selectedEvolution === 1}
+                      disabled={Boolean(selectedEvolution)}
                       hideGlowups={hideGlowups}
                       onHideGlowupsChange={onHideGlowupsChange}
                     />
