@@ -29,14 +29,13 @@ import SortEurekaToggle from './sort-eureka-toggle'
 import EurekaSelect from './eureka-select'
 import RarityToggle from './rarity-toggle'
 import OutfitSelect from './outfit-select'
-import EvolutionToggle from './evolution-toggle'
 import SortOutfitToggle from './sort-outfit-toggle'
 import DensityToggle from './density-toggle'
 import { useOutfitImageMode } from '../outfits/outfit-image-mode-context'
 import { useSortOrder } from '../sort-context'
 import OutfitCategorySelect from './outfit-category-select'
 import EvolutionOrderToggle from './evolution-order-toggle'
-import GlowupToggle from './glowup-toggle'
+import EvolutionShowToggle from './evolution-show-toggle'
 import SortAxisToggle from './sort-axis-toggle'
 import StyleLabelSelect from './style-label-select'
 
@@ -84,11 +83,13 @@ export default function FilterMenu() {
     labels: outfitLabels,
     isLoggedIn: outfitLoggedIn,
     groupBySet: outfitGroupBySet,
-    hideEvolutions,
-    hideGlowups,
+    showBase,
+    showEvolutions,
+    showGlowups,
     onGroupBySetChange: onOutfitGroupBySetChange,
-    onHideEvolutionsChange,
-    onHideGlowupsChange,
+    onShowBaseChange,
+    onShowEvolutionsChange,
+    onShowGlowupsChange,
     filters: outfitFilters,
     onFiltersChange: onOutfitFiltersChange,
     onClearFilters: onClearOutfitFilters,
@@ -105,11 +106,33 @@ export default function FilterMenu() {
   // density is standard. Idempotent — only fires an update when a selection
   // is actually present.
   const { selectedOutfitCategory } = outfitFilters
+  const { selectedEvolution: selectedEvolutionForReconcile } = outfitFilters
   React.useEffect(() => {
     if (isOutfits && density === 'standard' && selectedOutfitCategory.length > 0) {
       onOutfitFiltersChange({ selectedOutfitCategory: [] })
     }
   }, [isOutfits, density, selectedOutfitCategory, onOutfitFiltersChange])
+
+  React.useEffect(() => {
+    if (!isOutfits) return
+    const orderVisible =
+      selectedEvolutionForReconcile === null ||
+      (selectedEvolutionForReconcile === 1
+        ? showBase
+        : selectedEvolutionForReconcile === 0
+          ? showGlowups
+          : showEvolutions)
+    if (!orderVisible) {
+      onOutfitFiltersChange({ selectedEvolution: null })
+    }
+  }, [
+    isOutfits,
+    selectedEvolutionForReconcile,
+    showBase,
+    showEvolutions,
+    showGlowups,
+    onOutfitFiltersChange,
+  ])
 
   if (isOutfits) {
     const {
@@ -133,8 +156,9 @@ export default function FilterMenu() {
       selectedStyle.length > 0 ||
       selectedLabel.length > 0 ||
       !outfitGroupBySet ||
-      hideEvolutions ||
-      hideGlowups ||
+      !showBase ||
+      !showEvolutions ||
+      !showGlowups ||
       density !== 'standard' ||
       imageMode !== 'image'
 
@@ -152,10 +176,13 @@ export default function FilterMenu() {
       resetSort()
     }
 
-    // const availableOrders = [
-    //   ...new Set(outfitSets.flatMap((s) => s.evolutions).map((e) => e.order)),
-    // ].sort((a, b) => a - b)
-    const availableOrders = [2, 3, 4, 0]
+    const allOrders = [
+      1, // base is always a possible order
+      ...new Set(outfitSets.flatMap((s) => s.evolutions).map((e) => e.order)),
+    ]
+    const availableOrders = allOrders
+      .filter((o) => (o === 1 ? showBase : o === 0 ? showGlowups : showEvolutions))
+      .sort((a, b) => a - b)
 
     return (
       <>
@@ -208,18 +235,18 @@ export default function FilterMenu() {
                 >
                   <EvolutionOrderToggle
                     availableOrders={availableOrders}
-                    disabled={hideEvolutions && hideGlowups}
+                    disabled={!showBase && !showEvolutions && !showGlowups}
                     selectedEvolution={selectedEvolution}
                     onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
                   />
                   <Stack direction="row" spacing={1}>
-                    <EvolutionToggle
-                      hideEvolutions={hideEvolutions}
-                      onHideEvolutionsChange={onHideEvolutionsChange}
-                    />
-                    <GlowupToggle
-                      hideGlowups={hideGlowups}
-                      onHideGlowupsChange={onHideGlowupsChange}
+                    <EvolutionShowToggle
+                      showBase={showBase}
+                      showEvolutions={showEvolutions}
+                      showGlowups={showGlowups}
+                      onShowBaseChange={onShowBaseChange}
+                      onShowEvolutionsChange={onShowEvolutionsChange}
+                      onShowGlowupsChange={onShowGlowupsChange}
                     />
                   </Stack>
                 </Stack>
