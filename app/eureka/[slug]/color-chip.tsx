@@ -20,7 +20,13 @@ export default function ColorChip({
         key={color.slug}
         clickable
         avatar={
-          <LazyImage alt={color.title || color.slug} kind='avatar' size="xs" src={colorIconSrc(color.slug)} variant='circular' />
+          <LazyImage
+            alt={color.title || color.slug}
+            kind="avatar"
+            size="xs"
+            src={colorIconSrc(color.slug)}
+            variant="circular"
+          />
         }
         color={active ? 'secondary' : 'default'}
         deleteIcon={<Done />}
