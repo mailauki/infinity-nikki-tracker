@@ -51,6 +51,7 @@ import { Delete, ExpandMore, TaskAlt, CheckCircle as CheckCircleIcon, Tune as Tu
 import SidebarBody from '@/components/sidebar/sidebar-body'
 import { SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
+import CardGrid from '@/components/card-grid'
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} {...props} />
@@ -585,14 +586,7 @@ export default function LookBuilder({
               </Stack>
             </StepLabel>
             <StepContent>
-              <Box
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-                  gap: 1,
-                  pt: 1,
-                }}
-              >
+              <CardGrid>
                 {step.variants.map((v) => (
                   <VariantCard
                     key={v.slug}
@@ -601,7 +595,7 @@ export default function LookBuilder({
                     onToggle={(slug) => pickAndAdvance(slug, section, index)}
                   />
                 ))}
-              </Box>
+              </CardGrid>
             </StepContent>
           </Step>
         ))}
