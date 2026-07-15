@@ -2,6 +2,7 @@
 
 import { createContext, useContext } from 'react'
 import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
+import { Label, Style } from '@/lib/types/eureka'
 import { ObtainedFilter } from '@/lib/types/props'
 
 export interface OutfitFilterState {
@@ -10,12 +11,16 @@ export interface OutfitFilterState {
   selectedEvolution: number | null
   selectedRarity: number | null
   selectedObtainedFilter: ObtainedFilter | null
+  selectedStyle: string[]
+  selectedLabel: string[]
 }
 
 interface OutfitDataContextValue {
   outfitSets: OutfitSet[]
   obtainedOutfit: ObtainedOutfit[]
   outfitCategories: OutfitCategory[]
+  styles: Style[]
+  labels: Label[]
   isLoggedIn: boolean
   isAdmin: boolean
   isLoading: boolean
@@ -48,12 +53,16 @@ export const DEFAULT_OUTFIT_FILTERS: OutfitFilterState = {
   selectedEvolution: null,
   selectedRarity: null,
   selectedObtainedFilter: null,
+  selectedStyle: [],
+  selectedLabel: [],
 }
 
 export const OutfitDataContext = createContext<OutfitDataContextValue>({
   outfitSets: [],
   obtainedOutfit: [],
   outfitCategories: [],
+  styles: [],
+  labels: [],
   isLoggedIn: false,
   isAdmin: false,
   isLoading: true,

@@ -38,6 +38,7 @@ import OutfitCategorySelect from './outfit-category-select'
 import EvolutionOrderToggle from './evolution-order-toggle'
 import GlowupToggle from './glowup-toggle'
 import SortAxisToggle from './sort-axis-toggle'
+import StyleLabelSelect from './style-label-select'
 
 export default function FilterMenu() {
   const pathname = usePathname()
@@ -54,6 +55,8 @@ export default function FilterMenu() {
     eurekaSets,
     categories,
     colors,
+    styles,
+    labels,
     isLoggedIn,
     groupBySet,
     showByColor,
@@ -70,11 +73,15 @@ export default function FilterMenu() {
     selectedObtainedFilter,
     selectedColor,
     selectedRarity,
+    selectedStyle,
+    selectedLabel,
   } = filters
 
   const {
     outfitSets,
     outfitCategories,
+    styles: outfitStyles,
+    labels: outfitLabels,
     isLoggedIn: outfitLoggedIn,
     groupBySet: outfitGroupBySet,
     hideEvolutions,
@@ -105,8 +112,14 @@ export default function FilterMenu() {
   }, [isOutfits, density, selectedOutfitCategory, onOutfitFiltersChange])
 
   if (isOutfits) {
-    const { selectedOutfitSet, selectedEvolution, selectedObtainedFilter, selectedRarity } =
-      outfitFilters
+    const {
+      selectedOutfitSet,
+      selectedEvolution,
+      selectedObtainedFilter,
+      selectedRarity,
+      selectedStyle,
+      selectedLabel,
+    } = outfitFilters
 
     // "Clear all" resets every control in this drawer, so it should appear when
     // any of them is non-default — the filters, the grouping/evolution toggles,
@@ -117,6 +130,8 @@ export default function FilterMenu() {
       selectedEvolution !== null ||
       selectedObtainedFilter ||
       selectedRarity ||
+      selectedStyle.length > 0 ||
+      selectedLabel.length > 0 ||
       !outfitGroupBySet ||
       hideEvolutions ||
       hideGlowups ||
@@ -241,6 +256,24 @@ export default function FilterMenu() {
                 onRarityChange={(_e, v) => onOutfitFiltersChange({ selectedRarity: v })}
               />
             </ListItem>
+            <ListItem>
+              <StyleLabelSelect
+                id="outfit-style-select"
+                label="Style"
+                options={outfitStyles}
+                selected={selectedStyle}
+                onChange={(next) => onOutfitFiltersChange({ selectedStyle: next })}
+              />
+            </ListItem>
+            <ListItem>
+              <StyleLabelSelect
+                id="outfit-label-select"
+                label="Label"
+                options={outfitLabels}
+                selected={selectedLabel}
+                onChange={(next) => onOutfitFiltersChange({ selectedLabel: next })}
+              />
+            </ListItem>
             <Divider sx={{ mx: 2, mt: 2 }} />
             <ListItem>
               <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
@@ -306,6 +339,8 @@ export default function FilterMenu() {
     selectedObtainedFilter ||
     selectedColor ||
     selectedRarity ||
+    selectedStyle.length > 0 ||
+    selectedLabel.length > 0 ||
     !groupBySet ||
     showByColor
 
@@ -362,6 +397,24 @@ export default function FilterMenu() {
           </ListItem>
           <ListItem>
             <RarityToggle selectedRarity={selectedRarity} onRarityChange={handleRarityChange} />
+          </ListItem>
+          <ListItem>
+            <StyleLabelSelect
+              id="eureka-style-select"
+              label="Style"
+              options={styles}
+              selected={selectedStyle}
+              onChange={(next) => onFiltersChange({ selectedStyle: next })}
+            />
+          </ListItem>
+          <ListItem>
+            <StyleLabelSelect
+              id="eureka-label-select"
+              label="Label"
+              options={labels}
+              selected={selectedLabel}
+              onChange={(next) => onFiltersChange({ selectedLabel: next })}
+            />
           </ListItem>
           <Divider sx={{ mx: 2, mt: 2 }} />
           <ListItem>

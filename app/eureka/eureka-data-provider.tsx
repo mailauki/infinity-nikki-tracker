@@ -9,7 +9,9 @@ import {
   EurekaCategory,
   EurekaColor,
   EurekaSet,
+  Label,
   ObtainedEureka,
+  Style,
   Trial,
   UserPreferences,
 } from '@/lib/types/eureka'
@@ -31,6 +33,8 @@ interface EurekaBootstrap {
   categories: EurekaCategory[]
   colors: EurekaColor[]
   trials: Trial[]
+  styles: Style[]
+  labels: Label[]
   obtained: ObtainedEureka[]
 }
 
@@ -49,6 +53,8 @@ export default function EurekaDataProvider({
   const [categories, setCategories] = useState<EurekaCategory[]>([])
   const [colors, setColors] = useState<EurekaColor[]>([])
   const [trials, setTrials] = useState<Trial[]>([])
+  const [styles, setStyles] = useState<Style[]>([])
+  const [labels, setLabels] = useState<Label[]>([])
   const [obtainedEureka, setObtainedEureka] = useState<ObtainedEureka[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
@@ -61,14 +67,26 @@ export default function EurekaDataProvider({
 
   useEffect(() => {
     fetchJson<EurekaBootstrap>('/api/eureka/bootstrap')
-      .then(({ sets, categories: cats, colors: cols, trials: trls, obtained }) => {
-        setEurekaSets(sets)
-        setCategories(cats)
-        setColors(cols)
-        setTrials(trls)
-        setObtainedEureka(obtained)
-        setIsLoading(false)
-      })
+      .then(
+        ({
+          sets,
+          categories: cats,
+          colors: cols,
+          trials: trls,
+          styles: sty,
+          labels: lbl,
+          obtained,
+        }) => {
+          setEurekaSets(sets)
+          setCategories(cats)
+          setColors(cols)
+          setTrials(trls)
+          setStyles(sty)
+          setLabels(lbl)
+          setObtainedEureka(obtained)
+          setIsLoading(false)
+        }
+      )
       .catch((err) => {
         console.error('Failed to load eureka data:', err)
         setIsError(true)
@@ -88,6 +106,8 @@ export default function EurekaDataProvider({
           selectedObtainedFilter: (prefs.eureka_obtained_filter as ObtainedFilter) ?? null,
           selectedColor: prefs.eureka_color ?? null,
           selectedRarity: prefs.eureka_rarity ? Number(prefs.eureka_rarity) || null : null,
+          selectedStyle: prefs.eureka_style ? prefs.eureka_style.split(',').filter(Boolean) : [],
+          selectedLabel: prefs.eureka_label ? prefs.eureka_label.split(',').filter(Boolean) : [],
         })
         prefsLoaded.current = true
       })
@@ -192,6 +212,8 @@ export default function EurekaDataProvider({
         eureka_obtained_filter: filters.selectedObtainedFilter,
         eureka_color: filters.selectedColor,
         eureka_rarity: filters.selectedRarity ? String(filters.selectedRarity) : null,
+        eureka_style: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
+        eureka_label: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
       })
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -270,6 +292,8 @@ export default function EurekaDataProvider({
         categories,
         colors,
         trials,
+        styles,
+        labels,
         isLoggedIn,
         isAdmin,
         isLoading,

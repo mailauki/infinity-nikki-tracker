@@ -6,6 +6,8 @@ import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getEvolutions } from '@/hooks/data/evolutions'
 import { getObtainedOutfit } from '@/hooks/data/obtained-outfit'
 import { getOutfitVariantsBySet } from '@/hooks/data/outfit-variants'
+import { getStyles } from '@/hooks/data/styles'
+import { getLabels } from '@/hooks/data/labels'
 
 export async function GET() {
   const supabase = await createClient()
@@ -35,7 +37,12 @@ export async function GET() {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  const [outfitCategories, evolutions] = await Promise.all([getOutfitCategories(), getEvolutions()])
+  const [outfitCategories, evolutions, styles, labels] = await Promise.all([
+    getOutfitCategories(),
+    getEvolutions(),
+    getStyles(),
+    getLabels(),
+  ])
 
   const outfits = (outfitSets ?? []).map((outfitSet) =>
     createOutfitSet({
@@ -54,7 +61,7 @@ export async function GET() {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    return NextResponse.json({ outfitSets: outfits })
+    return NextResponse.json({ outfitSets: outfits, styles, labels })
   }
 
   let obtainedOutfit: ObtainedOutfit[]
@@ -70,5 +77,5 @@ export async function GET() {
     updateOutfitSet({ outfitSet, obtainedOutfit })
   )
 
-  return NextResponse.json({ outfitSets: outfitsWithObtained })
+  return NextResponse.json({ outfitSets: outfitsWithObtained, styles, labels })
 }

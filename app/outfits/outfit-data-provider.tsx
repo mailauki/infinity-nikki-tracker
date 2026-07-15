@@ -5,7 +5,7 @@ import { enqueueSnackbar } from 'notistack'
 import { createClient } from '@/lib/supabase/client'
 import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
-import { UserPreferences } from '@/lib/types/eureka'
+import { Label, Style, UserPreferences } from '@/lib/types/eureka'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 import {
   updateOutfitFilters,
@@ -40,6 +40,8 @@ export default function OutfitDataProvider({
 }) {
   const [outfitSets, setOutfitSets] = useState<OutfitSet[]>([])
   const [outfitCategories, setOutfitCategories] = useState<OutfitCategory[]>([])
+  const [styles, setStyles] = useState<Style[]>([])
+  const [labels, setLabels] = useState<Label[]>([])
   const [obtainedOutfit, setObtainedOutfit] = useState<ObtainedOutfit[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
@@ -55,12 +57,14 @@ export default function OutfitDataProvider({
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
-    fetchJson<{ outfitSets: OutfitSet[] }>('/api/outfits')
-      .then(({ outfitSets: sets }) => {
+    fetchJson<{ outfitSets: OutfitSet[]; styles: Style[]; labels: Label[] }>('/api/outfits')
+      .then(({ outfitSets: sets, styles: sty, labels: lbl }) => {
         setOutfitSets(sets)
         if (sets.length > 0) {
           setOutfitCategories(sets[0].outfit_categories)
         }
+        setStyles(sty)
+        setLabels(lbl)
         setIsLoading(false)
       })
       .catch((err) => {
@@ -93,6 +97,12 @@ export default function OutfitDataProvider({
             prefs.outfit_obtained_filter === 'obtained'
               ? (prefs.outfit_obtained_filter as ObtainedFilter)
               : null,
+          selectedStyle: prefs.outfit_style_filter
+            ? prefs.outfit_style_filter.split(',').filter(Boolean)
+            : [],
+          selectedLabel: prefs.outfit_label_filter
+            ? prefs.outfit_label_filter.split(',').filter(Boolean)
+            : [],
         })
         setPrefsLoaded(true)
       })
@@ -213,6 +223,8 @@ export default function OutfitDataProvider({
           filters.selectedEvolution !== null ? String(filters.selectedEvolution) : null,
         outfit_rarity_filter: filters.selectedRarity ? String(filters.selectedRarity) : null,
         outfit_obtained_filter: filters.selectedObtainedFilter,
+        outfit_style_filter: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
+        outfit_label_filter: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
       })
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -279,6 +291,8 @@ export default function OutfitDataProvider({
         outfitSets: outfitSetsWithObtained,
         obtainedOutfit,
         outfitCategories,
+        styles,
+        labels,
         isLoggedIn,
         isAdmin,
         isLoading,

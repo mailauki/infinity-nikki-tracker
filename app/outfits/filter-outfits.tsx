@@ -65,6 +65,8 @@ export default function FilterOutfits() {
     selectedEvolution,
     selectedObtainedFilter,
     selectedRarity,
+    selectedStyle,
+    selectedLabel,
   } = filters
 
   if (isError) {
@@ -118,6 +120,11 @@ export default function FilterOutfits() {
       }
       return set.rarity === selectedRarity
     })
+    .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
+    .filter(
+      (set) =>
+        !selectedLabel.length || selectedLabel.some((l) => l === set.label || l === set.label_2)
+    )
     .map((set) => {
       const baseSlug = set.slug
       // Map each state slug to its display order for the selectedEvolution filter.
