@@ -15,7 +15,7 @@ export default function OutfitToolBar({
   showFilters?: boolean
   baseEvolutionOnly?: boolean
 }) {
-  const { outfitSets, groupBySet, hideEvolutions, hideGlowups, filters } = useOutfitData()
+  const { outfitSets, groupBySet, showBase, showEvolutions, showGlowups, filters } = useOutfitData()
   const { density } = useOutfitImageMode()
 
   const {
@@ -51,9 +51,9 @@ export default function OutfitToolBar({
                 stateSlug: v.outfit_set,
                 baseSlug,
                 isGlowupState: !!evo && isGlowup(evo),
-                showBase: true,
-                showEvolutions: !hideEvolutions,
-                showGlowups: !hideGlowups,
+                showBase,
+                showEvolutions,
+                showGlowups,
               })
             })
             .filter(
