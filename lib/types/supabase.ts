@@ -899,14 +899,13 @@ export type Database = {
           outfit_density: string | null
           outfit_evolution_filter: string | null
           outfit_group_by_set: boolean
+          outfit_hide_evolutions: boolean
+          outfit_hide_glowups: boolean
           outfit_image_mode: string | null
           outfit_label_filter: string | null
           outfit_obtained_filter: string | null
           outfit_rarity_filter: string | null
           outfit_set_filter: string | null
-          outfit_show_base: boolean
-          outfit_show_evolutions: boolean
-          outfit_show_glowups: boolean
           outfit_sort_axis: string | null
           outfit_style_filter: string | null
           show_by_color: boolean
@@ -930,14 +929,13 @@ export type Database = {
           outfit_density?: string | null
           outfit_evolution_filter?: string | null
           outfit_group_by_set?: boolean
+          outfit_hide_evolutions?: boolean
+          outfit_hide_glowups?: boolean
           outfit_image_mode?: string | null
           outfit_label_filter?: string | null
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
           outfit_set_filter?: string | null
-          outfit_show_base?: boolean
-          outfit_show_evolutions?: boolean
-          outfit_show_glowups?: boolean
           outfit_sort_axis?: string | null
           outfit_style_filter?: string | null
           show_by_color?: boolean
@@ -961,14 +959,13 @@ export type Database = {
           outfit_density?: string | null
           outfit_evolution_filter?: string | null
           outfit_group_by_set?: boolean
+          outfit_hide_evolutions?: boolean
+          outfit_hide_glowups?: boolean
           outfit_image_mode?: string | null
           outfit_label_filter?: string | null
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
           outfit_set_filter?: string | null
-          outfit_show_base?: boolean
-          outfit_show_evolutions?: boolean
-          outfit_show_glowups?: boolean
           outfit_sort_axis?: string | null
           outfit_style_filter?: string | null
           show_by_color?: boolean

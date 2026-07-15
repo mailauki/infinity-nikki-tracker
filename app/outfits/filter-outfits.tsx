@@ -49,9 +49,8 @@ export default function FilterOutfits() {
     isError,
     isObtainedError,
     groupBySet,
-    showBase,
-    showEvolutions,
-    showGlowups,
+    hideEvolutions,
+    hideGlowups,
     filters,
     onBatchToggleObtained,
   } = useOutfitData()
@@ -144,9 +143,8 @@ export default function FilterOutfits() {
             stateSlug: v.outfit_set,
             baseSlug,
             isGlowupState: !!evo && isGlowup(evo),
-            showBase,
-            showEvolutions,
-            showGlowups,
+            hideEvolutions,
+            hideGlowups,
           })
         })
         .filter(
@@ -277,9 +275,8 @@ export default function FilterOutfits() {
                       stateSlug,
                       baseSlug,
                       isGlowupState: !!evolution && isGlowup(evolution),
-                      showBase,
-                      showEvolutions,
-                      showGlowups,
+                      hideEvolutions,
+                      hideGlowups,
                     })
                   }
                   total={variants.length}

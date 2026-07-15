@@ -66,24 +66,24 @@ export function sortOutfitVariants(
   })
 }
 
+// Base is always visible; evolutions/glow-ups can each be hidden. Base has no
+// hide-toggle, so it is never filtered out here.
 export function isEvolutionVisible({
   stateSlug,
   baseSlug,
   isGlowupState,
-  showBase,
-  showEvolutions,
-  showGlowups,
+  hideEvolutions,
+  hideGlowups,
 }: {
   stateSlug: string | null
   baseSlug: string
   isGlowupState: boolean
-  showBase: boolean
-  showEvolutions: boolean
-  showGlowups: boolean
+  hideEvolutions: boolean
+  hideGlowups: boolean
 }): boolean {
-  if (stateSlug === baseSlug) return showBase
-  if (isGlowupState) return showGlowups
-  return showEvolutions
+  if (stateSlug === baseSlug) return true
+  if (isGlowupState) return !hideGlowups
+  return !hideEvolutions
 }
 
 export function createOutfitSet({

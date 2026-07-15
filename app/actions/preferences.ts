@@ -78,16 +78,12 @@ export async function updateOutfitGroupBySet(value: boolean) {
   await upsertUserPreference({ outfit_group_by_set: value })
 }
 
-export async function updateOutfitShowBase(value: boolean) {
-  await upsertUserPreference({ outfit_show_base: value })
+export async function updateOutfitHideEvolutions(value: boolean) {
+  await upsertUserPreference({ outfit_hide_evolutions: value })
 }
 
-export async function updateOutfitShowEvolutions(value: boolean) {
-  await upsertUserPreference({ outfit_show_evolutions: value })
-}
-
-export async function updateOutfitShowGlowups(value: boolean) {
-  await upsertUserPreference({ outfit_show_glowups: value })
+export async function updateOutfitHideGlowups(value: boolean) {
+  await upsertUserPreference({ outfit_hide_glowups: value })
 }
 
 export async function updateOutfitImageMode(value: OutfitImageMode) {

@@ -16,11 +16,15 @@ export default function EvolutionOrderToggle({
   selectedEvolution,
   onEvolutionChange,
   disabled,
+  isOrderDisabled,
 }: {
   availableOrders: number[]
   selectedEvolution: number | null
   onEvolutionChange: (event: React.MouseEvent<HTMLElement>, newEvolution: number | null) => void
   disabled?: boolean
+  // Disables an individual order button (e.g. its category is hidden) while
+  // keeping it visible — distinct from `disabled`, which disables the group.
+  isOrderDisabled?: (order: number) => boolean
 }) {
   const orders = EVOLUTION_ORDERS.filter((e) => availableOrders.includes(e.order))
   // Glow-up evolutions are stored as order 0; show the toggle only when some set has one.
@@ -37,15 +41,19 @@ export default function EvolutionOrderToggle({
         onChange={onEvolutionChange}
       >
         {orders.map(({ order, icon }) => (
-          <Tooltip key={order} title={`Evolution ${order}`}>
-            <ToggleButton aria-label={`Evolution ${order}`} value={order}>
+          <Tooltip key={order} title={order === 1 ? 'Base' : `Evolution ${order}`}>
+            <ToggleButton
+              aria-label={order === 1 ? 'Base' : `Evolution ${order}`}
+              disabled={isOrderDisabled?.(order)}
+              value={order}
+            >
               {icon}
             </ToggleButton>
           </Tooltip>
         ))}
         {hasGlowup && (
           <Tooltip title="Glow-up">
-            <ToggleButton aria-label="Glow-up" value={0}>
+            <ToggleButton aria-label="Glow-up" disabled={isOrderDisabled?.(0)} value={0}>
               <AutoAwesome />
             </ToggleButton>
           </Tooltip>
