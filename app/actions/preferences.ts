@@ -48,6 +48,8 @@ export async function updateEurekaFilters(filters: {
   eureka_obtained_filter?: string | null
   eureka_color?: string | null
   eureka_rarity?: string | null
+  eureka_style?: string | null
+  eureka_label?: string | null
 }) {
   await upsertUserPreference(filters as Record<string, string | null>)
 }

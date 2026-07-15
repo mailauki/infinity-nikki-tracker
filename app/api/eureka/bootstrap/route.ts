@@ -5,6 +5,8 @@ import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getEurekaCategories } from '@/hooks/data/eureka-categories'
 import { getEurekaColors } from '@/hooks/data/eureka-colors'
 import { getTrials } from '@/hooks/data/trials'
+import { getStyles } from '@/hooks/data/styles'
+import { getLabels } from '@/hooks/data/labels'
 import { getObtainedEureka } from '@/hooks/data/obtained-eureka'
 import { ObtainedEureka } from '@/lib/types/eureka'
 
@@ -25,15 +27,17 @@ export async function GET() {
   try {
     const userId = await getUserID()
 
-    const [sets, categories, colors, trials, obtained] = await Promise.all([
+    const [sets, categories, colors, trials, styles, labels, obtained] = await Promise.all([
       getEurekaSets(),
       getEurekaCategories(),
       getEurekaColors(),
       getTrials(),
+      getStyles(),
+      getLabels(),
       userId ? getObtainedEureka(userId) : Promise.resolve<ObtainedEureka[]>([]),
     ])
 
-    return NextResponse.json({ sets, categories, colors, trials, obtained })
+    return NextResponse.json({ sets, categories, colors, trials, styles, labels, obtained })
   } catch (error) {
     console.error('Failed to fetch eureka bootstrap:', error)
     const message = error instanceof Error ? error.message : 'Unknown error'
