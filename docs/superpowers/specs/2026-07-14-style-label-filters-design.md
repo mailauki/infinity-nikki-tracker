@@ -159,10 +159,12 @@ Add the set-level `.filter(...)` calls from **Matching Semantics** to
 ### 6. Persistence — DB migration
 
 New migration `supabase/migrations/<timestamp>_add_style_label_filters.sql` adding four
-nullable `text` columns to `user_preferences`:
+nullable `text` columns to `user_preferences`. Column names follow each domain's
+existing convention: Eureka filter columns are bare (`eureka_category`, `eureka_color`),
+Outfit ones are suffixed (`outfit_category_filter`):
 
-- `eureka_style_filter`
-- `eureka_label_filter`
+- `eureka_style`
+- `eureka_label`
 - `outfit_style_filter`
 - `outfit_label_filter`
 
