@@ -59,7 +59,10 @@ export default function SetCard({
         )}
       </CardActionArea>
       <Stack direction="row" sx={{ px: 1, alignItems: 'center', justifyContent: 'space-between' }}>
-        <Stack spacing={1} sx={{ px: 1, py: 2, maxWidth: 'calc(100% - 40px)' }}>
+        <Stack
+          spacing={1}
+          sx={{ px: 1, py: 2, maxWidth: isLoggedIn ? 'calc(100% - 40px)' : '100%' }}
+        >
           <Typography noWrap variant="overline">
             {title}
           </Typography>

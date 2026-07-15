@@ -1,9 +1,11 @@
-import { countObtained, percent } from '@/hooks/count-obtained'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { countObtained } from '@/hooks/count-obtained'
 import { EurekaColor, EurekaSet } from '@/lib/types/eureka'
-import { Box, Card, LinearProgress, Stack, Typography } from '@mui/material'
-import { Category } from '@mui/icons-material'
-import LazyImage from '@/components/lazy-image'
-import RarityStars from '@/components/rarity-stars'
+import { useEurekaData } from '@/components/eureka/eureka-context'
+import ProgressChip from '@/components/progress-chip'
+import SetCard from '@/components/set-card'
 
 export default function EurekaColorSetCard({
   eurekaSet,
@@ -14,52 +16,40 @@ export default function EurekaColorSetCard({
   color: EurekaColor
   isLoggedIn: boolean
 }) {
-  const slug = `${eurekaSet.slug}-${color.slug}`
-  const variants = eurekaSet.eureka_variants.filter((variant) => variant.color === color.slug)
+  const { onBatchToggleObtained } = useEurekaData()
+  const [grown, setGrown] = useState(false)
 
-  const obtainedCount = countObtained(variants)
-  const percentage = percent(obtainedCount.obtained, obtainedCount.total)
+  useEffect(() => setGrown(true), [])
+
+  const variants = eurekaSet.eureka_variants.filter((variant) => variant.color === color.slug)
+  const { obtained, total } = countObtained(variants)
+
+  function handleToggle() {
+    onBatchToggleObtained(
+      variants.map((variant) => ({
+        eureka_set: variant.eureka_set!,
+        category: variant.category!,
+        color: variant.color!,
+      })),
+      obtained !== total
+    )
+  }
 
   return (
-    <Card
-      sx={{
-        minWidth: 'fit-content',
-      }}
-    >
-      <Box sx={{ position: 'relative' }}>
-        <Stack sx={{ pt: 1, alignItems: 'center' }}>
-          <LazyImage
-            optimized
-            alt={slug}
-            color="transparent"
-            size="lg"
-            src={variants[0].image_url!}
-            sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-          >
-            <Category fontSize="inherit" />
-          </LazyImage>
-        </Stack>
-        <Stack
-          direction="row"
-          sx={{ py: 0.75, px: 1.25, my: 0, alignItems: 'center', justifyContent: 'space-between' }}
-        >
-          <Typography variant="overline">{color.title}</Typography>
-          {isLoggedIn && (
-            <Typography color="textSecondary" variant="caption">
-              {`${percentage}%`}
-            </Typography>
-          )}
-        </Stack>
-        {isLoggedIn && (
-          <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-            <LinearProgress color="inherit" value={percentage} variant="determinate" />
-          </Box>
-        )}
-
-        <Box sx={{ position: 'absolute', top: 8, left: 8 }}>
-          {eurekaSet.rarity && <RarityStars rarity={eurekaSet.rarity} />}
-        </Box>
-      </Box>
-    </Card>
+    <SetCard
+      href={`/eureka/${eurekaSet.slug}?color=${color.slug}`}
+      imageSrc={variants[0].image_url ?? ''}
+      in={grown}
+      isLoggedIn={isLoggedIn}
+      obtained={obtained}
+      rarity={eurekaSet.rarity ?? 0}
+      showAlt={true}
+      title={color.title ?? ''}
+      topRight={
+        isLoggedIn ? <ProgressChip obtained={obtained} total={total} variant="parts" /> : undefined
+      }
+      total={total}
+      onToggle={handleToggle}
+    />
   )
 }

@@ -20,12 +20,12 @@ export default function ColorChip({
         key={color.slug}
         clickable
         avatar={
-          <LazyImage alt={color.title || color.slug} size="xs" src={colorIconSrc(color.slug)} />
+          <LazyImage alt={color.title || color.slug} kind='avatar' size="xs" src={colorIconSrc(color.slug)} variant='circular' />
         }
-        color={active ? 'primary' : 'default'}
+        color={active ? 'secondary' : 'default'}
         deleteIcon={<Done />}
         label={color.title}
-        sx={{ bgcolor: active ? 'primary' : 'surface.container' }}
+        sx={{ bgcolor: active ? 'secondary' : 'surface.container' }}
         onClick={() => toggleColor(color.slug)}
         onDelete={active ? () => toggleColor(color.slug) : undefined}
       />
