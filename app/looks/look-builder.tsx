@@ -7,7 +7,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Alert,
-  Avatar,
   Badge,
   Box,
   Button,
@@ -17,26 +16,24 @@ import {
   CardHeader,
   Chip,
   IconButton,
-  InputAdornment,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
   Stack,
-  Tab,
-  Tabs,
+  Step,
+  StepButton,
+  StepContent,
+  StepLabel,
+  Stepper,
   TextField,
-  Tooltip,
   Typography,
 } from '@mui/material'
-import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import CloseIcon from '@mui/icons-material/Close'
-import SearchIcon from '@mui/icons-material/Search'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
 import CheckroomIcon from '@mui/icons-material/Checkroom'
 import WatchOutlinedIcon from '@mui/icons-material/WatchOutlined'
 import CategoryIcon from '@mui/icons-material/Category'
-import DoNotDisturbIcon from '@mui/icons-material/DoNotDisturb'
 import SaveIcon from '@mui/icons-material/Save'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
@@ -59,14 +56,25 @@ import TuneIcon from '@mui/icons-material/Tune'
 const PIECES_PART = 'Pieces'
 const ACCESSORIES_PART = 'Accessories'
 
-type TabKey = 'pieces' | 'accessories' | 'eureka'
-
 type SavePayload = {
   name: string
   description: string | null
   eureka_variant_slugs: string[]
   outfit_variant_slugs: string[]
 }
+
+type StepBucket = 'pieces' | 'accessories' | 'eureka'
+type CategoryStep = {
+  kind: 'category'
+  bucket: StepBucket
+  slug: string
+  title: string
+  variants: FlatVariant[]
+  selectedVariant?: FlatVariant
+  disabled: boolean
+  disabledReason?: string
+}
+type BuilderStep = { kind: 'details' } | CategoryStep
 
 // Detail caption for a selected variant, matching the VariantCard label format.
 // Eureka always shows `color • category`. Outfits carry the set title for
@@ -146,97 +154,6 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
   )
 }
 
-type CategoryRowProps = {
-  categorySlug: string
-  categoryTitle: string
-  totalCount: number
-  selectedLabel?: string
-  disabled?: boolean
-  disabledReason?: string
-  onSelect: (slug: string) => void
-}
-
-function CategoryRow({
-  categorySlug,
-  categoryTitle,
-  totalCount,
-  selectedLabel,
-  disabled,
-  disabledReason,
-  onSelect,
-}: CategoryRowProps) {
-  const card = (
-    <Card
-      sx={{
-        opacity: disabled ? 0.55 : 1,
-        borderStyle: disabled ? 'dashed' : 'solid',
-        borderColor: disabled ? 'divider' : undefined,
-        transition: 'opacity 0.15s',
-      }}
-      variant="outlined"
-    >
-      <CardActionArea
-        disabled={disabled}
-        sx={{ px: 1.5, py: 1 }}
-        onClick={() => onSelect(categorySlug)}
-      >
-        <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5 }}>
-          {disabled ? (
-            <Avatar
-              sx={{
-                width: 40,
-                height: 40,
-                bgcolor: 'surface.containerHighest',
-                color: 'text.disabled',
-                flexShrink: 0,
-              }}
-              variant="rounded"
-            >
-              <DoNotDisturbIcon fontSize="small" />
-            </Avatar>
-          ) : (
-            <ToggleIcon category={categorySlug} size="sm" />
-          )}
-          <Stack sx={{ flex: 1, minWidth: 0 }}>
-            <Typography
-              noWrap
-              color={disabled ? 'textDisabled' : 'textPrimary'}
-              sx={{ fontWeight: 500 }}
-              variant="body2"
-            >
-              {categoryTitle}
-            </Typography>
-            <Typography color="textSecondary" variant="caption">
-              {disabled
-                ? (disabledReason ?? 'Unavailable')
-                : `${totalCount} piece${totalCount !== 1 ? 's' : ''}`}
-            </Typography>
-          </Stack>
-          {selectedLabel && !disabled && (
-            <Chip
-              color="success"
-              label={selectedLabel}
-              size="small"
-              sx={{ maxWidth: 140, flexShrink: 0 }}
-              variant="outlined"
-            />
-          )}
-        </Stack>
-      </CardActionArea>
-    </Card>
-  )
-
-  if (disabled && disabledReason) {
-    return (
-      <Tooltip placement="top" title={disabledReason}>
-        <span>{card}</span>
-      </Tooltip>
-    )
-  }
-
-  return card
-}
-
 export default function LookBuilder({
   initialLook,
   eurekaVariants,
@@ -289,9 +206,7 @@ export default function LookBuilder({
         ...(initialLook?.outfit_variant_slugs ?? []),
       ])
   )
-  const [tab, setTab] = useState<TabKey>('pieces')
-  const [search, setSearch] = useState('')
-  const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null)
+  const [activeStep, setActiveStep] = useState(0)
   const [saveError, setSaveError] = useState<string | null>(null)
 
   // Selected variants as FlatVariant (for chips in composer)
@@ -332,19 +247,62 @@ export default function LookBuilder({
     })
   }
 
-  const currentVariants = useMemo(() => {
-    if (tab === 'eureka') return eurekaVariants
-    const part = tab === 'pieces' ? PIECES_PART : ACCESSORIES_PART
-    return outfitVariants.filter((v) => v.part === part)
-  }, [tab, eurekaVariants, outfitVariants])
-  const currentCategories = useMemo(() => {
-    if (tab === 'eureka') return eurekaCategories
-    const part = tab === 'pieces' ? PIECES_PART : ACCESSORIES_PART
-    return outfitCategories.filter((c) => c.part === part)
-  }, [tab, eurekaCategories, outfitCategories])
+  // Advance to the next non-disabled step after `from`. Stays put if none.
+  function advanceFrom(from: number) {
+    for (let i = from + 1; i < steps.length; i++) {
+      const s = steps[i]
+      if (s.kind === 'category' && s.disabled) continue
+      setActiveStep(i)
+      return
+    }
+  }
+
+  // Pick a variant, then move to the next available step.
+  function pickAndAdvance(slug: string, stepIndex: number) {
+    selectPiece(slug)
+    advanceFrom(stepIndex)
+  }
+
+  // Group a bucket's variants by category, in canonical category order; drop
+  // empty categories. Mirrors the previous per-tab grouping, now per bucket.
+  function groupByCategory(cats: { slug: string; title: string }[], variants: FlatVariant[]) {
+    const map = new Map<string, { title: string; variants: FlatVariant[] }>()
+    for (const c of cats) map.set(c.slug, { title: c.title, variants: [] })
+    for (const v of variants) {
+      if (!v.category) continue
+      const group = map.get(v.category)
+      if (group) group.variants.push(v)
+      else map.set(v.category, { title: v.categoryTitle, variants: [v] })
+    }
+    for (const [slug, group] of map) {
+      if (group.variants.length === 0) map.delete(slug)
+    }
+    return map
+  }
+
+  const piecesGroups = useMemo(
+    () =>
+      groupByCategory(
+        outfitCategories.filter((c) => c.part === PIECES_PART),
+        outfitVariants.filter((v) => v.part === PIECES_PART)
+      ),
+    [outfitCategories, outfitVariants]
+  )
+  const accessoriesGroups = useMemo(
+    () =>
+      groupByCategory(
+        outfitCategories.filter((c) => c.part === ACCESSORIES_PART),
+        outfitVariants.filter((v) => v.part === ACCESSORIES_PART)
+      ),
+    [outfitCategories, outfitVariants]
+  )
+  const eurekaGroups = useMemo(
+    () => groupByCategory(eurekaCategories, eurekaVariants),
+    [eurekaCategories, eurekaVariants]
+  )
 
   // Outfit category slugs that currently have a selected piece. Drives the
-  // mutually-exclusive dress vs tops/bottoms rule in the Pieces tab.
+  // mutually-exclusive dress vs tops/bottoms rule in the Pieces bucket.
   const selectedOutfitCategorySlugs = useMemo(() => {
     const slugs = new Set<string>()
     for (const v of allVariants) {
@@ -360,36 +318,48 @@ export default function LookBuilder({
     ? "Can't combine with a dress — remove the dress first"
     : "Can't combine with tops or bottoms — remove them first"
 
-  // Group variants by category, in canonical category order; drop empty categories.
-  const categoryGroups = useMemo(() => {
-    const map = new Map<string, { title: string; variants: FlatVariant[] }>()
-    for (const c of currentCategories) {
-      map.set(c.slug, { title: c.title, variants: [] })
-    }
-    for (const v of currentVariants) {
-      if (!v.category) continue
-      const group = map.get(v.category)
-      if (group) group.variants.push(v)
-      else map.set(v.category, { title: v.categoryTitle, variants: [v] })
-    }
-    for (const [slug, group] of map) {
-      if (group.variants.length === 0) map.delete(slug)
-    }
-    return map
-  }, [currentVariants, currentCategories])
+  // Turn one bucket's category groups into category steps, in group order.
+  const bucketToSteps = (
+    bucket: StepBucket,
+    groups: Map<string, { title: string; variants: FlatVariant[] }>
+  ): CategoryStep[] =>
+    Array.from(groups.entries()).map(([slug, group]) => {
+      const selectedVariant = group.variants.find((v) => selectedSlugs.has(v.slug))
+      // Conflict rule only applies to the outfit Pieces bucket.
+      const disabled =
+        bucket === 'pieces' &&
+        isCategoryDisabled({ slug } as OutfitCategory, selectedOutfitCategorySlugs)
+      return {
+        kind: 'category',
+        bucket,
+        slug,
+        title: group.title,
+        variants: group.variants,
+        selectedVariant,
+        disabled,
+        disabledReason: disabled ? outfitConflictReason : undefined,
+      }
+    })
 
-  // Filter categories by search
-  const filteredCategorySlugs = useMemo(() => {
-    const q = search.toLowerCase()
-    return Array.from(categoryGroups.keys()).filter((slug) =>
-      q ? categoryGroups.get(slug)!.title.toLowerCase().includes(q) : true
-    )
-  }, [categoryGroups, search])
-
-  const activeCategoryVariants = useMemo(() => {
-    if (!activeCategorySlug) return []
-    return categoryGroups.get(activeCategorySlug)?.variants ?? []
-  }, [categoryGroups, activeCategorySlug])
+  const steps = useMemo<BuilderStep[]>(
+    () => [
+      { kind: 'details' },
+      ...bucketToSteps('pieces', piecesGroups),
+      ...bucketToSteps('accessories', accessoriesGroups),
+      ...bucketToSteps('eureka', eurekaGroups),
+    ],
+    // bucketToSteps is a plain function redefined each render; it reads only
+    // the values already listed below, so it's safe to omit as a dep.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      piecesGroups,
+      accessoriesGroups,
+      eurekaGroups,
+      selectedSlugs,
+      selectedOutfitCategorySlugs,
+      outfitConflictReason,
+    ]
+  )
 
   // Category slug → its position in the DB id-ordered category list, so selected
   // items can be sorted by their category's id.
@@ -503,27 +473,6 @@ export default function LookBuilder({
     <Stack sx={{ minWidth: 0 }}>
       <CardContent>
         <Stack spacing={2}>
-          <TextField
-            fullWidth
-            required
-            label="Look name"
-            placeholder="e.g. Moonlit Wanderer"
-            size="small"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
-            fullWidth
-            multiline
-            label="Description"
-            maxRows={3}
-            minRows={2}
-            placeholder="Optional notes about this look…"
-            size="small"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-
           {initialLook?.slug && (
             <ImageUpload
               caption="Cover image"
@@ -583,122 +532,130 @@ export default function LookBuilder({
     </Stack>
   )
 
-  // ── Picker panel (left / bottom) ─────────────────────────────────────────
+  // ── Picker panel (stepper) ───────────────────────────────────────────────
   const pickerPanel = (
-    <Stack spacing={1.5} sx={{ minWidth: 0 }}>
-      <Tabs
-        value={tab}
-        variant="fullWidth"
-        onChange={(_, v: TabKey) => {
-          setTab(v)
-          setActiveCategorySlug(null)
-          setSearch('')
-        }}
-      >
-        <Tab
-          icon={<CheckroomIcon fontSize="small" />}
-          iconPosition="start"
-          label="Pieces"
-          sx={{ minHeight: 40, minWidth: 0 }}
-          value="pieces"
-        />
-        <Tab
-          icon={<WatchOutlinedIcon fontSize="small" />}
-          iconPosition="start"
-          label="Accessories"
-          sx={{ minHeight: 40, minWidth: 0 }}
-          value="accessories"
-        />
-        <Tab
-          icon={<DiamondOutlinedIcon fontSize="small" />}
-          iconPosition="start"
-          label="Eureka"
-          sx={{ minHeight: 40, minWidth: 0 }}
-          value="eureka"
-        />
-      </Tabs>
+    <Stepper nonLinear activeStep={activeStep} orientation="vertical">
+      {steps.map((step, index) => {
+        if (step.kind === 'details') {
+          return (
+            <Step key="details" completed={!!name.trim()}>
+              <StepButton onClick={() => setActiveStep(index)}>
+                <StepLabel optional={<Typography variant="caption">Name and notes</Typography>}>
+                  Details
+                </StepLabel>
+              </StepButton>
+              <StepContent>
+                <Stack spacing={2} sx={{ pt: 1 }}>
+                  <TextField
+                    fullWidth
+                    required
+                    label="Look name"
+                    placeholder="e.g. Moonlit Wanderer"
+                    size="small"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                  <TextField
+                    fullWidth
+                    multiline
+                    label="Description"
+                    maxRows={3}
+                    minRows={2}
+                    placeholder="Optional notes about this look…"
+                    size="small"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                  <Box>
+                    <Button size="small" variant="contained" onClick={() => advanceFrom(index)}>
+                      Continue
+                    </Button>
+                  </Box>
+                </Stack>
+              </StepContent>
+            </Step>
+          )
+        }
 
-      {activeCategorySlug ? (
-        <Stack spacing={1.5}>
-          <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-            <IconButton size="small" onClick={() => setActiveCategorySlug(null)}>
-              <ArrowBackIcon fontSize="small" />
-            </IconButton>
-            <Typography sx={{ fontWeight: 500 }} variant="body2">
-              {categoryGroups.get(activeCategorySlug)?.title}
-            </Typography>
-          </Stack>
-          <Box
-            sx={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-              gap: 1,
-            }}
+        // Category step. Show the bucket header when the bucket changes.
+        const prev = steps[index - 1]
+        const showHeader = prev.kind !== 'category' || prev.bucket !== step.bucket
+        const bucketLabel =
+          step.bucket === 'pieces'
+            ? 'Pieces'
+            : step.bucket === 'accessories'
+              ? 'Accessories'
+              : 'Eureka'
+
+        return (
+          <Step
+            key={`${step.bucket}:${step.slug}`}
+            completed={!!step.selectedVariant}
+            disabled={step.disabled}
           >
-            {activeCategoryVariants.map((v) => (
-              <VariantCard
-                key={v.slug}
-                selected={selectedSlugs.has(v.slug)}
-                variant={v}
-                onToggle={selectPiece}
-              />
-            ))}
-          </Box>
-        </Stack>
-      ) : (
-        <Stack spacing={1}>
-          <TextField
-            fullWidth
-            placeholder="Search categories…"
-            size="small"
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon fontSize="small" />
-                  </InputAdornment>
-                ),
-                endAdornment: search ? (
-                  <InputAdornment position="end">
-                    <IconButton edge="end" size="small" onClick={() => setSearch('')}>
-                      <CloseIcon fontSize="small" />
-                    </IconButton>
-                  </InputAdornment>
-                ) : null,
-              },
-            }}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <Stack spacing={0.75}>
-            {filteredCategorySlugs.length === 0 && (
-              <Typography color="textSecondary" sx={{ py: 2, textAlign: 'center' }} variant="body2">
-                No categories found.
+            {showHeader && (
+              <Typography
+                color="textSecondary"
+                sx={{ pt: 1, pb: 0.5, textTransform: 'uppercase', letterSpacing: 0.5 }}
+                variant="caption"
+              >
+                {bucketLabel}
               </Typography>
             )}
-            {filteredCategorySlugs.map((slug) => {
-              const group = categoryGroups.get(slug)!
-              const selectedVariant = group.variants.find((v) => selectedSlugs.has(v.slug))
-              const disabled =
-                tab === 'pieces' &&
-                isCategoryDisabled({ slug } as OutfitCategory, selectedOutfitCategorySlugs)
-              return (
-                <CategoryRow
-                  key={slug}
-                  categorySlug={slug}
-                  categoryTitle={group.title}
-                  disabled={disabled}
-                  disabledReason={disabled ? outfitConflictReason : undefined}
-                  selectedLabel={selectedVariant?.setTitle}
-                  totalCount={group.variants.length}
-                  onSelect={setActiveCategorySlug}
-                />
-              )
-            })}
-          </Stack>
-        </Stack>
-      )}
-    </Stack>
+            <StepButton disabled={step.disabled} onClick={() => setActiveStep(index)}>
+              <StepLabel
+                icon={<ToggleIcon category={step.slug} size="sm" />}
+                optional={
+                  step.disabled ? (
+                    <Typography color="textDisabled" variant="caption">
+                      {step.disabledReason}
+                    </Typography>
+                  ) : step.selectedVariant ? (
+                    <Chip
+                      color="success"
+                      label={step.selectedVariant.setTitle}
+                      size="small"
+                      sx={{ maxWidth: 160 }}
+                      variant="outlined"
+                    />
+                  ) : (
+                    <Typography color="textSecondary" variant="caption">
+                      {step.variants.length} piece{step.variants.length !== 1 ? 's' : ''}
+                    </Typography>
+                  )
+                }
+              >
+                {step.title}
+              </StepLabel>
+            </StepButton>
+            <StepContent>
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+                  gap: 1,
+                  pt: 1,
+                }}
+              >
+                {step.variants.map((v) => (
+                  <VariantCard
+                    key={v.slug}
+                    selected={selectedSlugs.has(v.slug)}
+                    variant={v}
+                    onToggle={(slug) => pickAndAdvance(slug, index)}
+                  />
+                ))}
+              </Box>
+              <Box sx={{ pt: 1.5 }}>
+                <Button size="small" onClick={() => advanceFrom(index)}>
+                  Skip
+                </Button>
+              </Box>
+            </StepContent>
+          </Step>
+        )
+      })}
+    </Stepper>
   )
 
   return (
