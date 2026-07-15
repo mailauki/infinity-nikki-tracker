@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Stack } from '@mui/material'
 import CardGrid from '@/components/card-grid'
 import type { EurekaColor, EurekaVariant } from '@/lib/types/eureka'
@@ -19,7 +20,10 @@ export default function EurekaVariantColorFilter({
   isLoggedIn: boolean
 }) {
   const { obtainedKeys } = useEurekaData()
-  const [selectedColor, setSelectedColor] = useState<string | null>(null)
+  const searchParams = useSearchParams()
+  const colorParam = searchParams.get('color')
+  const initialColor = colors.some((c) => c.slug === colorParam) ? colorParam : null
+  const [selectedColor, setSelectedColor] = useState<string | null>(initialColor)
 
   const variantsWithObtained = eureka_variants.map((v) => ({
     ...v,

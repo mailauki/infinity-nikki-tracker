@@ -13,7 +13,7 @@ export default function AuthLayout({
         alignItems: 'center',
       }}
     >
-			<Toolbar />
+      <Toolbar />
       <Container maxWidth="sm">{children}</Container>
     </Stack>
   )

@@ -37,7 +37,7 @@ export default function EurekaColorSetCard({
 
   return (
     <SetCard
-      href={`/eureka/${eurekaSet.slug}?=${color.slug}`}
+      href={`/eureka/${eurekaSet.slug}?color=${color.slug}`}
       imageSrc={variants[0].image_url ?? ''}
       in={grown}
       isLoggedIn={isLoggedIn}
