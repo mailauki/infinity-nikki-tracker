@@ -6,13 +6,16 @@ import ToggleIcon from '../toggle-icon'
 export default function EvolutionToggle({
   hideEvolutions,
   onHideEvolutionsChange,
+  disabled,
 }: {
   hideEvolutions: boolean
   onHideEvolutionsChange: () => void
+  disabled?: boolean
 }) {
   return (
     <Tooltip title="Hide Evolutions">
       <ToggleButton
+        disabled={disabled}
         selected={hideEvolutions}
         size="small"
         value="hideEvolutions"

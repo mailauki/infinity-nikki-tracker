@@ -9,7 +9,6 @@ import {
   ListItem,
   SelectChangeEvent,
   Stack,
-  Typography,
 } from '@mui/material'
 import { FilterList } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
@@ -35,9 +34,11 @@ import { useOutfitImageMode } from '../outfits/outfit-image-mode-context'
 import { useSortOrder } from '../sort-context'
 import OutfitCategorySelect from './outfit-category-select'
 import EvolutionOrderToggle from './evolution-order-toggle'
-import EvolutionShowToggle from './evolution-show-toggle'
+import EvolutionToggle from './evolution-toggle'
+import GlowupToggle from './glowup-toggle'
 import SortAxisToggle from './sort-axis-toggle'
 import StyleLabelSelect from './style-label-select'
+import ToggleGroupLabel from '../forms/toggle-group-label'
 
 export default function FilterMenu() {
   const pathname = usePathname()
@@ -83,13 +84,11 @@ export default function FilterMenu() {
     labels: outfitLabels,
     isLoggedIn: outfitLoggedIn,
     groupBySet: outfitGroupBySet,
-    showBase,
-    showEvolutions,
-    showGlowups,
+    hideEvolutions,
+    hideGlowups,
     onGroupBySetChange: onOutfitGroupBySetChange,
-    onShowBaseChange,
-    onShowEvolutionsChange,
-    onShowGlowupsChange,
+    onHideEvolutionsChange,
+    onHideGlowupsChange,
     filters: outfitFilters,
     onFiltersChange: onOutfitFiltersChange,
     onClearFilters: onClearOutfitFilters,
@@ -108,17 +107,18 @@ export default function FilterMenu() {
   const { selectedOutfitCategory } = outfitFilters
   const { selectedEvolution: selectedEvolutionForReconcile } = outfitFilters
 
-  // Whether an evolution order is currently shown, per the show-toggles. Base is
-  // order 1, glow-up is order 0, everything else is a regular evolution. Shared
-  // by `availableOrders` (which orders the toggle offers) and the reconciliation
-  // effect below (which clears a selection whose category was just hidden).
+  // Whether an evolution order is currently shown, per the hide-toggles. Base is
+  // order 1 (always shown — no hide-toggle), glow-up is order 0, everything else
+  // is a regular evolution. Drives which order buttons are disabled (via
+  // `isOrderDisabled`) and the reconciliation effect below (which clears a
+  // selection whose category was just hidden).
   const isOrderShown = React.useCallback(
     (order: number) => {
-      if (order === 1) return showBase
-      if (order === 0) return showGlowups
-      return showEvolutions
+      if (order === 1) return true
+      if (order === 0) return !hideGlowups
+      return !hideEvolutions
     },
-    [showBase, showEvolutions, showGlowups]
+    [hideEvolutions, hideGlowups]
   )
 
   React.useEffect(() => {
@@ -158,9 +158,8 @@ export default function FilterMenu() {
       selectedStyle.length > 0 ||
       selectedLabel.length > 0 ||
       !outfitGroupBySet ||
-      !showBase ||
-      !showEvolutions ||
-      !showGlowups ||
+      hideEvolutions ||
+      hideGlowups ||
       density !== 'standard' ||
       imageMode !== 'image'
 
@@ -178,11 +177,13 @@ export default function FilterMenu() {
       resetSort()
     }
 
-    const allOrders = [
-      1, // base is always a possible order
+    // Static: every order that exists in the data (plus base, order 1, which is
+    // conceptually always present). Buttons for hidden categories are disabled —
+    // not removed — via `isOrderDisabled` below.
+    const availableOrders = [
+      1,
       ...new Set(outfitSets.flatMap((s) => s.evolutions).map((e) => e.order)),
-    ]
-    const availableOrders = allOrders.filter(isOrderShown).sort((a, b) => a - b)
+    ].sort((a, b) => a - b)
 
     return (
       <>
@@ -225,33 +226,6 @@ export default function FilterMenu() {
                 onOutfitSetChange={(slug) => onOutfitFiltersChange({ selectedOutfitSet: slug })}
               />
             </ListItem>
-            <ListItem>
-              <Stack spacing={0.5} sx={{ flexGrow: 1 }}>
-                <Typography variant="overline">Evolutions</Typography>
-                <Stack
-                  direction="row"
-                  spacing={1}
-                  sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-                >
-                  <EvolutionOrderToggle
-                    availableOrders={availableOrders}
-                    disabled={!showBase && !showEvolutions && !showGlowups}
-                    selectedEvolution={selectedEvolution}
-                    onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
-                  />
-                  <Stack direction="row" spacing={1}>
-                    <EvolutionShowToggle
-                      showBase={showBase}
-                      showEvolutions={showEvolutions}
-                      showGlowups={showGlowups}
-                      onShowBaseChange={onShowBaseChange}
-                      onShowEvolutionsChange={onShowEvolutionsChange}
-                      onShowGlowupsChange={onShowGlowupsChange}
-                    />
-                  </Stack>
-                </Stack>
-              </Stack>
-            </ListItem>
             {outfitLoggedIn && (
               <ListItem>
                 <ObtainedToggle
@@ -262,6 +236,35 @@ export default function FilterMenu() {
                 />
               </ListItem>
             )}
+            <ListItem>
+              <Stack sx={{ flexGrow: 1 }}>
+                <ToggleGroupLabel>Evolutions</ToggleGroupLabel>
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+                >
+                  <EvolutionOrderToggle
+                    availableOrders={availableOrders}
+                    isOrderDisabled={(o) => !isOrderShown(o)}
+                    selectedEvolution={selectedEvolution}
+                    onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
+                  />
+                  <Stack direction="row" spacing={1}>
+                    <EvolutionToggle
+                      disabled={selectedEvolution === 1}
+                      hideEvolutions={hideEvolutions}
+                      onHideEvolutionsChange={onHideEvolutionsChange}
+                    />
+                    <GlowupToggle
+                      disabled={selectedEvolution === 1}
+                      hideGlowups={hideGlowups}
+                      onHideGlowupsChange={onHideGlowupsChange}
+                    />
+                  </Stack>
+                </Stack>
+              </Stack>
+            </ListItem>
             <ListItem>
               <OutfitCategorySelect
                 multiple

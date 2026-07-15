@@ -1,8 +1,9 @@
 'use client'
 
-import { FormControl, FormLabel, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { FormControl, ToggleButton, ToggleButtonGroup } from '@mui/material'
 import { useSortOrder, SortAxis } from '@/components/sort-context'
 import { useOutfitData } from '../outfits/outfit-context'
+import ToggleGroupLabel from '../forms/toggle-group-label'
 
 const AXIS_OPTIONS: { value: SortAxis; label: string; loggedInOnly?: boolean }[] = [
   { value: 'date', label: 'Date' },
@@ -19,14 +20,7 @@ export default function SortAxisToggle() {
 
   return (
     <FormControl>
-      <Typography
-        component={FormLabel}
-        id="sort-axis-buttons-group-label"
-        sx={{ fontSize: 'overline.fontSize', pb: 0.5 }}
-        variant="overline"
-      >
-        Sort by
-      </Typography>
+      <ToggleGroupLabel id="sort-axis-buttons-group-label">Sort by</ToggleGroupLabel>
       <ToggleButtonGroup
         exclusive
         aria-labelledby="sort-axis-buttons-group-label"
