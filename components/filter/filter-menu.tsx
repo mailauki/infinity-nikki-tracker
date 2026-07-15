@@ -152,9 +152,10 @@ export default function FilterMenu() {
       resetSort()
     }
 
-    const availableOrders = [
-      ...new Set(outfitSets.flatMap((s) => s.evolutions).map((e) => e.order)),
-    ].sort((a, b) => a - b)
+    // const availableOrders = [
+    //   ...new Set(outfitSets.flatMap((s) => s.evolutions).map((e) => e.order)),
+    // ].sort((a, b) => a - b)
+    const availableOrders = [2, 3, 4, 0]
 
     return (
       <>
