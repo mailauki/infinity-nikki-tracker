@@ -68,6 +68,8 @@ export async function updateOutfitFilters(filters: {
   outfit_evolution_filter?: string | null
   outfit_rarity_filter?: string | null
   outfit_obtained_filter?: string | null
+  outfit_style_filter?: string | null
+  outfit_label_filter?: string | null
 }) {
   await upsertUserPreference(filters as Record<string, string | null>)
 }
