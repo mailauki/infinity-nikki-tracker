@@ -2,15 +2,9 @@
 
 import { EurekaCategory } from '@/lib/types/eureka'
 import { CategoryFilter } from '@/lib/types/props'
-import {
-  FormControl,
-  FormLabel,
-  ToggleButton,
-  ToggleButtonGroup,
-  Tooltip,
-  Typography,
-} from '@mui/material'
+import { FormControl, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
 import ToggleIcon from '../toggle-icon'
+import ToggleGroupLabel from '../forms/toggle-group-label'
 
 export default function CategoryToggle({
   categories,
@@ -28,14 +22,7 @@ export default function CategoryToggle({
 }) {
   return (
     <FormControl>
-      <Typography
-        component={FormLabel}
-        id="category-buttons-group-label"
-        sx={{ fontSize: 'overline.fontSize', pb: 0.5 }}
-        variant="overline"
-      >
-        Category
-      </Typography>
+      <ToggleGroupLabel id="category-buttons-group-label">Category</ToggleGroupLabel>
       <ToggleButtonGroup
         exclusive
         aria-labelledby="category-buttons-group-label"

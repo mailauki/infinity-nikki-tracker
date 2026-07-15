@@ -10,7 +10,7 @@ export const getStyles = cache(async () => {
     .from('styles')
     .select('slug, title')
     .not('title', 'is', null)
-    .order('title', { ascending: true })
+    .order('id', { ascending: true })
 
   return (styles ?? []) as Style[]
 })

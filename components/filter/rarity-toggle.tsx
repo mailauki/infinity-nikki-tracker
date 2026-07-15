@@ -1,5 +1,6 @@
 import { SparkleIcon } from '@/components/rarity-stars'
-import { FormControl, FormLabel, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { FormControl, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import ToggleGroupLabel from '../forms/toggle-group-label'
 
 export default function RarityToggle({
   selectedRarity,
@@ -10,14 +11,7 @@ export default function RarityToggle({
 }) {
   return (
     <FormControl>
-      <Typography
-        component={FormLabel}
-        id="rating-buttons-group-label"
-        sx={{ fontSize: 'overline.fontSize', pb: 0.5 }}
-        variant="overline"
-      >
-        Rarity
-      </Typography>
+      <ToggleGroupLabel id="rating-buttons-group-label">Rarity</ToggleGroupLabel>
       <ToggleButtonGroup
         exclusive
         aria-labelledby="rating-buttons-group-label"
