@@ -1,4 +1,4 @@
-import { Container, Stack } from '@mui/material'
+import { Container, Stack, Toolbar } from '@mui/material'
 
 export default function AuthLayout({
   children,
@@ -13,6 +13,7 @@ export default function AuthLayout({
         alignItems: 'center',
       }}
     >
+			<Toolbar />
       <Container maxWidth="sm">{children}</Container>
     </Stack>
   )
