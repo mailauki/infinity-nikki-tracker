@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Accordion,
@@ -184,17 +184,9 @@ export default function LookBuilder({
   const [isPending, startTransition] = useTransition()
   const { sidebarOpen, setSidebarOpen } = useSidebar()
 
-  // For a brand-new look, force the sidebar open so the (required) name field is
-  // visible. We also persist 'sidebar-open'=true because the provider (root layout)
-  // reads localStorage in its own post-mount effect that can run AFTER this child
-  // effect and would otherwise clobber the open state back to the persisted value.
-  // On edit, initialLook is set, so we leave the persisted open/closed state alone.
-  useEffect(() => {
-    if (!initialLook) {
-      localStorage.setItem(SIDEBAR_STORAGE_KEY, 'true')
-      setSidebarOpen(true)
-    }
-  }, [initialLook, setSidebarOpen])
+  // The look name lives in the Details step (main content), so the sidebar — now
+  // just the selected-items summary + cover image — stays at its persisted
+  // open/closed state for both new and edit; the toolbar toggle drives it.
 
   const [name, setName] = useState(initialLook?.name ?? '')
   const [description, setDescription] = useState(initialLook?.description ?? '')
