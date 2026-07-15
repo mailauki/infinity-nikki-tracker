@@ -28,11 +28,13 @@ interface OutfitDataContextValue {
   isObtainedError: boolean
   userId: string | null
   groupBySet: boolean
-  hideEvolutions: boolean
-  hideGlowups: boolean
+  showBase: boolean
+  showEvolutions: boolean
+  showGlowups: boolean
   onGroupBySetChange: () => void
-  onHideEvolutionsChange: () => void
-  onHideGlowupsChange: () => void
+  onShowBaseChange: () => void
+  onShowEvolutionsChange: () => void
+  onShowGlowupsChange: () => void
   filters: OutfitFilterState
   onFiltersChange: (updates: Partial<OutfitFilterState>) => void
   onClearFilters: () => void
@@ -70,11 +72,13 @@ export const OutfitDataContext = createContext<OutfitDataContextValue>({
   isObtainedError: false,
   userId: null,
   groupBySet: true,
-  hideEvolutions: false,
-  hideGlowups: false,
+  showBase: true,
+  showEvolutions: true,
+  showGlowups: true,
   onGroupBySetChange: () => {},
-  onHideEvolutionsChange: () => {},
-  onHideGlowupsChange: () => {},
+  onShowBaseChange: () => {},
+  onShowEvolutionsChange: () => {},
+  onShowGlowupsChange: () => {},
   filters: DEFAULT_OUTFIT_FILTERS,
   onFiltersChange: () => {},
   onClearFilters: () => {},

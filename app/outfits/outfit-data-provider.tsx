@@ -10,8 +10,9 @@ import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 import {
   updateOutfitFilters,
   updateOutfitGroupBySet,
-  updateOutfitHideEvolutions,
-  updateOutfitHideGlowups,
+  updateOutfitShowBase,
+  updateOutfitShowEvolutions,
+  updateOutfitShowGlowups,
 } from '@/app/actions/preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
 import { updateOutfitSet } from '@/hooks/outfit'
@@ -47,10 +48,11 @@ export default function OutfitDataProvider({
   const [isError, setIsError] = useState(false)
   const [isObtainedError, setIsObtainedError] = useState(false)
   const [groupBySet, setGroupBySet] = useState<boolean>(DEFAULT_PREFERENCES.outfit_group_by_set)
-  const [hideEvolutions, setHideEvolutions] = useState<boolean>(
-    DEFAULT_PREFERENCES.outfit_hide_evolutions
+  const [showBase, setShowBase] = useState<boolean>(DEFAULT_PREFERENCES.outfit_show_base)
+  const [showEvolutions, setShowEvolutions] = useState<boolean>(
+    DEFAULT_PREFERENCES.outfit_show_evolutions
   )
-  const [hideGlowups, setHideGlowups] = useState<boolean>(DEFAULT_PREFERENCES.outfit_hide_glowups)
+  const [showGlowups, setShowGlowups] = useState<boolean>(DEFAULT_PREFERENCES.outfit_show_glowups)
   const [filters, setFilters] = useState<OutfitFilterState>(DEFAULT_OUTFIT_FILTERS)
   const [prefsLoaded, setPrefsLoaded] = useState(false)
   const [, startTransition] = useTransition()
@@ -79,8 +81,9 @@ export default function OutfitDataProvider({
     fetchJson<UserPreferences>('/api/preferences')
       .then((prefs) => {
         setGroupBySet(prefs.outfit_group_by_set)
-        setHideEvolutions(prefs.outfit_hide_evolutions)
-        setHideGlowups(prefs.outfit_hide_glowups)
+        setShowBase(prefs.outfit_show_base)
+        setShowEvolutions(prefs.outfit_show_evolutions)
+        setShowGlowups(prefs.outfit_show_glowups)
         setFilters({
           selectedOutfitSet: prefs.outfit_set_filter ?? null,
           selectedOutfitCategory: prefs.outfit_category_filter
@@ -117,16 +120,22 @@ export default function OutfitDataProvider({
     if (isLoggedIn) startTransition(() => updateOutfitGroupBySet(next))
   }
 
-  const handleHideEvolutionsChange = () => {
-    const next = !hideEvolutions
-    setHideEvolutions(next)
-    if (isLoggedIn) startTransition(() => updateOutfitHideEvolutions(next))
+  const handleShowBaseChange = () => {
+    const next = !showBase
+    setShowBase(next)
+    if (isLoggedIn) startTransition(() => updateOutfitShowBase(next))
   }
 
-  const handleHideGlowupsChange = () => {
-    const next = !hideGlowups
-    setHideGlowups(next)
-    if (isLoggedIn) startTransition(() => updateOutfitHideGlowups(next))
+  const handleShowEvolutionsChange = () => {
+    const next = !showEvolutions
+    setShowEvolutions(next)
+    if (isLoggedIn) startTransition(() => updateOutfitShowEvolutions(next))
+  }
+
+  const handleShowGlowupsChange = () => {
+    const next = !showGlowups
+    setShowGlowups(next)
+    if (isLoggedIn) startTransition(() => updateOutfitShowGlowups(next))
   }
 
   const handleFiltersChange = (updates: Partial<OutfitFilterState>) => {
@@ -140,13 +149,15 @@ export default function OutfitDataProvider({
     // and image mode live in OutfitImageModeProvider and are reset separately.)
     setFilters(DEFAULT_OUTFIT_FILTERS)
     setGroupBySet(DEFAULT_PREFERENCES.outfit_group_by_set)
-    setHideEvolutions(DEFAULT_PREFERENCES.outfit_hide_evolutions)
-    setHideGlowups(DEFAULT_PREFERENCES.outfit_hide_glowups)
+    setShowBase(DEFAULT_PREFERENCES.outfit_show_base)
+    setShowEvolutions(DEFAULT_PREFERENCES.outfit_show_evolutions)
+    setShowGlowups(DEFAULT_PREFERENCES.outfit_show_glowups)
     if (isLoggedIn) {
       startTransition(() => {
         updateOutfitGroupBySet(DEFAULT_PREFERENCES.outfit_group_by_set)
-        updateOutfitHideEvolutions(DEFAULT_PREFERENCES.outfit_hide_evolutions)
-        updateOutfitHideGlowups(DEFAULT_PREFERENCES.outfit_hide_glowups)
+        updateOutfitShowBase(DEFAULT_PREFERENCES.outfit_show_base)
+        updateOutfitShowEvolutions(DEFAULT_PREFERENCES.outfit_show_evolutions)
+        updateOutfitShowGlowups(DEFAULT_PREFERENCES.outfit_show_glowups)
       })
     }
   }
@@ -300,11 +311,13 @@ export default function OutfitDataProvider({
         isObtainedError,
         userId,
         groupBySet,
-        hideEvolutions,
-        hideGlowups,
+        showBase,
+        showEvolutions,
+        showGlowups,
         onGroupBySetChange: handleGroupBySetChange,
-        onHideEvolutionsChange: handleHideEvolutionsChange,
-        onHideGlowupsChange: handleHideGlowupsChange,
+        onShowBaseChange: handleShowBaseChange,
+        onShowEvolutionsChange: handleShowEvolutionsChange,
+        onShowGlowupsChange: handleShowGlowupsChange,
         filters,
         onFiltersChange: handleFiltersChange,
         onClearFilters: handleClearFilters,
