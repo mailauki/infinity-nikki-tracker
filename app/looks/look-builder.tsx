@@ -28,14 +28,14 @@ import {
   Typography,
   styled,
   AccordionProps,
+	CardContent,
 } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
 import CheckroomIcon from '@mui/icons-material/Checkroom'
 import WatchOutlinedIcon from '@mui/icons-material/WatchOutlined'
 import CategoryIcon from '@mui/icons-material/Category'
 import EditNoteIcon from '@mui/icons-material/EditNote'
-import SaveIcon from '@mui/icons-material/Save'
+import SaveIcon from '@mui/icons-material/SaveAlt'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
 import { FREE_LOOKS_LIMIT } from '@/lib/types/looks'
@@ -47,12 +47,10 @@ import ToggleIcon from '@/components/toggle-icon'
 import ImageUpload from '@/components/forms/image-upload'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import PageShell from '@/components/page-shell'
-import { ExpandMore, MoreHoriz, TaskAlt } from '@mui/icons-material'
+import { Delete, ExpandMore, TaskAlt, CheckCircle as CheckCircleIcon, Tune as TuneIcon } from '@mui/icons-material'
 import SidebarBody from '@/components/sidebar/sidebar-body'
 import { SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
-import TuneIcon from '@mui/icons-material/Tune'
-import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 
 const Accordion = styled((props: AccordionProps) => (
   <MuiAccordion disableGutters elevation={0} {...props} />
@@ -475,11 +473,12 @@ export default function LookBuilder({
               secondaryAction={
                 <IconButton
                   aria-label="delete"
+                  color='secondary'
                   edge="end"
-                  size="small"
+									size="small"
                   onClick={() => removeSlug(v.slug)}
                 >
-                  <CloseIcon fontSize="small" />
+                  <Delete fontSize="small" />
                 </IconButton>
               }
             >
@@ -501,11 +500,12 @@ export default function LookBuilder({
     )
   }
   const composerPanel = (
-    <Stack sx={{ minWidth: 0 }}>
+    <CardContent sx={{ minWidth: 0, pr: 0 }}>
       <Stack spacing={1}>
+				<Typography component='p' variant="subtitle2">{name ? name : 'Name needed *'}</Typography>
         {selectedItems.length > 0 && (
           <Box>
-            <Typography color="textSecondary" sx={{ px: 2, py: 1 }} variant='overline'>
+            <Typography color="textSecondary" sx={{ py: 1 }} variant='overline'>
               {selectedItems.length} piece{selectedItems.length !== 1 ? 's' : ''} selected
             </Typography>
             {selectedSection(
@@ -534,7 +534,7 @@ export default function LookBuilder({
       </Stack>
 
       {saveError && <Alert severity="error">{saveError}</Alert>}
-    </Stack>
+    </CardContent>
   )
 
   // One bucket's category steps as an inner vertical stepper. Only mounted for
