@@ -889,9 +889,11 @@ export type Database = {
           created_at: string
           eureka_category: string | null
           eureka_color: string | null
+          eureka_label: string | null
           eureka_obtained_filter: string | null
           eureka_rarity: string | null
           eureka_set_filter: string | null
+          eureka_style: string | null
           group_by_set: boolean
           outfit_category_filter: string | null
           outfit_density: string | null
@@ -900,10 +902,12 @@ export type Database = {
           outfit_hide_evolutions: boolean
           outfit_hide_glowups: boolean
           outfit_image_mode: string | null
+          outfit_label_filter: string | null
           outfit_obtained_filter: string | null
           outfit_rarity_filter: string | null
           outfit_set_filter: string | null
           outfit_sort_axis: string | null
+          outfit_style_filter: string | null
           show_by_color: boolean
           sort_order: string | null
           theme: string
@@ -915,9 +919,11 @@ export type Database = {
           created_at?: string
           eureka_category?: string | null
           eureka_color?: string | null
+          eureka_label?: string | null
           eureka_obtained_filter?: string | null
           eureka_rarity?: string | null
           eureka_set_filter?: string | null
+          eureka_style?: string | null
           group_by_set?: boolean
           outfit_category_filter?: string | null
           outfit_density?: string | null
@@ -926,10 +932,12 @@ export type Database = {
           outfit_hide_evolutions?: boolean
           outfit_hide_glowups?: boolean
           outfit_image_mode?: string | null
+          outfit_label_filter?: string | null
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
           outfit_set_filter?: string | null
           outfit_sort_axis?: string | null
+          outfit_style_filter?: string | null
           show_by_color?: boolean
           sort_order?: string | null
           theme?: string
@@ -941,9 +949,11 @@ export type Database = {
           created_at?: string
           eureka_category?: string | null
           eureka_color?: string | null
+          eureka_label?: string | null
           eureka_obtained_filter?: string | null
           eureka_rarity?: string | null
           eureka_set_filter?: string | null
+          eureka_style?: string | null
           group_by_set?: boolean
           outfit_category_filter?: string | null
           outfit_density?: string | null
@@ -952,10 +962,12 @@ export type Database = {
           outfit_hide_evolutions?: boolean
           outfit_hide_glowups?: boolean
           outfit_image_mode?: string | null
+          outfit_label_filter?: string | null
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
           outfit_set_filter?: string | null
           outfit_sort_axis?: string | null
+          outfit_style_filter?: string | null
           show_by_color?: boolean
           sort_order?: string | null
           theme?: string

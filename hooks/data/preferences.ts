@@ -10,7 +10,7 @@ export const getPreferences = cache(async (user_id: string): Promise<UserPrefere
   const { data } = await supabase
     .from('user_preferences')
     .select(
-      'group_by_set, show_by_color, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity, theme, color_theme, outfit_set_filter, outfit_category_filter, outfit_evolution_filter, outfit_rarity_filter, outfit_obtained_filter, outfit_group_by_set, outfit_hide_evolutions, outfit_hide_glowups, outfit_image_mode, outfit_density, sort_order, outfit_sort_axis'
+      'group_by_set, show_by_color, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity, eureka_style, eureka_label, theme, color_theme, outfit_set_filter, outfit_category_filter, outfit_evolution_filter, outfit_rarity_filter, outfit_obtained_filter, outfit_style_filter, outfit_label_filter, outfit_group_by_set, outfit_hide_evolutions, outfit_hide_glowups, outfit_image_mode, outfit_density, sort_order, outfit_sort_axis'
     )
     .eq('user_id', user_id)
     .single()
