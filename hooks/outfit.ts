@@ -66,27 +66,24 @@ export function sortOutfitVariants(
   })
 }
 
-// Decide whether a variant's evolution should be visible given the independent
-// "hide evolutions" and "hide glowups" toggles. The base state is always shown;
-// the glow-up state is governed solely by hideGlowups, and every other
-// (non-base, non-glowup) evolution solely by hideEvolutions — so the two
-// toggles never affect each other.
 export function isEvolutionVisible({
   stateSlug,
   baseSlug,
   isGlowupState,
-  hideEvolutions,
-  hideGlowups,
+  showBase,
+  showEvolutions,
+  showGlowups,
 }: {
   stateSlug: string | null
   baseSlug: string
   isGlowupState: boolean
-  hideEvolutions: boolean
-  hideGlowups: boolean
+  showBase: boolean
+  showEvolutions: boolean
+  showGlowups: boolean
 }): boolean {
-  if (stateSlug === baseSlug) return true
-  if (isGlowupState) return !hideGlowups
-  return !hideEvolutions
+  if (stateSlug === baseSlug) return showBase
+  if (isGlowupState) return showGlowups
+  return showEvolutions
 }
 
 export function createOutfitSet({

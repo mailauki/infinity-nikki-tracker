@@ -143,8 +143,9 @@ export default function FilterOutfits() {
             stateSlug: v.outfit_set,
             baseSlug,
             isGlowupState: !!evo && isGlowup(evo),
-            hideEvolutions,
-            hideGlowups,
+            showBase: true,
+            showEvolutions: !hideEvolutions,
+            showGlowups: !hideGlowups,
           })
         })
         .filter(
@@ -275,8 +276,9 @@ export default function FilterOutfits() {
                       stateSlug,
                       baseSlug,
                       isGlowupState: !!evolution && isGlowup(evolution),
-                      hideEvolutions,
-                      hideGlowups,
+                      showBase: true,
+                      showEvolutions: !hideEvolutions,
+                      showGlowups: !hideGlowups,
                     })
                   }
                   total={variants.length}

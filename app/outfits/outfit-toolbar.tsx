@@ -51,8 +51,9 @@ export default function OutfitToolBar({
                 stateSlug: v.outfit_set,
                 baseSlug,
                 isGlowupState: !!evo && isGlowup(evo),
-                hideEvolutions,
-                hideGlowups,
+                showBase: true,
+                showEvolutions: !hideEvolutions,
+                showGlowups: !hideGlowups,
               })
             })
             .filter(

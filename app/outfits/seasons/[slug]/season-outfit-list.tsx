@@ -32,8 +32,9 @@ export function expandSet(
       stateSlug: evolution.slug,
       baseSlug,
       isGlowupState: isGlowup(evolution),
-      hideEvolutions,
-      hideGlowups,
+      showBase: true,
+      showEvolutions: !hideEvolutions,
+      showGlowups: !hideGlowups,
     })
     if (!visible) continue
 
