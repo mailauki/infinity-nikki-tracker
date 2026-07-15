@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  Accordion,
+  Accordion as MuiAccordion,
   AccordionDetails,
   AccordionSummary,
   Alert,
@@ -21,12 +21,13 @@ import {
   ListItemText,
   Stack,
   Step,
-  StepButton,
   StepContent,
   StepLabel,
   Stepper,
   TextField,
   Typography,
+  styled,
+  AccordionProps,
 } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
@@ -46,11 +47,25 @@ import ToggleIcon from '@/components/toggle-icon'
 import ImageUpload from '@/components/forms/image-upload'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import PageShell from '@/components/page-shell'
-import { ExpandMore, TaskAlt } from '@mui/icons-material'
+import { ExpandMore, MoreHoriz, TaskAlt } from '@mui/icons-material'
 import SidebarBody from '@/components/sidebar/sidebar-body'
 import { SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import TuneIcon from '@mui/icons-material/Tune'
+import CheckCircleIcon from '@mui/icons-material/CheckCircle'
+
+const Accordion = styled((props: AccordionProps) => (
+  <MuiAccordion disableGutters elevation={0} {...props} />
+))(({ theme }) => ({
+  border: 0,
+  borderRadius: theme.shape.borderRadius,
+  '&:not(:last-child)': {
+    borderBottom: 0,
+  },
+  '&::before': {
+    display: 'none',
+  },
+}))
 
 // Outfit categories carry a `part` that buckets them into these two groups.
 const PIECES_PART = 'Pieces'
@@ -489,30 +504,26 @@ export default function LookBuilder({
     <Stack sx={{ minWidth: 0 }}>
       <Stack spacing={1}>
         {selectedItems.length > 0 && (
-          <Accordion disableGutters>
-            <AccordionSummary expandIcon={<ExpandMore />}>
-              <Typography color="textSecondary" variant="caption">
-                {selectedItems.length} piece{selectedItems.length !== 1 ? 's' : ''} selected
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails sx={{ pr: 0 }}>
-              {selectedSection(
-                'Pieces',
-                <CheckroomIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
-                selectedPieces
-              )}
-              {selectedSection(
-                'Accessories',
-                <WatchOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
-                selectedAccessories
-              )}
-              {selectedSection(
-                'Eureka',
-                <DiamondOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
-                selectedEureka
-              )}
-            </AccordionDetails>
-          </Accordion>
+          <Box>
+            <Typography color="textSecondary" sx={{ px: 2, py: 1 }} variant='overline'>
+              {selectedItems.length} piece{selectedItems.length !== 1 ? 's' : ''} selected
+            </Typography>
+            {selectedSection(
+              'Pieces',
+              <CheckroomIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
+              selectedPieces
+            )}
+            {selectedSection(
+              'Accessories',
+              <WatchOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
+              selectedAccessories
+            )}
+            {selectedSection(
+              'Eureka',
+              <DiamondOutlinedIcon sx={{ fontSize: 14, color: 'text.secondary' }} />,
+              selectedEureka
+            )}
+          </Box>
         )}
 
         {selectedItems.length === 0 && (
@@ -534,7 +545,7 @@ export default function LookBuilder({
         {steps.map((step, index) => (
           <Step key={step.slug} completed={!!step.selectedVariant} disabled={step.disabled}>
             <StepLabel
-              icon={<ToggleIcon category={step.slug} size="sm" />}
+              icon={<ToggleIcon category={step.slug} size="xs" />}
               optional={
                 step.disabled ? (
                   <Typography color="textDisabled" variant="caption">
@@ -550,12 +561,18 @@ export default function LookBuilder({
                   />
                 ) : null
               }
-              sx={{ '& .MuiStepLabel-labelContainer': { display: 'flex', alignItems: 'center' } }}
+              sx={{
+                '& .MuiStepLabel-labelContainer': { display: 'flex', alignItems: 'center' },
+                '& .MuiStepLabel-label': { flexGrow: 1 },
+              }}
             >
-              <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
+              <Stack
+                direction="row"
+                sx={{ alignItems: 'center', justifyContent: 'space-between', gap: 1, flexGrow: 1 }}
+              >
                 <Box
                   component="span"
-                  sx={{ cursor: 'pointer', flex: 1 }}
+                  sx={{ cursor: 'pointer', flexGrow: 1 }}
                   onClick={() => !step.disabled && setActiveCategory(index)}
                 >
                   {step.title}
@@ -592,23 +609,38 @@ export default function LookBuilder({
     )
   }
 
-  // ── Picker panel (nested stepper) ────────────────────────────────────────
+  // Accordion summary row: section icon + label, with a check once advanced past.
+  function sectionSummary(index: number, icon: React.ReactNode, label: string) {
+    const done = activeSection > index
+    return (
+      <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, flex: 1 }}>
+        <Box sx={{ display: 'flex', color: done ? 'primary.main' : 'text.secondary' }}>{icon}</Box>
+        <Typography sx={{ fontWeight: 500, flex: 1 }} variant="body2">
+          {label}
+        </Typography>
+        {done && <CheckCircleIcon color="primary" fontSize="small" sx={{ mr: 1 }} />}
+      </Stack>
+    )
+  }
+
+  // ── Picker panel (nested accordion → category stepper) ───────────────────
   const pickerPanel = (
-    <Stepper nonLinear activeStep={activeSection} orientation="vertical">
-      <Step completed={activeSection > 0 && !!name.trim()}>
-        <StepButton icon={<EditNoteIcon />} onClick={() => setActiveSection(0)}>
-          <StepLabel optional={<Typography variant="caption">Name, notes and cover</Typography>}>
-            Details
-          </StepLabel>
-        </StepButton>
-        <StepContent>
-          <Stack spacing={2} sx={{ pt: 1 }}>
+    <Stack spacing={2}>
+      <Accordion
+        disableGutters
+        expanded={activeSection === 0}
+        onChange={() => setActiveSection(activeSection === 0 ? -1 : 0)}
+      >
+        <AccordionSummary expandIcon={<ExpandMore />}>
+          {sectionSummary(0, <EditNoteIcon fontSize="small" />, 'Details')}
+        </AccordionSummary>
+        <AccordionDetails>
+          <Stack spacing={2}>
             <TextField
               fullWidth
               required
               label="Look name"
               placeholder="e.g. Moonlit Wanderer"
-              size="small"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -618,8 +650,7 @@ export default function LookBuilder({
               label="Description"
               maxRows={3}
               minRows={2}
-              placeholder="Optional notes about this look…"
-              size="small"
+              placeholder="Optional notes about this look..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
@@ -640,34 +671,41 @@ export default function LookBuilder({
               </Alert>
             )}
             <Box>
-              <Button size="small" variant="contained" onClick={() => goToSection(1)}>
+              <Button variant="contained" onClick={() => goToSection(1)}>
                 Continue
               </Button>
             </Box>
           </Stack>
-        </StepContent>
-      </Step>
+        </AccordionDetails>
+      </Accordion>
 
       {sections.map((section, i) => {
         const sectionIndex = i + 1
         const sectionIcon =
           section.bucket === 'pieces' ? (
-            <CheckroomIcon />
+            <CheckroomIcon fontSize="small" />
           ) : section.bucket === 'accessories' ? (
-            <WatchOutlinedIcon />
+            <WatchOutlinedIcon fontSize="small" />
           ) : (
-            <DiamondOutlinedIcon />
+            <DiamondOutlinedIcon fontSize="small" />
           )
         return (
-          <Step key={section.bucket} completed={activeSection > sectionIndex}>
-            <StepButton icon={sectionIcon} onClick={() => goToSection(sectionIndex)}>
-              <StepLabel>{section.label}</StepLabel>
-            </StepButton>
-            <StepContent>{categoryStepper(sectionIndex, section.steps)}</StepContent>
-          </Step>
+          <Accordion
+            key={section.bucket}
+            disableGutters
+            expanded={activeSection === sectionIndex}
+            onChange={() =>
+              activeSection === sectionIndex ? setActiveSection(-1) : goToSection(sectionIndex)
+            }
+          >
+            <AccordionSummary expandIcon={<ExpandMore />}>
+              {sectionSummary(sectionIndex, sectionIcon, section.label)}
+            </AccordionSummary>
+            <AccordionDetails>{categoryStepper(sectionIndex, section.steps)}</AccordionDetails>
+          </Accordion>
         )
       })}
-    </Stepper>
+    </Stack>
   )
 
   return (
