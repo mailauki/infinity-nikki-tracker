@@ -12,7 +12,6 @@ import {
   Button,
   Card,
   CardActionArea,
-  CardContent,
   CardHeader,
   Chip,
   IconButton,
@@ -34,6 +33,7 @@ import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
 import CheckroomIcon from '@mui/icons-material/Checkroom'
 import WatchOutlinedIcon from '@mui/icons-material/WatchOutlined'
 import CategoryIcon from '@mui/icons-material/Category'
+import EditNoteIcon from '@mui/icons-material/EditNote'
 import SaveIcon from '@mui/icons-material/Save'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
@@ -65,7 +65,6 @@ type SavePayload = {
 
 type StepBucket = 'pieces' | 'accessories' | 'eureka'
 type CategoryStep = {
-  kind: 'category'
   bucket: StepBucket
   slug: string
   title: string
@@ -74,7 +73,6 @@ type CategoryStep = {
   disabled: boolean
   disabledReason?: string
 }
-type BuilderStep = { kind: 'details' } | CategoryStep
 
 // Detail caption for a selected variant, matching the VariantCard label format.
 // Eureka always shows `color • category`. Outfits carry the set title for
@@ -198,7 +196,10 @@ export default function LookBuilder({
         ...(initialLook?.outfit_variant_slugs ?? []),
       ])
   )
-  const [activeStep, setActiveStep] = useState(0)
+  // Outer stepper: 0 Details · 1 Pieces · 2 Accessories · 3 Eureka.
+  // Inner stepper: index of the active category within the active bucket.
+  const [activeSection, setActiveSection] = useState(0)
+  const [activeCategory, setActiveCategory] = useState(0)
   const [saveError, setSaveError] = useState<string | null>(null)
 
   // Selected variants as FlatVariant (for chips in composer)
@@ -239,20 +240,36 @@ export default function LookBuilder({
     })
   }
 
-  // Advance to the next non-disabled step after `from`. Stays put if none.
-  function advanceFrom(from: number) {
-    for (let i = from + 1; i < steps.length; i++) {
-      const s = steps[i]
-      if (s.kind === 'category' && s.disabled) continue
-      setActiveStep(i)
-      return
-    }
+  // First enabled category index in a section's step list (0 if none/empty).
+  function firstEnabledCategory(steps: CategoryStep[]) {
+    const i = steps.findIndex((s) => !s.disabled)
+    return i === -1 ? 0 : i
   }
 
-  // Pick a variant, then move to the next available step.
-  function pickAndAdvance(slug: string, stepIndex: number) {
+  // Jump to an outer section, opening its first available category.
+  function goToSection(section: number) {
+    setActiveSection(section)
+    setActiveCategory(firstEnabledCategory(sectionSteps(section)))
+  }
+
+  // Move to the next enabled category in the current section. When the section
+  // runs out, roll over into the next section (opening its first category).
+  function advanceCategory(section: number, from: number) {
+    const steps = sectionSteps(section)
+    for (let i = from + 1; i < steps.length; i++) {
+      if (!steps[i].disabled) {
+        setActiveCategory(i)
+        return
+      }
+    }
+    // No more categories in this section — roll into the next one, if any.
+    if (section < sections.length) goToSection(section + 1)
+  }
+
+  // Pick a variant, then advance to the next available category/section.
+  function pickAndAdvance(slug: string, section: number, categoryIndex: number) {
     selectPiece(slug)
-    advanceFrom(stepIndex)
+    advanceCategory(section, categoryIndex)
   }
 
   // Group a bucket's variants by category, in canonical category order; drop
@@ -322,7 +339,6 @@ export default function LookBuilder({
         bucket === 'pieces' &&
         isCategoryDisabled({ slug } as OutfitCategory, selectedOutfitCategorySlugs)
       return {
-        kind: 'category',
         bucket,
         slug,
         title: group.title,
@@ -333,25 +349,33 @@ export default function LookBuilder({
       }
     })
 
-  const steps = useMemo<BuilderStep[]>(
-    () => [
-      { kind: 'details' },
-      ...bucketToSteps('pieces', piecesGroups),
-      ...bucketToSteps('accessories', accessoriesGroups),
-      ...bucketToSteps('eureka', eurekaGroups),
-    ],
-    // bucketToSteps is a plain function redefined each render; it reads only
-    // the values already listed below, so it's safe to omit as a dep.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      piecesGroups,
-      accessoriesGroups,
-      eurekaGroups,
-      selectedSlugs,
-      selectedOutfitCategorySlugs,
-      outfitConflictReason,
-    ]
+  // bucketToSteps is a plain function redefined each render; it reads only the
+  // values already listed as deps, so it's safe to omit as a dep in each memo.
+  /* eslint-disable react-hooks/exhaustive-deps */
+  const piecesSteps = useMemo(
+    () => bucketToSteps('pieces', piecesGroups),
+    [piecesGroups, selectedSlugs, selectedOutfitCategorySlugs, outfitConflictReason]
   )
+  const accessoriesSteps = useMemo(
+    () => bucketToSteps('accessories', accessoriesGroups),
+    [accessoriesGroups, selectedSlugs]
+  )
+  const eurekaSteps = useMemo(
+    () => bucketToSteps('eureka', eurekaGroups),
+    [eurekaGroups, selectedSlugs]
+  )
+  /* eslint-enable react-hooks/exhaustive-deps */
+
+  // The three outfit/eureka buckets, in outer-stepper order. The Details
+  // section (index 0) is rendered separately; these are sections 1-3.
+  const sections: { bucket: StepBucket; label: string; steps: CategoryStep[] }[] = [
+    { bucket: 'pieces', label: 'Pieces', steps: piecesSteps },
+    { bucket: 'accessories', label: 'Accessories', steps: accessoriesSteps },
+    { bucket: 'eureka', label: 'Eureka', steps: eurekaSteps },
+  ]
+
+  // Category steps for a given outer section index (1-based; section 0 is Details).
+  const sectionSteps = (section: number) => sections[section - 1]?.steps ?? []
 
   // Category slug → its position in the DB id-ordered category list, so selected
   // items can be sorted by their category's id.
@@ -463,28 +487,6 @@ export default function LookBuilder({
   }
   const composerPanel = (
     <Stack sx={{ minWidth: 0 }}>
-      <CardContent>
-        <Stack spacing={2}>
-          {initialLook?.slug && (
-            <ImageUpload
-              caption="Cover image"
-              column="image_url"
-              size="lg"
-              slug={initialLook.slug}
-              table="custom_looks"
-              url={imageUrl}
-              onUpload={setImageUrl}
-            />
-          )}
-
-          {!initialLook && (
-            <Alert severity="info">
-              A cover image can be added after saving — edit the look to upload one.
-            </Alert>
-          )}
-        </Stack>
-      </CardContent>
-
       <Stack spacing={1}>
         {selectedItems.length > 0 && (
           <Accordion disableGutters>
@@ -524,102 +526,47 @@ export default function LookBuilder({
     </Stack>
   )
 
-  // ── Picker panel (stepper) ───────────────────────────────────────────────
-  const pickerPanel = (
-    <Stepper nonLinear activeStep={activeStep} orientation="vertical">
-      {steps.map((step, index) => {
-        if (step.kind === 'details') {
-          return (
-            <Step key="details" completed={!!name.trim()}>
-              <StepButton onClick={() => setActiveStep(index)}>
-                <StepLabel optional={<Typography variant="caption">Name and notes</Typography>}>
-                  Details
-                </StepLabel>
-              </StepButton>
-              <StepContent>
-                <Stack spacing={2} sx={{ pt: 1 }}>
-                  <TextField
-                    fullWidth
-                    required
-                    label="Look name"
-                    placeholder="e.g. Moonlit Wanderer"
+  // One bucket's category steps as an inner vertical stepper. Only mounted for
+  // the active section, so `activeCategory` always indexes this section's list.
+  function categoryStepper(section: number, steps: CategoryStep[]) {
+    return (
+      <Stepper nonLinear activeStep={activeCategory} orientation="vertical">
+        {steps.map((step, index) => (
+          <Step key={step.slug} completed={!!step.selectedVariant} disabled={step.disabled}>
+            <StepLabel
+              icon={<ToggleIcon category={step.slug} size="sm" />}
+              optional={
+                step.disabled ? (
+                  <Typography color="textDisabled" variant="caption">
+                    {step.disabledReason}
+                  </Typography>
+                ) : step.selectedVariant ? (
+                  <Chip
+                    color="success"
+                    label={step.selectedVariant.setTitle}
                     size="small"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    sx={{ maxWidth: 160 }}
+                    variant="outlined"
                   />
-                  <TextField
-                    fullWidth
-                    multiline
-                    label="Description"
-                    maxRows={3}
-                    minRows={2}
-                    placeholder="Optional notes about this look…"
-                    size="small"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                  <Box>
-                    <Button size="small" variant="contained" onClick={() => advanceFrom(index)}>
-                      Continue
-                    </Button>
-                  </Box>
-                </Stack>
-              </StepContent>
-            </Step>
-          )
-        }
-
-        // Category step. Show the bucket header when the bucket changes.
-        const prev = steps[index - 1]
-        const showHeader = prev.kind !== 'category' || prev.bucket !== step.bucket
-        const bucketLabel =
-          step.bucket === 'pieces'
-            ? 'Pieces'
-            : step.bucket === 'accessories'
-              ? 'Accessories'
-              : 'Eureka'
-
-        return (
-          <Step
-            key={`${step.bucket}:${step.slug}`}
-            completed={!!step.selectedVariant}
-            disabled={step.disabled}
-          >
-            {showHeader && (
-              <Typography
-                color="textSecondary"
-                sx={{ pt: 1, pb: 0.5, textTransform: 'uppercase', letterSpacing: 0.5 }}
-                variant="caption"
-              >
-                {bucketLabel}
-              </Typography>
-            )}
-            <StepButton disabled={step.disabled} onClick={() => setActiveStep(index)}>
-              <StepLabel
-                icon={<ToggleIcon category={step.slug} size="sm" />}
-                optional={
-                  step.disabled ? (
-                    <Typography color="textDisabled" variant="caption">
-                      {step.disabledReason}
-                    </Typography>
-                  ) : step.selectedVariant ? (
-                    <Chip
-                      color="success"
-                      label={step.selectedVariant.setTitle}
-                      size="small"
-                      sx={{ maxWidth: 160 }}
-                      variant="outlined"
-                    />
-                  ) : (
-                    <Typography color="textSecondary" variant="caption">
-                      {step.variants.length} piece{step.variants.length !== 1 ? 's' : ''}
-                    </Typography>
-                  )
-                }
-              >
-                {step.title}
-              </StepLabel>
-            </StepButton>
+                ) : null
+              }
+              sx={{ '& .MuiStepLabel-labelContainer': { display: 'flex', alignItems: 'center' } }}
+            >
+              <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
+                <Box
+                  component="span"
+                  sx={{ cursor: 'pointer', flex: 1 }}
+                  onClick={() => !step.disabled && setActiveCategory(index)}
+                >
+                  {step.title}
+                </Box>
+                {!step.disabled && !step.selectedVariant && index === activeCategory && (
+                  <Button size="small" onClick={() => advanceCategory(section, index)}>
+                    Skip
+                  </Button>
+                )}
+              </Stack>
+            </StepLabel>
             <StepContent>
               <Box
                 sx={{
@@ -634,16 +581,89 @@ export default function LookBuilder({
                     key={v.slug}
                     selected={selectedSlugs.has(v.slug)}
                     variant={v}
-                    onToggle={(slug) => pickAndAdvance(slug, index)}
+                    onToggle={(slug) => pickAndAdvance(slug, section, index)}
                   />
                 ))}
               </Box>
-              <Box sx={{ pt: 1.5 }}>
-                <Button size="small" onClick={() => advanceFrom(index)}>
-                  Skip
-                </Button>
-              </Box>
             </StepContent>
+          </Step>
+        ))}
+      </Stepper>
+    )
+  }
+
+  // ── Picker panel (nested stepper) ────────────────────────────────────────
+  const pickerPanel = (
+    <Stepper nonLinear activeStep={activeSection} orientation="vertical">
+      <Step completed={activeSection > 0 && !!name.trim()}>
+        <StepButton icon={<EditNoteIcon />} onClick={() => setActiveSection(0)}>
+          <StepLabel optional={<Typography variant="caption">Name, notes and cover</Typography>}>
+            Details
+          </StepLabel>
+        </StepButton>
+        <StepContent>
+          <Stack spacing={2} sx={{ pt: 1 }}>
+            <TextField
+              fullWidth
+              required
+              label="Look name"
+              placeholder="e.g. Moonlit Wanderer"
+              size="small"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              fullWidth
+              multiline
+              label="Description"
+              maxRows={3}
+              minRows={2}
+              placeholder="Optional notes about this look…"
+              size="small"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            {initialLook?.slug && (
+              <ImageUpload
+                caption="Cover image"
+                column="image_url"
+                size="lg"
+                slug={initialLook.slug}
+                table="custom_looks"
+                url={imageUrl}
+                onUpload={setImageUrl}
+              />
+            )}
+            {!initialLook && (
+              <Alert severity="info">
+                A cover image can be added after saving — edit the look to upload one.
+              </Alert>
+            )}
+            <Box>
+              <Button size="small" variant="contained" onClick={() => goToSection(1)}>
+                Continue
+              </Button>
+            </Box>
+          </Stack>
+        </StepContent>
+      </Step>
+
+      {sections.map((section, i) => {
+        const sectionIndex = i + 1
+        const sectionIcon =
+          section.bucket === 'pieces' ? (
+            <CheckroomIcon />
+          ) : section.bucket === 'accessories' ? (
+            <WatchOutlinedIcon />
+          ) : (
+            <DiamondOutlinedIcon />
+          )
+        return (
+          <Step key={section.bucket} completed={activeSection > sectionIndex}>
+            <StepButton icon={sectionIcon} onClick={() => goToSection(sectionIndex)}>
+              <StepLabel>{section.label}</StepLabel>
+            </StepButton>
+            <StepContent>{categoryStepper(sectionIndex, section.steps)}</StepContent>
           </Step>
         )
       })}
