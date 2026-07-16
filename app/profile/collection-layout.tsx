@@ -1,5 +1,5 @@
 import { ReactNode } from 'react'
-import { Box, Card, CardContent, CardHeader, Skeleton, Stack, Typography } from '@mui/material'
+import { Box, Card, CardContent, CardHeader, Skeleton, Stack } from '@mui/material'
 
 // Shared chart card for the profile collection charts. Owns the outlined Card,
 // the overline header, the pre-mount Skeleton fallback, and the flex-wrap row
@@ -35,13 +35,9 @@ export function ChartCard({
   return (
     <Card variant="outlined">
       <CardHeader
-        disableTypography
+        slotProps={{ title: { color: 'text.secondary', variant: 'overline' } }}
         sx={{ mt: -1 }}
-        title={
-          <Typography color="text.secondary" variant="overline">
-            {title}
-          </Typography>
-        }
+        title={title}
       />
       <CardContent sx={{ pt: 0 }}>
         <Stack
