@@ -95,7 +95,7 @@ export default function PremiumUpgrade() {
             variant="contained"
             onClick={handleUpgrade}
           >
-            {loading ? 'Redirecting…' : 'Upgrade — $5 one-time'}
+            {loading ? 'Redirecting…' : 'Upgrade — $2 one-time'}
           </Button>
         </Stack>
       </CardContent>

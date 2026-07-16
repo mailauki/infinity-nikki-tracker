@@ -28,7 +28,7 @@ import {
   Typography,
   styled,
   AccordionProps,
-	CardContent,
+  CardContent,
 } from '@mui/material'
 import DiamondOutlinedIcon from '@mui/icons-material/DiamondOutlined'
 import CheckroomIcon from '@mui/icons-material/Checkroom'
@@ -47,7 +47,13 @@ import ToggleIcon from '@/components/toggle-icon'
 import ImageUpload from '@/components/forms/image-upload'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import PageShell from '@/components/page-shell'
-import { Delete, ExpandMore, TaskAlt, CheckCircle as CheckCircleIcon, Tune as TuneIcon } from '@mui/icons-material'
+import {
+  Delete,
+  ExpandMore,
+  TaskAlt,
+  CheckCircle as CheckCircleIcon,
+  Tune as TuneIcon,
+} from '@mui/icons-material'
 import SidebarBody from '@/components/sidebar/sidebar-body'
 import { SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
@@ -474,9 +480,9 @@ export default function LookBuilder({
               secondaryAction={
                 <IconButton
                   aria-label="delete"
-                  color='secondary'
+                  color="secondary"
                   edge="end"
-									size="small"
+                  size="small"
                   onClick={() => removeSlug(v.slug)}
                 >
                   <Delete fontSize="small" />
@@ -503,10 +509,12 @@ export default function LookBuilder({
   const composerPanel = (
     <CardContent sx={{ minWidth: 0, pr: 0 }}>
       <Stack spacing={1}>
-				<Typography component='p' variant="subtitle2">{name ? name : 'Name needed *'}</Typography>
+        <Typography component="p" variant="subtitle2">
+          {name ? name : 'Name needed *'}
+        </Typography>
         {selectedItems.length > 0 && (
           <Box>
-            <Typography color="textSecondary" sx={{ py: 1 }} variant='overline'>
+            <Typography color="textSecondary" sx={{ py: 1 }} variant="overline">
               {selectedItems.length} piece{selectedItems.length !== 1 ? 's' : ''} selected
             </Typography>
             {selectedSection(

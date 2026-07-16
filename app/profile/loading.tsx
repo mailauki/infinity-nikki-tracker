@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, Skeleton, Stack } from '@mui/material'
+import { Card, CardContent, CardHeader, Divider, Skeleton, Stack } from '@mui/material'
 import { SimpleGrid } from '@/components/card-grid'
 
 function ProfileHeaderSkeleton() {
@@ -14,17 +14,60 @@ function ProfileHeaderSkeleton() {
   )
 }
 
-function StatCardSkeleton() {
+// Mirrors ProfileStats: a row of four centered stat pairs split by dividers.
+function ProfileStatsSkeleton() {
+  return (
+    <Stack
+      direction="row"
+      divider={<Divider flexItem orientation="vertical" variant="middle" />}
+      spacing={{ xs: 1, sm: 2, md: 3 }}
+    >
+      {Array.from({ length: 4 }).map((_, i) => (
+        <Stack key={i} spacing={0.5} sx={{ alignItems: 'center', flexGrow: { xs: 1, md: 0 } }}>
+          <Skeleton height={16} variant="text" width={72} />
+          <Skeleton height={28} variant="text" width={40} />
+        </Stack>
+      ))}
+    </Stack>
+  )
+}
+
+// Mirrors ChartCard: overline header + a chart square beside a stacked legend
+// that wraps below on narrow cards.
+function ChartCardSkeleton() {
   return (
     <Card variant="outlined">
       <CardHeader
-        disableTypography
-        action={<Skeleton height={24} sx={{ mt: 1 }} variant="rounded" width={60} />}
+        slotProps={{ title: { variant: 'overline' } }}
         sx={{ mt: -1 }}
-        title={<Skeleton height={20} variant="text" width={80} />}
+        title={<Skeleton height={16} variant="text" width={140} />}
       />
       <CardContent sx={{ pt: 0 }}>
-        <Skeleton height={8} variant="rounded" />
+        <Stack
+          useFlexGap
+          direction="row"
+          spacing={2}
+          sx={{ alignItems: 'center', flexWrap: 'wrap' }}
+        >
+          <Skeleton
+            height={200}
+            sx={{ flexGrow: 1, flexShrink: 0, minWidth: '200px' }}
+            variant="rounded"
+            width={200}
+          />
+          <Stack spacing={1.5} sx={{ flexGrow: 1, minWidth: '200px' }}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Stack key={i} spacing={0.5}>
+                <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+                  <Skeleton height={12} variant="rounded" width={12} />
+                  <Skeleton height={16} sx={{ flex: 1 }} variant="text" />
+                  <Skeleton height={20} variant="rounded" width={48} />
+                </Stack>
+                <Skeleton height={4} sx={{ ml: 3 }} variant="rounded" />
+              </Stack>
+            ))}
+          </Stack>
+        </Stack>
       </CardContent>
     </Card>
   )
@@ -34,7 +77,7 @@ function RecentUpdatesSkeleton() {
   return (
     <Card variant="outlined">
       <CardHeader
-        disableTypography
+        slotProps={{ title: { variant: 'overline' } }}
         sx={{ pb: 0 }}
         title={<Skeleton height={20} variant="text" width={140} />}
       />
@@ -60,10 +103,10 @@ export default function ProfileLoading() {
   return (
     <Stack spacing={3} sx={{ flexGrow: 1 }}>
       <ProfileHeaderSkeleton />
-      <SimpleGrid columns={{ xs: '1fr 1fr', md: '1fr 1fr 1fr' }}>
-        {Array.from({ length: 6 }).map((_, i) => (
-          <StatCardSkeleton key={i} />
-        ))}
+      <ProfileStatsSkeleton />
+      <SimpleGrid columns={{ sm: '1fr', md: '1fr 1fr' }}>
+        <ChartCardSkeleton />
+        <ChartCardSkeleton />
       </SimpleGrid>
       <RecentUpdatesSkeleton />
     </Stack>

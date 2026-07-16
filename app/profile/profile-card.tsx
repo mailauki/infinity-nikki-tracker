@@ -2,8 +2,8 @@
 
 import { type User } from '@supabase/supabase-js'
 import AvatarPreview from '@/app/settings/avatar-preview'
-import { Alert, Chip, Stack, Typography } from '@mui/material'
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
+import { Alert, Stack, Tooltip, Typography } from '@mui/material'
+import { Verified } from '@mui/icons-material'
 
 export default function ProfileCard({
   user,
@@ -32,13 +32,9 @@ export default function ProfileCard({
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
           <Typography variant="h6">{fullname ?? '—'}</Typography>
           {isPremium && (
-            <Chip
-              color="primary"
-              icon={<AutoAwesomeIcon fontSize="small" />}
-              label="Supporter"
-              size="small"
-              variant="outlined"
-            />
+            <Tooltip title="Verified supporter">
+              <Verified color="primary" />
+            </Tooltip>
           )}
         </Stack>
         <Typography color="textSecondary" variant="body2">
