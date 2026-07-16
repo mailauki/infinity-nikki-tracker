@@ -61,7 +61,8 @@ export default function PremiumUpgrade() {
           </Stack>
 
           <Typography color="textSecondary" variant="body2">
-            Support the tracker with a one-time purchase and unlock cosmetic extras. No subscriptions, no game content — just app features built for you.
+            Support the tracker with a one-time purchase and unlock cosmetic extras. No
+            subscriptions, no game content — just app features built for you.
           </Typography>
 
           <Divider />

@@ -20,6 +20,7 @@ import { isGlowup } from '@/hooks/outfit'
 import { OutfitSet, Season } from '@/lib/types/outfit'
 import PercentLabel from '@/components/percent-label'
 import ProgressChip from '@/components/progress-chip'
+import { CardsGrid, ChartRow } from './collection-layout'
 
 const RINGS_CHART_SIZE = 240
 const SEASONS_CHART_SIZE = 220
@@ -105,7 +106,7 @@ function OutfitRingsChart({
   const overallPct = percent(variantsObtained, variantsTotal)
 
   return (
-    <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
+    <Card variant="outlined">
       <CardHeader
         disableTypography
         sx={{ mt: -1 }}
@@ -116,17 +117,15 @@ function OutfitRingsChart({
         }
       />
       <CardContent sx={{ pt: 0 }}>
-        <Stack
-          direction={{ xs: 'column', sm: 'row', md: 'column', lg: 'row' }}
-          spacing={2}
-          sx={{ alignItems: 'center' }}
-        >
+        <ChartRow>
           <Box
             sx={{
               position: 'relative',
               width: RINGS_CHART_SIZE,
               height: RINGS_CHART_SIZE,
               flexShrink: 0,
+              flexGrow: 1,
+              minWidth: '200px',
             }}
           >
             <PieChart
@@ -170,10 +169,7 @@ function OutfitRingsChart({
             </Box>
           </Box>
 
-          <Stack
-            spacing={1.5}
-            sx={{ flex: 1, width: { xs: '100%', sm: 'auto', md: '100%', lg: 'auto' } }}
-          >
+          <Stack spacing={1.5} sx={{ flexGrow: 1, minWidth: '200px' }}>
             {rings.map((ring) => (
               <Stack key={ring.label} spacing={0.5}>
                 <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
@@ -201,7 +197,7 @@ function OutfitRingsChart({
               </Stack>
             ))}
           </Stack>
-        </Stack>
+        </ChartRow>
       </CardContent>
     </Card>
   )
@@ -224,7 +220,7 @@ function OutfitSeasonsChart({
 
   if (!mounted)
     return (
-      <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
+      <Card variant="outlined">
         <CardContent>
           <Skeleton height={SEASONS_CHART_SIZE} variant="rounded" />
         </CardContent>
@@ -277,7 +273,7 @@ function OutfitSeasonsChart({
   if (seasonVariantsTotal === 0) return null
 
   return (
-    <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
+    <Card variant="outlined">
       <CardHeader
         disableTypography
         sx={{ mt: -1 }}
@@ -288,17 +284,15 @@ function OutfitSeasonsChart({
         }
       />
       <CardContent sx={{ pt: 0 }}>
-        <Stack
-          direction={{ xs: 'column', sm: 'row', md: 'column', lg: 'row' }}
-          spacing={2}
-          sx={{ alignItems: 'center' }}
-        >
+        <ChartRow>
           <Box
             sx={{
               position: 'relative',
               width: SEASONS_CHART_SIZE,
               height: SEASONS_CHART_SIZE,
               flexShrink: 0,
+              flexGrow: 1,
+              minWidth: '200px',
             }}
           >
             <PieChart
@@ -360,10 +354,7 @@ function OutfitSeasonsChart({
             </Box>
           </Box>
 
-          <Stack
-            spacing={2}
-            sx={{ flex: 1, width: { xs: '100%', sm: 'auto', md: '100%', lg: 'auto' } }}
-          >
+          <Stack spacing={2} sx={{ flexGrow: 1, minWidth: '200px' }}>
             {[
               {
                 label: selected ? selected.label : 'Overall',
@@ -420,7 +411,7 @@ function OutfitSeasonsChart({
               </Stack>
             ))}
           </Stack>
-        </Stack>
+        </ChartRow>
       </CardContent>
     </Card>
   )
@@ -466,13 +457,7 @@ export default function OutfitCollectionCharts({
   const glowupsObtained = glowupGroups.filter(isComplete).length
 
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { sm: '1fr', md: '1fr 1fr' },
-        gap: 2,
-      }}
-    >
+    <CardsGrid>
       <OutfitRingsChart
         evolutionsObtained={evolutionsObtained}
         evolutionsTotal={evolutionsTotal}
@@ -484,6 +469,6 @@ export default function OutfitCollectionCharts({
         variantsTotal={variantsTotal}
       />
       <OutfitSeasonsChart outfitSets={outfitSets} seasons={seasons} />
-    </Box>
+    </CardsGrid>
   )
 }

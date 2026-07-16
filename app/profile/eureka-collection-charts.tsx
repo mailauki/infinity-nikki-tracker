@@ -20,6 +20,7 @@ import { EurekaSet, Trial } from '@/lib/types/eureka'
 import PercentLabel from '@/components/percent-label'
 import { SparkleIcon } from '@/components/rarity-stars'
 import ProgressChip from '@/components/progress-chip'
+import { CardsGrid, ChartRow } from './collection-layout'
 
 const RINGS_CHART_SIZE = 240
 const COLOR_SETS_CHART_SIZE = 220
@@ -51,7 +52,7 @@ function CollectionRingsChart({
 
   if (!mounted)
     return (
-      <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
+      <Card variant="outlined">
         <CardContent>
           <Skeleton height={RINGS_CHART_SIZE} variant="rounded" />
         </CardContent>
@@ -100,7 +101,7 @@ function CollectionRingsChart({
   const overallPct = percent(variantsObtained, variantsTotal)
 
   return (
-    <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
+    <Card variant="outlined">
       <CardHeader
         disableTypography
         sx={{ mt: -1 }}
@@ -111,17 +112,15 @@ function CollectionRingsChart({
         }
       />
       <CardContent sx={{ pt: 0 }}>
-        <Stack
-          direction={{ xs: 'column', sm: 'row', md: 'column', lg: 'row' }}
-          spacing={2}
-          sx={{ alignItems: 'center' }}
-        >
+        <ChartRow>
           <Box
             sx={{
               position: 'relative',
               width: RINGS_CHART_SIZE,
               height: RINGS_CHART_SIZE,
               flexShrink: 0,
+              flexGrow: 1,
+              minWidth: '200px',
             }}
           >
             <PieChart
@@ -165,10 +164,7 @@ function CollectionRingsChart({
             </Box>
           </Box>
 
-          <Stack
-            spacing={1.5}
-            sx={{ flex: 1, width: { xs: '100%', sm: 'auto', md: '100%', lg: 'auto' } }}
-          >
+          <Stack spacing={1.5} sx={{ flexGrow: 1, minWidth: '200px' }}>
             {rings.map((ring) => (
               <Stack key={ring.label} spacing={0.5}>
                 <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
@@ -196,7 +192,7 @@ function CollectionRingsChart({
               </Stack>
             ))}
           </Stack>
-        </Stack>
+        </ChartRow>
       </CardContent>
     </Card>
   )
@@ -449,13 +445,7 @@ export default function EurekaCollectionCharts({
   ).length
 
   return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { sm: '1fr', md: '1fr 1fr' },
-        gap: 2,
-      }}
-    >
+    <CardsGrid>
       <CollectionRingsChart
         colorSetsObtained={colorSetsObtained}
         colorSetsTotal={colorSetsTotal}
@@ -467,6 +457,6 @@ export default function EurekaCollectionCharts({
         variantsTotal={variantsTotal}
       />
       <CollectionSetsChart eurekaSets={eurekaSets} />
-    </Box>
+    </CardsGrid>
   )
 }
