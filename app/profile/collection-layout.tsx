@@ -1,28 +1,72 @@
-import { Box, Stack } from '@mui/material'
 import { ReactNode } from 'react'
+import { Box, Card, CardContent, CardHeader, Skeleton, Stack, Typography } from '@mui/material'
 
-// Responsive two-up grid for the profile collection cards: one column until
-// `md`, two columns from `md` up. Shared by the eureka & outfit chart groups.
-export function CardsGrid({ children }: { children: ReactNode }) {
-  return (
-    <Box
-      sx={{
-        display: 'grid',
-        gridTemplateColumns: { sm: '1fr', md: '1fr 1fr' },
-        gap: 2,
-      }}
-    >
-      {children}
-    </Box>
-  )
-}
+// Shared chart card for the profile collection charts. Owns the outlined Card,
+// the overline header, the pre-mount Skeleton fallback, and the flex-wrap row
+// that lays the chart out beside its legend — so each chart only supplies its
+// title, size, chart body, and legend body. The chart side keeps a fixed square
+// footprint (so the ring/pie has room) while the legend side grows to fill the
+// rest and both wrap to a column when the card gets narrow.
+export function ChartCard({
+  title,
+  size,
+  mounted,
+  chart,
+  legend,
+}: {
+  title: ReactNode
+  /** Square footprint of the chart body; also the skeleton height. */
+  size: number
+  /** Charts read color-scheme state, so they render a skeleton until mounted. */
+  mounted: boolean
+  chart: ReactNode
+  legend: ReactNode
+}) {
+  if (!mounted) {
+    return (
+      <Card variant="outlined">
+        <CardContent>
+          <Skeleton height={size} variant="rounded" />
+        </CardContent>
+      </Card>
+    )
+  }
 
-// Horizontal chart-and-legend row that wraps to a column when it runs out of
-// width. Each child sets its own `flexGrow`/`minWidth` to control wrapping.
-export function ChartRow({ children }: { children: ReactNode }) {
   return (
-    <Stack useFlexGap direction="row" spacing={2} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
-      {children}
-    </Stack>
+    <Card variant="outlined">
+      <CardHeader
+        disableTypography
+        sx={{ mt: -1 }}
+        title={
+          <Typography color="text.secondary" variant="overline">
+            {title}
+          </Typography>
+        }
+      />
+      <CardContent sx={{ pt: 0 }}>
+        <Stack
+          useFlexGap
+          direction="row"
+          spacing={2}
+          sx={{ alignItems: 'center', flexWrap: 'wrap' }}
+        >
+          <Box
+            sx={{
+              position: 'relative',
+              width: size,
+              height: size,
+              flexShrink: 0,
+              flexGrow: 1,
+              minWidth: '200px',
+            }}
+          >
+            {chart}
+          </Box>
+          <Stack spacing={1.5} sx={{ flexGrow: 1, minWidth: '200px' }}>
+            {legend}
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
   )
 }

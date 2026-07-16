@@ -1,18 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  LinearProgress,
-  Skeleton,
-  Stack,
-  Typography,
-  useColorScheme,
-  useTheme,
-} from '@mui/material'
+import { Box, LinearProgress, Stack, Typography, useColorScheme, useTheme } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { PieChart } from '@mui/x-charts/PieChart'
 import { percent } from '@/hooks/count-obtained'
@@ -20,7 +9,8 @@ import { isGlowup } from '@/hooks/outfit'
 import { OutfitSet, Season } from '@/lib/types/outfit'
 import PercentLabel from '@/components/percent-label'
 import ProgressChip from '@/components/progress-chip'
-import { CardsGrid, ChartRow } from './collection-layout'
+import { SimpleGrid } from '@/components/card-grid'
+import { ChartCard } from './collection-layout'
 
 const RINGS_CHART_SIZE = 240
 const SEASONS_CHART_SIZE = 220
@@ -54,15 +44,6 @@ function OutfitRingsChart({
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
-
-  if (!mounted)
-    return (
-      <Card sx={{ gridColumn: { sm: '1 / -1', md: 'auto' } }} variant="outlined">
-        <CardContent>
-          <Skeleton height={RINGS_CHART_SIZE} variant="rounded" />
-        </CardContent>
-      </Card>
-    )
 
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
   const tertiary = theme.palette.tertiary.main
@@ -106,100 +87,80 @@ function OutfitRingsChart({
   const overallPct = percent(variantsObtained, variantsTotal)
 
   return (
-    <Card variant="outlined">
-      <CardHeader
-        disableTypography
-        sx={{ mt: -1 }}
-        title={
-          <Typography color="text.secondary" variant="overline">
-            Hierarchy Progress
-          </Typography>
-        }
-      />
-      <CardContent sx={{ pt: 0 }}>
-        <ChartRow>
+    <ChartCard
+      chart={
+        <>
+          <PieChart
+            height={RINGS_CHART_SIZE}
+            margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
+            series={rings.map((ring) => ({
+              data: [
+                {
+                  id: `${ring.label}-obtained`,
+                  value: ring.obtained,
+                  label: ring.label,
+                  color: ring.color,
+                },
+                {
+                  id: `${ring.label}-remaining`,
+                  value: ring.total - ring.obtained,
+                  label: `${ring.label} remaining`,
+                  color: muted,
+                },
+              ],
+              innerRadius: ring.innerRadius,
+              outerRadius: ring.outerRadius,
+              paddingAngle: ring.obtained > 0 && ring.obtained < ring.total ? 2 : 0,
+              cornerRadius: 3,
+              valueFormatter: (item) => `${percent(item.value, ring.total)}%`,
+            }))}
+            slots={{ legend: () => null }}
+            width={RINGS_CHART_SIZE}
+          />
           <Box
             sx={{
-              position: 'relative',
-              width: RINGS_CHART_SIZE,
-              height: RINGS_CHART_SIZE,
-              flexShrink: 0,
-              flexGrow: 1,
-              minWidth: '200px',
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              textAlign: 'center',
+              pointerEvents: 'none',
             }}
           >
-            <PieChart
-              height={RINGS_CHART_SIZE}
-              margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
-              series={rings.map((ring) => ({
-                data: [
-                  {
-                    id: `${ring.label}-obtained`,
-                    value: ring.obtained,
-                    label: ring.label,
-                    color: ring.color,
-                  },
-                  {
-                    id: `${ring.label}-remaining`,
-                    value: ring.total - ring.obtained,
-                    label: `${ring.label} remaining`,
-                    color: muted,
-                  },
-                ],
-                innerRadius: ring.innerRadius,
-                outerRadius: ring.outerRadius,
-                paddingAngle: ring.obtained > 0 && ring.obtained < ring.total ? 2 : 0,
-                cornerRadius: 3,
-                valueFormatter: (item) => `${percent(item.value, ring.total)}%`,
-              }))}
-              slots={{ legend: () => null }}
-              width={RINGS_CHART_SIZE}
-            />
+            <PercentLabel percentage={overallPct} />
+          </Box>
+        </>
+      }
+      legend={rings.map((ring) => (
+        <Stack key={ring.label} spacing={0.5}>
+          <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
             <Box
               sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                textAlign: 'center',
-                pointerEvents: 'none',
+                width: 12,
+                height: 12,
+                borderRadius: '3px',
+                bgcolor: ring.color,
+                flexShrink: 0,
               }}
-            >
-              <PercentLabel percentage={overallPct} />
-            </Box>
-          </Box>
-
-          <Stack spacing={1.5} sx={{ flexGrow: 1, minWidth: '200px' }}>
-            {rings.map((ring) => (
-              <Stack key={ring.label} spacing={0.5}>
-                <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                  <Box
-                    sx={{
-                      width: 12,
-                      height: 12,
-                      borderRadius: '3px',
-                      bgcolor: ring.color,
-                      flexShrink: 0,
-                    }}
-                  />
-                  <Typography sx={{ flex: 1 }} variant="body2">
-                    {ring.label}
-                  </Typography>
-                  <ProgressChip obtained={ring.obtained} total={ring.total} variant="parts" />
-                </Stack>
-                <Box sx={{ ml: 3, color: ring.color }}>
-                  <LinearProgress
-                    color="inherit"
-                    value={percent(ring.obtained, ring.total)}
-                    variant="determinate"
-                  />
-                </Box>
-              </Stack>
-            ))}
+            />
+            <Typography sx={{ flex: 1 }} variant="body2">
+              {ring.label}
+            </Typography>
+            <ProgressChip obtained={ring.obtained} total={ring.total} variant="parts" />
           </Stack>
-        </ChartRow>
-      </CardContent>
-    </Card>
+          <Box sx={{ ml: 3, color: ring.color }}>
+            <LinearProgress
+              color="inherit"
+              value={percent(ring.obtained, ring.total)}
+              variant="determinate"
+            />
+          </Box>
+        </Stack>
+      ))}
+      mounted={mounted}
+      size={RINGS_CHART_SIZE}
+      title="Hierarchy Progress"
+    />
   )
 }
 
@@ -217,15 +178,6 @@ function OutfitSeasonsChart({
   const theme = useTheme()
 
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
-
-  if (!mounted)
-    return (
-      <Card variant="outlined">
-        <CardContent>
-          <Skeleton height={SEASONS_CHART_SIZE} variant="rounded" />
-        </CardContent>
-      </Card>
-    )
 
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
   const primary = theme.palette.primary.main
@@ -270,150 +222,130 @@ function OutfitSeasonsChart({
   const innerTotal = selected ? selected.total : seasonsTotal
   const innerPct = percent(innerObtained, innerTotal)
 
-  if (seasonVariantsTotal === 0) return null
+  if (mounted && seasonVariantsTotal === 0) return null
 
   return (
-    <Card variant="outlined">
-      <CardHeader
-        disableTypography
-        sx={{ mt: -1 }}
-        title={
-          <Typography color="text.secondary" variant="overline">
-            Season Progress
-          </Typography>
-        }
-      />
-      <CardContent sx={{ pt: 0 }}>
-        <ChartRow>
+    <ChartCard
+      chart={
+        <>
+          <PieChart
+            height={SEASONS_CHART_SIZE}
+            margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
+            series={[
+              {
+                data: [
+                  {
+                    id: 'obtained',
+                    value: innerObtained,
+                    label: 'Obtained',
+                    color: primary,
+                  },
+                  {
+                    id: 'remaining',
+                    value: innerTotal - innerObtained,
+                    label: 'Remaining',
+                    color: muted,
+                  },
+                ],
+                innerRadius: 40,
+                outerRadius: 62,
+                paddingAngle: innerObtained > 0 && innerObtained < innerTotal ? 2 : 0,
+                cornerRadius: 4,
+                valueFormatter: (item) => `${percent(item.value, innerTotal)}%`,
+              },
+              {
+                id: 'seasons',
+                data: seasonSegments,
+                innerRadius: 76,
+                outerRadius: 100,
+                paddingAngle: 1.5,
+                cornerRadius: 3,
+                valueFormatter: (item) =>
+                  (item as (typeof seasonSegments)[number]).formattedValue ??
+                  `${percent(item.value, seasonVariantsTotal)}%`,
+              },
+            ]}
+            slots={{ legend: () => null }}
+            width={SEASONS_CHART_SIZE}
+            onItemClick={(_, { seriesId, dataIndex }) => {
+              if (seriesId !== 'seasons') return
+              const slug = seasonSegments[dataIndex]?.id ?? null
+              setSelectedSlug((prev) => (prev === slug ? null : slug))
+            }}
+          />
           <Box
             sx={{
-              position: 'relative',
-              width: SEASONS_CHART_SIZE,
-              height: SEASONS_CHART_SIZE,
-              flexShrink: 0,
-              flexGrow: 1,
-              minWidth: '200px',
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              textAlign: 'center',
+              pointerEvents: 'none',
             }}
           >
-            <PieChart
-              height={SEASONS_CHART_SIZE}
-              margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
-              series={[
-                {
-                  data: [
-                    {
-                      id: 'obtained',
-                      value: innerObtained,
-                      label: 'Obtained',
-                      color: primary,
-                    },
-                    {
-                      id: 'remaining',
-                      value: innerTotal - innerObtained,
-                      label: 'Remaining',
-                      color: muted,
-                    },
-                  ],
-                  innerRadius: 40,
-                  outerRadius: 62,
-                  paddingAngle: innerObtained > 0 && innerObtained < innerTotal ? 2 : 0,
-                  cornerRadius: 4,
-                  valueFormatter: (item) => `${percent(item.value, innerTotal)}%`,
-                },
-                {
-                  id: 'seasons',
-                  data: seasonSegments,
-                  innerRadius: 76,
-                  outerRadius: 100,
-                  paddingAngle: 1.5,
-                  cornerRadius: 3,
-                  valueFormatter: (item) =>
-                    (item as (typeof seasonSegments)[number]).formattedValue ??
-                    `${percent(item.value, seasonVariantsTotal)}%`,
-                },
-              ]}
-              slots={{ legend: () => null }}
-              width={SEASONS_CHART_SIZE}
-              onItemClick={(_, { seriesId, dataIndex }) => {
-                if (seriesId !== 'seasons') return
-                const slug = seasonSegments[dataIndex]?.id ?? null
-                setSelectedSlug((prev) => (prev === slug ? null : slug))
-              }}
-            />
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                textAlign: 'center',
-                pointerEvents: 'none',
-              }}
-            >
-              <PercentLabel percentage={innerPct} />
-            </Box>
+            <PercentLabel percentage={innerPct} />
           </Box>
-
-          <Stack spacing={2} sx={{ flexGrow: 1, minWidth: '200px' }}>
-            {[
-              {
-                label: selected ? selected.label : 'Overall',
-                rows: [
-                  { color: primary, text: 'Obtained', value: `${innerObtained} / ${innerTotal}` },
-                  {
-                    color: muted,
-                    text: 'Missing',
-                    value: `${innerTotal - innerObtained} / ${innerTotal}`,
-                  },
-                ],
-              },
-              {
-                label: 'Seasons',
-                rows: [
-                  {
-                    color: secondary,
-                    text: 'Complete',
-                    value: `${seasonsObtained} / ${seasonsTotal}`,
-                  },
-                  {
-                    color: muted,
-                    text: 'Unfinished',
-                    value: `${seasonsTotal - seasonsObtained} / ${seasonsTotal}`,
-                  },
-                ],
-              },
-            ].map(({ label, rows }) => (
-              <Stack key={label} spacing={0.75}>
-                <Typography color="text.secondary" variant="caption">
-                  {label}
-                </Typography>
-                {rows.map(({ color, text, value }) => (
-                  <Stack key={text} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
-                    <Box
-                      sx={{
-                        width: 12,
-                        height: 12,
-                        borderRadius: '3px',
-                        bgcolor: color,
-                        flexShrink: 0,
-                      }}
-                    />
-                    <Typography sx={{ flex: 1 }} variant="body2">
-                      {text}
-                    </Typography>
-                    <ProgressChip
-                      obtained={Number(value.split('/')[0])}
-                      total={Number(value.split('/')[1])}
-                      variant="parts"
-                    />
-                  </Stack>
-                ))}
-              </Stack>
-            ))}
-          </Stack>
-        </ChartRow>
-      </CardContent>
-    </Card>
+        </>
+      }
+      legend={[
+        {
+          label: selected ? selected.label : 'Overall',
+          rows: [
+            { color: primary, text: 'Obtained', value: `${innerObtained} / ${innerTotal}` },
+            {
+              color: muted,
+              text: 'Missing',
+              value: `${innerTotal - innerObtained} / ${innerTotal}`,
+            },
+          ],
+        },
+        {
+          label: 'Seasons',
+          rows: [
+            {
+              color: secondary,
+              text: 'Complete',
+              value: `${seasonsObtained} / ${seasonsTotal}`,
+            },
+            {
+              color: muted,
+              text: 'Unfinished',
+              value: `${seasonsTotal - seasonsObtained} / ${seasonsTotal}`,
+            },
+          ],
+        },
+      ].map(({ label, rows }) => (
+        <Stack key={label} spacing={0.75}>
+          <Typography color="text.secondary" variant="caption">
+            {label}
+          </Typography>
+          {rows.map(({ color, text, value }) => (
+            <Stack key={text} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+              <Box
+                sx={{
+                  width: 12,
+                  height: 12,
+                  borderRadius: '3px',
+                  bgcolor: color,
+                  flexShrink: 0,
+                }}
+              />
+              <Typography sx={{ flex: 1 }} variant="body2">
+                {text}
+              </Typography>
+              <ProgressChip
+                obtained={Number(value.split('/')[0])}
+                total={Number(value.split('/')[1])}
+                variant="parts"
+              />
+            </Stack>
+          ))}
+        </Stack>
+      ))}
+      mounted={mounted}
+      size={SEASONS_CHART_SIZE}
+      title="Season Progress"
+    />
   )
 }
 
@@ -457,7 +389,7 @@ export default function OutfitCollectionCharts({
   const glowupsObtained = glowupGroups.filter(isComplete).length
 
   return (
-    <CardsGrid>
+    <SimpleGrid columns={{ sm: '1fr', md: '1fr 1fr' }}>
       <OutfitRingsChart
         evolutionsObtained={evolutionsObtained}
         evolutionsTotal={evolutionsTotal}
@@ -469,6 +401,6 @@ export default function OutfitCollectionCharts({
         variantsTotal={variantsTotal}
       />
       <OutfitSeasonsChart outfitSets={outfitSets} seasons={seasons} />
-    </CardsGrid>
+    </SimpleGrid>
   )
 }
