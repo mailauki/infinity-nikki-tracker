@@ -65,7 +65,11 @@ export default function OutfitSetCard({
   const imageSrc = evolution
     ? resolveOutfitImage(mode, { image: evolution.image_url, alt: evolution.alt_image_url })
     : resolveOutfitImage(mode, { image: set.image_url, alt: set.alt_image_url })
-  const showAlt = mode === 'alt' && !!(evolution ? evolution.alt_image_url : set.alt_image_url)
+  // The alt toggle switches the whole grid to the square (1/1) layout, so the
+  // layout follows the mode alone — not whether this card happens to have an alt
+  // image. `resolveOutfitImage` already falls back to the main image when alt is
+  // missing, so cards with no alt (or no image at all) still adopt the 1/1 layout.
+  const showAlt = mode === 'alt'
 
   const glowup = !!evolution && isGlowup(evolution)
 

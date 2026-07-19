@@ -47,16 +47,12 @@ export default function SetCard({
       onExited={onExited}
     >
       <CardActionArea aria-label={`${title} — rarity ${rarity}`} component={Link} href={href}>
-        {showAlt ? (
-          <LazyImage alt={title} kind="square" src={imageSrc} />
-        ) : (
-          <LazyImage
-            image={imageSrc}
-            kind="media"
-            sx={{ width: '100%', aspectRatio: '2 / 3' }}
-            title={title}
-          />
-        )}
+        <LazyImage
+          image={imageSrc}
+          kind="media"
+          sx={{ width: '100%', aspectRatio: showAlt ? '1 / 1' : '2 / 3' }}
+          title={title}
+        />
       </CardActionArea>
       <Stack direction="row" sx={{ px: 1, alignItems: 'center', justifyContent: 'space-between' }}>
         <Stack
