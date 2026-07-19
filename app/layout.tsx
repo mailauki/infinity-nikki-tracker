@@ -102,7 +102,18 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
               <NavUser />
             </Suspense>
             <Stack sx={{ flexDirection: 'row', flexGrow: 1, minWidth: 0 }}>
-              <Stack component="main" sx={{ flexGrow: 1, minWidth: 0 }}>
+              <Stack
+                component="main"
+                sx={{
+                  flexGrow: 1,
+                  // Floor the content column so the permanent filter drawer (md+)
+                  // can't shrink it past a usable width. Below md the drawer is a
+                  // temporary overlay that doesn't push content, so keep 0 there
+                  // and let the card grids reflow freely. The floor matches the
+                  // drawer's permanent breakpoint in SidebarShell.
+                  minWidth: { xs: 0, md: 320 },
+                }}
+              >
                 <Suspense>
                   <PullToRefresh />
                 </Suspense>

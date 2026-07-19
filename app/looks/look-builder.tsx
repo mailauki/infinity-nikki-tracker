@@ -55,7 +55,6 @@ import {
   Tune as TuneIcon,
 } from '@mui/icons-material'
 import SidebarBody from '@/components/sidebar/sidebar-body'
-import { SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import CardGrid from '@/components/card-grid'
 
@@ -729,11 +728,7 @@ export default function LookBuilder({
           </Button>
           <IconButton
             color={sidebarOpen ? 'primary' : 'default'}
-            onClick={() => {
-              const next = !sidebarOpen
-              setSidebarOpen(next)
-              localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next))
-            }}
+            onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             <TuneIcon />
           </IconButton>

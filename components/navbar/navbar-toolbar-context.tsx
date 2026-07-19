@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
+import { NAV_DRAWER_STORAGE_KEY } from '@/lib/layout-constants'
 
 type NavDrawerContextType = {
   drawerOpen: boolean
@@ -31,9 +31,10 @@ export function DrawerStateProvider({ children }: { children: React.ReactNode })
   const hasBody = bodyCount > 0
 
   // Read persisted state after mount to avoid an SSR/client hydration mismatch.
+  // The filter sidebar intentionally does NOT persist its open state — it always
+  // starts closed on load — so only the nav drawer is hydrated here.
   React.useEffect(() => {
     setDrawerOpen(localStorage.getItem(NAV_DRAWER_STORAGE_KEY) === 'true')
-    setSidebarOpen(localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true')
   }, [])
 
   return (

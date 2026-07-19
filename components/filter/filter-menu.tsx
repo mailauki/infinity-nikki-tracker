@@ -15,7 +15,6 @@ import { usePathname } from 'next/navigation'
 
 import { useSidebar } from '../navbar/navbar-toolbar-context'
 import SidebarBody from '@/components/sidebar/sidebar-body'
-import { SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 
 import { useEurekaData } from '../eureka/eureka-context'
 import { useOutfitData } from '../outfits/outfit-context'
@@ -44,11 +43,10 @@ export default function FilterMenu() {
   const pathname = usePathname()
   const { sidebarOpen, setSidebarOpen } = useSidebar()
 
-  // Persisted close used by the Apply / Close buttons inside the panel body,
-  // matching the toggle in Sidebar.
+  // Close used by the Apply / Close buttons inside the panel body. The sidebar's
+  // open state is intentionally not persisted — it always starts closed on load.
   const closeFilter = () => {
     setSidebarOpen(false)
-    localStorage.setItem(SIDEBAR_STORAGE_KEY, 'false')
   }
 
   const {
@@ -189,11 +187,7 @@ export default function FilterMenu() {
       <>
         <IconButton
           color={sidebarOpen ? 'primary' : 'default'}
-          onClick={() => {
-            const next = !sidebarOpen
-            setSidebarOpen(next)
-            localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next))
-          }}
+          onClick={() => setSidebarOpen(!sidebarOpen)}
         >
           <FilterList />
         </IconButton>
@@ -379,11 +373,7 @@ export default function FilterMenu() {
     <>
       <IconButton
         color={sidebarOpen ? 'primary' : 'default'}
-        onClick={() => {
-          const next = !sidebarOpen
-          setSidebarOpen(next)
-          localStorage.setItem(SIDEBAR_STORAGE_KEY, String(next))
-        }}
+        onClick={() => setSidebarOpen(!sidebarOpen)}
       >
         <FilterList />
       </IconButton>
