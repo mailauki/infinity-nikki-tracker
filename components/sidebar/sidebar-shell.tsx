@@ -66,14 +66,17 @@ const PermanentDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !=
   })
 )
 
-// Root-mounted sidebar chrome: a temporary overlay drawer below `sm` and a
-// permanent, content-pushing drawer at `sm`+. Renders nothing until a page mounts
-// a <SidebarBody> (hasBody). Publishes its content node as the portal target so the
-// page body (rendered under its own data providers) can portal in.
+// Root-mounted sidebar chrome: a temporary overlay drawer below `md` and a
+// permanent, content-pushing drawer at `md`+. The permanent breakpoint is `md`
+// (not `sm`) so the drawer only pushes content where the viewport can fit both the
+// 400px drawer and the main column's minWidth floor; below `md` it overlays instead
+// of shrinking the content. Renders nothing until a page mounts a <SidebarBody>
+// (hasBody). Publishes its content node as the portal target so the page body
+// (rendered under its own data providers) can portal in.
 //
 // Portal-target correctness: only ONE `<div ref={setTargetNode}>` exists. It is
 // rendered inside whichever drawer is currently active for the viewport
-// (temporary below `sm`, permanent at `sm`+), chosen by `useMediaQuery`. A callback
+// (temporary below `md`, permanent at `md`+), chosen by `useMediaQuery`. A callback
 // ref (not a ref + effect) publishes the node, because MUI's temporary drawer
 // unmounts its children entirely while closed — the target only exists in the DOM
 // once the drawer is open, and a callback ref fires exactly on attach/detach
@@ -81,7 +84,7 @@ const PermanentDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !=
 export default function SidebarShell() {
   const { sidebarOpen, setSidebarOpen, setPortalTarget, hasBody } = useSidebar()
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
 
   // Callback ref: publishes the target node the moment it attaches (and null when it
   // detaches). This is robust to MUI's temporary drawer mounting/unmounting its
@@ -115,7 +118,7 @@ export default function SidebarShell() {
         anchor="right"
         open={open}
         slotProps={{ root: { disableScrollLock: true } }}
-        sx={{ display: { xs: 'block', sm: 'none' }, '& .MuiDrawer-paper': { width: '100%' } }}
+        sx={{ display: { xs: 'block', md: 'none' }, '& .MuiDrawer-paper': { width: '100%' } }}
         variant="temporary"
         onClose={() => setSidebarOpen(false)}
       >
@@ -125,7 +128,7 @@ export default function SidebarShell() {
       <PermanentDrawer
         anchor="right"
         open={open}
-        sx={{ display: { xs: 'none', sm: 'block' } }}
+        sx={{ display: { xs: 'none', md: 'block' } }}
         variant="permanent"
       >
         {header}

@@ -1,11 +1,10 @@
 // Left nav drawer expanded width.
 export const NAV_DRAWER_WIDTH = 240
 
-// localStorage keys for persisted drawer/sidebar open state. Centralized so the
-// nav drawer, the sidebar context, the filter menu, and the looks builder all
-// agree on the exact strings.
+// localStorage key for the persisted nav drawer open state. The filter/composer
+// sidebar deliberately does not persist its open state (it always starts closed),
+// so only the nav drawer has a key here.
 export const NAV_DRAWER_STORAGE_KEY = 'nav-drawer-open'
-export const SIDEBAR_STORAGE_KEY = 'sidebar-open'
 
 // NavBarToolbar stacks two <Toolbar> bars, each followed by an mb: 2 (16px)
 // margin, so its total height is 2 * Toolbar minHeight + 32px. Toolbar minHeight
