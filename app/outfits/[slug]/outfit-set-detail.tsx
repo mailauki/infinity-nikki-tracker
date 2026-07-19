@@ -8,7 +8,6 @@ import {
   Chip,
   IconButton,
   Tooltip,
-  Card,
   CardContent,
 } from '@mui/material'
 import { Collections } from '@mui/icons-material'
@@ -69,9 +68,14 @@ export default function OutfitSetDetail({
   const searchParams = useSearchParams()
   const evolutionParams = searchParams.get('evolution')
   // Standalone has no evolution states, so never seed a selection from the param.
-  const evolutionParamsSlug =
-    !isStandalone && evolutionParams ? `${outfitSet.slug}-${evolutionParams}` : null
-  const [selected, setSelected] = useState<string | null>(evolutionParamsSlug || null)
+  // The base state's slug is the bare set slug (no `{set}-base`), so `evolution=base`
+  // seeds the set slug itself; every other evolution seeds `{set}-{evolution}`.
+  const resolveEvolutionSlug = () => {
+    if (isStandalone || !evolutionParams) return null
+    if (evolutionParams === 'base') return outfitSet.slug
+    return `${outfitSet.slug}-${evolutionParams}`
+  }
+  const [selected, setSelected] = useState<string | null>(resolveEvolutionSlug())
   const [showCarousel, setShowCarousel] = useState(false)
 
   function handleSelectEvolution(slug: string | null) {
@@ -103,85 +107,87 @@ export default function OutfitSetDetail({
       <SlugToolBar isAdmin={isAdmin} />
       {!isStandalone && (
         <SidebarBody>
-					<Stack spacing={1.5} sx={{ alignItems: 'center', pt: 1 }}>
-						{showCarousel && hasCarousel ? (
-							<OutfitCarousel images={carouselImages} title={outfitSet.title} />
-						) : null}
-						{(!showCarousel || !hasCarousel) && showingAlt && (
-							<LazyImage
-								image={imageSrc || outfitSet.image_url || ''}
-								kind="media"
-								sx={{ width: '100%', aspectRatio: '1 / 1' }}
-								title={outfitSet.title}
-							/>
-						)}
-						{(!showCarousel || !hasCarousel) && !showingAlt && (
-							<LazyImage
-								image={imageSrc || outfitSet.image_url || ''}
-								kind="media"
-								sx={{ width: '100%', maxWidth: 260, aspectRatio: '2 / 3' }}
-								title={outfitSet.title}
-							/>
-						)}
-					</Stack>
-					<CardContent>
-						<Stack spacing={1.5}>
-							<Stack
-								direction="row"
-								sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
-							>
-								<RarityStars rarity={rarity!} />
-								<Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
-									<Chip label={toTitle(label ?? '')} variant="outlined" />
-									{label_2 && <Chip label={toTitle(label_2)} variant="outlined" />}
-								</Stack>
-							</Stack>
-							<Stack
-								direction="row"
-								sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
-							>
-								<Typography color="textSecondary" variant="body1">
-									{toTitle(style ?? '')}
-								</Typography>
-								{isLoggedIn && <ProgressChip obtained={obtained} size="md" total={total} />}
-							</Stack>
-							<Stack
-								direction="row"
-								sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
-							>
-								{ability && <Chip label={toTitle(ability)} />}
-								{hasCarousel && (
-									<Tooltip title={showCarousel ? 'Hide gallery' : 'Show gallery'}>
-										<IconButton
-											aria-label={showCarousel ? 'Hide gallery' : 'Show gallery'}
-											color={showCarousel ? 'primary' : 'default'}
-											onClick={() => setShowCarousel((v) => !v)}
-										>
-											<Collections fontSize="small" />
-										</IconButton>
-									</Tooltip>
-								)}
-							</Stack>
-							<Stack
-								direction="row"
-								sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
-							>
-								<Anchor
-									component={Link}
-									href={`/outfits/seasons/${outfitSet.seasons}`}
-									sx={{ cursor: 'pointer' }}
-									underline="hover"
-									variant="subtitle2"
-								>
-									{season?.title}
-								</Anchor>
-								<Typography sx={{ textAlign: 'right' }} variant="body1">
-									{seasonCategory?.title}
-								</Typography>
-							</Stack>
-							<Typography sx={{ textWrap: 'wrap' }} variant="body2">{description}</Typography>
-						</Stack>
-					</CardContent>
+          <Stack spacing={1.5} sx={{ alignItems: 'center', pt: 1 }}>
+            {showCarousel && hasCarousel ? (
+              <OutfitCarousel images={carouselImages} title={outfitSet.title} />
+            ) : null}
+            {(!showCarousel || !hasCarousel) && showingAlt && (
+              <LazyImage
+                image={imageSrc || outfitSet.image_url || ''}
+                kind="media"
+                sx={{ width: '100%', aspectRatio: '1 / 1' }}
+                title={outfitSet.title}
+              />
+            )}
+            {(!showCarousel || !hasCarousel) && !showingAlt && (
+              <LazyImage
+                image={imageSrc || outfitSet.image_url || ''}
+                kind="media"
+                sx={{ width: '100%', maxWidth: 260, aspectRatio: '2 / 3' }}
+                title={outfitSet.title}
+              />
+            )}
+          </Stack>
+          <CardContent>
+            <Stack spacing={1.5}>
+              <Stack
+                direction="row"
+                sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                <RarityStars rarity={rarity!} />
+                <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
+                  <Chip label={toTitle(label ?? '')} variant="outlined" />
+                  {label_2 && <Chip label={toTitle(label_2)} variant="outlined" />}
+                </Stack>
+              </Stack>
+              <Stack
+                direction="row"
+                sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                <Typography color="textSecondary" variant="body1">
+                  {toTitle(style ?? '')}
+                </Typography>
+                {isLoggedIn && <ProgressChip obtained={obtained} size="md" total={total} />}
+              </Stack>
+              <Stack
+                direction="row"
+                sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                {ability && <Chip label={toTitle(ability)} />}
+                {hasCarousel && (
+                  <Tooltip title={showCarousel ? 'Hide gallery' : 'Show gallery'}>
+                    <IconButton
+                      aria-label={showCarousel ? 'Hide gallery' : 'Show gallery'}
+                      color={showCarousel ? 'primary' : 'default'}
+                      onClick={() => setShowCarousel((v) => !v)}
+                    >
+                      <Collections fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                )}
+              </Stack>
+              <Stack
+                direction="row"
+                sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
+              >
+                <Anchor
+                  component={Link}
+                  href={`/outfits/seasons/${outfitSet.seasons}`}
+                  sx={{ cursor: 'pointer' }}
+                  underline="hover"
+                  variant="subtitle2"
+                >
+                  {season?.title}
+                </Anchor>
+                <Typography sx={{ textAlign: 'right' }} variant="body1">
+                  {seasonCategory?.title}
+                </Typography>
+              </Stack>
+              <Typography sx={{ textWrap: 'wrap' }} variant="body2">
+                {description}
+              </Typography>
+            </Stack>
+          </CardContent>
         </SidebarBody>
       )}
 

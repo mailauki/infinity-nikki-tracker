@@ -122,7 +122,7 @@ export default function SidebarShell() {
         variant="temporary"
         onClose={() => setSidebarOpen(false)}
       >
-				{isMobile && <Toolbar sx={{ mb: 2 }} />}
+        {isMobile && <Toolbar sx={{ mb: 2 }} />}
         {header}
         {isMobile && target}
       </MuiDrawer>
