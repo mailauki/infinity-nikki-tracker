@@ -111,7 +111,7 @@ export async function editEvolution(
     const next = currentIndex >= 0 ? rows[currentIndex + 1] : undefined
 
     if (next?.slug) redirect(`${navLinksData.admin.outfits.evolutions.edit}/${next.slug}`)
-    redirect(navLinksData.admin.outfits.evolutions.list)
+    redirect(ADMIN_DASHBOARD)
   }
 
   redirect(ADMIN_DASHBOARD)

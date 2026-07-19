@@ -71,7 +71,7 @@ export async function editTrial(id: number, _: unknown, formData: FormData) {
       .maybeSingle()
 
     if (next?.slug) redirect(`${navLinksData.admin.eureka.trials.edit}/${next.slug}`)
-    redirect(navLinksData.admin.eureka.trials.list)
+    redirect(ADMIN_DASHBOARD)
   }
 
   redirect(ADMIN_DASHBOARD)

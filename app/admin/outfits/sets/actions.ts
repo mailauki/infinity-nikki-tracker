@@ -498,7 +498,7 @@ export async function editOutfitSet(id: number, _: unknown, formData: FormData) 
       .maybeSingle()
 
     if (next?.slug) redirect(`${navLinksData.admin.outfits.sets.edit}/${next.slug}`)
-    redirect(navLinksData.admin.outfits.sets.list)
+    redirect(ADMIN_DASHBOARD)
   }
   redirect(ADMIN_DASHBOARD)
 }

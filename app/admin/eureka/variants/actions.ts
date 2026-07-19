@@ -74,7 +74,7 @@ export async function editEurekaVariant(id: number, _: unknown, formData: FormDa
       .maybeSingle()
 
     if (next?.slug) redirect(`${navLinksData.admin.eureka.variants.edit}/${next.slug}`)
-    redirect(navLinksData.admin.eureka.variants.list)
+    redirect(ADMIN_DASHBOARD)
   }
 
   redirect(ADMIN_DASHBOARD)

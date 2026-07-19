@@ -35,7 +35,7 @@ export async function editAbility(currentSlug: string, _: unknown, formData: For
       .maybeSingle()
 
     if (next?.slug) redirect(`${navLinksData.admin.outfits.abilities.edit}/${next.slug}`)
-    redirect(navLinksData.admin.outfits.abilities.list)
+    redirect(ADMIN_DASHBOARD)
   }
 
   redirect(ADMIN_DASHBOARD)

@@ -189,7 +189,7 @@ export async function editEurekaSet(
       .maybeSingle()
 
     if (next?.slug) redirect(`${navLinksData.admin.eureka.sets.edit}/${next.slug}`)
-    redirect(navLinksData.admin.eureka.sets.list)
+    redirect(ADMIN_DASHBOARD)
   }
 
   redirect(ADMIN_DASHBOARD)
