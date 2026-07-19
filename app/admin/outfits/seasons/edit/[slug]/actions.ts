@@ -42,7 +42,7 @@ export async function editSeason(currentSlug: string, _: unknown, formData: Form
       .maybeSingle()
 
     if (next?.slug) redirect(`${navLinksData.admin.outfits.seasons.edit}/${next.slug}`)
-    redirect(navLinksData.admin.outfits.seasons.list)
+    redirect(ADMIN_DASHBOARD)
   }
 
   redirect(ADMIN_DASHBOARD)

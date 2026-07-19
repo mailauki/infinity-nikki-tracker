@@ -106,7 +106,7 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
       .maybeSingle()
 
     if (next?.slug) redirect(`${navLinksData.admin.outfits.variants.edit}/${next.slug}`)
-    redirect(navLinksData.admin.outfits.variants.list)
+    redirect(ADMIN_DASHBOARD)
   }
 
   redirect(ADMIN_DASHBOARD)
