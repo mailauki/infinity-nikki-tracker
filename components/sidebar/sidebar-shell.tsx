@@ -95,10 +95,10 @@ export default function SidebarShell() {
   )
 
   const header = (
-    <Toolbar disableGutters>
+    <Toolbar>
       <Stack
         direction="row"
-        sx={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', mt: 0.5, mr: 1 }}
+        sx={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', mt: 0.5 }}
       >
         <IconButton onClick={() => setSidebarOpen(false)}>
           <Close />
@@ -122,6 +122,7 @@ export default function SidebarShell() {
         variant="temporary"
         onClose={() => setSidebarOpen(false)}
       >
+				{isMobile && <Toolbar sx={{ mb: 2 }} />}
         {header}
         {isMobile && target}
       </MuiDrawer>

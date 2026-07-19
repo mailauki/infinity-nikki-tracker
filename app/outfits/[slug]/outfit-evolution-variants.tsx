@@ -106,15 +106,18 @@ export default function OutfitEvolutionVariants({
         {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
       </Stack>
 
+      {/*
+        Container-query columns (not viewport breakpoints) so the grid reflows to
+        fewer columns when the details sidebar opens and narrows the content column,
+        matching the main outfits page. The layout's minWidth floor keeps it from
+        shrinking past a usable width. Thresholds mirror MUI's sm/lg/xl.
+      */}
       <CardGrid
         columns={{
-          gridTemplateColumns: {
-            xs: 'repeat(2, 1fr)',
-            sm: 'repeat(3, 1fr)',
-            md: 'repeat(2, 1fr)',
-            lg: 'repeat(4, 1fr)',
-            xl: 'repeat(5, 1fr)',
-          },
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          '@container (min-width: 600px)': { gridTemplateColumns: 'repeat(3, 1fr)' },
+          '@container (min-width: 1200px)': { gridTemplateColumns: 'repeat(4, 1fr)' },
+          '@container (min-width: 1536px)': { gridTemplateColumns: 'repeat(5, 1fr)' },
         }}
       >
         {variants.map((variant) => (
