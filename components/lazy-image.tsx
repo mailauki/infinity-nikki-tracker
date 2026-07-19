@@ -205,34 +205,34 @@ function MediaImage({ image, sx, ...props }: CardMediaProps<'div'>) {
           />
         </>
       ) : (
-				<ImagePlaceholder title={props.title} />
+        <ImagePlaceholder title={props.title} />
       )}
     </Stack>
   )
 }
 
-function ImagePlaceholder({title}: {title?: string}) {
-	// No image: show the placeholder icon + optional caption. Absolutely fill
-	// the parent so it inherits the caller's aspect ratio instead of stretching
-	// to the surrounding card's (taller) row height.
-	return (
-		<Stack
-			spacing={1}
-			sx={{
-				position: 'absolute',
-				inset: 0,
-				alignItems: 'center',
-				justifyContent: 'center',
-				p: 2,
-				color: 'text.disabled',
-			}}
-		>
-			<ImageIcon fontSize="large" />
-			{title && (
-				<Typography align="center" color="text.secondary" variant="caption">
-					{title}
-				</Typography>
-			)}
-		</Stack>
-	)
+function ImagePlaceholder({ title }: { title?: string }) {
+  // No image: show the placeholder icon + optional caption. Absolutely fill
+  // the parent so it inherits the caller's aspect ratio instead of stretching
+  // to the surrounding card's (taller) row height.
+  return (
+    <Stack
+      spacing={1}
+      sx={{
+        position: 'absolute',
+        inset: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        p: 2,
+        color: 'text.disabled',
+      }}
+    >
+      <ImageIcon fontSize="large" />
+      {title && (
+        <Typography align="center" color="text.secondary" variant="caption">
+          {title}
+        </Typography>
+      )}
+    </Stack>
+  )
 }

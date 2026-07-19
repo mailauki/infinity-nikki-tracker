@@ -59,7 +59,7 @@ export default function OutfitSetCard({
 
   const href = evolution
     ? `/outfits/${evolution.slug.replace('-', '?evolution=')}`
-    : `/outfits/${set.slug}`
+    : `/outfits/${set.slug}?evolution=base`
   const title = evolution ? `${set.title}: ${toTitle(evolution.title)}` : set.title
 
   const imageSrc = evolution

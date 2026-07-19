@@ -3,9 +3,10 @@
 import { IconButton, Stack, Tooltip } from '@mui/material'
 import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import { useParams, usePathname } from 'next/navigation'
-import { ChevronLeft, Compare, Edit } from '@mui/icons-material'
+import { ChevronLeft, Compare, Edit, InfoOutlined } from '@mui/icons-material'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSeasonFilterOptional } from '@/app/outfits/seasons/[slug]/season-filter-context'
+import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import EvolutionToggle from '@/components/filter/evolution-toggle'
 import GlowupToggle from '@/components/filter/glowup-toggle'
 
@@ -14,6 +15,9 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
   const { slug } = useParams()
   const { mode, cycleMode } = useOutfitImageMode()
   const seasonFilter = useSeasonFilterOptional()
+  // The details sidebar toggle only shows once a page has mounted a <SidebarBody>
+  // (e.g. the outfit set-detail card) — self-activating and inert elsewhere.
+  const { sidebarOpen, setSidebarOpen, hasBody } = useSidebar()
 
   // The image swap is available to everyone on the outfits slug page.
   const showImageSwap = pathname.startsWith('/outfits/') && !pathname.includes('seasons')
@@ -66,6 +70,17 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
             <IconButton component="a" href={`/admin/${path}/edit/${slug}`}>
               <Edit />
             </IconButton>
+          )}
+          {hasBody && (
+            <Tooltip title={sidebarOpen ? 'Hide details' : 'Show details'}>
+              <IconButton
+                aria-label={sidebarOpen ? 'Hide details' : 'Show details'}
+                color={sidebarOpen ? 'primary' : 'default'}
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+              >
+                <InfoOutlined />
+              </IconButton>
+            </Tooltip>
           )}
         </Stack>
       </Stack>
