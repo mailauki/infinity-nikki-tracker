@@ -20,11 +20,10 @@ function PieceRow({ label, pieces }: { label: string; pieces: Piece[] }) {
         {pieces.map((p) => (
           <LazyImage
             key={p.slug}
-            alt={p.slug}
-            kind="square"
-            size="lg"
-            src={p.image_url ?? undefined}
-            sx={{ bgcolor: 'surface.containerHighest' }}
+            image={p.image_url ?? undefined}
+            kind="media"
+            sx={{ width: 94, aspectRatio: '1 / 1', bgcolor: 'surface.containerHighest' }}
+            title={p.slug}
           />
         ))}
       </Box>

@@ -489,7 +489,12 @@ export default function LookBuilder({
               }
             >
               <ListItemAvatar>
-                <LazyImage alt={primary} kind="square" size="sm" src={v.image_url ?? undefined} />
+                <LazyImage
+                  image={v.image_url ?? undefined}
+                  kind="media"
+                  sx={{ width: 40, aspectRatio: '1 / 1' }}
+                  title={primary}
+                />
               </ListItemAvatar>
               <ListItemText disableTypography>
                 <Stack sx={{ height: 40 }}>

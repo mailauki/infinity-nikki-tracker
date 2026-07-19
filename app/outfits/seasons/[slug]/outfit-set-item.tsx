@@ -59,7 +59,12 @@ export default function OutfitSetListItem({
           action={isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
           avatar={
             <Badge badgeContent={badgeContent}>
-              <LazyImage alt={title} kind="square" size="md" src={image || ''} />
+              <LazyImage
+                image={image || ''}
+                kind="media"
+                sx={{ width: 56, aspectRatio: '1 / 1' }}
+                title={title}
+              />
             </Badge>
           }
           subheader={<RarityStars rarity={set.rarity} />}

@@ -112,9 +112,10 @@ export default function OutfitSetDetail({
                   ) : null}
                   {(!showCarousel || !hasCarousel) && showingAlt && (
                     <LazyImage
-                      alt={outfitSet.title}
-                      kind="square"
-                      src={imageSrc || outfitSet.image_url || ''}
+                      image={imageSrc || outfitSet.image_url || ''}
+                      kind="media"
+                      sx={{ width: '100%', aspectRatio: '1 / 1' }}
+                      title={outfitSet.title}
                     />
                   )}
                   {(!showCarousel || !hasCarousel) && !showingAlt && (

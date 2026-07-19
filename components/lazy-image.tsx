@@ -1,9 +1,12 @@
 'use client'
 import Avatar, { type AvatarProps } from '@mui/material/Avatar'
 import CardMedia, { type CardMediaProps } from '@mui/material/CardMedia'
-import Box, { type BoxProps } from '@mui/material/Box'
+import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import Skeleton from '@mui/material/Skeleton'
+import Typography from '@mui/material/Typography'
 import CategoryIcon from '@mui/icons-material/Category'
+import ImageIcon from '@mui/icons-material/Image'
 import { type SxProps, type Theme } from '@mui/material/styles'
 import Image from 'next/image'
 import { useLazyImage } from '@/hooks/use-lazy-image'
@@ -32,34 +35,17 @@ type AvatarKind = {
   size?: AvatarSize
 } & Omit<AvatarProps, 'variant'>
 
-// Square (1:1) poster, also Avatar-rendered, sized full-width. `size` scales the
-// fallback placeholder icon (the square itself stays full-width up to maxWidth).
-type SquareKind = {
-  kind: 'square'
-  src?: string | null
-  alt: string
-  variant?: AvatarCorner
-  maxWidth?: number | string
-  size?: AvatarSize
-  sx?: BoxProps['sx']
-}
-
-// CardMedia render path: 9:16 / full-width / rectangular. No `variant` (always rectangular).
+// CardMedia render path: full-width, rectangular. No `variant` (always rectangular).
+// The caller sets the aspect ratio via sx (e.g. 1/1 or 2/3).
 type MediaKind = { kind: 'media' } & CardMediaProps<'div'>
 
-export type LazyImageProps = AvatarKind | SquareKind | MediaKind
+export type LazyImageProps = AvatarKind | MediaKind
 
 export default function LazyImage(props: LazyImageProps) {
   if (props.kind === 'media') {
     const { kind, ...rest } = props
     void kind
     return <MediaImage {...rest} />
-  }
-  if (props.kind === 'square') {
-    const { alt, maxWidth = 300, size, src, sx, variant = 'rounded' } = props
-    return (
-      <SquareImage alt={alt} maxWidth={maxWidth} size={size} src={src} sx={sx} variant={variant} />
-    )
   }
   const { children, kind, optimized, size, src, sx, variant = 'rounded', ...rest } = props
   void kind
@@ -93,6 +79,10 @@ function AvatarImage({
 }: { variant: AvatarCorner; size?: AvatarSize } & Omit<AvatarProps, 'variant'>) {
   const { loaded, retrySrc, imgRef, handleLoad, handleError } = useLazyImage(src)
 
+  // With no src, fall back to a caller-supplied child or the shared category icon
+  // rather than MUI's default person silhouette.
+  const placeholder = children ?? <CategoryIcon fontSize="inherit" />
+
   return (
     <Box sx={{ position: 'relative', display: 'inline-flex', width: 'fit-content' }}>
       {!loaded && src && (
@@ -111,7 +101,7 @@ function AvatarImage({
         variant={variant}
         {...props}
       >
-        {children}
+        {src ? children : placeholder}
       </Avatar>
     </Box>
   )
@@ -181,69 +171,9 @@ function OptimizedAvatarImage({
         </Box>
       ) : (
         <Avatar size={size} sx={[...toSxArray(sx)]} variant={variant}>
-          {children}
+          {children ?? <CategoryIcon fontSize="inherit" />}
         </Avatar>
       )}
-    </Box>
-  )
-}
-
-function SquareImage({
-  src,
-  alt,
-  variant,
-  maxWidth,
-  size,
-  sx,
-}: {
-  src?: string | null
-  alt: string
-  variant: AvatarCorner
-  maxWidth: number | string
-  size?: AvatarSize
-  sx?: BoxProps['sx']
-}) {
-  const { loaded, retrySrc, imgRef, handleLoad, handleError } = useLazyImage(src)
-
-  // With an explicit `size`, defer to the Avatar's fixed size variant; without
-  // one, the square fills its container (full width up to maxWidth).
-  const fullWidth = !size
-
-  return (
-    <Box
-      sx={{
-        position: 'relative',
-        display: 'inline-flex',
-        width: fullWidth ? '100%' : 'fit-content',
-        maxWidth,
-      }}
-    >
-      {!loaded && src && (
-        <Skeleton
-          sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-          variant={variant === 'circular' ? 'circular' : 'rounded'}
-        />
-      )}
-      <Avatar
-        alt={alt}
-        size={size}
-        slotProps={{
-          img: retrySrc ? { ref: imgRef, onLoad: handleLoad, onError: handleError } : undefined,
-        }}
-        src={retrySrc}
-        sx={[
-          {
-            aspectRatio: '1 / 1',
-            opacity: loaded || !src ? 1 : 0,
-            ...(!size && { width: '100%', height: '100%' }),
-          },
-          ...toSxArray(sx),
-          darkDim,
-        ]}
-        variant={variant}
-      >
-        <CategoryIcon fontSize="inherit" />
-      </Avatar>
     </Box>
   )
 }
@@ -252,27 +182,57 @@ function MediaImage({ image, sx, ...props }: CardMediaProps<'div'>) {
   const { loaded, retrySrc, imgRef, handleLoad, handleError } = useLazyImage(image)
 
   return (
-    <Box sx={{ position: 'relative', ...sx }}>
+    <Stack sx={{ position: 'relative', ...sx }}>
       {!loaded && image && (
         <Skeleton sx={{ position: 'absolute', inset: 0, height: '100%' }} variant="rectangular" />
       )}
-      {image && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          ref={imgRef}
-          aria-hidden
-          alt=""
-          src={retrySrc}
-          style={{ visibility: 'hidden', position: 'absolute', width: 0, height: 0 }}
-          onError={handleError}
-          onLoad={handleLoad}
-        />
+      {image ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            ref={imgRef}
+            aria-hidden
+            alt=""
+            src={retrySrc}
+            style={{ visibility: 'hidden', position: 'absolute', width: 0, height: 0 }}
+            onError={handleError}
+            onLoad={handleLoad}
+          />
+          <CardMedia
+            image={retrySrc}
+            sx={[{ borderRadius: 1.5, height: '100%', opacity: loaded ? 1 : 0 }, darkDim]}
+            {...props}
+          />
+        </>
+      ) : (
+				<ImagePlaceholder title={props.title} />
       )}
-      <CardMedia
-        image={retrySrc}
-        sx={[{ borderRadius: 1.5, height: '100%', opacity: loaded || !image ? 1 : 0 }, darkDim]}
-        {...props}
-      />
-    </Box>
+    </Stack>
   )
+}
+
+function ImagePlaceholder({title}: {title?: string}) {
+	// No image: show the placeholder icon + optional caption. Absolutely fill
+	// the parent so it inherits the caller's aspect ratio instead of stretching
+	// to the surrounding card's (taller) row height.
+	return (
+		<Stack
+			spacing={1}
+			sx={{
+				position: 'absolute',
+				inset: 0,
+				alignItems: 'center',
+				justifyContent: 'center',
+				p: 2,
+				color: 'text.disabled',
+			}}
+		>
+			<ImageIcon fontSize="large" />
+			{title && (
+				<Typography align="center" color="text.secondary" variant="caption">
+					{title}
+				</Typography>
+			)}
+		</Stack>
+	)
 }
