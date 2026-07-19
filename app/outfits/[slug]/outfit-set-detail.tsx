@@ -73,8 +73,17 @@ export default function OutfitSetDetail({
       ]
   const hasCarousel = carouselImages.length > 0
 
-  const obtained = outfit_variants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
-  const total = outfit_variants.length
+  // Scope progress to the selected state so the card's chip matches the grid:
+  // evolution mode filters by state slug, standalone mode by outfit category;
+  // a null selection counts the whole set. Mirrors OutfitEvolutionVariants.
+  const scopedVariants =
+    selected === null
+      ? outfit_variants
+      : outfit_variants.filter((v) =>
+          isStandalone ? v.outfit_category === selected : v.outfit_set === selected
+        )
+  const obtained = scopedVariants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
+  const total = scopedVariants.length
 
   return (
     <>
