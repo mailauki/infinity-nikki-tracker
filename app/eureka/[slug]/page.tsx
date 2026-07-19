@@ -2,17 +2,8 @@ import { Suspense } from 'react'
 
 import { getUserID, getUserRole } from '@/hooks/user'
 import { getEurekaSet } from '@/hooks/data/eureka-sets'
-import { Stack, Button, Divider, Typography, Chip } from '@mui/material'
 import type { Metadata } from 'next'
-import { Category, ChevronRight } from '@mui/icons-material'
-import LazyImage from '@/components/lazy-image'
-import EurekaVariantColorFilter from './eureka-variant-color-filter'
-import { toTitle } from '@/lib/utils'
-import RarityStars from '@/components/rarity-stars'
-import { countObtained } from '@/hooks/count-obtained'
-import ProgressChip from '@/components/progress-chip'
-import SlugToolBar from '@/components/slug-toolbar'
-import PageShell from '@/components/page-shell'
+import EurekaSetDetail from './eureka-set-detail'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -45,88 +36,5 @@ async function EurekaSet({ slug }: { slug: string }) {
   const isLoggedIn = !!user_id
   const isAdmin = role === 'admin'
 
-  const {
-    image_url,
-    eureka_set_trials,
-    eureka_variants,
-    rarity,
-    label,
-    style,
-    colors,
-    description,
-  } = eurekaSet
-
-  const { obtained, total } = countObtained(eureka_variants)
-
-  return (
-    <>
-      <SlugToolBar isAdmin={isAdmin} />
-      <PageShell>
-        <Stack spacing={1}>
-          <Stack direction="row" sx={{ flex: 1, justifyContent: 'space-between' }}>
-            <Stack sx={{ pt: 1, alignItems: 'center' }}>
-              <LazyImage
-                alt={slug || 'Eureka Variant'}
-                size="xl"
-                src={image_url!}
-                sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-              >
-                <Category fontSize="inherit" />
-              </LazyImage>
-            </Stack>
-
-            <Chip label={toTitle(label ?? '')} variant="outlined" />
-          </Stack>
-
-          <Stack
-            direction="row"
-            sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
-          >
-            <Typography color="textSecondary" variant="subtitle2">
-              <RarityStars rarity={rarity!} />
-            </Typography>
-
-            <Typography color="textSecondary" variant="body1">
-              {toTitle(style ?? '')}
-            </Typography>
-          </Stack>
-        </Stack>
-        <Typography variant="body2">{description}</Typography>
-
-        {eureka_set_trials.length > 0 && (
-          <Stack>
-            <Stack
-              direction="row"
-              sx={{ mb: 0.5, alignItems: 'flex-end', justifyContent: 'space-between' }}
-            >
-              <Button
-                color="inherit"
-                endIcon={<ChevronRight />}
-                href={
-                  eureka_set_trials.length > 1
-                    ? '/eureka/trials'
-                    : `/eureka/trials/${eureka_set_trials[0].trial}`
-                }
-                size="small"
-              >
-                {eureka_set_trials.length > 1
-                  ? `${eureka_set_trials.length} trials`
-                  : toTitle(eureka_set_trials[0].trial)}
-              </Button>
-
-              <ProgressChip obtained={obtained} size="sm" total={total} />
-            </Stack>
-
-            <Divider />
-          </Stack>
-        )}
-
-        <EurekaVariantColorFilter
-          colors={colors}
-          eureka_variants={eureka_variants}
-          isLoggedIn={isLoggedIn}
-        />
-      </PageShell>
-    </>
-  )
+  return <EurekaSetDetail eurekaSet={eurekaSet} isAdmin={isAdmin} isLoggedIn={isLoggedIn} />
 }
