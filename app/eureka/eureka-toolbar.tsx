@@ -1,7 +1,7 @@
 'use client'
 
 import { Stack, Typography } from '@mui/material'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 import FilterMenu from '@/components/filter/filter-menu'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 import { SortButton } from '@/components/navbar/appbar-actions'
@@ -37,7 +37,7 @@ export default function EurekaToolBar() {
     : filtered.reduce((sum, set) => sum + set.eureka_variants.length, 0)
 
   return (
-    <NavBarToolbar>
+    <ToolbarSlot>
       <Stack
         direction="row"
         sx={{
@@ -60,6 +60,6 @@ export default function EurekaToolBar() {
           <FilterMenu />
         </Stack>
       </Stack>
-    </NavBarToolbar>
+    </ToolbarSlot>
   )
 }
