@@ -173,10 +173,21 @@ approach that respects each page's provider boundary.
    sidebar = temporary below `md`, permanent at `md`+.
 4. **CLS / cookie seed:** `initialDrawerOpen` still seeds the left drawer width server-side; the
    mini-variant closed state is a fixed icon width, so first paint is stable.
-5. **`PageShell` reflow floor:** `minWidth: 0` (needed so container-query card grids shrink
+5. **Cookie persistence is permanent-drawer only.** The nav-drawer cookie (`NAV_DRAWER_STORAGE_KEY`)
+   exists solely to seed the **permanent** (sm+) drawer's width server-side and avoid CLS. The
+   **temporary** mobile drawer must NOT write it — otherwise opening the mobile overlay persists an
+   open state that then widens the permanent desktop drawer on the next larger-viewport load.
+   Today this is violated: `setDrawerOpen` unconditionally writes the cookie, and the temporary
+   drawer calls the same `setDrawerOpen(true/false)` on open/close. Fix: split the persisting
+   toggle from the ephemeral one. The permanent drawer's toggle persists (writes the cookie); the
+   temporary drawer's open/close updates React state only (no cookie write) — e.g. a
+   `setDrawerOpen(open, { persist })` flag, or a separate non-persisting setter the temporary
+   drawer uses. The right sidebar already never persists (always starts closed); keep that — no
+   cookie for either sidebar variant.
+6. **`PageShell` reflow floor:** `minWidth: 0` (needed so container-query card grids shrink
    instead of overflowing when a drawer narrows the column) moves to the shell `main`; verify
    the `/eureka` and `/outfits` grids still reflow when the sidebar opens.
-6. **Provider boundary:** every migrated toolbar that reads page-scoped hooks
+7. **Provider boundary:** every migrated toolbar that reads page-scoped hooks
    (`slug-toolbar`, etc.) must render via `ToolbarSlot` so it stays under its page providers.
 
 ## Testing
@@ -186,6 +197,9 @@ No test framework in the repo — manual verification plus static checks.
 - `yarn tsc --noEmit` and `yarn lint` clean.
 - **Nav:** left drawer toggle works; open state persists across reload (cookie); mobile overlay
   opens/closes; collapsed mini-variant shows icons only.
+- **Cookie scope:** toggling the **permanent** drawer persists across reload; opening the
+  **temporary** mobile overlay does NOT write the cookie — resizing back to desktop after a mobile
+  open shows the permanent drawer in its previously-persisted state, not force-opened.
 - **Toolbar slot:** each route group's toolbar renders in the shell's second row; page-scoped
   controls still function — outfit image-swap, season filters, admin edit, sidebar toggle.
 - **Sidebar:** on an outfit/eureka detail page, `SidebarBody` portals in; open/close works;
