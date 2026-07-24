@@ -1,4 +1,5 @@
 import { Suspense } from 'react'
+import ReactDOM from 'react-dom'
 
 import { QuickAccess } from '@/components/quick-access'
 import { Hero } from '../components/hero'
@@ -9,6 +10,10 @@ import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import PageShell from '@/components/page-shell'
 
 export default function HomePage() {
+  // Preload the LCP hero so it downloads during HTML parse, not after CSS/layout.
+  // React hoists this into <head> as <link rel="preload" as="image">.
+  ReactDOM.preload('/hero.webp', { as: 'image', fetchPriority: 'high' })
+
   return (
     <PageShell>
       <NavBarToolbar>

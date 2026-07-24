@@ -1,9 +1,12 @@
 // Left nav drawer expanded width.
 export const NAV_DRAWER_WIDTH = 240
 
-// localStorage key for the persisted nav drawer open state. The filter/composer
-// sidebar deliberately does not persist its open state (it always starts closed),
-// so only the nav drawer has a key here.
+// Cookie key for the persisted nav drawer open state. A cookie (not localStorage)
+// so the server can read it during the initial render and seed the drawer's width
+// correctly — localStorage is only readable after hydration, which caused a layout
+// shift (CLS) as the content-pushing desktop drawer widened post-mount. The
+// filter/composer sidebar deliberately does not persist its open state (it always
+// starts closed), so only the nav drawer has a key here.
 export const NAV_DRAWER_STORAGE_KEY = 'nav-drawer-open'
 
 // NavBarToolbar stacks two <Toolbar> bars, each followed by an mb: 2 (16px)

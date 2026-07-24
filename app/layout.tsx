@@ -15,11 +15,13 @@ import SidebarShell from '@/components/sidebar/sidebar-shell'
 import { DrawerStateProvider } from '@/components/navbar/navbar-toolbar-context'
 import SnackbarAlertProvider from '@/components/snackbar-provider'
 import { connection } from 'next/server'
+import { cookies } from 'next/headers'
 import type { ColorTheme } from '@/lib/types/eureka'
 import { getUserID } from '@/hooks/user'
 import { getPreferences } from '@/hooks/data/preferences'
 import { NavUser } from '@/components/navbar/nav-user'
 import PageTitle from '@/components/navbar/page-title'
+import { NAV_DRAWER_STORAGE_KEY } from '@/lib/layout-constants'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -80,10 +82,15 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
     if (saved && (VALID_THEMES as string[]).includes(saved)) colorTheme = saved as ColorTheme
   }
 
+  // Seed the drawer's open state from the persisted cookie so the content-pushing
+  // desktop drawer renders at its final width on first paint (avoids a CLS shift).
+  const cookieStore = await cookies()
+  const initialDrawerOpen = cookieStore.get(NAV_DRAWER_STORAGE_KEY)?.value === 'true'
+
   return (
     <ThemeClientProvider colorTheme={colorTheme}>
       <CssBaseline />
-      <DrawerStateProvider>
+      <DrawerStateProvider initialDrawerOpen={initialDrawerOpen}>
         <SnackbarAlertProvider>
           <Stack
             direction="row"

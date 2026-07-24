@@ -6,7 +6,10 @@ export async function Hero() {
       <CardMedia
         alt="Infinity Nikki Hero Image"
         component="img"
-        image="/hero.jpg"
+        // 1400w WebP (~107 KB) instead of the 2560×1440 JPEG (~347 KB) — this is
+        // the homepage LCP element, so keep it small and fetch it first.
+        fetchPriority="high"
+        image="/hero.webp"
         loading="eager"
         sx={{ height: 240, borderRadius: 2 }}
       />
