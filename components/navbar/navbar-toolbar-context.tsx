@@ -21,8 +21,17 @@ type SidebarContextType = {
 export const NavDrawerContext = React.createContext<NavDrawerContextType | null>(null)
 export const SidebarContext = React.createContext<SidebarContextType | null>(null)
 
-export function DrawerStateProvider({ children }: { children: React.ReactNode }) {
-  const [drawerOpen, setDrawerOpen] = React.useState(false)
+export function DrawerStateProvider({
+  children,
+  initialDrawerOpen = false,
+}: {
+  children: React.ReactNode
+  // Seeded server-side from the persisted cookie so the content-pushing desktop
+  // drawer renders at its correct width on first paint — no post-hydration widen
+  // (the previous localStorage-in-effect approach caused a large CLS shift).
+  initialDrawerOpen?: boolean
+}) {
+  const [drawerOpen, setDrawerOpenState] = React.useState(initialDrawerOpen)
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
   const [portalTarget, setPortalTarget] = React.useState<HTMLElement | null>(null)
   const [bodyCount, setBodyCount] = React.useState(0)
@@ -30,11 +39,11 @@ export function DrawerStateProvider({ children }: { children: React.ReactNode })
   const unregisterBody = React.useCallback(() => setBodyCount((n) => Math.max(0, n - 1)), [])
   const hasBody = bodyCount > 0
 
-  // Read persisted state after mount to avoid an SSR/client hydration mismatch.
-  // The filter sidebar intentionally does NOT persist its open state — it always
-  // starts closed on load — so only the nav drawer is hydrated here.
-  React.useEffect(() => {
-    setDrawerOpen(localStorage.getItem(NAV_DRAWER_STORAGE_KEY) === 'true')
+  // Persist to a cookie (readable server-side next load) so the drawer's initial
+  // width is correct before hydration. 1-year max-age, lax same-site.
+  const setDrawerOpen = React.useCallback((open: boolean) => {
+    setDrawerOpenState(open)
+    document.cookie = `${NAV_DRAWER_STORAGE_KEY}=${open}; path=/; max-age=31536000; samesite=lax`
   }, [])
 
   return (
