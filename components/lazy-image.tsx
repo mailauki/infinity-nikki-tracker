@@ -1,6 +1,6 @@
 'use client'
 import Avatar, { type AvatarProps } from '@mui/material/Avatar'
-import CardMedia, { type CardMediaProps } from '@mui/material/CardMedia'
+import { type CardMediaProps } from '@mui/material/CardMedia'
 import Box from '@mui/material/Box'
 import Stack from '@mui/material/Stack'
 import Skeleton from '@mui/material/Skeleton'
@@ -94,7 +94,15 @@ function AvatarImage({
       <Avatar
         size={size}
         slotProps={{
-          img: retrySrc ? { ref: imgRef, onLoad: handleLoad, onError: handleError } : undefined,
+          img: retrySrc
+            ? {
+                ref: imgRef,
+                loading: 'lazy',
+                decoding: 'async',
+                onLoad: handleLoad,
+                onError: handleError,
+              }
+            : undefined,
         }}
         src={retrySrc}
         sx={[{ opacity: loaded || !src ? 1 : 0 }, ...toSxArray(sx), darkDim]}
@@ -178,7 +186,7 @@ function OptimizedAvatarImage({
   )
 }
 
-function MediaImage({ image, sx, ...props }: CardMediaProps<'div'>) {
+function MediaImage({ image, sx, title }: CardMediaProps<'div'>) {
   const { loaded, retrySrc, imgRef, handleLoad, handleError } = useLazyImage(image)
 
   return (
@@ -187,25 +195,35 @@ function MediaImage({ image, sx, ...props }: CardMediaProps<'div'>) {
         <Skeleton sx={{ position: 'absolute', inset: 0, height: '100%' }} variant="rectangular" />
       )}
       {image ? (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            ref={imgRef}
-            aria-hidden
-            alt=""
-            src={retrySrc}
-            style={{ visibility: 'hidden', position: 'absolute', width: 0, height: 0 }}
-            onError={handleError}
-            onLoad={handleLoad}
-          />
-          <CardMedia
-            image={retrySrc}
-            sx={[{ borderRadius: 1.5, height: '100%', opacity: loaded ? 1 : 0 }, darkDim]}
-            {...props}
-          />
-        </>
+        // A real <img loading="lazy"> (not a CardMedia CSS background) so the
+        // browser defers off-screen thumbnails on the large /eureka and /outfits
+        // grids — background-image can't be natively lazy-loaded, so those grids
+        // used to fetch every card's image eagerly on load. object-fit: cover
+        // reproduces CardMedia's cover crop; the wrapper Stack supplies the aspect
+        // ratio, so the box is reserved before the image loads (no CLS).
+        <Box
+          ref={imgRef}
+          alt=""
+          component="img"
+          decoding="async"
+          loading="lazy"
+          src={retrySrc}
+          sx={[
+            {
+              borderRadius: 1.5,
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: 'block',
+              opacity: loaded ? 1 : 0,
+            },
+            darkDim,
+          ]}
+          onError={handleError}
+          onLoad={handleLoad}
+        />
       ) : (
-        <ImagePlaceholder title={props.title} />
+        <ImagePlaceholder title={title} />
       )}
     </Stack>
   )
