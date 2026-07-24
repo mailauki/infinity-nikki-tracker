@@ -30,6 +30,12 @@ import { useNavDrawer, useSidebar, useToolbar } from './navbar/navbar-toolbar-co
 
 const SIDEBAR_WIDTH = 400
 
+// Fixed height of the AppBar's injected second row (and every spacer that must
+// clear it). The row's content — the portaled page toolbar — can be up to 40px
+// tall; a fixed 56px row keeps the AppBar row and its main/drawer spacers in exact
+// agreement regardless of content, so page content never sits under the second row.
+const TOOLBAR_ROW_2_HEIGHT = 56
+
 // ---- Left nav drawer (flush mini-variant) ------------------------------------
 
 const navOpenedMixin = (theme: Theme): CSSObject => ({
@@ -200,7 +206,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
             here; ToolbarSlot portals page content in. Rendered only when a page has
             mounted a ToolbarSlot (hasToolbar). */}
         {hasToolbar && (
-          <Toolbar sx={{ minHeight: 'unset' }}>
+          <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }}>
             <Box ref={setToolbarNode} sx={{ flexGrow: 1 }} />
           </Toolbar>
         )}
@@ -233,7 +239,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         variant="permanent"
       >
         <Toolbar />
-        {hasToolbar && <Toolbar sx={{ minHeight: 'unset' }} />}
+        {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
         {navContent(drawerOpen, () => {})}
       </NavDrawer>
 
@@ -241,7 +247,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
           that track the AppBar's row count. */}
       <Box component="main" sx={{ flexGrow: 1, minWidth: { xs: 0, md: 320 }, px: 2 }}>
         <Toolbar />
-        {hasToolbar && <Toolbar sx={{ minHeight: 'unset' }} />}
+        {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
         {children}
         <Footer />
       </Box>
@@ -257,7 +263,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         onClose={() => setSidebarOpen(false)}
       >
         <Toolbar />
-        {hasToolbar && <Toolbar sx={{ minHeight: 'unset' }} />}
+        {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
         <Toolbar>
           <Stack direction="row" sx={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
             <IconButton aria-label="Close details" onClick={() => setSidebarOpen(false)}>
@@ -274,7 +280,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         variant="permanent"
       >
         <Toolbar />
-        {hasToolbar && <Toolbar sx={{ minHeight: 'unset' }} />}
+        {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
         <Toolbar>
           <Stack direction="row" sx={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
             <IconButton aria-label="Close details" onClick={() => setSidebarOpen(false)}>
