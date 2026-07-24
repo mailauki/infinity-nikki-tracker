@@ -5,7 +5,9 @@ import { NAV_DRAWER_STORAGE_KEY } from '@/lib/layout-constants'
 
 type NavDrawerContextType = {
   drawerOpen: boolean
-  setDrawerOpen: (open: boolean) => void
+  // persist defaults to true. The temporary mobile drawer passes { persist: false }
+  // so opening the overlay never writes the cookie that seeds the permanent drawer.
+  setDrawerOpen: (open: boolean, opts?: { persist?: boolean }) => void
 }
 
 type SidebarContextType = {
@@ -18,17 +20,23 @@ type SidebarContextType = {
   unregisterBody: () => void
 }
 
+type ToolbarContextType = {
+  toolbarTarget: HTMLElement | null
+  setToolbarTarget: (el: HTMLElement | null) => void
+  hasToolbar: boolean
+  registerToolbar: () => void
+  unregisterToolbar: () => void
+}
+
 export const NavDrawerContext = React.createContext<NavDrawerContextType | null>(null)
 export const SidebarContext = React.createContext<SidebarContextType | null>(null)
+export const ToolbarContext = React.createContext<ToolbarContextType | null>(null)
 
 export function DrawerStateProvider({
   children,
   initialDrawerOpen = false,
 }: {
   children: React.ReactNode
-  // Seeded server-side from the persisted cookie so the content-pushing desktop
-  // drawer renders at its correct width on first paint — no post-hydration widen
-  // (the previous localStorage-in-effect approach caused a large CLS shift).
   initialDrawerOpen?: boolean
 }) {
   const [drawerOpen, setDrawerOpenState] = React.useState(initialDrawerOpen)
@@ -39,11 +47,20 @@ export function DrawerStateProvider({
   const unregisterBody = React.useCallback(() => setBodyCount((n) => Math.max(0, n - 1)), [])
   const hasBody = bodyCount > 0
 
-  // Persist to a cookie (readable server-side next load) so the drawer's initial
-  // width is correct before hydration. 1-year max-age, lax same-site.
-  const setDrawerOpen = React.useCallback((open: boolean) => {
+  const [toolbarTarget, setToolbarTarget] = React.useState<HTMLElement | null>(null)
+  const [toolbarCount, setToolbarCount] = React.useState(0)
+  const registerToolbar = React.useCallback(() => setToolbarCount((n) => n + 1), [])
+  const unregisterToolbar = React.useCallback(() => setToolbarCount((n) => Math.max(0, n - 1)), [])
+  const hasToolbar = toolbarCount > 0
+
+  // persist defaults to true: the permanent drawer's toggle writes the cookie so the
+  // server can seed the drawer's width next load (avoids CLS). The temporary mobile
+  // drawer passes { persist: false } to update state only.
+  const setDrawerOpen = React.useCallback((open: boolean, opts?: { persist?: boolean }) => {
     setDrawerOpenState(open)
-    document.cookie = `${NAV_DRAWER_STORAGE_KEY}=${open}; path=/; max-age=31536000; samesite=lax`
+    if (opts?.persist ?? true) {
+      document.cookie = `${NAV_DRAWER_STORAGE_KEY}=${open}; path=/; max-age=31536000; samesite=lax`
+    }
   }, [])
 
   return (
@@ -59,7 +76,17 @@ export function DrawerStateProvider({
           unregisterBody,
         }}
       >
-        {children}
+        <ToolbarContext.Provider
+          value={{
+            toolbarTarget,
+            setToolbarTarget,
+            hasToolbar,
+            registerToolbar,
+            unregisterToolbar,
+          }}
+        >
+          {children}
+        </ToolbarContext.Provider>
       </SidebarContext.Provider>
     </NavDrawerContext.Provider>
   )
@@ -74,5 +101,11 @@ export function useNavDrawer() {
 export function useSidebar() {
   const ctx = React.useContext(SidebarContext)
   if (!ctx) throw new Error('useSidebar must be used within DrawerStateProvider')
+  return ctx
+}
+
+export function useToolbar() {
+  const ctx = React.useContext(ToolbarContext)
+  if (!ctx) throw new Error('useToolbar must be used within DrawerStateProvider')
   return ctx
 }
