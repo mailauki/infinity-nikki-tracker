@@ -6,7 +6,7 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import CheckIcon from '@mui/icons-material/Check'
 import SkipNextIcon from '@mui/icons-material/SkipNext'
 import SaveIcon from '@mui/icons-material/SaveAlt'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 import { ADMIN_DASHBOARD, useFormConfig } from './form-context'
 import { useEffect, type ReactNode } from 'react'
 import { enqueueSnackbar } from 'notistack'
@@ -36,7 +36,7 @@ export default function FormToolBar() {
   if (!formId) return null
 
   return (
-    <NavBarToolbar>
+    <ToolbarSlot>
       <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
         <ToolbarButton
           component="a"
@@ -95,7 +95,7 @@ export default function FormToolBar() {
           variant="contained"
         />
       </Stack>
-    </NavBarToolbar>
+    </ToolbarSlot>
   )
 }
 

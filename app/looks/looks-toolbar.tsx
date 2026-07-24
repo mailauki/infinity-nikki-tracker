@@ -3,11 +3,11 @@
 import Link from 'next/link'
 import { Button, Stack, Typography } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 
 export default function LooksToolbar({ atLimit }: { atLimit: boolean }) {
   return (
-    <NavBarToolbar>
+    <ToolbarSlot>
       <Stack
         direction="row"
         sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
@@ -24,6 +24,6 @@ export default function LooksToolbar({ atLimit }: { atLimit: boolean }) {
           New look
         </Button>
       </Stack>
-    </NavBarToolbar>
+    </ToolbarSlot>
   )
 }

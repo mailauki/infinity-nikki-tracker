@@ -45,7 +45,7 @@ import type { OutfitCategory } from '@/lib/types/outfit'
 import { DRESS_SLUGS, isCategoryDisabled } from '@/components/filter/outfit-category-select'
 import ToggleIcon from '@/components/toggle-icon'
 import ImageUpload from '@/components/forms/image-upload'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 import PageShell from '@/components/page-shell'
 import {
   Delete,
@@ -716,7 +716,7 @@ export default function LookBuilder({
 
   return (
     <>
-      <NavBarToolbar>
+      <ToolbarSlot>
         <Typography variant="subtitle2">{initialLook ? 'Edit Look' : 'New Look'}</Typography>
         <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
           <Button component="a" href={cancelHref} variant="outlined">
@@ -738,7 +738,7 @@ export default function LookBuilder({
             <TuneIcon />
           </IconButton>
         </Stack>
-      </NavBarToolbar>
+      </ToolbarSlot>
 
       <SidebarBody>{composerPanel}</SidebarBody>
 

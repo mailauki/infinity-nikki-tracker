@@ -1,12 +1,12 @@
 'use client'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 import { AdminPanelSettings } from '@mui/icons-material'
 import { Chip, Stack } from '@mui/material'
 import Link from 'next/link'
 
 export default function ProfileToolbar({ isAdmin = false }: { isAdmin?: boolean }) {
   return (
-    <NavBarToolbar>
+    <ToolbarSlot>
       {isAdmin && (
         <Stack
           direction="row"
@@ -24,6 +24,6 @@ export default function ProfileToolbar({ isAdmin = false }: { isAdmin?: boolean 
           />
         </Stack>
       )}
-    </NavBarToolbar>
+    </ToolbarSlot>
   )
 }

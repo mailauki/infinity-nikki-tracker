@@ -7,7 +7,7 @@ import LoginAlert from '@/components/login-alert'
 import AppearanceSettings from './appearance-settings'
 import AccountSettings from './account-settings'
 import ProfileSettings from './profile-settings'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 
 type TabValue = 'profile' | 'appearance' | 'account'
 
@@ -30,7 +30,7 @@ export default function SettingsTabs({
 
   return (
     <>
-      <NavBarToolbar>
+      <ToolbarSlot>
         <Tabs
           aria-label="Settings tabs"
           sx={{ borderBottom: 1, borderColor: 'divider', flexGrow: 1 }}
@@ -45,7 +45,7 @@ export default function SettingsTabs({
             <Tab label="Account" sx={{ flexGrow: { xs: 1, md: 0 } }} value="account" />
           )}
         </Tabs>
-      </NavBarToolbar>
+      </ToolbarSlot>
 
       {tab === 'profile' && (isLoggedIn ? <ProfileSettings user={user} /> : <LoginAlert />)}
       {tab === 'appearance' && <AppearanceSettings isLoggedIn={isLoggedIn} isPremium={isPremium} />}

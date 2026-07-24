@@ -2,7 +2,7 @@
 
 import { Box, Container, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { ChevronLeft, Edit as EditIcon } from '@mui/icons-material'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 import LazyImage from '@/components/lazy-image'
 import PageShell from '@/components/page-shell'
 import type { CustomLook } from '@/lib/types/looks'
@@ -48,7 +48,7 @@ export default function LookDetail({
 
   return (
     <>
-      <NavBarToolbar>
+      <ToolbarSlot>
         <Stack
           direction="row"
           sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
@@ -62,7 +62,7 @@ export default function LookDetail({
             </IconButton>
           </Tooltip>
         </Stack>
-      </NavBarToolbar>
+      </ToolbarSlot>
 
       <PageShell maxWidth="md">
         <Stack useFlexGap direction="row" spacing={3} sx={{ flexWrap: 'wrap' }}>

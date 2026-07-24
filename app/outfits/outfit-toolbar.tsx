@@ -1,7 +1,7 @@
 'use client'
 
 import { Stack, Typography } from '@mui/material'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 import FilterMenu from '@/components/filter/filter-menu'
 import { SortButton } from '@/components/navbar/appbar-actions'
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
@@ -106,7 +106,7 @@ export default function OutfitToolBar({
   const resultsCount = countResults()
 
   return (
-    <NavBarToolbar>
+    <ToolbarSlot>
       <Stack
         direction="row"
         sx={{
@@ -129,6 +129,6 @@ export default function OutfitToolBar({
           {showFilters && <FilterMenu />}
         </Stack>
       </Stack>
-    </NavBarToolbar>
+    </ToolbarSlot>
   )
 }
