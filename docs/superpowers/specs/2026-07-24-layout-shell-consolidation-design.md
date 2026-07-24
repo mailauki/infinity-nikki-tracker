@@ -184,6 +184,14 @@ approach that respects each page's provider boundary.
    `setDrawerOpen(open, { persist })` flag, or a separate non-persisting setter the temporary
    drawer uses. The right sidebar already never persists (always starts closed); keep that — no
    cookie for either sidebar variant.
+
+   **Default-open rule:** a drawer/sidebar's initial open state is `true` **only** when a
+   persisted value says so. The nav drawer's `initialDrawerOpen` is `true` only if the cookie is
+   present and equals `'true'` (absent/any-other value → closed) — never default-open. The
+   sidebar does not persist, so its default is unconditionally `false` (closed). Equivalently:
+   initial open is derived from the persisted flag, and where nothing is persisted, the default
+   is closed.
+
 6. **`PageShell` reflow floor:** `minWidth: 0` (needed so container-query card grids shrink
    instead of overflowing when a drawer narrows the column) moves to the shell `main`; verify
    the `/eureka` and `/outfits` grids still reflow when the sidebar opens.
