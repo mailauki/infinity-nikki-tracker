@@ -16,11 +16,11 @@ export default function HomePage() {
 
   return (
     <PageShell>
-      <ToolbarSlot>
+      {/* <ToolbarSlot>
         <Suspense>
           <HomeCTAs />
         </Suspense>
-      </ToolbarSlot>
+      </ToolbarSlot> */}
       <Hero />
       <QuickAccess />
       <HelpActions />

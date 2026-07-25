@@ -107,7 +107,7 @@ export default function OutfitToolBar({
 
   return (
     <ToolbarSlot>
-      <Stack
+      {/* <Stack
         direction="row"
         sx={{
           width: '100%',
@@ -116,19 +116,19 @@ export default function OutfitToolBar({
           justifyContent: 'space-between',
           position: 'relative',
         }}
-      >
-        <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
+      > */}
+        {/* <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
           Showing: {resultsCount} results
-        </Typography>
-        <Stack
+        </Typography> */}
+        {/* <Stack
           direction="row"
           spacing={1}
           sx={{ position: 'relative', width: '88px', height: '40px' }}
-        >
+        > */}
           <SortButton />
           {showFilters && <FilterMenu />}
-        </Stack>
-      </Stack>
+        {/* </Stack> */}
+      {/* </Stack> */}
     </ToolbarSlot>
   )
 }

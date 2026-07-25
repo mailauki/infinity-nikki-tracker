@@ -129,16 +129,24 @@ const SidebarDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
 // ---- Nav content (shared by permanent + temporary drawers) -------------------
 
 const navContent = (open: boolean, onClose: () => void) => (
-  <Stack component="nav" sx={{ flexGrow: 1, mx: 1.5, pb: 3, height: '100%' }}>
+  <Stack component="nav" sx={{ flexGrow: 1, mx: 1.5, pb: 3 }}>
     <NavSection items={navLinksData.home} open={open} onClose={onClose} />
     <NavSection items={navLinksData.navMain} open={open} onClose={onClose} />
     <Divider sx={{ my: 0.5 }} />
     <NavSection items={navLinksData.navSecondary} open={open} onClose={onClose} />
-    <Stack sx={{ flex: 1, justifyContent: 'flex-end' }}>
-      <NavSection items={navLinksData.navExtra} open={open} onClose={onClose} />
-    </Stack>
+		<Stack sx={{ flexGrow: 1 }} />
+    <NavSection items={navLinksData.navExtra} open={open} onClose={onClose} />
   </Stack>
 )
+
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: theme.spacing(0, 2.5),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+}));
 
 export default function LayoutShell({ children }: { children?: React.ReactNode }) {
   const theme = useTheme()
@@ -204,7 +212,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
   const sidebarDrawerOpen = hasBody && sidebarOpen
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', overflowX: 'hidden' }}>
       <AppBar
         color="default"
         position="fixed"
@@ -223,7 +231,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
           <Stack
             direction="row"
             spacing={1}
-            sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'space-between' }}
+            sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'space-between', ml: 1.5 }}
           >
             <IconButton
               aria-label={drawerOpen ? 'Collapse navigation' : 'Expand navigation'}
@@ -241,11 +249,10 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
           </Stack>
         </Toolbar>
         {/* Second row: the injected page toolbar. The single toolbar target lives here; ToolbarSlot portals page content in. Rendered only when a page has mounted a ToolbarSlot (hasToolbar). */}
-        {hasToolbar && (
-          <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }}>
-            <Box ref={setToolbarNode} sx={{ flexGrow: 1 }} />
-          </Toolbar>
-        )}
+				{hasToolbar && (<Toolbar>
+          <Stack direction='row' spacing={1} ref={setToolbarNode} sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'flex-end' }} />
+				</Toolbar>
+			)}
         <Box sx={{ height: theme.spacing(2) }} /> {/* Box spacer for AppBar mask */}
       </AppBar>
       <PullToRefresh />
@@ -277,20 +284,34 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
       <NavDrawer
         anchor="left"
         open={drawerOpen}
-        sx={{ display: { xs: 'none', sm: 'block' } }}
+        sx={{ display: { xs: 'none', sm: 'block' }, zIndex: theme.zIndex.drawer + 2 }}
         variant="permanent"
       >
-        <Toolbar />
-        {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
         <Paper sx={{ borderRadius: 3, m: 2, mr: 0, flexGrow: 1 }} variant="filled">
+					<Stack sx={{ flexGrow: 1, height: '100%' }}>
+        <DrawerHeader>
+          <IconButton
+						aria-label={drawerOpen ? 'Collapse navigation' : 'Expand navigation'}
+						color="inherit"
+						onClick={() =>
+							isNavMobile
+								? setDrawerOpen(!drawerOpen, { persist: false })
+								: setDrawerOpen(!drawerOpen)
+						}
+					>
+						{drawerOpen ? <MenuOpen /> : <Menu />}
+					</IconButton>
+        </DrawerHeader>
+        {hasToolbar && <Toolbar />}
           {navContent(drawerOpen, () => {})}
+					</Stack>
         </Paper>
       </NavDrawer>
 
       {/* Main column: owns the gutter, minWidth:0 (grid reflow), and top spacers that track the AppBar's row count. */}
       <Box component="main" sx={{ flexGrow: 1, minWidth: { xs: 0, md: 320 }, px: 2 }}>
-        <Toolbar />
-        {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
+				<DrawerHeader />
+        {hasToolbar && <Toolbar />}
         <Box sx={{ height: theme.spacing(2) }} /> {/* Box spacer for AppBar mask */}
         {children}
         <Footer />
@@ -310,7 +331,6 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         onClose={() => setSidebarOpen(false)}
       >
         <Toolbar />
-        {/* {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />} */}
         <Toolbar>
           <Stack direction="row" sx={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
             <IconButton aria-label="Close details" onClick={() => setSidebarOpen(false)}>
@@ -326,8 +346,8 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         sx={{ display: { xs: 'none', md: 'block' } }}
         variant="permanent"
       >
-        <Toolbar />
-        {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
+				<DrawerHeader />
+        {hasToolbar && <Toolbar />}
         <Paper sx={{ borderRadius: 3, m: 2, ml: 0, flexGrow: 1 }} variant="filled">
           <Toolbar>
             <Stack
