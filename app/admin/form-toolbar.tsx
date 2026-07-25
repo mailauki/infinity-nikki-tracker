@@ -37,62 +37,62 @@ export default function FormToolBar() {
 
   return (
     <ToolbarSlot>
-        <ToolbarButton
-          component="a"
-          href={ADMIN_DASHBOARD}
-          icon={<CloseIcon />}
-          isMobile={isMobile}
-          label="Cancel"
-          variant="outlined"
-        />
-        {showAddAnother && (
-          <ToolbarButton
-            disabled={pending}
-            form={formId}
-            icon={<PlaylistAddIcon />}
-            isMobile={isMobile}
-            label={pending ? 'Saving...' : 'Save & add another'}
-            name="add_another"
-            type="submit"
-            value="true"
-            variant="outlined"
-          />
-        )}
-        {showUpdateOnly && (
-          <ToolbarButton
-            disabled={pending}
-            form={formId}
-            icon={<CheckIcon />}
-            isMobile={isMobile}
-            label={pending ? 'Saving...' : 'Update'}
-            name="update_only"
-            type="submit"
-            value="true"
-            variant="outlined"
-          />
-        )}
-        {showUpdateNext && (
-          <ToolbarButton
-            disabled={pending}
-            form={formId}
-            icon={<SkipNextIcon />}
-            isMobile={isMobile}
-            label={pending ? 'Saving...' : 'Update & next item'}
-            name="update_next"
-            type="submit"
-            value="true"
-            variant="outlined"
-          />
-        )}
+      <ToolbarButton
+        component="a"
+        href={ADMIN_DASHBOARD}
+        icon={<CloseIcon />}
+        isMobile={isMobile}
+        label="Cancel"
+        variant="outlined"
+      />
+      {showAddAnother && (
         <ToolbarButton
           disabled={pending}
           form={formId}
-          icon={<SaveIcon />}
+          icon={<PlaylistAddIcon />}
           isMobile={isMobile}
-          label={pending ? 'Saving...' : 'Save'}
+          label={pending ? 'Saving...' : 'Save & add another'}
+          name="add_another"
           type="submit"
-          variant="contained"
+          value="true"
+          variant="outlined"
         />
+      )}
+      {showUpdateOnly && (
+        <ToolbarButton
+          disabled={pending}
+          form={formId}
+          icon={<CheckIcon />}
+          isMobile={isMobile}
+          label={pending ? 'Saving...' : 'Update'}
+          name="update_only"
+          type="submit"
+          value="true"
+          variant="outlined"
+        />
+      )}
+      {showUpdateNext && (
+        <ToolbarButton
+          disabled={pending}
+          form={formId}
+          icon={<SkipNextIcon />}
+          isMobile={isMobile}
+          label={pending ? 'Saving...' : 'Update & next item'}
+          name="update_next"
+          type="submit"
+          value="true"
+          variant="outlined"
+        />
+      )}
+      <ToolbarButton
+        disabled={pending}
+        form={formId}
+        icon={<SaveIcon />}
+        isMobile={isMobile}
+        label={pending ? 'Saving...' : 'Save'}
+        type="submit"
+        variant="contained"
+      />
     </ToolbarSlot>
   )
 }

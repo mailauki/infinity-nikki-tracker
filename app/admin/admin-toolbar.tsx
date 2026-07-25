@@ -39,11 +39,11 @@ export default function AdminToolBar() {
           justifyContent: 'space-between',
         }}
       > */}
-        <AdminNavMenu />
-        {/* <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}> */}
-          <AdminVariantColumnsToggle />
-          {pathname !== '/admin' && <AdminViewToggle />}
-        {/* </Stack> */}
+      <AdminNavMenu />
+      {/* <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}> */}
+      <AdminVariantColumnsToggle />
+      {pathname !== '/admin' && <AdminViewToggle />}
+      {/* </Stack> */}
       {/* </Stack> */}
     </ToolbarSlot>
   )

@@ -1,6 +1,5 @@
 'use client'
 
-import { Stack, Typography } from '@mui/material'
 import ToolbarSlot from '@/components/toolbar-slot'
 import FilterMenu from '@/components/filter/filter-menu'
 import { SortButton } from '@/components/navbar/appbar-actions'
@@ -107,8 +106,8 @@ export default function OutfitToolBar({
 
   return (
     <ToolbarSlot>
-			<SortButton />
-			{showFilters && <FilterMenu />}
+      <SortButton />
+      {showFilters && <FilterMenu />}
     </ToolbarSlot>
   )
 }

@@ -717,27 +717,24 @@ export default function LookBuilder({
   return (
     <>
       <ToolbarSlot>
-        <Typography variant="subtitle2">{initialLook ? 'Edit Look' : 'New Look'}</Typography>
-        <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
-          <Button component="a" href={cancelHref} variant="outlined">
-            Cancel
-          </Button>
-          <Button
-            color="primary"
-            disabled={!name.trim() || isPending}
-            startIcon={<SaveIcon />}
-            variant="contained"
-            onClick={handleSave}
-          >
-            {isPending ? 'Saving…' : saveLabel}
-          </Button>
-          <IconButton
-            color={sidebarOpen ? 'primary' : 'default'}
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <TuneIcon />
-          </IconButton>
-        </Stack>
+        <Button component="a" href={cancelHref} variant="outlined">
+          Cancel
+        </Button>
+        <Button
+          color="primary"
+          disabled={!name.trim() || isPending}
+          startIcon={<SaveIcon />}
+          variant="contained"
+          onClick={handleSave}
+        >
+          {isPending ? 'Saving…' : saveLabel}
+        </Button>
+        <IconButton
+          color={sidebarOpen ? 'primary' : 'default'}
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          <TuneIcon />
+        </IconButton>
       </ToolbarSlot>
 
       <SidebarBody>{composerPanel}</SidebarBody>

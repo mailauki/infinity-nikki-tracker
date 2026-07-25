@@ -12,17 +12,17 @@ export default function LooksToolbar({ atLimit }: { atLimit: boolean }) {
         direction="row"
         sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
       > */}
-        {/* <Typography variant="subtitle2">Custom Looks</Typography> */}
-        <Button
-          component={Link}
-          disabled={atLimit}
-          href="/looks/new"
-          size="small"
-          startIcon={<AddIcon />}
-          variant="contained"
-        >
-          New look
-        </Button>
+      {/* <Typography variant="subtitle2">Custom Looks</Typography> */}
+      <Button
+        component={Link}
+        disabled={atLimit}
+        href="/looks/new"
+        size="small"
+        startIcon={<AddIcon />}
+        variant="contained"
+      >
+        New look
+      </Button>
       {/* </Stack> */}
     </ToolbarSlot>
   )

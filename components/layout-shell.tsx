@@ -134,7 +134,7 @@ const navContent = (open: boolean, onClose: () => void) => (
     <NavSection items={navLinksData.navMain} open={open} onClose={onClose} />
     <Divider sx={{ my: 0.5 }} />
     <NavSection items={navLinksData.navSecondary} open={open} onClose={onClose} />
-		<Stack sx={{ flexGrow: 1 }} />
+    <Stack sx={{ flexGrow: 1 }} />
     <NavSection items={navLinksData.navExtra} open={open} onClose={onClose} />
   </Stack>
 )
@@ -146,7 +146,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 2.5),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-}));
+}))
 
 export default function LayoutShell({ children }: { children?: React.ReactNode }) {
   const theme = useTheme()
@@ -249,10 +249,16 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
           </Stack>
         </Toolbar>
         {/* Second row: the injected page toolbar. The single toolbar target lives here; ToolbarSlot portals page content in. Rendered only when a page has mounted a ToolbarSlot (hasToolbar). */}
-				{hasToolbar && (<Toolbar>
-          <Stack direction='row' spacing={1} ref={setToolbarNode} sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'flex-end' }} />
-				</Toolbar>
-			)}
+        {hasToolbar && (
+          <Toolbar>
+            <Stack
+              ref={setToolbarNode}
+              direction="row"
+              spacing={1}
+              sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'flex-end' }}
+            />
+          </Toolbar>
+        )}
         <Box sx={{ height: theme.spacing(2) }} /> {/* Box spacer for AppBar mask */}
       </AppBar>
       <PullToRefresh />
@@ -288,29 +294,32 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         variant="permanent"
       >
         <Paper sx={{ borderRadius: 3, m: 2, mr: 0, flexGrow: 1 }} variant="filled">
-					<Stack sx={{ flexGrow: 1, height: '100%' }}>
-        <DrawerHeader>
-          <IconButton
-						aria-label={drawerOpen ? 'Collapse navigation' : 'Expand navigation'}
-						color="inherit"
-						onClick={() =>
-							isNavMobile
-								? setDrawerOpen(!drawerOpen, { persist: false })
-								: setDrawerOpen(!drawerOpen)
-						}
-					>
-						{drawerOpen ? <MenuOpen /> : <Menu />}
-					</IconButton>
-        </DrawerHeader>
-        <Toolbar />
-          {navContent(drawerOpen, () => {})}
-					</Stack>
+          <Stack sx={{ flexGrow: 1, height: '100%' }}>
+            <DrawerHeader>
+              <IconButton
+                aria-label={drawerOpen ? 'Collapse navigation' : 'Expand navigation'}
+                color="inherit"
+                onClick={() =>
+                  isNavMobile
+                    ? setDrawerOpen(!drawerOpen, { persist: false })
+                    : setDrawerOpen(!drawerOpen)
+                }
+              >
+                {drawerOpen ? <MenuOpen /> : <Menu />}
+              </IconButton>
+            </DrawerHeader>
+            <Toolbar />
+            {navContent(drawerOpen, () => {})}
+          </Stack>
         </Paper>
       </NavDrawer>
 
       {/* Main column: owns the gutter, minWidth:0 (grid reflow), and top spacers that track the AppBar's row count. */}
-      <Stack component="main" sx={{ flexGrow: 1, minHeight: '100vh', minWidth: { xs: 0, md: 320 }, px: 2 }}>
-				<DrawerHeader />
+      <Stack
+        component="main"
+        sx={{ flexGrow: 1, minHeight: '100vh', minWidth: { xs: 0, md: 320 }, px: 2 }}
+      >
+        <DrawerHeader />
         {hasToolbar && <Toolbar />}
         <Box sx={{ height: theme.spacing(2) }} /> {/* Box spacer for AppBar mask */}
         {children}
@@ -346,7 +355,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         sx={{ display: { xs: 'none', md: 'block' } }}
         variant="permanent"
       >
-				<DrawerHeader />
+        <DrawerHeader />
         {hasToolbar && <Toolbar />}
         <Paper sx={{ borderRadius: 3, m: 2, ml: 0, flexGrow: 1 }} variant="filled">
           <Toolbar>
