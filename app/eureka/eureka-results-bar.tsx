@@ -1,6 +1,6 @@
 'use client'
 
-import { Typography } from '@mui/material'
+import { Chip } from '@mui/material'
 import StickyBar from '@/components/sticky-bar'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 
@@ -36,9 +36,12 @@ export default function EurekaResultsBar() {
 
   return (
     <StickyBar>
-      <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
-        Showing: {resultsCount} results
-      </Typography>
+      <Chip
+        color="secondary"
+        label={`Showing: ${resultsCount} results`}
+        sx={{ backgroundColor: 'surface.mainHover' }}
+        variant="outlined"
+      />
     </StickyBar>
   )
 }

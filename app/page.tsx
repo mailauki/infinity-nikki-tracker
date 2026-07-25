@@ -16,7 +16,7 @@ export default function HomePage() {
   return (
     <PageShell>
       <Hero />
-			<Suspense>
+      <Suspense>
         <HomeCTAs />
       </Suspense>
       <QuickAccess />

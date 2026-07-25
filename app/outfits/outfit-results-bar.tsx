@@ -1,6 +1,6 @@
 'use client'
 
-import { Typography } from '@mui/material'
+import { Chip } from '@mui/material'
 import StickyBar from '@/components/sticky-bar'
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
@@ -103,9 +103,12 @@ export default function OutfitResultsBar({
 
   return (
     <StickyBar>
-      <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
-        Showing: {resultsCount} results
-      </Typography>
+      <Chip
+        color="secondary"
+        label={`Showing: ${resultsCount} results`}
+        sx={{ backgroundColor: 'surface.mainHover' }}
+        variant="outlined"
+      />
     </StickyBar>
   )
 }

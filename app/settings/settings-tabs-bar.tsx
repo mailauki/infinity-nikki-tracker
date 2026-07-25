@@ -11,7 +11,7 @@ export default function SettingsTabsBar({ isLoggedIn }: { isLoggedIn: boolean })
     <StickyBar>
       <Tabs
         aria-label="Settings tabs"
-        sx={{ flexGrow: 1 }}
+        sx={{ flexGrow: 1, borderBottom: 1, borderColor: 'divider' }}
         value={tab}
         onChange={(_, value: TabValue) => setTab(value)}
       >

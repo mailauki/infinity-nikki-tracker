@@ -293,7 +293,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         variant="temporary"
         onClose={() => setDrawerOpen(false, { persist: false })}
       >
-        <Toolbar disableGutters sx={{ px: 2.4, pt: 3 }}>
+        <Toolbar disableGutters sx={{ px: 3.4 }}>
           <IconButton
             aria-label="Close navigation"
             onClick={() => setDrawerOpen(false, { persist: false })}
@@ -311,7 +311,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         variant="permanent"
       >
         <Paper sx={{ borderRadius: 3, m: 2, mr: 0, flexGrow: 1 }} variant="filled">
-          <Stack sx={{ flexGrow: 1, height: '100%' }}>
+          <Stack sx={{ flexGrow: 1, height: '100%', pt: 3 }}>
             <DrawerHeader>
               <IconButton
                 aria-label={drawerOpen ? 'Collapse navigation' : 'Expand navigation'}
@@ -340,20 +340,28 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         {hasToolbar && <Toolbar />}
         <Box sx={{ height: theme.spacing(2) }} /> {/* Box spacer for AppBar mask */}
         {hasStickyBar && (
-          <Box
+          <AppBar
+            color="transparent"
+            component={Box}
+            position="sticky"
             sx={{
-              position: 'sticky',
               top: stickyTop,
               zIndex: (t) => t.zIndex.appBar - 1,
-              bgcolor: 'background.paper',
-              borderBottom: 1,
-              borderColor: 'divider',
-              mx: -2,
-              px: 2,
             }}
+            variant="filled"
           >
-            <Box ref={setStickyBarNode} />
-          </Box>
+            <Toolbar disableGutters>
+              <Stack
+                ref={setStickyBarNode}
+                direction="row"
+                sx={{
+                  flexGrow: 1,
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              />
+            </Toolbar>
+          </AppBar>
         )}
         {children}
         <Footer />
@@ -374,7 +382,11 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
       >
         <Toolbar />
         <Toolbar>
-          <Stack direction="row" sx={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
+          <Stack
+            direction="row"
+            sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'space-between' }}
+          >
+            <Typography variant="subtitle2">Details</Typography>
             <IconButton aria-label="Close details" onClick={() => setSidebarOpen(false)}>
               <Close />
             </IconButton>
@@ -394,7 +406,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
           <Toolbar>
             <Stack
               direction="row"
-              sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
+              sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'space-between' }}
             >
               <Typography variant="subtitle2">Details</Typography>
               <IconButton aria-label="Close details" onClick={() => setSidebarOpen(false)}>
