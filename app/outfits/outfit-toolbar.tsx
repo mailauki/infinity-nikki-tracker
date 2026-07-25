@@ -106,6 +106,9 @@ export default function OutfitToolBar({
 
   return (
     <ToolbarSlot>
+      {/* <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
+          Showing: {resultsCount} results
+        </Typography> */}
       <SortButton />
       {showFilters && <FilterMenu />}
     </ToolbarSlot>

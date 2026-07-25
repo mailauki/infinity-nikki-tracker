@@ -1,6 +1,5 @@
 'use client'
 
-import { Stack, Typography } from '@mui/material'
 import ToolbarSlot from '@/components/toolbar-slot'
 import FilterMenu from '@/components/filter/filter-menu'
 import { useEurekaData } from '@/components/eureka/eureka-context'
@@ -38,28 +37,11 @@ export default function EurekaToolBar() {
 
   return (
     <ToolbarSlot>
-      {/* <Stack
-        direction="row"
-        sx={{
-          width: '100%',
-          flexGrow: 1,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          position: 'relative',
-        }}
-      > */}
       {/* <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
           Showing: {resultsCount} results
         </Typography> */}
-      {/* <Stack
-          direction="row"
-          spacing={1}
-          sx={{ position: 'relative', width: '88px', height: '40px' }}
-        > */}
       <SortButton />
       <FilterMenu />
-      {/* </Stack> */}
-      {/* </Stack> */}
     </ToolbarSlot>
   )
 }
