@@ -31,20 +31,20 @@ export default function AdminToolBar() {
 
   return (
     <ToolbarSlot>
-      <Stack
+      {/* <Stack
         direction="row"
         sx={{
           flex: 1,
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
-      >
+      > */}
         <AdminNavMenu />
-        <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
+        {/* <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}> */}
           <AdminVariantColumnsToggle />
           {pathname !== '/admin' && <AdminViewToggle />}
-        </Stack>
-      </Stack>
+        {/* </Stack> */}
+      {/* </Stack> */}
     </ToolbarSlot>
   )
 }

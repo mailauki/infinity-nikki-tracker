@@ -8,11 +8,6 @@ export default function ProfileToolbar({ isAdmin = false }: { isAdmin?: boolean 
   return (
     <ToolbarSlot>
       {isAdmin && (
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'flex-end' }}
-        >
           <Chip
             clickable
             color="secondary"
@@ -22,7 +17,6 @@ export default function ProfileToolbar({ isAdmin = false }: { isAdmin?: boolean 
             label="Admin access"
             variant="outlined"
           />
-        </Stack>
       )}
     </ToolbarSlot>
   )

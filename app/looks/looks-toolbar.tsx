@@ -8,11 +8,11 @@ import ToolbarSlot from '@/components/toolbar-slot'
 export default function LooksToolbar({ atLimit }: { atLimit: boolean }) {
   return (
     <ToolbarSlot>
-      <Stack
+      {/* <Stack
         direction="row"
         sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
-      >
-        <Typography variant="subtitle2">Custom Looks</Typography>
+      > */}
+        {/* <Typography variant="subtitle2">Custom Looks</Typography> */}
         <Button
           component={Link}
           disabled={atLimit}
@@ -23,7 +23,7 @@ export default function LooksToolbar({ atLimit }: { atLimit: boolean }) {
         >
           New look
         </Button>
-      </Stack>
+      {/* </Stack> */}
     </ToolbarSlot>
   )
 }

@@ -37,7 +37,6 @@ export default function FormToolBar() {
 
   return (
     <ToolbarSlot>
-      <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
         <ToolbarButton
           component="a"
           href={ADMIN_DASHBOARD}
@@ -94,7 +93,6 @@ export default function FormToolBar() {
           type="submit"
           variant="contained"
         />
-      </Stack>
     </ToolbarSlot>
   )
 }

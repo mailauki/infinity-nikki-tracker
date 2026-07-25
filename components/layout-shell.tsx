@@ -212,7 +212,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
   const sidebarDrawerOpen = hasBody && sidebarOpen
 
   return (
-    <Box sx={{ display: 'flex', overflowX: 'hidden' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', overflowX: 'hidden' }}>
       <AppBar
         color="default"
         position="fixed"
@@ -302,20 +302,20 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
 						{drawerOpen ? <MenuOpen /> : <Menu />}
 					</IconButton>
         </DrawerHeader>
-        {hasToolbar && <Toolbar />}
+        <Toolbar />
           {navContent(drawerOpen, () => {})}
 					</Stack>
         </Paper>
       </NavDrawer>
 
       {/* Main column: owns the gutter, minWidth:0 (grid reflow), and top spacers that track the AppBar's row count. */}
-      <Box component="main" sx={{ flexGrow: 1, minWidth: { xs: 0, md: 320 }, px: 2 }}>
+      <Stack component="main" sx={{ flexGrow: 1, minHeight: '100vh', minWidth: { xs: 0, md: 320 }, px: 2 }}>
 				<DrawerHeader />
         {hasToolbar && <Toolbar />}
         <Box sx={{ height: theme.spacing(2) }} /> {/* Box spacer for AppBar mask */}
         {children}
         <Footer />
-      </Box>
+      </Stack>
 
       {/* Right sidebar: temporary overlay below md, permanent at md+. Exactly one portal target div, rendered inside whichever drawer is active. */}
       <MuiDrawer
