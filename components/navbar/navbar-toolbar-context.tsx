@@ -5,6 +5,11 @@ import { NAV_DRAWER_STORAGE_KEY } from '@/lib/layout-constants'
 
 type NavDrawerContextType = {
   drawerOpen: boolean
+  // The user's persisted open preference (from the cookie). Tracks only persisting
+  // writes, so it survives an ephemeral auto-close (e.g. shrinking to xs closes the
+  // live drawer with persist:false but leaves this preference intact) — the shell
+  // reads it to restore the drawer when the viewport expands back to where it fits.
+  drawerPreferOpen: boolean
   // persist defaults to true. The temporary mobile drawer passes { persist: false }
   // so opening the overlay never writes the cookie that seeds the permanent drawer.
   setDrawerOpen: (open: boolean, opts?: { persist?: boolean }) => void
@@ -40,6 +45,9 @@ export function DrawerStateProvider({
   initialDrawerOpen?: boolean
 }) {
   const [drawerOpen, setDrawerOpenState] = React.useState(initialDrawerOpen)
+  // The persisted preference, seeded from the same cookie-derived initial value.
+  // Only persisting writes update it, so an auto-close (persist:false) doesn't erase it.
+  const [drawerPreferOpen, setDrawerPreferOpen] = React.useState(initialDrawerOpen)
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
   const [portalTarget, setPortalTarget] = React.useState<HTMLElement | null>(null)
   const [bodyCount, setBodyCount] = React.useState(0)
@@ -59,12 +67,13 @@ export function DrawerStateProvider({
   const setDrawerOpen = React.useCallback((open: boolean, opts?: { persist?: boolean }) => {
     setDrawerOpenState(open)
     if (opts?.persist ?? true) {
+      setDrawerPreferOpen(open)
       document.cookie = `${NAV_DRAWER_STORAGE_KEY}=${open}; path=/; max-age=31536000; samesite=lax`
     }
   }, [])
 
   return (
-    <NavDrawerContext.Provider value={{ drawerOpen, setDrawerOpen }}>
+    <NavDrawerContext.Provider value={{ drawerOpen, drawerPreferOpen, setDrawerOpen }}>
       <SidebarContext.Provider
         value={{
           sidebarOpen,

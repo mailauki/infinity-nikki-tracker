@@ -15,6 +15,8 @@ import {
   Toolbar,
   useMediaQuery,
   useTheme,
+  Paper,
+  Typography,
 } from '@mui/material'
 import { Close, Menu, MenuOpen } from '@mui/icons-material'
 import NavSection from './navbar/nav-section'
@@ -46,6 +48,7 @@ const navOpenedMixin = (theme: Theme): CSSObject => ({
   }),
   overflowX: 'hidden',
   border: 0,
+  backgroundColor: 'transparent',
 })
 
 const navClosedMixin = (theme: Theme): CSSObject => ({
@@ -54,8 +57,9 @@ const navClosedMixin = (theme: Theme): CSSObject => ({
     duration: theme.transitions.duration.leavingScreen,
   }),
   overflowX: 'hidden',
-  width: `calc(${theme.spacing(10)} + 1px)`,
+  width: theme.spacing(12),
   border: 0,
+  backgroundColor: 'transparent',
 })
 
 const NavDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -88,6 +92,7 @@ const sidebarOpenedMixin = (theme: Theme): CSSObject => ({
   }),
   overflowX: 'hidden',
   border: 0,
+  backgroundColor: 'transparent',
 })
 
 const sidebarClosedMixin = (theme: Theme): CSSObject => ({
@@ -98,6 +103,7 @@ const sidebarClosedMixin = (theme: Theme): CSSObject => ({
   overflowX: 'hidden',
   width: 0,
   border: 0,
+  backgroundColor: 'transparent',
 })
 
 const SidebarDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
@@ -123,7 +129,7 @@ const SidebarDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
 // ---- Nav content (shared by permanent + temporary drawers) -------------------
 
 const navContent = (open: boolean, onClose: () => void) => (
-  <Stack component="nav" sx={{ flex: 1, mx: 1.5, pb: 3 }}>
+  <Stack component="nav" sx={{ flexGrow: 1, mx: 1.5, pb: 3, height: '100%' }}>
     <NavSection items={navLinksData.home} open={open} onClose={onClose} />
     <NavSection items={navLinksData.navMain} open={open} onClose={onClose} />
     <Divider sx={{ my: 0.5 }} />
@@ -137,12 +143,37 @@ const navContent = (open: boolean, onClose: () => void) => (
 export default function LayoutShell({ children }: { children?: React.ReactNode }) {
   const theme = useTheme()
   const { colorTheme } = useColorTheme()
-  const { drawerOpen, setDrawerOpen } = useNavDrawer()
+  const { drawerOpen, drawerPreferOpen, setDrawerOpen } = useNavDrawer()
   const { sidebarOpen, setSidebarOpen, setPortalTarget, hasBody } = useSidebar()
   const { setToolbarTarget, hasToolbar } = useToolbar()
 
   const isNavMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const isSidebarMobile = useMediaQuery(theme.breakpoints.down('md'))
+
+  // Reconcile the nav drawer to the viewport across the sm breakpoint. Keyed on the
+  // breakpoint boolean so it fires only on the crossing, not on every render —
+  // otherwise it would re-close the temporary overlay the moment the user opens it.
+  //  - Shrinking to xs: close the (content-pushing) drawer so it doesn't conflict
+  //    with the temporary overlay. persist:false keeps the user's saved preference.
+  //  - Expanding to sm+: restore the drawer to the user's persisted preference, so a
+  //    drawer that was auto-closed on shrink re-opens when there's room for it again.
+  React.useEffect(() => {
+    if (isNavMobile) {
+      if (drawerOpen) setDrawerOpen(false, { persist: false })
+    } else if (drawerPreferOpen !== drawerOpen) {
+      setDrawerOpen(drawerPreferOpen, { persist: false })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNavMobile])
+
+  // On resize down below md (where the sidebar becomes a temporary overlay), close an
+  // open sidebar so the permanent and overlay open states don't conflict. Same
+  // crossing-only keying. The sidebar has no persisted preference (always starts
+  // closed), so there is nothing to restore on expand.
+  React.useEffect(() => {
+    if (isSidebarMobile && sidebarOpen) setSidebarOpen(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSidebarMobile])
 
   // Callback ref: publishes the sidebar portal target on attach/detach — robust to
   // MUI's temporary drawer mounting/unmounting its children on open/close.
@@ -159,8 +190,8 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
   const preset = COLOR_THEME_PRESETS[colorTheme]
   const gradient = (surface: string) =>
     `linear-gradient(to bottom, ${alpha(surface, 0.7)} 0%, ${alpha(surface, 0.3)} 70%, ${alpha(surface, 0)} 100%)`
-  const background = gradient(preset.light.surface.containerLowest)
-  const darkBackground = gradient(preset.dark.surface.containerLowest)
+  const background = gradient(preset.light.surface.main)
+  const darkBackground = gradient(preset.dark.surface.main)
 
   const sidebarTarget = <div ref={setSidebarNode} />
   const sidebarDrawerOpen = hasBody && sidebarOpen
@@ -202,14 +233,13 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
             <NavUser />
           </Stack>
         </Toolbar>
-        {/* Second row: the injected page toolbar. The single toolbar target lives
-            here; ToolbarSlot portals page content in. Rendered only when a page has
-            mounted a ToolbarSlot (hasToolbar). */}
+        {/* Second row: the injected page toolbar. The single toolbar target lives here; ToolbarSlot portals page content in. Rendered only when a page has mounted a ToolbarSlot (hasToolbar). */}
         {hasToolbar && (
           <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }}>
             <Box ref={setToolbarNode} sx={{ flexGrow: 1 }} />
           </Toolbar>
         )}
+        <Box sx={{ height: theme.spacing(2) }} /> {/* Box spacer for AppBar mask */}
       </AppBar>
       <PullToRefresh />
 
@@ -218,7 +248,11 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         anchor="left"
         open={drawerOpen}
         slotProps={{ root: { keepMounted: true, disableScrollLock: true } }}
-        sx={{ display: { xs: 'block', sm: 'none' }, '& .MuiDrawer-paper': { width: '100%' } }}
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          '& .MuiDrawer-paper': { width: '100%' },
+          zIndex: theme.zIndex.drawer + 2,
+        }}
         variant="temporary"
         onClose={() => setDrawerOpen(false, { persist: false })}
       >
@@ -230,6 +264,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
             <MenuOpen />
           </IconButton>
         </Toolbar>
+        <Toolbar />
         {navContent(true, () => setDrawerOpen(false, { persist: false }))}
       </MuiDrawer>
       <NavDrawer
@@ -240,30 +275,35 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
       >
         <Toolbar />
         {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
-        {navContent(drawerOpen, () => {})}
+        <Paper sx={{ borderRadius: 3, m: 2, mr: 0, flexGrow: 1 }} variant="filled">
+          {navContent(drawerOpen, () => {})}
+        </Paper>
       </NavDrawer>
 
-      {/* Main column: owns the gutter, minWidth:0 (grid reflow), and top spacers
-          that track the AppBar's row count. */}
+      {/* Main column: owns the gutter, minWidth:0 (grid reflow), and top spacers that track the AppBar's row count. */}
       <Box component="main" sx={{ flexGrow: 1, minWidth: { xs: 0, md: 320 }, px: 2 }}>
         <Toolbar />
         {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
+        <Box sx={{ height: theme.spacing(2) }} /> {/* Box spacer for AppBar mask */}
         {children}
         <Footer />
       </Box>
 
-      {/* Right sidebar: temporary overlay below md, permanent at md+. Exactly one
-          portal target div, rendered inside whichever drawer is active. */}
+      {/* Right sidebar: temporary overlay below md, permanent at md+. Exactly one portal target div, rendered inside whichever drawer is active. */}
       <MuiDrawer
         anchor="right"
         open={sidebarDrawerOpen}
         slotProps={{ root: { disableScrollLock: true } }}
-        sx={{ display: { xs: 'block', md: 'none' }, '& .MuiDrawer-paper': { width: '100%' } }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': { width: '100%' },
+          zIndex: theme.zIndex.drawer + 2,
+        }}
         variant="temporary"
         onClose={() => setSidebarOpen(false)}
       >
         <Toolbar />
-        {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
+        {/* {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />} */}
         <Toolbar>
           <Stack direction="row" sx={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
             <IconButton aria-label="Close details" onClick={() => setSidebarOpen(false)}>
@@ -281,14 +321,20 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
       >
         <Toolbar />
         {hasToolbar && <Toolbar sx={{ minHeight: TOOLBAR_ROW_2_HEIGHT }} />}
-        <Toolbar>
-          <Stack direction="row" sx={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end' }}>
-            <IconButton aria-label="Close details" onClick={() => setSidebarOpen(false)}>
-              <Close />
-            </IconButton>
-          </Stack>
-        </Toolbar>
-        {!isSidebarMobile && sidebarTarget}
+        <Paper sx={{ borderRadius: 3, m: 2, ml: 0, flexGrow: 1 }} variant="filled">
+          <Toolbar>
+            <Stack
+              direction="row"
+              sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
+            >
+              <Typography variant="subtitle2">Details</Typography>
+              <IconButton aria-label="Close details" onClick={() => setSidebarOpen(false)}>
+                <Close />
+              </IconButton>
+            </Stack>
+          </Toolbar>
+          {!isSidebarMobile && sidebarTarget}
+        </Paper>
       </SidebarDrawer>
     </Box>
   )
