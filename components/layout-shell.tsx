@@ -229,7 +229,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
   }
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', overflowX: 'hidden' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', overflowX: 'clip' }}>
       <AppBar
         color="default"
         position="fixed"
