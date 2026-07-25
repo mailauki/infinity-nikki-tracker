@@ -118,7 +118,7 @@ export default function PullToRefresh() {
             aria-label="scroll back to top"
             color="primary"
             size="small"
-            sx={{ position: 'fixed', bottom: 100, right: 30 }}
+            sx={{ position: 'fixed', bottom: 100, right: 30, zIndex: (theme) => theme.zIndex.drawer + 3, }}
             onClick={scrollToTop}
           >
             <KeyboardArrowUp />
