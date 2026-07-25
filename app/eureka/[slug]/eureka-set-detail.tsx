@@ -10,6 +10,7 @@ import SlugToolBar from '@/components/slug-toolbar'
 import PageShell from '@/components/page-shell'
 import SidebarBody from '@/components/sidebar/sidebar-body'
 import EurekaSetDetailCard from './eureka-set-detail-card'
+import EurekaColorBar from './eureka-color-bar'
 import EurekaVariantColorFilter from './eureka-variant-color-filter'
 
 export default function EurekaSetDetail({
@@ -55,6 +56,14 @@ export default function EurekaSetDetail({
   return (
     <>
       <SlugToolBar isAdmin={isAdmin} />
+      <EurekaColorBar
+        colors={colors}
+        isLoggedIn={isLoggedIn}
+        obtained={obtained}
+        selectedColor={selectedColor}
+        total={total}
+        onToggleColor={toggleColor}
+      />
       <SidebarBody>
         <EurekaSetDetailCard
           colorImage={colorImage}
@@ -67,11 +76,9 @@ export default function EurekaSetDetail({
 
       <PageShell maxWidth="wide">
         <EurekaVariantColorFilter
-          colors={colors}
           eureka_variants={eureka_variants}
           isLoggedIn={isLoggedIn}
           selectedColor={selectedColor}
-          onToggleColor={toggleColor}
         />
       </PageShell>
     </>
