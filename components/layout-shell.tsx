@@ -28,7 +28,7 @@ import { navLinksData } from '@/lib/nav-links'
 import { NAV_DRAWER_WIDTH } from '@/lib/layout-constants'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from './color-theme-context'
-import { useNavDrawer, useSidebar, useToolbar } from './navbar/navbar-toolbar-context'
+import { useNavDrawer, useSidebar, useStickyBar, useToolbar } from './navbar/navbar-toolbar-context'
 
 const SIDEBAR_WIDTH = 400
 
@@ -154,6 +154,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
   const { drawerOpen, drawerPreferOpen, setDrawerOpen } = useNavDrawer()
   const { sidebarOpen, sidebarPreferOpen, setSidebarOpen, setPortalTarget, hasBody } = useSidebar()
   const { setToolbarTarget, hasToolbar } = useToolbar()
+  const { setStickyBarTarget, hasStickyBar } = useStickyBar()
 
   const isNavMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const isSidebarMobile = useMediaQuery(theme.breakpoints.down('md'))
@@ -200,6 +201,10 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
     (node: HTMLDivElement | null) => setToolbarTarget(node),
     [setToolbarTarget]
   )
+  const setStickyBarNode = React.useCallback(
+    (node: HTMLDivElement | null) => setStickyBarTarget(node),
+    [setStickyBarTarget]
+  )
 
   // Gradient/blur/mask AppBar styling (moved from the deleted NavBarToolbar).
   const preset = COLOR_THEME_PRESETS[colorTheme]
@@ -210,6 +215,18 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
 
   const sidebarTarget = <div ref={setSidebarNode} />
   const sidebarDrawerOpen = hasBody && sidebarOpen
+
+  // The fixed AppBar's on-screen height: row 1 (responsive 56/48/64) + a 16px mask
+  // spacer, plus row 2 (another 56/48/64) only when a page injected a ToolbarSlot.
+  // The sticky bar pins flush beneath it, so its `top` mirrors that composition across
+  // the same breakpoints the toolbar height uses.
+  const MASK_SPACER = 16
+  const row2 = hasToolbar ? 56 : 0
+  const stickyTop = {
+    top: 56 + MASK_SPACER + row2,
+    '@media (orientation: landscape)': { top: 48 + MASK_SPACER + (hasToolbar ? 48 : 0) },
+    '@media (min-width:600px)': { top: 64 + MASK_SPACER + (hasToolbar ? 64 : 0) },
+  }
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', overflowX: 'hidden' }}>
@@ -322,6 +339,22 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         <DrawerHeader />
         {hasToolbar && <Toolbar />}
         <Box sx={{ height: theme.spacing(2) }} /> {/* Box spacer for AppBar mask */}
+        {hasStickyBar && (
+          <Box
+            sx={{
+              position: 'sticky',
+              top: stickyTop,
+              zIndex: (t) => t.zIndex.appBar - 1,
+              bgcolor: 'background.paper',
+              borderBottom: 1,
+              borderColor: 'divider',
+              mx: -2,
+              px: 2,
+            }}
+          >
+            <Box ref={setStickyBarNode} />
+          </Box>
+        )}
         {children}
         <Footer />
       </Stack>
