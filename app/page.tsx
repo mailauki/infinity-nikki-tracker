@@ -6,7 +6,6 @@ import { Hero } from '../components/hero'
 import { HeroCTAs } from '@/components/hero-ctas'
 import { getUserID } from '@/hooks/user'
 import HelpActions from './help/help-actions'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
 import PageShell from '@/components/page-shell'
 
 export default function HomePage() {
@@ -16,12 +15,10 @@ export default function HomePage() {
 
   return (
     <PageShell>
-      <NavBarToolbar>
-        <Suspense>
-          <HomeCTAs />
-        </Suspense>
-      </NavBarToolbar>
       <Hero />
+      <Suspense>
+        <HomeCTAs />
+      </Suspense>
       <QuickAccess />
       <HelpActions />
     </PageShell>

@@ -7,6 +7,7 @@ import PageShell from '@/components/page-shell'
 import SidebarBody from '@/components/sidebar/sidebar-body'
 import OutfitEvolutionVariants from './outfit-evolution-variants'
 import OutfitSetDetailCard from './outfit-set-detail-card'
+import OutfitToggleBar from './outfit-toggle-bar'
 import {
   resolveOutfitImage,
   useOutfitImageMode,
@@ -88,6 +89,15 @@ export default function OutfitSetDetail({
   return (
     <>
       <SlugToolBar isAdmin={isAdmin} />
+      <OutfitToggleBar
+        isLoggedIn={isLoggedIn}
+        isStandalone={isStandalone}
+        obtained={obtained}
+        outfitSet={outfitSet}
+        selected={selected}
+        total={total}
+        onSelect={handleSelectEvolution}
+      />
       {!isStandalone && (
         <SidebarBody>
           <OutfitSetDetailCard
@@ -112,7 +122,6 @@ export default function OutfitSetDetail({
           isStandalone={isStandalone}
           outfitSet={outfitSet}
           selected={selected && evolutions.length > 0 ? selected : null}
-          onSelect={handleSelectEvolution}
         />
       </PageShell>
     </>

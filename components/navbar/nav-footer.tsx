@@ -11,7 +11,7 @@ export default function Footer() {
       position="relative"
       sx={{
         border: 0,
-        backgroundColor: 'surface.containerLowest',
+        backgroundColor: 'transparent',
         py: 2,
         my: 3,
         flexGrow: 1,

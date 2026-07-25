@@ -2,7 +2,7 @@
 
 import { IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { Compare } from '@mui/icons-material'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 import { SortButton } from '@/components/navbar/appbar-actions'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 
@@ -15,7 +15,7 @@ export default function SeasonsToolBar({ count }: { count: number }) {
   const { mode, cycleMode } = useOutfitImageMode()
 
   return (
-    <NavBarToolbar>
+    <ToolbarSlot>
       <Stack
         direction="row"
         sx={{
@@ -38,6 +38,6 @@ export default function SeasonsToolBar({ count }: { count: number }) {
           <SortButton />
         </Stack>
       </Stack>
-    </NavBarToolbar>
+    </ToolbarSlot>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 import { Stack } from '@mui/material'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
@@ -30,21 +30,21 @@ export default function AdminToolBar() {
   if (isFormRoute) return null
 
   return (
-    <NavBarToolbar>
-      <Stack
+    <ToolbarSlot>
+      {/* <Stack
         direction="row"
         sx={{
           flex: 1,
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
-      >
-        <AdminNavMenu />
-        <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}>
-          <AdminVariantColumnsToggle />
-          {pathname !== '/admin' && <AdminViewToggle />}
-        </Stack>
-      </Stack>
-    </NavBarToolbar>
+      > */}
+      <AdminNavMenu />
+      {/* <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}> */}
+      <AdminVariantColumnsToggle />
+      {pathname !== '/admin' && <AdminViewToggle />}
+      {/* </Stack> */}
+      {/* </Stack> */}
+    </ToolbarSlot>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { IconButton, Stack, Tooltip } from '@mui/material'
-import NavBarToolbar from '@/components/navbar/navbar-toolbar'
+import ToolbarSlot from '@/components/toolbar-slot'
 import { useParams, usePathname } from 'next/navigation'
 import { ChevronLeft, Compare, Edit, InfoOutlined } from '@mui/icons-material'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
@@ -37,7 +37,7 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
       : pathname.split('/').slice(1, 3).join('/')
 
   return (
-    <NavBarToolbar>
+    <ToolbarSlot>
       <Stack
         direction="row"
         sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
@@ -84,6 +84,6 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
           )}
         </Stack>
       </Stack>
-    </NavBarToolbar>
+    </ToolbarSlot>
   )
 }

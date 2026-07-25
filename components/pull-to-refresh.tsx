@@ -4,7 +4,7 @@ import * as React from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Box, CircularProgress, Fab, Slide, Tooltip } from '@mui/material'
 import { KeyboardArrowUp } from '@mui/icons-material'
-import { navToolbarStackTop } from '@/lib/layout-constants'
+import { shellToolbarTop } from '@/lib/layout-constants'
 
 const PULL_THRESHOLD = 80
 
@@ -88,9 +88,9 @@ export default function PullToRefresh() {
         <Box
           sx={(theme) => ({
             position: 'fixed',
-            // Anchor below the sticky NavBarToolbar's full stack height, matched
-            // to its responsive Toolbar breakpoints via navToolbarStackTop.
-            ...navToolbarStackTop,
+            // Anchor just below the shell AppBar's first row, matched to its
+            // responsive Toolbar breakpoints via shellToolbarTop.
+            ...shellToolbarTop,
             left: 0,
             right: 0,
             zIndex: theme.zIndex.appBar + 1,
@@ -118,7 +118,7 @@ export default function PullToRefresh() {
             aria-label="scroll back to top"
             color="primary"
             size="small"
-            sx={{ position: 'fixed', bottom: 100, right: 30 }}
+            sx={{ position: 'fixed', bottom: 100, right: 30, zIndex: (theme) => theme.zIndex.drawer + 3, }}
             onClick={scrollToTop}
           >
             <KeyboardArrowUp />

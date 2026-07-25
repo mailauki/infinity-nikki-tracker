@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { Metadata } from 'next'
 
 import SetsContent from './sets-content'
-import TrialsToolBar from '@/app/eureka/trials/trials-tool-bar'
+import TrialsToolBar from '@/app/eureka/trials/trials-toolbar'
 import PageShell from '@/components/page-shell'
 
 export const metadata: Metadata = {

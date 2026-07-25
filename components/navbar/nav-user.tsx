@@ -82,10 +82,6 @@ export function NavUser() {
       <Box
         sx={{
           flexGrow: 0,
-          position: 'fixed',
-          top: 24,
-          right: 18,
-          zIndex: (theme) => theme.zIndex.appBar + 2,
         }}
       >
         <Skeleton height={40} variant="circular" width={40} />
@@ -95,14 +91,7 @@ export function NavUser() {
 
   if (!userId) {
     return (
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 24,
-          right: 18,
-          zIndex: (theme) => theme.zIndex.appBar + 2,
-        }}
-      >
+      <Box>
         <Button color="inherit" href="/login">
           Login
         </Button>
@@ -114,10 +103,6 @@ export function NavUser() {
     <Box
       sx={{
         flexGrow: 0,
-        position: 'fixed',
-        top: 24,
-        right: 18,
-        zIndex: (theme) => theme.zIndex.appBar + 2,
       }}
     >
       <Tooltip placement="bottom-end" title="Open menu">

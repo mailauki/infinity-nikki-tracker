@@ -43,8 +43,8 @@ export default function FilterMenu() {
   const pathname = usePathname()
   const { sidebarOpen, setSidebarOpen } = useSidebar()
 
-  // Close used by the Apply / Close buttons inside the panel body. The sidebar's
-  // open state is intentionally not persisted — it always starts closed on load.
+  // Close used by the Apply / Close buttons inside the panel body. This is a user
+  // action, so it persists the sidebar's closed state (default persist behavior).
   const closeFilter = () => {
     setSidebarOpen(false)
   }
