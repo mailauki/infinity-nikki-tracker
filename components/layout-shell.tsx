@@ -144,7 +144,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
   const theme = useTheme()
   const { colorTheme } = useColorTheme()
   const { drawerOpen, drawerPreferOpen, setDrawerOpen } = useNavDrawer()
-  const { sidebarOpen, setSidebarOpen, setPortalTarget, hasBody } = useSidebar()
+  const { sidebarOpen, sidebarPreferOpen, setSidebarOpen, setPortalTarget, hasBody } = useSidebar()
   const { setToolbarTarget, hasToolbar } = useToolbar()
 
   const isNavMobile = useMediaQuery(theme.breakpoints.down('sm'))
@@ -166,12 +166,19 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNavMobile])
 
-  // On resize down below md (where the sidebar becomes a temporary overlay), close an
-  // open sidebar so the permanent and overlay open states don't conflict. Same
-  // crossing-only keying. The sidebar has no persisted preference (always starts
-  // closed), so there is nothing to restore on expand.
+  // Reconcile the sidebar to the viewport across the md breakpoint, mirroring the nav
+  // drawer. Crossing-only keying so it never re-closes the overlay the user just opened.
+  //  - Shrinking below md: close the (content-pushing) sidebar so it doesn't conflict
+  //    with the temporary overlay. persist:false keeps the user's saved preference.
+  //  - Expanding to md+: restore the sidebar to the user's persisted preference — but
+  //    only when a page has mounted a SidebarBody (hasBody), since the sidebar can't
+  //    open without content to portal into.
   React.useEffect(() => {
-    if (isSidebarMobile && sidebarOpen) setSidebarOpen(false)
+    if (isSidebarMobile) {
+      if (sidebarOpen) setSidebarOpen(false, { persist: false })
+    } else if (hasBody && sidebarPreferOpen !== sidebarOpen) {
+      setSidebarOpen(sidebarPreferOpen, { persist: false })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSidebarMobile])
 

@@ -15,7 +15,7 @@ import { cookies } from 'next/headers'
 import type { ColorTheme } from '@/lib/types/eureka'
 import { getUserID } from '@/hooks/user'
 import { getPreferences } from '@/hooks/data/preferences'
-import { NAV_DRAWER_STORAGE_KEY } from '@/lib/layout-constants'
+import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import LayoutShell from '@/components/layout-shell'
 
 const roboto = Roboto({
@@ -77,15 +77,19 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
     if (saved && (VALID_THEMES as string[]).includes(saved)) colorTheme = saved as ColorTheme
   }
 
-  // Seed the drawer's open state from the persisted cookie so the content-pushing
-  // desktop drawer renders at its final width on first paint (avoids a CLS shift).
+  // Seed each drawer's open state from its persisted cookie so the content-pushing
+  // drawers render at their final width on first paint (avoids a CLS shift).
   const cookieStore = await cookies()
   const initialDrawerOpen = cookieStore.get(NAV_DRAWER_STORAGE_KEY)?.value === 'true'
+  const initialSidebarOpen = cookieStore.get(SIDEBAR_STORAGE_KEY)?.value === 'true'
 
   return (
     <ThemeClientProvider colorTheme={colorTheme}>
       <CssBaseline />
-      <DrawerStateProvider initialDrawerOpen={initialDrawerOpen}>
+      <DrawerStateProvider
+        initialDrawerOpen={initialDrawerOpen}
+        initialSidebarOpen={initialSidebarOpen}
+      >
         <SnackbarAlertProvider>
           <LayoutShell>{children}</LayoutShell>
           <Analytics />

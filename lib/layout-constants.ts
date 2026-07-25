@@ -1,13 +1,15 @@
 // Left nav drawer expanded width.
 export const NAV_DRAWER_WIDTH = 240
 
-// Cookie key for the persisted nav drawer open state. A cookie (not localStorage)
-// so the server can read it during the initial render and seed the drawer's width
+// Cookie keys for the persisted drawer open states. Cookies (not localStorage) so
+// the server can read them during the initial render and seed each drawer's width
 // correctly — localStorage is only readable after hydration, which caused a layout
-// shift (CLS) as the content-pushing desktop drawer widened post-mount. The
-// filter/composer sidebar deliberately does not persist its open state (it always
-// starts closed), so only the nav drawer has a key here.
+// shift (CLS) as a content-pushing drawer widened post-mount. Both the left nav
+// drawer and the right sidebar persist their open state across reloads; user toggles
+// write the cookie, while ephemeral breakpoint reconciliation (auto-close on shrink /
+// restore on expand) does not.
 export const NAV_DRAWER_STORAGE_KEY = 'nav-drawer-open'
+export const SIDEBAR_STORAGE_KEY = 'sidebar-open'
 
 // Responsive `top` offset (in px) equal to a single Toolbar's height — the shell
 // AppBar's first row. MUI's Toolbar minHeight is responsive (56 default, 48

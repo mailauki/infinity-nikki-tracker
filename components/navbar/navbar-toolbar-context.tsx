@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { NAV_DRAWER_STORAGE_KEY } from '@/lib/layout-constants'
+import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 
 type NavDrawerContextType = {
   drawerOpen: boolean
@@ -17,7 +17,14 @@ type NavDrawerContextType = {
 
 type SidebarContextType = {
   sidebarOpen: boolean
-  setSidebarOpen: (open: boolean) => void
+  // The user's persisted sidebar open preference (from the cookie). Like the nav
+  // drawer's, it tracks only persisting writes, so it survives an ephemeral auto-close
+  // on shrink and lets the shell restore the sidebar when the viewport expands.
+  sidebarPreferOpen: boolean
+  // persist defaults to true: user toggles write the cookie. The shell's breakpoint
+  // reconciliation passes { persist: false } to update state without touching the
+  // saved preference.
+  setSidebarOpen: (open: boolean, opts?: { persist?: boolean }) => void
   portalTarget: HTMLElement | null
   setPortalTarget: (el: HTMLElement | null) => void
   hasBody: boolean
@@ -40,15 +47,19 @@ export const ToolbarContext = React.createContext<ToolbarContextType | null>(nul
 export function DrawerStateProvider({
   children,
   initialDrawerOpen = false,
+  initialSidebarOpen = false,
 }: {
   children: React.ReactNode
   initialDrawerOpen?: boolean
+  initialSidebarOpen?: boolean
 }) {
   const [drawerOpen, setDrawerOpenState] = React.useState(initialDrawerOpen)
   // The persisted preference, seeded from the same cookie-derived initial value.
   // Only persisting writes update it, so an auto-close (persist:false) doesn't erase it.
   const [drawerPreferOpen, setDrawerPreferOpen] = React.useState(initialDrawerOpen)
-  const [sidebarOpen, setSidebarOpen] = React.useState(false)
+  const [sidebarOpen, setSidebarOpenState] = React.useState(initialSidebarOpen)
+  // The persisted sidebar preference, mirroring drawerPreferOpen.
+  const [sidebarPreferOpen, setSidebarPreferOpen] = React.useState(initialSidebarOpen)
   const [portalTarget, setPortalTarget] = React.useState<HTMLElement | null>(null)
   const [bodyCount, setBodyCount] = React.useState(0)
   const registerBody = React.useCallback(() => setBodyCount((n) => n + 1), [])
@@ -72,11 +83,22 @@ export function DrawerStateProvider({
     }
   }, [])
 
+  // Mirrors setDrawerOpen: user toggles persist (default), the shell's breakpoint
+  // reconciliation passes { persist: false } to leave the saved preference untouched.
+  const setSidebarOpen = React.useCallback((open: boolean, opts?: { persist?: boolean }) => {
+    setSidebarOpenState(open)
+    if (opts?.persist ?? true) {
+      setSidebarPreferOpen(open)
+      document.cookie = `${SIDEBAR_STORAGE_KEY}=${open}; path=/; max-age=31536000; samesite=lax`
+    }
+  }, [])
+
   return (
     <NavDrawerContext.Provider value={{ drawerOpen, drawerPreferOpen, setDrawerOpen }}>
       <SidebarContext.Provider
         value={{
           sidebarOpen,
+          sidebarPreferOpen,
           setSidebarOpen,
           portalTarget,
           setPortalTarget,
