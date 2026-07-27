@@ -418,7 +418,7 @@ export const baseThemeOptions: ThemeOptions = {
                 '&.Mui-selected:hover': {
                   borderRadius: '12px',
                   backgroundColor: alpha(theme.palette.secondary.main, 0.84),
-                  color: theme.palette.primary.contrastText,
+                  color: theme.palette.secondary.contrastText,
                 },
                 '&.Mui-disabled': {
                   backgroundColor: alpha(theme.palette.secondary.main, 0.12),
@@ -455,6 +455,34 @@ export const baseThemeOptions: ThemeOptions = {
         },
       },
     },
+		MuiChip: {
+      styleOverrides: {
+        root: {
+          variants: [
+            {
+              props: { variant: 'filled', color: 'default' },
+              style: ({ theme }) => ({
+								backgroundColor: alpha(theme.palette.secondary.main, 0.12),
+							})
+						},
+            {
+              props: { variant: 'outlined', color: 'default' },
+              style: ({ theme }) => ({
+								backgroundColor: alpha(theme.palette.secondary.main, 0.04),
+								borderColor: alpha(theme.palette.secondary.main, 0.44),
+							})
+						},
+            {
+              props: { variant: 'outlined', color: 'success' },
+              style: ({ theme }) => ({
+								backgroundColor: alpha(theme.palette.success.main, 0.04),
+								borderColor: alpha(theme.palette.success.main, 0.44),
+							})
+						}
+					]
+				}
+			}
+		},
   },
 }
 
