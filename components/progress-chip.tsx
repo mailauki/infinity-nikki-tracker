@@ -25,7 +25,6 @@ export default function ProgressChip({
         color={isComplete ? 'success' : 'default'}
         label={isComplete ? <Check /> : `${obtained} / ${total}`}
         size="small"
-        sx={{ bgcolor: 'surface.containerHover' }}
         variant="outlined"
       />
     )
@@ -37,7 +36,6 @@ export default function ProgressChip({
         color={isComplete ? 'success' : 'default'}
         label={isComplete ? <Check /> : <MoreHoriz />}
         size="small"
-        sx={{ bgcolor: isComplete ? 'success' : 'surface.container' }}
       />
     )
 
@@ -49,7 +47,6 @@ export default function ProgressChip({
       sx={{
         fontWeight: 'bold',
         textTransform: 'uppercase',
-        bgcolor: isComplete ? 'success' : 'surface.container',
       }}
     />
   )

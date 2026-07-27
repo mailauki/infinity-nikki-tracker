@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react'
 import Link from 'next/link'
-import { CardActionArea, Stack, Typography } from '@mui/material'
+import { CardActionArea, Stack, Tooltip, Typography } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
 import RarityStars from '@/components/rarity-stars'
 import CardShell, { CollectionToggle } from '@/components/card-shell'
@@ -59,9 +59,9 @@ export default function SetCard({
           spacing={1}
           sx={{ px: 1, py: 2, maxWidth: isLoggedIn ? 'calc(100% - 40px)' : '100%' }}
         >
-          <Typography noWrap variant="overline">
-            {title}
-          </Typography>
+					<Typography noWrap variant="overline">
+						{title}
+					</Typography>
           <RarityStars rarity={rarity} />
         </Stack>
         <CollectionToggle
