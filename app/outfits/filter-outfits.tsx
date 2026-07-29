@@ -49,6 +49,7 @@ export default function FilterOutfits() {
     isLoading,
     isError,
     isObtainedError,
+    isFiltering,
     groupBySet,
     hideEvolutions,
     hideGlowups,
@@ -280,7 +281,15 @@ export default function FilterOutfits() {
       )}
 
       {filteredSets.length > 0 && density === 'standard' && (
-        <CardGrid columns="outfit" gap={2}>
+        <CardGrid
+          columns="outfit"
+          gap={2}
+          sx={{
+            opacity: isFiltering ? 0.5 : 1,
+            transition: 'opacity 150ms ease',
+            pointerEvents: isFiltering ? 'none' : 'auto',
+          }}
+        >
           {filteredSets.flatMap((set) => {
             const baseSlug = set.slug
             // Render the base set plus each evolution as its own card.
@@ -326,7 +335,15 @@ export default function FilterOutfits() {
       )}
 
       {filteredSets.length > 0 && density === 'compact' && (
-        <CardGrid columns="outfit" gap={2}>
+        <CardGrid
+          columns="outfit"
+          gap={2}
+          sx={{
+            opacity: isFiltering ? 0.5 : 1,
+            transition: 'opacity 150ms ease',
+            pointerEvents: isFiltering ? 'none' : 'auto',
+          }}
+        >
           {groupBySet ? (
             <>
               {filteredSets.map((set) => (

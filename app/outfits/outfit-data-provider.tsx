@@ -54,6 +54,7 @@ export default function OutfitDataProvider({
   const [filters, setFilters] = useState<OutfitFilterState>(DEFAULT_OUTFIT_FILTERS)
   const [prefsLoaded, setPrefsLoaded] = useState(false)
   const [, startTransition] = useTransition()
+  const [isFiltering, startFilterTransition] = useTransition()
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
@@ -130,7 +131,12 @@ export default function OutfitDataProvider({
   }, [hideGlowups, isLoggedIn])
 
   const handleFiltersChange = useCallback((updates: Partial<OutfitFilterState>) => {
-    setFilters((prev) => ({ ...prev, ...updates }))
+    // Mark the filter re-render interruptible: the control stays responsive and
+    // React abandons in-flight work when another filter arrives. Without this the
+    // ~6k-card render blocks the main thread and swallows the next click.
+    startFilterTransition(() => {
+      setFilters((prev) => ({ ...prev, ...updates }))
+    })
   }, [])
 
   const handleClearFilters = useCallback(() => {
@@ -304,6 +310,7 @@ export default function OutfitDataProvider({
       isLoading,
       isError,
       isObtainedError,
+      isFiltering,
       userId,
       groupBySet,
       hideEvolutions,
@@ -328,6 +335,7 @@ export default function OutfitDataProvider({
       isLoading,
       isError,
       isObtainedError,
+      isFiltering,
       userId,
       groupBySet,
       hideEvolutions,
