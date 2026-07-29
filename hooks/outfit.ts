@@ -157,11 +157,12 @@ export function updateOutfitSet({
   outfitSet: OutfitSet
   obtainedOutfit: ObtainedOutfit[] | null
 }): OutfitSet {
+  const obtainedSlugs = new Set((obtainedOutfit ?? []).map((o) => o.outfit_variant))
   return {
     ...outfitSet,
     outfit_variants: outfitSet.outfit_variants.map((variant) => ({
       ...variant,
-      obtained: !!obtainedOutfit?.find((o) => o.outfit_variant === variant.slug),
+      obtained: obtainedSlugs.has(variant.slug),
     })) as OutfitVariant[],
   } as OutfitSet
 }
