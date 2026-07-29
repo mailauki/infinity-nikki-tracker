@@ -414,6 +414,108 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 ---
 
+### Task 2c: Make filter changes non-blocking
+
+**Added 2026-07-29** after field testing during the Step 2a.1 snapshot capture: changing a filter froze the whole page, and a second filter could not be applied until the full grid had re-rendered. Worst in compact density.
+
+This is a different failure from Tasks 1/2a/2b. Those remove _wasted_ re-renders. This one is a _blocking_ re-render: `handleFiltersChange` sets state urgently, so React cannot interrupt the ~6,000-card render it triggers, and the main thread stays busy — dropping the next click. Memoization cannot fix it; only marking the update interruptible can.
+
+**Files:**
+
+- Modify: `app/outfits/outfit-data-provider.tsx:132-134` (`handleFiltersChange`), context value + deps
+- Modify: `components/outfits/outfit-context.tsx:18-48` (add `isFiltering` to the interface), `:60-83` (default)
+- Modify: `app/outfits/filter-outfits.tsx` (consume `isFiltering`, dim the grid)
+
+**Interfaces:**
+
+- Consumes: the memoized context value from Task 1 and the memoized pipeline from Task 2a.
+- Produces: a new context field `isFiltering: boolean`. Task 3 does not depend on it, but must not drop it when editing the same files.
+
+- [ ] **Step 2c.1: Add a dedicated transition for filter updates**
+
+In `app/outfits/outfit-data-provider.tsx`, do **not** reuse the existing `useTransition` on line 56. That one is `const [, startTransition]` — it discards `isPending` and is shared with preference-persistence writes, so reusing it would dim the grid whenever a preference saves. Add a second, dedicated one:
+
+```ts
+const [isFiltering, startFilterTransition] = useTransition()
+```
+
+Then change `handleFiltersChange` (lines 132-134) to:
+
+```ts
+const handleFiltersChange = useCallback((updates: Partial<OutfitFilterState>) => {
+  // Mark the filter re-render interruptible: the control stays responsive and
+  // React abandons in-flight work when another filter arrives. Without this the
+  // ~6k-card render blocks the main thread and swallows the next click.
+  startFilterTransition(() => {
+    setFilters((prev) => ({ ...prev, ...updates }))
+  })
+}, [])
+```
+
+`startFilterTransition` is stable, so the empty dep array stays correct.
+
+- [ ] **Step 2c.2: Expose `isFiltering` through the context**
+
+In `components/outfits/outfit-context.tsx`, add to the `OutfitDataContextValue` interface (after `isObtainedError` on line 28):
+
+```ts
+isFiltering: boolean
+```
+
+and to the `createContext` default object (after `isObtainedError: false` on line 70):
+
+```ts
+isFiltering: false,
+```
+
+Then in `outfit-data-provider.tsx`, add `isFiltering,` to the `contextValue` object and `isFiltering,` to its dependency array. Both must be updated together — a value added to the object but not the deps is a stale-context bug.
+
+- [ ] **Step 2c.3: Dim the grid while filtering**
+
+In `app/outfits/filter-outfits.tsx`, pull `isFiltering` from `useOutfitData()`.
+
+Both `CardGrid` blocks (the `density === 'standard'` and `density === 'compact'` branches) already accept an `sx` prop. Apply the pending state to each:
+
+```tsx
+sx={{
+  opacity: isFiltering ? 0.5 : 1,
+  transition: 'opacity 150ms ease',
+  pointerEvents: isFiltering ? 'none' : 'auto',
+}}
+```
+
+`pointerEvents: 'none'` while pending prevents a click landing on a card that is about to be replaced. Do not add a spinner — the dim plus the already-responsive filter control is the feedback.
+
+- [ ] **Step 2c.4: Verify types and lint**
+
+Run: `yarn tsc --noEmit && yarn lint`
+Expected: no errors. Adding a required field to `OutfitDataContextValue` makes TypeScript flag any other object literal that must supply it — if a second construction site exists, fix it rather than making the field optional.
+
+- [ ] **Step 2c.5: Manual responsiveness check (human)**
+
+In compact density with no filters (the ~6,000-card worst case):
+
+- Click a filter — the control must respond immediately, not after the grid settles
+- Click a second filter while the grid is still updating — it must register, not be swallowed
+- The grid dims while pending and returns to full opacity when done
+- Rapidly toggling several filters ends on the correct final result, not an intermediate one
+
+- [ ] **Step 2c.6: Commit**
+
+```bash
+git add app/outfits/outfit-data-provider.tsx components/outfits/outfit-context.tsx app/outfits/filter-outfits.tsx
+git commit -m "perf(outfits): make filter changes non-blocking
+
+Filter updates were urgent state changes, so React could not interrupt
+the ~6k-card re-render they triggered -- the main thread blocked and the
+next click was dropped. Filter updates now run in a dedicated transition,
+with isFiltering dimming the grid while the render is in flight.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
 ### Task 3: Cards — make `React.memo` hold
 
 **Files:**
