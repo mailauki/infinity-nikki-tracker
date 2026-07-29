@@ -287,7 +287,6 @@ export default function FilterOutfits() {
           sx={{
             opacity: isFiltering ? 0.5 : 1,
             transition: 'opacity 150ms ease',
-            pointerEvents: isFiltering ? 'none' : 'auto',
           }}
         >
           {filteredSets.flatMap((set) => {
@@ -341,7 +340,6 @@ export default function FilterOutfits() {
           sx={{
             opacity: isFiltering ? 0.5 : 1,
             transition: 'opacity 150ms ease',
-            pointerEvents: isFiltering ? 'none' : 'auto',
           }}
         >
           {groupBySet ? (
