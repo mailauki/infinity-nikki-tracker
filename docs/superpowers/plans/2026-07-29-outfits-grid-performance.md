@@ -325,6 +325,152 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 ---
 
+### Task 2d: Take preference persistence out of the interaction path
+
+**Added 2026-07-29 after Task 2c failed to help.** Diagnosis correction: every filter change fires a `updateOutfitFilters` Server Action — a network POST to Supabase — at `outfit-data-provider.tsx:225-241`. Server Actions are serialized, so rapid filter changes queue sequential round-trips. Worse, line 227 wraps the write in `startTransition`, the same primitive Task 2c used, so `isFiltering` tracked the **network write** rather than the render. Task 2c therefore dimmed the grid and blocked pointer events for the duration of a database write.
+
+This task removes persistence from the interaction path entirely.
+
+**Files:**
+
+- Modify: `app/outfits/outfit-data-provider.tsx:225-243` (the persistence effect)
+
+**Interfaces:**
+
+- Consumes: `filters` state and the `prefsLoaded` guard, both already present.
+- Produces: no API change. `isFiltering` keeps its name but now reflects only render work, because the write no longer runs inside a transition the UI observes.
+
+- [ ] **Step 2d.1: Debounce the write and remove it from the transition**
+
+Replace the persistence effect at lines 225-243 with a debounced, fire-and-forget version. Two changes matter: the `setTimeout` collapses rapid filter changes into one write, and dropping `startTransition` means no UI state tracks the network call.
+
+```ts
+useEffect(() => {
+  if (!isLoggedIn || !prefsLoaded) return
+  // Persist filter choices as fire-and-forget: the UI must never wait on this
+  // write. Server Actions are serialized, so an un-debounced write per filter
+  // click queues sequential round-trips and stalls the interaction. Debouncing
+  // collapses a burst of filter changes into a single write, and staying out of
+  // startTransition keeps isFiltering tracking render work only.
+  const id = setTimeout(() => {
+    void updateOutfitFilters({
+      outfit_set_filter: filters.selectedOutfitSet,
+      outfit_category_filter: filters.selectedOutfitCategory.length
+        ? filters.selectedOutfitCategory.join(',')
+        : null,
+      // selectedEvolution can be 0 (glow-up), so persist on null — not falsiness.
+      outfit_evolution_filter:
+        filters.selectedEvolution !== null ? String(filters.selectedEvolution) : null,
+      outfit_rarity_filter: filters.selectedRarity ? String(filters.selectedRarity) : null,
+      outfit_obtained_filter: filters.selectedObtainedFilter,
+      outfit_style_filter: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
+      outfit_label_filter: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
+    }).catch((err) => {
+      // A failed preference write must not disrupt filtering — the user's
+      // filters still work, they just may not persist across a reload.
+      console.error('Failed to persist outfit filters:', err)
+    })
+  }, PREFERENCE_DEBOUNCE_MS)
+  return () => clearTimeout(id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [filters])
+```
+
+Add the constant near the top of the file, above the component:
+
+```ts
+// Filter changes arrive in bursts as the user adjusts several controls; collapse
+// them into one preference write instead of one write per click.
+const PREFERENCE_DEBOUNCE_MS = 500
+```
+
+Keep the existing `// eslint-disable-next-line react-hooks/exhaustive-deps` comment on the `[filters]` dep array — it is pre-existing and intentional, since including every handler would refire the effect spuriously.
+
+Note the cleanup function: `clearTimeout` on unmount or on the next filter change is what makes the debounce work. Without it every filter change still writes, just later.
+
+- [ ] **Step 2d.2: Verify types and lint**
+
+Run: `yarn tsc --noEmit && yarn lint`
+Expected: no errors. `updateOutfitFilters` returns a promise; the `void` operator plus the `.catch()` satisfies lint rules about unhandled promises.
+
+- [ ] **Step 2d.3: Manual check (human)**
+
+- Change a filter — the grid updates without waiting on a network call
+- Change five filters quickly, wait ~1s, reload the page — the **last** filter state is restored, proving the debounced write landed
+- With the network tab open, confirm a burst of filter clicks produces **one** preference request, not one per click
+
+- [ ] **Step 2d.4: Commit**
+
+```bash
+git add app/outfits/outfit-data-provider.tsx
+git commit -m "perf(outfits): debounce filter persistence out of the render path
+
+Every filter change fired a serialized Server Action POST, and it ran
+inside startTransition -- so the pending state tracked a network write
+rather than the render. The write is now debounced fire-and-forget, so
+filtering never waits on persistence.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 2e: Stop the pending state from swallowing clicks
+
+**Added 2026-07-29.** Task 2c added `pointerEvents: 'none'` to the grid while `isFiltering` was true. Because the transition tracked a network write (see Task 2d), that blocked interaction for the duration of a database round-trip — recreating the swallowed-click problem Task 2c was meant to fix. With persistence moved out of the path by Task 2d, the dim is useful feedback but the pointer block is not worth its cost.
+
+**Files:**
+
+- Modify: `app/outfits/filter-outfits.tsx` (both `CardGrid` blocks)
+
+**Interfaces:**
+
+- Consumes: `isFiltering` from context (added by Task 2c).
+- Produces: no API change.
+
+- [ ] **Step 2e.1: Remove the pointerEvents block from both grids**
+
+In `app/outfits/filter-outfits.tsx` there are two `CardGrid` blocks (the `density === 'standard'` branch and the `density === 'compact'` branch). Each currently has:
+
+```tsx
+sx={{
+  opacity: isFiltering ? 0.5 : 1,
+  transition: 'opacity 150ms ease',
+  pointerEvents: isFiltering ? 'none' : 'auto',
+}}
+```
+
+Delete the `pointerEvents` line from **both**, leaving:
+
+```tsx
+sx={{
+  opacity: isFiltering ? 0.5 : 1,
+  transition: 'opacity 150ms ease',
+}}
+```
+
+Keep the opacity and transition — the dim is the feedback. Do not remove `isFiltering` from the component or the context; it is still used.
+
+- [ ] **Step 2e.2: Verify types and lint**
+
+Run: `yarn tsc --noEmit && yarn lint`
+Expected: no errors, and no unused-variable warning for `isFiltering` (it is still read by the opacity expression).
+
+- [ ] **Step 2e.3: Commit**
+
+```bash
+git add app/outfits/filter-outfits.tsx
+git commit -m "fix(outfits): stop the filtering pending state blocking clicks
+
+pointerEvents: none while isFiltering blocked interaction with the grid
+during the pending window, recreating the dropped-click problem it was
+meant to solve. The dim stays as feedback; the block is removed.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
 ### Task 2b: Filter pipeline — remove the quadratic group lookup
 
 **Files:**
