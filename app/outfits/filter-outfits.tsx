@@ -1,4 +1,5 @@
 'use client'
+import { useMemo } from 'react'
 import { Alert, Box, Divider, Skeleton, Stack, Typography } from '@mui/material'
 
 import ErrorAlert from '@/components/error-alert'
@@ -69,6 +70,147 @@ export default function FilterOutfits() {
     selectedLabel,
   } = filters
 
+  // When grouped, each set renders as one card/header per evolution group (base
+  // plus each evolution), so the obtained filter is applied at the GROUP level:
+  // 'obtained' = every variant in the group obtained, 'missing' = any group that
+  // is not fully complete (none or only some obtained). Variants are kept intact
+  // so each group shows true progress. When not grouped, the flat views render
+  // one card per variant, so the filter is applied per variant.
+  const groupLevelObtained = groupBySet
+
+  type FilteredSet = (typeof outfitSets)[number]
+
+  const filteredSets = useMemo(() => {
+    return outfitSets
+      .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
+      .filter((set) => {
+        if (!selectedRarity) return true
+        // Standalone is a mixed bag: keep it if any of its pieces match the rarity.
+        // Every other set has a single set-level rarity.
+        if (set.slug === STANDALONE_SLUG) {
+          return set.outfit_variants.some((v) => v.rarity === selectedRarity)
+        }
+        return set.rarity === selectedRarity
+      })
+      .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
+      .filter(
+        (set) =>
+          !selectedLabel.length || selectedLabel.some((l) => l === set.label || l === set.label_2)
+      )
+      .map((set) => {
+        const baseSlug = set.slug
+        // Map each state slug to its display order for the selectedEvolution filter.
+        const orderByStateSlug = new Map<string, number>([
+          [baseSlug, 1],
+          ...set.evolutions.map((e) => [e.slug, e.order] as [string, number]),
+        ])
+        // Variants in scope for this set after the structural filters (evolution
+        // visibility + evolution order). The group-level obtained state is judged
+        // over these — the FULL group — so it reflects true set progress rather
+        // than the category-filtered subset.
+        const scopedVariants = set.outfit_variants
+          .filter((v) => {
+            const evo = set.evolutions.find((e) => e.slug === v.outfit_set) ?? null
+            return isEvolutionVisible({
+              stateSlug: v.outfit_set,
+              baseSlug,
+              isGlowupState: !!evo && isGlowup(evo),
+              hideEvolutions,
+              hideGlowups,
+            })
+          })
+          .filter(
+            // selectedEvolution is null for "any" and 0 for glow-up, so compare to
+            // null explicitly — `!selectedEvolution` would treat glow-up as no filter.
+            (v) =>
+              selectedEvolution === null ||
+              orderByStateSlug.get(v.outfit_set ?? '') === selectedEvolution
+          )
+        // Group-level obtained filter: drop whole evolution groups whose full-group
+        // state doesn't match the selected missing / obtained state.
+        const inMatchingGroup =
+          groupLevelObtained && selectedObtainedFilter
+            ? scopedVariants.filter((v) => {
+                const group = scopedVariants.filter((g) => g.outfit_set === v.outfit_set)
+                return matchesObtainedFilter(group, selectedObtainedFilter)
+              })
+            : scopedVariants
+        // Apply the category filter last so it only narrows what is displayed,
+        // without affecting the group-level obtained classification above. In
+        // ungrouped mode the obtained filter is still per variant.
+        const culledVariants = inMatchingGroup
+          .filter(
+            (v) =>
+              selectedOutfitCategory.length === 0 ||
+              (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
+          )
+          .filter((v) => {
+            if (groupLevelObtained) return true
+            if (selectedObtainedFilter === 'obtained') return v.obtained === true
+            if (selectedObtainedFilter === 'missing') return v.obtained !== true
+            return true
+          })
+          // Standalone is a mixed bag: when a rarity is selected, show only the
+          // matching pieces. Other sets are single-rarity, so this is a no-op for them.
+          .filter(
+            (v) => !selectedRarity || set.slug !== STANDALONE_SLUG || v.rarity === selectedRarity
+          )
+        return { ...set, outfit_variants: culledVariants }
+      })
+      .filter((set) => set.outfit_variants.length > 0)
+      .sort((a, b) => {
+        // Standalone Pieces is a catch-all bucket — always render it dead last,
+        // regardless of sort axis or direction. Only one standalone set exists,
+        // so both-standalone never happens.
+        if (a.slug === STANDALONE_SLUG) return 1
+        if (b.slug === STANDALONE_SLUG) return -1
+        const progress = (s: FilteredSet) => {
+          const total = s.outfit_variants.length
+          return total === 0 ? 0 : s.outfit_variants.filter((v) => v.obtained).length / total
+        }
+        let cmp: number
+        switch (axis) {
+          case 'rarity':
+            cmp = a.rarity - b.rarity
+            break
+          case 'progress':
+            cmp = progress(a) - progress(b)
+            break
+          case 'title':
+            cmp = a.title.localeCompare(b.title)
+            break
+          default:
+            cmp = a.id! - b.id!
+        }
+        // `desc` is the default direction for date/rarity/progress (newest /
+        // highest first); for title, `asc` is A→Z. Stable tiebreak on id.
+        return (sortDir === 'asc' ? cmp : -cmp) || a.id! - b.id!
+      })
+  }, [
+    outfitSets,
+    selectedOutfitSet,
+    selectedOutfitCategory,
+    selectedEvolution,
+    selectedObtainedFilter,
+    selectedRarity,
+    selectedStyle,
+    selectedLabel,
+    hideEvolutions,
+    hideGlowups,
+    groupLevelObtained,
+    axis,
+    sortDir,
+  ])
+
+  // TEMP-SNAPSHOT: remove before commit
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line react-hooks/immutability -- debug-only window write, removed in Task 2b
+    ;(window as unknown as { __snap?: unknown }).__snap = filteredSets.map((s) => ({
+      slug: s.slug,
+      variants: s.outfit_variants.map((v) => v.slug),
+    }))
+  }
+
   if (isError) {
     return (
       <Box sx={{ flexGrow: 1, py: 3 }}>
@@ -101,121 +243,7 @@ export default function FilterOutfits() {
     )
   }
 
-  // When grouped, each set renders as one card/header per evolution group (base
-  // plus each evolution), so the obtained filter is applied at the GROUP level:
-  // 'obtained' = every variant in the group obtained, 'missing' = any group that
-  // is not fully complete (none or only some obtained). Variants are kept intact
-  // so each group shows true progress. When not grouped, the flat views render
-  // one card per variant, so the filter is applied per variant.
-  const groupLevelObtained = groupBySet
-
-  const filteredSets = outfitSets
-    .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
-    .filter((set) => {
-      if (!selectedRarity) return true
-      // Standalone is a mixed bag: keep it if any of its pieces match the rarity.
-      // Every other set has a single set-level rarity.
-      if (set.slug === STANDALONE_SLUG) {
-        return set.outfit_variants.some((v) => v.rarity === selectedRarity)
-      }
-      return set.rarity === selectedRarity
-    })
-    .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
-    .filter(
-      (set) =>
-        !selectedLabel.length || selectedLabel.some((l) => l === set.label || l === set.label_2)
-    )
-    .map((set) => {
-      const baseSlug = set.slug
-      // Map each state slug to its display order for the selectedEvolution filter.
-      const orderByStateSlug = new Map<string, number>([
-        [baseSlug, 1],
-        ...set.evolutions.map((e) => [e.slug, e.order] as [string, number]),
-      ])
-      // Variants in scope for this set after the structural filters (evolution
-      // visibility + evolution order). The group-level obtained state is judged
-      // over these — the FULL group — so it reflects true set progress rather
-      // than the category-filtered subset.
-      const scopedVariants = set.outfit_variants
-        .filter((v) => {
-          const evo = set.evolutions.find((e) => e.slug === v.outfit_set) ?? null
-          return isEvolutionVisible({
-            stateSlug: v.outfit_set,
-            baseSlug,
-            isGlowupState: !!evo && isGlowup(evo),
-            hideEvolutions,
-            hideGlowups,
-          })
-        })
-        .filter(
-          // selectedEvolution is null for "any" and 0 for glow-up, so compare to
-          // null explicitly — `!selectedEvolution` would treat glow-up as no filter.
-          (v) =>
-            selectedEvolution === null ||
-            orderByStateSlug.get(v.outfit_set ?? '') === selectedEvolution
-        )
-      // Group-level obtained filter: drop whole evolution groups whose full-group
-      // state doesn't match the selected missing / obtained state.
-      const inMatchingGroup =
-        groupLevelObtained && selectedObtainedFilter
-          ? scopedVariants.filter((v) => {
-              const group = scopedVariants.filter((g) => g.outfit_set === v.outfit_set)
-              return matchesObtainedFilter(group, selectedObtainedFilter)
-            })
-          : scopedVariants
-      // Apply the category filter last so it only narrows what is displayed,
-      // without affecting the group-level obtained classification above. In
-      // ungrouped mode the obtained filter is still per variant.
-      const culledVariants = inMatchingGroup
-        .filter(
-          (v) =>
-            selectedOutfitCategory.length === 0 ||
-            (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
-        )
-        .filter((v) => {
-          if (groupLevelObtained) return true
-          if (selectedObtainedFilter === 'obtained') return v.obtained === true
-          if (selectedObtainedFilter === 'missing') return v.obtained !== true
-          return true
-        })
-        // Standalone is a mixed bag: when a rarity is selected, show only the
-        // matching pieces. Other sets are single-rarity, so this is a no-op for them.
-        .filter(
-          (v) => !selectedRarity || set.slug !== STANDALONE_SLUG || v.rarity === selectedRarity
-        )
-      return { ...set, outfit_variants: culledVariants }
-    })
-    .filter((set) => set.outfit_variants.length > 0)
-    .sort((a, b) => {
-      // Standalone Pieces is a catch-all bucket — always render it dead last,
-      // regardless of sort axis or direction. Only one standalone set exists,
-      // so both-standalone never happens.
-      if (a.slug === STANDALONE_SLUG) return 1
-      if (b.slug === STANDALONE_SLUG) return -1
-      const progress = (s: (typeof filteredSets)[number]) => {
-        const total = s.outfit_variants.length
-        return total === 0 ? 0 : s.outfit_variants.filter((v) => v.obtained).length / total
-      }
-      let cmp: number
-      switch (axis) {
-        case 'rarity':
-          cmp = a.rarity - b.rarity
-          break
-        case 'progress':
-          cmp = progress(a) - progress(b)
-          break
-        case 'title':
-          cmp = a.title.localeCompare(b.title)
-          break
-        default:
-          cmp = a.id! - b.id!
-      }
-      // `desc` is the default direction for date/rarity/progress (newest /
-      // highest first); for title, `asc` is A→Z. Stable tiebreak on id.
-      return (sortDir === 'asc' ? cmp : -cmp) || a.id! - b.id!
-    })
-
-  function renderSetVariants(set: (typeof filteredSets)[number]) {
+  function renderSetVariants(set: FilteredSet) {
     return set.outfit_variants.map((variant) => (
       <OutfitVariantCard
         key={variant.id}
