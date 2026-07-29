@@ -27,6 +27,10 @@ async function fetchJson<T>(url: string): Promise<T> {
   return r.json()
 }
 
+// Filter changes arrive in bursts as the user adjusts several controls; collapse
+// them into one preference write instead of one write per click.
+const PREFERENCE_DEBOUNCE_MS = 500
+
 export default function OutfitDataProvider({
   isLoggedIn,
   isAdmin = false,
@@ -224,8 +228,13 @@ export default function OutfitDataProvider({
 
   useEffect(() => {
     if (!isLoggedIn || !prefsLoaded) return
-    startTransition(() =>
-      updateOutfitFilters({
+    // Persist filter choices as fire-and-forget: the UI must never wait on this
+    // write. Server Actions are serialized, so an un-debounced write per filter
+    // click queues sequential round-trips and stalls the interaction. Debouncing
+    // collapses a burst of filter changes into a single write, and staying out of
+    // startTransition keeps isFiltering tracking render work only.
+    const id = setTimeout(() => {
+      void updateOutfitFilters({
         outfit_set_filter: filters.selectedOutfitSet,
         outfit_category_filter: filters.selectedOutfitCategory.length
           ? filters.selectedOutfitCategory.join(',')
@@ -237,8 +246,13 @@ export default function OutfitDataProvider({
         outfit_obtained_filter: filters.selectedObtainedFilter,
         outfit_style_filter: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
         outfit_label_filter: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
+      }).catch((err) => {
+        // A failed preference write must not disrupt filtering — the user's
+        // filters still work, they just may not persist across a reload.
+        console.error('Failed to persist outfit filters:', err)
       })
-    )
+    }, PREFERENCE_DEBOUNCE_MS)
+    return () => clearTimeout(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters])
 
