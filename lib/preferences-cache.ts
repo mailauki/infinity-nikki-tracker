@@ -27,8 +27,11 @@ export function fetchPreferencesOnce(): Promise<UserPreferences> {
   return inFlight
 }
 
-// Call after a write so the next read reflects it. Not needed for the current
-// callers (they all read once on mount) but required if a consumer ever refetches.
+// Call around a write so the next read reflects it. `savePreferences` calls this
+// both before its POST and after it settles: the providers read once per mount,
+// and a client-side navigation away from /outfits and back remounts them, so a
+// cache left standing past a write would re-hydrate the pre-write values and
+// visibly snap the UI back.
 export function invalidatePreferences() {
   inFlight = null
 }
