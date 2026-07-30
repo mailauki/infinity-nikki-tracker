@@ -150,6 +150,15 @@ export default function VirtualVariantGrid({
     // meaningless after a reflow. Folding columnCount into the key makes the
     // virtualizer discard the old measurements instead of reusing them.
     getItemKey: (index) => `${columnCount}-${index}`,
+    // `measureElement`'s ResizeObserver callback runs synchronously, and a row
+    // whose measured height differs from the estimate calls `resizeItem` ->
+    // `notify(sync = true)` -> `flushSync(rerender)`. When rows mount during a
+    // React commit — which is exactly what happens as `density` hydrates from
+    // saved preferences and this grid replaces the standard-density one — that
+    // lands mid-lifecycle and React throws "flushSync was called from inside a
+    // lifecycle method". This option defers each measurement into a
+    // requestAnimationFrame, which is the "scheduler task" the error asks for.
+    useAnimationFrameWithResizeObserver: true,
   })
 
   const rows = virtualizer.getVirtualItems()
