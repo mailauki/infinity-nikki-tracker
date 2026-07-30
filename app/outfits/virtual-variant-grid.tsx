@@ -14,10 +14,12 @@ import OutfitVariantCard from './outfit-variant-card'
 // plus the grid's 16px (gap={2}) row gap. `measureElement` replaces this with the
 // real height on the first paint of every row, so it only has to be close enough
 // to keep the initial scrollbar honest.
-const ESTIMATED_ROW_HEIGHT = 191
+// Exported so `virtual-grouped-grid.tsx` estimates card rows with the exact same
+// number — the two grids render identical card rows and must not drift.
+export const ESTIMATED_ROW_HEIGHT = 191
 
 // Matches the `gap={2}` the non-virtualized outfit grids pass to CardGrid.
-const GAP_PX = 16
+export const GAP_PX = 16
 
 // The flat compact grid can hold ~6500 variants. Mounting them all costs seconds
 // of main-thread time that no amount of memoization removes — the work is real,

@@ -1,6 +1,6 @@
 'use client'
-import { useEffect, useMemo, useState } from 'react'
-import { Alert, Box, Button, Divider, Skeleton, Stack, Typography } from '@mui/material'
+import { useMemo } from 'react'
+import { Alert, Box, Divider, Skeleton, Stack, Typography } from '@mui/material'
 
 import ErrorAlert from '@/components/error-alert'
 import LoginAlert from '@/components/login-alert'
@@ -10,16 +10,10 @@ import { useSortOrder } from '@/components/sort-context'
 import CardGrid from '@/components/card-grid'
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
 import OutfitSetCard from './outfit-set-card'
-import OutfitSetSection from './outfit-set-section'
+import VirtualGroupedGrid from './virtual-grouped-grid'
 import VirtualVariantGrid from './virtual-variant-grid'
 
 const STANDALONE_SLUG = 'standalone-pieces'
-
-// Grouped mode renders whole set sections rather than a flat card list, so its
-// window is measured in sections. Each section is one header plus its variants.
-// Sections vary in size, so a fixed section count is the pragmatic choice.
-const INITIAL_SECTION_LIMIT = 20
-const SECTION_LIMIT_STEP = 20
 
 function GroupHeaderSkeleton() {
   return (
@@ -226,35 +220,9 @@ export default function FilterOutfits() {
     [filteredSets]
   )
 
-  // Only the grouped compact branch caps what it renders. The ungrouped branch is
-  // virtualized (see VirtualVariantGrid), so it needs no reveal window at all.
-  const [visibleSections, setVisibleSections] = useState(INITIAL_SECTION_LIMIT)
-
-  // Collapse back to the first window when the result set changes, so a new
-  // filter starts from the top rather than inheriting a previous "load more".
-  //
-  // Deliberately NOT keyed on `filteredSets`: that array's identity also changes
-  // when a variant's obtained state is toggled (the provider rebuilds
-  // outfitSets from obtainedOutfit), which would yank the user back to 200 cards
-  // mid-scroll on every checkbox click. Keying on the filter/sort criteria
-  // instead captures "the result set was redefined" without firing on a toggle.
-  useEffect(() => {
-    setVisibleSections(INITIAL_SECTION_LIMIT)
-  }, [
-    selectedOutfitSet,
-    selectedOutfitCategory,
-    selectedEvolution,
-    selectedObtainedFilter,
-    selectedRarity,
-    selectedStyle,
-    selectedLabel,
-    hideEvolutions,
-    hideGlowups,
-    groupBySet,
-    density,
-    axis,
-    sortDir,
-  ])
+  // No reveal window in either compact branch any more: both are virtualized
+  // (VirtualGroupedGrid / VirtualVariantGrid), so the whole result set is always
+  // "rendered" and only the rows in view are mounted.
 
   if (isError) {
     return (
@@ -356,35 +324,11 @@ export default function FilterOutfits() {
         </CardGrid>
       )}
 
+      {/* Rendered OUTSIDE a CardGrid for the same reason as VirtualVariantGrid
+          below: it positions its own rows absolutely and would fight CardGrid's
+          CSS grid. It carries its own inline-size container and row template. */}
       {filteredSets.length > 0 && density === 'compact' && groupBySet && (
-        <>
-          <CardGrid
-            columns="outfit"
-            gap={2}
-            sx={{
-              opacity: isFiltering ? 0.5 : 1,
-              transition: 'opacity 150ms ease',
-            }}
-          >
-            {filteredSets.slice(0, visibleSections).map((set) => (
-              <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
-            ))}
-          </CardGrid>
-
-          {/* Outside CardGrid: the button is not a card and would otherwise be
-              laid out as a cell of the CSS grid. */}
-          {filteredSets.length > visibleSections && (
-            <Stack sx={{ alignItems: 'center', py: 3 }}>
-              <Button
-                variant="outlined"
-                onClick={() => setVisibleSections((n) => n + SECTION_LIMIT_STEP)}
-              >
-                Load {Math.min(filteredSets.length - visibleSections, SECTION_LIMIT_STEP)} more sets
-                ({filteredSets.length - visibleSections} remaining)
-              </Button>
-            </Stack>
-          )}
-        </>
+        <VirtualGroupedGrid isFiltering={isFiltering} isLoggedIn={isLoggedIn} sets={filteredSets} />
       )}
 
       {/* Rendered OUTSIDE a CardGrid on purpose: VirtualVariantGrid positions its
