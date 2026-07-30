@@ -20,6 +20,12 @@ const STANDALONE_SLUG = 'standalone-pieces'
 const INITIAL_CARD_LIMIT = 200
 const CARD_LIMIT_STEP = 200
 
+// Grouped mode renders whole set sections rather than a flat card list, so its
+// window is measured in sections. Each section is one header plus its variants.
+// Sections vary in size, so a fixed section count is the pragmatic choice.
+const INITIAL_SECTION_LIMIT = 20
+const SECTION_LIMIT_STEP = 20
+
 function GroupHeaderSkeleton() {
   return (
     <Box sx={{ gridColumn: '1 / -1' }}>
@@ -261,6 +267,10 @@ export default function FilterOutfits() {
   ])
 
   const [visibleCount, setVisibleCount] = useState(INITIAL_CARD_LIMIT)
+  // Tracked separately from `visibleCount`: the grouped branch's unit is sections,
+  // not cards, so a shared counter would make the two branches fight each other
+  // when the user switches grouping.
+  const [visibleSections, setVisibleSections] = useState(INITIAL_SECTION_LIMIT)
 
   // Collapse back to the first window when the result set changes, so a new
   // filter starts from the top rather than inheriting a previous "load more".
@@ -272,6 +282,7 @@ export default function FilterOutfits() {
   // instead captures "the result set was redefined" without firing on a toggle.
   useEffect(() => {
     setVisibleCount(INITIAL_CARD_LIMIT)
+    setVisibleSections(INITIAL_SECTION_LIMIT)
   }, [
     selectedOutfitSet,
     selectedOutfitCategory,
@@ -400,18 +411,34 @@ export default function FilterOutfits() {
       )}
 
       {filteredSets.length > 0 && density === 'compact' && groupBySet && (
-        <CardGrid
-          columns="outfit"
-          gap={2}
-          sx={{
-            opacity: isFiltering ? 0.5 : 1,
-            transition: 'opacity 150ms ease',
-          }}
-        >
-          {filteredSets.map((set) => (
-            <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
-          ))}
-        </CardGrid>
+        <>
+          <CardGrid
+            columns="outfit"
+            gap={2}
+            sx={{
+              opacity: isFiltering ? 0.5 : 1,
+              transition: 'opacity 150ms ease',
+            }}
+          >
+            {filteredSets.slice(0, visibleSections).map((set) => (
+              <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
+            ))}
+          </CardGrid>
+
+          {/* Outside CardGrid: the button is not a card and would otherwise be
+              laid out as a cell of the CSS grid. */}
+          {filteredSets.length > visibleSections && (
+            <Stack sx={{ alignItems: 'center', py: 3 }}>
+              <Button
+                variant="outlined"
+                onClick={() => setVisibleSections((n) => n + SECTION_LIMIT_STEP)}
+              >
+                Load {Math.min(filteredSets.length - visibleSections, SECTION_LIMIT_STEP)} more sets
+                ({filteredSets.length - visibleSections} remaining)
+              </Button>
+            </Stack>
+          )}
+        </>
       )}
 
       {filteredSets.length > 0 && density === 'compact' && !groupBySet && (
