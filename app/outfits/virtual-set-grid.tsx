@@ -261,22 +261,32 @@ export default function VirtualSetGrid({
               <Box
                 key={row.key}
                 ref={(node: HTMLDivElement | null) => {
+                  // Hand the node to the virtualizer FIRST and without anything
+                  // else in this callback touching React state. A ref callback
+                  // runs during the commit phase, so a `setState` here puts React
+                  // into rendering; `measureElement` can then reach
+                  // `flushSync(rerender)` mid-lifecycle and React throws
+                  // "flushSync was called from inside a lifecycle method".
+                  // (`useAnimationFrameWithResizeObserver` only defers the
+                  // ResizeObserver path, not this direct call.)
+                  virtualizer.measureElement(node)
+
                   // Record the first real height for this width/mode so later
                   // rows estimate from a measured value instead of arithmetic.
-                  // Only full rows count: a partial last row is shorter and
-                  // would skew the estimate for every row above it. The
-                  // functional updater keeps this a one-shot per key — once a
-                  // height is stored, later rows return the same object and
-                  // React bails out rather than re-rendering.
-                  if (node && rowItems.length === columnCount) {
+                  // Only full rows count: a partial last row is shorter and would
+                  // skew the estimate for every row above it. Deferred to a
+                  // microtask so the state write lands after the commit, never
+                  // inside it.
+                  if (node && rowItems.length === columnCount && !measuredHeights[measureKey]) {
                     const height = node.getBoundingClientRect().height
                     if (height > 0) {
-                      setMeasuredHeights((prev) =>
-                        prev[measureKey] ? prev : { ...prev, [measureKey]: height }
-                      )
+                      queueMicrotask(() => {
+                        setMeasuredHeights((prev) =>
+                          prev[measureKey] ? prev : { ...prev, [measureKey]: height }
+                        )
+                      })
                     }
                   }
-                  virtualizer.measureElement(node)
                 }}
                 data-index={row.index}
                 sx={{
