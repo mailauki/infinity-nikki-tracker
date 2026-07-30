@@ -212,14 +212,22 @@ export default function VirtualSetGrid({
     estimateSize: () => estimatedRowHeight,
     overscan: 3,
     scrollMargin,
-    // Row N holds different items at 4 columns than at 8, so its cached height is
-    // meaningless after a reflow. Folding columnCount into the key makes the
-    // virtualizer discard the old measurements instead of reusing them.
+    // The key must identify a row's CONTENT, not its position. `itemSizeCache` is
+    // keyed by this value and is never cleared on a count or content change, so a
+    // key that is only positional lets row 0 reuse the previous row 0's height
+    // after a filter swaps which sets are at index 0 — cards then paint at a
+    // stale, much smaller height and overlap.
     //
-    // `showAlt` is folded in for the same reason, one step further: even at an
-    // unchanged column count, flipping the image mode swaps the card aspect ratio
-    // between 2/3 and 1/1, so every cached row height is wrong by ~a third.
-    getItemKey: (index) => `${columnCount}-${showAlt}-${index}`,
+    // Three things therefore participate:
+    //  - the first item's key, which changes whenever filtering, sorting or
+    //    grouping changes what lands in this row
+    //  - `columnCount`, since row N holds different items at 4 columns than at 8
+    //  - `showAlt`, since flipping the image mode swaps the card aspect ratio
+    //    between 2/3 and 1/1 and makes every cached height wrong by ~a third
+    getItemKey: (index) => {
+      const first = items[index * (columnCount ?? 1)]
+      return `${columnCount}-${showAlt}-${first?.key ?? index}`
+    },
     // `measureElement`'s ResizeObserver callback runs synchronously, and a row
     // whose measured height differs from the estimate calls `resizeItem` ->
     // `notify(sync = true)` -> `flushSync(rerender)`. When rows mount during a

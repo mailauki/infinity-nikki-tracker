@@ -146,10 +146,19 @@ export default function VirtualVariantGrid({
     estimateSize: () => ESTIMATED_ROW_HEIGHT,
     overscan: 3,
     scrollMargin,
-    // Row N holds different items at 4 columns than at 8, so its cached height is
-    // meaningless after a reflow. Folding columnCount into the key makes the
-    // virtualizer discard the old measurements instead of reusing them.
-    getItemKey: (index) => `${columnCount}-${index}`,
+    // The key identifies a row's CONTENT, not its position. `itemSizeCache` is
+    // keyed by this value and is never cleared when the item list changes, so a
+    // purely positional key lets row 0 reuse the previous row 0's height after a
+    // filter swaps which variants land there. These cards are fixed-height so the
+    // usual case is harmless, but a partial last row is shorter than a full one
+    // and that height would otherwise leak onto a full row.
+    //
+    // `columnCount` also participates: row N holds different items at 4 columns
+    // than at 8, so its cached height is meaningless after a reflow.
+    getItemKey: (index) => {
+      const first = variants[index * (columnCount ?? 1)]
+      return `${columnCount}-${first?.id ?? index}`
+    },
     // `measureElement`'s ResizeObserver callback runs synchronously, and a row
     // whose measured height differs from the estimate calls `resizeItem` ->
     // `notify(sync = true)` -> `flushSync(rerender)`. When rows mount during a
