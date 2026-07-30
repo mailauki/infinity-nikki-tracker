@@ -64,24 +64,57 @@ export default function VirtualVariantGrid({
   }, [])
 
   // Row offsets are measured from the document top, so the virtualizer needs to
-  // know how much page sits above the grid (toolbar, alerts, results bar). That
-  // offset moves when anything above the grid resizes — a login alert appearing,
-  // the toolbar wrapping to two rows — so it is re-read on every resize rather
-  // than only on mount. `setScrollMargin` bails out when the value is unchanged,
-  // so this cannot chain updates.
+  // know how much page sits above the grid (toolbar, alerts, results bar).
+  //
+  // That offset moves for TWO independent reasons, and both have to be watched:
+  //
+  //  1. A sibling above the grid RESIZES (the toolbar wrapping to a second row,
+  //     an alert reflowing to two lines) — caught by the ResizeObserver.
+  //  2. A sibling above the grid MOUNTS OR UNMOUNTS. FilterOutfits renders a
+  //     fragment, so the conditional `LoginAlert`, the `isObtainedError` warning
+  //     and the "No results" block are all real siblings of this grid. When the
+  //     obtained fetch fails mid-scroll, that warning appears and shifts the grid
+  //     down without any *observed* element resizing — a ResizeObserver over the
+  //     sibling list captured at mount would never fire, leaving scrollMargin
+  //     stale and every row painted ~56px above its true position. A
+  //     MutationObserver on the parent's childList catches exactly this.
+  //
+  // Why a MutationObserver rather than a ResizeObserver on the parent: the parent
+  // is this grid's own ancestor, so its height also tracks the virtualizer's
+  // total size — observing it would re-fire on every scroll-driven remeasure.
+  // childList mutations fire only on the mount/unmount that is actually missed,
+  // with no overlap with the resize path.
   useLayoutEffect(() => {
     const el = containerRef.current
-    if (!el) return
+    const parent = el?.parentElement
+    if (!el || !parent) return
+
     const read = () => setScrollMargin(el.offsetTop)
     read()
-    // Watch the siblings ABOVE the grid, not the body: the body's height tracks
-    // the virtualizer's own total size and would fire on every remeasure. These
-    // elements are what actually push the grid down.
-    const observer = new ResizeObserver(read)
-    for (const sibling of Array.from(el.parentElement?.children ?? [])) {
-      if (sibling !== el) observer.observe(sibling)
+
+    // Resize path: watch the siblings above the grid. Deliberately NOT the parent
+    // or the body, whose heights both track the virtualizer's own total size.
+    const resizeObserver = new ResizeObserver(read)
+    const observeSiblings = () => {
+      resizeObserver.disconnect()
+      for (const sibling of Array.from(parent.children)) {
+        if (sibling !== el) resizeObserver.observe(sibling)
+      }
     }
-    return () => observer.disconnect()
+    observeSiblings()
+
+    // Mount/unmount path. Re-reads the offset and re-subscribes, so a sibling
+    // that appears later is also watched for subsequent resizes.
+    const mutationObserver = new MutationObserver(() => {
+      observeSiblings()
+      read()
+    })
+    mutationObserver.observe(parent, { childList: true })
+
+    return () => {
+      resizeObserver.disconnect()
+      mutationObserver.disconnect()
+    }
   }, [])
 
   const rowCount = columnCount === null ? 0 : Math.ceil(variants.length / columnCount)
