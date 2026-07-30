@@ -1254,6 +1254,286 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 ---
 
+### Task 10: Parallelize the variant fetch
+
+**Added 2026-07-29 from measurements against the production database.** The route was 6.8s of server time. `EXPLAIN ANALYZE` shows the database is not the problem:
+
+| Query                                  | Time         |
+| -------------------------------------- | ------------ |
+| All 6,567 variants, one query          | **4.9 ms**   |
+| Same columns, `LIMIT 1000 OFFSET 6000` | **323.7 ms** |
+
+`hooks/data/outfit-variants.ts:16-25` loops **sequentially**, 1000 rows per request, ~7 round-trips each awaiting the previous. Worse, `OFFSET N` makes Postgres scan and discard N rows every time, so per-page cost climbs.
+
+**Pagination cannot simply be removed.** Verified by curl against production with `Range: 0-99999`: PostgREST returns `content-range: 0-999/6567`. The 1000-row cap applies to **top-level** selects, not just embeds. Dropping the loop would silently truncate to 1000 rows and lose 5,567 variants. **The fix is to parallelize, not eliminate.**
+
+**Urgency:** the `authenticated` Postgres role has an **8-second `statement_timeout`** (`anon` is 3s). At 6.8s this route is near a hard failure cliff — as the variant count grows it will start returning 500s in production.
+
+**Files:**
+
+- Modify: `hooks/data/outfit-variants.ts`
+
+**Interfaces:**
+
+- Consumes: nothing new.
+- Produces: `getOutfitVariantsBySet()` keeps its exact signature — `() => Promise<Map<string, OutfitVariant[]>>` — and must return identical data. Callers (`app/api/outfits/route.ts`, `hooks/data/outfit-sets.ts`) need no changes.
+
+- [ ] **Step 10.1: Fetch the exact count, then request all pages in parallel**
+
+Replace `fetchAllOutfitVariants` (lines 12-27). Get the total first with a head request, compute every range, then `Promise.all` them:
+
+```ts
+async function fetchAllOutfitVariants(): Promise<OutfitVariant[]> {
+  const supabase = await createClient()
+  const PAGE = 1000
+
+  // PostgREST caps every response at 1000 rows — including top-level selects,
+  // not just embeds — so the ~6.5k variants must be paged. Fetching the exact
+  // count first lets all pages go out at once: the old sequential loop cost ~7
+  // round-trips in series, and each OFFSET made Postgres scan and discard the
+  // rows before it.
+  const { count, error: countError } = await supabase
+    .from('outfit_variants')
+    .select('id', { count: 'exact', head: true })
+  if (countError) throw countError
+
+  const total = count ?? 0
+  if (total === 0) return []
+
+  const pages = Array.from({ length: Math.ceil(total / PAGE) }, (_, i) => i * PAGE)
+  const results = await Promise.all(
+    pages.map(async (from) => {
+      const { data, error } = await supabase
+        .from('outfit_variants')
+        .select(PUBLIC_VARIANT_SELECT)
+        .order('id', { ascending: true })
+        .range(from, from + PAGE - 1)
+      if (error) throw error
+      return (data ?? []) as OutfitVariant[]
+    })
+  )
+
+  return results.flat()
+}
+```
+
+Two properties this preserves, both load-bearing:
+
+- **Order.** Every page carries `.order('id')`, and `results.flat()` concatenates them in range order, so the combined array is still sorted by `id` exactly as the sequential loop produced. Downstream `createOutfitSet` relies on variant order for its category sorting — do not drop the `.order()` from any page.
+- **Completeness.** A row inserted between the count and the page reads could shift rows across page boundaries. That is a pre-existing property of the old loop too, and this data is admin-edited rather than high-churn, so it is accepted rather than solved with a snapshot transaction.
+
+- [ ] **Step 10.2: Verify types and lint**
+
+Run: `yarn tsc --noEmit && yarn lint`
+Expected: clean.
+
+- [ ] **Step 10.3: Verify the row count did not change (human, decisive)**
+
+This is the check that matters — a silent truncation here would drop variants from the whole app.
+
+With the dev server running, hit `/api/outfits` and confirm the total variant count across all sets is **6,567** (the production count as of 2026-07-29). Compare against `main` if in doubt. Also confirm `/api/outfits` server time drops substantially from ~6.8s.
+
+- [ ] **Step 10.4: Commit**
+
+```bash
+git add hooks/data/outfit-variants.ts
+git commit -m "perf(outfits): fetch variant pages in parallel
+
+The variant fetch looped sequentially, ~7 round-trips each awaiting the
+previous, and every OFFSET made Postgres scan and discard the preceding
+rows. Measured: one unpaginated query is 4.9ms while LIMIT 1000 OFFSET
+6000 alone is 323ms. Pagination is still required (PostgREST caps
+top-level selects at 1000 rows), so the pages now go out in parallel
+after an exact-count head request.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 12: Fetch preferences once per page, not once per provider
+
+**Added 2026-07-29 from the user's server log**, which showed `GET /api/preferences` three times on a single `/outfits` load (562ms + 671ms + 1019ms ≈ 2.25s). Three providers each fetch it independently:
+
+- `app/outfits/outfit-data-provider.tsx:84`
+- `components/sort-context.tsx:67`
+- `components/outfits/outfit-image-mode-context.tsx:67`
+
+**Files:**
+
+- Create: `lib/preferences-cache.ts`
+- Modify: the three call sites above
+
+**Scope note:** `app/eureka/eureka-data-provider.tsx` and `app/settings/appearance-settings.tsx` also fetch it, but on their own pages. Converting them is optional; if the shared helper makes it trivial, do it, but do not restructure those pages.
+
+**Interfaces:**
+
+- Produces: `fetchPreferencesOnce(): Promise<UserPreferences>` — de-duplicates concurrent callers by sharing one in-flight promise.
+
+- [ ] **Step 12.1: Create the shared fetch**
+
+Create `lib/preferences-cache.ts`:
+
+```ts
+import type { UserPreferences } from '@/lib/types/eureka'
+
+// Three providers mount together on /outfits and each used to fetch preferences
+// independently — three identical round-trips on every page load. They share one
+// in-flight promise instead. Module scope is correct here: the module is
+// per-client-bundle, and preferences are per-session, so there is no cross-user
+// leak the way a module-level cache on the server would risk.
+let inFlight: Promise<UserPreferences> | null = null
+
+export function fetchPreferencesOnce(): Promise<UserPreferences> {
+  if (inFlight) return inFlight
+  inFlight = fetch('/api/preferences')
+    .then((r) => {
+      if (!r.ok) throw new Error(`/api/preferences returned ${r.status}`)
+      return r.json() as Promise<UserPreferences>
+    })
+    .catch((err) => {
+      // Clear on failure so a later mount can retry rather than inheriting a
+      // permanently rejected promise.
+      inFlight = null
+      throw err
+    })
+  return inFlight
+}
+
+// Call after a write so the next read reflects it. Not needed for the current
+// callers (they all read once on mount) but required if a consumer ever refetches.
+export function invalidatePreferences() {
+  inFlight = null
+}
+```
+
+- [ ] **Step 12.2: Switch the three call sites**
+
+In each of the three files, replace the direct `fetch('/api/preferences')` (or `fetchJson<UserPreferences>('/api/preferences')`) with `fetchPreferencesOnce()`. Keep every `.then()` body, each `.catch()`, and all existing guards exactly as they are — only the call that produces the promise changes.
+
+Note `outfit-data-provider.tsx` uses a local `fetchJson` helper; leave that helper in place, since its other call sites (`/api/outfits`, `/api/obtained-outfit`) still use it.
+
+- [ ] **Step 12.3: Verify types and lint**
+
+Run: `yarn tsc --noEmit && yarn lint`
+Expected: clean.
+
+- [ ] **Step 12.4: Manual check (human)**
+
+Load `/outfits` with the dev log visible: exactly **one** `GET /api/preferences` should appear, not three. Then confirm all three preference-driven features still hydrate correctly from saved values: filters, sort order/axis, and density/image mode.
+
+- [ ] **Step 12.5: Commit**
+
+```bash
+git add lib/preferences-cache.ts app/outfits/outfit-data-provider.tsx components/sort-context.tsx components/outfits/outfit-image-mode-context.tsx
+git commit -m "perf: fetch preferences once per page instead of per provider
+
+Three providers mount together on /outfits and each fetched
+/api/preferences independently -- three identical round-trips totalling
+~2.25s on the user's load. They now share one in-flight promise.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 13: Single source of truth for the grid breakpoints
+
+**Added 2026-07-29.** Prerequisite for Task 5. The user approved virtualization specifically on the condition that the breakpoints not be duplicated.
+
+`OUTFIT_GRID_COLUMNS_CONTAINER` (`lib/types/props.ts:80-86`) encodes the column counts as CSS `@container` rules. A virtualizer must know the column count **in JavaScript** — container queries resolve only inside the CSS engine, and there is no API to read the resolved column count. Writing those thresholds a second time in JS creates two sources of truth that can silently drift, producing overlapping or gapped cards with no type error and no test to catch it (this repo has no test runner).
+
+**Files:**
+
+- Modify: `lib/types/props.ts`
+
+**Interfaces:**
+
+- Produces: `OUTFIT_GRID_BREAKPOINTS` (the single source) plus `outfitColumnsForWidth(width: number): number`. `OUTFIT_GRID_COLUMNS_CONTAINER` keeps its existing name, shape, and behavior — it is consumed by `components/card-grid.tsx` and must stay a drop-in.
+
+- [ ] **Step 13.1: Derive the CSS object from a declared list**
+
+In `lib/types/props.ts`, replace the hand-written `OUTFIT_GRID_COLUMNS_CONTAINER` (lines 80-86) with a declared breakpoint list plus a derivation. The generated object must be **exactly equivalent** to the current one: base 2 columns, then 600→3, 900→4, 1200→6, 1536→8.
+
+```ts
+// THE single source of truth for the outfit grid's responsive columns. Both the
+// CSS container-query object below and the JS lookup used by the virtualizer are
+// derived from this list, so the two can never disagree. Add or change a
+// breakpoint here and both follow.
+export const OUTFIT_GRID_BREAKPOINTS = [
+  { minWidth: 0, columns: 2 },
+  { minWidth: 600, columns: 3 },
+  { minWidth: 900, columns: 4 },
+  { minWidth: 1200, columns: 6 },
+  { minWidth: 1536, columns: 8 },
+] as const
+
+// Container-query grid template derived from the breakpoints. Pair with
+// GRID_CONTAINER on an ancestor so it reads CONTENT width, not viewport.
+export const OUTFIT_GRID_COLUMNS_CONTAINER = OUTFIT_GRID_BREAKPOINTS.reduce(
+  (acc, { minWidth, columns }) => {
+    const template = `repeat(${columns}, 1fr)`
+    if (minWidth === 0) return { ...acc, gridTemplateColumns: template }
+    return { ...acc, [`@container (min-width: ${minWidth}px)`]: { gridTemplateColumns: template } }
+  },
+  {} as Record<string, unknown>
+)
+
+// The same breakpoints resolved in JS, for code that must know the column count
+// (the virtualizer maps a flat item list onto rows). Mirrors how CSS resolves
+// min-width rules: the last matching breakpoint wins.
+export function outfitColumnsForWidth(width: number): number {
+  let columns = OUTFIT_GRID_BREAKPOINTS[0].columns
+  for (const bp of OUTFIT_GRID_BREAKPOINTS) {
+    if (width >= bp.minWidth) columns = bp.columns
+  }
+  return columns
+}
+```
+
+- [ ] **Step 13.2: Verify the derived object is identical to the original**
+
+This is the crux — a mismatch changes the layout of every outfit grid in the app.
+
+The original object was exactly:
+
+```ts
+{
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  '@container (min-width: 600px)': { gridTemplateColumns: 'repeat(3, 1fr)' },
+  '@container (min-width: 900px)': { gridTemplateColumns: 'repeat(4, 1fr)' },
+  '@container (min-width: 1200px)': { gridTemplateColumns: 'repeat(6, 1fr)' },
+  '@container (min-width: 1536px)': { gridTemplateColumns: 'repeat(8, 1fr)' },
+}
+```
+
+Confirm the derived value deep-equals this — same keys, same order, same strings. If `reduce` produces a type MUI's `sx` rejects, keep the runtime shape identical and adjust only the type annotation (e.g. assert to the shape `card-grid.tsx` expects). Do **not** change the emitted CSS to satisfy the type checker.
+
+- [ ] **Step 13.3: Verify types, lint, and build**
+
+Run: `yarn tsc --noEmit && yarn lint && yarn build`
+Expected: clean. `OUTFIT_GRID_COLUMNS_CONTAINER` is passed through MUI's `sx`, so a type regression here would surface at the `CardGrid` call sites.
+
+- [ ] **Step 13.4: Manual check (human)**
+
+Load `/outfits` and confirm the column counts are unchanged at several window widths, including with the filter drawer open and closed (the drawer narrowing the content column must still reflow the grid). Check `/eureka` too if it shares any of these constants.
+
+- [ ] **Step 13.5: Commit**
+
+```bash
+git add lib/types/props.ts
+git commit -m "refactor: derive outfit grid columns from one breakpoint list
+
+The virtualizer needs the column count in JS, but the counts lived only in
+CSS container queries, which JS cannot read. Rather than write the
+thresholds twice, both the container-query object and a new
+outfitColumnsForWidth() lookup are derived from one exported list.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
 ### Task 5: Virtualize the ungrouped compact grid
 
 **Status: specified but DEFERRED.** The user chose Task 7's card cap instead ("cap now, virtualize later if needed"). Revisit this task only if capping proves unsatisfying — it costs a new dependency and duplicates the container-query breakpoints in JS, where they can silently drift from the CSS.
@@ -1291,7 +1571,8 @@ Create `app/outfits/virtual-variant-grid.tsx`. Key design points, each load-bear
 
 - Use `useWindowVirtualizer`, **not** `useVirtualizer`. The page scrolls; there is no inner scroll container (verified: neither `CardGrid` nor `PageShell` sets `overflow`). `useVirtualizer` would silently never scroll.
 - Pass `scrollMargin: parentRef.current?.offsetTop ?? 0` captured in a `useLayoutEffect`, so row offsets account for everything above the grid (toolbar, alerts, results bar).
-- Derive the column count with a `ResizeObserver` on the wrapper, using the SAME breakpoints as `OUTFIT_GRID_COLUMNS_CONTAINER` so the virtualized layout matches the CSS grid exactly: `<600 → 2`, `≥600 → 3`, `≥900 → 4`, `≥1200 → 6`, `≥1536 → 8`. Import those thresholds or define them once and reference them — do not hardcode a second divergent copy.
+- Derive the column count with a `ResizeObserver` on the wrapper, calling **`outfitColumnsForWidth(width)`** from `@/lib/types/props` (added by Task 13). Do **not** write the thresholds into this file — Task 13 exists precisely so the CSS grid and this lookup share one source of truth. If you find yourself typing `600` or `1536` here, stop and import instead.
+- Observe the same element that carries `containerType: 'inline-size'`, so the drawer-open reflow still works: the `ResizeObserver` sees the same content-width changes the container query does.
 - Row count is `Math.ceil(variants.length / columnCount)`.
 - Use `measureElement` on each row so real card heights replace the estimate. Provide a sensible `estimateSize` (cards are ~4:3 plus a header; measure one in the browser and use that number rather than guessing).
 - `overscan: 3` rows.
