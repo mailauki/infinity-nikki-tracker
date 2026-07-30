@@ -19,6 +19,7 @@
     "@mui/x-data-grid": "^9.4.0",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "^2.107.0",
+    "@tanstack/react-virtual": "^3.14.9",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "boneyard-js": "^1.8.1",

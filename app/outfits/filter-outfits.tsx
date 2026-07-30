@@ -9,16 +9,11 @@ import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-conte
 import { useSortOrder } from '@/components/sort-context'
 import CardGrid from '@/components/card-grid'
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
-import OutfitVariantCard from './outfit-variant-card'
 import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
+import VirtualVariantGrid from './virtual-variant-grid'
 
 const STANDALONE_SLUG = 'standalone-pieces'
-
-// The compact ungrouped view can hold ~6000 variants; mounting them all at once
-// blocks the main thread for seconds. Render a window and let the user extend it.
-const INITIAL_CARD_LIMIT = 200
-const CARD_LIMIT_STEP = 200
 
 // Grouped mode renders whole set sections rather than a flat card list, so its
 // window is measured in sections. Each section is one header plus its variants.
@@ -50,49 +45,6 @@ function VariantCardSkeleton() {
       variant="rectangular"
       width="100%"
     />
-  )
-}
-
-// The compact ungrouped grid and its "Load more" control must be siblings — the
-// button is not a card and would otherwise be laid out as a cell of the CSS grid.
-function CompactUngroupedGrid<T>({
-  sets,
-  renderSetVariants,
-  visibleCount,
-  onLoadMore,
-  isFiltering,
-}: {
-  sets: T[]
-  renderSetVariants: (set: T) => React.ReactNode[]
-  visibleCount: number
-  onLoadMore: () => void
-  isFiltering: boolean
-}) {
-  const allCards = sets.flatMap((set) => renderSetVariants(set))
-  const visibleCards = allCards.slice(0, visibleCount)
-  const remaining = allCards.length - visibleCards.length
-
-  return (
-    <>
-      <CardGrid
-        columns="outfit"
-        gap={2}
-        sx={{
-          opacity: isFiltering ? 0.5 : 1,
-          transition: 'opacity 150ms ease',
-        }}
-      >
-        {visibleCards}
-      </CardGrid>
-
-      {remaining > 0 && (
-        <Stack sx={{ alignItems: 'center', py: 3 }}>
-          <Button variant="outlined" onClick={onLoadMore}>
-            Load {Math.min(remaining, CARD_LIMIT_STEP)} more ({remaining} remaining)
-          </Button>
-        </Stack>
-      )}
-    </>
   )
 }
 
@@ -266,10 +218,16 @@ export default function FilterOutfits() {
     sortDir,
   ])
 
-  const [visibleCount, setVisibleCount] = useState(INITIAL_CARD_LIMIT)
-  // Tracked separately from `visibleCount`: the grouped branch's unit is sections,
-  // not cards, so a shared counter would make the two branches fight each other
-  // when the user switches grouping.
+  // The ungrouped compact branch renders one card per variant, so it consumes a
+  // flat list rather than sets. Memoized to keep the array identity — and with it
+  // the virtualizer's row model — stable across unrelated re-renders.
+  const flatVariants = useMemo(
+    () => filteredSets.flatMap((set) => set.outfit_variants),
+    [filteredSets]
+  )
+
+  // Only the grouped compact branch caps what it renders. The ungrouped branch is
+  // virtualized (see VirtualVariantGrid), so it needs no reveal window at all.
   const [visibleSections, setVisibleSections] = useState(INITIAL_SECTION_LIMIT)
 
   // Collapse back to the first window when the result set changes, so a new
@@ -281,7 +239,6 @@ export default function FilterOutfits() {
   // mid-scroll on every checkbox click. Keying on the filter/sort criteria
   // instead captures "the result set was redefined" without firing on a toggle.
   useEffect(() => {
-    setVisibleCount(INITIAL_CARD_LIMIT)
     setVisibleSections(INITIAL_SECTION_LIMIT)
   }, [
     selectedOutfitSet,
@@ -329,17 +286,6 @@ export default function FilterOutfits() {
         </CardGrid>
       </Box>
     )
-  }
-
-  function renderSetVariants(set: FilteredSet) {
-    return set.outfit_variants.map((variant) => (
-      <OutfitVariantCard
-        key={variant.id}
-        isLoggedIn={isLoggedIn}
-        isMissingFilter={selectedObtainedFilter === 'missing'}
-        outfitVariant={variant}
-      />
-    ))
   }
 
   return (
@@ -441,13 +387,15 @@ export default function FilterOutfits() {
         </>
       )}
 
+      {/* Rendered OUTSIDE a CardGrid on purpose: VirtualVariantGrid positions its
+          own rows absolutely and would fight CardGrid's CSS grid. It carries its
+          own inline-size container and row template instead. */}
       {filteredSets.length > 0 && density === 'compact' && !groupBySet && (
-        <CompactUngroupedGrid
+        <VirtualVariantGrid
           isFiltering={isFiltering}
-          renderSetVariants={renderSetVariants}
-          sets={filteredSets}
-          visibleCount={visibleCount}
-          onLoadMore={() => setVisibleCount((n) => n + CARD_LIMIT_STEP)}
+          isLoggedIn={isLoggedIn}
+          isMissingFilter={selectedObtainedFilter === 'missing'}
+          variants={flatVariants}
         />
       )}
     </>
