@@ -62,8 +62,12 @@ function OutfitGroupHeader({
   )
 }
 
-// Matches the card components: every prop is a primitive except `onToggle`,
-// which the virtualized grid rebuilds per render from the row model. Row models
-// are memoized on `[sets, columnCount]`, so the closure identity is stable
-// across unrelated re-renders.
+// Every prop is a primitive except `onToggle`, which the grid allocates fresh on
+// each render (`onToggle={() => handleToggle(row)}`). That identity change means
+// this memo does NOT currently skip parent-driven re-renders — it only guards
+// against a header re-rendering when its own primitives are unchanged and the
+// parent bails out elsewhere. Kept because it is free and correct, not because
+// it is doing heavy lifting: only the visible headers are mounted (a handful),
+// so the unmemoized path is cheap either way. Stabilizing `onToggle` would make
+// this effective, but the win is small enough not to warrant the extra state.
 export default memo(OutfitGroupHeader)
