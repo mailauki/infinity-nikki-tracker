@@ -1671,3 +1671,114 @@ Then open a PR against `main` including the before/after profiler numbers and th
 - **Why not virtualization?** It was the original request. It was rejected because the lag reproduces in standard density at only a few hundred cards, where node count is not the bottleneck — re-render churn is. Virtualization reduces node count but not re-renders. See `docs/superpowers/specs/2026-07-29-outfits-grid-performance-design.md`.
 - **If a dependency array fights you,** add the missing dependency rather than suppressing the lint rule. A stale dep array causes wrong data on screen, which is a worse bug than the slowness being fixed.
 - **The riskiest change is Task 2b.** The group-level vs per-variant obtained semantics at `filter-outfits.tsx:104-110` are subtle. The six-state snapshot diff exists specifically to catch a regression there — do not skip it.
+
+---
+
+### Task 14: Virtualize the grouped compact view
+
+**Added 2026-07-30 at the user's request.** Task 5 virtualized only the ungrouped compact branch. Grouped is the **default** view (`outfit_group_by_set` defaults to `true` in `lib/preferences.ts:22`), so most users never reach the virtualized path — they get the 20-section cap from Task 9 instead.
+
+**Why this is harder than Task 5.** The ungrouped grid is uniform: every row is `columnCount` cards. The grouped view interleaves **full-width headers** (set title link, progress chips, batch-toggle button, divider) with variable-length runs of cards, and one set can contribute several header+cards groups (base plus each evolution). A virtualizer needs a single indexed list of rows, so this task builds a **flattened row model** and virtualizes that.
+
+**Files:**
+
+- Create: `app/outfits/outfit-group-header.tsx` (extracted from `outfit-set-section.tsx`)
+- Create: `app/outfits/virtual-grouped-grid.tsx`
+- Modify: `app/outfits/filter-outfits.tsx` (grouped compact branch only)
+- Delete or reduce: `app/outfits/outfit-set-section.tsx`
+
+**Interfaces:**
+
+- Consumes: the memoized `filteredSets`, the memoized `OutfitVariantCard`, `outfitColumnsForWidth` and `GRID_CONTAINER` from `lib/types/props`.
+- Produces: `VirtualGroupedGrid`, taking the same `sets` the grouped branch renders today plus `isLoggedIn` / `isFiltering`.
+
+- [ ] **Step 14.1: Extract the group header into its own component**
+
+`outfit-set-section.tsx` currently returns an array mixing a header `Box` and card elements — exactly the shape the flat row model replaces. Extract the header (lines 59-86: the `Box` with `gridColumn: '1 / -1'`, the title `Button`, both `ProgressChip`s, the toggle `IconButton`, and the `Divider`) into `app/outfits/outfit-group-header.tsx`.
+
+Its props: `title: string`, `href: string`, `isLoggedIn: boolean`, `obtained: number`, `total: number`, `allObtained: boolean`, `onToggle: () => void`.
+
+Drop the `gridColumn: '1 / -1'` from the extracted component — in the virtualized layout a header occupies its own row rather than spanning grid columns. Keep the `mt: 1`, the `Stack` layout, and the `Divider` exactly as they are so the header looks identical.
+
+Wrap it in `React.memo`, matching the card components.
+
+- [ ] **Step 14.2: Build the flattened row model**
+
+In `virtual-grouped-grid.tsx`, derive a flat row array from `sets` inside a `useMemo` keyed on `[sets, columnCount]`. Two row kinds:
+
+```ts
+type GroupRow =
+  | { kind: 'header'; key: string; title: string; href: string; obtained: number; total: number; allObtained: boolean; variants: OutfitVariant[] }
+  | { kind: 'cards'; key: string; variants: OutfitVariant[] }
+```
+
+Build it by reproducing the grouping logic currently in `outfit-set-section.tsx:30-57`, for each set in order:
+
+- iterate `[null, ...set.evolutions]`; the state slug is `evolution?.slug ?? set.slug`
+- `variants` = `set.outfit_variants.filter((v) => v.outfit_set === stateSlug)`; **skip the group entirely when empty** (the current code returns `null` for these)
+- `href` = `evolution ? \`/outfits/${evolution.slug.replace('-', '?evolution=')}\` : \`/outfits/${set.slug}\``
+- `title` = `evolution ? \`${set.title}: ${toTitle(evolution.title)}\` : set.title`
+- push one `header` row, then `Math.ceil(variants.length / columnCount)` `cards` rows, each holding `variants.slice(i * columnCount, (i + 1) * columnCount)`
+
+**Load-bearing detail — do not lose this.** The progress numbers and the batch toggle must be computed from the **full, unfiltered** group, not the displayed subset. `outfit-set-section.tsx:24` reads `fullSet` from context (`outfitSets.find((s) => s.id === set.id) ?? set`) precisely because `set.outfit_variants` is already filter-culled. Reproduce that: `groupVariants` comes from `fullSet`, and `obtained` / `total` / `allObtained` / the toggle payload all derive from `groupVariants` — never from the displayed `variants`. Getting this wrong silently shows wrong progress and makes the batch toggle act on a partial group.
+
+The toggle body is `outfit-set-section.tsx:48-57`; carry it over verbatim, including `onBatchToggleObtained(toToggle, !allObtained)`.
+
+- [ ] **Step 14.3: Virtualize the flat row list**
+
+Model this on `app/outfits/virtual-variant-grid.tsx` — reuse its proven structure rather than inventing a second approach. Specifically keep, unchanged in spirit:
+
+- `useWindowVirtualizer` (the page scrolls; there is no inner overflow container)
+- the `ResizeObserver` on the `GRID_CONTAINER` element feeding `outfitColumnsForWidth` — **never write breakpoint literals**; that shared lookup is the only permitted source of the column count
+- the `useLayoutEffect` `scrollMargin` block **including its `MutationObserver` on the parent's `childList`** (a fix-round found that conditional siblings above the grid mount/unmount without resizing, leaving `scrollMargin` stale)
+- `overscan: 3`, `measureElement` on each row, `data-index`
+- the `isFiltering` opacity dim; do **not** reintroduce `pointerEvents: 'none'`
+- `columnCount === null` → render nothing (SSR safety)
+
+Two things must differ from Task 5:
+
+1. **`estimateSize` branches on row kind.** A header is roughly 48px (a `size="small"` Button plus a `Divider` and `mt: 1`); a card row is the existing `ESTIMATED_ROW_HEIGHT` of 191. Returning one number for both makes the initial scrollbar badly wrong on a header-dense list. Export or re-declare the card constant with a comment pointing at `virtual-variant-grid.tsx` so the two stay recognizably linked; measure a header in the browser later if 48 proves off.
+2. **`getItemKey` must fold in `columnCount`** exactly as Task 5 does — row N holds different content at 4 columns than at 8, so cached heights must be discarded on reflow. Use the row's own `key` combined with `columnCount`.
+
+Render a `header` row as the extracted `OutfitGroupHeader` at full width, and a `cards` row as the same `display: grid` / `repeat(${columnCount}, minmax(0, 1fr))` / `gap: 16px` row Task 5 uses.
+
+- [ ] **Step 14.4: Wire it into the grouped branch and remove the section cap**
+
+In `filter-outfits.tsx`, replace the grouped compact branch's `CardGrid` + `filteredSets.slice(0, visibleSections).map(...)` + "Load more sets" button with `VirtualGroupedGrid`. Render it **outside** `CardGrid` for the same reason Task 5's grid is — it positions rows absolutely and would fight the CSS grid.
+
+Virtualization supersedes the section cap, so remove `visibleSections`, `INITIAL_SECTION_LIMIT`, `SECTION_LIMIT_STEP`, the "Load more sets" button, and the `setVisibleSections` line inside the cap-reset `useEffect`. **If that effect's body becomes empty, delete the whole effect** — do not leave a no-op effect behind. Check whether any other state still needs resetting there first.
+
+`OutfitSetSection` should now have no consumers. Verify with a grep, then delete the file. If something still imports it, keep it and say so.
+
+- [ ] **Step 14.5: Verify types, lint, and build**
+
+Run: `yarn tsc --noEmit && yarn lint && yarn build`
+Expected: all clean. The build matters — `window`/`ResizeObserver`/`MutationObserver` access must stay inside effects so `/outfits` still prerenders.
+
+- [ ] **Step 14.6: Manual verification (human)**
+
+In compact density, **grouped** (the default):
+
+- Set headers appear above their cards, with correct titles, and each header's progress chips show the **full** group's obtained-out-of-total — not the filtered subset
+- The batch-toggle button on a header marks/clears the whole group, including variants currently hidden by a filter
+- Scrolling reaches the last set with no gaps, overlaps, or duplicated headers
+- Opening/closing the filter drawer reflows the columns and rows re-measure cleanly
+- Applying a filter that culls sets updates the list correctly
+- A set whose variants are entirely filtered out shows **no** orphaned header
+- Switching to ungrouped still shows Task 5's virtualized flat grid; standard density is unchanged
+
+- [ ] **Step 14.7: Commit**
+
+```bash
+git add app/outfits/outfit-group-header.tsx app/outfits/virtual-grouped-grid.tsx app/outfits/filter-outfits.tsx
+git rm app/outfits/outfit-set-section.tsx
+git commit -m "perf(outfits): virtualize the grouped compact view
+
+Grouped is the default view, so the Task 5 virtualization never reached
+most users -- they got the 20-section cap instead. The interleaved
+full-width headers and variable-length card runs are flattened into one
+indexed row model (header rows and card rows) and virtualized, replacing
+the cap entirely.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
