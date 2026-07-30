@@ -7,12 +7,7 @@ import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
 import { Label, Style, UserPreferences } from '@/lib/types/eureka'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
-import {
-  updateOutfitFilters,
-  updateOutfitGroupBySet,
-  updateOutfitHideEvolutions,
-  updateOutfitHideGlowups,
-} from '@/app/actions/preferences'
+import { savePreferences } from '@/lib/save-preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
 import { updateOutfitSet } from '@/hooks/outfit'
 import {
@@ -30,6 +25,12 @@ async function fetchJson<T>(url: string): Promise<T> {
 // Filter changes arrive in bursts as the user adjusts several controls; collapse
 // them into one preference write instead of one write per click.
 const PREFERENCE_DEBOUNCE_MS = 500
+
+// A failed preference write must not disrupt filtering — the user's choices still
+// apply for this session, they just may not persist across a reload.
+const persistFailed = (err: unknown) => {
+  console.error('Failed to persist outfit preferences:', err)
+}
 
 export default function OutfitDataProvider({
   isLoggedIn,
@@ -57,7 +58,6 @@ export default function OutfitDataProvider({
   const [hideGlowups, setHideGlowups] = useState<boolean>(DEFAULT_PREFERENCES.outfit_hide_glowups)
   const [filters, setFilters] = useState<OutfitFilterState>(DEFAULT_OUTFIT_FILTERS)
   const [prefsLoaded, setPrefsLoaded] = useState(false)
-  const [, startTransition] = useTransition()
   const [isFiltering, startFilterTransition] = useTransition()
   const supabase = useMemo(() => createClient(), [])
 
@@ -116,22 +116,24 @@ export default function OutfitDataProvider({
       })
   }, [isLoggedIn])
 
+  // The toggle writes are fire-and-forget: the UI applies the change immediately
+  // and a failed persist only means the choice won't survive a reload.
   const handleGroupBySetChange = useCallback(() => {
     const next = !groupBySet
     setGroupBySet(next)
-    if (isLoggedIn) startTransition(() => updateOutfitGroupBySet(next))
+    if (isLoggedIn) void savePreferences({ outfit_group_by_set: next }).catch(persistFailed)
   }, [groupBySet, isLoggedIn])
 
   const handleHideEvolutionsChange = useCallback(() => {
     const next = !hideEvolutions
     setHideEvolutions(next)
-    if (isLoggedIn) startTransition(() => updateOutfitHideEvolutions(next))
+    if (isLoggedIn) void savePreferences({ outfit_hide_evolutions: next }).catch(persistFailed)
   }, [hideEvolutions, isLoggedIn])
 
   const handleHideGlowupsChange = useCallback(() => {
     const next = !hideGlowups
     setHideGlowups(next)
-    if (isLoggedIn) startTransition(() => updateOutfitHideGlowups(next))
+    if (isLoggedIn) void savePreferences({ outfit_hide_glowups: next }).catch(persistFailed)
   }, [hideGlowups, isLoggedIn])
 
   const handleFiltersChange = useCallback((updates: Partial<OutfitFilterState>) => {
@@ -153,11 +155,13 @@ export default function OutfitDataProvider({
     setHideEvolutions(DEFAULT_PREFERENCES.outfit_hide_evolutions)
     setHideGlowups(DEFAULT_PREFERENCES.outfit_hide_glowups)
     if (isLoggedIn) {
-      startTransition(() => {
-        updateOutfitGroupBySet(DEFAULT_PREFERENCES.outfit_group_by_set)
-        updateOutfitHideEvolutions(DEFAULT_PREFERENCES.outfit_hide_evolutions)
-        updateOutfitHideGlowups(DEFAULT_PREFERENCES.outfit_hide_glowups)
-      })
+      // One call for all three toggles: three concurrent upserts would race on
+      // the same user_preferences row.
+      void savePreferences({
+        outfit_group_by_set: DEFAULT_PREFERENCES.outfit_group_by_set,
+        outfit_hide_evolutions: DEFAULT_PREFERENCES.outfit_hide_evolutions,
+        outfit_hide_glowups: DEFAULT_PREFERENCES.outfit_hide_glowups,
+      }).catch(persistFailed)
     }
   }, [isLoggedIn])
 
@@ -229,12 +233,12 @@ export default function OutfitDataProvider({
   useEffect(() => {
     if (!isLoggedIn || !prefsLoaded) return
     // Persist filter choices as fire-and-forget: the UI must never wait on this
-    // write. Server Actions are serialized, so an un-debounced write per filter
-    // click queues sequential round-trips and stalls the interaction. Debouncing
-    // collapses a burst of filter changes into a single write, and staying out of
-    // startTransition keeps isFiltering tracking render work only.
+    // write. Debouncing collapses a burst of filter changes into a single write,
+    // and staying out of startTransition keeps isFiltering tracking render work
+    // only. The write goes through the route handler rather than a Server Action
+    // so it cannot invalidate the router cache and remount this provider.
     const id = setTimeout(() => {
-      void updateOutfitFilters({
+      void savePreferences({
         outfit_set_filter: filters.selectedOutfitSet,
         outfit_category_filter: filters.selectedOutfitCategory.length
           ? filters.selectedOutfitCategory.join(',')
@@ -246,11 +250,7 @@ export default function OutfitDataProvider({
         outfit_obtained_filter: filters.selectedObtainedFilter,
         outfit_style_filter: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
         outfit_label_filter: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
-      }).catch((err) => {
-        // A failed preference write must not disrupt filtering — the user's
-        // filters still work, they just may not persist across a reload.
-        console.error('Failed to persist outfit filters:', err)
-      })
+      }).catch(persistFailed)
     }, PREFERENCE_DEBOUNCE_MS)
     return () => clearTimeout(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps

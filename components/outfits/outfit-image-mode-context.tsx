@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { UserPreferences } from '@/lib/types/eureka'
-import { updateOutfitDensity, updateOutfitImageMode } from '@/app/actions/preferences'
+import { savePreferences } from '@/lib/save-preferences'
 
 // The image swap cycles between main image and alternate image.
 export type OutfitImageMode = 'image' | 'alt'
@@ -79,12 +79,12 @@ export function OutfitImageModeProvider({
     // Fire-and-forget: the UI must never wait on this write. Running it inside a
     // transition made the pending state track a network round-trip, so toggling
     // took seconds to register (same bug as the filter persistence in Task 2d).
-    if (isLoggedIn) void updateOutfitImageMode(next).catch(persistFailed)
+    if (isLoggedIn) void savePreferences({ outfit_image_mode: next }).catch(persistFailed)
   }
 
   const setDensity = (next: OutfitDensity) => {
     setDensityState(next)
-    if (isLoggedIn) void updateOutfitDensity(next).catch(persistFailed)
+    if (isLoggedIn) void savePreferences({ outfit_density: next }).catch(persistFailed)
   }
 
   // Restore both image mode and density to their defaults ('image' / 'standard'),
@@ -92,9 +92,11 @@ export function OutfitImageModeProvider({
   const reset = () => {
     setModeState('image')
     setDensityState('standard')
+    // Both keys in one call: two concurrent upserts would race on the same row.
     if (isLoggedIn) {
-      void updateOutfitImageMode('image').catch(persistFailed)
-      void updateOutfitDensity('standard').catch(persistFailed)
+      void savePreferences({ outfit_image_mode: 'image', outfit_density: 'standard' }).catch(
+        persistFailed
+      )
     }
   }
 
