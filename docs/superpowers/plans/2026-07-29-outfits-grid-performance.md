@@ -1782,3 +1782,110 @@ the cap entirely.
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 ```
+
+---
+
+### Task 16: Virtualize the standard-density view
+
+**Added 2026-07-30 at the user's request.** Tasks 5 and 14 virtualized both compact branches. Standard density still mounts every set card at once.
+
+**Structure:** unlike grouped compact, this branch is a **flat uniform list** — one `OutfitSetCard` per set+evolution group (`filter-outfits.tsx:284-324`). Structurally it is the same shape as the ungrouped compact grid, so `VirtualVariantGrid` is the model to follow.
+
+**Two real differences from the compact grids — neither can be glossed over:**
+
+1. **Card height is aspect-ratio driven.** `components/set-card.tsx:53` uses `aspectRatio: showAlt ? '1 / 1' : '2 / 3'`, so height **scales with column width** and changes with the image mode. The compact grids' fixed 191px constant is invalid here.
+2. **`shouldHide` is being removed** (see Step 16.1). The user's ruling: hide-evolutions / hide-glow-ups should behave like every other filter — the card is simply absent, with no exit animation. The only animation that should remain is the `Grow` when the obtained toggle is clicked.
+
+**Files:**
+
+- Modify: `app/outfits/outfit-set-card.tsx` (remove `shouldHide`)
+- Modify: `app/outfits/filter-outfits.tsx` (standard branch)
+- Create: `app/outfits/virtual-set-grid.tsx`
+
+**Interfaces:**
+
+- Consumes: memoized `filteredSets`, `outfitColumnsForWidth` / `GRID_CONTAINER` from `lib/types/props`, `useOutfitImageMode` for the current mode.
+- Produces: `VirtualSetGrid`.
+
+- [ ] **Step 16.1: Remove the `shouldHide` prop and its exit animation**
+
+The filter pipeline at `filter-outfits.tsx:111-121` **already** culls variants for hidden evolutions and glow-ups via `isEvolutionVisible`. The `shouldHide` prop at `:309-318` re-evaluates that same condition purely to animate the card out — so it is redundant with the filter that already removed the data.
+
+In `app/outfits/outfit-set-card.tsx`:
+
+- Delete the `shouldHide` prop, its type, and the `useEffect` that does `setExiting(shouldHide)` (lines ~53-56).
+- Keep the `exiting` state and the `isMissingFilter` path in `handleToggle` — that is the obtained-toggle `Grow`, which the user explicitly wants preserved.
+- Keep `grown` / `useEffect(() => setGrown(true), [])` and the `in={grown && !exiting}` wiring.
+
+In `filter-outfits.tsx`, delete the whole `shouldHide={...}` prop from the `OutfitSetCard` call site. Check afterward whether `isEvolutionVisible` and `isGlowup` are still imported for the pipeline use at `:114` — they should be; do not remove imports still needed there.
+
+- [ ] **Step 16.2: Create the virtualized set grid**
+
+Create `app/outfits/virtual-set-grid.tsx`, modelled closely on `app/outfits/virtual-variant-grid.tsx`. Carry over, unchanged in intent:
+
+- `useWindowVirtualizer` with `overscan: 3`, `measureElement`, `data-index`
+- **`useAnimationFrameWithResizeObserver: true`** — this is required, not optional. Without it, `measureElement`'s synchronous ResizeObserver callback calls `resizeItem` → `notify(true)` → `flushSync` during a React commit, and React throws "flushSync was called from inside a lifecycle method". This grid mounts during exactly such a commit when `density` hydrates from saved preferences.
+- the `ResizeObserver` on the `GRID_CONTAINER` element feeding `outfitColumnsForWidth` — **never write breakpoint literals**
+- the `scrollMargin` `useEffect` **including the `MutationObserver` on the parent's `childList`**, and note it must be `useEffect`, **not** `useLayoutEffect` (a layout-phase state write re-triggers the same `flushSync` throw)
+- `columnCount === null` → render nothing (SSR safety)
+- the `isFiltering` opacity dim; do **not** add `pointerEvents: 'none'`
+- `getItemKey` folding in `columnCount`
+
+**The estimate must be computed, not constant.** Derive it from the observed container width:
+
+```ts
+// Set cards are aspect-ratio driven (2/3, or 1/1 in alt mode), so row height
+// scales with column width — a fixed constant would make the scrollbar badly
+// wrong at narrow and wide windows alike. Estimate from the measured width;
+// `measureElement` still corrects each row on its first paint.
+const columnWidth = (containerWidth - GAP_PX * (columnCount - 1)) / columnCount
+const imageHeight = columnWidth * (showAlt ? 1 : 3 / 2)
+const estimated = imageHeight + SET_CARD_TEXT_HEIGHT + GAP_PX
+```
+
+Store the observed width in state alongside `columnCount` (the same `ResizeObserver` callback already has `entry.contentRect.width`). `SET_CARD_TEXT_HEIGHT` covers the title/rarity block below the image — derive it from `components/set-card.tsx` (the `Stack` with `px: 1, py: 2` plus an `overline` title and `RarityStars`) and state your derivation in a comment.
+
+`showAlt` comes from `useOutfitImageMode()`'s `mode === 'alt'`, matching how `OutfitSetCard` computes it. The estimate must be recomputed when the mode changes, and `getItemKey` should fold in `showAlt` too, so cached heights are discarded when the aspect ratio changes.
+
+- [ ] **Step 16.3: Wire it into the standard branch**
+
+Replace the `CardGrid` + `flatMap` block at `filter-outfits.tsx:284-324` with `VirtualSetGrid`, rendered **outside** `CardGrid` (it positions rows absolutely). Build the flat item list — one entry per set+evolution group with its `evolution`, `set`, `obtained`, `total`, and `variants` — in a `useMemo`, reproducing the existing grouping logic including the `if (variants.length === 0) return null` skip.
+
+Keep passing every prop `OutfitSetCard` still needs (`evolution`, `isLoggedIn`, `isMissingFilter`, `obtained`, `set`, `total`, `variants`) with the same values. Only `shouldHide` is gone.
+
+- [ ] **Step 16.4: Verify types, lint, and build**
+
+Run: `yarn tsc --noEmit && yarn lint && yarn build`
+Expected: all clean, `/outfits` still prerendering.
+
+- [ ] **Step 16.5: Manual verification (human)**
+
+In **standard** density:
+
+- The console is clean — no `flushSync` error on load or when switching density
+- Scrolling reaches the last set with no gaps, overlaps, or duplicates
+- Card proportions look right, and the scrollbar does not lurch wildly while scrolling
+- Toggling the image mode (alt) reflows to square cards and rows re-measure cleanly
+- Clicking a card's obtained toggle still animates (`Grow`) — this is the one animation that must survive
+- Hiding evolutions / glow-ups removes those cards immediately, like any other filter
+- Opening/closing the filter drawer reflows columns correctly
+- Both compact views still work
+
+- [ ] **Step 16.6: Commit**
+
+```bash
+git add app/outfits/virtual-set-grid.tsx app/outfits/outfit-set-card.tsx app/outfits/filter-outfits.tsx
+git commit -m "perf(outfits): virtualize the standard-density view
+
+Standard density mounted every set card at once. It is a flat uniform
+list, so it follows the ungrouped compact grid's structure -- but set
+cards are aspect-ratio driven, so the row estimate is computed from the
+observed column width and image mode rather than a constant.
+
+Also drops shouldHide: the filter pipeline already culls hidden
+evolutions and glow-ups, so the prop only drove a redundant exit
+animation. Hiding now behaves like every other filter, leaving the
+obtained-toggle Grow as the only card animation.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
