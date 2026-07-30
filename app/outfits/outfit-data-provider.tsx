@@ -5,8 +5,9 @@ import { enqueueSnackbar } from 'notistack'
 import { createClient } from '@/lib/supabase/client'
 import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
-import { Label, Style, UserPreferences } from '@/lib/types/eureka'
+import { Label, Style } from '@/lib/types/eureka'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
+import { fetchPreferencesOnce } from '@/lib/preferences-cache'
 import { savePreferences } from '@/lib/save-preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
 import { updateOutfitSet } from '@/hooks/outfit'
@@ -81,7 +82,7 @@ export default function OutfitDataProvider({
 
   useEffect(() => {
     if (!isLoggedIn) return
-    fetchJson<UserPreferences>('/api/preferences')
+    fetchPreferencesOnce()
       .then((prefs) => {
         setGroupBySet(prefs.outfit_group_by_set)
         setHideEvolutions(prefs.outfit_hide_evolutions)

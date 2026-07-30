@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { UserPreferences } from '@/lib/types/eureka'
+import { fetchPreferencesOnce } from '@/lib/preferences-cache'
 import { savePreferences } from '@/lib/save-preferences'
 
 export type SortOrder = 'new' | 'old'
@@ -64,9 +65,10 @@ export function SortProvider({
   // Hydrate from saved preferences for logged-in users.
   useEffect(() => {
     if (!isLoggedIn) return
-    fetch('/api/preferences')
-      .then((r) => (r.ok ? (r.json() as Promise<UserPreferences>) : null))
-      .then((prefs) => {
+    // The shared helper rejects on a non-ok response rather than resolving null,
+    // and the .catch below swallows that — same silent no-op as before.
+    fetchPreferencesOnce()
+      .then((prefs: UserPreferences | null) => {
         if (!prefs) return
         // Back-compat: accept legacy 'new'/'old' as well as 'asc'/'desc'.
         const stored = prefs.sort_order

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { UserPreferences } from '@/lib/types/eureka'
+import { fetchPreferencesOnce } from '@/lib/preferences-cache'
 import { savePreferences } from '@/lib/save-preferences'
 
 // The image swap cycles between main image and alternate image.
@@ -64,9 +65,10 @@ export function OutfitImageModeProvider({
   // Hydrate from saved preferences for logged-in users.
   useEffect(() => {
     if (!isLoggedIn) return
-    fetch('/api/preferences')
-      .then((r) => (r.ok ? (r.json() as Promise<UserPreferences>) : null))
-      .then((prefs) => {
+    // The shared helper rejects on a non-ok response rather than resolving null,
+    // and the .catch below swallows that — same silent no-op as before.
+    fetchPreferencesOnce()
+      .then((prefs: UserPreferences | null) => {
         if (!prefs) return
         if (prefs.outfit_image_mode) setModeState(prefs.outfit_image_mode as OutfitImageMode)
         if (prefs.outfit_density) setDensityState(prefs.outfit_density as OutfitDensity)
