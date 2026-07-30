@@ -796,7 +796,210 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 ---
 
+### Task 6: Take density / image-mode persistence out of the interaction path
+
+**Added 2026-07-29.** User reported that switching standard → compact takes **seconds to register the toggle itself**, before any card rendering. Cause: `setDensity` (`components/outfits/outfit-image-mode-context.tsx:77-80`) fires the `updateOutfitDensity` Server Action inside `startTransition`. This is the identical bug Task 2d fixed for filters — in a second provider that was never touched. `setMode` and `reset` have it too.
+
+**Files:**
+
+- Modify: `components/outfits/outfit-image-mode-context.tsx:72-93`
+
+**Interfaces:**
+
+- Consumes: nothing new.
+- Produces: no API change. `setMode`, `setDensity`, `cycleMode`, and `reset` keep their signatures.
+
+- [ ] **Step 6.1: Make all three write sites fire-and-forget**
+
+The pattern for all three: update local state synchronously, then persist without any transition the UI observes. Unlike Task 2d these are single discrete clicks rather than a burst, so a debounce is unnecessary — the fix is removing `startTransition`, not adding a timer.
+
+Replace lines 72-93 with:
+
+```ts
+const setMode = (next: OutfitImageMode) => {
+  setModeState(next)
+  // Fire-and-forget: the UI must never wait on this write. Running it inside a
+  // transition made the pending state track a network round-trip, so toggling
+  // took seconds to register (same bug as the filter persistence in Task 2d).
+  if (isLoggedIn) void updateOutfitImageMode(next).catch(persistFailed)
+}
+
+const setDensity = (next: OutfitDensity) => {
+  setDensityState(next)
+  if (isLoggedIn) void updateOutfitDensity(next).catch(persistFailed)
+}
+
+// Restore both image mode and density to their defaults ('image' / 'standard'),
+// persisting the reset for logged-in users. Used by the filter menu "Clear all".
+const reset = () => {
+  setModeState('image')
+  setDensityState('standard')
+  if (isLoggedIn) {
+    void updateOutfitImageMode('image').catch(persistFailed)
+    void updateOutfitDensity('standard').catch(persistFailed)
+  }
+}
+```
+
+Add this helper at module scope, above the provider:
+
+```ts
+// A failed view-preference write must not disrupt the UI — the setting still
+// applies for this session, it just may not survive a reload.
+const persistFailed = (err: unknown) => {
+  console.error('Failed to persist outfit view preference:', err)
+}
+```
+
+- [ ] **Step 6.2: Remove the now-unused transition**
+
+With all three call sites converted, `startTransition` (line 57) is unused. Delete the `const [, startTransition] = useTransition()` line and drop `useTransition` from the React import on line 3 — but **only** if nothing else in the file uses it. Grep the file to confirm before deleting.
+
+Leave the `useMemo` on the context value and its `eslint-disable-next-line react-hooks/exhaustive-deps` (line 108) exactly as they are.
+
+- [ ] **Step 6.3: Verify types and lint**
+
+Run: `yarn tsc --noEmit && yarn lint`
+Expected: no errors, and no unused-import warning for `useTransition`.
+
+- [ ] **Step 6.4: Manual check (human)**
+
+- Toggling density registers **immediately** — the toggle's own visual state must not wait
+- The image-mode swap toggles immediately
+- "Clear all" in the filter menu still resets density and image mode
+- Change density, reload the page — the choice persisted
+
+- [ ] **Step 6.5: Commit**
+
+```bash
+git add components/outfits/outfit-image-mode-context.tsx
+git commit -m "perf(outfits): stop density and image-mode toggles awaiting writes
+
+setDensity, setMode, and reset each ran their Server Action inside a
+transition, so the toggle's own state waited on a Supabase round-trip --
+seconds before a density switch even registered. Same bug Task 2d fixed
+for filters, in the other provider. Writes are now fire-and-forget.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 7: Cap rendered cards with progressive reveal
+
+**Added 2026-07-29.** Chosen by the user over virtualization ("cap now, virtualize later if needed"). The compact ungrouped view mounts ~6,000 cards at once; no amount of memoization helps because the work is genuinely necessary. Capping avoids both the new dependency and the JS/CSS breakpoint duplication that Task 5 would require.
+
+**Files:**
+
+- Modify: `app/outfits/filter-outfits.tsx`
+
+**Interfaces:**
+
+- Consumes: the memoized `filteredSets` (Tasks 2a/2b) and memoized cards (Task 3).
+- Produces: no new exports.
+
+- [ ] **Step 7.1: Add the cap state**
+
+Near the top of the `FilterOutfits` component (with the other hooks, above the early returns), add:
+
+```ts
+const [visibleCount, setVisibleCount] = useState(INITIAL_CARD_LIMIT)
+```
+
+And at module scope:
+
+```ts
+// The compact ungrouped view can hold ~6000 variants; mounting them all at once
+// blocks the main thread for seconds. Render a window and let the user extend it.
+const INITIAL_CARD_LIMIT = 200
+const CARD_LIMIT_STEP = 200
+```
+
+- [ ] **Step 7.2: Reset the cap when the result set changes**
+
+This is the subtle part. If the user filters down and the cap stays where they scrolled it, behavior is confusing. Reset the cap whenever the filtered results change:
+
+```ts
+// Collapse back to the first window when the result set changes, so a new
+// filter starts from the top rather than inheriting a previous "load more".
+useEffect(() => {
+  setVisibleCount(INITIAL_CARD_LIMIT)
+}, [filteredSets])
+```
+
+Place this with the other hooks, above the early returns.
+
+- [ ] **Step 7.3: Slice the ungrouped compact list and add the reveal control**
+
+In the compact branch, the ungrouped side currently reads:
+
+```tsx
+<>{filteredSets.flatMap((set) => renderSetVariants(set))}</>
+```
+
+Replace it so the flattened list is sliced, and a "Load more" button follows the grid when more remain. The button must sit **outside** the `CardGrid` (it is not a card), so restructure the ungrouped branch to render the grid and the button as siblings.
+
+```tsx
+const allCards = filteredSets.flatMap((set) => renderSetVariants(set))
+const visibleCards = allCards.slice(0, visibleCount)
+const remaining = allCards.length - visibleCards.length
+```
+
+Compute these inside the compact-ungrouped branch. Render `visibleCards` in the `CardGrid`, then below it:
+
+```tsx
+{
+  remaining > 0 && (
+    <Stack sx={{ alignItems: 'center', py: 3 }}>
+      <Button variant="outlined" onClick={() => setVisibleCount((n) => n + CARD_LIMIT_STEP)}>
+        Load {Math.min(remaining, CARD_LIMIT_STEP)} more ({remaining} remaining)
+      </Button>
+    </Stack>
+  )
+}
+```
+
+`Stack` and `Button` are already imported from `@mui/material` in this file — verify before adding imports.
+
+Important: apply the cap **only** to the compact ungrouped branch. Leave the grouped compact branch and the standard-density branch untouched — grouped mode's set sections are a different structure, and standard density renders only hundreds of cards.
+
+Note `renderSetVariants` returns an array of elements, so `flatMap` over it yields a flat element array that slices cleanly. The elements already carry stable `key`s from `variant.id`.
+
+- [ ] **Step 7.4: Verify types and lint**
+
+Run: `yarn tsc --noEmit && yarn lint`
+Expected: no errors, no exhaustive-deps warnings on the new effect.
+
+- [ ] **Step 7.5: Manual check (human)**
+
+In compact density, ungrouped, no filters:
+
+- Initial load renders quickly (~200 cards, not ~6000)
+- Scrolling is smooth
+- "Load more" appends the next batch and the count decrements correctly
+- Applying a filter resets back to the first window
+- Toggling a variant's obtained state still works, and does **not** reset the cap unexpectedly
+- Switching to grouped mode or standard density still shows everything as before
+
+- [ ] **Step 7.6: Commit**
+
+```bash
+git add app/outfits/filter-outfits.tsx
+git commit -m "perf(outfits): cap rendered cards in the compact ungrouped view
+
+The compact ungrouped view mounted ~6000 cards at once, which blocks the
+main thread for seconds regardless of memoization -- the work is real,
+just too much at once. It now renders 200 with a Load more control, and
+resets to the first window when the filtered results change.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
 ### Task 5: Virtualize the ungrouped compact grid
+
+**Status: specified but DEFERRED.** The user chose Task 7's card cap instead ("cap now, virtualize later if needed"). Revisit this task only if capping proves unsatisfying — it costs a new dependency and duplicates the container-query breakpoints in JS, where they can silently drift from the CSS.
 
 **Added 2026-07-29.** Approved by the user after Tasks 2c/2d showed that filter interaction, while improved, is still limited by rendering ~6,000 cards synchronously. This was the user's original instinct; it is now evidence-backed rather than assumed.
 
