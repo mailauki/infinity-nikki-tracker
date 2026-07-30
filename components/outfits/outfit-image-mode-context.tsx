@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useMemo, useState, useTransition } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { UserPreferences } from '@/lib/types/eureka'
 import { updateOutfitDensity, updateOutfitImageMode } from '@/app/actions/preferences'
 
@@ -45,6 +45,12 @@ const OutfitImageModeContext = createContext<OutfitImageModeContextValue>({
   reset: () => {},
 })
 
+// A failed view-preference write must not disrupt the UI — the setting still
+// applies for this session, it just may not survive a reload.
+const persistFailed = (err: unknown) => {
+  console.error('Failed to persist outfit view preference:', err)
+}
+
 export function OutfitImageModeProvider({
   isLoggedIn = false,
   children,
@@ -54,7 +60,6 @@ export function OutfitImageModeProvider({
 }) {
   const [mode, setModeState] = useState<OutfitImageMode>('image')
   const [density, setDensityState] = useState<OutfitDensity>('standard')
-  const [, startTransition] = useTransition()
 
   // Hydrate from saved preferences for logged-in users.
   useEffect(() => {
@@ -71,12 +76,15 @@ export function OutfitImageModeProvider({
 
   const setMode = (next: OutfitImageMode) => {
     setModeState(next)
-    if (isLoggedIn) startTransition(() => updateOutfitImageMode(next))
+    // Fire-and-forget: the UI must never wait on this write. Running it inside a
+    // transition made the pending state track a network round-trip, so toggling
+    // took seconds to register (same bug as the filter persistence in Task 2d).
+    if (isLoggedIn) void updateOutfitImageMode(next).catch(persistFailed)
   }
 
   const setDensity = (next: OutfitDensity) => {
     setDensityState(next)
-    if (isLoggedIn) startTransition(() => updateOutfitDensity(next))
+    if (isLoggedIn) void updateOutfitDensity(next).catch(persistFailed)
   }
 
   // Restore both image mode and density to their defaults ('image' / 'standard'),
@@ -85,10 +93,8 @@ export function OutfitImageModeProvider({
     setModeState('image')
     setDensityState('standard')
     if (isLoggedIn) {
-      startTransition(() => {
-        updateOutfitImageMode('image')
-        updateOutfitDensity('standard')
-      })
+      void updateOutfitImageMode('image').catch(persistFailed)
+      void updateOutfitDensity('standard').catch(persistFailed)
     }
   }
 
