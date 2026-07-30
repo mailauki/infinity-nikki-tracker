@@ -8,9 +8,12 @@ import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
 import CardGrid from '@/components/card-grid'
+// isEvolutionVisible / isGlowup are still needed: the filter pipeline below uses
+// them to cull hidden evolutions and glow-ups outright. Only the redundant
+// `shouldHide` exit-animation use was removed.
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
-import OutfitSetCard from './outfit-set-card'
 import VirtualGroupedGrid from './virtual-grouped-grid'
+import VirtualSetGrid, { type SetGridItem } from './virtual-set-grid'
 import VirtualVariantGrid from './virtual-variant-grid'
 
 const STANDALONE_SLUG = 'standalone-pieces'
@@ -220,9 +223,35 @@ export default function FilterOutfits() {
     [filteredSets]
   )
 
-  // No reveal window in either compact branch any more: both are virtualized
-  // (VirtualGroupedGrid / VirtualVariantGrid), so the whole result set is always
-  // "rendered" and only the rows in view are mounted.
+  // The standard branch renders one card per set+evolution group, so it consumes
+  // a flat item list rather than sets. Memoized to keep the array identity — and
+  // with it the virtualizer's row model — stable across unrelated re-renders.
+  const setGridItems = useMemo<SetGridItem[]>(() => {
+    const items: SetGridItem[] = []
+    for (const set of filteredSets) {
+      const baseSlug = set.slug
+      // The base set plus each evolution is its own card.
+      for (const evolution of [null, ...set.evolutions]) {
+        const stateSlug = evolution?.slug ?? baseSlug
+        const variants = set.outfit_variants.filter((v) => v.outfit_set === stateSlug)
+        // An evolution group whose variants were all culled emits no card.
+        if (variants.length === 0) continue
+        items.push({
+          key: `${set.id}-${stateSlug}`,
+          set,
+          evolution,
+          obtained: variants.filter((v) => v.obtained === true).length,
+          total: variants.length,
+          variants,
+        })
+      }
+    }
+    return items
+  }, [filteredSets])
+
+  // No reveal window in any branch any more: all three are virtualized
+  // (VirtualSetGrid / VirtualGroupedGrid / VirtualVariantGrid), so the whole
+  // result set is always "rendered" and only the rows in view are mounted.
 
   if (isError) {
     return (
@@ -281,47 +310,17 @@ export default function FilterOutfits() {
         </Stack>
       )}
 
+      {/* Rendered OUTSIDE a CardGrid for the same reason as the two compact
+          grids below: it positions its own rows absolutely and would fight
+          CardGrid's CSS grid. It carries its own inline-size container and row
+          template. */}
       {filteredSets.length > 0 && density === 'standard' && (
-        <CardGrid
-          columns="outfit"
-          gap={2}
-          sx={{
-            opacity: isFiltering ? 0.5 : 1,
-            transition: 'opacity 150ms ease',
-          }}
-        >
-          {filteredSets.flatMap((set) => {
-            const baseSlug = set.slug
-            // Render the base set plus each evolution as its own card.
-            return [null, ...set.evolutions].map((evolution) => {
-              const stateSlug = evolution?.slug ?? baseSlug
-              const variants = set.outfit_variants.filter((v) => v.outfit_set === stateSlug)
-              if (variants.length === 0) return null
-              const obtained = variants.filter((v) => v.obtained === true).length
-              return (
-                <OutfitSetCard
-                  key={`${set.id}-${stateSlug}`}
-                  evolution={evolution}
-                  isLoggedIn={isLoggedIn}
-                  isMissingFilter={selectedObtainedFilter === 'missing'}
-                  obtained={obtained}
-                  set={set}
-                  shouldHide={
-                    !isEvolutionVisible({
-                      stateSlug,
-                      baseSlug,
-                      isGlowupState: !!evolution && isGlowup(evolution),
-                      hideEvolutions,
-                      hideGlowups,
-                    })
-                  }
-                  total={variants.length}
-                  variants={variants}
-                />
-              )
-            })
-          })}
-        </CardGrid>
+        <VirtualSetGrid
+          isFiltering={isFiltering}
+          isLoggedIn={isLoggedIn}
+          isMissingFilter={selectedObtainedFilter === 'missing'}
+          items={setGridItems}
+        />
       )}
 
       {/* Rendered OUTSIDE a CardGrid for the same reason as VirtualVariantGrid

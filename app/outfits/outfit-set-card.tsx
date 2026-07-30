@@ -21,7 +21,6 @@ function OutfitSetCard({
   total,
   variants,
   isMissingFilter = false,
-  shouldHide = false,
 }: {
   set: OutfitSet
   // When provided, the card represents this evolution of the set (its image,
@@ -38,22 +37,17 @@ function OutfitSetCard({
   // card out (the obtained toggle is committed in onExited) so it leaves the
   // filtered view smoothly instead of vanishing instantly.
   isMissingFilter?: boolean
-  // When true (e.g. an evolution card while "hide evolutions" is active), the
-  // card animates out and stays unmounted.
-  shouldHide?: boolean
 }) {
   const { onBatchToggleObtained } = useOutfitData()
   const { mode } = useOutfitImageMode()
   const [grown, setGrown] = useState(false)
+  // The ONE card animation that survives: set by `handleToggle` under the
+  // "missing" filter so completing a group animates out instead of vanishing.
+  // Hide-evolutions / hide-glow-ups no longer animate — the filter pipeline in
+  // `filter-outfits.tsx` culls those variants outright, like every other filter.
   const [exiting, setExiting] = useState(false)
 
   useEffect(() => setGrown(true), [])
-
-  // Animate out when this card should be hidden by a filter change, and grow
-  // back in when the filter is cleared.
-  useEffect(() => {
-    setExiting(shouldHide)
-  }, [shouldHide])
 
   function handleToggle() {
     // Batch-toggle the whole group: when fully obtained, clear it; otherwise
