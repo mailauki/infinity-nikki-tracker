@@ -997,6 +997,263 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 ---
 
+### Task 8: Stop preference writes from remounting the provider
+
+**Added 2026-07-29 after a user-supplied server log disproved an earlier claim of mine.** Toggling density produced:
+
+```text
+POST /outfits 200 in 399ms      -> updateOutfitFilters 218ms
+GET /api/obtained-outfit 200 in 2.4s
+GET /api/outfits 200 in 6.7s    (application-code: 5.7s)
+POST /outfits 200 in 1087ms     -> updateOutfitDensity 596ms
+```
+
+I had told the user the DB fetch "happens once on mount." It does not — it refires on every preference toggle. Tasks 2d and 6 removed the `await` on a 200-600ms write while leaving a **6.7s refetch** behind it, which is why the user noticed no improvement.
+
+**The mechanism, verified against the Next.js 16 source.** A Server Action does _not_ automatically refresh the router — it bails out unless `revalidatePath`, `revalidateTag`, `refresh()`, or **`cookies.set()`** is called. `upsertUserPreference` calls `getUserID()` → `createClient()`, and the Supabase SSR client **sets auth cookies** (`lib/supabase/server.ts:22-27`) when it refreshes the session. In `action-handler.ts`, `isCookieRevalidated` sets the revalidation header → `ActionDidRevalidateStaticAndDynamic` → full client cache invalidation → the route re-renders → `app/outfits/layout.tsx` re-runs `getUserID()` → `OutfitDataProvider` remounts → its `useEffect(…, [])` refires both fetches.
+
+**The fix:** write preferences through a route handler instead. Route handlers cannot trigger client-cache revalidation, so the cookie write no longer invalidates anything.
+
+**Files:**
+
+- Modify: `app/api/preferences/route.ts` (add `POST`)
+- Modify: `app/outfits/outfit-data-provider.tsx` (filter writes)
+- Modify: `components/outfits/outfit-image-mode-context.tsx` (density / image-mode writes)
+
+**Scope note:** five other files import `app/actions/preferences` (`app/settings/appearance-settings.tsx`, `app/eureka/eureka-data-provider.tsx`, `app/admin/admin-view-toggle.tsx`, `components/sort-context.tsx`, `components/navbar/theme-switcher.tsx`). They have the same latent bug, but this task covers **only the two outfits-path files**. Leave the Server Actions in `app/actions/preferences.ts` in place for those other callers — do not delete them.
+
+**Interfaces:**
+
+- Consumes: the existing `GET /api/preferences` route.
+- Produces: `POST /api/preferences` accepting a partial preferences object, and a client helper for calling it.
+
+- [ ] **Step 8.1: Add a POST handler to the preferences route**
+
+In `app/api/preferences/route.ts`, add a `POST` alongside the existing `GET`. Reuse the same auth pattern the `GET` uses.
+
+```ts
+// Allowed preference columns. An explicit allowlist keeps a malicious body from
+// writing arbitrary columns through the upsert.
+const WRITABLE_KEYS = new Set([
+  'group_by_set',
+  'show_by_color',
+  'eureka_set_filter',
+  'eureka_category',
+  'eureka_obtained_filter',
+  'eureka_color',
+  'eureka_rarity',
+  'theme',
+  'color_theme',
+  'outfit_set_filter',
+  'outfit_category_filter',
+  'outfit_evolution_filter',
+  'outfit_rarity_filter',
+  'outfit_obtained_filter',
+  'outfit_group_by_set',
+  'outfit_hide_evolutions',
+  'outfit_hide_glowups',
+  'outfit_image_mode',
+  'outfit_density',
+  'sort_order',
+  'outfit_sort_axis',
+])
+
+export async function POST(request: Request) {
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ ok: false }, { status: 401 })
+
+  const body = (await request.json()) as Record<string, unknown>
+  const updates: Record<string, unknown> = {}
+  for (const [key, value] of Object.entries(body)) {
+    if (WRITABLE_KEYS.has(key)) updates[key] = value
+  }
+  if (Object.keys(updates).length === 0) return NextResponse.json({ ok: true })
+
+  const { error } = await supabase
+    .from('user_preferences')
+    .upsert(
+      { user_id: user.id, ...updates, updated_at: new Date().toISOString() },
+      { onConflict: 'user_id' }
+    )
+
+  if (error) {
+    console.error('Failed to persist preferences:', error)
+    return NextResponse.json({ ok: false }, { status: 500 })
+  }
+  return NextResponse.json({ ok: true })
+}
+```
+
+- [ ] **Step 8.2: Add a client helper**
+
+Create `lib/save-preferences.ts`:
+
+```ts
+// Persist view preferences through the API route rather than a Server Action.
+// A Server Action that sets cookies (which the Supabase SSR client does when it
+// refreshes a session) invalidates the client router cache, remounting the
+// outfits provider and refiring its ~6.7s data fetch. Route handlers cannot
+// trigger that revalidation.
+export function savePreferences(updates: Record<string, unknown>) {
+  return fetch('/api/preferences', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates),
+  }).then((r) => {
+    if (!r.ok) throw new Error(`POST /api/preferences returned ${r.status}`)
+  })
+}
+```
+
+- [ ] **Step 8.3: Switch the outfits filter writes**
+
+In `app/outfits/outfit-data-provider.tsx`, replace the imported Server Action calls with `savePreferences`. The debounced `[filters]` effect from Task 2d keeps its `setTimeout` and `clearTimeout` — only the call inside changes:
+
+```ts
+void savePreferences({
+  outfit_set_filter: filters.selectedOutfitSet,
+  outfit_category_filter: filters.selectedOutfitCategory.length
+    ? filters.selectedOutfitCategory.join(',')
+    : null,
+  outfit_evolution_filter:
+    filters.selectedEvolution !== null ? String(filters.selectedEvolution) : null,
+  outfit_rarity_filter: filters.selectedRarity ? String(filters.selectedRarity) : null,
+  outfit_obtained_filter: filters.selectedObtainedFilter,
+  outfit_style_filter: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
+  outfit_label_filter: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
+}).catch((err) => {
+  console.error('Failed to persist outfit filters:', err)
+})
+```
+
+Also convert the three toggle handlers that call `updateOutfitGroupBySet`, `updateOutfitHideEvolutions`, and `updateOutfitHideGlowups`, plus the `handleClearFilters` block that calls all three. Each becomes a `void savePreferences({ … }).catch(…)` with the matching column (`outfit_group_by_set`, `outfit_hide_evolutions`, `outfit_hide_glowups`). Remove the now-unused `startTransition` wrapper around those calls, and delete the `useTransition` on line 60 **only if** nothing else in the file uses it — grep first.
+
+Note: `outfit_style_filter` and `outfit_label_filter` are not in the `GET`'s select list nor in my `WRITABLE_KEYS` list above. Check whether those columns exist on `user_preferences`; if they do, add them to `WRITABLE_KEYS` and to the `GET` select. If they do not, drop them from the write. Report what you found.
+
+- [ ] **Step 8.4: Switch the density / image-mode writes**
+
+In `components/outfits/outfit-image-mode-context.tsx`, replace `updateOutfitImageMode` / `updateOutfitDensity` with `savePreferences({ outfit_image_mode: next })` and `savePreferences({ outfit_density: next })`. Keep the existing fire-and-forget shape and the `persistFailed` handler from Task 6. `reset` writes both keys — send them in **one** call (`{ outfit_image_mode: 'image', outfit_density: 'standard' }`) rather than two, which also fixes a race noted in an earlier review.
+
+- [ ] **Step 8.5: Verify types, lint, and build**
+
+Run: `yarn tsc --noEmit && yarn lint && yarn build`
+Expected: clean. The build matters — a route handler with a bad signature can pass `tsc` and fail the build.
+
+- [ ] **Step 8.6: Manual verification (human) — THE decisive check**
+
+With the dev server's request log visible, toggle density in the browser. Confirm:
+
+- **`GET /api/outfits` does NOT appear** — this is the whole point of the task
+- `GET /api/obtained-outfit` does not appear either
+- A single `POST /api/preferences` appears instead of `POST /outfits`
+- The density toggle registers immediately
+- Reload the page — the density choice persisted
+- The same for a filter change: one debounced `POST /api/preferences`, no refetch
+
+- [ ] **Step 8.7: Commit**
+
+```bash
+git add app/api/preferences/route.ts lib/save-preferences.ts app/outfits/outfit-data-provider.tsx components/outfits/outfit-image-mode-context.tsx
+git commit -m "perf(outfits): write preferences via route handler, not Server Action
+
+The Supabase SSR client sets auth cookies while refreshing a session.
+Inside a Server Action that marks the response as revalidated, which
+invalidates the client router cache, remounts OutfitDataProvider, and
+refires its ~6.7s /api/outfits fetch on every preference toggle. Writing
+through a route handler avoids the revalidation entirely.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 9: Extend the card cap to grouped compact
+
+**Added 2026-07-29.** Task 7 capped only the **ungrouped** compact branch, but `outfit_group_by_set` defaults to `true` (`lib/preferences.ts:22`), so the user never saw the cap or the "Load more" button. Task 7 was scoped by which branch was easiest to cap rather than which branch is actually used.
+
+**Files:**
+
+- Modify: `app/outfits/filter-outfits.tsx`
+
+**Interfaces:**
+
+- Consumes: `visibleCount` / `setVisibleCount` and the `INITIAL_CARD_LIMIT` / `CARD_LIMIT_STEP` constants added by Task 7, plus the existing cap-reset effect. Reuse them — do not add a second cap mechanism.
+- Produces: no new exports.
+
+- [ ] **Step 9.1: Cap the number of set sections**
+
+In grouped compact mode the unit is a **set section**, not a card, so the cap counts sections. Sections vary in size, so a fixed section count is the pragmatic choice.
+
+Add at module scope, beside the existing card constants:
+
+```ts
+// Grouped mode renders whole set sections rather than a flat card list, so its
+// window is measured in sections. Each section is one header plus its variants.
+const INITIAL_SECTION_LIMIT = 20
+const SECTION_LIMIT_STEP = 20
+```
+
+Do **not** reuse `visibleCount` for sections — the two branches have different units and would fight each other when the user switches grouping. Add a separate state:
+
+```ts
+const [visibleSections, setVisibleSections] = useState(INITIAL_SECTION_LIMIT)
+```
+
+Place it with the other hooks, above the early returns.
+
+- [ ] **Step 9.2: Reset the section cap on the same criteria**
+
+Add `setVisibleSections(INITIAL_SECTION_LIMIT)` to the body of the existing cap-reset `useEffect` that Task 7 added. Do not create a second effect, and do not change that effect's dependency array — it is deliberately keyed on the filter/sort criteria rather than `filteredSets` so an obtained toggle does not reset the window mid-scroll. Read the comment above it before editing.
+
+- [ ] **Step 9.3: Slice the grouped branch and add its reveal control**
+
+The grouped compact branch currently renders every set:
+
+```tsx
+{
+  filteredSets.map((set) => <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />)
+}
+```
+
+Slice it to `filteredSets.slice(0, visibleSections)`, and render a "Load more" button below the grid when sections remain — following the same shape Task 7 used, with the button **outside** `CardGrid` (it is not a card). Label it in terms of sets, e.g. `Load N more sets (M remaining)`.
+
+Keep using `OutfitSetSection` unchanged; do not modify that component.
+
+- [ ] **Step 9.4: Verify types and lint**
+
+Run: `yarn tsc --noEmit && yarn lint`
+Expected: clean, no exhaustive-deps warnings.
+
+- [ ] **Step 9.5: Manual check (human)**
+
+In compact density, **grouped** (the default):
+
+- Only ~20 set sections render initially, and the "Load more" button is visible
+- "Load more" appends the next 20 and the remaining count decrements
+- Applying a filter resets to 20 sections
+- Toggling a variant's obtained state does **not** reset the window
+- Switching to ungrouped still shows the 200-card window from Task 7
+- Standard density is unaffected
+
+- [ ] **Step 9.6: Commit**
+
+```bash
+git add app/outfits/filter-outfits.tsx
+git commit -m "perf(outfits): cap set sections in the grouped compact view
+
+Task 7 capped only the ungrouped branch, but grouped is the default, so
+the cap was unreachable for most users. Grouped compact now renders 20
+set sections with a Load more control, using a separate counter since
+its unit is sections rather than cards.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
 ### Task 5: Virtualize the ungrouped compact grid
 
 **Status: specified but DEFERRED.** The user chose Task 7's card cap instead ("cap now, virtualize later if needed"). Revisit this task only if capping proves unsatisfying — it costs a new dependency and duplicates the container-query breakpoints in JS, where they can silently drift from the CSS.
