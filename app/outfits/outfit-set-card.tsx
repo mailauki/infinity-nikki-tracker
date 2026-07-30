@@ -116,7 +116,9 @@ function OutfitSetCard({
   )
 }
 
-// Default shallow comparison: every prop is either a primitive or an object
-// whose identity is preserved by the provider/filter memos until its underlying
-// data actually changes.
+// Default shallow comparison. Most props are primitives or memo-stable objects,
+// but `variants` is a fresh `.filter()` allocation per render in filter-outfits,
+// so this memo does NOT currently skip re-renders driven by the parent. It only
+// skips when FilterOutfits itself doesn't re-render. Hoisting that per-group
+// filter into the `filteredSets` memo would make it fully effective.
 export default memo(OutfitSetCard)
