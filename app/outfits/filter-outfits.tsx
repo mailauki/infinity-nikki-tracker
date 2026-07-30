@@ -54,7 +54,6 @@ export default function FilterOutfits() {
     hideEvolutions,
     hideGlowups,
     filters,
-    onBatchToggleObtained,
   } = useOutfitData()
   const { density } = useOutfitImageMode()
   const { sortAxis, sortDir } = useSortOrder()
@@ -297,7 +296,6 @@ export default function FilterOutfits() {
               const stateSlug = evolution?.slug ?? baseSlug
               const variants = set.outfit_variants.filter((v) => v.outfit_set === stateSlug)
               if (variants.length === 0) return null
-              const allObtained = variants.every((v) => v.obtained === true)
               const obtained = variants.filter((v) => v.obtained === true).length
               return (
                 <OutfitSetCard
@@ -317,16 +315,7 @@ export default function FilterOutfits() {
                     })
                   }
                   total={variants.length}
-                  onToggle={() => {
-                    const toToggle = variants
-                      .filter((v) => v.obtained === allObtained)
-                      .map((v) => ({
-                        outfit_set: v.outfit_set!,
-                        outfit_category: v.outfit_category!,
-                        outfit_variant: v.slug,
-                      }))
-                    onBatchToggleObtained(toToggle, !allObtained)
-                  }}
+                  variants={variants}
                 />
               )
             })
