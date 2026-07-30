@@ -58,10 +58,14 @@ export default function VirtualSetGrid({
   const showAlt = mode === 'alt'
 
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const [columnCount, setColumnCount] = useState<number | null>(null)
-  // Unlike the compact grids, this one needs the raw width too: row height is a
-  // function of the column width, so the estimate cannot be a constant.
-  const [containerWidth, setContainerWidth] = useState(0)
+  // Column count and raw width live in ONE state object on purpose. Row height
+  // here is a function of column width, so a commit that had the count but not
+  // yet the width would fall back to the text-only estimate (~84px) and position
+  // rows that far apart while the cards actually occupy ~450px — a brief flash of
+  // wildly overlapping cards. Kept together, the two can never disagree.
+  const [layout, setLayout] = useState<{ columnCount: number; width: number } | null>(null)
+  const columnCount = layout?.columnCount ?? null
+  const containerWidth = layout?.width ?? 0
   const [scrollMargin, setScrollMargin] = useState(0)
 
   // Column count is derived from the observed content width, so it stays null
@@ -75,8 +79,13 @@ export default function VirtualSetGrid({
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const width = entry.contentRect.width
-        setColumnCount(outfitColumnsForWidth(width))
-        setContainerWidth((prev) => (prev === width ? prev : width))
+        // A zero width carries no usable layout — publishing it would swap a
+        // correct estimate for the text-only fallback and squash every row.
+        if (width === 0) continue
+        const next = { columnCount: outfitColumnsForWidth(width), width }
+        setLayout((prev) =>
+          prev && prev.columnCount === next.columnCount && prev.width === next.width ? prev : next
+        )
       }
     })
     observer.observe(el)
@@ -163,11 +172,15 @@ export default function VirtualSetGrid({
   // scales with column width — a fixed constant would make the scrollbar badly
   // wrong at narrow and wide windows alike. Estimate from the measured width;
   // `measureElement` still corrects each row on its first paint.
+  // `layout` is null or fully populated — never half-set — so there is no
+  // width-less branch that could yield a text-only height. When it is null the
+  // grid renders nothing anyway, so the value is unused.
   const computedRowHeight =
-    columnCount === null || containerWidth === 0
+    layout === null
       ? SET_CARD_TEXT_HEIGHT + GAP_PX
       : (() => {
-          const columnWidth = (containerWidth - GAP_PX * (columnCount - 1)) / columnCount
+          const columnWidth =
+            (layout.width - GAP_PX * (layout.columnCount - 1)) / layout.columnCount
           const imageHeight = columnWidth * (showAlt ? 1 : 3 / 2)
           return imageHeight + SET_CARD_TEXT_HEIGHT + GAP_PX
         })()
