@@ -163,7 +163,7 @@ export default function VirtualSetGrid({
   // scales with column width — a fixed constant would make the scrollbar badly
   // wrong at narrow and wide windows alike. Estimate from the measured width;
   // `measureElement` still corrects each row on its first paint.
-  const estimatedRowHeight =
+  const computedRowHeight =
     columnCount === null || containerWidth === 0
       ? SET_CARD_TEXT_HEIGHT + GAP_PX
       : (() => {
@@ -171,6 +171,28 @@ export default function VirtualSetGrid({
           const imageHeight = columnWidth * (showAlt ? 1 : 3 / 2)
           return imageHeight + SET_CARD_TEXT_HEIGHT + GAP_PX
         })()
+
+  // The computed estimate is derived from the component tree, so it is close but
+  // not exact — MUI padding and the title/rarity block round differently than the
+  // arithmetic predicts.
+  //
+  // That gap is what makes a density or image-mode toggle feel jumpy. Both change
+  // every row's height at once, so `getItemKey` (correctly) invalidates every
+  // cached measurement and all rows fall back to the estimate together. The
+  // virtualizer then shifts the scroll position to compensate for each row that
+  // measures differently, and those adjustments stack into a visible lurch.
+  //
+  // Remembering the first real measurement per width/mode makes every subsequent
+  // row's estimate exact, so the bulk re-measure produces no deltas to correct
+  // for. Keyed by width too, since a resize changes the true height as well.
+  // (The core's `shouldAdjustScrollPositionOnItemSizeChange` would suppress the
+  // adjustment directly, but it is a class property rather than a passable
+  // option, so it cannot be set through `useWindowVirtualizer`.)
+  // State rather than a ref: the estimate is read during render, and a newly
+  // recorded height has to re-render for the virtualizer to pick it up.
+  const [measuredHeights, setMeasuredHeights] = useState<Record<string, number>>({})
+  const measureKey = `${columnCount}-${showAlt}-${Math.round(containerWidth)}`
+  const estimatedRowHeight = measuredHeights[measureKey] ?? computedRowHeight
 
   const virtualizer = useWindowVirtualizer({
     count: rowCount,
@@ -217,7 +239,24 @@ export default function VirtualSetGrid({
             return (
               <Box
                 key={row.key}
-                ref={virtualizer.measureElement}
+                ref={(node: HTMLDivElement | null) => {
+                  // Record the first real height for this width/mode so later
+                  // rows estimate from a measured value instead of arithmetic.
+                  // Only full rows count: a partial last row is shorter and
+                  // would skew the estimate for every row above it. The
+                  // functional updater keeps this a one-shot per key — once a
+                  // height is stored, later rows return the same object and
+                  // React bails out rather than re-rendering.
+                  if (node && rowItems.length === columnCount) {
+                    const height = node.getBoundingClientRect().height
+                    if (height > 0) {
+                      setMeasuredHeights((prev) =>
+                        prev[measureKey] ? prev : { ...prev, [measureKey]: height }
+                      )
+                    }
+                  }
+                  virtualizer.measureElement(node)
+                }}
                 data-index={row.index}
                 sx={{
                   position: 'absolute',
