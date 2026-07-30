@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Box } from '@mui/material'
 import { useWindowVirtualizer } from '@tanstack/react-virtual'
 import { GRID_CONTAINER, outfitColumnsForWidth } from '@/lib/types/props'
@@ -86,12 +86,32 @@ export default function VirtualVariantGrid({
   // total size — observing it would re-fire on every scroll-driven remeasure.
   // childList mutations fire only on the mount/unmount that is actually missed,
   // with no overlap with the resize path.
-  useLayoutEffect(() => {
+  //
+  // DO NOT change this back to `useLayoutEffect`, and do not call `read()` from
+  // any other layout-phase code. `setScrollMargin` must never run synchronously
+  // inside React's commit phase. Writing it there re-renders the grid while React
+  // is still committing, which mounts row elements whose `virtualizer.measureElement`
+  // ref callbacks ALSO run in that same commit phase. A measured row whose real
+  // height differs from ESTIMATED_ROW_HEIGHT makes virtual-core call
+  // `applyScrollAdjustment` -> `notify(sync = true)` -> `flushSync(rerender)`, and
+  // React throws "flushSync was called from inside a lifecycle method. React
+  // cannot flush when React is already rendering."
+  //
+  // `useEffect` runs after paint, outside the commit phase, so the same
+  // `flushSync` lands on an idle React and is legal. Nothing is lost by waiting:
+  // rows do not render at all until `columnCount` is measured, and that too is
+  // set from a `useEffect`-driven ResizeObserver above — so the first paint that
+  // contains any row already happens after an effect has run. A layout-phase read
+  // could only beat a paint that renders nothing.
+  useEffect(() => {
     const el = containerRef.current
     const parent = el?.parentElement
     if (!el || !parent) return
 
-    const read = () => setScrollMargin(el.offsetTop)
+    // Bail when the offset is unchanged: both observers re-read on every
+    // callback, and an unguarded setter would re-render the whole grid on
+    // sibling resizes that did not actually move it.
+    const read = () => setScrollMargin((prev) => (prev === el.offsetTop ? prev : el.offsetTop))
     read()
 
     // Resize path: watch the siblings above the grid. Deliberately NOT the parent
