@@ -796,6 +796,99 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 ---
 
+### Task 5: Virtualize the ungrouped compact grid
+
+**Added 2026-07-29.** Approved by the user after Tasks 2c/2d showed that filter interaction, while improved, is still limited by rendering ~6,000 cards synchronously. This was the user's original instinct; it is now evidence-backed rather than assumed.
+
+**Scope decision — read before starting.** Only the **ungrouped compact** branch is virtualized. Three reasons:
+
+1. That branch (`filteredSets.flatMap((set) => renderSetVariants(set))`) is a flat, uniform list of `OutfitVariantCard`s — the only branch with a simple row model.
+2. The **grouped** compact branch renders `OutfitSetSection`s that emit full-width headers (`gridColumn: '1 / -1'`) interleaved with variable-length card runs. Virtualizing it requires flattening headers and cards into one indexed row model — materially harder, and deferred.
+3. **Standard** density renders only hundreds of set cards; it does not need virtualization.
+
+**The central obstacle.** `OUTFIT_GRID_COLUMNS_CONTAINER` (`lib/types/props.ts:80-86`) sets 2/3/4/6/8 columns via CSS **container queries**, keyed on content width so the grid reflows when the filter drawer opens. A virtualizer must know the column count **in JS** to map items to rows, but container queries resolve only in CSS. There is no way around this — every TanStack Virtual grid example needs the lane count in JS. So this task derives the column count with a `ResizeObserver` and accepts that the virtualized branch no longer reflows by pure CSS.
+
+**Files:**
+
+- Add dependency: `@tanstack/react-virtual`
+- Create: `app/outfits/virtual-variant-grid.tsx`
+- Modify: `app/outfits/filter-outfits.tsx` (ungrouped compact branch only)
+
+**Interfaces:**
+
+- Consumes: the memoized `filteredSets` (Task 2a/2b) and the memoized `OutfitVariantCard` (Task 3). Both are prerequisites — virtualizing unmemoized cards would still re-render the visible window on every parent render.
+- Produces: `VirtualVariantGrid`, a component taking `variants: OutfitVariant[]` plus the props `OutfitVariantCard` needs, and rendering only the visible rows.
+
+- [ ] **Step 5.1: Add the dependency**
+
+Run: `yarn add @tanstack/react-virtual`
+
+This is the **only** new dependency in the entire plan. Confirm it lands in `dependencies` (not `devDependencies`) and that `yarn.lock` updates.
+
+- [ ] **Step 5.2: Create the virtualized grid component**
+
+Create `app/outfits/virtual-variant-grid.tsx`. Key design points, each load-bearing:
+
+- Use `useWindowVirtualizer`, **not** `useVirtualizer`. The page scrolls; there is no inner scroll container (verified: neither `CardGrid` nor `PageShell` sets `overflow`). `useVirtualizer` would silently never scroll.
+- Pass `scrollMargin: parentRef.current?.offsetTop ?? 0` captured in a `useLayoutEffect`, so row offsets account for everything above the grid (toolbar, alerts, results bar).
+- Derive the column count with a `ResizeObserver` on the wrapper, using the SAME breakpoints as `OUTFIT_GRID_COLUMNS_CONTAINER` so the virtualized layout matches the CSS grid exactly: `<600 → 2`, `≥600 → 3`, `≥900 → 4`, `≥1200 → 6`, `≥1536 → 8`. Import those thresholds or define them once and reference them — do not hardcode a second divergent copy.
+- Row count is `Math.ceil(variants.length / columnCount)`.
+- Use `measureElement` on each row so real card heights replace the estimate. Provide a sensible `estimateSize` (cards are ~4:3 plus a header; measure one in the browser and use that number rather than guessing).
+- `overscan: 3` rows.
+
+Render each virtual row as an absolutely-positioned flex/grid row of up to `columnCount` cards, sliced from `variants`. Keep using the existing `OutfitVariantCard` — do not reimplement the card.
+
+- [ ] **Step 5.3: Wire it into the ungrouped compact branch**
+
+In `app/outfits/filter-outfits.tsx`, the compact branch currently reads:
+
+```tsx
+{groupBySet ? (
+  <>{filteredSets.map((set) => (<OutfitSetSection ... />))}</>
+) : (
+  <>{filteredSets.flatMap((set) => renderSetVariants(set))}</>
+)}
+```
+
+Replace **only** the `else` branch with `VirtualVariantGrid`, passing the flattened variant list. The grouped branch stays exactly as it is.
+
+Note: `VirtualVariantGrid` positions its own rows, so it must NOT be a child of `CardGrid`'s CSS grid — nesting an absolutely-positioned virtualizer inside a grid container will fight the grid. Restructure so the ungrouped compact branch renders `VirtualVariantGrid` outside `CardGrid` while the grouped branch keeps using `CardGrid`.
+
+- [ ] **Step 5.4: Verify types, lint, and build**
+
+Run: `yarn tsc --noEmit && yarn lint && yarn build`
+Expected: all clean. The build matters here because a new dependency plus `window` access can surface SSR errors that the dev server tolerates.
+
+`useWindowVirtualizer` touches `window`, so confirm the component is under `'use client'` (`filter-outfits.tsx` already is) and that nothing reads `window` during the server render pass.
+
+- [ ] **Step 5.5: Manual verification (human)**
+
+In compact density, ungrouped, with no filters (~6,000 variants):
+
+- Scrolling is smooth, and cards appear as you scroll without gaps or overlap
+- The column count matches the non-virtualized grid at several window widths, including after opening/closing the filter drawer
+- Toggling a variant's obtained state still works and the card updates
+- The "missing" filter still animates a completed card out
+- Scrolling to the very bottom reaches the last variant (no truncation)
+- Switching density to standard and back restores the normal grid
+
+- [ ] **Step 5.6: Commit**
+
+```bash
+git add package.json yarn.lock app/outfits/virtual-variant-grid.tsx app/outfits/filter-outfits.tsx
+git commit -m "perf(outfits): virtualize the ungrouped compact grid
+
+The ungrouped compact view renders ~6000 variant cards synchronously,
+which memoization cannot fix -- the work is necessary, just too much at
+once. That branch now renders only visible rows via a window
+virtualizer, with the column count derived from a ResizeObserver to
+match the container-query breakpoints.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
+```
+
+---
+
 ### Task 4: Verify against the baseline
 
 **Files:** none modified.
