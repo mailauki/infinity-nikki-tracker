@@ -23,6 +23,13 @@ export function savePreferences(updates: Record<string, unknown>) {
   }).then(
     (r) => {
       invalidatePreferences()
+      // 401 is an expected outcome, not a fault: callers gate on a client-side
+      // `isLoggedIn` that can outlive the actual session (expired cookie, signed
+      // out in another tab). The old Server Action path hit the same condition
+      // and returned silently, so surfacing it as a thrown error only produced
+      // console noise for a preference that legitimately cannot be saved.
+      // Anything else is a real failure and still rejects.
+      if (r.status === 401) return
       if (!r.ok) throw new Error(`POST /api/preferences returned ${r.status}`)
     },
     (err) => {
