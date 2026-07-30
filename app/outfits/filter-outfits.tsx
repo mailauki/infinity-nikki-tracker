@@ -129,13 +129,23 @@ export default function FilterOutfits() {
           )
         // Group-level obtained filter: drop whole evolution groups whose full-group
         // state doesn't match the selected missing / obtained state.
-        const inMatchingGroup =
-          groupLevelObtained && selectedObtainedFilter
-            ? scopedVariants.filter((v) => {
-                const group = scopedVariants.filter((g) => g.outfit_set === v.outfit_set)
-                return matchesObtainedFilter(group, selectedObtainedFilter)
-              })
-            : scopedVariants
+        let inMatchingGroup = scopedVariants
+        if (groupLevelObtained && selectedObtainedFilter) {
+          // Group once by state slug, then judge each group a single time, instead of
+          // re-scanning every variant for every variant (quadratic per set).
+          const byState = new Map<string, typeof scopedVariants>()
+          for (const v of scopedVariants) {
+            const key = v.outfit_set ?? ''
+            const group = byState.get(key)
+            if (group) group.push(v)
+            else byState.set(key, [v])
+          }
+          const keptStates = new Set<string>()
+          for (const [key, group] of byState) {
+            if (matchesObtainedFilter(group, selectedObtainedFilter)) keptStates.add(key)
+          }
+          inMatchingGroup = scopedVariants.filter((v) => keptStates.has(v.outfit_set ?? ''))
+        }
         // Apply the category filter last so it only narrows what is displayed,
         // without affecting the group-level obtained classification above. In
         // ungrouped mode the obtained filter is still per variant.
@@ -202,15 +212,6 @@ export default function FilterOutfits() {
     axis,
     sortDir,
   ])
-
-  // TEMP-SNAPSHOT: remove before commit
-  if (typeof window !== 'undefined') {
-    // eslint-disable-next-line react-hooks/immutability -- debug-only window write, removed in Task 2b
-    ;(window as unknown as { __snap?: unknown }).__snap = filteredSets.map((s) => ({
-      slug: s.slug,
-      variants: s.outfit_variants.map((v) => v.slug),
-    }))
-  }
 
   if (isError) {
     return (
