@@ -1,6 +1,6 @@
 'use client'
-import { useMemo } from 'react'
-import { Alert, Box, Divider, Skeleton, Stack, Typography } from '@mui/material'
+import { useEffect, useMemo, useState } from 'react'
+import { Alert, Box, Button, Divider, Skeleton, Stack, Typography } from '@mui/material'
 
 import ErrorAlert from '@/components/error-alert'
 import LoginAlert from '@/components/login-alert'
@@ -14,6 +14,11 @@ import OutfitSetCard from './outfit-set-card'
 import OutfitSetSection from './outfit-set-section'
 
 const STANDALONE_SLUG = 'standalone-pieces'
+
+// The compact ungrouped view can hold ~6000 variants; mounting them all at once
+// blocks the main thread for seconds. Render a window and let the user extend it.
+const INITIAL_CARD_LIMIT = 200
+const CARD_LIMIT_STEP = 200
 
 function GroupHeaderSkeleton() {
   return (
@@ -39,6 +44,49 @@ function VariantCardSkeleton() {
       variant="rectangular"
       width="100%"
     />
+  )
+}
+
+// The compact ungrouped grid and its "Load more" control must be siblings — the
+// button is not a card and would otherwise be laid out as a cell of the CSS grid.
+function CompactUngroupedGrid<T>({
+  sets,
+  renderSetVariants,
+  visibleCount,
+  onLoadMore,
+  isFiltering,
+}: {
+  sets: T[]
+  renderSetVariants: (set: T) => React.ReactNode[]
+  visibleCount: number
+  onLoadMore: () => void
+  isFiltering: boolean
+}) {
+  const allCards = sets.flatMap((set) => renderSetVariants(set))
+  const visibleCards = allCards.slice(0, visibleCount)
+  const remaining = allCards.length - visibleCards.length
+
+  return (
+    <>
+      <CardGrid
+        columns="outfit"
+        gap={2}
+        sx={{
+          opacity: isFiltering ? 0.5 : 1,
+          transition: 'opacity 150ms ease',
+        }}
+      >
+        {visibleCards}
+      </CardGrid>
+
+      {remaining > 0 && (
+        <Stack sx={{ alignItems: 'center', py: 3 }}>
+          <Button variant="outlined" onClick={onLoadMore}>
+            Load {Math.min(remaining, CARD_LIMIT_STEP)} more ({remaining} remaining)
+          </Button>
+        </Stack>
+      )}
+    </>
   )
 }
 
@@ -212,6 +260,34 @@ export default function FilterOutfits() {
     sortDir,
   ])
 
+  const [visibleCount, setVisibleCount] = useState(INITIAL_CARD_LIMIT)
+
+  // Collapse back to the first window when the result set changes, so a new
+  // filter starts from the top rather than inheriting a previous "load more".
+  //
+  // Deliberately NOT keyed on `filteredSets`: that array's identity also changes
+  // when a variant's obtained state is toggled (the provider rebuilds
+  // outfitSets from obtainedOutfit), which would yank the user back to 200 cards
+  // mid-scroll on every checkbox click. Keying on the filter/sort criteria
+  // instead captures "the result set was redefined" without firing on a toggle.
+  useEffect(() => {
+    setVisibleCount(INITIAL_CARD_LIMIT)
+  }, [
+    selectedOutfitSet,
+    selectedOutfitCategory,
+    selectedEvolution,
+    selectedObtainedFilter,
+    selectedRarity,
+    selectedStyle,
+    selectedLabel,
+    hideEvolutions,
+    hideGlowups,
+    groupBySet,
+    density,
+    axis,
+    sortDir,
+  ])
+
   if (isError) {
     return (
       <Box sx={{ flexGrow: 1, py: 3 }}>
@@ -323,7 +399,7 @@ export default function FilterOutfits() {
         </CardGrid>
       )}
 
-      {filteredSets.length > 0 && density === 'compact' && (
+      {filteredSets.length > 0 && density === 'compact' && groupBySet && (
         <CardGrid
           columns="outfit"
           gap={2}
@@ -332,16 +408,20 @@ export default function FilterOutfits() {
             transition: 'opacity 150ms ease',
           }}
         >
-          {groupBySet ? (
-            <>
-              {filteredSets.map((set) => (
-                <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
-              ))}
-            </>
-          ) : (
-            <>{filteredSets.flatMap((set) => renderSetVariants(set))}</>
-          )}
+          {filteredSets.map((set) => (
+            <OutfitSetSection key={set.id} isLoggedIn={isLoggedIn} set={set} />
+          ))}
         </CardGrid>
+      )}
+
+      {filteredSets.length > 0 && density === 'compact' && !groupBySet && (
+        <CompactUngroupedGrid
+          isFiltering={isFiltering}
+          renderSetVariants={renderSetVariants}
+          sets={filteredSets}
+          visibleCount={visibleCount}
+          onLoadMore={() => setVisibleCount((n) => n + CARD_LIMIT_STEP)}
+        />
       )}
     </>
   )
