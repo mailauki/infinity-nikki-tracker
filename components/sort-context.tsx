@@ -1,8 +1,8 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useTransition } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { UserPreferences } from '@/lib/types/eureka'
-import { updateSortDir, updateSortAxis } from '@/app/actions/preferences'
+import { savePreferences } from '@/lib/save-preferences'
 
 export type SortOrder = 'new' | 'old'
 export type SortAxis = 'date' | 'rarity' | 'progress' | 'title'
@@ -43,6 +43,12 @@ export const SortContext = createContext<SortContextValue>({
 
 const SORT_AXES: SortAxis[] = ['date', 'rarity', 'progress', 'title']
 
+// A failed sort-preference write must not disrupt the UI — the sort still
+// applies for this session, it just may not survive a reload.
+const persistFailed = (err: unknown) => {
+  console.error('Failed to persist sort preference:', err)
+}
+
 export function SortProvider({
   children,
   isLoggedIn = false,
@@ -54,7 +60,6 @@ export function SortProvider({
 }) {
   const [sortDir, setSortDir] = useState<SortDir>(orderToDir(defaultOrder))
   const [sortAxis, setSortAxisState] = useState<SortAxis>('date')
-  const [, startTransition] = useTransition()
 
   // Hydrate from saved preferences for logged-in users.
   useEffect(() => {
@@ -77,26 +82,26 @@ export function SortProvider({
   const toggleSortDir = () => {
     const next: SortDir = sortDir === 'desc' ? 'asc' : 'desc'
     setSortDir(next)
-    if (isLoggedIn) startTransition(() => updateSortDir(next))
+    if (isLoggedIn) void savePreferences({ sort_order: next }).catch(persistFailed)
   }
 
   const setSortAxis = (axis: SortAxis) => {
     setSortAxisState(axis)
-    if (isLoggedIn) startTransition(() => updateSortAxis(axis))
+    if (isLoggedIn) void savePreferences({ outfit_sort_axis: axis }).catch(persistFailed)
   }
 
   const defaultDir = orderToDir(defaultOrder)
 
   // Restore both axis and direction to their defaults, persisting for logged-in
-  // users in one transition.
+  // users in one call. Both keys in one call: two concurrent upserts would race
+  // on the same row.
   const resetSort = () => {
     setSortAxisState('date')
     setSortDir(defaultDir)
     if (isLoggedIn) {
-      startTransition(() => {
-        updateSortAxis('date')
-        updateSortDir(defaultDir)
-      })
+      void savePreferences({ outfit_sort_axis: 'date', sort_order: defaultDir }).catch(
+        persistFailed
+      )
     }
   }
 
