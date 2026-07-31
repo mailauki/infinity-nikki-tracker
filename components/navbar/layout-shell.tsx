@@ -30,7 +30,7 @@ import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '../color-theme-context'
 import { useNavDrawer, useSidebar, useStickyBar, useToolbar } from './navbar-toolbar-context'
 
-const SIDEBAR_WIDTH = 400
+const SIDEBAR_WIDTH = 420
 
 // ---- Left nav drawer (flush mini-variant) ------------------------------------
 
@@ -282,7 +282,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         sx={{
           display: { xs: 'block', sm: 'none' },
           '& .MuiDrawer-paper': { width: '100%' },
-          zIndex: theme.zIndex.drawer + 2,
+          zIndex: theme.zIndex.drawer + 3,
         }}
         variant="temporary"
         onClose={() => setDrawerOpen(false, { persist: false })}
@@ -369,7 +369,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         sx={{
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': { width: '100%' },
-          zIndex: theme.zIndex.drawer + 2,
+          zIndex: theme.zIndex.drawer + 3,
         }}
         variant="temporary"
         onClose={() => setSidebarOpen(false)}

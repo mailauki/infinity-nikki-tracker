@@ -10,6 +10,7 @@ import { useOutfitData } from '@/components/outfits/outfit-context'
 import OutfitGroupHeader from './outfit-group-header'
 import OutfitVariantCard from './outfit-variant-card'
 import { ESTIMATED_ROW_HEIGHT, GAP_PX } from './virtual-variant-grid'
+import { deferredMeasureRef } from './deferred-measure-ref'
 
 // A group header is a `size="small"` Button (~30px) plus a 4px bottom margin
 // (mb: 0.5), a 1px Divider and the wrapper's 8px top margin (mt: 1) — roughly
@@ -230,10 +231,15 @@ export default function VirtualGroupedGrid({
     // lands mid-lifecycle and React throws "flushSync was called from inside a
     // lifecycle method". This option defers each measurement into a
     // requestAnimationFrame, which is the "scheduler task" the error asks for.
+    //
+    // It covers ONLY the ResizeObserver path. The row ref goes through
+    // deferredMeasureRef to defer the direct `measureElement` call as well.
     useAnimationFrameWithResizeObserver: true,
   })
 
   const rows = virtualizer.getVirtualItems()
+  // Deferred past the commit phase — see deferredMeasureRef.
+  const measureRef = useMemo(() => deferredMeasureRef(virtualizer), [virtualizer])
 
   // Batch-toggle the whole evolution group: when fully obtained, clear it;
   // otherwise mark the remaining (not-yet-obtained) variants obtained. Carried
@@ -267,7 +273,7 @@ export default function VirtualGroupedGrid({
             return (
               <Box
                 key={row.key}
-                ref={virtualizer.measureElement}
+                ref={measureRef}
                 data-index={row.index}
                 sx={
                   item.kind === 'header'

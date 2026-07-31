@@ -1,11 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Box } from '@mui/material'
 import { useWindowVirtualizer } from '@tanstack/react-virtual'
 import { GRID_CONTAINER, outfitColumnsForWidth } from '@/lib/types/props'
 import type { OutfitVariant } from '@/lib/types/outfit'
 import OutfitVariantCard from './outfit-variant-card'
+import { deferredMeasureRef } from './deferred-measure-ref'
 
 // Row height estimate used before a row has been measured. The compact variant
 // card is fixed-height, not aspect-ratio driven: CardShell > Stack(pt: 1 = 8px) +
@@ -167,10 +168,15 @@ export default function VirtualVariantGrid({
     // lands mid-lifecycle and React throws "flushSync was called from inside a
     // lifecycle method". This option defers each measurement into a
     // requestAnimationFrame, which is the "scheduler task" the error asks for.
+    //
+    // It covers ONLY the ResizeObserver path. The row ref goes through
+    // deferredMeasureRef to defer the direct `measureElement` call as well.
     useAnimationFrameWithResizeObserver: true,
   })
 
   const rows = virtualizer.getVirtualItems()
+  // Deferred past the commit phase — see deferredMeasureRef.
+  const measureRef = useMemo(() => deferredMeasureRef(virtualizer), [virtualizer])
 
   return (
     <Box
@@ -191,7 +197,7 @@ export default function VirtualVariantGrid({
             return (
               <Box
                 key={row.key}
-                ref={virtualizer.measureElement}
+                ref={measureRef}
                 data-index={row.index}
                 sx={{
                   position: 'absolute',
