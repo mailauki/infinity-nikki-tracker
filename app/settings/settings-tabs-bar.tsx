@@ -1,7 +1,7 @@
 'use client'
 
 import { Tab, Tabs } from '@mui/material'
-import StickyBar from '@/components/sticky-bar'
+import StickyBar from '@/components/navbar/sticky-bar'
 import { useSettingsTabs, type TabValue } from './settings-tabs-context'
 
 export default function SettingsTabsBar({ isLoggedIn }: { isLoggedIn: boolean }) {

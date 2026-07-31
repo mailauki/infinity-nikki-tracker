@@ -2,7 +2,7 @@
 
 import { IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { Compare } from '@mui/icons-material'
-import ToolbarSlot from '@/components/toolbar-slot'
+import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import { SortButton } from '@/components/navbar/appbar-actions'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 

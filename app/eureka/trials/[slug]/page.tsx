@@ -9,7 +9,7 @@ import { getUserRole } from '@/hooks/user'
 import EurekaSetCard from './eureka-set-card'
 import LazyImage from '@/components/lazy-image'
 import CardGrid from '@/components/card-grid'
-import SlugToolBar from '@/components/slug-toolbar'
+import SlugToolBar from '@/components/navbar/slug-toolbar'
 import PageShell from '@/components/page-shell'
 
 type Props = {

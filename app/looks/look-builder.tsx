@@ -45,7 +45,7 @@ import type { OutfitCategory } from '@/lib/types/outfit'
 import { DRESS_SLUGS, isCategoryDisabled } from '@/components/filter/outfit-category-select'
 import ToggleIcon from '@/components/toggle-icon'
 import ImageUpload from '@/components/forms/image-upload'
-import ToolbarSlot from '@/components/toolbar-slot'
+import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import PageShell from '@/components/page-shell'
 import {
   Delete,

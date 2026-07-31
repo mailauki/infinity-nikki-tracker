@@ -16,7 +16,7 @@ import type { ColorTheme } from '@/lib/types/eureka'
 import { getUserID } from '@/hooks/user'
 import { getPreferences } from '@/hooks/data/preferences'
 import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
-import LayoutShell from '@/components/layout-shell'
+import LayoutShell from '@/components/navbar/layout-shell'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],

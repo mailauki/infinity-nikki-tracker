@@ -1,7 +1,6 @@
 'use client'
 
-import ToolbarSlot from '@/components/toolbar-slot'
-import { Stack } from '@mui/material'
+import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import { useFormConfig } from '@/app/admin/form-context'

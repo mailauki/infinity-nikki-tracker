@@ -19,24 +19,18 @@ import {
   Typography,
 } from '@mui/material'
 import { Close, Menu, MenuOpen } from '@mui/icons-material'
-import NavSection from './navbar/nav-section'
-import PageTitle from './navbar/page-title'
-import { NavUser } from './navbar/nav-user'
-import Footer from './navbar/nav-footer'
+import NavSection from './nav-section'
+import PageTitle from './page-title'
+import { NavUser } from './nav-user'
+import Footer from './nav-footer'
 import PullToRefresh from './pull-to-refresh'
 import { navLinksData } from '@/lib/nav-links'
 import { NAV_DRAWER_WIDTH } from '@/lib/layout-constants'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
-import { useColorTheme } from './color-theme-context'
-import { useNavDrawer, useSidebar, useStickyBar, useToolbar } from './navbar/navbar-toolbar-context'
+import { useColorTheme } from '../color-theme-context'
+import { useNavDrawer, useSidebar, useStickyBar, useToolbar } from './navbar-toolbar-context'
 
 const SIDEBAR_WIDTH = 400
-
-// Fixed height of the AppBar's injected second row (and every spacer that must
-// clear it). The row's content — the portaled page toolbar — can be up to 40px
-// tall; a fixed 56px row keeps the AppBar row and its main/drawer spacers in exact
-// agreement regardless of content, so page content never sits under the second row.
-const TOOLBAR_ROW_2_HEIGHT = 56
 
 // ---- Left nav drawer (flush mini-variant) ------------------------------------
 
@@ -310,7 +304,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         sx={{ display: { xs: 'none', sm: 'block' }, zIndex: theme.zIndex.drawer + 2 }}
         variant="permanent"
       >
-        <Paper sx={{ borderRadius: 3, m: 2, mr: 0, flexGrow: 1 }} variant="filled">
+        <Paper elevation={2} sx={{ borderRadius: 3, m: 2, mr: 0, flexGrow: 1 }} variant="filled">
           <Stack sx={{ flexGrow: 1, height: '100%', pt: 3 }}>
             <DrawerHeader>
               <IconButton
@@ -402,7 +396,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
       >
         <DrawerHeader />
         {hasToolbar && <Toolbar />}
-        <Paper sx={{ borderRadius: 3, m: 2, ml: 0, flexGrow: 1 }} variant="filled">
+        <Paper elevation={2} sx={{ borderRadius: 3, m: 2, ml: 0, flexGrow: 1 }} variant="filled">
           <Toolbar>
             <Stack
               direction="row"

@@ -1708,7 +1708,16 @@ In `virtual-grouped-grid.tsx`, derive a flat row array from `sets` inside a `use
 
 ```ts
 type GroupRow =
-  | { kind: 'header'; key: string; title: string; href: string; obtained: number; total: number; allObtained: boolean; variants: OutfitVariant[] }
+  | {
+      kind: 'header'
+      key: string
+      title: string
+      href: string
+      obtained: number
+      total: number
+      allObtained: boolean
+      variants: OutfitVariant[]
+    }
   | { kind: 'cards'; key: string; variants: OutfitVariant[] }
 ```
 

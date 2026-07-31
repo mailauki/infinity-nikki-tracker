@@ -1,5 +1,5 @@
 'use client'
-import ToolbarSlot from '@/components/toolbar-slot'
+import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import { AdminPanelSettings } from '@mui/icons-material'
 import { Chip } from '@mui/material'
 import Link from 'next/link'
