@@ -23,6 +23,11 @@ import { GAP_PX } from './virtual-variant-grid'
 //
 // This is an estimate for the FIRST paint of each row; `measureElement` replaces
 // it with the real height, so it only has to keep the initial scrollbar honest.
+// How long the observed width must hold steady before the grid re-lays-out.
+// Comfortably longer than a MUI drawer transition (~225ms) so the whole
+// animation resolves to a single layout change rather than dozens.
+const RESIZE_SETTLE_MS = 250
+
 const SET_CARD_TEXT_HEIGHT = 68
 
 type SetGridItem = {
@@ -41,6 +46,34 @@ type SetGridItem = {
 // The ONE real difference: set cards are aspect-ratio driven rather than
 // fixed-height, so the row estimate is computed from the observed column width
 // and the current image mode instead of being a constant.
+//
+// ─────────────────────────────────────────────────────────────────────────────
+// KNOWN ISSUE — brief overlapping-card flash on layout change (accepted, 2026-07-30)
+//
+// Toggling the nav drawer (or otherwise animating the content column's width)
+// can flash overlapping cards for a few frames, with the scrollbar briefly ~2x
+// its settled height. It self-corrects within ~200ms. Measured, frame by frame:
+//
+//   f0: total  18470, 4 cols          f5: total 106619, 3 cols  <- overlapping
+//   f4: total  75470, 4 cols          f7: total 116577, 3 cols  <- recovered
+//
+// Cause: `rowCount = ceil(items.length / columnCount)` scales INVERSELY with the
+// column count, so a drawer animation that takes the grid from 6 columns to 3
+// exactly doubles the row count and the total size mid-animation, while rows are
+// still positioned for the old column count inside the new narrower box.
+//
+// Debouncing the published layout (see RESIZE_SETTLE_MS below) removes the
+// worst of the churn but does NOT eliminate the flash: a second mechanism wipes
+// the measurement cache, dropping the total to a few thousand px before it
+// rebuilds. That path has not been isolated.
+//
+// Why this is tolerated rather than fixed: standard density renders only a few
+// hundred cards, so virtualizing it was never load-bearing — the ~6.5k-card
+// problem lives in the compact views, which are fixed-height and unaffected.
+// If this becomes annoying, the cheap and safe fix is to REVERT this branch to
+// a plain non-virtualized `CardGrid` (see the grouped/ungrouped branches in
+// `filter-outfits.tsx` for the shape) rather than to keep chasing it.
+// ─────────────────────────────────────────────────────────────────────────────
 export default function VirtualSetGrid({
   items,
   isLoggedIn,
@@ -66,6 +99,15 @@ export default function VirtualSetGrid({
   const [layout, setLayout] = useState<{ columnCount: number; width: number } | null>(null)
   const columnCount = layout?.columnCount ?? null
   const containerWidth = layout?.width ?? 0
+
+  // The nav drawer animates the content column's width over many frames. Every
+  // intermediate width re-derives the column count and therefore `rowCount`, and
+  // because `rowCount` scales inversely with columns, the scroll height swings
+  // violently mid-animation (measured: 18k -> 75k -> 106k -> 116k across four
+  // frames, with rows overlapping while it settled). Debouncing the PUBLISHED
+  // layout means the grid keeps rendering the last stable geometry until the
+  // animation finishes, so there is no intermediate state to flash.
+  const settleRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [scrollMargin, setScrollMargin] = useState(0)
 
   // Column count is derived from the observed content width, so it stays null
@@ -76,20 +118,37 @@ export default function VirtualSetGrid({
   useEffect(() => {
     const el = containerRef.current
     if (!el) return
+    const publish = (width: number) => {
+      const next = { columnCount: outfitColumnsForWidth(width), width }
+      setLayout((prev) =>
+        prev && prev.columnCount === next.columnCount && prev.width === next.width ? prev : next
+      )
+    }
+
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const width = entry.contentRect.width
         // A zero width carries no usable layout — publishing it would swap a
         // correct estimate for the text-only fallback and squash every row.
         if (width === 0) continue
-        const next = { columnCount: outfitColumnsForWidth(width), width }
-        setLayout((prev) =>
-          prev && prev.columnCount === next.columnCount && prev.width === next.width ? prev : next
-        )
+        // Wait for the width to stop moving before republishing. A drawer
+        // animation delivers dozens of intermediate widths; acting on each one is
+        // what produced the overlapping-card flash and the doubled scrollbar.
+        if (settleRef.current) clearTimeout(settleRef.current)
+        settleRef.current = setTimeout(() => publish(width), RESIZE_SETTLE_MS)
       }
     })
+    // Seed synchronously from the element's current width. The observer's first
+    // callback is async, so without this the grid would paint one frame using
+    // whatever `layout` already held.
+    const initial = el.getBoundingClientRect().width
+    if (initial > 0) publish(initial)
+
     observer.observe(el)
-    return () => observer.disconnect()
+    return () => {
+      observer.disconnect()
+      if (settleRef.current) clearTimeout(settleRef.current)
+    }
   }, [])
 
   // Row offsets are measured from the document top, so the virtualizer needs to
@@ -166,7 +225,11 @@ export default function VirtualSetGrid({
     }
   }, [])
 
-  const rowCount = columnCount === null ? 0 : Math.ceil(items.length / columnCount)
+  const effectiveColumnCount = columnCount
+  const liveWidth = containerWidth
+
+  const rowCount =
+    effectiveColumnCount === null ? 0 : Math.ceil(items.length / effectiveColumnCount)
 
   // Set cards are aspect-ratio driven (2/3, or 1/1 in alt mode), so row height
   // scales with column width — a fixed constant would make the scrollbar badly
@@ -179,8 +242,9 @@ export default function VirtualSetGrid({
     layout === null
       ? SET_CARD_TEXT_HEIGHT + GAP_PX
       : (() => {
-          const columnWidth =
-            (layout.width - GAP_PX * (layout.columnCount - 1)) / layout.columnCount
+          const width = liveWidth || layout.width
+          const cols = effectiveColumnCount ?? layout.columnCount
+          const columnWidth = (width - GAP_PX * (cols - 1)) / cols
           const imageHeight = columnWidth * (showAlt ? 1 : 3 / 2)
           return imageHeight + SET_CARD_TEXT_HEIGHT + GAP_PX
         })()
@@ -204,7 +268,7 @@ export default function VirtualSetGrid({
   // State rather than a ref: the estimate is read during render, and a newly
   // recorded height has to re-render for the virtualizer to pick it up.
   const [measuredHeights, setMeasuredHeights] = useState<Record<string, number>>({})
-  const measureKey = `${columnCount}-${showAlt}-${Math.round(containerWidth)}`
+  const measureKey = `${effectiveColumnCount}-${showAlt}-${Math.round(liveWidth || containerWidth)}`
   const estimatedRowHeight = measuredHeights[measureKey] ?? computedRowHeight
 
   const virtualizer = useWindowVirtualizer({
@@ -225,8 +289,8 @@ export default function VirtualSetGrid({
     //  - `showAlt`, since flipping the image mode swaps the card aspect ratio
     //    between 2/3 and 1/1 and makes every cached height wrong by ~a third
     getItemKey: (index) => {
-      const first = items[index * (columnCount ?? 1)]
-      return `${columnCount}-${showAlt}-${first?.key ?? index}`
+      const first = items[index * (effectiveColumnCount ?? 1)]
+      return `${effectiveColumnCount}-${showAlt}-${first?.key ?? index}`
     },
     // `measureElement`'s ResizeObserver callback runs synchronously, and a row
     // whose measured height differs from the estimate calls `resizeItem` ->
@@ -251,12 +315,12 @@ export default function VirtualSetGrid({
       }}
     >
       <Box sx={{ position: 'relative', height: virtualizer.getTotalSize() }}>
-        {columnCount !== null &&
+        {effectiveColumnCount !== null &&
           rows.map((row) => {
-            const start = row.index * columnCount
+            const start = row.index * effectiveColumnCount
             // The last row is usually partial; slice clamps it so no phantom
             // cells are padded in.
-            const rowItems = items.slice(start, start + columnCount)
+            const rowItems = items.slice(start, start + effectiveColumnCount)
             return (
               <Box
                 key={row.key}
@@ -277,7 +341,11 @@ export default function VirtualSetGrid({
                   // skew the estimate for every row above it. Deferred to a
                   // microtask so the state write lands after the commit, never
                   // inside it.
-                  if (node && rowItems.length === columnCount && !measuredHeights[measureKey]) {
+                  if (
+                    node &&
+                    rowItems.length === effectiveColumnCount &&
+                    !measuredHeights[measureKey]
+                  ) {
                     const height = node.getBoundingClientRect().height
                     if (height > 0) {
                       queueMicrotask(() => {
@@ -296,7 +364,7 @@ export default function VirtualSetGrid({
                   width: '100%',
                   transform: `translateY(${row.start - virtualizer.options.scrollMargin}px)`,
                   display: 'grid',
-                  gridTemplateColumns: `repeat(${columnCount}, minmax(0, 1fr))`,
+                  gridTemplateColumns: `repeat(${effectiveColumnCount}, minmax(0, 1fr))`,
                   gap: `${GAP_PX}px`,
                   pb: `${GAP_PX}px`,
                 }}
