@@ -1,9 +1,10 @@
 'use client'
 
-import { ReactNode, useEffect, useState } from 'react'
-import { Evolution, OutfitSet } from '@/lib/types/outfit'
+import { memo, ReactNode, useEffect, useState } from 'react'
+import { Evolution, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { isGlowup } from '@/hooks/outfit'
 import { toTitle } from '@/lib/utils'
+import { useOutfitData } from '@/components/outfits/outfit-context'
 import {
   resolveOutfitImage,
   useOutfitImageMode,
@@ -12,15 +13,14 @@ import ToggleIcon from '@/components/toggle-icon'
 import ProgressChip from '@/components/progress-chip'
 import SetCard from '@/components/set-card'
 
-export default function OutfitSetCard({
+function OutfitSetCard({
   set,
   evolution = null,
   isLoggedIn,
   obtained,
   total,
-  onToggle,
+  variants,
   isMissingFilter = false,
-  shouldHide = false,
 }: {
   set: OutfitSet
   // When provided, the card represents this evolution of the set (its image,
@@ -29,29 +29,38 @@ export default function OutfitSetCard({
   isLoggedIn: boolean
   obtained: number
   total: number
-  onToggle: () => void
+  // The variants making up this evolution group. Passed as data rather than as
+  // a prebuilt `onToggle` closure so the prop list stays free of per-render
+  // function identities, which would defeat the `memo` wrapper below.
+  variants: OutfitVariant[]
   // When the "missing" filter is active, completing this group animates the
   // card out (the obtained toggle is committed in onExited) so it leaves the
   // filtered view smoothly instead of vanishing instantly.
   isMissingFilter?: boolean
-  // When true (e.g. an evolution card while "hide evolutions" is active), the
-  // card animates out and stays unmounted.
-  shouldHide?: boolean
 }) {
+  const { onBatchToggleObtained } = useOutfitData()
   const { mode } = useOutfitImageMode()
   const [grown, setGrown] = useState(false)
+  // The ONE card animation that survives: set by `handleToggle` under the
+  // "missing" filter so completing a group animates out instead of vanishing.
+  // Hide-evolutions / hide-glow-ups no longer animate — the filter pipeline in
+  // `filter-outfits.tsx` culls those variants outright, like every other filter.
   const [exiting, setExiting] = useState(false)
 
   useEffect(() => setGrown(true), [])
 
-  // Animate out when this card should be hidden by a filter change, and grow
-  // back in when the filter is cleared.
-  useEffect(() => {
-    setExiting(shouldHide)
-  }, [shouldHide])
-
   function handleToggle() {
-    onToggle()
+    // Batch-toggle the whole group: when fully obtained, clear it; otherwise
+    // mark the remaining (not-yet-obtained) variants obtained.
+    const allObtained = variants.every((v) => v.obtained === true)
+    const toToggle = variants
+      .filter((v) => v.obtained === allObtained)
+      .map((v) => ({
+        outfit_set: v.outfit_set!,
+        outfit_category: v.outfit_category!,
+        outfit_variant: v.slug,
+      }))
+    onBatchToggleObtained(toToggle, !allObtained)
     if (isMissingFilter) {
       setExiting(true)
     }
@@ -100,3 +109,10 @@ export default function OutfitSetCard({
     />
   )
 }
+
+// Default shallow comparison. Most props are primitives or memo-stable objects,
+// but `variants` is a fresh `.filter()` allocation per render in filter-outfits,
+// so this memo does NOT currently skip re-renders driven by the parent. It only
+// skips when FilterOutfits itself doesn't re-render. Hoisting that per-group
+// filter into the `filteredSets` memo would make it fully effective.
+export default memo(OutfitSetCard)

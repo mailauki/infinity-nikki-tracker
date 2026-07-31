@@ -157,13 +157,31 @@ export function updateOutfitSet({
   outfitSet: OutfitSet
   obtainedOutfit: ObtainedOutfit[] | null
 }): OutfitSet {
-  return {
-    ...outfitSet,
-    outfit_variants: outfitSet.outfit_variants.map((variant) => ({
-      ...variant,
-      obtained: !!obtainedOutfit?.find((o) => o.outfit_variant === variant.slug),
-    })) as OutfitVariant[],
-  } as OutfitSet
+  const obtainedSlugs = new Set((obtainedOutfit ?? []).map((o) => o.outfit_variant))
+
+  // Preserve object identity for variants whose `obtained` value is unchanged, so
+  // `React.memo` on the outfit cards can skip them. A single toggle changes one
+  // variant, so respreading all ~6k of them would re-render the whole grid.
+  //
+  // Strict `!==` is deliberate: `OutfitVariant.obtained` is optional and
+  // `createOutfitSet` never sets it, so variants arrive here with `undefined`.
+  // `undefined !== false` is therefore correctly treated as a change on the first
+  // pass, which is what guarantees every variant ends up with a strict boolean
+  // rather than a lingering `undefined`.
+  let changed = false
+  const outfit_variants = outfitSet.outfit_variants.map((variant) => {
+    const obtained = obtainedSlugs.has(variant.slug)
+    if (variant.obtained === obtained) return variant
+    changed = true
+    return { ...variant, obtained }
+  }) as OutfitVariant[]
+
+  // When no variant changed, return the original set so the parent reference is
+  // stable too — otherwise a new set object would invalidate every consumer memo
+  // and defeat the per-variant work above.
+  if (!changed) return outfitSet
+
+  return { ...outfitSet, outfit_variants } as OutfitSet
 }
 
 export function updateOutfitVariants({

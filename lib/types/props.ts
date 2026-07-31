@@ -75,14 +75,39 @@ export const GRID_COLUMNS_CONTAINER = {
   '@container (min-width: 900px)': { gridTemplateColumns: 'repeat(5, 1fr)' },
 }
 
+// THE single source of truth for the outfit grid's responsive columns. Both the
+// CSS container-query object below and the JS lookup used by the virtualizer are
+// derived from this list, so the two can never disagree. Add or change a
+// breakpoint here and both follow.
+export const OUTFIT_GRID_BREAKPOINTS = [
+  { minWidth: 0, columns: 2 },
+  { minWidth: 600, columns: 3 },
+  { minWidth: 900, columns: 4 },
+  { minWidth: 1200, columns: 6 },
+  { minWidth: 1536, columns: 8 },
+] as const
+
 // Outfit grids pack more columns than the eureka grids (2 → 3 → 4 → 6 → 8).
-// Same container-query approach: pair with GRID_CONTAINER on an ancestor.
-export const OUTFIT_GRID_COLUMNS_CONTAINER = {
-  gridTemplateColumns: 'repeat(2, 1fr)',
-  '@container (min-width: 600px)': { gridTemplateColumns: 'repeat(3, 1fr)' },
-  '@container (min-width: 900px)': { gridTemplateColumns: 'repeat(4, 1fr)' },
-  '@container (min-width: 1200px)': { gridTemplateColumns: 'repeat(6, 1fr)' },
-  '@container (min-width: 1536px)': { gridTemplateColumns: 'repeat(8, 1fr)' },
+// Container-query grid template derived from the breakpoints above. Same
+// container-query approach: pair with GRID_CONTAINER on an ancestor.
+export const OUTFIT_GRID_COLUMNS_CONTAINER = OUTFIT_GRID_BREAKPOINTS.reduce(
+  (acc, { minWidth, columns }) => {
+    const template = `repeat(${columns}, 1fr)`
+    if (minWidth === 0) return { ...acc, gridTemplateColumns: template }
+    return { ...acc, [`@container (min-width: ${minWidth}px)`]: { gridTemplateColumns: template } }
+  },
+  {} as Record<string, unknown>
+)
+
+// The same breakpoints resolved in JS, for code that must know the column count
+// (the virtualizer maps a flat item list onto rows). Mirrors how CSS resolves
+// min-width rules: the last matching breakpoint wins.
+export function outfitColumnsForWidth(width: number): number {
+  let columns: number = OUTFIT_GRID_BREAKPOINTS[0].columns
+  for (const bp of OUTFIT_GRID_BREAKPOINTS) {
+    if (width >= bp.minWidth) columns = bp.columns
+  }
+  return columns
 }
 
 export const TABLE_ROW_HEIGHT = 50

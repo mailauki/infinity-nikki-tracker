@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { OutfitVariant } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
 import { useOutfitData } from '@/components/outfits/outfit-context'
@@ -8,7 +8,7 @@ import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-conte
 import ToggleIcon from '@/components/toggle-icon'
 import VariantCard from '@/components/variant-card'
 
-export default function OutfitVariantCard({
+function OutfitVariantCard({
   outfitVariant,
   isLoggedIn,
   isMissingFilter = false,
@@ -51,3 +51,9 @@ export default function OutfitVariantCard({
     />
   )
 }
+
+// Default shallow comparison. Every prop is a primitive except `outfitVariant`,
+// whose identity is preserved by the provider/filter memos until the underlying
+// variant data changes. The toggle handler is built from context inside the
+// component, so no call site passes a per-render closure.
+export default memo(OutfitVariantCard)

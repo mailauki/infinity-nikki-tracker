@@ -1,18 +1,14 @@
 'use client'
 
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 import { createClient } from '@/lib/supabase/client'
 import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
-import { Label, Style, UserPreferences } from '@/lib/types/eureka'
+import { Label, Style } from '@/lib/types/eureka'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
-import {
-  updateOutfitFilters,
-  updateOutfitGroupBySet,
-  updateOutfitHideEvolutions,
-  updateOutfitHideGlowups,
-} from '@/app/actions/preferences'
+import { fetchPreferencesOnce } from '@/lib/preferences-cache'
+import { savePreferences } from '@/lib/save-preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
 import { updateOutfitSet } from '@/hooks/outfit'
 import {
@@ -25,6 +21,16 @@ async function fetchJson<T>(url: string): Promise<T> {
   const r = await fetch(url)
   if (!r.ok) throw new Error(`${url} returned ${r.status}`)
   return r.json()
+}
+
+// Filter changes arrive in bursts as the user adjusts several controls; collapse
+// them into one preference write instead of one write per click.
+const PREFERENCE_DEBOUNCE_MS = 500
+
+// A failed preference write must not disrupt filtering — the user's choices still
+// apply for this session, they just may not persist across a reload.
+const persistFailed = (err: unknown) => {
+  console.error('Failed to persist outfit preferences:', err)
 }
 
 export default function OutfitDataProvider({
@@ -53,7 +59,7 @@ export default function OutfitDataProvider({
   const [hideGlowups, setHideGlowups] = useState<boolean>(DEFAULT_PREFERENCES.outfit_hide_glowups)
   const [filters, setFilters] = useState<OutfitFilterState>(DEFAULT_OUTFIT_FILTERS)
   const [prefsLoaded, setPrefsLoaded] = useState(false)
-  const [, startTransition] = useTransition()
+  const [isFiltering, startFilterTransition] = useTransition()
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
@@ -76,7 +82,7 @@ export default function OutfitDataProvider({
 
   useEffect(() => {
     if (!isLoggedIn) return
-    fetchJson<UserPreferences>('/api/preferences')
+    fetchPreferencesOnce()
       .then((prefs) => {
         setGroupBySet(prefs.outfit_group_by_set)
         setHideEvolutions(prefs.outfit_hide_evolutions)
@@ -111,29 +117,36 @@ export default function OutfitDataProvider({
       })
   }, [isLoggedIn])
 
-  const handleGroupBySetChange = () => {
+  // The toggle writes are fire-and-forget: the UI applies the change immediately
+  // and a failed persist only means the choice won't survive a reload.
+  const handleGroupBySetChange = useCallback(() => {
     const next = !groupBySet
     setGroupBySet(next)
-    if (isLoggedIn) startTransition(() => updateOutfitGroupBySet(next))
-  }
+    if (isLoggedIn) void savePreferences({ outfit_group_by_set: next }).catch(persistFailed)
+  }, [groupBySet, isLoggedIn])
 
-  const handleHideEvolutionsChange = () => {
+  const handleHideEvolutionsChange = useCallback(() => {
     const next = !hideEvolutions
     setHideEvolutions(next)
-    if (isLoggedIn) startTransition(() => updateOutfitHideEvolutions(next))
-  }
+    if (isLoggedIn) void savePreferences({ outfit_hide_evolutions: next }).catch(persistFailed)
+  }, [hideEvolutions, isLoggedIn])
 
-  const handleHideGlowupsChange = () => {
+  const handleHideGlowupsChange = useCallback(() => {
     const next = !hideGlowups
     setHideGlowups(next)
-    if (isLoggedIn) startTransition(() => updateOutfitHideGlowups(next))
-  }
+    if (isLoggedIn) void savePreferences({ outfit_hide_glowups: next }).catch(persistFailed)
+  }, [hideGlowups, isLoggedIn])
 
-  const handleFiltersChange = (updates: Partial<OutfitFilterState>) => {
-    setFilters((prev) => ({ ...prev, ...updates }))
-  }
+  const handleFiltersChange = useCallback((updates: Partial<OutfitFilterState>) => {
+    // Mark the filter re-render interruptible: the control stays responsive and
+    // React abandons in-flight work when another filter arrives. Without this the
+    // ~6k-card render blocks the main thread and swallows the next click.
+    startFilterTransition(() => {
+      setFilters((prev) => ({ ...prev, ...updates }))
+    })
+  }, [])
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     // Reset every control in the outfit filter menu — the filters plus the
     // grouping/evolution toggles — back to their defaults. The filters reset is
     // persisted by the [filters] effect; the toggles are persisted here. (Density
@@ -143,77 +156,90 @@ export default function OutfitDataProvider({
     setHideEvolutions(DEFAULT_PREFERENCES.outfit_hide_evolutions)
     setHideGlowups(DEFAULT_PREFERENCES.outfit_hide_glowups)
     if (isLoggedIn) {
-      startTransition(() => {
-        updateOutfitGroupBySet(DEFAULT_PREFERENCES.outfit_group_by_set)
-        updateOutfitHideEvolutions(DEFAULT_PREFERENCES.outfit_hide_evolutions)
-        updateOutfitHideGlowups(DEFAULT_PREFERENCES.outfit_hide_glowups)
-      })
+      // One call for all three toggles: three concurrent upserts would race on
+      // the same user_preferences row.
+      void savePreferences({
+        outfit_group_by_set: DEFAULT_PREFERENCES.outfit_group_by_set,
+        outfit_hide_evolutions: DEFAULT_PREFERENCES.outfit_hide_evolutions,
+        outfit_hide_glowups: DEFAULT_PREFERENCES.outfit_hide_glowups,
+      }).catch(persistFailed)
     }
-  }
+  }, [isLoggedIn])
 
-  const handleToggleObtained = async (
-    outfit_set: string,
-    outfit_category: string,
-    outfit_variant: string
-  ) => {
-    const saved = obtainedOutfit
-    const isObtained = obtainedOutfit.some((o) => o.outfit_variant === outfit_variant)
-    if (isObtained) {
-      setObtainedOutfit((prev) => prev.filter((o) => o.outfit_variant !== outfit_variant))
-    } else {
-      setObtainedOutfit((prev) => [
-        ...prev,
-        { id: -1, outfit_set, outfit_category, outfit_variant },
-      ])
-    }
-    try {
-      await handleObtainedOutfit(outfit_set, outfit_category, outfit_variant)
-    } catch (err) {
-      console.error('Failed to toggle obtained outfit:', err)
-      setObtainedOutfit(saved)
-      enqueueSnackbar('Failed to update your collection. Please try again.', { variant: 'error' })
-    }
-  }
-
-  const handleBatchToggleObtained = async (
-    variants: Array<{
-      outfit_set: string
-      outfit_category: string
-      outfit_variant: string
-    }>,
-    targetObtained: boolean
-  ) => {
-    const saved = obtainedOutfit
-
-    if (targetObtained) {
-      setObtainedOutfit((prev) => {
-        const toAdd = variants
-          .filter((v) => !prev.some((o) => o.outfit_variant === v.outfit_variant))
-          .map((v) => ({ id: -1, ...v }))
-        return [...prev, ...toAdd]
-      })
-    } else {
-      setObtainedOutfit((prev) =>
-        prev.filter((o) => !variants.some((v) => o.outfit_variant === v.outfit_variant))
-      )
-    }
-
-    for (const v of variants) {
-      try {
-        await handleObtainedOutfit(v.outfit_set, v.outfit_category, v.outfit_variant)
-      } catch (err) {
-        console.error('Failed to batch toggle obtained outfit:', err)
-        setObtainedOutfit(saved)
-        enqueueSnackbar('Failed to update your collection. Please try again.', { variant: 'error' })
-        return
+  const handleToggleObtained = useCallback(
+    async (outfit_set: string, outfit_category: string, outfit_variant: string) => {
+      const saved = obtainedOutfit
+      const isObtained = obtainedOutfit.some((o) => o.outfit_variant === outfit_variant)
+      if (isObtained) {
+        setObtainedOutfit((prev) => prev.filter((o) => o.outfit_variant !== outfit_variant))
+      } else {
+        setObtainedOutfit((prev) => [
+          ...prev,
+          { id: -1, outfit_set, outfit_category, outfit_variant },
+        ])
       }
-    }
-  }
+      try {
+        await handleObtainedOutfit(outfit_set, outfit_category, outfit_variant)
+      } catch (err) {
+        console.error('Failed to toggle obtained outfit:', err)
+        setObtainedOutfit(saved)
+        enqueueSnackbar('Failed to update your collection. Please try again.', {
+          variant: 'error',
+        })
+      }
+    },
+    [obtainedOutfit]
+  )
+
+  const handleBatchToggleObtained = useCallback(
+    async (
+      variants: Array<{
+        outfit_set: string
+        outfit_category: string
+        outfit_variant: string
+      }>,
+      targetObtained: boolean
+    ) => {
+      const saved = obtainedOutfit
+
+      if (targetObtained) {
+        setObtainedOutfit((prev) => {
+          const toAdd = variants
+            .filter((v) => !prev.some((o) => o.outfit_variant === v.outfit_variant))
+            .map((v) => ({ id: -1, ...v }))
+          return [...prev, ...toAdd]
+        })
+      } else {
+        setObtainedOutfit((prev) =>
+          prev.filter((o) => !variants.some((v) => o.outfit_variant === v.outfit_variant))
+        )
+      }
+
+      for (const v of variants) {
+        try {
+          await handleObtainedOutfit(v.outfit_set, v.outfit_category, v.outfit_variant)
+        } catch (err) {
+          console.error('Failed to batch toggle obtained outfit:', err)
+          setObtainedOutfit(saved)
+          enqueueSnackbar('Failed to update your collection. Please try again.', {
+            variant: 'error',
+          })
+          return
+        }
+      }
+    },
+    [obtainedOutfit]
+  )
 
   useEffect(() => {
     if (!isLoggedIn || !prefsLoaded) return
-    startTransition(() =>
-      updateOutfitFilters({
+    // Persist filter choices as fire-and-forget: the UI must never wait on this
+    // write. Debouncing collapses a burst of filter changes into a single write,
+    // and staying out of startTransition keeps isFiltering tracking render work
+    // only. The write goes through the route handler rather than a Server Action
+    // so it cannot invalidate the router cache and remount this provider.
+    const id = setTimeout(() => {
+      void savePreferences({
         outfit_set_filter: filters.selectedOutfitSet,
         outfit_category_filter: filters.selectedOutfitCategory.length
           ? filters.selectedOutfitCategory.join(',')
@@ -225,8 +251,9 @@ export default function OutfitDataProvider({
         outfit_obtained_filter: filters.selectedObtainedFilter,
         outfit_style_filter: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
         outfit_label_filter: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
-      })
-    )
+      }).catch(persistFailed)
+    }, PREFERENCE_DEBOUNCE_MS)
+    return () => clearTimeout(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters])
 
@@ -281,38 +308,63 @@ export default function OutfitDataProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId])
 
-  const outfitSetsWithObtained = outfitSets.map((outfitSet) =>
-    updateOutfitSet({ outfitSet, obtainedOutfit })
+  const outfitSetsWithObtained = useMemo(
+    () => outfitSets.map((outfitSet) => updateOutfitSet({ outfitSet, obtainedOutfit })),
+    [outfitSets, obtainedOutfit]
   )
 
-  return (
-    <OutfitDataContext.Provider
-      value={{
-        outfitSets: outfitSetsWithObtained,
-        obtainedOutfit,
-        outfitCategories,
-        styles,
-        labels,
-        isLoggedIn,
-        isAdmin,
-        isLoading,
-        isError,
-        isObtainedError,
-        userId,
-        groupBySet,
-        hideEvolutions,
-        hideGlowups,
-        onGroupBySetChange: handleGroupBySetChange,
-        onHideEvolutionsChange: handleHideEvolutionsChange,
-        onHideGlowupsChange: handleHideGlowupsChange,
-        filters,
-        onFiltersChange: handleFiltersChange,
-        onClearFilters: handleClearFilters,
-        onToggleObtained: handleToggleObtained,
-        onBatchToggleObtained: handleBatchToggleObtained,
-      }}
-    >
-      {children}
-    </OutfitDataContext.Provider>
+  const contextValue = useMemo(
+    () => ({
+      outfitSets: outfitSetsWithObtained,
+      obtainedOutfit,
+      outfitCategories,
+      styles,
+      labels,
+      isLoggedIn,
+      isAdmin,
+      isLoading,
+      isError,
+      isObtainedError,
+      isFiltering,
+      userId,
+      groupBySet,
+      hideEvolutions,
+      hideGlowups,
+      onGroupBySetChange: handleGroupBySetChange,
+      onHideEvolutionsChange: handleHideEvolutionsChange,
+      onHideGlowupsChange: handleHideGlowupsChange,
+      filters,
+      onFiltersChange: handleFiltersChange,
+      onClearFilters: handleClearFilters,
+      onToggleObtained: handleToggleObtained,
+      onBatchToggleObtained: handleBatchToggleObtained,
+    }),
+    [
+      outfitSetsWithObtained,
+      obtainedOutfit,
+      outfitCategories,
+      styles,
+      labels,
+      isLoggedIn,
+      isAdmin,
+      isLoading,
+      isError,
+      isObtainedError,
+      isFiltering,
+      userId,
+      groupBySet,
+      hideEvolutions,
+      hideGlowups,
+      handleGroupBySetChange,
+      handleHideEvolutionsChange,
+      handleHideGlowupsChange,
+      filters,
+      handleFiltersChange,
+      handleClearFilters,
+      handleToggleObtained,
+      handleBatchToggleObtained,
+    ]
   )
+
+  return <OutfitDataContext.Provider value={contextValue}>{children}</OutfitDataContext.Provider>
 }

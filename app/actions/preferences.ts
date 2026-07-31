@@ -1,9 +1,24 @@
 'use server'
 
+// Preference writes on the /outfits path do NOT belong here — they go through
+// `POST /api/preferences` via `lib/save-preferences.ts`.
+//
+// Why: a Server Action that sets cookies — which the Supabase SSR client does
+// whenever it refreshes a session — marks its response as revalidated. That
+// invalidates the client router cache, which remounts OutfitDataProvider and
+// refires its ~6.7s /api/outfits fetch on every single preference toggle. A
+// route handler cannot trigger that revalidation, so the same cookie write is
+// harmless there.
+//
+// The outfit/sort-axis/density/image-mode actions that used to live in this file
+// were deleted for exactly that reason. Do not add them back — if you need to
+// persist a new outfits preference, call `savePreferences({ column: value })`.
+// The actions that remain here are for pages where a provider remount is cheap
+// (settings, eureka, admin, theme switcher).
+
 import { createClient } from '@/lib/supabase/server'
 import { getUserID } from '@/hooks/user'
-import type { OutfitImageMode, OutfitDensity } from '@/components/outfits/outfit-image-mode-context'
-import type { SortAxis, SortDir } from '@/components/sort-context'
+import type { SortDir } from '@/components/sort-context'
 
 async function upsertUserPreference(updates: Record<string, boolean | string | null>) {
   const user_id = await getUserID()
@@ -62,42 +77,6 @@ export async function updateColorTheme(value: string) {
   await upsertUserPreference({ color_theme: value })
 }
 
-export async function updateOutfitFilters(filters: {
-  outfit_set_filter?: string | null
-  outfit_category_filter?: string | null
-  outfit_evolution_filter?: string | null
-  outfit_rarity_filter?: string | null
-  outfit_obtained_filter?: string | null
-  outfit_style_filter?: string | null
-  outfit_label_filter?: string | null
-}) {
-  await upsertUserPreference(filters as Record<string, string | null>)
-}
-
-export async function updateOutfitGroupBySet(value: boolean) {
-  await upsertUserPreference({ outfit_group_by_set: value })
-}
-
-export async function updateOutfitHideEvolutions(value: boolean) {
-  await upsertUserPreference({ outfit_hide_evolutions: value })
-}
-
-export async function updateOutfitHideGlowups(value: boolean) {
-  await upsertUserPreference({ outfit_hide_glowups: value })
-}
-
-export async function updateOutfitImageMode(value: OutfitImageMode) {
-  await upsertUserPreference({ outfit_image_mode: value })
-}
-
-export async function updateOutfitDensity(value: OutfitDensity) {
-  await upsertUserPreference({ outfit_density: value })
-}
-
 export async function updateSortDir(value: SortDir) {
   await upsertUserPreference({ sort_order: value })
-}
-
-export async function updateSortAxis(value: SortAxis) {
-  await upsertUserPreference({ outfit_sort_axis: value })
 }

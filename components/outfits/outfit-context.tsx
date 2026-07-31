@@ -26,6 +26,7 @@ interface OutfitDataContextValue {
   isLoading: boolean
   isError: boolean
   isObtainedError: boolean
+  isFiltering: boolean
   userId: string | null
   groupBySet: boolean
   hideEvolutions: boolean
@@ -68,6 +69,7 @@ export const OutfitDataContext = createContext<OutfitDataContextValue>({
   isLoading: true,
   isError: false,
   isObtainedError: false,
+  isFiltering: false,
   userId: null,
   groupBySet: true,
   hideEvolutions: false,
