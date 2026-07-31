@@ -308,9 +308,9 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         anchor="left"
         open={drawerOpen}
         sx={{ display: { xs: 'none', sm: 'block' }, zIndex: theme.zIndex.drawer + 2 }}
-        variant="permanent"
+				variant="permanent"
       >
-        <Paper sx={{ borderRadius: 3, m: 2, mr: 0, flexGrow: 1 }} variant="filled">
+        <Paper elevation={2} sx={{ borderRadius: 3, m: 2, mr: 0, flexGrow: 1 }} variant="filled">
           <Stack sx={{ flexGrow: 1, height: '100%', pt: 3 }}>
             <DrawerHeader>
               <IconButton
@@ -402,7 +402,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
       >
         <DrawerHeader />
         {hasToolbar && <Toolbar />}
-        <Paper sx={{ borderRadius: 3, m: 2, ml: 0, flexGrow: 1 }} variant="filled">
+        <Paper elevation={2} sx={{ borderRadius: 3, m: 2, ml: 0, flexGrow: 1 }} variant="filled">
           <Toolbar>
             <Stack
               direction="row"

@@ -39,7 +39,7 @@ export default function EurekaResultsBar() {
       <Chip
         color="secondary"
         label={`Showing: ${resultsCount} results`}
-        sx={{ backgroundColor: 'surface.mainHover' }}
+        sx={{ backgroundColor: 'surface.mainHover', backdropFilter: 'blur(8px)' }}
         variant="outlined"
       />
     </StickyBar>
