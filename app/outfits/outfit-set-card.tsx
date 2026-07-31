@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, ReactNode, useEffect, useState } from 'react'
+import { memo, ReactNode, useState } from 'react'
 import { Evolution, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { isGlowup } from '@/hooks/outfit'
 import { toTitle } from '@/lib/utils'
@@ -40,14 +40,11 @@ function OutfitSetCard({
 }) {
   const { onBatchToggleObtained } = useOutfitData()
   const { mode } = useOutfitImageMode()
-  const [grown, setGrown] = useState(false)
   // The ONE card animation that survives: set by `handleToggle` under the
   // "missing" filter so completing a group animates out instead of vanishing.
   // Hide-evolutions / hide-glow-ups no longer animate — the filter pipeline in
   // `filter-outfits.tsx` culls those variants outright, like every other filter.
   const [exiting, setExiting] = useState(false)
-
-  useEffect(() => setGrown(true), [])
 
   function handleToggle() {
     // Batch-toggle the whole group: when fully obtained, clear it; otherwise
@@ -94,7 +91,7 @@ function OutfitSetCard({
       unmountOnExit
       href={href}
       imageSrc={imageSrc || set.image_url || ''}
-      in={grown && !exiting}
+      in={!exiting}
       isLoggedIn={isLoggedIn}
       obtained={obtained}
       rarity={set.rarity}

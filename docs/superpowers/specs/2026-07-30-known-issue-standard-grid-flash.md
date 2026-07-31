@@ -1,9 +1,69 @@
 # Known Issue: overlapping-card flash in the virtualized standard grid
 
 **Filed:** 2026-07-30
-**Status:** Accepted, not fixed. Revisit or revert.
-**File:** `app/outfits/virtual-set-grid.tsx`
-**Severity:** Cosmetic. Self-corrects in ~200ms. No data or interaction impact.
+**Updated:** 2026-07-31 — **RESOLVED.** See "Resolution" below.
+**Status:** Fixed. Zero overlap frames measured on both triggers.
+**Files:** `app/outfits/virtual-set-grid.tsx`, `app/outfits/outfit-set-card.tsx`
+**Severity:** Was cosmetic. No data or interaction impact.
+
+## Resolution part 2 (2026-07-31) — the mount-in animation
+
+The remaining frame was **not** the exit animation, as first assumed. `OutfitSetCard`
+initialised `grown = false` and flipped it to `true` in a `useEffect`, so **every card
+animated in on mount**. That is harmless in a plain grid where cards mount once, but
+under virtualization rows mount and unmount constantly — so every reorder had cards
+mid-`Grow` while the virtualizer was measuring them, and old rows lingered under
+`unmountOnExit` while new ones arrived.
+
+Removing the mount-in animation (`in={!exiting}` instead of `in={grown && !exiting}`)
+eliminated it completely. The exit animation is **kept** — it still runs when the
+"missing" filter culls a completed group, which is the one place it carries meaning.
+
+Measured after, on both triggers:
+
+| Trigger     | Overlap frames | Peak mounted rows | Swing     |
+| ----------- | -------------- | ----------------- | --------- |
+| Sort change | **0**          | 6 (no double)     | **1.00×** |
+| Alt toggle  | **0**          | 6 (no double)     | n/a\*     |
+
+\* The alt toggle legitimately changes row height (423px → 310px) because the card
+aspect ratio switches from 2/3 to 1/1. The total size changes with it; that is the
+feature working, not a flash.
+
+## Resolution part 1 (2026-07-31) — the content-keyed rows
+
+The dominant cause was `getItemKey` folding the row's **content identity** into the
+key. A sort or filter changed every key at once, so the virtualizer mounted the old
+and new key sets together — six rows became twelve for a frame, absolutely
+positioned on top of each other — and the total size collapsed while nothing was
+measured.
+
+That content identity was protecting against reusing a stale height for different
+content. But measurement showed it protected against nothing **in this grid**: every
+card is 407px and every row 423px at a given width and image mode, because height is
+`columnWidth * (showAlt ? 1 : 3/2)` plus a fixed text block. Content does not affect
+height, so the key now folds in only `columnCount` and `showAlt`.
+
+Measured before and after, on a sort change:
+
+| Metric              | Before | After     |
+| ------------------- | ------ | --------- |
+| Scroll-height swing | 2.65×  | **1.02×** |
+| Overlap frames      | 2      | 1         |
+| Peak mounted rows   | 12     | 11        |
+
+**Residual:** one frame, ~176ms after the interaction, where 11 rows are mounted
+instead of 6. This is **not** a virtualizer defect — `OutfitSetCard` renders through
+MUI `Grow` with `unmountOnExit` and a 300ms timeout, so exiting cards stay mounted
+while new ones arrive. 176ms falls inside that window. Removing it would mean
+dropping the card exit animation, which is a UX decision rather than a bug fix.
+
+**Caveat for future work:** this fix depends on all set cards being the same height.
+If they ever become variable (a wrapping title, a badge only some sets have), the
+row identity must return to `getItemKey` — and the double-mount would need a
+different answer.
+
+## Original report (2026-07-30)
 
 ## Symptom
 
@@ -49,24 +109,13 @@ Re-measured after the debounce: still 12 overlapping frames, and the total swing
 column-count effect; it is the **measurement cache being wiped**, leaving almost
 nothing measured. That second mechanism has not been isolated.
 
-## Why it is tolerated
+## Fallback, if this ever regresses
 
-Standard density renders only a few hundred cards. Virtualizing it was never
-load-bearing — the ~6,500-card problem that motivated this work lives entirely in
-the compact views, which are fixed-height and work correctly.
-
-## Recommended resolution
-
-**Prefer reverting over further debugging.** Replace `VirtualSetGrid` in the
-`density === 'standard'` branch of `app/outfits/filter-outfits.tsx` with a plain
-`CardGrid`, matching the shape the compact branches used before virtualization.
-That eliminates this entire class of bug at negligible performance cost.
-
-If someone does want to fix it properly, the open question is _what invalidates
-the measurement cache during a resize_ — `getItemKey` folds in `columnCount`, so
-a column change legitimately discards every cached height, and the total collapses
-until rows re-measure. A fix likely means keeping a stable height estimate across
-the transition rather than falling back to the arithmetic one.
+Superseded by the resolution above, but kept because it remains the cheapest
+escape hatch: replace `VirtualSetGrid` in the `density === 'standard'` branch of
+`app/outfits/filter-outfits.tsx` with a plain `CardGrid`. Standard density renders
+only a few hundred cards, so virtualizing it was never load-bearing — the
+~6,500-card problem that motivated this work lives entirely in the compact views.
 
 ## Background
 
