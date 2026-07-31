@@ -32,12 +32,6 @@ import { useNavDrawer, useSidebar, useStickyBar, useToolbar } from './navbar-too
 
 const SIDEBAR_WIDTH = 400
 
-// Fixed height of the AppBar's injected second row (and every spacer that must
-// clear it). The row's content — the portaled page toolbar — can be up to 40px
-// tall; a fixed 56px row keeps the AppBar row and its main/drawer spacers in exact
-// agreement regardless of content, so page content never sits under the second row.
-const TOOLBAR_ROW_2_HEIGHT = 56
-
 // ---- Left nav drawer (flush mini-variant) ------------------------------------
 
 const navOpenedMixin = (theme: Theme): CSSObject => ({
@@ -308,7 +302,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         anchor="left"
         open={drawerOpen}
         sx={{ display: { xs: 'none', sm: 'block' }, zIndex: theme.zIndex.drawer + 2 }}
-				variant="permanent"
+        variant="permanent"
       >
         <Paper elevation={2} sx={{ borderRadius: 3, m: 2, mr: 0, flexGrow: 1 }} variant="filled">
           <Stack sx={{ flexGrow: 1, height: '100%', pt: 3 }}>

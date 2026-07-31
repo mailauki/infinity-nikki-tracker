@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, IconButton, Stack, Tooltip, useMediaQuery, useTheme } from '@mui/material'
+import { Button, IconButton, Tooltip, useMediaQuery, useTheme } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import CheckIcon from '@mui/icons-material/Check'

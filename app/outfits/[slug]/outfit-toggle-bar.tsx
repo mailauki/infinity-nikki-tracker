@@ -53,7 +53,11 @@ export default function OutfitToggleBar({
           >
             <ToggleButton value={null as unknown as string}>All</ToggleButton>
             {presentCategories.map((category) => (
-              <ToggleButton key={category.slug} value={category.slug} sx={{ backdropFilter: 'blur(8px)' }}>
+              <ToggleButton
+                key={category.slug}
+                sx={{ backdropFilter: 'blur(8px)' }}
+                value={category.slug}
+              >
                 {category.title}
               </ToggleButton>
             ))}
@@ -71,7 +75,7 @@ export default function OutfitToggleBar({
               const value = evolution?.slug ?? baseSlug
               const glowup = !!evolution && isGlowup(evolution)
               return (
-                <ToggleButton key={value} value={value} sx={{ backdropFilter: 'blur(8px)' }}>
+                <ToggleButton key={value} sx={{ backdropFilter: 'blur(8px)' }} value={value}>
                   {glowup && '✦ '}
                   {evolution ? evolution.title : 'Base'}
                 </ToggleButton>

@@ -2,7 +2,7 @@
 
 import { navLinksData } from '@/lib/nav-links'
 import { toTitle } from '@/lib/utils'
-import { Toolbar, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 import { usePathname } from 'next/navigation'
 
 export default function PageTitle() {
