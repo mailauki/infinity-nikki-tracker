@@ -71,6 +71,8 @@ export default function FilterOutfits() {
     selectedRarity,
     selectedStyle,
     selectedLabel,
+    selectedSeason,
+    selectedSeasonCategory,
   } = filters
 
   // When grouped, each set renders as one card/header per evolution group (base
@@ -99,6 +101,12 @@ export default function FilterOutfits() {
       .filter(
         (set) =>
           !selectedLabel.length || selectedLabel.some((l) => l === set.label || l === set.label_2)
+      )
+      .filter((set) => !selectedSeason.length || selectedSeason.includes(set.seasons ?? ''))
+      .filter(
+        (set) =>
+          !selectedSeasonCategory.length ||
+          selectedSeasonCategory.includes(set.season_category ?? '')
       )
       .map((set) => {
         const baseSlug = set.slug
@@ -208,6 +216,8 @@ export default function FilterOutfits() {
     selectedRarity,
     selectedStyle,
     selectedLabel,
+    selectedSeason,
+    selectedSeasonCategory,
     hideEvolutions,
     hideGlowups,
     groupLevelObtained,

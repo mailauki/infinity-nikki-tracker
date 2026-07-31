@@ -108,6 +108,9 @@ export default function EurekaDataProvider({
           selectedRarity: prefs.eureka_rarity ? Number(prefs.eureka_rarity) || null : null,
           selectedStyle: prefs.eureka_style ? prefs.eureka_style.split(',').filter(Boolean) : [],
           selectedLabel: prefs.eureka_label ? prefs.eureka_label.split(',').filter(Boolean) : [],
+          // Session-only — user_preferences has no column for the trial filter yet,
+          // so it always starts cleared rather than rehydrating.
+          selectedTrial: [],
         })
         prefsLoaded.current = true
       })

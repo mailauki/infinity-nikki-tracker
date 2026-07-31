@@ -21,6 +21,7 @@ interface FilterState {
   selectedRarity: number | null
   selectedStyle: string[]
   selectedLabel: string[]
+  selectedTrial: string[]
 }
 
 interface EurekaDataContextValue {
@@ -59,6 +60,7 @@ const DEFAULT_FILTERS: FilterState = {
   selectedRarity: null,
   selectedStyle: [],
   selectedLabel: [],
+  selectedTrial: [],
 }
 
 export const EurekaDataContext = createContext<EurekaDataContextValue>({
