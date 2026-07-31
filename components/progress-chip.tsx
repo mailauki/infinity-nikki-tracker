@@ -26,6 +26,7 @@ export default function ProgressChip({
         label={isComplete ? <Check /> : `${obtained} / ${total}`}
         size="small"
         variant="outlined"
+				sx={{ backdropFilter: 'blur(8px)' }}
       />
     )
   }
@@ -36,6 +37,7 @@ export default function ProgressChip({
         color={isComplete ? 'success' : 'default'}
         label={isComplete ? <Check /> : <MoreHoriz />}
         size="small"
+				sx={{ backdropFilter: 'blur(8px)' }}
       />
     )
 
@@ -47,6 +49,7 @@ export default function ProgressChip({
       sx={{
         fontWeight: 'bold',
         textTransform: 'uppercase',
+				backdropFilter: 'blur(8px)'
       }}
     />
   )

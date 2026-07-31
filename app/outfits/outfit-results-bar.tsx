@@ -1,7 +1,7 @@
 'use client'
 
 import { Chip } from '@mui/material'
-import StickyBar from '@/components/sticky-bar'
+import StickyBar from '@/components/navbar/sticky-bar'
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
@@ -106,7 +106,7 @@ export default function OutfitResultsBar({
       <Chip
         color="secondary"
         label={`Showing: ${resultsCount} results`}
-        sx={{ backgroundColor: 'surface.mainHover' }}
+        sx={{ backgroundColor: 'surface.mainHover', backdropFilter: 'blur(8px)' }}
         variant="outlined"
       />
     </StickyBar>

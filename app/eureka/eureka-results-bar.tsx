@@ -1,7 +1,7 @@
 'use client'
 
 import { Chip } from '@mui/material'
-import StickyBar from '@/components/sticky-bar'
+import StickyBar from '@/components/navbar/sticky-bar'
 import { useEurekaData } from '@/components/eureka/eureka-context'
 
 export default function EurekaResultsBar() {

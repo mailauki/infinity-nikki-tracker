@@ -19,16 +19,16 @@ import {
   Typography,
 } from '@mui/material'
 import { Close, Menu, MenuOpen } from '@mui/icons-material'
-import NavSection from './navbar/nav-section'
-import PageTitle from './navbar/page-title'
-import { NavUser } from './navbar/nav-user'
-import Footer from './navbar/nav-footer'
+import NavSection from './nav-section'
+import PageTitle from './page-title'
+import { NavUser } from './nav-user'
+import Footer from './nav-footer'
 import PullToRefresh from './pull-to-refresh'
 import { navLinksData } from '@/lib/nav-links'
 import { NAV_DRAWER_WIDTH } from '@/lib/layout-constants'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
-import { useColorTheme } from './color-theme-context'
-import { useNavDrawer, useSidebar, useStickyBar, useToolbar } from './navbar/navbar-toolbar-context'
+import { useColorTheme } from '../color-theme-context'
+import { useNavDrawer, useSidebar, useStickyBar, useToolbar } from './navbar-toolbar-context'
 
 const SIDEBAR_WIDTH = 400
 

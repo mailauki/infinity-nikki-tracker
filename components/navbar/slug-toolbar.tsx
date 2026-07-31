@@ -1,7 +1,7 @@
 'use client'
 
 import { IconButton, Stack, Tooltip } from '@mui/material'
-import ToolbarSlot from '@/components/toolbar-slot'
+import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import { useParams, usePathname } from 'next/navigation'
 import { ChevronLeft, Compare, Edit, InfoOutlined } from '@mui/icons-material'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'

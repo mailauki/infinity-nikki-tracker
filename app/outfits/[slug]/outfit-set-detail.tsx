@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { OutfitSet } from '@/lib/types/outfit'
-import SlugToolBar from '@/components/slug-toolbar'
+import SlugToolBar from '@/components/navbar/slug-toolbar'
 import PageShell from '@/components/page-shell'
 import SidebarBody from '@/components/sidebar/sidebar-body'
 import OutfitEvolutionVariants from './outfit-evolution-variants'

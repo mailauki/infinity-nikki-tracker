@@ -1,7 +1,7 @@
 'use client'
 
 import { Stack } from '@mui/material'
-import StickyBar from '@/components/sticky-bar'
+import StickyBar from '@/components/navbar/sticky-bar'
 import ProgressChip from '@/components/progress-chip'
 import type { EurekaColor } from '@/lib/types/eureka'
 import ColorChip from './color-chip'

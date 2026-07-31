@@ -2,7 +2,7 @@
 
 import { Box, Container, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { ChevronLeft, Edit as EditIcon } from '@mui/icons-material'
-import ToolbarSlot from '@/components/toolbar-slot'
+import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import LazyImage from '@/components/lazy-image'
 import PageShell from '@/components/page-shell'
 import type { CustomLook } from '@/lib/types/looks'
