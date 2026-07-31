@@ -1,9 +1,45 @@
 # Known Issue: overlapping-card flash in the virtualized standard grid
 
 **Filed:** 2026-07-30
-**Status:** Accepted, not fixed. Revisit or revert.
+**Updated:** 2026-07-31 — largely fixed; see "Resolution" below.
+**Status:** Mostly resolved. One residual frame remains, with a known and benign cause.
 **File:** `app/outfits/virtual-set-grid.tsx`
-**Severity:** Cosmetic. Self-corrects in ~200ms. No data or interaction impact.
+**Severity:** Cosmetic. No data or interaction impact.
+
+## Resolution (2026-07-31)
+
+The dominant cause was `getItemKey` folding the row's **content identity** into the
+key. A sort or filter changed every key at once, so the virtualizer mounted the old
+and new key sets together — six rows became twelve for a frame, absolutely
+positioned on top of each other — and the total size collapsed while nothing was
+measured.
+
+That content identity was protecting against reusing a stale height for different
+content. But measurement showed it protected against nothing **in this grid**: every
+card is 407px and every row 423px at a given width and image mode, because height is
+`columnWidth * (showAlt ? 1 : 3/2)` plus a fixed text block. Content does not affect
+height, so the key now folds in only `columnCount` and `showAlt`.
+
+Measured before and after, on a sort change:
+
+| Metric              | Before | After     |
+| ------------------- | ------ | --------- |
+| Scroll-height swing | 2.65×  | **1.02×** |
+| Overlap frames      | 2      | 1         |
+| Peak mounted rows   | 12     | 11        |
+
+**Residual:** one frame, ~176ms after the interaction, where 11 rows are mounted
+instead of 6. This is **not** a virtualizer defect — `OutfitSetCard` renders through
+MUI `Grow` with `unmountOnExit` and a 300ms timeout, so exiting cards stay mounted
+while new ones arrive. 176ms falls inside that window. Removing it would mean
+dropping the card exit animation, which is a UX decision rather than a bug fix.
+
+**Caveat for future work:** this fix depends on all set cards being the same height.
+If they ever become variable (a wrapping title, a badge only some sets have), the
+row identity must return to `getItemKey` — and the double-mount would need a
+different answer.
+
+## Original report (2026-07-30)
 
 ## Symptom
 

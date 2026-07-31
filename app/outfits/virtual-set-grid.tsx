@@ -276,22 +276,27 @@ export default function VirtualSetGrid({
     estimateSize: () => estimatedRowHeight,
     overscan: 3,
     scrollMargin,
-    // The key must identify a row's CONTENT, not its position. `itemSizeCache` is
-    // keyed by this value and is never cleared on a count or content change, so a
-    // key that is only positional lets row 0 reuse the previous row 0's height
-    // after a filter swaps which sets are at index 0 — cards then paint at a
-    // stale, much smaller height and overlap.
+    // The key identifies what a row's HEIGHT depends on — nothing more.
     //
-    // Three things therefore participate:
-    //  - the first item's key, which changes whenever filtering, sorting or
-    //    grouping changes what lands in this row
-    //  - `columnCount`, since row N holds different items at 4 columns than at 8
-    //  - `showAlt`, since flipping the image mode swaps the card aspect ratio
-    //    between 2/3 and 1/1 and makes every cached height wrong by ~a third
-    getItemKey: (index) => {
-      const first = items[index * (effectiveColumnCount ?? 1)]
-      return `${effectiveColumnCount}-${showAlt}-${first?.key ?? index}`
-    },
+    // In this grid every card is the same height: the image box is
+    // `columnWidth * (showAlt ? 1 : 3/2)` and the text block below it is fixed.
+    // Measured in the browser: all cards 407px, all rows 423px, regardless of
+    // which sets they hold. So height is a pure function of `columnCount` and
+    // `showAlt`, and those are the only two things the key needs.
+    //
+    // It deliberately does NOT include the row's content identity. Folding the
+    // first item's key in made every key change at once on a sort or filter,
+    // which made the virtualizer mount the old and new key sets together — six
+    // rows became twelve for a frame, absolutely positioned on top of each other.
+    // That was the visible "overlapping cards" flash. Content identity guards
+    // against reusing a stale height for different content, but here different
+    // content has the SAME height, so it protected against nothing and cost a
+    // double mount on every reorder.
+    //
+    // If set cards ever become variable-height (a wrapping title, a badge that
+    // only some sets have), this reasoning breaks and the row identity has to
+    // come back — along with a different answer for the double mount.
+    getItemKey: (index) => `${effectiveColumnCount}-${showAlt}-${index}`,
     // `measureElement`'s ResizeObserver callback runs synchronously, and a row
     // whose measured height differs from the estimate calls `resizeItem` ->
     // `notify(sync = true)` -> `flushSync(rerender)`. When rows mount during a
