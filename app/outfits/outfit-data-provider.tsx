@@ -3,7 +3,13 @@
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 import { createClient } from '@/lib/supabase/client'
-import { OutfitCategory, OutfitSet, ObtainedOutfit } from '@/lib/types/outfit'
+import {
+  OutfitCategory,
+  OutfitSet,
+  ObtainedOutfit,
+  Season,
+  SeasonCategory,
+} from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
 import { Label, Style } from '@/lib/types/eureka'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
@@ -48,6 +54,8 @@ export default function OutfitDataProvider({
   const [outfitCategories, setOutfitCategories] = useState<OutfitCategory[]>([])
   const [styles, setStyles] = useState<Style[]>([])
   const [labels, setLabels] = useState<Label[]>([])
+  const [seasons, setSeasons] = useState<Season[]>([])
+  const [seasonCategories, setSeasonCategories] = useState<SeasonCategory[]>([])
   const [obtainedOutfit, setObtainedOutfit] = useState<ObtainedOutfit[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
@@ -63,16 +71,26 @@ export default function OutfitDataProvider({
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
-    fetchJson<{ outfitSets: OutfitSet[]; styles: Style[]; labels: Label[] }>('/api/outfits')
-      .then(({ outfitSets: sets, styles: sty, labels: lbl }) => {
-        setOutfitSets(sets)
-        if (sets.length > 0) {
-          setOutfitCategories(sets[0].outfit_categories)
+    fetchJson<{
+      outfitSets: OutfitSet[]
+      styles: Style[]
+      labels: Label[]
+      seasons: Season[]
+      seasonCategories: SeasonCategory[]
+    }>('/api/outfits')
+      .then(
+        ({ outfitSets: sets, styles: sty, labels: lbl, seasons: sea, seasonCategories: sec }) => {
+          setOutfitSets(sets)
+          if (sets.length > 0) {
+            setOutfitCategories(sets[0].outfit_categories)
+          }
+          setStyles(sty)
+          setLabels(lbl)
+          setSeasons(sea)
+          setSeasonCategories(sec)
+          setIsLoading(false)
         }
-        setStyles(sty)
-        setLabels(lbl)
-        setIsLoading(false)
-      })
+      )
       .catch((err) => {
         console.error('Failed to load outfit data:', err)
         setIsError(true)
@@ -109,6 +127,10 @@ export default function OutfitDataProvider({
           selectedLabel: prefs.outfit_label_filter
             ? prefs.outfit_label_filter.split(',').filter(Boolean)
             : [],
+          // Season filters are session-only — user_preferences has no column for
+          // them yet, so they always start cleared rather than rehydrating.
+          selectedSeason: [],
+          selectedSeasonCategory: [],
         })
         setPrefsLoaded(true)
       })
@@ -320,6 +342,8 @@ export default function OutfitDataProvider({
       outfitCategories,
       styles,
       labels,
+      seasons,
+      seasonCategories,
       isLoggedIn,
       isAdmin,
       isLoading,
@@ -345,6 +369,8 @@ export default function OutfitDataProvider({
       outfitCategories,
       styles,
       labels,
+      seasons,
+      seasonCategories,
       isLoggedIn,
       isAdmin,
       isLoading,

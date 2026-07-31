@@ -1,17 +1,9 @@
+'use client'
+
 import { EurekaSet } from '@/lib/types/eureka'
 import { Category } from '@mui/icons-material'
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  SelectChangeEvent,
-} from '@mui/material'
+import { Autocomplete, Box, ListItemAvatar, ListItemText, TextField } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
-import { MENU_PROPS } from '@/lib/types/props'
 
 export default function EurekaSelect({
   eurekaSets,
@@ -20,40 +12,35 @@ export default function EurekaSelect({
 }: {
   eurekaSets: EurekaSet[]
   selectedEurekaSet: string | null
-  onEurekaSetChange: (event: SelectChangeEvent) => void
+  onEurekaSetChange: (slug: string | null) => void
 }) {
+  const value = eurekaSets.find((set) => set.slug === selectedEurekaSet) ?? null
+
   return (
-    <FormControl
-      sx={{
-        flex: 1,
-        whiteSpace: 'nowrap',
+    <Autocomplete
+      autoHighlight
+      fullWidth
+      getOptionLabel={(option) => option.title}
+      isOptionEqualToValue={(option, val) => option.slug === val.slug}
+      options={eurekaSets}
+      renderInput={(params) => <TextField {...params} aria-label="Eureka Set" label="Eureka Set" />}
+      renderOption={(props, option) => {
+        const { key, ...optionProps } = props
+        return (
+          <Box key={key} component="li" {...optionProps} sx={{ gap: 1 }}>
+            <ListItemAvatar sx={{ minWidth: 'auto' }}>
+              <LazyImage alt={option.title} size="sm" src={option.image_url}>
+                <Category fontSize="inherit" />
+              </LazyImage>
+            </ListItemAvatar>
+            <ListItemText>{option.title}</ListItemText>
+          </Box>
+        )
       }}
-    >
-      <InputLabel id="eureka-set-select-label">Eureka Set</InputLabel>
-      <Select
-        MenuProps={MENU_PROPS}
-        aria-label="Eureka Set"
-        id="eureka-set-select"
-        label="Eureka Set"
-        labelId="eureka-set-select-label"
-        sx={{ '& .MuiOutlinedInput-input': { py: selectedEurekaSet && 1 } }}
-        value={selectedEurekaSet ?? ''}
-        onChange={onEurekaSetChange}
-      >
-        <MenuItem value="">—</MenuItem>
-        {eurekaSets.map((set) => (
-          <MenuItem key={set.slug} value={set.slug!}>
-            <ListItem disablePadding component="div">
-              <ListItemAvatar>
-                <LazyImage alt={set.title} size="sm" src={set.image_url}>
-                  <Category fontSize="inherit" />
-                </LazyImage>
-              </ListItemAvatar>
-              <ListItemText>{set.title}</ListItemText>
-            </ListItem>
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+      size="small"
+      sx={{ flex: 1, whiteSpace: 'nowrap' }}
+      value={value}
+      onChange={(_e, newValue) => onEurekaSetChange(newValue?.slug ?? null)}
+    />
   )
 }

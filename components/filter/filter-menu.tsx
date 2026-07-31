@@ -55,6 +55,7 @@ export default function FilterMenu() {
     colors,
     styles,
     labels,
+    trials,
     isLoggedIn,
     groupBySet,
     showByColor,
@@ -73,6 +74,7 @@ export default function FilterMenu() {
     selectedRarity,
     selectedStyle,
     selectedLabel,
+    selectedTrial,
   } = filters
 
   const {
@@ -80,6 +82,8 @@ export default function FilterMenu() {
     outfitCategories,
     styles: outfitStyles,
     labels: outfitLabels,
+    seasons,
+    seasonCategories,
     isLoggedIn: outfitLoggedIn,
     groupBySet: outfitGroupBySet,
     hideEvolutions,
@@ -142,6 +146,8 @@ export default function FilterMenu() {
       selectedRarity,
       selectedStyle,
       selectedLabel,
+      selectedSeason,
+      selectedSeasonCategory,
     } = outfitFilters
 
     // "Clear all" resets every control in this drawer, so it should appear when
@@ -155,6 +161,8 @@ export default function FilterMenu() {
       selectedRarity ||
       selectedStyle.length > 0 ||
       selectedLabel.length > 0 ||
+      selectedSeason.length > 0 ||
+      selectedSeasonCategory.length > 0 ||
       !outfitGroupBySet ||
       hideEvolutions ||
       hideGlowups ||
@@ -281,7 +289,7 @@ export default function FilterMenu() {
                 onRarityChange={(_e, v) => onOutfitFiltersChange({ selectedRarity: v })}
               />
             </ListItem>
-            <ListItem>
+            <ListItem sx={{ gap: 1 }}>
               <StyleLabelSelect
                 id="outfit-style-select"
                 label="Style"
@@ -289,14 +297,28 @@ export default function FilterMenu() {
                 selected={selectedStyle}
                 onChange={(next) => onOutfitFiltersChange({ selectedStyle: next })}
               />
-            </ListItem>
-            <ListItem>
               <StyleLabelSelect
                 id="outfit-label-select"
                 label="Label"
                 options={outfitLabels}
                 selected={selectedLabel}
                 onChange={(next) => onOutfitFiltersChange({ selectedLabel: next })}
+              />
+            </ListItem>
+            <ListItem sx={{ gap: 1 }}>
+              <StyleLabelSelect
+                id="outfit-season-select"
+                label="Season"
+                options={seasons}
+                selected={selectedSeason}
+                onChange={(next) => onOutfitFiltersChange({ selectedSeason: next })}
+              />
+              <StyleLabelSelect
+                id="outfit-season-category-select"
+                label="Season Category"
+                options={seasonCategories}
+                selected={selectedSeasonCategory}
+                onChange={(next) => onOutfitFiltersChange({ selectedSeasonCategory: next })}
               />
             </ListItem>
             <Divider sx={{ mx: 2, mt: 2 }} />
@@ -323,8 +345,8 @@ export default function FilterMenu() {
     )
   }
 
-  const handleEurekaSetChange = (event: SelectChangeEvent) => {
-    onFiltersChange({ selectedEurekaSet: event.target.value || null })
+  const handleEurekaSetChange = (slug: string | null) => {
+    onFiltersChange({ selectedEurekaSet: slug })
   }
 
   const handleCategoryChange = (
@@ -366,6 +388,7 @@ export default function FilterMenu() {
     selectedRarity ||
     selectedStyle.length > 0 ||
     selectedLabel.length > 0 ||
+    selectedTrial.length > 0 ||
     !groupBySet ||
     showByColor
 
@@ -419,7 +442,7 @@ export default function FilterMenu() {
           <ListItem>
             <RarityToggle selectedRarity={selectedRarity} onRarityChange={handleRarityChange} />
           </ListItem>
-          <ListItem>
+          <ListItem sx={{ gap: 1 }}>
             <StyleLabelSelect
               id="eureka-style-select"
               label="Style"
@@ -427,14 +450,21 @@ export default function FilterMenu() {
               selected={selectedStyle}
               onChange={(next) => onFiltersChange({ selectedStyle: next })}
             />
-          </ListItem>
-          <ListItem>
             <StyleLabelSelect
               id="eureka-label-select"
               label="Label"
               options={labels}
               selected={selectedLabel}
               onChange={(next) => onFiltersChange({ selectedLabel: next })}
+            />
+          </ListItem>
+          <ListItem>
+            <StyleLabelSelect
+              id="eureka-trial-select"
+              label="Trial"
+              options={trials}
+              selected={selectedTrial}
+              onChange={(next) => onFiltersChange({ selectedTrial: next })}
             />
           </ListItem>
           <Divider sx={{ mx: 2, mt: 2 }} />

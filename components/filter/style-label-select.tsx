@@ -1,9 +1,7 @@
 'use client'
 
 import {
-  Box,
   Checkbox,
-  Chip,
   FormControl,
   IconButton,
   InputAdornment,
@@ -12,6 +10,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
+  Typography,
 } from '@mui/material'
 import { Clear } from '@mui/icons-material'
 
@@ -45,7 +44,7 @@ export default function StyleLabelSelect({
   }
 
   return (
-    <FormControl disabled={disabled} sx={{ flex: 1, whiteSpace: 'nowrap' }}>
+    <FormControl disabled={disabled} size="small" sx={{ flex: 1, whiteSpace: 'nowrap' }}>
       <InputLabel id={`${id}-label`}>{label}</InputLabel>
       <Select<string[]>
         multiple
@@ -69,13 +68,9 @@ export default function StyleLabelSelect({
         label={label}
         labelId={`${id}-label`}
         renderValue={(value) => (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-            {options
-              .filter((option) => value.includes(option.slug))
-              .map((option) => (
-                <Chip key={option.slug} label={optionLabel(option)} size="small" />
-              ))}
-          </Box>
+          <Typography variant="body2">
+            {options.filter((option) => value.includes(option.slug)).length} selected
+          </Typography>
         )}
         value={selected}
         onChange={handleChange}

@@ -61,6 +61,7 @@ export default function FilterEureka() {
     selectedRarity,
     selectedStyle,
     selectedLabel,
+    selectedTrial,
   } = filters
 
   if (isError) {
@@ -99,6 +100,12 @@ export default function FilterEureka() {
     .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
     .filter((set) => !selectedLabel.length || selectedLabel.includes(set.label ?? ''))
+    // A set belongs to many trials, so it matches if ANY of its trials is selected.
+    .filter(
+      (set) =>
+        !selectedTrial.length ||
+        set.eureka_set_trials.some((t) => selectedTrial.includes(t.trial ?? ''))
+    )
     .map((set) => {
       const filteredColors = set.colors.filter(
         (color) => !selectedColor || color.slug === selectedColor

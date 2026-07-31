@@ -17,7 +17,7 @@ export default function OutfitEvolutionSelect({
   disabled?: boolean
 }) {
   return (
-    <FormControl disabled={disabled} sx={{ flex: 1, whiteSpace: 'nowrap' }}>
+    <FormControl disabled={disabled} size="small" sx={{ flex: 1, whiteSpace: 'nowrap' }}>
       <InputLabel id="outfit-evolution-select-label">Evolution</InputLabel>
       <Select
         MenuProps={MENU_PROPS}

@@ -305,6 +305,10 @@ export default function VirtualSetGrid({
     // mid-lifecycle and React throws "flushSync was called from inside a
     // lifecycle method". This option defers each measurement into a
     // requestAnimationFrame, which is the "scheduler task" the error asks for.
+    //
+    // It covers ONLY the ResizeObserver path. The direct `measureElement` call
+    // in the row ref below is a separate route to the same throw — see
+    // deferredMeasureRef.
     useAnimationFrameWithResizeObserver: true,
   })
 
@@ -330,36 +334,32 @@ export default function VirtualSetGrid({
               <Box
                 key={row.key}
                 ref={(node: HTMLDivElement | null) => {
-                  // Hand the node to the virtualizer FIRST and without anything
-                  // else in this callback touching React state. A ref callback
-                  // runs during the commit phase, so a `setState` here puts React
-                  // into rendering; `measureElement` can then reach
-                  // `flushSync(rerender)` mid-lifecycle and React throws
-                  // "flushSync was called from inside a lifecycle method".
-                  // (`useAnimationFrameWithResizeObserver` only defers the
-                  // ResizeObserver path, not this direct call.)
-                  virtualizer.measureElement(node)
+                  // Both statements below must run AFTER the commit phase —
+                  // `measureElement` can reach `flushSync` and
+                  // `setMeasuredHeights` is a state write. See deferredMeasureRef
+                  // for why the virtualizer's own option doesn't cover this.
+                  //
+                  // The height is read synchronously though: by the time the
+                  // microtask runs the node may already be detached (fast filter
+                  // changes unmount rows within the same tick), and
+                  // getBoundingClientRect on a detached node returns 0.
+                  const shouldRecord =
+                    node && rowItems.length === effectiveColumnCount && !measuredHeights[measureKey]
+                  const height = shouldRecord ? node.getBoundingClientRect().height : 0
 
-                  // Record the first real height for this width/mode so later
-                  // rows estimate from a measured value instead of arithmetic.
-                  // Only full rows count: a partial last row is shorter and would
-                  // skew the estimate for every row above it. Deferred to a
-                  // microtask so the state write lands after the commit, never
-                  // inside it.
-                  if (
-                    node &&
-                    rowItems.length === effectiveColumnCount &&
-                    !measuredHeights[measureKey]
-                  ) {
-                    const height = node.getBoundingClientRect().height
+                  queueMicrotask(() => {
+                    virtualizer.measureElement(node)
+
+                    // Record the first real height for this width/mode so later
+                    // rows estimate from a measured value instead of arithmetic.
+                    // Only full rows count: a partial last row is shorter and
+                    // would skew the estimate for every row above it.
                     if (height > 0) {
-                      queueMicrotask(() => {
-                        setMeasuredHeights((prev) =>
-                          prev[measureKey] ? prev : { ...prev, [measureKey]: height }
-                        )
-                      })
+                      setMeasuredHeights((prev) =>
+                        prev[measureKey] ? prev : { ...prev, [measureKey]: height }
+                      )
                     }
-                  }
+                  })
                 }}
                 data-index={row.index}
                 sx={{

@@ -70,7 +70,7 @@ export default function OutfitCategorySelect({
   const categoryLabel = (category: OutfitCategory) => toTitle(category.title ?? category.slug)
 
   return (
-    <FormControl disabled={disabled} sx={{ flex: 1, whiteSpace: 'nowrap' }}>
+    <FormControl disabled={disabled} size="small" sx={{ flex: 1, whiteSpace: 'nowrap' }}>
       <InputLabel id="outfit-category-select-label">Category</InputLabel>
       {multiple ? (
         <Select<string[]>
