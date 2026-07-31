@@ -45,7 +45,7 @@ export default function StyleLabelSelect({
   }
 
   return (
-    <FormControl disabled={disabled} sx={{ flex: 1, whiteSpace: 'nowrap' }}>
+    <FormControl disabled={disabled} size="small" sx={{ flex: 1, whiteSpace: 'nowrap' }}>
       <InputLabel id={`${id}-label`}>{label}</InputLabel>
       <Select<string[]>
         multiple

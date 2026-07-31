@@ -281,7 +281,7 @@ export default function FilterMenu() {
                 onRarityChange={(_e, v) => onOutfitFiltersChange({ selectedRarity: v })}
               />
             </ListItem>
-            <ListItem>
+            <ListItem sx={{ gap: 1 }}>
               <StyleLabelSelect
                 id="outfit-style-select"
                 label="Style"
@@ -289,8 +289,6 @@ export default function FilterMenu() {
                 selected={selectedStyle}
                 onChange={(next) => onOutfitFiltersChange({ selectedStyle: next })}
               />
-            </ListItem>
-            <ListItem>
               <StyleLabelSelect
                 id="outfit-label-select"
                 label="Label"
@@ -323,8 +321,8 @@ export default function FilterMenu() {
     )
   }
 
-  const handleEurekaSetChange = (event: SelectChangeEvent) => {
-    onFiltersChange({ selectedEurekaSet: event.target.value || null })
+  const handleEurekaSetChange = (slug: string | null) => {
+    onFiltersChange({ selectedEurekaSet: slug })
   }
 
   const handleCategoryChange = (
@@ -419,7 +417,7 @@ export default function FilterMenu() {
           <ListItem>
             <RarityToggle selectedRarity={selectedRarity} onRarityChange={handleRarityChange} />
           </ListItem>
-          <ListItem>
+          <ListItem sx={{ gap: 1 }}>
             <StyleLabelSelect
               id="eureka-style-select"
               label="Style"
@@ -427,8 +425,6 @@ export default function FilterMenu() {
               selected={selectedStyle}
               onChange={(next) => onFiltersChange({ selectedStyle: next })}
             />
-          </ListItem>
-          <ListItem>
             <StyleLabelSelect
               id="eureka-label-select"
               label="Label"

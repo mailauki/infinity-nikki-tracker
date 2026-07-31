@@ -37,6 +37,7 @@ export default function OutfitSelect({
           </Box>
         )
       }}
+      size="small"
       sx={{ flex: 1, whiteSpace: 'nowrap' }}
       value={value}
       onChange={(_e, newValue) => onOutfitSetChange(newValue?.slug ?? null)}

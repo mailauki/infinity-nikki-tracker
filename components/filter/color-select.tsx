@@ -29,6 +29,7 @@ export default function ColorSelect({
 }) {
   return (
     <FormControl
+      size="small"
       sx={{
         flex: 1,
         minWidth: '180px',
