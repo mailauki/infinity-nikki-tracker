@@ -73,9 +73,7 @@ export default function SeasonsContent({
     <Box sx={{ containerType: 'inline-size' }}>
       {locationGroups.map(([location, group]) => (
         <Box key={location} sx={{ mb: 4 }}>
-          <ListSubheader sx={{ bgcolor: 'surface.containerLowest' }}>
-            {locationTitle(location)}
-          </ListSubheader>
+          <ListSubheader disableSticky>{locationTitle(location)}</ListSubheader>
           <Box
             sx={{
               display: 'grid',
