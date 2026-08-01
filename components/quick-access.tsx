@@ -41,14 +41,15 @@ export function QuickAccess() {
       <Typography sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="overline">
         Quick Access
       </Typography>
-      <SimpleGrid columns={{ xs: '1fr', sm: '1fr 1fr' }}>
+      <SimpleGrid columns='1fr 1fr'>
         {cards.map(({ title, subtitle, href, image }) => (
           <Card key={href}>
             <CardActionArea component={Link} href={href} sx={{ height: '100%' }}>
               <Box
                 aria-hidden="true"
                 sx={{
-                  height: 160,
+                  height: 150,
+                  borderRadius: (theme) => `${theme.shape.borderRadius}px`,
                   background: (theme) =>
                     `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
                 }}
@@ -66,20 +67,21 @@ export function QuickAccess() {
                 </Stack>
               </Box>
               <CardHeader
-                disableTypography
-                avatar={
+								avatar={
                   <Avatar
                     alt={title}
                     src={image}
                     sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
                   />
                 }
-                subheader={<Typography variant="body2">{subtitle}</Typography>}
-                title={
-                  <Typography component="span" variant="subtitle2">
-                    {title}
-                  </Typography>
-                }
+                slotProps={{
+                  avatar: { sx: { display: { xs: 'none', sm: 'flex' } } },
+                  title: { variant: 'subtitle2', component: 'span' },
+                  subheader: { variant: 'body2' },
+                }}
+                subheader={subtitle}
+                sx={{ pt: 1 }}
+                title={title}
               />
             </CardActionArea>
           </Card>
