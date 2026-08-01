@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next'
+import { SPLASH_BACKGROUND_LIGHT, SPLASH_THEME_COLOR } from '@/lib/splash-colors'
 
 // Manifest colors are static (one value for all users). The app has 4 themes,
 // but the OS reads this before app JS runs, so we use the default Terracotta
@@ -12,8 +13,8 @@ export default function manifest(): MetadataRoute.Manifest {
     start_url: '/',
     display: 'standalone',
     orientation: 'portrait',
-    background_color: '#FFF8F6',
-    theme_color: '#8F4C33',
+    background_color: SPLASH_BACKGROUND_LIGHT,
+    theme_color: SPLASH_THEME_COLOR,
     icons: [
       {
         src: '/icons/pwa/icon-192.png',

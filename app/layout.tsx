@@ -16,6 +16,7 @@ import type { ColorTheme } from '@/lib/types/eureka'
 import { getUserID } from '@/hooks/user'
 import { getPreferences } from '@/hooks/data/preferences'
 import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
+import { SPLASH_BACKGROUND_DARK, SPLASH_BACKGROUND_LIGHT } from '@/lib/splash-colors'
 import LayoutShell from '@/components/navbar/layout-shell'
 
 const roboto = Roboto({
@@ -58,8 +59,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#FFF8F6' },
-    { media: '(prefers-color-scheme: dark)', color: '#1a110e' },
+    { media: '(prefers-color-scheme: light)', color: SPLASH_BACKGROUND_LIGHT },
+    { media: '(prefers-color-scheme: dark)', color: SPLASH_BACKGROUND_DARK },
   ],
 }
 
