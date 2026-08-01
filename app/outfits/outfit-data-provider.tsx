@@ -127,10 +127,12 @@ export default function OutfitDataProvider({
           selectedLabel: prefs.outfit_label_filter
             ? prefs.outfit_label_filter.split(',').filter(Boolean)
             : [],
-          // Season filters are session-only — user_preferences has no column for
-          // them yet, so they always start cleared rather than rehydrating.
-          selectedSeason: [],
-          selectedSeasonCategory: [],
+          selectedSeason: prefs.outfit_season_filter
+            ? prefs.outfit_season_filter.split(',').filter(Boolean)
+            : [],
+          selectedSeasonCategory: prefs.outfit_season_category_filter
+            ? prefs.outfit_season_category_filter.split(',').filter(Boolean)
+            : [],
         })
         setPrefsLoaded(true)
       })
@@ -273,6 +275,12 @@ export default function OutfitDataProvider({
         outfit_obtained_filter: filters.selectedObtainedFilter,
         outfit_style_filter: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
         outfit_label_filter: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
+        outfit_season_filter: filters.selectedSeason.length
+          ? filters.selectedSeason.join(',')
+          : null,
+        outfit_season_category_filter: filters.selectedSeasonCategory.length
+          ? filters.selectedSeasonCategory.join(',')
+          : null,
       }).catch(persistFailed)
     }, PREFERENCE_DEBOUNCE_MS)
     return () => clearTimeout(id)

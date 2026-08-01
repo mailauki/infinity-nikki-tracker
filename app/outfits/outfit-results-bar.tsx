@@ -6,6 +6,8 @@ import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/out
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 
+const STANDALONE_SLUG = 'standalone-pieces'
+
 export default function OutfitResultsBar({
   baseEvolutionOnly = false,
 }: {
@@ -20,6 +22,10 @@ export default function OutfitResultsBar({
     selectedEvolution,
     selectedObtainedFilter,
     selectedRarity,
+    selectedStyle,
+    selectedLabel,
+    selectedSeason,
+    selectedSeasonCategory,
   } = filters
 
   // Mirror filter-outfits: grouped mode applies the obtained filter per evolution
@@ -28,7 +34,25 @@ export default function OutfitResultsBar({
 
   const filtered = outfitSets
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
-    .filter((set) => !selectedRarity || set.rarity === selectedRarity)
+    .filter((set) => {
+      if (!selectedRarity) return true
+      // Standalone is a mixed bag: keep it if any of its pieces match the rarity.
+      // Every other set has a single set-level rarity.
+      if (set.slug === STANDALONE_SLUG) {
+        return set.outfit_variants.some((v) => v.rarity === selectedRarity)
+      }
+      return set.rarity === selectedRarity
+    })
+    .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
+    .filter(
+      (set) =>
+        !selectedLabel.length || selectedLabel.some((l) => l === set.label || l === set.label_2)
+    )
+    .filter((set) => !selectedSeason.length || selectedSeason.includes(set.seasons ?? ''))
+    .filter(
+      (set) =>
+        !selectedSeasonCategory.length || selectedSeasonCategory.includes(set.season_category ?? '')
+    )
     .map((set) => {
       const baseSlug = set.slug
       const orderByStateSlug = new Map<string, number>([
@@ -77,6 +101,11 @@ export default function OutfitResultsBar({
           if (selectedObtainedFilter === 'missing') return v.obtained !== true
           return true
         })
+        // Standalone is a mixed bag: when a rarity is selected, show only the
+        // matching pieces. Other sets are single-rarity, so this is a no-op for them.
+        .filter(
+          (v) => !selectedRarity || set.slug !== STANDALONE_SLUG || v.rarity === selectedRarity
+        )
       return { outfit_variants: culled }
     })
     .filter((set) => set.outfit_variants.length > 0)
