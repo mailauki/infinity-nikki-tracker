@@ -25,6 +25,7 @@ type AdminLink = {
   list: string
   add?: string
   edit: string
+	main?: string
 }
 
 export type AdminLinks = {

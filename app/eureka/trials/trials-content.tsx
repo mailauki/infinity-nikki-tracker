@@ -67,7 +67,7 @@ export default function TrialsContent() {
     <Stack spacing={4}>
       {realmGroups.map(([realm, group]) => (
         <Box key={realm}>
-          <ListSubheader sx={{ bgcolor: 'surface.containerLowest' }}>{realm}</ListSubheader>
+          <ListSubheader disableSticky>{realm}</ListSubheader>
           <SimpleGrid columns={{ xs: '1fr', md: '1fr 1fr' }}>
             {group.map((trial) => (
               <TrialCard key={trial.title} isLoggedIn={isLoggedIn} trial={trial as Total} />

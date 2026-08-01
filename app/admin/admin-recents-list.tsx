@@ -8,6 +8,7 @@ import {
   List,
   ListItem,
   ListItemAvatar,
+  ListItemButton,
   ListItemText,
   Tooltip,
   Typography,
@@ -70,6 +71,7 @@ export default function AdminRecentsList({
                     </Tooltip>
                   }
                 >
+									<ListItemButton component='a' href={row.href}>
                   <ListItemAvatar>
                     <LazyImage
                       alt={row.slug}
@@ -100,6 +102,7 @@ export default function AdminRecentsList({
                     }
                     sx={{ textAlign: 'right', mr: 2 }}
                   />
+									</ListItemButton>
                 </ListItem>
                 {i < filtered.length - 1 && (
                   <Divider component="li" sx={{ mr: 2 }} variant="inset" />
