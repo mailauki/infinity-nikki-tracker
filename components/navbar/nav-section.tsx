@@ -3,6 +3,7 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import {
   Avatar,
   Collapse,
+  IconButton,
   List,
   ListItem,
   ListItemAvatar,
@@ -10,7 +11,6 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
-  ToggleButton,
   Tooltip,
 } from '@mui/material'
 import Link from 'next/link'
@@ -148,11 +148,11 @@ function ExpandNavLink({
     <>
       {open && visibleItems?.length ? (
         <>
-          <Stack direction="row">
+          <Stack direction="row" sx={{ alignItems: 'center' }}>
             {children}
-            <ToggleButton value={expandOpen} onClick={() => setExpandOpen(!expandOpen)}>
+            <IconButton onClick={() => setExpandOpen(!expandOpen)}>
               {expandOpen ? <ExpandLess /> : <ExpandMore />}
-            </ToggleButton>
+            </IconButton>
           </Stack>
           <Collapse unmountOnExit in={expandOpen} timeout="auto">
             <List disablePadding component="div">
