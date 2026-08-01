@@ -41,7 +41,7 @@ export function QuickAccess() {
       <Typography sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="overline">
         Quick Access
       </Typography>
-      <SimpleGrid columns='1fr 1fr'>
+      <SimpleGrid columns="1fr 1fr">
         {cards.map(({ title, subtitle, href, image }) => (
           <Card key={href}>
             <CardActionArea component={Link} href={href} sx={{ height: '100%' }}>
@@ -67,7 +67,7 @@ export function QuickAccess() {
                 </Stack>
               </Box>
               <CardHeader
-								avatar={
+                avatar={
                   <Avatar
                     alt={title}
                     src={image}
