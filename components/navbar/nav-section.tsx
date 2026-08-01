@@ -2,7 +2,6 @@ import { NavLink } from '@/lib/types/props'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import {
   Avatar,
-  Box,
   Collapse,
   IconButton,
   List,
@@ -12,7 +11,6 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
-  ToggleButton,
   Tooltip,
 } from '@mui/material'
 import Link from 'next/link'
@@ -150,11 +148,11 @@ function ExpandNavLink({
     <>
       {open && visibleItems?.length ? (
         <>
-          <Stack direction="row">
+          <Stack direction="row" sx={{ alignItems: 'center' }}>
             {children}
-						<Stack sx={{ alignItems: 'center', justifyContent: 'center' }}>
-						<IconButton onClick={() => setExpandOpen(!expandOpen)}>{expandOpen ? <ExpandLess /> : <ExpandMore />}</IconButton>
-						</Stack>
+            <IconButton onClick={() => setExpandOpen(!expandOpen)}>
+              {expandOpen ? <ExpandLess /> : <ExpandMore />}
+            </IconButton>
           </Stack>
           <Collapse unmountOnExit in={expandOpen} timeout="auto">
             <List disablePadding component="div">
