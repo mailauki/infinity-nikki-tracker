@@ -894,6 +894,7 @@ export type Database = {
           eureka_rarity: string | null
           eureka_set_filter: string | null
           eureka_style: string | null
+          eureka_trial: string | null
           group_by_set: boolean
           outfit_category_filter: string | null
           outfit_density: string | null
@@ -905,6 +906,8 @@ export type Database = {
           outfit_label_filter: string | null
           outfit_obtained_filter: string | null
           outfit_rarity_filter: string | null
+          outfit_season_category_filter: string | null
+          outfit_season_filter: string | null
           outfit_set_filter: string | null
           outfit_sort_axis: string | null
           outfit_style_filter: string | null
@@ -924,6 +927,7 @@ export type Database = {
           eureka_rarity?: string | null
           eureka_set_filter?: string | null
           eureka_style?: string | null
+          eureka_trial?: string | null
           group_by_set?: boolean
           outfit_category_filter?: string | null
           outfit_density?: string | null
@@ -935,6 +939,8 @@ export type Database = {
           outfit_label_filter?: string | null
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
+          outfit_season_category_filter?: string | null
+          outfit_season_filter?: string | null
           outfit_set_filter?: string | null
           outfit_sort_axis?: string | null
           outfit_style_filter?: string | null
@@ -954,6 +960,7 @@ export type Database = {
           eureka_rarity?: string | null
           eureka_set_filter?: string | null
           eureka_style?: string | null
+          eureka_trial?: string | null
           group_by_set?: boolean
           outfit_category_filter?: string | null
           outfit_density?: string | null
@@ -965,6 +972,8 @@ export type Database = {
           outfit_label_filter?: string | null
           outfit_obtained_filter?: string | null
           outfit_rarity_filter?: string | null
+          outfit_season_category_filter?: string | null
+          outfit_season_filter?: string | null
           outfit_set_filter?: string | null
           outfit_sort_axis?: string | null
           outfit_style_filter?: string | null

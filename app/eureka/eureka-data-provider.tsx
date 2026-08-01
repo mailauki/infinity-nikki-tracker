@@ -108,9 +108,7 @@ export default function EurekaDataProvider({
           selectedRarity: prefs.eureka_rarity ? Number(prefs.eureka_rarity) || null : null,
           selectedStyle: prefs.eureka_style ? prefs.eureka_style.split(',').filter(Boolean) : [],
           selectedLabel: prefs.eureka_label ? prefs.eureka_label.split(',').filter(Boolean) : [],
-          // Session-only — user_preferences has no column for the trial filter yet,
-          // so it always starts cleared rather than rehydrating.
-          selectedTrial: [],
+          selectedTrial: prefs.eureka_trial ? prefs.eureka_trial.split(',').filter(Boolean) : [],
         })
         prefsLoaded.current = true
       })
@@ -217,6 +215,7 @@ export default function EurekaDataProvider({
         eureka_rarity: filters.selectedRarity ? String(filters.selectedRarity) : null,
         eureka_style: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
         eureka_label: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
+        eureka_trial: filters.selectedTrial.length ? filters.selectedTrial.join(',') : null,
       })
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
