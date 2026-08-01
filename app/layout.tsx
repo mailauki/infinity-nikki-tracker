@@ -18,6 +18,7 @@ import { getPreferences } from '@/hooks/data/preferences'
 import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import { SPLASH_BACKGROUND_DARK, SPLASH_BACKGROUND_LIGHT } from '@/lib/splash-colors'
 import LayoutShell from '@/components/navbar/layout-shell'
+import SplashScreen from './splash-screen'
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -115,7 +116,7 @@ export default function RootLayout({
       <body>
         <InitColorSchemeScript attribute="class" defaultMode="system" />
         <AppRouterCacheProvider options={{ key: 'css' }}>
-          <Suspense>
+          <Suspense fallback={<SplashScreen />}>
             <ThemedApp>{children}</ThemedApp>
           </Suspense>
         </AppRouterCacheProvider>
