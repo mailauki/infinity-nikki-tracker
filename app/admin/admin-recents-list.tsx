@@ -90,7 +90,7 @@ export default function AdminRecentsList({
                       }
                       secondary={row.type}
                       slotProps={{
-                        primary: { variant: 'body2' },
+                        primary: { variant: 'body2', noWrap: true },
                         secondary: { variant: 'caption' },
                       }}
                     />
@@ -101,7 +101,7 @@ export default function AdminRecentsList({
                           {row.date ? formatDate(row.date) : '—'}
                         </Typography>
                       }
-                      sx={{ textAlign: 'right', mr: 2 }}
+                      sx={{ textAlign: 'right', mr: 2, minWidth: '100px' }}
                     />
                   </ListItemButton>
                 </ListItem>
