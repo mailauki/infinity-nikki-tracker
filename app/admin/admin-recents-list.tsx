@@ -63,6 +63,7 @@ export default function AdminRecentsList({
             {filtered.map((row, i) => (
               <Fragment key={`${row.type}-${row.slug}`}>
                 <ListItem
+                  disablePadding
                   secondaryAction={
                     <Tooltip title={`Edit ${row.title}`}>
                       <IconButton color="secondary" href={row.editHref} size="small">
@@ -71,38 +72,38 @@ export default function AdminRecentsList({
                     </Tooltip>
                   }
                 >
-									<ListItemButton component='a' href={row.href}>
-                  <ListItemAvatar>
-                    <LazyImage
-                      alt={row.slug}
-                      src={row.image_url ?? undefined}
-                      sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
-                    >
-                      <Category fontSize="inherit" />
-                    </LazyImage>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      row.type === 'Evolutions'
-                        ? `${toTitle(row.slug.split('-')[0])}: ${row.title}`
-                        : row.title
-                    }
-                    secondary={row.type}
-                    slotProps={{
-                      primary: { variant: 'body2' },
-                      secondary: { variant: 'caption' },
-                    }}
-                  />
-                  <ListItemText
-                    disableTypography
-                    secondary={
-                      <Typography color="text.secondary" variant="caption">
-                        {row.date ? formatDate(row.date) : '—'}
-                      </Typography>
-                    }
-                    sx={{ textAlign: 'right', mr: 2 }}
-                  />
-									</ListItemButton>
+                  <ListItemButton component="a" href={row.href}>
+                    <ListItemAvatar>
+                      <LazyImage
+                        alt={row.slug}
+                        src={row.image_url ?? undefined}
+                        sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+                      >
+                        <Category fontSize="inherit" />
+                      </LazyImage>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        row.type === 'Evolutions'
+                          ? `${toTitle(row.slug.split('-')[0])}: ${row.title}`
+                          : row.title
+                      }
+                      secondary={row.type}
+                      slotProps={{
+                        primary: { variant: 'body2' },
+                        secondary: { variant: 'caption' },
+                      }}
+                    />
+                    <ListItemText
+                      disableTypography
+                      secondary={
+                        <Typography color="text.secondary" variant="caption">
+                          {row.date ? formatDate(row.date) : '—'}
+                        </Typography>
+                      }
+                      sx={{ textAlign: 'right', mr: 2 }}
+                    />
+                  </ListItemButton>
                 </ListItem>
                 {i < filtered.length - 1 && (
                   <Divider component="li" sx={{ mr: 2 }} variant="inset" />
