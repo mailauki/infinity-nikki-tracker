@@ -93,7 +93,7 @@ export default function PullToRefresh() {
             ...shellToolbarTop,
             left: 0,
             right: 0,
-            zIndex: theme.zIndex.appBar + 1,
+            zIndex: theme.zIndex.drawer + 2,
             display: 'flex',
             justifyContent: 'center',
             pt: 1,
