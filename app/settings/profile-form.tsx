@@ -39,12 +39,17 @@ export default function ProfileForm({
   const [username, setUsername] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
   const [banner_url, setBannerUrl] = useState<string | null>(null)
+  // The handle the profile currently owns, so re-saving it isn't "taken".
+  const [savedUsername, setSavedUsername] = useState<string | null>(null)
+  const [usernameTaken, setUsernameTaken] = useState(false)
+  const [checkingUsername, setCheckingUsername] = useState(false)
 
   // Derived during render rather than mirrored into state — see CLAUDE.md.
-  const usernameError =
+  const charsetError =
     username && !USERNAME_PATTERN.test(username)
       ? 'Only letters, numbers, and underscores are allowed.'
       : null
+  const usernameError = charsetError ?? (usernameTaken ? 'That username is taken.' : null)
 
   useEffect(() => {
     if (!user) return
@@ -60,12 +65,45 @@ export default function ProfileForm({
         } else if (data) {
           setDisplayName(data.display_name)
           setUsername(data.username)
+          setSavedUsername(data.username)
           setAvatarUrl(data.avatar_url)
           setBannerUrl(data.banner_url)
         }
         setLoading(false)
       })
   }, [user, supabase])
+
+  // Look up availability as the user types. Debounced so a query isn't fired per
+  // keystroke, and skipped for the handle they already own or one that can't be
+  // saved anyway. The unique index is the real guarantee — this is just so the
+  // conflict surfaces before they press Update.
+  useEffect(() => {
+    if (!user?.id || !username || charsetError || username === savedUsername) {
+      setUsernameTaken(false)
+      setCheckingUsername(false)
+      return
+    }
+
+    setCheckingUsername(true)
+    let active = true
+    const id = setTimeout(async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('username', username)
+        .neq('id', user.id)
+        .maybeSingle()
+      // Ignore a resolved query whose input is already stale.
+      if (!active) return
+      setUsernameTaken(Boolean(data))
+      setCheckingUsername(false)
+    }, 400)
+
+    return () => {
+      active = false
+      clearTimeout(id)
+    }
+  }, [username, savedUsername, charsetError, user?.id, supabase])
 
   // avatar_url/banner_url are optional so a text-only save leaves the images
   // untouched rather than nulling whichever one wasn't passed.
@@ -92,7 +130,15 @@ export default function ProfileForm({
           updated_at: new Date().toISOString(),
         })
         .eq('id', user.id)
+      // 23505 = unique violation. The availability check can go stale between
+      // typing and saving, so the index is what actually decides — translate it
+      // into the same inline message instead of a generic failure.
+      if (error?.code === '23505') {
+        setUsernameTaken(true)
+        return
+      }
       if (error) throw error
+      if (usernameIsValid) setSavedUsername(updates.username)
       enqueueSnackbar('Profile saved successfully!', { variant: 'success' })
     } catch (err) {
       console.error('saveProfile error:', err)
@@ -295,7 +341,12 @@ export default function ProfileForm({
         />
         <TextField
           error={Boolean(usernameError)}
-          helperText={usernameError ?? 'Letters, numbers, and underscores only.'}
+          helperText={
+            usernameError ??
+            (checkingUsername
+              ? 'Checking availability…'
+              : 'Letters, numbers, and underscores only.')
+          }
           id="username"
           label="Username"
           margin="normal"
@@ -310,7 +361,7 @@ export default function ProfileForm({
         )}
         <Button
           fullWidth
-          disabled={loading || Boolean(usernameError)}
+          disabled={loading || checkingUsername || Boolean(usernameError)}
           size="large"
           sx={{ my: 2 }}
           variant="contained"
