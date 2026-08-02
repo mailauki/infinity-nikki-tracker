@@ -14,6 +14,11 @@ import { DEFAULT_BANNER } from '@/app/profile/profile-card'
 // object's base name and the `{kind}_url` column it writes.
 type ProfileImageKind = 'avatar' | 'banner'
 
+// Mirrors the profiles_username_charset CHECK constraint. The handle is a URL
+// segment (/u/[username]), so anything needing percent-encoding is rejected.
+// This is for feedback only — the database is what actually enforces it.
+const USERNAME_PATTERN = /^[A-Za-z0-9_]+$/
+
 export default function ProfileForm({
   user,
   isAdmin = false,
@@ -34,6 +39,12 @@ export default function ProfileForm({
   const [username, setUsername] = useState<string | null>(null)
   const [avatar_url, setAvatarUrl] = useState<string | null>(null)
   const [banner_url, setBannerUrl] = useState<string | null>(null)
+
+  // Derived during render rather than mirrored into state — see CLAUDE.md.
+  const usernameError =
+    username && !USERNAME_PATTERN.test(username)
+      ? 'Only letters, numbers, and underscores are allowed.'
+      : null
 
   useEffect(() => {
     if (!user) return
@@ -65,13 +76,17 @@ export default function ProfileForm({
     banner_url?: string | null
   }) {
     if (!user?.id) return
+    // An image upload also routes through here carrying the current username.
+    // If the field is mid-edit and invalid, sending it would fail the DB
+    // constraint and lose the upload — omit it and let the save proceed.
+    const usernameIsValid = !updates.username || USERNAME_PATTERN.test(updates.username)
     try {
       setLoading(true)
       const { error } = await supabase
         .from('profiles')
         .update({
           display_name: updates.displayName,
-          username: updates.username,
+          ...(usernameIsValid ? { username: updates.username } : {}),
           ...('avatar_url' in updates ? { avatar_url: updates.avatar_url } : {}),
           ...('banner_url' in updates ? { banner_url: updates.banner_url } : {}),
           updated_at: new Date().toISOString(),
@@ -279,6 +294,8 @@ export default function ProfileForm({
           onChange={(e) => setDisplayName(e.target.value)}
         />
         <TextField
+          error={Boolean(usernameError)}
+          helperText={usernameError ?? 'Letters, numbers, and underscores only.'}
           id="username"
           label="Username"
           margin="normal"
@@ -293,7 +310,7 @@ export default function ProfileForm({
         )}
         <Button
           fullWidth
-          disabled={loading}
+          disabled={loading || Boolean(usernameError)}
           size="large"
           sx={{ my: 2 }}
           variant="contained"

@@ -48,7 +48,7 @@ export default function LookDetail({
   return (
     <>
       <SlugToolBar isAdmin={false} />
-      {/* Add user match to this slug in place of isAdmin for edit button */}
+      {/* TODO: Add user match to this slug in place of isAdmin for edit button */}
 
       <PageShell maxWidth="md">
         <Stack useFlexGap direction="row" spacing={3} sx={{ flexWrap: 'wrap' }}>
