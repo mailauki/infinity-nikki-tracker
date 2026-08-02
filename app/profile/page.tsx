@@ -10,13 +10,12 @@ import { getTrials } from '@/hooks/data/trials'
 import { getRecentObtained } from '@/hooks/data/obtained-eureka'
 import { getRecentObtainedOutfit } from '@/hooks/data/obtained-outfit'
 import { getSeasons } from '@/hooks/data/seasons'
-import ProfileToolbar from './profile-toolbar'
 import ProfileStats from './profile-stats'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import PremiumUpgrade from './premium-upgrade'
 import EurekaStats from './eureka-stats'
 import OutfitStats from './outfit-stats'
-import StatsToggle from './stats-toggle'
+import ProfileTabs from './profile-tabs'
 import PageShell from '@/components/page-shell'
 
 export const metadata: Metadata = {
@@ -61,37 +60,44 @@ async function UserDetails() {
 
   return (
     <>
-      <ProfileToolbar isAdmin={role === 'admin'} />
-      <PageShell maxWidth="md">
-        <ProfileCard
-          avatar_url={profile?.avatar_url ?? null}
-          fullname={profile?.display_name ?? null}
-          isPremium={isPremium}
-          loadError={false}
-          user={user}
-          username={profile?.username ?? null}
-        />
-        <ProfileStats eurekaSets={eurekaSets || []} outfitSets={outfitSets || []} />
-        {!isPremium && <PremiumUpgrade />}
-        <StatsToggle
-          eureka={
+      {/* ProfileTabs sits outside PageShell so the Profile tab's hero can run
+          full-bleed; the stats views re-apply the md cap around their own content.
+          It also owns ProfileToolbar, which reads the tab context. */}
+      <ProfileTabs
+        eureka={
+          <PageShell maxWidth="md">
+            {!isPremium && <PremiumUpgrade />}
             <EurekaStats
               eurekaSets={eurekaSets || []}
               recentObtained={recentObtained || []}
               trials={trials || []}
               user_id={Boolean(user_id)}
             />
-          }
-          outfits={
+          </PageShell>
+        }
+        isAdmin={role === 'admin'}
+        outfits={
+          <PageShell maxWidth="md">
+            {!isPremium && <PremiumUpgrade />}
             <OutfitStats
               outfitSets={outfitSets || []}
               recentObtained={recentObtainedOutfit || []}
               seasons={seasons || []}
               user_id={Boolean(user_id)}
             />
-          }
-        />
-      </PageShell>
+          </PageShell>
+        }
+        profile={
+          <ProfileCard
+            avatar_url={profile?.avatar_url ?? null}
+            fullname={profile?.display_name ?? null}
+            isPremium={isPremium}
+            loadError={false}
+            stats={<ProfileStats eurekaSets={eurekaSets || []} outfitSets={outfitSets || []} />}
+            username={profile?.username ?? null}
+          />
+        }
+      />
     </>
   )
 }

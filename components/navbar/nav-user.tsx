@@ -17,9 +17,9 @@ import {
 } from '@mui/material'
 import React from 'react'
 import { navLinksData } from '@/lib/nav-links'
-import { List } from '@mui/icons-material'
+import { List, Person } from '@mui/icons-material'
 import { LogoutButton } from './logout-button'
-import AvatarPreview from '../../app/settings/avatar-preview'
+import LazyImage from '@/components/lazy-image'
 
 export function NavUser() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null)
@@ -114,7 +114,9 @@ export function NavUser() {
           sx={{ p: 0 }}
           onClick={(e) => setAnchorElUser(e.currentTarget)}
         >
-          <AvatarPreview url={avatarUrl} />
+          <LazyImage alt="Avatar" size="sm" src={avatarUrl} variant="circular">
+            <Person fontSize="inherit" />
+          </LazyImage>
         </IconButton>
       </Tooltip>
       <Menu

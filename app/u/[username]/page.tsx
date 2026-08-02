@@ -4,7 +4,8 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { Stack, Typography, Chip, Card, CardContent, Box, Divider } from '@mui/material'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
-import AvatarPreview from '@/app/settings/avatar-preview'
+import PersonIcon from '@mui/icons-material/Person'
+import LazyImage from '@/components/lazy-image'
 import PageShell from '@/components/page-shell'
 
 type Props = { params: Promise<{ username: string }> }
@@ -61,7 +62,14 @@ async function ProfileView({ params }: Props) {
   return (
     <PageShell maxWidth="xs">
       <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
-        <AvatarPreview size="xl" url={profile.avatar_url} />
+        <LazyImage
+          alt={`@${profile.username}`}
+          size="xl"
+          src={profile.avatar_url}
+          variant="circular"
+        >
+          <PersonIcon fontSize="inherit" />
+        </LazyImage>
         <Stack spacing={0.5}>
           <Stack direction="row" sx={{ alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
             <Typography variant="h6">{profile.display_name ?? profile.username}</Typography>

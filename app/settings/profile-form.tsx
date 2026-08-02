@@ -6,6 +6,7 @@ import AvatarUpload from './avatar-upload'
 import { Alert, Button, Chip, Stack, TextField, Typography } from '@mui/material'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import { enqueueSnackbar } from 'notistack'
+import { fileToWebp } from '@/lib/image-to-webp'
 
 export default function ProfileForm({
   user,
@@ -75,19 +76,49 @@ export default function ProfileForm({
     if (!event.target.files?.length || !user?.id) return
     try {
       setUploading(true)
-      const file = event.target.files[0]
-      const fileExt = file.name.split('.').pop()
-      const filePath = `${user.id}/${Math.random()}.${fileExt}`
-      const { error } = await supabase.storage.from('avatars').upload(filePath, file)
+      // Re-encode to WebP so every object in the bucket has a consistent
+      // `.webp` extension and content type, matching the `images` bucket.
+      const file = await fileToWebp(event.target.files[0], 'avatar')
+      // One stable object per user: a re-upload upserts over the previous
+      // avatar instead of orphaning it. Because the extension is fixed too,
+      // no explicit removal of a prior path is needed.
+      const filePath = `${user.id}/avatar.webp`
+      const { error } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true, contentType: 'image/webp' })
       if (error) throw error
-      setAvatarUrl(filePath)
-      await saveProfile({ fullname, username, avatar_url: filePath })
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath)
+      // The public URL is stable across re-uploads, so bust the CDN/browser
+      // cache with the upload time — otherwise the new avatar looks unchanged.
+      const publicUrl = `${data.publicUrl}?v=${Date.now()}`
+
+      setAvatarUrl(publicUrl)
+      await saveProfile({ fullname, username, avatar_url: publicUrl })
     } catch (err) {
       console.error('Avatar upload error:', err)
       setSaveError(true)
     } finally {
       setUploading(false)
       event.target.value = ''
+    }
+  }
+
+  // Clearing the avatar deletes the storage object too — leaving it behind is
+  // exactly the orphan the stable `avatar.webp` path exists to prevent.
+  const handleAvatarRemove = async () => {
+    if (!user?.id) return
+    try {
+      setUploading(true)
+      const { error } = await supabase.storage.from('avatars').remove([`${user.id}/avatar.webp`])
+      if (error) throw error
+      setAvatarUrl(null)
+      await saveProfile({ fullname, username, avatar_url: null })
+    } catch (err) {
+      console.error('Avatar remove error:', err)
+      setSaveError(true)
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -129,13 +160,7 @@ export default function ProfileForm({
               Upload
             </Button>
             {avatar_url && (
-              <Button
-                color="inherit"
-                onClick={() => {
-                  setAvatarUrl(null)
-                  saveProfile({ fullname, username, avatar_url: null })
-                }}
-              >
+              <Button color="inherit" disabled={uploading} onClick={handleAvatarRemove}>
                 Remove
               </Button>
             )}
