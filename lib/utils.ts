@@ -29,6 +29,10 @@ export function toSlugVariant(eurekaSet: string, category: string, color: string
   return [eurekaSet, category, color].map((s) => toSlug(s)).join('-')
 }
 
+export function toSlugMakeup(makeupSet: string, category: string) {
+  return [makeupSet, category].map((s) => toSlug(s)).join('-')
+}
+
 // Comparators that mirror the admin "Update & next item" navigation order
 // (next row by title, slug tie-break; by slug for variants), so list views
 // display items in the same sequence the button walks through.
