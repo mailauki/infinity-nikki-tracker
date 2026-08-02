@@ -9,18 +9,18 @@ export default function ProfileToolbar({ isAdmin = false }: { isAdmin?: boolean 
   const { tab, setTab } = useProfileTabs()
 
   return (
-    <ToolbarSlot>
-      {/* The shell's toolbar row right-aligns its children, so push the tabs
-          left with an auto margin and let the actions keep the right edge. */}
-      <Tabs
-        aria-label="Profile tabs"
-        sx={{ mr: 'auto' }}
-        value={tab}
-        onChange={(_, value: ProfileTabValue) => setTab(value)}
-      >
-        <Tab label="Profile" value="profile" />
-        <Tab label="Stats" value="stats" />
-      </Tabs>
+    <ToolbarSlot
+      lead={
+        <Tabs
+          aria-label="Profile tabs"
+          value={tab}
+          onChange={(_, value: ProfileTabValue) => setTab(value)}
+        >
+          <Tab label="Profile" value="profile" />
+          <Tab label="Stats" value="stats" />
+        </Tabs>
+      }
+    >
       {isAdmin && (
         <Tooltip title="Admin access">
           <IconButton component={Link} href="/admin">

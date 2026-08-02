@@ -80,6 +80,7 @@ export default function ProfileCard({
           disableTypography
           action={
             <Button
+              disabled
               component={Link}
               endIcon={<Add />}
               href="/settings"

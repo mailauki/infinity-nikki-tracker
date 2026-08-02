@@ -29,21 +29,9 @@ export default function AdminToolBar() {
   if (isFormRoute) return null
 
   return (
-    <ToolbarSlot>
-      {/* <Stack
-        direction="row"
-        sx={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      > */}
-      <AdminNavMenu />
-      {/* <Stack direction="row" sx={{ gap: 1, alignItems: 'center' }}> */}
+    <ToolbarSlot lead={<AdminNavMenu />}>
       <AdminVariantColumnsToggle />
       {pathname !== '/admin' && <AdminViewToggle />}
-      {/* </Stack> */}
-      {/* </Stack> */}
     </ToolbarSlot>
   )
 }

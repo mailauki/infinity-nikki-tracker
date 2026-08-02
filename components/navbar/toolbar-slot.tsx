@@ -9,14 +9,29 @@ import { useToolbar } from '@/components/navbar/navbar-toolbar-context'
 // Rendered by a page UNDER its own data providers, so the toolbar's hooks
 // (useOutfitImageMode, useSeasonFilter, useSidebar, etc.) still work while the DOM
 // lands in the shell AppBar. Mirrors components/sidebar/sidebar-body.tsx.
-export default function ToolbarSlot({ children }: { children: React.ReactNode }) {
-  const { toolbarTarget, registerToolbar, unregisterToolbar } = useToolbar()
+//
+// The row has two sections: `children` land in the trailing action area
+// (right-aligned, sized to content — icon buttons, menus), and the optional
+// `lead` lands in the leading area, which spans the remaining width for wide
+// content like tabs. Pages that only need actions pass children alone.
+export default function ToolbarSlot({
+  children,
+  lead,
+}: {
+  children?: React.ReactNode
+  lead?: React.ReactNode
+}) {
+  const { toolbarTarget, toolbarLeadTarget, registerToolbar, unregisterToolbar } = useToolbar()
 
   React.useEffect(() => {
     registerToolbar()
     return unregisterToolbar
   }, [registerToolbar, unregisterToolbar])
 
-  if (!toolbarTarget) return null
-  return createPortal(children, toolbarTarget)
+  return (
+    <>
+      {lead && toolbarLeadTarget ? createPortal(lead, toolbarLeadTarget) : null}
+      {children && toolbarTarget ? createPortal(children, toolbarTarget) : null}
+    </>
+  )
 }

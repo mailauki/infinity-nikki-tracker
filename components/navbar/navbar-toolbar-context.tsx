@@ -33,8 +33,14 @@ type SidebarContextType = {
 }
 
 type ToolbarContextType = {
+  // The trailing action area (right-aligned icon buttons). Named without a suffix
+  // because it is the default slot — most toolbars only supply actions.
   toolbarTarget: HTMLElement | null
   setToolbarTarget: (el: HTMLElement | null) => void
+  // The leading area, spanning the remaining width to the left. For wide content
+  // like tabs or filter chips.
+  toolbarLeadTarget: HTMLElement | null
+  setToolbarLeadTarget: (el: HTMLElement | null) => void
   hasToolbar: boolean
   registerToolbar: () => void
   unregisterToolbar: () => void
@@ -76,6 +82,7 @@ export function DrawerStateProvider({
   const hasBody = bodyCount > 0
 
   const [toolbarTarget, setToolbarTarget] = React.useState<HTMLElement | null>(null)
+  const [toolbarLeadTarget, setToolbarLeadTarget] = React.useState<HTMLElement | null>(null)
   const [toolbarCount, setToolbarCount] = React.useState(0)
   const registerToolbar = React.useCallback(() => setToolbarCount((n) => n + 1), [])
   const unregisterToolbar = React.useCallback(() => setToolbarCount((n) => Math.max(0, n - 1)), [])
@@ -129,6 +136,8 @@ export function DrawerStateProvider({
           value={{
             toolbarTarget,
             setToolbarTarget,
+            toolbarLeadTarget,
+            setToolbarLeadTarget,
             hasToolbar,
             registerToolbar,
             unregisterToolbar,
