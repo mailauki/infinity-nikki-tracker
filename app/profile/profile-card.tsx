@@ -12,25 +12,35 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { Add, Person, Verified } from '@mui/icons-material'
+import { Add, Edit, Person, Verified } from '@mui/icons-material'
 import Link from 'next/link'
 import LazyImage from '@/components/lazy-image'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '@/components/color-theme-context'
 
+// Shipped hero art, used when a profile has no banner of its own. Exported so
+// the settings banner picker previews the same fallback the card renders.
+export const DEFAULT_BANNER = '/banner.webp'
+
 export default function ProfileCard({
-  fullname,
+  displayName,
   username,
   avatar_url,
+  banner_url,
   loadError,
   isPremium,
+  isOwner = false,
   stats,
 }: {
-  fullname: string | null
+  displayName: string | null
   username: string | null
   avatar_url: string | null
+  /** Profile banner. Falls back to the default hero art when null. */
+  banner_url?: string | null
   loadError: boolean
   isPremium?: boolean
+  /** The viewer owns this profile — swaps Follow for an edit affordance. */
+  isOwner?: boolean
   /** Collection stat row, overlaid inside the gradient beneath the name. */
   stats?: React.ReactNode
 }) {
@@ -56,7 +66,13 @@ export default function ProfileCard({
           stretch to the viewport. Absolutely positioned so LazyImage's media path
           keeps its skeleton + native lazy-load while covering the whole box. */}
       <Box sx={{ position: 'absolute', inset: 0 }}>
-        <LazyImage image="/hero.webp" kind="media" sx={{ width: '100%', height: '100%' }} />
+        <LazyImage
+          image={banner_url || DEFAULT_BANNER}
+          kind="media"
+          // Center the crop so a tall banner keeps its middle in frame rather
+          // than anchoring to the top edge as object-fit: cover defaults to.
+          sx={{ width: '100%', height: '100%', '& img': { objectPosition: 'center' } }}
+        />
       </Box>
 
       <Stack
@@ -79,17 +95,30 @@ export default function ProfileCard({
         <CardHeader
           disableTypography
           action={
-            <Button
-              disabled
-              component={Link}
-              endIcon={<Add />}
-              href="/settings"
-              size="large"
-              sx={{ borderRadius: 40, whiteSpace: 'nowrap' }}
-              variant="contained"
-            >
-              Follow
-            </Button>
+            // The owner gets a working edit link; visitors get the Follow
+            // placeholder, still disabled until a follow system exists.
+            isOwner ? (
+              <Button
+                component={Link}
+                endIcon={<Edit />}
+                href="/settings"
+                size="large"
+                sx={{ borderRadius: 40, whiteSpace: 'nowrap' }}
+                variant="contained"
+              >
+                Edit profile
+              </Button>
+            ) : (
+              <Button
+                disabled
+                endIcon={<Add />}
+                size="large"
+                sx={{ borderRadius: 40, whiteSpace: 'nowrap' }}
+                variant="contained"
+              >
+                Follow
+              </Button>
+            )
           }
           subheader={
             <Typography color="textSecondary" component="span" variant="body1">
@@ -102,7 +131,7 @@ export default function ProfileCard({
           title={
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
               <Typography component="span" variant="h5">
-                {fullname ?? '—'}
+                {displayName ?? '—'}
               </Typography>
               {isPremium && (
                 <Tooltip title="Verified supporter">
@@ -116,7 +145,7 @@ export default function ProfileCard({
           }
         />
 
-        {stats && <Box sx={{ px: 2, pb: 3 }}>{stats}</Box>}
+        {stats && <Box sx={{ px: 2, pb: 12 }}>{stats}</Box>}
       </Stack>
     </Card>
   )

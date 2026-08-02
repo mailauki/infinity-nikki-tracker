@@ -22,7 +22,8 @@ export default function SettingsTabsContent({
 
   return (
     <>
-      {tab === 'profile' && (isLoggedIn ? <ProfileSettings user={user} /> : <LoginAlert />)}
+      {tab === 'profile' &&
+        (isLoggedIn ? <ProfileSettings isPremium={isPremium} user={user} /> : <LoginAlert />)}
       {tab === 'appearance' && <AppearanceSettings isLoggedIn={isLoggedIn} isPremium={isPremium} />}
       {tab === 'account' && (isLoggedIn ? <AccountSettings isAdmin={isAdmin} /> : <LoginAlert />)}
     </>

@@ -8,7 +8,11 @@ import { getEurekaCategories } from './eureka-categories'
 import { createEurekaSet, sortVariants, updateEurekaSet } from '../eureka'
 import { getObtainedEureka } from './obtained-eureka'
 
-export const getEurekaSets = cache(async () => {
+// `forUserId` scopes the obtained flags to a specific user instead of the
+// viewer. Public profile pages need it: without it every visitor would see
+// their OWN progress rendered under someone else's name. Omit it (the default)
+// and it resolves the signed-in viewer as before.
+export const getEurekaSets = cache(async (forUserId?: string) => {
   const supabase = await createClient()
 
   const { data: eurekaSets } = await supabase
@@ -69,7 +73,7 @@ export const getEurekaSets = cache(async () => {
     }
   }) as EurekaSet[]
 
-  const user_id = await getUserID()
+  const user_id = forUserId ?? (await getUserID())
 
   if (!user_id) return eureka
 

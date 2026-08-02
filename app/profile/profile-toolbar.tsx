@@ -5,7 +5,13 @@ import { IconButton, Tab, Tabs, Tooltip } from '@mui/material'
 import Link from 'next/link'
 import { useProfileTabs, type ProfileTabValue } from './profile-tabs-context'
 
-export default function ProfileToolbar({ isAdmin = false }: { isAdmin?: boolean }) {
+export default function ProfileToolbar({
+  isAdmin = false,
+  isOwner = false,
+}: {
+  isAdmin?: boolean
+  isOwner?: boolean
+}) {
   const { tab, setTab } = useProfileTabs()
 
   return (
@@ -28,11 +34,14 @@ export default function ProfileToolbar({ isAdmin = false }: { isAdmin?: boolean 
           </IconButton>
         </Tooltip>
       )}
-      <Tooltip title="Edit profile">
-        <IconButton component={Link} href="/settings">
-          <Edit />
-        </IconButton>
-      </Tooltip>
+      {/* Editing is owner-only — a visitor has nothing to edit here. */}
+      {isOwner && (
+        <Tooltip title="Edit profile">
+          <IconButton component={Link} href="/settings">
+            <Edit />
+          </IconButton>
+        </Tooltip>
+      )}
     </ToolbarSlot>
   )
 }
