@@ -1,6 +1,7 @@
 'use client'
 import { ButtonBase } from '@mui/material'
-import AvatarPreview from './avatar-preview'
+import PersonIcon from '@mui/icons-material/Person'
+import LazyImage from '@/components/lazy-image'
 
 export default function AvatarUpload({
   url,
@@ -24,7 +25,9 @@ export default function AvatarUpload({
       }}
       onClick={() => inputRef.current?.click()}
     >
-      <AvatarPreview size="xl" url={url} />
+      <LazyImage alt="Avatar" size="xl" src={url} variant="circular">
+        <PersonIcon fontSize="inherit" />
+      </LazyImage>
     </ButtonBase>
   )
 }

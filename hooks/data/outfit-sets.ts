@@ -8,7 +8,9 @@ import { getObtainedOutfit } from './obtained-outfit'
 import { getOutfitVariantsBySet } from './outfit-variants'
 import { createOutfitSet, updateOutfitSet } from '../outfit'
 
-export const getOutfitSets = cache(async () => {
+// `forUserId` scopes the obtained flags to a specific user instead of the
+// viewer — see the note on getEurekaSets. Omit it to resolve the signed-in user.
+export const getOutfitSets = cache(async (forUserId?: string) => {
   const supabase = await createClient()
 
   // Variants injected from the paginated grouped fetch — a PostgREST embed caps
@@ -65,7 +67,7 @@ export const getOutfitSets = cache(async () => {
     })
   )
 
-  const user_id = await getUserID()
+  const user_id = forUserId ?? (await getUserID())
   if (!user_id) return outfits
 
   const obtainedOutfit = await getObtainedOutfit(user_id)

@@ -58,3 +58,4 @@ supabase/.temp/
 certificates
 # Migration backup (one-off WebP migration script output)
 bucket-backup/
+avatar-backup/

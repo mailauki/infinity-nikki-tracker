@@ -28,12 +28,16 @@ type AvatarCorner = 'circular' | 'rounded' | 'square'
 // Avatar render path (default): thumbnails. `variant` = corner style, default 'rounded'.
 // `optimized` swaps the raw <img> for next/image (AVIF/WebP, srcset, lazy-load),
 // keeping the same skeleton + retry UX — opt in on the heavy grids only.
+// `src` is widened to allow null so callers can pass a nullable DB column
+// (e.g. profiles.avatar_url) straight through — the no-src path already renders
+// the fallback child.
 type AvatarKind = {
   kind?: 'avatar'
   variant?: AvatarCorner
   optimized?: boolean
   size?: AvatarSize
-} & Omit<AvatarProps, 'variant'>
+  src?: string | null
+} & Omit<AvatarProps, 'variant' | 'src'>
 
 // CardMedia render path: full-width, rectangular. No `variant` (always rectangular).
 // The caller sets the aspect ratio via sx (e.g. 1/1 or 2/3).
@@ -76,7 +80,10 @@ function AvatarImage({
   size,
   children,
   ...props
-}: { variant: AvatarCorner; size?: AvatarSize } & Omit<AvatarProps, 'variant'>) {
+}: { variant: AvatarCorner; size?: AvatarSize; src?: string | null } & Omit<
+  AvatarProps,
+  'variant' | 'src'
+>) {
   const { loaded, retrySrc, imgRef, handleLoad, handleError } = useLazyImage(src)
 
   // With no src, fall back to a caller-supplied child or the shared category icon

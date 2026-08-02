@@ -147,7 +147,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
   const { colorTheme } = useColorTheme()
   const { drawerOpen, drawerPreferOpen, setDrawerOpen } = useNavDrawer()
   const { sidebarOpen, sidebarPreferOpen, setSidebarOpen, setPortalTarget, hasBody } = useSidebar()
-  const { setToolbarTarget, hasToolbar } = useToolbar()
+  const { setToolbarTarget, setToolbarLeadTarget, hasToolbar } = useToolbar()
   const { setStickyBarTarget, hasStickyBar } = useStickyBar()
 
   const isNavMobile = useMediaQuery(theme.breakpoints.down('sm'))
@@ -195,6 +195,10 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
     (node: HTMLDivElement | null) => setToolbarTarget(node),
     [setToolbarTarget]
   )
+  const setToolbarLeadNode = React.useCallback(
+    (node: HTMLDivElement | null) => setToolbarLeadTarget(node),
+    [setToolbarLeadTarget]
+  )
   const setStickyBarNode = React.useCallback(
     (node: HTMLDivElement | null) => setStickyBarTarget(node),
     [setStickyBarTarget]
@@ -214,6 +218,21 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
   // spacer, plus row 2 (another 56/48/64) only when a page injected a ToolbarSlot.
   // The sticky bar pins flush beneath it, so its `top` mirrors that composition across
   // the same breakpoints the toolbar height uses.
+  // The toolbar row starts where the content column does. Below sm the nav drawer
+  // is a temporary overlay (no layout space), so there is nothing to inset past;
+  // at sm+ it is permanent and the row clears its current width. Mirrors the
+  // drawer's own open/closed widths and easing so the two move together.
+  const toolbarInset = {
+    xs: 0,
+    sm: drawerOpen ? `${NAV_DRAWER_WIDTH}px` : theme.spacing(12),
+  }
+  const drawerWidthTransition = theme.transitions.create('margin-left', {
+    easing: theme.transitions.easing.sharp,
+    duration: drawerOpen
+      ? theme.transitions.duration.enteringScreen
+      : theme.transitions.duration.leavingScreen,
+  })
+
   const MASK_SPACER = 16
   const row2 = hasToolbar ? 56 : 0
   const stickyTop = {
@@ -259,14 +278,26 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
             <NavUser />
           </Stack>
         </Toolbar>
-        {/* Second row: the injected page toolbar. The single toolbar target lives here; ToolbarSlot portals page content in. Rendered only when a page has mounted a ToolbarSlot (hasToolbar). */}
+        {/* Second row: the injected page toolbar, split into two sections —
+            a flexible lead area (tabs, filters) and a trailing action area
+            (icon buttons). ToolbarSlot portals into both; a page supplies either
+            or both. Rendered only when a page has mounted a ToolbarSlot.
+            The AppBar spans the full viewport, so this row is inset by the nav
+            drawer's current width (permanent at sm+ only — below that the drawer
+            is a temporary overlay and occupies no layout space). */}
         {hasToolbar && (
-          <Toolbar>
+          <Toolbar sx={{ ml: toolbarInset, transition: drawerWidthTransition }}>
+            <Stack
+              ref={setToolbarLeadNode}
+              direction="row"
+              spacing={1}
+              sx={{ flexGrow: 1, minWidth: 0, alignItems: 'center' }}
+            />
             <Stack
               ref={setToolbarNode}
               direction="row"
               spacing={1}
-              sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'flex-end' }}
+              sx={{ flexShrink: 0, alignItems: 'center', justifyContent: 'flex-end' }}
             />
           </Toolbar>
         )}

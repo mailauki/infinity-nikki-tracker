@@ -48,6 +48,10 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/outfits') &&
     !request.nextUrl.pathname.startsWith('/about') &&
     !request.nextUrl.pathname.startsWith('/help') &&
+    // Public profiles (/u/[username]) are viewable by anyone — the page itself
+    // hides owner-only affordances. /profile stays gated: it resolves the
+    // signed-in user's handle, so it has nothing to show a logged-out visitor.
+    !request.nextUrl.pathname.startsWith('/u/') &&
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&
     !request.nextUrl.pathname.startsWith('/sign-up') &&

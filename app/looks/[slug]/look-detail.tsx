@@ -1,11 +1,10 @@
 'use client'
 
-import { Box, Container, IconButton, Stack, Tooltip, Typography } from '@mui/material'
-import { ChevronLeft, Edit as EditIcon } from '@mui/icons-material'
-import ToolbarSlot from '@/components/navbar/toolbar-slot'
+import { Box, Container, Stack, Typography } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
 import PageShell from '@/components/page-shell'
 import type { CustomLook } from '@/lib/types/looks'
+import SlugToolBar from '@/components/navbar/slug-toolbar'
 
 type Piece = { slug: string; image_url: string | null }
 
@@ -48,21 +47,8 @@ export default function LookDetail({
 
   return (
     <>
-      <ToolbarSlot>
-        <Stack
-          direction="row"
-          sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
-        >
-          <IconButton href="/looks">
-            <ChevronLeft />
-          </IconButton>
-          <Tooltip title="Edit">
-            <IconButton href={`/looks/edit/${href}`}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-        </Stack>
-      </ToolbarSlot>
+      <SlugToolBar isAdmin={false} />
+      {/* TODO: Add user match to this slug in place of isAdmin for edit button */}
 
       <PageShell maxWidth="md">
         <Stack useFlexGap direction="row" spacing={3} sx={{ flexWrap: 'wrap' }}>

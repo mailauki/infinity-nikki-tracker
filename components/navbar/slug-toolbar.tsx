@@ -1,6 +1,6 @@
 'use client'
 
-import { IconButton, Stack, Tooltip } from '@mui/material'
+import { IconButton, Tooltip } from '@mui/material'
 import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import { useParams, usePathname } from 'next/navigation'
 import { ChevronLeft, Compare, Edit, InfoOutlined } from '@mui/icons-material'
@@ -37,53 +37,48 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
       : pathname.split('/').slice(1, 3).join('/')
 
   return (
-    <ToolbarSlot>
-      <Stack
-        direction="row"
-        sx={{ flex: 1, alignItems: 'center', justifyContent: 'space-between' }}
-      >
+    <ToolbarSlot
+      lead={
         <IconButton component="a" href={`/${backUrl}`}>
           <ChevronLeft />
         </IconButton>
-
-        <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
-          {seasonFilter && (
-            <>
-              <EvolutionToggle
-                hideEvolutions={seasonFilter.hideEvolutions}
-                onHideEvolutionsChange={seasonFilter.onHideEvolutionsChange}
-              />
-              <GlowupToggle
-                hideGlowups={seasonFilter.hideGlowups}
-                onHideGlowupsChange={seasonFilter.onHideGlowupsChange}
-              />
-            </>
-          )}
-          {showImageSwap && (
-            <Tooltip title={IMAGE_MODE_LABEL[mode]}>
-              <IconButton aria-label={IMAGE_MODE_LABEL[mode]} onClick={cycleMode}>
-                <Compare />
-              </IconButton>
-            </Tooltip>
-          )}
-          {isAdmin && (
-            <IconButton component="a" href={`/admin/${path}/edit/${slug}`}>
-              <Edit />
-            </IconButton>
-          )}
-          {hasBody && (
-            <Tooltip title={sidebarOpen ? 'Hide details' : 'Show details'}>
-              <IconButton
-                aria-label={sidebarOpen ? 'Hide details' : 'Show details'}
-                color={sidebarOpen ? 'primary' : 'default'}
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-              >
-                <InfoOutlined />
-              </IconButton>
-            </Tooltip>
-          )}
-        </Stack>
-      </Stack>
+      }
+    >
+      {seasonFilter && (
+        <>
+          <EvolutionToggle
+            hideEvolutions={seasonFilter.hideEvolutions}
+            onHideEvolutionsChange={seasonFilter.onHideEvolutionsChange}
+          />
+          <GlowupToggle
+            hideGlowups={seasonFilter.hideGlowups}
+            onHideGlowupsChange={seasonFilter.onHideGlowupsChange}
+          />
+        </>
+      )}
+      {showImageSwap && (
+        <Tooltip title={IMAGE_MODE_LABEL[mode]}>
+          <IconButton aria-label={IMAGE_MODE_LABEL[mode]} onClick={cycleMode}>
+            <Compare />
+          </IconButton>
+        </Tooltip>
+      )}
+      {isAdmin && (
+        <IconButton component="a" href={`/admin/${path}/edit/${slug}`}>
+          <Edit />
+        </IconButton>
+      )}
+      {hasBody && (
+        <Tooltip title={sidebarOpen ? 'Hide details' : 'Show details'}>
+          <IconButton
+            aria-label={sidebarOpen ? 'Hide details' : 'Show details'}
+            color={sidebarOpen ? 'primary' : 'default'}
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            <InfoOutlined />
+          </IconButton>
+        </Tooltip>
+      )}
     </ToolbarSlot>
   )
 }
