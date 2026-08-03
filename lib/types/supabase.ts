@@ -426,7 +426,7 @@ export type Database = {
             columns: ["label"]
             isOneToOne: false
             referencedRelation: "labels"
-            referencedColumns: ["title"]
+            referencedColumns: ["slug"]
           },
           {
             foreignKeyName: "makeup_sets_outfit_set_fkey"
@@ -440,21 +440,21 @@ export type Database = {
             columns: ["season_category"]
             isOneToOne: false
             referencedRelation: "season_categories"
-            referencedColumns: ["title"]
+            referencedColumns: ["slug"]
           },
           {
             foreignKeyName: "makeup_sets_seasons_fkey"
             columns: ["seasons"]
             isOneToOne: false
             referencedRelation: "seasons"
-            referencedColumns: ["title"]
+            referencedColumns: ["slug"]
           },
           {
             foreignKeyName: "makeup_sets_style_fkey"
             columns: ["style"]
             isOneToOne: false
             referencedRelation: "styles"
-            referencedColumns: ["title"]
+            referencedColumns: ["slug"]
           },
         ]
       }
@@ -513,7 +513,7 @@ export type Database = {
             columns: ["label"]
             isOneToOne: false
             referencedRelation: "labels"
-            referencedColumns: ["title"]
+            referencedColumns: ["slug"]
           },
           {
             foreignKeyName: "makeup_variants_makeup_category_fkey"
@@ -534,7 +534,7 @@ export type Database = {
             columns: ["style"]
             isOneToOne: false
             referencedRelation: "styles"
-            referencedColumns: ["title"]
+            referencedColumns: ["slug"]
           },
         ]
       }
