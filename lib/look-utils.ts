@@ -38,6 +38,12 @@ const CATEGORY_ICON_SLUGS = new Set([
   'head',
   'hands',
   'feet',
+  // makeup categories
+  'base-makeup',
+  'eyebrows',
+  'eyelashes',
+  'contact-lenses',
+  'lips',
 ])
 
 /** Local icon path for a category slug, or undefined when no icon exists. */

@@ -54,7 +54,7 @@ async function EditMakeupSet({ params }: { params: Promise<{ slug: string }> }) 
   const supabase = await createClient()
   const { data: variantRows } = await supabase
     .from('makeup_variants')
-    .select('makeup_category')
+    .select('id, slug, makeup_set, makeup_category, image_url, alt_image_url, title, description')
     .eq('makeup_set', makeupSet.slug)
 
   const initialCategorySelect = [
@@ -65,6 +65,7 @@ async function EditMakeupSet({ params }: { params: Promise<{ slug: string }> }) 
     <EditMakeupSetForm
       initial={makeupSet}
       initialCategorySelect={initialCategorySelect}
+      initialVariants={variantRows ?? []}
       labels={labels}
       makeupCategories={makeupCategories}
       makeupSets={makeupSets}

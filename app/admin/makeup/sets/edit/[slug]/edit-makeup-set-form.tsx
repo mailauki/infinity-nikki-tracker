@@ -20,6 +20,7 @@ import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
+import { Tables } from '@/lib/types/supabase'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
@@ -27,6 +28,19 @@ import ToggleField from '@/components/forms/toggle-field'
 import { useFormConfig } from '@/app/admin/form-context'
 import { updateMakeupSet } from '../../actions'
 import { MENU_PROPS } from '@/lib/types/props'
+import MakeupVariantImageCard from './makeup-variant-image-card'
+
+type MakeupVariantRow = Pick<
+  Tables<'makeup_variants'>,
+  | 'id'
+  | 'slug'
+  | 'makeup_set'
+  | 'makeup_category'
+  | 'image_url'
+  | 'alt_image_url'
+  | 'title'
+  | 'description'
+>
 
 const FORM_ID = 'edit-makeup-set'
 
@@ -40,6 +54,7 @@ export default function EditMakeupSetForm({
   seasonCategories,
   makeupCategories,
   initialCategorySelect = [],
+  initialVariants = [],
 }: {
   initial: MakeupSetRaw
   makeupSets: MakeupSetRaw[]
@@ -50,6 +65,7 @@ export default function EditMakeupSetForm({
   seasonCategories: SeasonCategory[]
   makeupCategories: MakeupCategory[]
   initialCategorySelect?: string[]
+  initialVariants?: MakeupVariantRow[]
 }) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState(initial.title)
@@ -70,6 +86,36 @@ export default function EditMakeupSetForm({
   // non-empty selection, or saving would re-create variants an admin removed.
   const [categorySelect, setCategorySelect] = useState<string[]>(() =>
     initialCategorySelect.length > 0 ? initialCategorySelect : makeupCategories.map((c) => c.slug)
+  )
+  // Only the base set's variants get cards — evolutions are edited on their own pages.
+  const baseSlug = initial.slug ?? ''
+  const isBaseVariant = (v: MakeupVariantRow) => v.makeup_set === baseSlug
+  const [variantRows, setVariantRows] = useState<MakeupVariantRow[]>(
+    initialVariants.filter(isBaseVariant)
+  )
+  const [variantImages, setVariantImages] = useState<Record<string, string | null>>(
+    Object.fromEntries(
+      initialVariants.filter((v) => v.slug && isBaseVariant(v)).map((v) => [v.slug, v.image_url])
+    )
+  )
+  const [variantAltImages, setVariantAltImages] = useState<Record<string, string | null>>(
+    Object.fromEntries(
+      initialVariants
+        .filter((v) => v.slug && isBaseVariant(v))
+        .map((v) => [v.slug, v.alt_image_url])
+    )
+  )
+  const [variantTitles, setVariantTitles] = useState<Record<string, string>>(
+    Object.fromEntries(
+      initialVariants.filter((v) => v.slug && isBaseVariant(v)).map((v) => [v.slug, v.title ?? ''])
+    )
+  )
+  const [variantDescriptions, setVariantDescriptions] = useState<Record<string, string>>(
+    Object.fromEntries(
+      initialVariants
+        .filter((v) => v.slug && isBaseVariant(v))
+        .map((v) => [v.slug, v.description ?? ''])
+    )
   )
 
   // A set cannot be its own base — exclude the row being edited from options.
@@ -103,6 +149,23 @@ export default function EditMakeupSetForm({
   useEffect(() => {
     if (state && 'savedTitle' in state && !('error' in state)) {
       setFormConfig({ savedTitle: state.savedTitle })
+
+      if ('variants' in state) {
+        const fresh = state.variants.filter(isBaseVariant)
+        setVariantRows(fresh)
+        setVariantImages(
+          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.image_url]))
+        )
+        setVariantAltImages(
+          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.alt_image_url]))
+        )
+        setVariantTitles(
+          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.title ?? '']))
+        )
+        setVariantDescriptions(
+          Object.fromEntries(fresh.filter((v) => v.slug).map((v) => [v.slug, v.description ?? '']))
+        )
+      }
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -297,6 +360,45 @@ export default function EditMakeupSetForm({
 
         <input name="image_url" type="hidden" value={setImage ?? ''} />
         <input name="alt_image_url" type="hidden" value={altSetImage ?? ''} />
+
+        {variantRows.length > 0 && (
+          <Stack spacing={1}>
+            <Typography variant="subtitle2">Variant Images</Typography>
+            <Box
+              sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
+            >
+              {[...variantRows]
+                .sort((a, b) => {
+                  const aIndex = makeupCategories.findIndex((c) => c.slug === a.makeup_category)
+                  const bIndex = makeupCategories.findIndex((c) => c.slug === b.makeup_category)
+                  return (aIndex === -1 ? Infinity : aIndex) - (bIndex === -1 ? Infinity : bIndex)
+                })
+                .filter((v) => v.slug)
+                .map((v) => (
+                  <MakeupVariantImageCard
+                    key={v.id}
+                    altImage={variantAltImages[v.slug!] ?? null}
+                    description={variantDescriptions[v.slug!] ?? ''}
+                    image={variantImages[v.slug!] ?? null}
+                    title={variantTitles[v.slug!] ?? ''}
+                    variant={v}
+                    onAltImageChange={(url) =>
+                      setVariantAltImages((prev) => ({ ...prev, [v.slug!]: url }))
+                    }
+                    onDescriptionChange={(value) =>
+                      setVariantDescriptions((prev) => ({ ...prev, [v.slug!]: value }))
+                    }
+                    onImageChange={(url) =>
+                      setVariantImages((prev) => ({ ...prev, [v.slug!]: url }))
+                    }
+                    onTitleChange={(value) =>
+                      setVariantTitles((prev) => ({ ...prev, [v.slug!]: value }))
+                    }
+                  />
+                ))}
+            </Box>
+          </Stack>
+        )}
       </Stack>
     </form>
   )

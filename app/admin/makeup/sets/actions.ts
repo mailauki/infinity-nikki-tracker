@@ -194,9 +194,63 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
     if (deleteAllError) return { error: deleteAllError.message }
   }
 
+  // Resolve a submitted variant input key back to its current DB slug, carrying
+  // the slug across a base set rename (variant_image_ / variant_title_ / etc.).
+  const resolveVariantSlug = (submittedSlug: string) =>
+    originalSlug !== slug && submittedSlug.startsWith(`${originalSlug}-`)
+      ? submittedSlug.replace(`${originalSlug}-`, `${slug}-`)
+      : submittedSlug
+
+  // Update variant images from hidden inputs.
+  const variantImageEntries = [...formData.entries()].filter(([key]) =>
+    key.startsWith('variant_image_')
+  )
+  for (const [key, value] of variantImageEntries) {
+    const variantSlug = resolveVariantSlug(key.replace('variant_image_', ''))
+    const { error: imgError } = await supabase
+      .from('makeup_variants')
+      .update({ image_url: (value as string) || null })
+      .eq('slug', variantSlug)
+    if (imgError) return { error: imgError.message }
+  }
+
+  // Update variant titles from text inputs.
+  const variantTitleEntries = [...formData.entries()].filter(([key]) =>
+    key.startsWith('variant_title_')
+  )
+  for (const [key, value] of variantTitleEntries) {
+    const variantSlug = resolveVariantSlug(key.replace('variant_title_', ''))
+    const { error: titleError } = await supabase
+      .from('makeup_variants')
+      .update({ title: (value as string).trim() || null })
+      .eq('slug', variantSlug)
+    if (titleError) return { error: titleError.message }
+  }
+
+  // Update variant descriptions from text inputs.
+  const variantDescriptionEntries = [...formData.entries()].filter(([key]) =>
+    key.startsWith('variant_description_')
+  )
+  for (const [key, value] of variantDescriptionEntries) {
+    const variantSlug = resolveVariantSlug(key.replace('variant_description_', ''))
+    const { error: descError } = await supabase
+      .from('makeup_variants')
+      .update({ description: (value as string).trim() || null })
+      .eq('slug', variantSlug)
+    if (descError) return { error: descError.message }
+  }
+
   revalidatePath('/admin/makeup/sets')
 
-  if (formData.get('update_only') === 'true') return { savedTitle: values.title }
+  if (formData.get('update_only') === 'true') {
+    const { data: variants } = await supabase
+      .from('makeup_variants')
+      .select('id, slug, makeup_set, makeup_category, image_url, alt_image_url, title, description')
+      .eq('makeup_set', slug)
+      .order('id', { ascending: true })
+
+    return { savedTitle: values.title, variants: variants ?? [] }
+  }
   if (formData.get('update_next') === 'true') {
     const { data: next } = await supabase
       .from('makeup_sets')
