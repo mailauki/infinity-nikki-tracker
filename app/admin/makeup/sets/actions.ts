@@ -1,7 +1,6 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
@@ -95,8 +94,6 @@ export async function addMakeupSet(_: unknown, formData: FormData) {
       return { error: 'Failed to save variants. The set was not created — please try again.' }
     }
   }
-
-  revalidatePath('/admin/makeup/sets')
 
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: values.title }
@@ -240,8 +237,6 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
     if (descError) return { error: descError.message }
   }
 
-  revalidatePath('/admin/makeup/sets')
-
   if (formData.get('update_only') === 'true') {
     const { data: variants } = await supabase
       .from('makeup_variants')
@@ -276,7 +271,6 @@ export async function deleteMakeupSet(slug: string) {
   const { error } = await supabase.from('makeup_sets').delete().eq('slug', slug)
   if (error) return { error: error.message }
 
-  revalidatePath('/admin/makeup/sets')
   return { success: true }
 }
 

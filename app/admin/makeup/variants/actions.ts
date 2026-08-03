@@ -1,7 +1,6 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
@@ -47,8 +46,6 @@ export async function addMakeupVariant(_: unknown, formData: FormData) {
 
   if (error) return { error: error.message }
 
-  revalidatePath('/admin/makeup/variants')
-
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: values.slug }
   redirect(ADMIN_DASHBOARD)
@@ -71,8 +68,6 @@ export async function editMakeupVariant(id: number, _: unknown, formData: FormDa
     .eq('id', id)
 
   if (error) return { error: error.message }
-
-  revalidatePath('/admin/makeup/variants')
 
   if (formData.get('update_only') === 'true') return { savedTitle: values.slug }
 
@@ -100,7 +95,6 @@ export async function deleteMakeupVariant(slug: string) {
   const { error } = await supabase.from('makeup_variants').delete().eq('slug', slug)
   if (error) return { error: error.message }
 
-  revalidatePath('/admin/makeup/variants')
   return { success: true }
 }
 
