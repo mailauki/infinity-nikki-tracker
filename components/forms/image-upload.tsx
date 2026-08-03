@@ -27,6 +27,7 @@ export type ImageUploadTable =
   | 'custom_looks'
   | 'makeup_sets'
   | 'makeup_variants'
+  | 'momo_cloaks'
 
 export default function ImageUpload({
   url,
