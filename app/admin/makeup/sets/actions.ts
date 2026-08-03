@@ -2,7 +2,14 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 import { getUserRole } from '@/hooks/user'
+
+// No navLinksData.admin.makeup entry exists yet (unlike outfits/eureka), so
+// the "next item" edit route is built from this literal rather than adding
+// nav-links plumbing out of scope for this fix.
+const MAKEUP_SETS_EDIT_PATH = '/admin/makeup/sets/edit'
 
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null
@@ -65,7 +72,10 @@ export async function addMakeupSet(_: unknown, formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/makeup/sets')
-  return { success: true, savedTitle: values.title }
+
+  if (formData.get('add_another') === 'true')
+    return { addAnother: true as const, savedTitle: values.title }
+  redirect(ADMIN_DASHBOARD)
 }
 
 export async function updateMakeupSet(_: unknown, formData: FormData) {
@@ -84,7 +94,23 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
   if (error) return { error: error.message }
 
   revalidatePath('/admin/makeup/sets')
-  return { success: true, savedTitle: values.title }
+
+  if (formData.get('update_only') === 'true') return { savedTitle: values.title }
+  if (formData.get('update_next') === 'true') {
+    const { data: next } = await supabase
+      .from('makeup_sets')
+      .select('slug')
+      .is('base_set', null)
+      .gt('title', values.title)
+      .order('title', { ascending: true })
+      .order('slug', { ascending: true })
+      .limit(1)
+      .maybeSingle()
+
+    if (next?.slug) redirect(`${MAKEUP_SETS_EDIT_PATH}/${next.slug}`)
+    redirect(ADMIN_DASHBOARD)
+  }
+  redirect(ADMIN_DASHBOARD)
 }
 
 export async function deleteMakeupSet(slug: string) {
