@@ -21,11 +21,12 @@ export type ImageUploadTable =
   | 'outfit_variants'
   | 'trials'
   | 'outfit_sets'
-  | 'makeup_sets'
   | 'abilities'
   | 'seasons'
   | 'season_categories'
   | 'custom_looks'
+  | 'makeup_sets'
+  | 'makeup_variants'
 
 export default function ImageUpload({
   url,

@@ -8,6 +8,7 @@ import { outfitVariantFields } from './outfits/variants/fields'
 import { abilityFields } from './outfits/abilities/fields'
 import { seasonCategoryFields } from './outfits/season-categories/fields'
 import { seasonFields } from './outfits/seasons/fields'
+import { makeupVariantFields } from './makeup/variants/fields'
 
 /**
  * The admin field builders emit function-valued props (`slugFrom`, `required`,
@@ -23,6 +24,7 @@ export type FormKind =
   | 'ability'
   | 'seasonCategory'
   | 'season'
+  | 'makeupVariant'
 
 /** Extra, serializable inputs a builder needs beyond `mode`. */
 export interface BuilderData {
@@ -50,5 +52,7 @@ export function buildFields(
       return seasonCategoryFields(mode)
     case 'season':
       return seasonFields(mode)
+    case 'makeupVariant':
+      return makeupVariantFields(mode)
   }
 }
