@@ -5,17 +5,21 @@ import {
   Alert,
   Autocomplete,
   Box,
+  Chip,
   FormControl,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
+  SelectChangeEvent,
   Stack,
   TextField,
 } from '@mui/material'
 import { toSlug } from '@/lib/utils'
+import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
-import { MakeupSetRaw } from '@/lib/types/makeup'
+import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
@@ -32,6 +36,7 @@ export default function AddMakeupSetForm({
   labels,
   seasons,
   seasonCategories,
+  makeupCategories,
 }: {
   makeupSets: MakeupSetRaw[]
   outfitSets: OutfitSetRaw[]
@@ -39,6 +44,7 @@ export default function AddMakeupSetForm({
   labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
+  makeupCategories: MakeupCategory[]
 }) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')
@@ -52,11 +58,17 @@ export default function AddMakeupSetForm({
   const [outfitSet, setOutfitSet] = useState<string | null>(null)
   const [baseSet, setBaseSet] = useState<string | null>(null)
   const [order, setOrder] = useState<number | ''>(1)
+  const [categorySelect, setCategorySelect] = useState<string[]>([])
   const [slugEdited, setSlugEdited] = useState(false)
 
   function handleTitleChange(value: string) {
     setTitle(value)
     if (!slugEdited) setSlug(toSlug(value))
+  }
+
+  function handleCategoryChange(e: SelectChangeEvent<string[]>) {
+    const { value } = e.target
+    setCategorySelect(typeof value === 'string' ? value.split(',') : value)
   }
 
   function handleBaseSetChange(value: string | null) {
@@ -92,6 +104,7 @@ export default function AddMakeupSetForm({
       setOutfitSet(null)
       setBaseSet(null)
       setOrder(1)
+      setCategorySelect([])
       setSlugEdited(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -228,9 +241,48 @@ export default function AddMakeupSetForm({
         )}
         {!baseSet && <input name="order" type="hidden" value={1} />}
 
+        <FormControl>
+          <InputLabel>Categories</InputLabel>
+          <Select
+            multiple
+            MenuProps={MENU_PROPS}
+            input={<OutlinedInput label="Categories" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((s) => {
+                  const cat = makeupCategories.find((c) => c.slug === s)
+                  return <Chip key={s} label={cat?.title ?? s} size="small" />
+                })}
+              </Box>
+            )}
+            value={categorySelect}
+            onChange={handleCategoryChange}
+          >
+            {makeupCategories.map((c) => {
+              const selected = categorySelect.includes(c.slug)
+              return (
+                <MenuItem key={c.slug} value={c.slug}>
+                  {selected ? (
+                    <CheckBox fontSize="small" sx={{ mr: 1 }} />
+                  ) : (
+                    <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
+                  )}
+                  {c.title}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </FormControl>
+
         <Alert severity="info">
           Images can be added after saving — use the makeup set edit form.
         </Alert>
+
+        <input
+          name="makeup_categories"
+          type="hidden"
+          value={JSON.stringify(categorySelect.map((s) => ({ slug: s })))}
+        />
       </Stack>
     </form>
   )

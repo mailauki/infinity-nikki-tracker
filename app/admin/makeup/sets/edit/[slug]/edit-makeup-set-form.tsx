@@ -5,17 +5,21 @@ import {
   Alert,
   Autocomplete,
   Box,
+  Chip,
   FormControl,
   InputLabel,
   MenuItem,
+  OutlinedInput,
   Select,
+  SelectChangeEvent,
   Stack,
   TextField,
   Typography,
 } from '@mui/material'
+import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
-import { MakeupSetRaw } from '@/lib/types/makeup'
+import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
@@ -34,6 +38,8 @@ export default function EditMakeupSetForm({
   labels,
   seasons,
   seasonCategories,
+  makeupCategories,
+  initialCategorySelect = [],
 }: {
   initial: MakeupSetRaw
   makeupSets: MakeupSetRaw[]
@@ -42,6 +48,8 @@ export default function EditMakeupSetForm({
   labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
+  makeupCategories: MakeupCategory[]
+  initialCategorySelect?: string[]
 }) {
   const { setFormConfig } = useFormConfig()
   const [title, setTitle] = useState(initial.title)
@@ -57,6 +65,7 @@ export default function EditMakeupSetForm({
   const [order, setOrder] = useState<number | ''>(initial.order ?? 1)
   const [setImage, setSetImage] = useState<string | null>(initial.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(initial.alt_image_url ?? null)
+  const [categorySelect, setCategorySelect] = useState<string[]>(initialCategorySelect)
 
   // A set cannot be its own base — exclude the row being edited from options.
   const baseSetOptions = makeupSets.filter((s) => s.slug !== initial.slug)
@@ -64,6 +73,11 @@ export default function EditMakeupSetForm({
   function handleBaseSetChange(value: string | null) {
     setBaseSet(value)
     setOrder(value ? 2 : 1)
+  }
+
+  function handleCategoryChange(e: SelectChangeEvent<string[]>) {
+    const { value } = e.target
+    setCategorySelect(typeof value === 'string' ? value.split(',') : value)
   }
 
   const selectedOutfitSet = outfitSets.find((s) => s.slug === outfitSet) ?? null
@@ -219,6 +233,49 @@ export default function EditMakeupSetForm({
           </Box>
         )}
         {!baseSet && <input name="order" type="hidden" value={1} />}
+
+        <FormControl>
+          <InputLabel>Categories</InputLabel>
+          <Select
+            multiple
+            MenuProps={MENU_PROPS}
+            input={<OutlinedInput label="Categories" />}
+            renderValue={(selected) => (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selected.map((s) => {
+                  const cat = makeupCategories.find((c) => c.slug === s)
+                  return <Chip key={s} label={cat?.title ?? s} size="small" />
+                })}
+              </Box>
+            )}
+            value={categorySelect}
+            onChange={handleCategoryChange}
+          >
+            {makeupCategories.map((c) => {
+              const selected = categorySelect.includes(c.slug)
+              return (
+                <MenuItem key={c.slug} value={c.slug}>
+                  {selected ? (
+                    <CheckBox fontSize="small" sx={{ mr: 1 }} />
+                  ) : (
+                    <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
+                  )}
+                  {c.title}
+                </MenuItem>
+              )
+            })}
+          </Select>
+        </FormControl>
+
+        <Alert severity="warning">
+          Unchecking a category deletes its variant and any collection records for it.
+        </Alert>
+
+        <input
+          name="makeup_categories"
+          type="hidden"
+          value={JSON.stringify(categorySelect.map((s) => ({ slug: s })))}
+        />
 
         <Stack spacing={1}>
           <Typography variant="subtitle2">Set Images</Typography>

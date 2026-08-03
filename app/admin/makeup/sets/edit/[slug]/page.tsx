@@ -7,6 +7,8 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { getMakeupCategories } from '@/hooks/data/makeup-categories'
+import { createClient } from '@/lib/supabase/server'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -27,23 +29,44 @@ export default async function EditMakeupSetPage({ params }: { params: Promise<{ 
 async function EditMakeupSet({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  const [makeupSet, makeupSets, outfitSets, styles, labels, seasons, seasonCategories] =
-    await Promise.all([
-      getMakeupSetRaw(slug),
-      getMakeupSetsRaw(),
-      getOutfitSetsRaw(),
-      getStyles(),
-      getLabels(),
-      getSeasons(),
-      getSeasonCategories(),
-    ])
+  const [
+    makeupSet,
+    makeupSets,
+    outfitSets,
+    styles,
+    labels,
+    seasons,
+    seasonCategories,
+    makeupCategories,
+  ] = await Promise.all([
+    getMakeupSetRaw(slug),
+    getMakeupSetsRaw(),
+    getOutfitSetsRaw(),
+    getStyles(),
+    getLabels(),
+    getSeasons(),
+    getSeasonCategories(),
+    getMakeupCategories(),
+  ])
 
   if (!makeupSet) notFound()
+
+  const supabase = await createClient()
+  const { data: variantRows } = await supabase
+    .from('makeup_variants')
+    .select('makeup_category')
+    .eq('makeup_set', makeupSet.slug)
+
+  const initialCategorySelect = [
+    ...new Set((variantRows ?? []).map((v) => v.makeup_category).filter(Boolean)),
+  ] as string[]
 
   return (
     <EditMakeupSetForm
       initial={makeupSet}
+      initialCategorySelect={initialCategorySelect}
       labels={labels}
+      makeupCategories={makeupCategories}
       makeupSets={makeupSets}
       outfitSets={outfitSets}
       seasonCategories={seasonCategories}

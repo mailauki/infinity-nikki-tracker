@@ -6,6 +6,7 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { getMakeupCategories } from '@/hooks/data/makeup-categories'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -24,18 +25,21 @@ export default function NewMakeupSetPage() {
 }
 
 async function NewMakeupSet() {
-  const [makeupSets, outfitSets, styles, labels, seasons, seasonCategories] = await Promise.all([
-    getMakeupSetsRaw(),
-    getOutfitSetsRaw(),
-    getStyles(),
-    getLabels(),
-    getSeasons(),
-    getSeasonCategories(),
-  ])
+  const [makeupSets, outfitSets, styles, labels, seasons, seasonCategories, makeupCategories] =
+    await Promise.all([
+      getMakeupSetsRaw(),
+      getOutfitSetsRaw(),
+      getStyles(),
+      getLabels(),
+      getSeasons(),
+      getSeasonCategories(),
+      getMakeupCategories(),
+    ])
 
   return (
     <AddMakeupSetForm
       labels={labels}
+      makeupCategories={makeupCategories}
       makeupSets={makeupSets}
       outfitSets={outfitSets}
       seasonCategories={seasonCategories}

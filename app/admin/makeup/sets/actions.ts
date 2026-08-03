@@ -6,10 +6,14 @@ import { redirect } from 'next/navigation'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 import { getUserRole } from '@/hooks/user'
+import { toSlugMakeup } from '@/lib/utils'
 
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null
   const orderRaw = formData.get('order') as string | null
+  const makeupCategories = JSON.parse((formData.get('makeup_categories') as string) || '[]') as {
+    slug: string
+  }[]
   return {
     title: (formData.get('title') as string | null)?.trim() ?? '',
     slug: (formData.get('slug') as string | null)?.trim() ?? '',
@@ -24,6 +28,7 @@ function readForm(formData: FormData) {
     order: orderRaw ? parseInt(orderRaw, 10) : 1,
     image_url: (formData.get('image_url') as string | null) || null,
     alt_image_url: (formData.get('alt_image_url') as string | null) || null,
+    makeupCategories,
   }
 }
 
@@ -57,15 +62,39 @@ export async function addMakeupSet(_: unknown, formData: FormData) {
   const role = await getUserRole()
   if (role !== 'admin') return { error: 'Forbidden' }
 
-  const values = readForm(formData)
-  const invalid = validate(values)
+  const formValues = readForm(formData)
+  const invalid = validate(formValues)
   if (invalid) return { error: invalid }
+  const { makeupCategories, ...values } = formValues
   // validate() already rejected a falsy rarity — narrow the DB's NOT NULL column.
   const insertValues = { ...values, rarity: values.rarity as number }
 
   const supabase = await createClient()
   const { error } = await supabase.from('makeup_sets').insert([insertValues])
   if (error) return { error: error.message }
+
+  const rollback = async () => {
+    await supabase.from('makeup_sets').delete().eq('slug', values.slug)
+  }
+
+  // Create one variant per selected category. NEVER write `default` here — a
+  // DB trigger (enforce_base_makeup_variant_default) owns it, setting
+  // default=true when the parent set's order=1 and false otherwise.
+  if (makeupCategories.length > 0) {
+    const variants = makeupCategories.map((cat) => ({
+      makeup_set: values.slug,
+      makeup_category: cat.slug,
+      slug: toSlugMakeup(values.slug, cat.slug),
+      rarity: values.rarity as number,
+      style: values.style,
+      label: values.label,
+    }))
+    const { error: variantError } = await supabase.from('makeup_variants').insert(variants)
+    if (variantError) {
+      await rollback()
+      return { error: 'Failed to save variants. The set was not created — please try again.' }
+    }
+  }
 
   revalidatePath('/admin/makeup/sets')
 
@@ -79,15 +108,91 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
   if (role !== 'admin') return { error: 'Forbidden' }
 
   const originalSlug = (formData.get('original_slug') as string | null) ?? ''
-  const values = readForm(formData)
-  const invalid = validate(values)
+  const formValues = readForm(formData)
+  const invalid = validate(formValues)
   if (invalid) return { error: invalid }
+  const { makeupCategories, ...values } = formValues
   // validate() already rejected a falsy rarity — narrow the DB's NOT NULL column.
   const updateValues = { ...values, rarity: values.rarity as number }
 
   const supabase = await createClient()
   const { error } = await supabase.from('makeup_sets').update(updateValues).eq('slug', originalSlug)
   if (error) return { error: error.message }
+
+  const slug = values.slug
+
+  // If the base slug changed, rename base variant slugs — the makeup_set FK
+  // cascades (on update cascade), but the variant's own `slug` text column
+  // (`{set}-{category}`) is not derived from the FK and must be updated by hand.
+  if (originalSlug !== slug) {
+    const { data: baseVariants } = await supabase
+      .from('makeup_variants')
+      .select('slug, makeup_category')
+      .eq('makeup_set', slug)
+
+    for (const v of baseVariants ?? []) {
+      if (!v.makeup_category || v.slug !== toSlugMakeup(originalSlug, v.makeup_category)) continue
+      const { error: renameError } = await supabase
+        .from('makeup_variants')
+        .update({ slug: toSlugMakeup(slug, v.makeup_category) })
+        .eq('slug', v.slug)
+      if (renameError) return { error: renameError.message }
+    }
+  }
+
+  // Sync variants: diff DB state against (state slugs × categories), covering
+  // the base set and all of its evolutions (makeup_sets rows with base_set = slug).
+  const { data: evolutionRows } = await supabase
+    .from('makeup_sets')
+    .select('slug')
+    .eq('base_set', slug)
+  const stateSlugs: string[] = [slug, ...(evolutionRows ?? []).map((e) => e.slug)]
+
+  if (makeupCategories.length > 0) {
+    const expectedVariants = stateSlugs.flatMap((stateSlug) =>
+      makeupCategories.map((cat) => ({
+        makeup_set: stateSlug,
+        makeup_category: cat.slug,
+        slug: toSlugMakeup(stateSlug, cat.slug),
+        rarity: values.rarity as number,
+        style: values.style,
+        label: values.label,
+      }))
+    )
+    const expectedSlugs = new Set(expectedVariants.map((v) => v.slug))
+
+    const { data: currentVariants } = await supabase
+      .from('makeup_variants')
+      .select('slug, makeup_set, makeup_category')
+      .in('makeup_set', stateSlugs)
+
+    const currentSlugsInDB = new Set((currentVariants ?? []).map((v) => v.slug))
+
+    const toInsert = expectedVariants.filter((v) => !currentSlugsInDB.has(v.slug))
+    const toDelete = (currentVariants ?? [])
+      .filter((v) => !expectedSlugs.has(v.slug))
+      .map((v) => v.slug)
+
+    if (toInsert.length > 0) {
+      const { error: insertError } = await supabase.from('makeup_variants').insert(toInsert)
+      if (insertError) return { error: insertError.message }
+    }
+
+    if (toDelete.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('makeup_variants')
+        .delete()
+        .in('slug', toDelete)
+      if (deleteError) return { error: deleteError.message }
+    }
+  } else {
+    // No categories selected — remove all variants for base and evolutions.
+    const { error: deleteAllError } = await supabase
+      .from('makeup_variants')
+      .delete()
+      .in('makeup_set', stateSlugs)
+    if (deleteAllError) return { error: deleteAllError.message }
+  }
 
   revalidatePath('/admin/makeup/sets')
 
