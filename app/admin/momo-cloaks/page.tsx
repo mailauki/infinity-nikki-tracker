@@ -4,6 +4,7 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { getLocations } from '@/hooks/data/locations'
 import { byTitleThenSlug } from '@/lib/utils'
 import MomoCloakView from './momo-cloak-view'
 
@@ -16,12 +17,13 @@ export default function MomoCloaksAdminPage() {
 }
 
 async function AdminView() {
-  const [momoCloaks, styles, labels, seasons, seasonCategories] = await Promise.all([
+  const [momoCloaks, styles, labels, seasons, seasonCategories, locations] = await Promise.all([
     getMomoCloaksRaw(),
     getStyles(),
     getLabels(),
     getSeasons(),
     getSeasonCategories(),
+    getLocations(),
   ])
 
   const sortedMomoCloaks = [...momoCloaks].sort(byTitleThenSlug)
@@ -29,6 +31,7 @@ async function AdminView() {
   return (
     <MomoCloakView
       labels={labels}
+      locations={locations}
       momoCloaks={sortedMomoCloaks}
       seasonCategories={seasonCategories}
       seasons={seasons}

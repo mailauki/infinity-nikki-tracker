@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Alert, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
 import { MomoCloakRaw } from '@/lib/types/momo'
-import { Season, SeasonCategory } from '@/lib/types/outfit'
+import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
@@ -22,12 +22,14 @@ export default function EditMomoCloakForm({
   labels,
   seasons,
   seasonCategories,
+  locations,
 }: {
   initial: MomoCloakRaw
   styles: Style[]
   labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
+  locations: Location[]
 }) {
   const { setFormConfig } = useFormConfig()
   const router = useRouter()
@@ -39,6 +41,7 @@ export default function EditMomoCloakForm({
   const [label, setLabel] = useState(initial.label ?? '')
   const [season, setSeason] = useState(initial.seasons ?? '')
   const [seasonCategory, setSeasonCategory] = useState(initial.season_category ?? '')
+  const [location, setLocation] = useState(initial.location ?? '')
   const [image, setImage] = useState<string | null>(initial.image_url ?? null)
   const [altImage, setAltImage] = useState<string | null>(initial.alt_image_url ?? null)
 
@@ -156,6 +159,24 @@ export default function EditMomoCloakForm({
             {seasonCategories.map((sc) => (
               <MenuItem key={sc.slug} value={sc.slug}>
                 {sc.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl>
+          <InputLabel>Location</InputLabel>
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Location"
+            name="location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {locations.map((l) => (
+              <MenuItem key={l.slug} value={l.slug}>
+                {l.title}
               </MenuItem>
             ))}
           </Select>

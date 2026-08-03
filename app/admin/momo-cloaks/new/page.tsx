@@ -4,6 +4,7 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { getLocations } from '@/hooks/data/locations'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -22,16 +23,18 @@ export default function NewMomoCloakPage() {
 }
 
 async function NewMomoCloak() {
-  const [styles, labels, seasons, seasonCategories] = await Promise.all([
+  const [styles, labels, seasons, seasonCategories, locations] = await Promise.all([
     getStyles(),
     getLabels(),
     getSeasons(),
     getSeasonCategories(),
+    getLocations(),
   ])
 
   return (
     <AddMomoCloakForm
       labels={labels}
+      locations={locations}
       seasonCategories={seasonCategories}
       seasons={seasons}
       styles={styles}

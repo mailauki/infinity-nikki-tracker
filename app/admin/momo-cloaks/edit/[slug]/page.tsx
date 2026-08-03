@@ -6,6 +6,7 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { getLocations } from '@/hooks/data/locations'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -26,12 +27,13 @@ export default async function EditMomoCloakPage({ params }: { params: Promise<{ 
 async function EditMomoCloak({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  const [momoCloak, styles, labels, seasons, seasonCategories] = await Promise.all([
+  const [momoCloak, styles, labels, seasons, seasonCategories, locations] = await Promise.all([
     getMomoCloakRaw(slug),
     getStyles(),
     getLabels(),
     getSeasons(),
     getSeasonCategories(),
+    getLocations(),
   ])
 
   if (!momoCloak) notFound()
@@ -40,6 +42,7 @@ async function EditMomoCloak({ params }: { params: Promise<{ slug: string }> }) 
     <EditMomoCloakForm
       initial={momoCloak}
       labels={labels}
+      locations={locations}
       seasonCategories={seasonCategories}
       seasons={seasons}
       styles={styles}

@@ -5,7 +5,7 @@ import { Stack } from '@mui/material'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toTitle } from '@/lib/utils'
 import { MomoCloakRaw } from '@/lib/types/momo'
-import { Season, SeasonCategory } from '@/lib/types/outfit'
+import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import RarityStars from '@/components/rarity-stars'
 import { updateMomoCloakRow } from './actions'
@@ -24,6 +24,7 @@ interface MomoCloakTableProps {
   labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
+  locations: Location[]
 }
 
 const LOCKED_FIELDS = ['slug', 'updated_at']
@@ -34,6 +35,7 @@ export function MomoCloakTable({
   labels,
   seasons,
   seasonCategories,
+  locations,
 }: MomoCloakTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const {
@@ -57,6 +59,7 @@ export function MomoCloakTable({
         label: newRow.label,
         seasons: newRow.seasons,
         season_category: newRow.season_category,
+        location: newRow.location,
       })
       setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)))
       return newRow
@@ -156,6 +159,18 @@ export function MomoCloakTable({
       valueOptions: [
         { value: '', label: '—' },
         ...seasonCategories.map((sc) => ({ value: sc.slug, label: toTitle(sc.title ?? '') })),
+      ],
+      valueFormatter: (value: string | null) => toTitle(value || '—'),
+    },
+    {
+      field: 'location',
+      headerName: 'Location',
+      width: 160,
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: [
+        { value: '', label: '—' },
+        ...locations.map((l) => ({ value: l.slug, label: toTitle(l.title ?? '') })),
       ],
       valueFormatter: (value: string | null) => toTitle(value || '—'),
     },

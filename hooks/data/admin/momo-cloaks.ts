@@ -12,6 +12,7 @@ const RAW_COLUMNS = `
 	label,
 	seasons,
 	season_category,
+	location,
 	image_url,
 	alt_image_url,
 	updated_at

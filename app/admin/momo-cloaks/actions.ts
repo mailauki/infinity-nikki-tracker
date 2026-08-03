@@ -22,6 +22,7 @@ function readForm(formData: FormData) {
     label: (formData.get('label') as string | null) || null,
     seasons: (formData.get('seasons') as string | null) || null,
     season_category: (formData.get('season_category') as string | null) || null,
+    location: (formData.get('location') as string | null) || null,
     image_url: (formData.get('image_url') as string | null) || null,
     alt_image_url: (formData.get('alt_image_url') as string | null) || null,
   }
@@ -116,6 +117,7 @@ export async function updateMomoCloakRow(
     label?: string | null
     seasons?: string | null
     season_category?: string | null
+    location?: string | null
   }
 ) {
   const role = await getUserRole()
@@ -125,7 +127,7 @@ export async function updateMomoCloakRow(
 
   // FK columns reject '' — the grid's singleSelect '—' option yields an empty
   // string, so coerce those to null before writing.
-  const FK_FIELDS = ['style', 'label', 'seasons', 'season_category'] as const
+  const FK_FIELDS = ['style', 'label', 'seasons', 'season_category', 'location'] as const
   const normalized = { ...fields }
   for (const key of FK_FIELDS) {
     if (normalized[key] === '') normalized[key] = null

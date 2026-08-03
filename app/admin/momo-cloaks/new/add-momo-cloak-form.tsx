@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Alert, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
 import { toSlug } from '@/lib/utils'
-import { Season, SeasonCategory } from '@/lib/types/outfit'
+import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
@@ -20,11 +20,13 @@ export default function AddMomoCloakForm({
   labels,
   seasons,
   seasonCategories,
+  locations,
 }: {
   styles: Style[]
   labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
+  locations: Location[]
 }) {
   const { setFormConfig } = useFormConfig()
   const router = useRouter()
@@ -36,6 +38,7 @@ export default function AddMomoCloakForm({
   const [label, setLabel] = useState('')
   const [season, setSeason] = useState('')
   const [seasonCategory, setSeasonCategory] = useState('')
+  const [location, setLocation] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
 
   function handleTitleChange(value: string) {
@@ -72,6 +75,7 @@ export default function AddMomoCloakForm({
       setLabel('')
       setSeason('')
       setSeasonCategory('')
+      setLocation('')
       setSlugEdited(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -165,6 +169,24 @@ export default function AddMomoCloakForm({
             {seasonCategories.map((sc) => (
               <MenuItem key={sc.slug} value={sc.slug}>
                 {sc.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl>
+          <InputLabel>Location</InputLabel>
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Location"
+            name="location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {locations.map((l) => (
+              <MenuItem key={l.slug} value={l.slug}>
+                {l.title}
               </MenuItem>
             ))}
           </Select>
