@@ -35,7 +35,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
     .select(
-      'id, slug, title, description, rarity, style, label, label_2, ability, seasons, season_category, image_url, alt_image_url, "order", base_set, handheld_base_only, updated_at'
+      'id, slug, title, subtitle, description, rarity, style, label, label_2, ability, seasons, season_category, image_url, alt_image_url, "order", base_set, handheld_base_only, updated_at'
     )
     .eq('slug', slug)
     .is('base_set', null)
@@ -84,7 +84,9 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const orderKey = (o: number) => (o === 0 ? Infinity : o)
   const sortedEvos = [...evolutions].sort((a, b) => orderKey(a.order) - orderKey(b.order))
   const initialDrafts: EvolutionDraft[] = sortedEvos.map((e, i) => ({
-    subtitle: e.title,
+    // `title` is the composed "{base}: {subtitle}" form — the editor edits the
+    // short name only, so read it back from `subtitle`.
+    subtitle: e.subtitle ?? '',
     order: i + 1,
     existingSlug: e.slug,
   }))

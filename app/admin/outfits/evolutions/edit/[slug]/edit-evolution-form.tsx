@@ -13,7 +13,14 @@ import { deriveGlowupVariantTitle, isGlowup } from '@/hooks/outfit'
 
 type EvolutionRow = Pick<
   Tables<'outfit_sets'>,
-  'slug' | 'title' | 'description' | 'order' | 'base_set' | 'image_url' | 'alt_image_url'
+  | 'slug'
+  | 'title'
+  | 'subtitle'
+  | 'description'
+  | 'order'
+  | 'base_set'
+  | 'image_url'
+  | 'alt_image_url'
 >
 
 type VariantRow = Pick<
@@ -50,7 +57,7 @@ function buildVariantTitles(
         if (stored.trim() || !derivable) return [v.slug, stored]
         const derived = deriveGlowupVariantTitle({
           baseVariantTitle: baseTitleByCategory[v.outfit_category ?? ''],
-          glowupSetTitle: evolution.title,
+          glowupSubtitle: evolution.subtitle,
         })
         return [v.slug, derived ?? stored]
       })

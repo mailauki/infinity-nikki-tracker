@@ -46,6 +46,7 @@ export type OutfitSetRaw = Pick<
   | 'id'
   | 'slug'
   | 'title'
+  | 'subtitle'
   | 'description'
   | 'rarity'
   | 'style'

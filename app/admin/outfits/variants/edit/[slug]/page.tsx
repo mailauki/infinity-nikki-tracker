@@ -60,7 +60,7 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
     prefillTitle =
       deriveGlowupVariantTitle({
         baseVariantTitle,
-        glowupSetTitle: glowupSet.title,
+        glowupSubtitle: glowupSet.subtitle,
       }) ?? ''
   }
 

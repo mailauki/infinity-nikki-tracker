@@ -7,6 +7,7 @@ import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 import { getUserRole } from '@/hooks/user'
 import { EvolutionDraft } from '@/lib/types/outfit'
+import { evolutionTitle } from '@/hooks/outfit'
 
 // The standalone-pieces set holds individually-authored variants (many per
 // category, own slugs) managed via the standalone-variant admin — its variants
@@ -79,7 +80,10 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
   if (evolutionDrafts.length > 0) {
     const evolutionRows = evolutionDrafts.map((draft) => ({
       slug: `${slug}-${toSlug(draft.subtitle)}`,
-      title: draft.subtitle,
+      // Evolutions keep their short name in `subtitle`; `title` is composed against
+      // the base set so it stays unambiguous in select fields and card headings.
+      subtitle: draft.subtitle,
+      title: evolutionTitle(title, draft.subtitle),
       order: draft.order + 1,
       base_set: slug,
       ...sharedFields,
@@ -303,7 +307,9 @@ export async function editOutfitSet(id: number, _: unknown, formData: FormData) 
       .from('outfit_sets')
       .update({
         slug: newEvoSlug,
-        title: draft.subtitle,
+        subtitle: draft.subtitle,
+        // Recomposed on every edit so renaming the base set retitles its evolutions.
+        title: evolutionTitle(title, draft.subtitle),
         order: isGlowup ? 0 : draft.order + 1,
         base_set: slug,
         ...sharedFields,
@@ -320,7 +326,8 @@ export async function editOutfitSet(id: number, _: unknown, formData: FormData) 
       const isGlowup = glowupSlug === newEvoSlug
       return {
         slug: newEvoSlug,
-        title: draft.subtitle,
+        subtitle: draft.subtitle,
+        title: evolutionTitle(title, draft.subtitle),
         order: isGlowup ? 0 : draft.order + 1,
         base_set: slug,
         ...sharedFields,

@@ -29,19 +29,33 @@ export function evolutionSortKey(row: { order: number }): number {
   return row.order === 0 ? Infinity : row.order
 }
 
+// Stored title for an evolution row: "{base set title}: {subtitle}", e.g.
+// "Behind Prayers: Frost Night". Evolutions keep their short name in `subtitle`
+// and the composed form in `title`, so a bare evolution name never appears alone
+// (subtitles repeat across sets and would collide in select fields).
+// Falls back to the subtitle alone when the base title is missing.
+export function evolutionTitle(baseSetTitle: string | null | undefined, subtitle: string): string {
+  const base = baseSetTitle?.trim()
+  const sub = subtitle.trim()
+  return base ? `${base}: ${sub}` : sub
+}
+
 // Derived default title for a glow-up variant with no stored title:
-// "{base variant title}: {glow-up set title}", e.g. "Gifted Sunlight: Light Pursuer".
+// "{base variant title}: {glow-up subtitle}", e.g. "Gifted Sunlight: Light Pursuer".
+// Takes the glow-up row's `subtitle` (its short name), NOT its `title` — an
+// evolution's stored title is already "{base set title}: {subtitle}" and would
+// nest the set name into every variant title.
 // Returns null when the base variant has no usable title (or the glow-up set has
-// no title) — callers then leave the variant title untouched.
+// no subtitle) — callers then leave the variant title untouched.
 export function deriveGlowupVariantTitle({
   baseVariantTitle,
-  glowupSetTitle,
+  glowupSubtitle,
 }: {
   baseVariantTitle: string | null | undefined
-  glowupSetTitle: string | null | undefined
+  glowupSubtitle: string | null | undefined
 }): string | null {
   const base = baseVariantTitle?.trim()
-  const glowup = glowupSetTitle?.trim()
+  const glowup = glowupSubtitle?.trim()
   if (!base || !glowup) return null
   return `${base}: ${glowup}`
 }
@@ -118,18 +132,18 @@ export function createOutfitSet({
     }
   }
 
-  // Glow-up state slug -> that glow-up set's title.
-  const glowupTitleBySlug = new Map<string, string | null>()
+  // Glow-up state slug -> that glow-up set's subtitle (short name, no base prefix).
+  const glowupSubtitleBySlug = new Map<string, string | null>()
   for (const e of resolvedEvolutions) {
-    if (isGlowup(e)) glowupTitleBySlug.set(e.slug, e.title)
+    if (isGlowup(e)) glowupSubtitleBySlug.set(e.slug, e.subtitle)
   }
 
   const withDerivedTitles = resolvedEvolutions.flatMap((e) =>
     (e.outfit_variants ?? []).map((v) => {
-      if (v.title?.trim() || !glowupTitleBySlug.has(v.outfit_set ?? '')) return v
+      if (v.title?.trim() || !glowupSubtitleBySlug.has(v.outfit_set ?? '')) return v
       const derived = deriveGlowupVariantTitle({
         baseVariantTitle: baseTitleByCategory.get(v.outfit_category ?? ''),
-        glowupSetTitle: glowupTitleBySlug.get(v.outfit_set ?? ''),
+        glowupSubtitle: glowupSubtitleBySlug.get(v.outfit_set ?? ''),
       })
       return derived ? { ...v, title: derived } : v
     })

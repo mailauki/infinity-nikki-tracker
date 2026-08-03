@@ -4,7 +4,6 @@ import ProgressChip from '@/components/progress-chip'
 import RarityStars from '@/components/rarity-stars'
 import ToggleIcon from '@/components/toggle-icon'
 import { Evolution, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
-import { toTitle } from '@/lib/utils'
 import { Badge, Box, CardActionArea, CardHeader, ListItem, Stack, Typography } from '@mui/material'
 import Link from 'next/link'
 
@@ -31,7 +30,8 @@ export default function OutfitSetListItem({
   const total = variants.length
   const obtained = variants.reduce((sum, variant) => sum + (variant.obtained ? 1 : 0), 0)
 
-  const title = evolution ? `${set.title}: ${toTitle(evolution.title)}` : set.title
+  // Evolution titles are stored pre-composed as "{base set title}: {subtitle}".
+  const title = evolution ? evolution.title : set.title
   // Evolution detail is reached via the set page with an ?evolution= param,
   // matching the outfits grid cards (slug `{set}-{evo}` → `{set}?evolution={evo}`).
   const href = evolution
