@@ -16,7 +16,7 @@ import VirtualGroupedGrid from './virtual-grouped-grid'
 import VirtualSetGrid, { type SetGridItem } from './virtual-set-grid'
 import VirtualVariantGrid from './virtual-variant-grid'
 
-const STANDALONE_SLUG = 'standalone-pieces'
+const STANDALONE_SLUG = 'standalone_pieces'
 
 function GroupHeaderSkeleton() {
   return (

@@ -18,7 +18,7 @@ import { useSearchParams } from 'next/navigation'
 // The standalone-pieces set is a container of individually-authored variants
 // with no cohesive identity, so its detail card is hidden and its toggle
 // filters by outfit category instead of evolution state.
-const STANDALONE_SLUG = 'standalone-pieces'
+const STANDALONE_SLUG = 'standalone_pieces'
 
 export default function OutfitSetDetail({
   outfitSet,

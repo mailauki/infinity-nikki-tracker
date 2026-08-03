@@ -3,7 +3,7 @@
 import { FieldConfig, FieldValues } from '@/lib/types/form-fields'
 import { toSlug } from '@/lib/utils'
 
-const STANDALONE_SLUG = 'standalone-pieces'
+const STANDALONE_SLUG = 'standalone_pieces'
 
 // A "bag" set (standalone or no set) derives its slug from title + category so
 // multiple pieces in the same category don't collide (e.g. `silverplume-hair`).

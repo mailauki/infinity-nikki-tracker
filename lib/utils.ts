@@ -5,18 +5,29 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// Title -> slug: lowercase, punctuation stripped, everything else joined by "_".
+//
+// Step order matters and is load-bearing:
+//   1. Apostrophes are removed BEFORE the allowlist so "Dawn's" collapses to
+//      "dawns" rather than splitting into "dawn_s".
+//   2. "&" becomes " and " (spaces, not underscores) so the allowlist below —
+//      which does NOT permit "_" — cannot strip the separator back out. Emitting
+//      "_and_" here is what produced `growthanddecay` from "Growth & Decay".
+//   3. Only then does the allowlist drop remaining punctuation, and whitespace
+//      and hyphens collapse into single underscores.
+// The final trim clears leading/trailing separators so "Trailing-" does not
+// slug to "trailing_".
 export function toSlug(name: string) {
   return name
     .trim()
     .toLowerCase()
-    .replace(/\s*&\s*/g, '_and_')
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9 -]/g, '')
     .replace(/['‘’]/g, '')
-    .replace(/\s+/g, '_')
-    .replace(/-+/g, '_')
-    .replace(/_+/g, '_')
+    .replace(/\s*&\s*/g, ' and ')
+    .replace(/[^a-z0-9 -]/g, ' ')
+    .replace(/[\s-]+/g, '_')
+    .replace(/^_+|_+$/g, '')
 }
 
 export function toTitle(slug: string) {

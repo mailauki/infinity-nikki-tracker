@@ -111,7 +111,7 @@ export default function EditOutfitSetForm({
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>(initialCarouselImages)
   // Base variants are those whose outfit_set matches the base slug (order = 1, base_set = null).
   const baseSlug = outfitSet.slug ?? ''
-  const isStandalone = outfitSet.slug === 'standalone-pieces'
+  const isStandalone = outfitSet.slug === 'standalone_pieces'
   const isBaseVariant = (v: OutfitVariantRow) => v.outfit_set === baseSlug
   const [variantRows, setVariantRows] = useState<OutfitVariantRow[]>(
     initialVariants.filter(isBaseVariant)
