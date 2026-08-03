@@ -1,10 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import { Box, Button, Card, CardContent, Chip, Divider, Stack, Typography } from '@mui/material'
+import {
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+  Typography,
+} from '@mui/material'
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome'
 import PaletteIcon from '@mui/icons-material/Palette'
-import ShareIcon from '@mui/icons-material/Share'
+import ImageIcon from '@mui/icons-material/Image'
 import BrushIcon from '@mui/icons-material/Brush'
 
 const FEATURES = [
@@ -14,9 +26,9 @@ const FEATURES = [
     description: 'Moonlight, Cherry Blossom, and Forest color palettes',
   },
   {
-    icon: <ShareIcon fontSize="small" />,
-    label: 'Shareable profile',
-    description: 'Public collection page at /u/your-username',
+    icon: <ImageIcon fontSize="small" />,
+    label: 'Profile banner',
+    description: 'Upload a custom banner image for your profile',
   },
   {
     icon: <BrushIcon fontSize="small" />,
@@ -62,24 +74,19 @@ export default function PremiumUpgrade() {
 
           <Typography color="textSecondary" variant="body2">
             Support the tracker with a one-time purchase and unlock cosmetic extras. No
-            subscriptions, no game content — just app features built for you.
+            subscriptions, no ads, no game content — just app features built for you.
           </Typography>
 
           <Divider />
 
-          <Stack spacing={1.5}>
+          <List disablePadding>
             {FEATURES.map(({ icon, label, description }) => (
-              <Stack key={label} direction="row" spacing={1.5} sx={{ alignItems: 'flex-start' }}>
-                <Box sx={{ color: 'primary.main', mt: 0.25 }}>{icon}</Box>
-                <Stack spacing={0}>
-                  <Typography variant="body2">{label}</Typography>
-                  <Typography color="textSecondary" variant="caption">
-                    {description}
-                  </Typography>
-                </Stack>
-              </Stack>
+              <ListItem key={label} disablePadding>
+                <ListItemIcon>{icon}</ListItemIcon>
+                <ListItemText primary={label} secondary={description} />
+              </ListItem>
             ))}
-          </Stack>
+          </List>
 
           {error && (
             <Typography color="error" variant="caption">
