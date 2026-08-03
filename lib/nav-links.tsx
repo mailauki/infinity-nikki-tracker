@@ -40,6 +40,16 @@ export const navLinksData: {
       ],
     },
     {
+      title: 'Makeup',
+      url: '/makeup',
+      image: '/icons/makeup.png',
+    },
+    {
+      title: "Momo's Cloaks",
+      url: '/momo-cloaks',
+      image: '/icons/momo-cloak.png',
+    },
+    {
       title: 'Custom Looks',
       url: '/looks',
       image: '/icons/wardrobe.png',
