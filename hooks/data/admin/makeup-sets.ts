@@ -13,7 +13,7 @@ const RAW_COLUMNS = `
 	seasons,
 	season_category,
 	outfit_set,
-	order,
+	"order",
 	base_set,
 	image_url,
 	alt_image_url,

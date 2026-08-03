@@ -44,11 +44,17 @@ export type MakeupVariantRaw = Tables<'makeup_variants'> & {
 
 export type MakeupSet = Tables<'makeup_sets'> & {
   makeup_variants: MakeupVariant[]
-  makeup_categories: MakeupCategory[]
+  // Not yet populated by createMakeupSet — always [] until the public makeup
+  // pages wire up category resolution. Optional so a future consumer gets a
+  // compile-time signal instead of a silent [].
+  makeup_categories?: MakeupCategory[]
   evolutions: MakeupEvolution[]
   season: { title: string } | null
   seasonCategory: { title: string } | null
-  outfitSet: { slug: string; title: string; image_url: string | null } | null
+  // Not yet populated by createMakeupSet — always null until the public
+  // makeup pages wire up the outfit-set join. Optional so a future consumer
+  // gets a compile-time signal instead of a silent null.
+  outfitSet?: { slug: string; title: string; image_url: string | null } | null
 }
 
 // A makeup evolution is just a makeup_sets row with base_set IS NOT NULL

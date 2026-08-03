@@ -3,13 +3,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 import { getUserRole } from '@/hooks/user'
-
-// No navLinksData.admin.makeup entry exists yet (unlike outfits/eureka), so
-// the "next item" edit route is built from this literal rather than adding
-// nav-links plumbing out of scope for this task.
-const MAKEUP_VARIANTS_EDIT_PATH = '/admin/makeup/variants/edit'
 
 // makeup_set is nullable — a variant with no set is a standalone piece with
 // its own title/description/rarity/style/label. The select's empty-string
@@ -89,7 +85,7 @@ export async function editMakeupVariant(id: number, _: unknown, formData: FormDa
       .limit(1)
       .maybeSingle()
 
-    if (next?.slug) redirect(`${MAKEUP_VARIANTS_EDIT_PATH}/${next.slug}`)
+    if (next?.slug) redirect(`${navLinksData.admin.makeup.variants.edit}/${next.slug}`)
     redirect(ADMIN_DASHBOARD)
   }
 

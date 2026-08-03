@@ -32,12 +32,10 @@ export function createMakeupSet(rows: MakeupSetRaw[], variants: MakeupVariant[])
     ({
       ...row,
       makeup_variants: variantsBySet.get(row.slug) ?? [],
-      makeup_categories: [],
       evolutions,
       season: row.seasons ? { title: row.seasons } : null,
       seasonCategory: row.season_category ? { title: row.season_category } : null,
-      outfitSet: null,
-    }) as unknown as MakeupSet
+    }) as MakeupSet
 
   const evolutionsByBase = new Map<string, MakeupEvolution[]>()
   for (const row of rows) {
