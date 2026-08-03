@@ -1,7 +1,13 @@
 'use server'
 
+// NOTE — TEMPORARY WORKAROUND: client-side redirect instead of redirect().
+// Calling Next's redirect() from these actions makes the POST 500 with
+// `TypeError: Invalid character in header content ["x-action-redirect"]`, after
+// the DB write has already succeeded. Full investigation notes — including
+// everything ruled out — are in app/admin/makeup/sets/actions.ts. These actions
+// return `{ redirectTo }` and EntityForm navigates with router.push().
+
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 import { getUserRole } from '@/hooks/user'
@@ -48,7 +54,8 @@ export async function addMakeupVariant(_: unknown, formData: FormData) {
 
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: values.slug }
-  redirect(ADMIN_DASHBOARD)
+  // WORKAROUND (see NOTE at the top of this file).
+  return { savedTitle: values.slug, redirectTo: ADMIN_DASHBOARD }
 }
 
 export async function editMakeupVariant(id: number, _: unknown, formData: FormData) {
@@ -80,11 +87,17 @@ export async function editMakeupVariant(id: number, _: unknown, formData: FormDa
       .limit(1)
       .maybeSingle()
 
-    if (next?.slug) redirect(`${navLinksData.admin.makeup.variants.edit}/${next.slug}`)
-    redirect(ADMIN_DASHBOARD)
+    // WORKAROUND (see NOTE at the top of this file).
+    return {
+      savedTitle: values.slug,
+      redirectTo: next?.slug
+        ? `${navLinksData.admin.makeup.variants.edit}/${next.slug}`
+        : ADMIN_DASHBOARD,
+    }
   }
 
-  redirect(ADMIN_DASHBOARD)
+  // WORKAROUND (see NOTE at the top of this file).
+  return { savedTitle: values.slug, redirectTo: ADMIN_DASHBOARD }
 }
 
 export async function deleteMakeupVariant(slug: string) {
