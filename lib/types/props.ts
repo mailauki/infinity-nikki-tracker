@@ -39,6 +39,7 @@ export type AdminLinks = {
     variants: AdminLink
     seasonCategories: AdminLink
   }
+  makeup: { sets: AdminLink; variants: AdminLink }
 }
 
 export interface NavLink {

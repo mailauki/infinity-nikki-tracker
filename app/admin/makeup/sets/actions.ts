@@ -3,13 +3,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
 import { getUserRole } from '@/hooks/user'
-
-// No navLinksData.admin.makeup entry exists yet (unlike outfits/eureka), so
-// the "next item" edit route is built from this literal rather than adding
-// nav-links plumbing out of scope for this fix.
-const MAKEUP_SETS_EDIT_PATH = '/admin/makeup/sets/edit'
 
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null
@@ -107,7 +103,7 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
       .limit(1)
       .maybeSingle()
 
-    if (next?.slug) redirect(`${MAKEUP_SETS_EDIT_PATH}/${next.slug}`)
+    if (next?.slug) redirect(`${navLinksData.admin.makeup.sets.edit}/${next.slug}`)
     redirect(ADMIN_DASHBOARD)
   }
   redirect(ADMIN_DASHBOARD)

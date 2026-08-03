@@ -100,6 +100,15 @@ export const navLinksData: {
           { title: 'Trials', url: '/admin/eureka/trials' },
         ],
       },
+      {
+        title: 'Makeup',
+        url: '/admin/makeup/sets',
+        image: '/icons/makeup.png',
+        items: [
+          { title: 'Sets', url: '/admin/makeup/sets' },
+          { title: 'Variants', url: '/admin/makeup/variants' },
+        ],
+      },
     ],
     eureka: {
       sets: {
@@ -165,6 +174,22 @@ export const navLinksData: {
         add: '/admin/outfits/season-categories/new',
         edit: '/admin/outfits/season-categories/edit',
         main: '/outfits',
+      },
+    },
+    makeup: {
+      sets: {
+        title: 'Makeup Sets',
+        list: '/admin/makeup/sets',
+        add: '/admin/makeup/sets/new',
+        edit: '/admin/makeup/sets/edit',
+        main: '/makeup',
+      },
+      variants: {
+        title: 'Makeup Variants',
+        list: '/admin/makeup/variants',
+        add: '/admin/makeup/variants/new',
+        edit: '/admin/makeup/variants/edit',
+        main: '/makeup',
       },
     },
   },
