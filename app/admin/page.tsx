@@ -16,6 +16,7 @@ import { getOutfitVariantsRaw } from '@/hooks/data/admin/outfit-variants'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getMakeupSets } from '@/hooks/data/makeup-sets'
 import { getMakeupVariantsRaw } from '@/hooks/data/admin/makeup-variants'
+import { getMomoCloaksRaw } from '@/hooks/data/admin/momo-cloaks'
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -41,6 +42,7 @@ async function AdminContent() {
     seasonCategories,
     makeupSets,
     makeupVariants,
+    momoCloaks,
     role,
     recentlyAdded,
     recentlyEdited,
@@ -57,6 +59,9 @@ async function AdminContent() {
     // how the Outfit Sets card counts (getOutfitSets filters base_set IS NULL).
     getMakeupSets(),
     getMakeupVariantsRaw(),
+    // Raw rows are the true count here — momo cloaks have no base/evolution
+    // split for a resolved hook to fold together.
+    getMomoCloaksRaw(),
     getUserRole(),
     getRecentlyAdded(),
     getRecentlyEdited(),
@@ -138,6 +143,12 @@ async function AdminContent() {
           count={makeupVariants?.length ?? 0}
           listHref={navLinksData.admin.makeup.variants.list}
           title="Makeup Variants"
+        />
+        <StatCard
+          addHref={isAdmin ? navLinksData.admin.momoCloaks.cloaks.add : undefined}
+          count={momoCloaks?.length ?? 0}
+          listHref={navLinksData.admin.momoCloaks.cloaks.list}
+          title="Momo's Cloaks"
         />
       </Box>
       <Box

@@ -119,6 +119,11 @@ export const navLinksData: {
           { title: 'Variants', url: '/admin/makeup/variants' },
         ],
       },
+      {
+        title: "Momo's Cloaks",
+        url: '/admin/momo-cloaks',
+        image: '/icons/momo-cloak.png',
+      },
     ],
     eureka: {
       sets: {
@@ -200,6 +205,15 @@ export const navLinksData: {
         add: '/admin/makeup/variants/new',
         edit: '/admin/makeup/variants/edit',
         main: '/makeup',
+      },
+    },
+    momoCloaks: {
+      cloaks: {
+        title: "Momo's Cloaks",
+        list: '/admin/momo-cloaks',
+        add: '/admin/momo-cloaks/new',
+        edit: '/admin/momo-cloaks/edit',
+        main: '/momo-cloaks',
       },
     },
   },
