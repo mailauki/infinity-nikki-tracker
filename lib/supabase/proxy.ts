@@ -59,6 +59,21 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/update-password') &&
     !request.nextUrl.pathname.startsWith('/auth')
   ) {
+    // No user: this request is rejected either way. Only the SHAPE of the
+    // rejection depends on the request kind — the auth decision above never
+    // does, so the client-settable Next-Action header cannot be used to slip
+    // an unauthenticated request past this gate.
+    //
+    // A Server Action POST cannot be answered with NextResponse.redirect:
+    // Next signals an action redirect via an `x-action-redirect` header on the
+    // action's own RSC-flight response, so a bare 307 is not a valid action
+    // response and React's client runtime reports it as "An unexpected
+    // response was received from the server". Return an explicit 401 instead,
+    // which the client surfaces as a real error rather than a corrupt payload.
+    if (request.method === 'POST' && request.headers.has('next-action')) {
+      return new NextResponse('Unauthorized', { status: 401 })
+    }
+
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
     url.pathname = '/login'
