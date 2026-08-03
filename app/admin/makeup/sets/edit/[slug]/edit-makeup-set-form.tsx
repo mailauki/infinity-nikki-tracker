@@ -65,7 +65,12 @@ export default function EditMakeupSetForm({
   const [order, setOrder] = useState<number | ''>(initial.order ?? 1)
   const [setImage, setSetImage] = useState<string | null>(initial.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(initial.alt_image_url ?? null)
-  const [categorySelect, setCategorySelect] = useState<string[]>(initialCategorySelect)
+  // Reflect the categories the set actually has. A set with none predates the
+  // auto-create behaviour, so start it fully checked — but never override a
+  // non-empty selection, or saving would re-create variants an admin removed.
+  const [categorySelect, setCategorySelect] = useState<string[]>(() =>
+    initialCategorySelect.length > 0 ? initialCategorySelect : makeupCategories.map((c) => c.slug)
+  )
 
   // A set cannot be its own base — exclude the row being edited from options.
   const baseSetOptions = makeupSets.filter((s) => s.slug !== initial.slug)

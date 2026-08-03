@@ -58,7 +58,10 @@ export default function AddMakeupSetForm({
   const [outfitSet, setOutfitSet] = useState<string | null>(null)
   const [baseSet, setBaseSet] = useState<string | null>(null)
   const [order, setOrder] = useState<number | ''>(1)
-  const [categorySelect, setCategorySelect] = useState<string[]>([])
+  // Every makeup set has all five categories by default — uncheck to skip one.
+  const [categorySelect, setCategorySelect] = useState<string[]>(() =>
+    makeupCategories.map((c) => c.slug)
+  )
   const [slugEdited, setSlugEdited] = useState(false)
 
   function handleTitleChange(value: string) {
