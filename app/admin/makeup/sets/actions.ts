@@ -25,15 +25,29 @@ function readForm(formData: FormData) {
 }
 
 // An evolution must point at a base set and sort after it; a base set must do
-// neither. Enforced here because the DB allows any (base_set, order) pair.
-function validate(values: ReturnType<typeof readForm>) {
-  if (!values.title) return 'Title is required.'
-  if (!values.slug) return 'Slug is required.'
-  if (!values.rarity) return 'Rarity is required.'
+// neither, and a set can never point at itself. Enforced here because the DB
+// allows any (base_set, order) pair. Shared by both mutation paths — the
+// FormData/slug-keyed add/update actions below AND the DataGrid's id-keyed
+// updateMakeupSetRow — so the invariant can't be bypassed by editing a single
+// cell (e.g. `order` alone) inline. Takes just the fields the rule needs so
+// either caller can feed it either a fresh form read or an existing-row +
+// patch merge.
+function validateBaseEvolutionInvariants(values: {
+  slug: string
+  base_set: string | null
+  order: number
+}) {
   if (values.base_set && values.order < 2) return 'An evolution needs an order of 2 or higher.'
   if (!values.base_set && values.order !== 1) return 'A base set must have order 1.'
   if (values.base_set && values.base_set === values.slug) return 'A set cannot be its own base.'
   return null
+}
+
+function validate(values: ReturnType<typeof readForm>) {
+  if (!values.title) return 'Title is required.'
+  if (!values.slug) return 'Slug is required.'
+  if (!values.rarity) return 'Rarity is required.'
+  return validateBaseEvolutionInvariants(values)
 }
 
 export async function addMakeupSet(_: unknown, formData: FormData) {
@@ -123,6 +137,27 @@ export async function updateMakeupSetRow(
   for (const key of FK_FIELDS) {
     if (normalized[key] === '') normalized[key] = null
   }
+
+  // The grid only sends CHANGED fields (e.g. a lone `order` edit), so the
+  // base/evolution invariants can't be checked against `fields` alone — an
+  // edit to `order` must be validated against the row's existing `base_set`,
+  // and vice versa. Fetch the current row and validate the merged result.
+  // The self-base check also needs the row's slug, which `fields` never
+  // carries (slug isn't editable in the grid).
+  const { data: existing, error: fetchError } = await supabase
+    .from('makeup_sets')
+    .select('slug, base_set, order')
+    .eq('id', id)
+    .single()
+  if (fetchError) throw new Error(fetchError.message)
+
+  const merged = {
+    slug: existing.slug,
+    base_set: 'base_set' in normalized ? (normalized.base_set ?? null) : existing.base_set,
+    order: normalized.order ?? existing.order,
+  }
+  const invalid = validateBaseEvolutionInvariants(merged)
+  if (invalid) throw new Error(invalid)
 
   const { data, error } = await supabase
     .from('makeup_sets')
