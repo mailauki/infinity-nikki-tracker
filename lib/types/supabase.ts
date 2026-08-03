@@ -538,6 +538,83 @@ export type Database = {
           },
         ]
       }
+      momo_cloaks: {
+        Row: {
+          alt_image_url: string | null
+          created_at: string | null
+          description: string | null
+          id: number
+          image_url: string | null
+          label: string | null
+          rarity: number | null
+          season_category: string | null
+          seasons: string | null
+          slug: string
+          style: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          alt_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          label?: string | null
+          rarity?: number | null
+          season_category?: string | null
+          seasons?: string | null
+          slug: string
+          style?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          alt_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          label?: string | null
+          rarity?: number | null
+          season_category?: string | null
+          seasons?: string | null
+          slug?: string
+          style?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "momo_cloaks_label_fkey"
+            columns: ["label"]
+            isOneToOne: false
+            referencedRelation: "labels"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "momo_cloaks_season_category_fkey"
+            columns: ["season_category"]
+            isOneToOne: false
+            referencedRelation: "season_categories"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "momo_cloaks_seasons_fkey"
+            columns: ["seasons"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "momo_cloaks_style_fkey"
+            columns: ["style"]
+            isOneToOne: false
+            referencedRelation: "styles"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       obtained_eureka: {
         Row: {
           category: string | null
@@ -613,6 +690,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      obtained_momo_cloaks: {
+        Row: {
+          created_at: string
+          id: number
+          momo_cloak: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          momo_cloak: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          momo_cloak?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "obtained_momo_cloaks_momo_cloak_fkey"
+            columns: ["momo_cloak"]
+            isOneToOne: false
+            referencedRelation: "momo_cloaks"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       obtained_outfit: {
         Row: {
@@ -1245,6 +1351,10 @@ export type Database = {
           p_makeup_set: string
           p_makeup_variant: string
         }
+        Returns: undefined
+      }
+      toggle_obtained_momo_cloak: {
+        Args: { p_momo_cloak: string }
         Returns: undefined
       }
       toggle_obtained_outfit: {
