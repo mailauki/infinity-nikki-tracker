@@ -16,7 +16,7 @@ import { Label } from '@/lib/types/eureka'
 import { FieldValues } from '@/lib/types/form-fields'
 import { MENU_PROPS } from '@/lib/types/props'
 
-const STANDALONE_SLUG = 'standalone-pieces'
+const STANDALONE_SLUG = 'standalone_pieces'
 
 /**
  * Outfit-set picker grouped by base → evolution, matching the standalone

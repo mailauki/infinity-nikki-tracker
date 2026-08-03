@@ -6,7 +6,7 @@ import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/out
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 
-const STANDALONE_SLUG = 'standalone-pieces'
+const STANDALONE_SLUG = 'standalone_pieces'
 
 export default function OutfitResultsBar({
   baseEvolutionOnly = false,

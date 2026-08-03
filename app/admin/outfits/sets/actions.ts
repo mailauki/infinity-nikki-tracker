@@ -13,7 +13,7 @@ import { evolutionTitle } from '@/hooks/outfit'
 // category, own slugs) managed via the standalone-variant admin — its variants
 // are NOT generated from (state × category), so the set-edit variant-sync must
 // skip it or it deletes every real piece as "unexpected".
-const STANDALONE_PIECES_SLUG = 'standalone-pieces'
+const STANDALONE_PIECES_SLUG = 'standalone_pieces'
 
 export async function addOutfitSet(_: unknown, formData: FormData) {
   const role = await getUserRole()
