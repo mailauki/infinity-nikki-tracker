@@ -16,7 +16,7 @@ import {
 import { Category, Edit } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
 import { RecentAdminItem } from '@/hooks/data/admin/recents'
-import { formatDate, toTitle } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import AdminRecentsToggle from './admin-recents-toggle'
 
@@ -82,12 +82,9 @@ export default function AdminRecentsList({
                         <Category fontSize="inherit" />
                       </LazyImage>
                     </ListItemAvatar>
+                    {/* Evolution rows already carry their "{base set}: " prefix in `title`. */}
                     <ListItemText
-                      primary={
-                        row.type === 'Evolutions'
-                          ? `${toTitle(row.slug.split('-')[0])}: ${row.title}`
-                          : row.title
-                      }
+                      primary={row.title}
                       secondary={row.type}
                       slotProps={{
                         primary: { variant: 'body2', noWrap: true },

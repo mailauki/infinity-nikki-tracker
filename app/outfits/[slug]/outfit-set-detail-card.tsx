@@ -46,8 +46,10 @@ export default function OutfitSetDetailCard({
   onToggleCarousel,
 }: OutfitSetDetailCardProps) {
   const { ability, rarity, label, label_2, style, description, season, seasonCategory } = outfitSet
+  // Rendered as a suffix beside the base title, which is already the card heading —
+  // so this uses the short `subtitle`, not the composed "{base}: {subtitle}" title.
   const selectedEvolution =
-    outfitSet.evolutions.find((evolution) => evolution.slug === selected)?.title || null
+    outfitSet.evolutions.find((evolution) => evolution.slug === selected)?.subtitle || null
 
   const media =
     showCarousel && hasCarousel ? (

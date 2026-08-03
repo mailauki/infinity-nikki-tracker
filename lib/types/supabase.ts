@@ -856,6 +856,7 @@ export type Database = {
           seasons: string | null
           slug: string
           style: string | null
+          subtitle: string | null
           title: string
           updated_at: string | null
         }
@@ -876,6 +877,7 @@ export type Database = {
           seasons?: string | null
           slug: string
           style?: string | null
+          subtitle?: string | null
           title: string
           updated_at?: string | null
         }
@@ -896,6 +898,7 @@ export type Database = {
           seasons?: string | null
           slug?: string
           style?: string | null
+          subtitle?: string | null
           title?: string
           updated_at?: string | null
         }

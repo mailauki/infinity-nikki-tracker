@@ -358,7 +358,8 @@ export function OutfitSetTable({
       sortable: false,
       renderCell: ({ row }: GridRenderCellParams<Row>) => {
         const evo = row.evolutions?.find((e: Evolution) => e.order === 0)
-        const content = <span>{evo ? evo.title : '—'}</span>
+        // Column of a row already identified by its set — short name only.
+        const content = <span>{evo ? (evo.subtitle ?? evo.title) : '—'}</span>
         return isEditing(row.id) ? <LockedCell href={editHref(row)}>{content}</LockedCell> : content
       },
     },

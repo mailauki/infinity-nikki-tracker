@@ -27,7 +27,7 @@ async function EditEvolution({ params }: { params: Promise<{ slug: string }> }) 
 
   const { data: evolution } = await supabase
     .from('outfit_sets')
-    .select('slug, title, description, "order", base_set, image_url, alt_image_url')
+    .select('slug, title, subtitle, description, "order", base_set, image_url, alt_image_url')
     .eq('slug', slug)
     .not('base_set', 'is', null)
     .single()
@@ -51,7 +51,7 @@ async function EditEvolution({ params }: { params: Promise<{ slug: string }> }) 
   ])
 
   // For a glow-up evolution, map each base-set category to its variant title so the
-  // form can default an empty variant title to "{base title}: {glow-up set title}".
+  // form can default an empty variant title to "{base title}: {glow-up subtitle}".
   const baseTitleByCategory: Record<string, string> = {}
   if (isGlowup(evolution) && evolution.base_set) {
     const { data: baseVariants } = await supabase

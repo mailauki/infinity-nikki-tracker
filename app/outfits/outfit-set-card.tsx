@@ -3,7 +3,6 @@
 import { memo, ReactNode, useState } from 'react'
 import { Evolution, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { isGlowup } from '@/hooks/outfit'
-import { toTitle } from '@/lib/utils'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import {
   resolveOutfitImage,
@@ -66,7 +65,8 @@ function OutfitSetCard({
   const href = evolution
     ? `/outfits/${evolution.slug.replace('-', '?evolution=')}`
     : `/outfits/${set.slug}?evolution=base`
-  const title = evolution ? `${set.title}: ${toTitle(evolution.title)}` : set.title
+  // Evolution titles are stored pre-composed as "{base set title}: {subtitle}".
+  const title = evolution ? evolution.title : set.title
 
   const imageSrc = evolution
     ? resolveOutfitImage(mode, { image: evolution.image_url, alt: evolution.alt_image_url })

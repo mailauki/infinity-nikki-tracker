@@ -31,7 +31,9 @@ export default function OutfitEvolutionSelect({
         <MenuItem value="">—</MenuItem>
         {evolutions.map((evolution) => (
           <MenuItem key={evolution.slug} value={evolution.slug}>
-            {toTitle(evolution.title ?? evolution.slug)}
+            {/* Stored title is the composed "{base set title}: {subtitle}", which is
+                what keeps repeated subtitles distinct in this select. */}
+            {evolution.title || toTitle(evolution.slug)}
           </MenuItem>
         ))}
       </Select>

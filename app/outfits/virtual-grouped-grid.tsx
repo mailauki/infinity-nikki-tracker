@@ -5,7 +5,6 @@ import { Box } from '@mui/material'
 import { useWindowVirtualizer } from '@tanstack/react-virtual'
 import { GRID_CONTAINER, outfitColumnsForWidth } from '@/lib/types/props'
 import type { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
-import { toTitle } from '@/lib/utils'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import OutfitGroupHeader from './outfit-group-header'
 import OutfitVariantCard from './outfit-variant-card'
@@ -179,7 +178,8 @@ export default function VirtualGroupedGrid({
         const href = evolution
           ? `/outfits/${evolution.slug.replace('-', '?evolution=')}`
           : `/outfits/${set.slug}`
-        const title = evolution ? `${set.title}: ${toTitle(evolution.title)}` : set.title
+        // Evolution titles are stored pre-composed as "{base set title}: {subtitle}".
+        const title = evolution ? evolution.title : set.title
 
         // FULL group — the source of truth for progress and the toggle payload.
         const groupVariants = fullSet.outfit_variants.filter(inState)

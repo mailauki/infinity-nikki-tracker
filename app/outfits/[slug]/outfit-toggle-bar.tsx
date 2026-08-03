@@ -77,7 +77,8 @@ export default function OutfitToggleBar({
               return (
                 <ToggleButton key={value} sx={{ backdropFilter: 'blur(8px)' }} value={value}>
                   {glowup && '✦ '}
-                  {evolution ? evolution.title : 'Base'}
+                  {/* Sits beside "Base" under the set's own heading — short name only. */}
+                  {evolution ? (evolution.subtitle ?? evolution.title) : 'Base'}
                 </ToggleButton>
               )
             })}
