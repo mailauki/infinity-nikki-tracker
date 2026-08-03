@@ -25,6 +25,8 @@ export type ImageUploadTable =
   | 'seasons'
   | 'season_categories'
   | 'custom_looks'
+  | 'makeup_sets'
+  | 'makeup_variants'
 
 export default function ImageUpload({
   url,

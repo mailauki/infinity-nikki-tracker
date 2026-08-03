@@ -14,6 +14,8 @@ import { getAbilities } from '@/hooks/data/abilities'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getOutfitVariantsRaw } from '@/hooks/data/admin/outfit-variants'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { getMakeupSets } from '@/hooks/data/makeup-sets'
+import { getMakeupVariantsRaw } from '@/hooks/data/admin/makeup-variants'
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -37,6 +39,8 @@ async function AdminContent() {
     abilities,
     seasons,
     seasonCategories,
+    makeupSets,
+    makeupVariants,
     role,
     recentlyAdded,
     recentlyEdited,
@@ -49,6 +53,10 @@ async function AdminContent() {
     getAbilities(),
     getSeasons(),
     getSeasonCategories(),
+    // Base sets only — getMakeupSets folds evolutions into their base, matching
+    // how the Outfit Sets card counts (getOutfitSets filters base_set IS NULL).
+    getMakeupSets(),
+    getMakeupVariantsRaw(),
     getUserRole(),
     getRecentlyAdded(),
     getRecentlyEdited(),
@@ -118,6 +126,18 @@ async function AdminContent() {
           count={trials?.length ?? 0}
           listHref={navLinksData.admin.eureka.trials.list}
           title="Trials"
+        />
+        <StatCard
+          addHref={isAdmin ? navLinksData.admin.makeup.sets.add : undefined}
+          count={makeupSets?.length ?? 0}
+          listHref={navLinksData.admin.makeup.sets.list}
+          title="Makeup Sets"
+        />
+        <StatCard
+          addHref={isAdmin ? navLinksData.admin.makeup.variants.add : undefined}
+          count={makeupVariants?.length ?? 0}
+          listHref={navLinksData.admin.makeup.variants.list}
+          title="Makeup Variants"
         />
       </Box>
       <Box

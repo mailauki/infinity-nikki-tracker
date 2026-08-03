@@ -334,6 +334,210 @@ export type Database = {
         }
         Relationships: []
       }
+      makeup_categories: {
+        Row: {
+          created_at: string | null
+          id: number
+          image_url: string | null
+          slug: string
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          image_url?: string | null
+          slug: string
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          image_url?: string | null
+          slug?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      makeup_sets: {
+        Row: {
+          alt_image_url: string | null
+          base_set: string | null
+          created_at: string | null
+          description: string | null
+          id: number
+          image_url: string | null
+          label: string | null
+          order: number
+          outfit_set: string | null
+          rarity: number
+          season_category: string | null
+          seasons: string | null
+          slug: string
+          style: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          alt_image_url?: string | null
+          base_set?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          label?: string | null
+          order?: number
+          outfit_set?: string | null
+          rarity: number
+          season_category?: string | null
+          seasons?: string | null
+          slug: string
+          style?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          alt_image_url?: string | null
+          base_set?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          label?: string | null
+          order?: number
+          outfit_set?: string | null
+          rarity?: number
+          season_category?: string | null
+          seasons?: string | null
+          slug?: string
+          style?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "makeup_sets_base_set_fkey"
+            columns: ["base_set"]
+            isOneToOne: false
+            referencedRelation: "makeup_sets"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "makeup_sets_label_fkey"
+            columns: ["label"]
+            isOneToOne: false
+            referencedRelation: "labels"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "makeup_sets_outfit_set_fkey"
+            columns: ["outfit_set"]
+            isOneToOne: false
+            referencedRelation: "outfit_sets"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "makeup_sets_season_category_fkey"
+            columns: ["season_category"]
+            isOneToOne: false
+            referencedRelation: "season_categories"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "makeup_sets_seasons_fkey"
+            columns: ["seasons"]
+            isOneToOne: false
+            referencedRelation: "seasons"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "makeup_sets_style_fkey"
+            columns: ["style"]
+            isOneToOne: false
+            referencedRelation: "styles"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
+      makeup_variants: {
+        Row: {
+          alt_image_url: string | null
+          created_at: string | null
+          default: boolean
+          description: string | null
+          id: number
+          image_url: string | null
+          label: string | null
+          makeup_category: string | null
+          makeup_set: string | null
+          rarity: number | null
+          slug: string
+          style: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          alt_image_url?: string | null
+          created_at?: string | null
+          default?: boolean
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          label?: string | null
+          makeup_category?: string | null
+          makeup_set?: string | null
+          rarity?: number | null
+          slug: string
+          style?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          alt_image_url?: string | null
+          created_at?: string | null
+          default?: boolean
+          description?: string | null
+          id?: number
+          image_url?: string | null
+          label?: string | null
+          makeup_category?: string | null
+          makeup_set?: string | null
+          rarity?: number | null
+          slug?: string
+          style?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "makeup_variants_label_fkey"
+            columns: ["label"]
+            isOneToOne: false
+            referencedRelation: "labels"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "makeup_variants_makeup_category_fkey"
+            columns: ["makeup_category"]
+            isOneToOne: false
+            referencedRelation: "makeup_categories"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "makeup_variants_makeup_set_fkey"
+            columns: ["makeup_set"]
+            isOneToOne: false
+            referencedRelation: "makeup_sets"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "makeup_variants_style_fkey"
+            columns: ["style"]
+            isOneToOne: false
+            referencedRelation: "styles"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       obtained_eureka: {
         Row: {
           category: string | null
@@ -382,6 +586,33 @@ export type Database = {
             referencedColumns: ["slug"]
           },
         ]
+      }
+      obtained_makeup: {
+        Row: {
+          created_at: string
+          id: number
+          makeup_category: string
+          makeup_set: string
+          makeup_variant: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          makeup_category: string
+          makeup_set: string
+          makeup_variant: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          makeup_category?: string
+          makeup_set?: string
+          makeup_variant?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       obtained_outfit: {
         Row: {
@@ -1001,9 +1232,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_unique_username: { Args: never; Returns: string }
+      generate_username: { Args: { len?: number }; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       toggle_obtained: {
         Args: { p_category: string; p_color: string; p_eureka_set: string }
+        Returns: undefined
+      }
+      toggle_obtained_makeup: {
+        Args: {
+          p_makeup_category: string
+          p_makeup_set: string
+          p_makeup_variant: string
+        }
         Returns: undefined
       }
       toggle_obtained_outfit: {

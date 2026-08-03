@@ -40,6 +40,16 @@ export const navLinksData: {
       ],
     },
     {
+      title: 'Makeup',
+      url: '/makeup',
+      image: '/icons/makeup.png',
+    },
+    {
+      title: "Momo's Cloaks",
+      url: '/momo-cloaks',
+      image: '/icons/momo-cloak.png',
+    },
+    {
       title: 'Custom Looks',
       url: '/looks',
       image: '/icons/wardrobe.png',
@@ -98,6 +108,15 @@ export const navLinksData: {
           { title: 'Sets', url: '/admin/eureka/sets' },
           { title: 'Variants', url: '/admin/eureka/variants' },
           { title: 'Trials', url: '/admin/eureka/trials' },
+        ],
+      },
+      {
+        title: 'Makeup',
+        url: '/admin/makeup/sets',
+        image: '/icons/makeup.png',
+        items: [
+          { title: 'Sets', url: '/admin/makeup/sets' },
+          { title: 'Variants', url: '/admin/makeup/variants' },
         ],
       },
     ],
@@ -165,6 +184,22 @@ export const navLinksData: {
         add: '/admin/outfits/season-categories/new',
         edit: '/admin/outfits/season-categories/edit',
         main: '/outfits',
+      },
+    },
+    makeup: {
+      sets: {
+        title: 'Makeup Sets',
+        list: '/admin/makeup/sets',
+        add: '/admin/makeup/sets/new',
+        edit: '/admin/makeup/sets/edit',
+        main: '/makeup',
+      },
+      variants: {
+        title: 'Makeup Variants',
+        list: '/admin/makeup/variants',
+        add: '/admin/makeup/variants/new',
+        edit: '/admin/makeup/variants/edit',
+        main: '/makeup',
       },
     },
   },
