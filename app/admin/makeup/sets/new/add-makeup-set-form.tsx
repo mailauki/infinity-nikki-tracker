@@ -207,12 +207,25 @@ export default function AddMakeupSetForm({
         </FormControl>
 
         <input name="outfit_set" type="hidden" value={outfitSet ?? ''} />
+        {/* Titles are deliberately non-unique (evolution subtitles repeat across
+            sets, e.g. two "Rainbow" rows), so key the option on the slug —
+            MUI's default key is the label, which collides and warns. */}
         <Autocomplete
           clearOnEscape
           getOptionLabel={(option) => option.title ?? option.slug ?? ''}
           isOptionEqualToValue={(option, val) => option.slug === val.slug}
           options={outfitSets}
           renderInput={(params) => <TextField {...params} label="Associated Outfit" />}
+          renderOption={(props, option) => {
+            // Drop MUI's label-derived key in favour of the unique slug.
+            const { key, ...optionProps } = props
+            void key
+            return (
+              <li {...optionProps} key={option.slug}>
+                {option.title ?? option.slug}
+              </li>
+            )
+          }}
           value={selectedOutfitSet}
           onChange={(_e, newValue) => setOutfitSet(newValue?.slug ?? null)}
         />
@@ -224,6 +237,16 @@ export default function AddMakeupSetForm({
           isOptionEqualToValue={(option, val) => option.slug === val.slug}
           options={makeupSets}
           renderInput={(params) => <TextField {...params} label="Evolution of" />}
+          renderOption={(props, option) => {
+            // Drop MUI's label-derived key in favour of the unique slug.
+            const { key, ...optionProps } = props
+            void key
+            return (
+              <li {...optionProps} key={option.slug}>
+                {option.title ?? option.slug}
+              </li>
+            )
+          }}
           value={selectedBaseSet}
           onChange={(_e, newValue) => handleBaseSetChange(newValue?.slug ?? null)}
         />
