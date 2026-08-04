@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Alert,
+  Autocomplete,
   FormControl,
   InputAdornment,
   InputLabel,
@@ -14,7 +15,7 @@ import {
 } from '@mui/material'
 import { toSlug } from '@/lib/utils'
 import { MOMO_CLOAK_TITLE_PREFIX, withMomoCloakPrefix } from '@/lib/types/momo'
-import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
+import { Location, OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
@@ -31,12 +32,14 @@ export default function AddMomoCloakForm({
   seasons,
   seasonCategories,
   locations,
+  outfitSets,
 }: {
   styles: Style[]
   labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   locations: Location[]
+  outfitSets: OutfitSetRaw[]
 }) {
   const { setFormConfig } = useFormConfig()
   const router = useRouter()
@@ -49,7 +52,10 @@ export default function AddMomoCloakForm({
   const [season, setSeason] = useState('')
   const [seasonCategory, setSeasonCategory] = useState('')
   const [location, setLocation] = useState('')
+  const [outfitSet, setOutfitSet] = useState<string | null>(null)
   const [slugEdited, setSlugEdited] = useState(false)
+
+  const selectedOutfitSet = outfitSets.find((s) => s.slug === outfitSet) ?? null
 
   // `title` holds only the part the admin types; the prefix is supplied by the
   // adornment. Both the slug and the saved title derive from the full string so
@@ -91,6 +97,7 @@ export default function AddMomoCloakForm({
       setSeason('')
       setSeasonCategory('')
       setLocation('')
+      setOutfitSet(null)
       setSlugEdited(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -216,6 +223,30 @@ export default function AddMomoCloakForm({
             ))}
           </Select>
         </FormControl>
+
+        <input name="outfit_set" type="hidden" value={outfitSet ?? ''} />
+        {/* Titles are deliberately non-unique (evolution subtitles repeat across
+            sets, e.g. two "Rainbow" rows), so key the option on the slug —
+            MUI's default key is the label, which collides and warns. */}
+        <Autocomplete
+          clearOnEscape
+          getOptionLabel={(option) => option.title ?? option.slug ?? ''}
+          isOptionEqualToValue={(option, val) => option.slug === val.slug}
+          options={outfitSets}
+          renderInput={(params) => <TextField {...params} label="Associated Outfit" />}
+          renderOption={(props, option) => {
+            // Drop MUI's label-derived key in favour of the unique slug.
+            const { key, ...optionProps } = props
+            void key
+            return (
+              <li {...optionProps} key={option.slug}>
+                {option.title ?? option.slug}
+              </li>
+            )
+          }}
+          value={selectedOutfitSet}
+          onChange={(_e, newValue) => setOutfitSet(newValue?.slug ?? null)}
+        />
 
         <Alert severity="info">
           Images can be added after saving — use the Momo&apos;s Cloak edit form.
