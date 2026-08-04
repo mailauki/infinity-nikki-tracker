@@ -1,7 +1,7 @@
 'use client'
 
 import { OutfitSet } from '@/lib/types/outfit'
-import { evolutionSortKey } from '@/hooks/outfit'
+import { evolutionSortKey, matchesOutfitFilter } from '@/hooks/outfit'
 import CardGrid from '@/components/card-grid'
 import OutfitVariantCard from '@/app/outfits/outfit-variant-card'
 import { useOutfitData } from '@/components/outfits/outfit-context'
@@ -10,11 +10,15 @@ export default function OutfitEvolutionVariants({
   outfitSet,
   isLoggedIn,
   selected,
+  selectedSeason = null,
+  selectedSeasonCategory = null,
   isStandalone = false,
 }: {
   outfitSet: OutfitSet
   isLoggedIn: boolean
   selected: string | null
+  selectedSeason?: string | null
+  selectedSeasonCategory?: string | null
   isStandalone?: boolean
 }) {
   const { obtainedOutfit, outfitCategories } = useOutfitData()
@@ -35,12 +39,13 @@ export default function OutfitEvolutionVariants({
   const orderOf = (stateSlug: string) => stateOrder.get(stateSlug) ?? Infinity
 
   const matchesSelected = (v: (typeof outfit_variants)[number]) =>
-    isStandalone ? v.outfit_category === selected : v.outfit_set === selected
+    matchesOutfitFilter(v, { selected, selectedSeason, selectedSeasonCategory, isStandalone })
 
   const sortKey = (v: (typeof outfit_variants)[number]) =>
     isStandalone ? categoryOrder.indexOf(v.outfit_category ?? '') : orderOf(v.outfit_set ?? '')
 
-  const variants = (selected === null ? outfit_variants : outfit_variants.filter(matchesSelected))
+  const variants = outfit_variants
+    .filter(matchesSelected)
     .slice()
     .sort((a, b) => sortKey(a) - sortKey(b))
 
