@@ -74,6 +74,8 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
     { data: makeupSets },
     { data: makeupVariants },
     { data: momoCloaks },
+    { data: seasons },
+    { data: seasonCategories },
   ] = await Promise.all([
     supabase
       .from('eureka_sets')
@@ -127,6 +129,16 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       .select('slug, title, image_url, created_at')
       .not('created_at', 'is', null)
       .order('created_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('seasons')
+      .select('slug, title, image_url, created_at')
+      .order('created_at', { ascending: false })
+      .limit(limit),
+    supabase
+      .from('season_categories')
+      .select('slug, title, image_url, created_at')
+      .order('created_at', { ascending: false })
       .limit(limit),
   ])
 
@@ -215,6 +227,25 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       type: navLinksData.admin.momoCloaks.cloaks.title,
       editHref: `${navLinksData.admin.momoCloaks.cloaks.edit}/${c.slug}`,
       href: editOnlyHref(navLinksData.admin.momoCloaks.cloaks, c.slug),
+      date: c.created_at,
+    })),
+    ...(seasons ?? []).map((s) => ({
+      slug: s.slug,
+      title: s.title,
+      image_url: s.image_url,
+      type: navLinksData.admin.outfits.seasons.title,
+      editHref: `${navLinksData.admin.outfits.seasons.edit}/${s.slug}`,
+      href: `${navLinksData.admin.outfits.seasons.main}/seasons/${s.slug}`,
+      date: s.created_at,
+    })),
+    ...(seasonCategories ?? []).map((c) => ({
+      slug: c.slug,
+      title: c.title,
+      image_url: c.image_url,
+      type: navLinksData.admin.outfits.seasonCategories.title,
+      editHref: `${navLinksData.admin.outfits.seasonCategories.edit}/${c.slug}`,
+      // Season categories have no public page of their own — only a filter on /outfits.
+      href: editOnlyHref(navLinksData.admin.outfits.seasonCategories, c.slug),
       date: c.created_at,
     })),
   ]

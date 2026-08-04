@@ -108,7 +108,14 @@ export default function AdminRecentsToggle({ title, item, tab, onItemChange, onT
                 aria-label={showOverflow ? 'Hide more sections' : 'Show more sections'}
                 size="small"
                 value={OVERFLOW_VALUE}
-                onClick={() => setIsExpanded((prev) => !prev)}
+                onClick={() => {
+                  // Closing the row would strand a selection inside it, so fall back to the
+                  // first item. Without this the row is forced back open by isOverflowSelected.
+                  if (showOverflow && isOverflowSelected && visibleItems[0]) {
+                    onItemChange(visibleItems[0].title)
+                  }
+                  setIsExpanded(!showOverflow)
+                }}
               >
                 {showOverflow ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
               </ToggleButton>
