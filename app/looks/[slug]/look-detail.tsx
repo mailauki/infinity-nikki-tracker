@@ -32,13 +32,11 @@ function PieceRow({ label, pieces }: { label: string; pieces: Piece[] }) {
 
 export default function LookDetail({
   look,
-  href,
   pieces,
   accessories,
   eureka,
 }: {
   look: Pick<CustomLook, 'name' | 'description' | 'image_url' | 'slug' | 'id'>
-  href: string
   pieces: Piece[]
   accessories: Piece[]
   eureka: Piece[]
