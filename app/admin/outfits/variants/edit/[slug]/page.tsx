@@ -85,7 +85,6 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
         slug: variant.slug,
         image_url: variant.image_url,
         image_url_alt: variant.alt_image_url,
-        default: variant.default,
       }}
       lookups={{ outfitSets, outfitCategories, seasons, seasonCategories, styles, labels }}
       mode="edit"

@@ -26,6 +26,9 @@ export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
       type: 'custom',
       name: 'outfit_set',
       component: 'groupedOutfitSet',
+      // Most new variants are standalone pieces, so add mode starts there.
+      // Edit mode seeds from the variant's own saved set instead.
+      ...(mode === 'add' ? { defaultValue: STANDALONE_SLUG } : {}),
     },
     { type: 'select', name: 'outfit_category', label: 'Category', optionsKey: 'outfitCategories' },
     { type: 'select', name: 'seasons', label: 'Season', optionsKey: 'seasons' },
@@ -57,6 +60,8 @@ export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
     ...(mode === 'edit'
       ? [{ type: 'imagePair', name: 'image_url', table: 'outfit_variants' } as FieldConfig]
       : []),
-    { type: 'switch', name: 'default', label: 'Default variant' },
+    // No `default` switch: the `trg_enforce_base_variant_default` DB trigger
+    // derives the column on every write (true when the owning set's order is 1),
+    // overwriting whatever the form posts. Editing it here was always a no-op.
   ]
 }

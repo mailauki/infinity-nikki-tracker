@@ -81,7 +81,6 @@ export async function updateOutfitVariant(
     outfit_set?: string | null
     outfit_category?: string | null
     title?: string | null
-    default?: boolean
   }
 ) {
   await requireAdmin()
