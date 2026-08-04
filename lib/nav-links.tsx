@@ -110,15 +110,16 @@ export const navLinksData: {
           { title: 'Trials', url: '/admin/eureka/trials' },
         ],
       },
-			{
-				title: 'Other',
-				url: '/admin/other',
-				items: [
-					{ title: 'Makeup Sets', url: '/admin/makeup/sets' },
-					{ title: 'Makeup Variants', url: '/admin/makeup/variants' },
-					{ title: "Momo's Cloaks", url: '/admin/momo-cloaks' },
-				]
-			}
+      {
+        title: 'Other',
+        url: '/admin/makeup/sets',
+        image: '/icons/makeup.png',
+        items: [
+          { title: 'Makeup Sets', url: '/admin/makeup/sets' },
+          { title: 'Makeup Variants', url: '/admin/makeup/variants' },
+          { title: "Momo's Cloaks", url: '/admin/momo-cloaks' },
+        ],
+      },
     ],
     eureka: {
       sets: {
