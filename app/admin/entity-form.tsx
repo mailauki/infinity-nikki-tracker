@@ -111,7 +111,7 @@ export default function EntityForm({
   showUpdateNext?: boolean
   maxWidth?: Breakpoint
 }) {
-  const { setFormConfig } = useFormConfig()
+  const { setFormConfig, clearFormConfig } = useFormConfig()
   const router = useRouter()
   // Field builders emit function-valued props, so they must run on the client.
   // We build here (not in the server page) to keep those closures off the wire.
@@ -152,8 +152,14 @@ export default function EntityForm({
   // Push config into the shared FormContext that FormToolbar reads.
   useEffect(() => {
     setFormConfig({ formId, pending, showAddAnother, showUpdateOnly, showUpdateNext })
+    // Clearing on unmount is what makes this correct: the toolbar renders in a
+    // portal outside the <form> and targets it by id, so a formId left over from
+    // a previous form points at an element no longer in the DOM and Save silently
+    // no-ops. Do not rely on the next form overwriting it — on a form -> form
+    // navigation (e.g. "Update & next item") mount order is not guaranteed.
+    return () => clearFormConfig(formId)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pending])
+  }, [formId, pending])
 
   // React to the action result: reset on add-another, surface savedTitle on edit.
   useEffect(() => {
