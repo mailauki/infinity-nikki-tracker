@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, IconButton, Stack, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
+import { IconButton, Stack, ToggleButton, ToggleButtonGroup, Tooltip } from '@mui/material'
 import { Clear } from '@mui/icons-material'
 import { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { isGlowup, matchesOutfitFilter } from '@/hooks/outfit'
@@ -101,15 +101,15 @@ export default function OutfitToggleBar({
               onSelect={onSelectSeasonCategory}
             />
             {hasActiveFilters && (
-							<Tooltip title='Clear all'>
-								<IconButton
-									size='small'
-									sx={{ backdropFilter: 'blur(8px)' }}
-									onClick={onClearFilters}
-								>
-									<Clear fontSize='small' />
-								</IconButton>
-							</Tooltip>
+              <Tooltip title="Clear all">
+                <IconButton
+                  size="small"
+                  sx={{ backdropFilter: 'blur(8px)' }}
+                  onClick={onClearFilters}
+                >
+                  <Clear fontSize="small" />
+                </IconButton>
+              </Tooltip>
             )}
           </Stack>
         ) : (
@@ -134,7 +134,11 @@ export default function OutfitToggleBar({
             })}
           </ToggleButtonGroup>
         )}
-        {isLoggedIn && <Stack sx={{ py: 0.6 }}><ProgressChip obtained={obtained} total={total} variant="parts" /></Stack>}
+        {isLoggedIn && (
+          <Stack sx={{ py: 0.6 }}>
+            <ProgressChip obtained={obtained} total={total} variant="parts" />
+          </Stack>
+        )}
       </Stack>
     </StickyBar>
   )
