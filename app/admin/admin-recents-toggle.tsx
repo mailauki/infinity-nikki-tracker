@@ -2,12 +2,12 @@
 import { useId, useState } from 'react'
 import ToggleIcon from '@/components/toggle-icon'
 import { navLinksData } from '@/lib/nav-links'
-import { MoreHoriz } from '@mui/icons-material'
+import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import {
+  Box,
   CardContent,
   CardHeader,
-  Menu,
-  MenuItem,
+  Collapse,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
@@ -28,20 +28,20 @@ type Props = {
 
 export default function AdminRecentsToggle({ title, item, tab, onItemChange, onTabChange }: Props) {
   const id = useId()
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-  const isMenuOpen = Boolean(anchorEl)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const currentTab = navLinksData.admin.tabs.find((t) => t.title === tab)
   const items = currentTab?.items ?? []
 
-  // A selected item from the overflow would otherwise render no pressed toggle, so promote
-  // it into the visible row (swapping out the last slot) and keep the count at three.
-  const selectedIndex = items.findIndex((i) => i.title === item)
-  const isSelectionHidden = selectedIndex >= VISIBLE_ITEM_COUNT
-  const visibleItems = isSelectionHidden
-    ? [...items.slice(0, VISIBLE_ITEM_COUNT - 1), items[selectedIndex]]
-    : items.slice(0, VISIBLE_ITEM_COUNT)
-  const overflowItems = items.filter((i) => !visibleItems.includes(i))
+  // The first row is fixed; anything past it lives in a second row the expand toggle
+  // reveals. Row contents never change, so a toggle stays put under the cursor.
+  const visibleItems = items.slice(0, VISIBLE_ITEM_COUNT)
+  const overflowItems = items.slice(VISIBLE_ITEM_COUNT)
+
+  // Keep the overflow row open whenever its item is the active filter, so switching tabs
+  // or landing on a hidden selection never leaves the pressed toggle out of sight.
+  const isOverflowSelected = overflowItems.some((i) => i.title === item)
+  const showOverflow = isExpanded || isOverflowSelected
 
   return (
     <>
@@ -55,6 +55,9 @@ export default function AdminRecentsToggle({ title, item, tab, onItemChange, onT
             onChange={(_, v) => {
               if (!v) return
               onTabChange(v)
+              // The new tab always selects its first item, which is in row one — start it
+              // collapsed rather than carrying the previous tab's expanded state over.
+              setIsExpanded(false)
               const firstItem = navLinksData.admin.tabs.find((t) => t.title === v)?.items?.[0]
               if (firstItem) onItemChange(firstItem.title)
             }}
@@ -81,14 +84,14 @@ export default function AdminRecentsToggle({ title, item, tab, onItemChange, onT
         }
       />
       <CardContent>
-        <Stack direction="row" spacing={1} sx={{ flexGrow: 1, justifyContent: 'space-between' }}>
+        <Stack spacing={1} sx={{ flexGrow: 1 }}>
           <ToggleButtonGroup
             exclusive
             size="small"
             value={item}
             onChange={(_, v) => {
-              // The overflow trigger lives inside the exclusive group, so its value
-              // reaches onChange too — it opens the menu instead of becoming the filter.
+              // The expand trigger lives inside the exclusive group, so its value reaches
+              // onChange too — it toggles the second row instead of becoming the filter.
               if (!v || v === OVERFLOW_VALUE) return
               onItemChange(v)
             }}
@@ -98,45 +101,40 @@ export default function AdminRecentsToggle({ title, item, tab, onItemChange, onT
                 {i.title}
               </ToggleButton>
             ))}
-            {/* Keep the row to three toggles; the rest stay reachable via the overflow
-                menu rather than wrapping onto a second line. The selected item is pulled
-                into view above so the current filter is never hidden behind the menu. */}
             {overflowItems.length > 0 && (
               <ToggleButton
-                aria-controls={isMenuOpen ? `${id}-overflow-menu` : undefined}
-                aria-expanded={isMenuOpen}
-                aria-haspopup="true"
-                aria-label="More sections"
-                id={`${id}-overflow-button`}
+                aria-controls={showOverflow ? `${id}-overflow-row` : undefined}
+                aria-expanded={showOverflow}
+                aria-label={showOverflow ? 'Hide more sections' : 'Show more sections'}
                 size="small"
                 value={OVERFLOW_VALUE}
-                onClick={(event) => setAnchorEl(event.currentTarget)}
+                onClick={() => setIsExpanded((prev) => !prev)}
               >
-                <MoreHoriz fontSize="small" />
+                {showOverflow ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
               </ToggleButton>
             )}
           </ToggleButtonGroup>
-          <Menu
-            disableScrollLock
-            anchorEl={anchorEl}
-            id={`${id}-overflow-menu`}
-            open={isMenuOpen}
-            slotProps={{ list: { 'aria-labelledby': `${id}-overflow-button` } }}
-            onClose={() => setAnchorEl(null)}
-          >
-            {overflowItems.map((i) => (
-              <MenuItem
-                key={i.title}
-                selected={i.title === item}
-                onClick={() => {
-                  onItemChange(i.title)
-                  setAnchorEl(null)
-                }}
-              >
-                {i.title}
-              </MenuItem>
-            ))}
-          </Menu>
+          {overflowItems.length > 0 && (
+            <Collapse unmountOnExit in={showOverflow} timeout="auto">
+              <Box id={`${id}-overflow-row`}>
+                <ToggleButtonGroup
+                  exclusive
+                  size="small"
+                  value={item}
+                  onChange={(_, v) => {
+                    if (!v) return
+                    onItemChange(v)
+                  }}
+                >
+                  {overflowItems.map((i) => (
+                    <ToggleButton key={i.title} size="small" value={i.title}>
+                      {i.title}
+                    </ToggleButton>
+                  ))}
+                </ToggleButtonGroup>
+              </Box>
+            </Collapse>
+          )}
         </Stack>
       </CardContent>
     </>
