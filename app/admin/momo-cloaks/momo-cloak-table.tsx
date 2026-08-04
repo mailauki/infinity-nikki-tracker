@@ -5,7 +5,7 @@ import { Stack } from '@mui/material'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toTitle } from '@/lib/utils'
 import { MomoCloakRaw } from '@/lib/types/momo'
-import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
+import { Location, OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import RarityStars from '@/components/rarity-stars'
 import { updateMomoCloakRow } from './actions'
@@ -25,6 +25,7 @@ interface MomoCloakTableProps {
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   locations: Location[]
+  outfitSets: OutfitSetRaw[]
 }
 
 const LOCKED_FIELDS = ['slug', 'updated_at']
@@ -36,6 +37,7 @@ export function MomoCloakTable({
   seasons,
   seasonCategories,
   locations,
+  outfitSets,
 }: MomoCloakTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const {
@@ -60,6 +62,7 @@ export function MomoCloakTable({
         seasons: newRow.seasons,
         season_category: newRow.season_category,
         location: newRow.location,
+        outfit_set: newRow.outfit_set,
       })
       setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)))
       return newRow
@@ -173,6 +176,22 @@ export function MomoCloakTable({
         ...locations.map((l) => ({ value: l.slug, label: toTitle(l.title ?? '') })),
       ],
       valueFormatter: (value: string | null) => toTitle(value || '—'),
+    },
+    {
+      field: 'outfit_set',
+      headerName: 'Associated Outfit',
+      width: 200,
+      editable: true,
+      type: 'singleSelect',
+      valueOptions: [
+        { value: '', label: '—' },
+        ...outfitSets.map((s) => ({ value: s.slug ?? '', label: s.title ?? '' })),
+      ],
+      valueFormatter: (value: string | null) => (value ? toTitle(value) : '—'),
+      renderCell: ({ row }: GridRenderCellParams<Row>) => {
+        const outfit = outfitSets.find((s) => s.slug === row.outfit_set)
+        return <span>{outfit?.title ?? (row.outfit_set ? toTitle(row.outfit_set) : '—')}</span>
+      },
     },
     {
       field: 'description',

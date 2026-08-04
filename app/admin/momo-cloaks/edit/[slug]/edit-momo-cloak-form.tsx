@@ -2,9 +2,18 @@
 
 import { useActionState, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Alert, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
+import {
+  Alert,
+  Autocomplete,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+} from '@mui/material'
 import { MomoCloakRaw } from '@/lib/types/momo'
-import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
+import { Location, OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
@@ -23,6 +32,7 @@ export default function EditMomoCloakForm({
   seasons,
   seasonCategories,
   locations,
+  outfitSets,
 }: {
   initial: MomoCloakRaw
   styles: Style[]
@@ -30,6 +40,7 @@ export default function EditMomoCloakForm({
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   locations: Location[]
+  outfitSets: OutfitSetRaw[]
 }) {
   const { setFormConfig } = useFormConfig()
   const router = useRouter()
@@ -42,8 +53,11 @@ export default function EditMomoCloakForm({
   const [season, setSeason] = useState(initial.seasons ?? '')
   const [seasonCategory, setSeasonCategory] = useState(initial.season_category ?? '')
   const [location, setLocation] = useState(initial.location ?? '')
+  const [outfitSet, setOutfitSet] = useState<string | null>(initial.outfit_set ?? null)
   const [image, setImage] = useState<string | null>(initial.image_url ?? null)
   const [altImage, setAltImage] = useState<string | null>(initial.alt_image_url ?? null)
+
+  const selectedOutfitSet = outfitSets.find((s) => s.slug === outfitSet) ?? null
 
   const [state, action, pending] = useActionState(updateMomoCloak, null)
 
@@ -181,6 +195,30 @@ export default function EditMomoCloakForm({
             ))}
           </Select>
         </FormControl>
+
+        <input name="outfit_set" type="hidden" value={outfitSet ?? ''} />
+        {/* Titles are deliberately non-unique (evolution subtitles repeat across
+            sets, e.g. two "Rainbow" rows), so key the option on the slug —
+            MUI's default key is the label, which collides and warns. */}
+        <Autocomplete
+          clearOnEscape
+          getOptionLabel={(option) => option.title ?? option.slug ?? ''}
+          isOptionEqualToValue={(option, val) => option.slug === val.slug}
+          options={outfitSets}
+          renderInput={(params) => <TextField {...params} label="Associated Outfit" />}
+          renderOption={(props, option) => {
+            // Drop MUI's label-derived key in favour of the unique slug.
+            const { key, ...optionProps } = props
+            void key
+            return (
+              <li {...optionProps} key={option.slug}>
+                {option.title ?? option.slug}
+              </li>
+            )
+          }}
+          value={selectedOutfitSet}
+          onChange={(_e, newValue) => setOutfitSet(newValue?.slug ?? null)}
+        />
 
         <ImageUploadPair
           altImage={altImage}

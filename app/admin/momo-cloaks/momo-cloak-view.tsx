@@ -3,7 +3,7 @@
 import { useAdminView } from '../admin-view-context'
 import { Label, Style } from '@/lib/types/eureka'
 import { MomoCloakRaw } from '@/lib/types/momo'
-import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
+import { Location, OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { MomoCloakTable } from './momo-cloak-table'
 import MomoCloakList from './momo-cloak-list'
 import TableContainer from '../table-container'
@@ -15,6 +15,7 @@ export default function MomoCloakView({
   seasons,
   seasonCategories,
   locations,
+  outfitSets,
 }: {
   momoCloaks: MomoCloakRaw[]
   styles: Style[]
@@ -22,6 +23,7 @@ export default function MomoCloakView({
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   locations: Location[]
+  outfitSets: OutfitSetRaw[]
 }) {
   const { view } = useAdminView()
 
@@ -30,6 +32,7 @@ export default function MomoCloakView({
       <MomoCloakTable
         labels={labels}
         locations={locations}
+        outfitSets={outfitSets}
         rows={momoCloaks}
         seasonCategories={seasonCategories}
         seasons={seasons}

@@ -23,6 +23,10 @@ export type MomoCloak = Tables<'momo_cloaks'> & {
   // Resolved lookup titles; the columns themselves hold slugs.
   season?: { title: string } | null
   seasonCategory?: { title: string } | null
+  // The associated outfit, mirroring MakeupSet.outfitSet. Not yet populated by
+  // the momo data hooks — optional so a future consumer gets a compile-time
+  // signal instead of a silent null.
+  outfitSet?: { slug: string; title: string; image_url: string | null } | null
   obtained?: boolean
 }
 
@@ -38,6 +42,7 @@ export type MomoCloakRaw = Pick<
   | 'seasons'
   | 'season_category'
   | 'location'
+  | 'outfit_set'
   | 'image_url'
   | 'alt_image_url'
   | 'updated_at'

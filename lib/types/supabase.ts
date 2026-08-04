@@ -547,6 +547,7 @@ export type Database = {
           image_url: string | null
           label: string | null
           location: string | null
+          outfit_set: string | null
           rarity: number | null
           season_category: string | null
           seasons: string | null
@@ -563,6 +564,7 @@ export type Database = {
           image_url?: string | null
           label?: string | null
           location?: string | null
+          outfit_set?: string | null
           rarity?: number | null
           season_category?: string | null
           seasons?: string | null
@@ -579,6 +581,7 @@ export type Database = {
           image_url?: string | null
           label?: string | null
           location?: string | null
+          outfit_set?: string | null
           rarity?: number | null
           season_category?: string | null
           seasons?: string | null
@@ -600,6 +603,13 @@ export type Database = {
             columns: ["location"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "momo_cloaks_outfit_set_fkey"
+            columns: ["outfit_set"]
+            isOneToOne: false
+            referencedRelation: "outfit_sets"
             referencedColumns: ["slug"]
           },
           {
