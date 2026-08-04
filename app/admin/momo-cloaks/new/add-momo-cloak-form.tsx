@@ -2,8 +2,18 @@
 
 import { useActionState, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Alert, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from '@mui/material'
+import {
+  Alert,
+  FormControl,
+  InputAdornment,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+} from '@mui/material'
 import { toSlug } from '@/lib/utils'
+import { MOMO_CLOAK_TITLE_PREFIX, withMomoCloakPrefix } from '@/lib/types/momo'
 import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import SlugField from '@/components/forms/slug-field'
@@ -41,9 +51,14 @@ export default function AddMomoCloakForm({
   const [location, setLocation] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
 
+  // `title` holds only the part the admin types; the prefix is supplied by the
+  // adornment. Both the slug and the saved title derive from the full string so
+  // they match existing rows (momos_cloak_dream / "Momo’s Cloak: Dream").
+  const fullTitle = withMomoCloakPrefix(title)
+
   function handleTitleChange(value: string) {
     setTitle(value)
-    if (!slugEdited) setSlug(toSlug(value))
+    if (!slugEdited) setSlug(toSlug(withMomoCloakPrefix(value)))
   }
 
   const [state, action, pending] = useActionState(addMomoCloak, null)
@@ -85,10 +100,20 @@ export default function AddMomoCloakForm({
       <Stack spacing={2} sx={{ maxWidth: 'sm' }}>
         {state?.error && <Alert severity="error">{state.error}</Alert>}
 
+        {/* The adornment is display-only, so the real (prefixed) title posts
+            via this hidden input instead of the visible field. */}
+        <input name="title" type="hidden" value={fullTitle} />
         <TextField
           required
+          helperText={title.trim() ? `Saves as “${fullTitle}”` : undefined}
           label="Title"
-          name="title"
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">{MOMO_CLOAK_TITLE_PREFIX}</InputAdornment>
+              ),
+            },
+          }}
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
         />
