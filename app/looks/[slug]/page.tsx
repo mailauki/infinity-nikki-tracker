@@ -46,7 +46,6 @@ async function LookContent({ params }: Props) {
     <LookDetail
       accessories={accessories.map(toPiece)}
       eureka={look.eureka_variant_slugs.map(toPiece)}
-      href={look.slug ?? look.id}
       look={look}
       pieces={pieces.map(toPiece)}
     />

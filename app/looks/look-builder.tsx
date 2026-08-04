@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useTransition } from 'react'
+import { useMemo, useState, useTransition, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   Accordion as MuiAccordion,
@@ -83,6 +83,14 @@ type SavePayload = {
 }
 
 type StepBucket = 'pieces' | 'accessories' | 'eureka'
+
+// Keyed by bucket so adding a StepBucket is a compile error until it has an icon.
+const SECTION_ICONS: Record<StepBucket, ReactNode> = {
+  pieces: <CheckroomIcon fontSize="small" />,
+  accessories: <WatchOutlinedIcon fontSize="small" />,
+  eureka: <DiamondOutlinedIcon fontSize="small" />,
+}
+
 type CategoryStep = {
   bucket: StepBucket
   slug: string
@@ -550,6 +558,27 @@ export default function LookBuilder({
     </CardContent>
   )
 
+  // A step's sub-label: why it's unavailable, or what's currently picked.
+  function stepOptionalLabel(step: CategoryStep) {
+    if (step.disabled) {
+      return (
+        <Typography color="textDisabled" variant="caption">
+          {step.disabledReason}
+        </Typography>
+      )
+    }
+    if (!step.selectedVariant) return null
+    return (
+      <Chip
+        color="success"
+        label={step.selectedVariant.setTitle}
+        size="small"
+        sx={{ maxWidth: 160 }}
+        variant="outlined"
+      />
+    )
+  }
+
   // One bucket's category steps as an inner vertical stepper. Only mounted for
   // the active section, so `activeCategory` always indexes this section's list.
   function categoryStepper(section: number, steps: CategoryStep[]) {
@@ -559,21 +588,7 @@ export default function LookBuilder({
           <Step key={step.slug} completed={!!step.selectedVariant} disabled={step.disabled}>
             <StepLabel
               icon={<ToggleIcon category={step.slug} size="xs" />}
-              optional={
-                step.disabled ? (
-                  <Typography color="textDisabled" variant="caption">
-                    {step.disabledReason}
-                  </Typography>
-                ) : step.selectedVariant ? (
-                  <Chip
-                    color="success"
-                    label={step.selectedVariant.setTitle}
-                    size="small"
-                    sx={{ maxWidth: 160 }}
-                    variant="outlined"
-                  />
-                ) : null
-              }
+              optional={stepOptionalLabel(step)}
               sx={{
                 '& .MuiStepLabel-labelContainer': { display: 'flex', alignItems: 'center' },
                 '& .MuiStepLabel-label': { flexGrow: 1 },
@@ -687,14 +702,7 @@ export default function LookBuilder({
 
       {sections.map((section, i) => {
         const sectionIndex = i + 1
-        const sectionIcon =
-          section.bucket === 'pieces' ? (
-            <CheckroomIcon fontSize="small" />
-          ) : section.bucket === 'accessories' ? (
-            <WatchOutlinedIcon fontSize="small" />
-          ) : (
-            <DiamondOutlinedIcon fontSize="small" />
-          )
+        const sectionIcon = SECTION_ICONS[section.bucket]
         return (
           <Accordion
             key={section.bucket}
