@@ -32,6 +32,13 @@ function outfitSetHref(setSlug: string): string {
     : `${navLinksData.admin.outfits.sets.main}/${setSlug}?evolution=base`
 }
 
+// Makeup and Momo's Cloaks have no public `[slug]` detail route yet — `/makeup` and
+// `/momo-cloaks` are still ComingSoon stubs. Point the row at its admin edit form so the
+// primary click lands somewhere real instead of 404ing; swap to the public page once it exists.
+function editOnlyHref(link: { edit: string }, slug: string): string {
+  return `${link.edit}/${slug}`
+}
+
 // The eureka set thumbnail is its default head variant's image (default variant
 // as fallback), matching createEurekaSet / the eureka slug page. The set rows
 // themselves have no image_url column, so resolve it from eureka_variants.
@@ -64,6 +71,12 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
     { data: outfitSets },
     { data: outfitVariants },
     { data: evolutions },
+    { data: makeupSets },
+    { data: makeupVariants },
+    { data: momoCloaks },
+    { data: seasons },
+    { data: seasonCategories },
+    { data: abilities },
   ] = await Promise.all([
     supabase
       .from('eureka_sets')
@@ -97,6 +110,40 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       .from('outfit_sets')
       .select('slug, title, image_url, created_at')
       .not('base_set', 'is', null)
+      .not('created_at', 'is', null)
+      .order('created_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('makeup_sets')
+      .select('slug, title, image_url, created_at')
+      .not('created_at', 'is', null)
+      .order('created_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('makeup_variants')
+      .select('slug, title, image_url, created_at')
+      .not('created_at', 'is', null)
+      .order('created_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('momo_cloaks')
+      .select('slug, title, image_url, created_at')
+      .not('created_at', 'is', null)
+      .order('created_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('seasons')
+      .select('slug, title, image_url, created_at')
+      .order('created_at', { ascending: false })
+      .limit(limit),
+    supabase
+      .from('season_categories')
+      .select('slug, title, image_url, created_at')
+      .order('created_at', { ascending: false })
+      .limit(limit),
+    supabase
+      .from('abilities')
+      .select('slug, title, image_url, created_at')
       .not('created_at', 'is', null)
       .order('created_at', { ascending: false, nullsFirst: false })
       .limit(limit),
@@ -162,6 +209,62 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       href: outfitSetHref(e.slug),
       date: e.created_at,
     })),
+    ...(makeupSets ?? []).map((m) => ({
+      slug: m.slug,
+      title: m.title,
+      image_url: m.image_url,
+      type: navLinksData.admin.makeup.sets.title,
+      editHref: `${navLinksData.admin.makeup.sets.edit}/${m.slug}`,
+      href: editOnlyHref(navLinksData.admin.makeup.sets, m.slug),
+      date: m.created_at,
+    })),
+    ...(makeupVariants ?? []).map((v) => ({
+      slug: v.slug,
+      title: v.title ?? toTitle(v.slug),
+      image_url: v.image_url,
+      type: navLinksData.admin.makeup.variants.title,
+      editHref: `${navLinksData.admin.makeup.variants.edit}/${v.slug}`,
+      href: editOnlyHref(navLinksData.admin.makeup.variants, v.slug),
+      date: v.created_at,
+    })),
+    ...(momoCloaks ?? []).map((c) => ({
+      slug: c.slug,
+      title: c.title,
+      image_url: c.image_url,
+      type: navLinksData.admin.momoCloaks.cloaks.title,
+      editHref: `${navLinksData.admin.momoCloaks.cloaks.edit}/${c.slug}`,
+      href: editOnlyHref(navLinksData.admin.momoCloaks.cloaks, c.slug),
+      date: c.created_at,
+    })),
+    ...(seasons ?? []).map((s) => ({
+      slug: s.slug,
+      title: s.title,
+      image_url: s.image_url,
+      type: navLinksData.admin.outfits.seasons.title,
+      editHref: `${navLinksData.admin.outfits.seasons.edit}/${s.slug}`,
+      href: `${navLinksData.admin.outfits.seasons.main}/seasons/${s.slug}`,
+      date: s.created_at,
+    })),
+    ...(seasonCategories ?? []).map((c) => ({
+      slug: c.slug,
+      title: c.title,
+      image_url: c.image_url,
+      type: navLinksData.admin.outfits.seasonCategories.title,
+      editHref: `${navLinksData.admin.outfits.seasonCategories.edit}/${c.slug}`,
+      // Season categories have no public page of their own — only a filter on /outfits.
+      href: editOnlyHref(navLinksData.admin.outfits.seasonCategories, c.slug),
+      date: c.created_at,
+    })),
+    ...(abilities ?? []).map((a) => ({
+      slug: a.slug,
+      title: a.title,
+      image_url: a.image_url,
+      type: navLinksData.admin.outfits.abilities.title,
+      editHref: `${navLinksData.admin.outfits.abilities.edit}/${a.slug}`,
+      // Abilities are a lookup surfaced as a field on outfit sets, not a page.
+      href: editOnlyHref(navLinksData.admin.outfits.abilities, a.slug),
+      date: a.created_at,
+    })),
   ]
 })
 
@@ -175,6 +278,12 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
     { data: outfitSets },
     { data: outfitVariants },
     { data: evolutions },
+    { data: makeupSets },
+    { data: makeupVariants },
+    { data: momoCloaks },
+    { data: seasons },
+    { data: seasonCategories },
+    { data: abilities },
   ] = await Promise.all([
     supabase
       .from('eureka_sets')
@@ -211,6 +320,42 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       .from('outfit_sets')
       .select('slug, title, image_url, updated_at')
       .not('base_set', 'is', null)
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('makeup_sets')
+      .select('slug, title, image_url, updated_at')
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('makeup_variants')
+      .select('slug, title, image_url, updated_at')
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('momo_cloaks')
+      .select('slug, title, image_url, updated_at')
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('seasons')
+      .select('slug, title, image_url, updated_at')
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('season_categories')
+      .select('slug, title, image_url, updated_at')
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('abilities')
+      .select('slug, title, image_url, updated_at')
       .not('updated_at', 'is', null)
       .order('updated_at', { ascending: false, nullsFirst: false })
       .limit(limit),
@@ -275,6 +420,60 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       editHref: `${navLinksData.admin.outfits.evolutions.edit}/${e.slug}`,
       href: outfitSetHref(e.slug),
       date: e.updated_at!,
+    })),
+    ...(makeupSets ?? []).map((m) => ({
+      slug: m.slug,
+      title: m.title,
+      image_url: m.image_url,
+      type: navLinksData.admin.makeup.sets.title,
+      editHref: `${navLinksData.admin.makeup.sets.edit}/${m.slug}`,
+      href: editOnlyHref(navLinksData.admin.makeup.sets, m.slug),
+      date: m.updated_at!,
+    })),
+    ...(makeupVariants ?? []).map((v) => ({
+      slug: v.slug,
+      title: v.title ?? toTitle(v.slug),
+      image_url: v.image_url,
+      type: navLinksData.admin.makeup.variants.title,
+      editHref: `${navLinksData.admin.makeup.variants.edit}/${v.slug}`,
+      href: editOnlyHref(navLinksData.admin.makeup.variants, v.slug),
+      date: v.updated_at!,
+    })),
+    ...(momoCloaks ?? []).map((c) => ({
+      slug: c.slug,
+      title: c.title,
+      image_url: c.image_url,
+      type: navLinksData.admin.momoCloaks.cloaks.title,
+      editHref: `${navLinksData.admin.momoCloaks.cloaks.edit}/${c.slug}`,
+      href: editOnlyHref(navLinksData.admin.momoCloaks.cloaks, c.slug),
+      date: c.updated_at!,
+    })),
+    ...(seasons ?? []).map((s) => ({
+      slug: s.slug,
+      title: s.title,
+      image_url: s.image_url,
+      type: navLinksData.admin.outfits.seasons.title,
+      editHref: `${navLinksData.admin.outfits.seasons.edit}/${s.slug}`,
+      href: `${navLinksData.admin.outfits.seasons.main}/seasons/${s.slug}`,
+      date: s.updated_at!,
+    })),
+    ...(seasonCategories ?? []).map((c) => ({
+      slug: c.slug,
+      title: c.title,
+      image_url: c.image_url,
+      type: navLinksData.admin.outfits.seasonCategories.title,
+      editHref: `${navLinksData.admin.outfits.seasonCategories.edit}/${c.slug}`,
+      href: editOnlyHref(navLinksData.admin.outfits.seasonCategories, c.slug),
+      date: c.updated_at!,
+    })),
+    ...(abilities ?? []).map((a) => ({
+      slug: a.slug,
+      title: a.title,
+      image_url: a.image_url,
+      type: navLinksData.admin.outfits.abilities.title,
+      editHref: `${navLinksData.admin.outfits.abilities.edit}/${a.slug}`,
+      href: editOnlyHref(navLinksData.admin.outfits.abilities, a.slug),
+      date: a.updated_at!,
     })),
   ]
 })

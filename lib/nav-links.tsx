@@ -111,18 +111,14 @@ export const navLinksData: {
         ],
       },
       {
-        title: 'Makeup',
+        title: 'Other',
         url: '/admin/makeup/sets',
         image: '/icons/makeup.png',
         items: [
-          { title: 'Sets', url: '/admin/makeup/sets' },
-          { title: 'Variants', url: '/admin/makeup/variants' },
+          { title: 'Makeup Sets', url: '/admin/makeup/sets' },
+          { title: 'Makeup Variants', url: '/admin/makeup/variants' },
+          { title: "Momo's Cloaks", url: '/admin/momo-cloaks' },
         ],
-      },
-      {
-        title: "Momo's Cloaks",
-        url: '/admin/momo-cloaks',
-        image: '/icons/momo-cloak.png',
       },
     ],
     eureka: {

@@ -23,10 +23,24 @@ import AdminRecentsToggle from './admin-recents-toggle'
 const defaultTab = navLinksData.admin.tabs[0]
 const defaultItem = defaultTab.items?.[0]
 
+// Tab items are labelled for the toggle ("Sets"), while `RecentAdminItem.type` carries
+// the fully-qualified AdminLink title ("Outfit Sets"). Resolve by the item's `url`, which
+// is the one value both sides already agree on — matching on the label alone breaks as
+// soon as two tabs share one ("Sets" under both Outfits and Eureka).
+const typeByUrl = new Map(
+  [
+    ...Object.values(navLinksData.admin.outfits),
+    ...Object.values(navLinksData.admin.eureka),
+    ...Object.values(navLinksData.admin.makeup),
+    ...Object.values(navLinksData.admin.momoCloaks),
+  ].map((link) => [link.list, link.title])
+)
+
 function typeForSelection(tab: string, item: string): string {
-  const section = tab === 'Outfits' ? navLinksData.admin.outfits : navLinksData.admin.eureka
-  const match = Object.values(section).find((s) => s.title.endsWith(item) || s.title === item)
-  return match?.title ?? ''
+  const url = navLinksData.admin.tabs
+    .find((t) => t.title === tab)
+    ?.items?.find((i) => i.title === item)?.url
+  return (url && typeByUrl.get(url)) ?? ''
 }
 
 export default function AdminRecentsList({
