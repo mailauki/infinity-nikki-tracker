@@ -47,7 +47,7 @@ export default function AddMakeupSetForm({
   seasonCategories: SeasonCategory[]
   makeupCategories: MakeupCategory[]
 }) {
-  const { setFormConfig } = useFormConfig()
+  const { setFormConfig, clearFormConfig } = useFormConfig()
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
@@ -92,6 +92,12 @@ export default function AddMakeupSetForm({
       pending,
       showAddAnother: true,
     })
+    // Clearing on unmount is what makes this correct: the toolbar renders in a
+    // portal outside the <form> and targets it by id, so a formId left over from
+    // a previous form points at an element no longer in the DOM and Save silently
+    // no-ops. Do not rely on the next form overwriting it — on a form -> form
+    // navigation (e.g. "Update & next item") mount order is not guaranteed.
+    return () => clearFormConfig(FORM_ID)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending])
 

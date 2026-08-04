@@ -15,6 +15,12 @@ interface FormConfig {
 
 interface FormContextValue extends FormConfig {
   setFormConfig: (config: Partial<FormConfig>) => void
+  /**
+   * Release the toolbar, but only if `formId` still owns it. A form calls this
+   * on unmount; the ownership check means a late-running cleanup can never wipe
+   * the registration a newly mounted form has already made.
+   */
+  clearFormConfig: (formId: string) => void
 }
 
 const FormContext = createContext<FormContextValue>({
@@ -25,6 +31,7 @@ const FormContext = createContext<FormContextValue>({
   showUpdateNext: false,
   savedTitle: undefined,
   setFormConfig: () => {},
+  clearFormConfig: () => {},
 })
 
 export function FormProvider({ children }: { children: React.ReactNode }) {
@@ -41,7 +48,23 @@ export function FormProvider({ children }: { children: React.ReactNode }) {
     setConfig((prev) => ({ ...prev, ...updates }))
   }, [])
 
-  return <FormContext value={{ ...config, setFormConfig }}>{children}</FormContext>
+  const clearFormConfig = useCallback((formId: string) => {
+    setConfig((prev) =>
+      // Someone else already claimed the toolbar — leave their registration alone.
+      prev.formId !== formId
+        ? prev
+        : {
+            formId: '',
+            pending: false,
+            showAddAnother: false,
+            showUpdateOnly: false,
+            showUpdateNext: false,
+            savedTitle: prev.savedTitle,
+          }
+    )
+  }, [])
+
+  return <FormContext value={{ ...config, setFormConfig, clearFormConfig }}>{children}</FormContext>
 }
 
 export function useFormConfig() {

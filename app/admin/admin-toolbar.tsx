@@ -2,29 +2,18 @@
 
 import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import { usePathname } from 'next/navigation'
-import { useEffect, useRef } from 'react'
-import { useFormConfig } from '@/app/admin/form-context'
 import AdminNavMenu from './admin-nav-menu'
 import AdminVariantColumnsToggle from './admin-variant-columns-toggle'
 import AdminViewToggle from './admin-view-toggle'
 
 export default function AdminToolBar() {
   const pathname = usePathname()
-  const { formId, setFormConfig } = useFormConfig()
   const isFormRoute = pathname.endsWith('/new') || pathname.includes('/edit/')
-  const mounted = useRef(false)
 
-  useEffect(() => {
-    if (mounted.current && !isFormRoute && formId) {
-      setFormConfig({
-        formId: '',
-        pending: false,
-        showAddAnother: false,
-        showUpdateOnly: false,
-      })
-    }
-    mounted.current = true
-  }, [pathname]) // eslint-disable-line react-hooks/exhaustive-deps
+  // No formId cleanup here: each form releases the toolbar from its own unmount
+  // via clearFormConfig(). This component isn't even mounted on form routes, so
+  // it could never observe a form -> form navigation — which is exactly the case
+  // that used to strand a stale formId and silently break Save.
 
   if (isFormRoute) return null
 
