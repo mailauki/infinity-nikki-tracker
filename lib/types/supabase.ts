@@ -16,22 +16,28 @@ export type Database = {
     Tables: {
       abilities: {
         Row: {
+          created_at: string | null
           id: number
           image_url: string | null
           slug: string
           title: string
+          updated_at: string | null
         }
         Insert: {
+          created_at?: string | null
           id?: number
           image_url?: string | null
           slug: string
           title: string
+          updated_at?: string | null
         }
         Update: {
+          created_at?: string | null
           id?: number
           image_url?: string | null
           slug?: string
           title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1121,6 +1127,7 @@ export type Database = {
           image_url: string | null
           slug: string
           title: string
+          updated_at: string | null
         }
         Insert: {
           created_at?: string
@@ -1129,6 +1136,7 @@ export type Database = {
           image_url?: string | null
           slug: string
           title: string
+          updated_at?: string | null
         }
         Update: {
           created_at?: string
@@ -1137,6 +1145,7 @@ export type Database = {
           image_url?: string | null
           slug?: string
           title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1150,6 +1159,7 @@ export type Database = {
           location: string | null
           slug: string
           title: string
+          updated_at: string | null
         }
         Insert: {
           alt_image_url?: string | null
@@ -1160,6 +1170,7 @@ export type Database = {
           location?: string | null
           slug: string
           title: string
+          updated_at?: string | null
         }
         Update: {
           alt_image_url?: string | null
@@ -1170,6 +1181,7 @@ export type Database = {
           location?: string | null
           slug?: string
           title?: string
+          updated_at?: string | null
         }
         Relationships: [
           {

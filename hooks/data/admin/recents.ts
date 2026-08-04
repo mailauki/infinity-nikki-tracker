@@ -76,6 +76,7 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
     { data: momoCloaks },
     { data: seasons },
     { data: seasonCategories },
+    { data: abilities },
   ] = await Promise.all([
     supabase
       .from('eureka_sets')
@@ -139,6 +140,12 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       .from('season_categories')
       .select('slug, title, image_url, created_at')
       .order('created_at', { ascending: false })
+      .limit(limit),
+    supabase
+      .from('abilities')
+      .select('slug, title, image_url, created_at')
+      .not('created_at', 'is', null)
+      .order('created_at', { ascending: false, nullsFirst: false })
       .limit(limit),
   ])
 
@@ -248,6 +255,16 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       href: editOnlyHref(navLinksData.admin.outfits.seasonCategories, c.slug),
       date: c.created_at,
     })),
+    ...(abilities ?? []).map((a) => ({
+      slug: a.slug,
+      title: a.title,
+      image_url: a.image_url,
+      type: navLinksData.admin.outfits.abilities.title,
+      editHref: `${navLinksData.admin.outfits.abilities.edit}/${a.slug}`,
+      // Abilities are a lookup surfaced as a field on outfit sets, not a page.
+      href: editOnlyHref(navLinksData.admin.outfits.abilities, a.slug),
+      date: a.created_at,
+    })),
   ]
 })
 
@@ -264,6 +281,9 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
     { data: makeupSets },
     { data: makeupVariants },
     { data: momoCloaks },
+    { data: seasons },
+    { data: seasonCategories },
+    { data: abilities },
   ] = await Promise.all([
     supabase
       .from('eureka_sets')
@@ -317,6 +337,24 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       .limit(limit),
     supabase
       .from('momo_cloaks')
+      .select('slug, title, image_url, updated_at')
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('seasons')
+      .select('slug, title, image_url, updated_at')
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('season_categories')
+      .select('slug, title, image_url, updated_at')
+      .not('updated_at', 'is', null)
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(limit),
+    supabase
+      .from('abilities')
       .select('slug, title, image_url, updated_at')
       .not('updated_at', 'is', null)
       .order('updated_at', { ascending: false, nullsFirst: false })
@@ -409,6 +447,33 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       editHref: `${navLinksData.admin.momoCloaks.cloaks.edit}/${c.slug}`,
       href: editOnlyHref(navLinksData.admin.momoCloaks.cloaks, c.slug),
       date: c.updated_at!,
+    })),
+    ...(seasons ?? []).map((s) => ({
+      slug: s.slug,
+      title: s.title,
+      image_url: s.image_url,
+      type: navLinksData.admin.outfits.seasons.title,
+      editHref: `${navLinksData.admin.outfits.seasons.edit}/${s.slug}`,
+      href: `${navLinksData.admin.outfits.seasons.main}/seasons/${s.slug}`,
+      date: s.updated_at!,
+    })),
+    ...(seasonCategories ?? []).map((c) => ({
+      slug: c.slug,
+      title: c.title,
+      image_url: c.image_url,
+      type: navLinksData.admin.outfits.seasonCategories.title,
+      editHref: `${navLinksData.admin.outfits.seasonCategories.edit}/${c.slug}`,
+      href: editOnlyHref(navLinksData.admin.outfits.seasonCategories, c.slug),
+      date: c.updated_at!,
+    })),
+    ...(abilities ?? []).map((a) => ({
+      slug: a.slug,
+      title: a.title,
+      image_url: a.image_url,
+      type: navLinksData.admin.outfits.abilities.title,
+      editHref: `${navLinksData.admin.outfits.abilities.edit}/${a.slug}`,
+      href: editOnlyHref(navLinksData.admin.outfits.abilities, a.slug),
+      date: a.updated_at!,
     })),
   ]
 })
