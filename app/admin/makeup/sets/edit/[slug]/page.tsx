@@ -57,14 +57,9 @@ async function EditMakeupSet({ params }: { params: Promise<{ slug: string }> }) 
     .select('id, slug, makeup_set, makeup_category, image_url, alt_image_url, title, description')
     .eq('makeup_set', makeupSet.slug)
 
-  const initialCategorySelect = [
-    ...new Set((variantRows ?? []).map((v) => v.makeup_category).filter(Boolean)),
-  ] as string[]
-
   return (
     <EditMakeupSetForm
       initial={makeupSet}
-      initialCategorySelect={initialCategorySelect}
       initialVariants={variantRows ?? []}
       labels={labels}
       makeupCategories={makeupCategories}

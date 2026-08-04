@@ -10,14 +10,11 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
-  SelectChangeEvent,
   Stack,
   TextField,
   Typography,
 } from '@mui/material'
-import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
@@ -54,7 +51,6 @@ export default function EditMakeupSetForm({
   seasons,
   seasonCategories,
   makeupCategories,
-  initialCategorySelect = [],
   initialVariants = [],
 }: {
   initial: MakeupSetRaw
@@ -65,7 +61,6 @@ export default function EditMakeupSetForm({
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   makeupCategories: MakeupCategory[]
-  initialCategorySelect?: string[]
   initialVariants?: MakeupVariantRow[]
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
@@ -83,12 +78,6 @@ export default function EditMakeupSetForm({
   const [order, setOrder] = useState<number | ''>(initial.order ?? 1)
   const [setImage, setSetImage] = useState<string | null>(initial.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(initial.alt_image_url ?? null)
-  // Reflect the categories the set actually has. A set with none predates the
-  // auto-create behaviour, so start it fully checked — but never override a
-  // non-empty selection, or saving would re-create variants an admin removed.
-  const [categorySelect, setCategorySelect] = useState<string[]>(() =>
-    initialCategorySelect.length > 0 ? initialCategorySelect : makeupCategories.map((c) => c.slug)
-  )
   // Only the base set's variants get cards — evolutions are edited on their own pages.
   const baseSlug = initial.slug ?? ''
   const isBaseVariant = (v: MakeupVariantRow) => v.makeup_set === baseSlug
@@ -123,14 +112,15 @@ export default function EditMakeupSetForm({
   // A set cannot be its own base — exclude the row being edited from options.
   const baseSetOptions = makeupSets.filter((s) => s.slug !== initial.slug)
 
+  // Every makeup set always has all of the categories, so this is submitted as
+  // the full list rather than an editable selection. Sets created before that
+  // rule get their missing variants back-filled on the next save; only variants
+  // not tied to a set differ, and those live on the makeup variants pages.
+  const categorySlugs = makeupCategories.map((c) => c.slug)
+
   function handleBaseSetChange(value: string | null) {
     setBaseSet(value)
     setOrder(value ? 2 : 1)
-  }
-
-  function handleCategoryChange(e: SelectChangeEvent<string[]>) {
-    const { value } = e.target
-    setCategorySelect(typeof value === 'string' ? value.split(',') : value)
   }
 
   const selectedOutfitSet = outfitSets.find((s) => s.slug === outfitSet) ?? null
@@ -340,47 +330,22 @@ export default function EditMakeupSetForm({
         )}
         {!baseSet && <input name="order" type="hidden" value={1} />}
 
-        <FormControl>
-          <InputLabel>Categories</InputLabel>
-          <Select
-            multiple
-            MenuProps={MENU_PROPS}
-            input={<OutlinedInput label="Categories" />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((s) => {
-                  const cat = makeupCategories.find((c) => c.slug === s)
-                  return <Chip key={s} label={cat?.title ?? s} size="small" />
-                })}
-              </Box>
-            )}
-            value={categorySelect}
-            onChange={handleCategoryChange}
-          >
-            {makeupCategories.map((c) => {
-              const selected = categorySelect.includes(c.slug)
-              return (
-                <MenuItem key={c.slug} value={c.slug}>
-                  {selected ? (
-                    <CheckBox fontSize="small" sx={{ mr: 1 }} />
-                  ) : (
-                    <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
-                  )}
-                  {c.title}
-                </MenuItem>
-              )
-            })}
-          </Select>
-        </FormControl>
-
-        <Alert severity="warning">
-          Unchecking a category deletes its variant and any collection records for it.
-        </Alert>
+        <Stack spacing={1}>
+          <Typography variant="subtitle2">Categories</Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+            {makeupCategories.map((c) => (
+              <Chip key={c.slug} label={c.title ?? c.slug} size="small" />
+            ))}
+          </Box>
+          <Typography color="text.secondary" variant="caption">
+            Every makeup set has a variant for all categories.
+          </Typography>
+        </Stack>
 
         <input
           name="makeup_categories"
           type="hidden"
-          value={JSON.stringify(categorySelect.map((s) => ({ slug: s })))}
+          value={JSON.stringify(categorySlugs.map((s) => ({ slug: s })))}
         />
 
         <Stack spacing={1}>

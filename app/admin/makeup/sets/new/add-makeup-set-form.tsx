@@ -10,14 +10,12 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
-  OutlinedInput,
   Select,
-  SelectChangeEvent,
   Stack,
   TextField,
+  Typography,
 } from '@mui/material'
 import { toSlug } from '@/lib/utils'
-import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
@@ -60,20 +58,17 @@ export default function AddMakeupSetForm({
   const [outfitSet, setOutfitSet] = useState<string | null>(null)
   const [baseSet, setBaseSet] = useState<string | null>(null)
   const [order, setOrder] = useState<number | ''>(1)
-  // Every makeup set has all five categories by default — uncheck to skip one.
-  const [categorySelect, setCategorySelect] = useState<string[]>(() =>
-    makeupCategories.map((c) => c.slug)
-  )
   const [slugEdited, setSlugEdited] = useState(false)
+
+  // Every makeup set always has all of the categories — there is nothing to
+  // choose, so the categories are derived rather than held in state. Only
+  // variants that aren't tied to a set differ, and those are managed on the
+  // makeup variants pages.
+  const categorySlugs = makeupCategories.map((c) => c.slug)
 
   function handleTitleChange(value: string) {
     setTitle(value)
     if (!slugEdited) setSlug(toSlug(value))
-  }
-
-  function handleCategoryChange(e: SelectChangeEvent<string[]>) {
-    const { value } = e.target
-    setCategorySelect(typeof value === 'string' ? value.split(',') : value)
   }
 
   function handleBaseSetChange(value: string | null) {
@@ -122,7 +117,6 @@ export default function AddMakeupSetForm({
       setOutfitSet(null)
       setBaseSet(null)
       setOrder(1)
-      setCategorySelect([])
       setSlugEdited(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -282,38 +276,17 @@ export default function AddMakeupSetForm({
         )}
         {!baseSet && <input name="order" type="hidden" value={1} />}
 
-        <FormControl>
-          <InputLabel>Categories</InputLabel>
-          <Select
-            multiple
-            MenuProps={MENU_PROPS}
-            input={<OutlinedInput label="Categories" />}
-            renderValue={(selected) => (
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                {selected.map((s) => {
-                  const cat = makeupCategories.find((c) => c.slug === s)
-                  return <Chip key={s} label={cat?.title ?? s} size="small" />
-                })}
-              </Box>
-            )}
-            value={categorySelect}
-            onChange={handleCategoryChange}
-          >
-            {makeupCategories.map((c) => {
-              const selected = categorySelect.includes(c.slug)
-              return (
-                <MenuItem key={c.slug} value={c.slug}>
-                  {selected ? (
-                    <CheckBox fontSize="small" sx={{ mr: 1 }} />
-                  ) : (
-                    <CheckBoxOutlineBlank fontSize="small" sx={{ mr: 1 }} />
-                  )}
-                  {c.title}
-                </MenuItem>
-              )
-            })}
-          </Select>
-        </FormControl>
+        <Stack spacing={1}>
+          <Typography variant="subtitle2">Categories</Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+            {makeupCategories.map((c) => (
+              <Chip key={c.slug} label={c.title ?? c.slug} size="small" />
+            ))}
+          </Box>
+          <Typography color="text.secondary" variant="caption">
+            Every makeup set gets a variant for all categories.
+          </Typography>
+        </Stack>
 
         <Alert severity="info">
           Images can be added after saving — use the makeup set edit form.
@@ -322,7 +295,7 @@ export default function AddMakeupSetForm({
         <input
           name="makeup_categories"
           type="hidden"
-          value={JSON.stringify(categorySelect.map((s) => ({ slug: s })))}
+          value={JSON.stringify(categorySlugs.map((s) => ({ slug: s })))}
         />
       </Stack>
     </form>
