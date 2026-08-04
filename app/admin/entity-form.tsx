@@ -55,6 +55,8 @@ function typeDefault(field: FieldConfig): unknown {
       return []
     case 'imagePair':
       return null
+    case 'custom':
+      return field.defaultValue ?? ''
     default:
       return field.type === 'text' || field.type === 'textarea' ? (field.defaultValue ?? '') : ''
   }

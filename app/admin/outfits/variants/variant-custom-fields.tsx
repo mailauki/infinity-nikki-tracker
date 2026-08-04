@@ -36,9 +36,10 @@ export function GroupedOutfitSetSelect({
   outfitSets: OutfitSetRaw[]
   mode: 'add' | 'edit'
 }) {
-  // In add mode, default the picker to the Standalone Pieces bag. Edit mode uses
-  // the variant's own saved set (which may be any set, including standalone).
-  const value = String(values.outfit_set ?? (mode === 'add' ? STANDALONE_SLUG : ''))
+  // Add mode is seeded to Standalone Pieces by the field's `defaultValue`, so
+  // the rendered value always mirrors real form state (edit mode seeds from the
+  // variant's own saved set).
+  const value = String(values.outfit_set ?? '')
 
   function applyBackfill(nextSlug: string) {
     // Standalone is a mixed bag: each piece carries its own rarity/style/labels,

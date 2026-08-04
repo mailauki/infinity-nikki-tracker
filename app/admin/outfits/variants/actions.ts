@@ -23,11 +23,12 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
   const label_2 = (formData.get('label_2') as string | null) || null
   const title = (formData.get('title') as string | null)?.trim() || null
   const description = (formData.get('description') as string | null)?.trim() || null
-  const isDefault = formData.get('default') === 'true'
   const slug = (formData.get('slug') as string | null)?.trim() ?? ''
 
   if (!slug) return { error: 'Slug is required.' }
 
+  // `default` is intentionally omitted: the trg_enforce_base_variant_default
+  // trigger derives it from the owning set's order on every insert/update.
   const { error } = await supabase.from('outfit_variants').insert([
     {
       outfit_set,
@@ -40,7 +41,6 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
       label_2,
       title,
       description,
-      default: isDefault,
       slug,
     },
   ])
@@ -68,11 +68,12 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
   const label_2 = (formData.get('label_2') as string | null) || null
   const title = (formData.get('title') as string | null)?.trim() || null
   const description = (formData.get('description') as string | null)?.trim() || null
-  const isDefault = formData.get('default') === 'true'
   const slug = (formData.get('slug') as string | null)?.trim() ?? ''
 
   if (!slug) return { error: 'Slug is required.' }
 
+  // `default` is intentionally omitted — see the note in addOutfitVariant. The
+  // trigger still fires here because `outfit_set` is part of every update.
   const { error } = await supabase
     .from('outfit_variants')
     .update({
@@ -86,7 +87,6 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
       label_2,
       title,
       description,
-      default: isDefault,
       slug,
       updated_at: new Date().toISOString(),
     })

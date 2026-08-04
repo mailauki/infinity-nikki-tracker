@@ -46,14 +46,16 @@ export function OutfitVariantTable({
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {
-      await updateOutfitVariant(newRow.id, {
+      const saved = await updateOutfitVariant(newRow.id, {
         outfit_set: newRow.outfit_set,
         outfit_category: newRow.outfit_category,
         title: newRow.title,
-        default: newRow.default,
       })
-      setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)))
-      return newRow
+      // Changing outfit_set re-fires the base-variant trigger, so `default` may
+      // differ from what the row held. Take the saved value as the truth.
+      const savedRow = { ...newRow, default: saved.default }
+      setRows((prev) => prev.map((r) => (r.id === newRow.id ? savedRow : r)))
+      return savedRow
     } catch {
       return oldRow
     }
@@ -157,7 +159,9 @@ export function OutfitVariantTable({
       field: 'default',
       headerName: 'Default',
       width: 100,
-      editable: true,
+      // Read-only: derived by the trg_enforce_base_variant_default DB trigger
+      // from the owning set's order, so an edit here would never stick.
+      editable: false,
       type: 'boolean',
       renderCell: ({ value }: GridRenderCellParams<Row>) =>
         value ? <CheckBox color="secondary" fontSize="small" /> : null,

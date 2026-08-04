@@ -111,6 +111,8 @@ interface CustomField extends BaseField {
    * `EntityForm` maps to the real client component.
    */
   component: CustomFieldComponent
+  /** Seed value for add mode, so the field's state matches what it renders. */
+  defaultValue?: string
 }
 
 export type FieldConfig =
