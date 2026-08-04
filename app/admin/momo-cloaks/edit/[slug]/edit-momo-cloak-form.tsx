@@ -1,7 +1,6 @@
 'use client'
 
 import { useActionState, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   Alert,
   Autocomplete,
@@ -43,7 +42,6 @@ export default function EditMomoCloakForm({
   outfitSets: OutfitSetRaw[]
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
-  const router = useRouter()
   const [title, setTitle] = useState(initial.title ?? '')
   const [slug, setSlug] = useState(initial.slug ?? '')
   const [description, setDescription] = useState(initial.description ?? '')
@@ -80,12 +78,6 @@ export default function EditMomoCloakForm({
   useEffect(() => {
     if (state && 'savedTitle' in state && !('error' in state)) {
       setFormConfig({ savedTitle: state.savedTitle })
-
-      // The action hands back a redirect target instead of calling Next's
-      // redirect(); see the NOTE at the top of ../../actions.ts.
-      if ('redirectTo' in state && state.redirectTo) {
-        router.push(state.redirectTo)
-      }
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 

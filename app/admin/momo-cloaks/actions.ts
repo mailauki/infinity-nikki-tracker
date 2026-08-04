@@ -1,11 +1,6 @@
 'use server'
 
-// NOTE: these actions return `{ redirectTo }` rather than calling Next's
-// redirect(), for the same reason documented at length in
-// app/admin/makeup/sets/actions.ts — redirect() from a Server Action POST
-// trips `TypeError: Invalid character in header content ["x-action-redirect"]`.
-// The forms navigate with router.push() instead. Revisit alongside makeup.
-
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
@@ -52,7 +47,7 @@ export async function addMomoCloak(_: unknown, formData: FormData) {
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: values.title }
 
-  return { savedTitle: values.title, redirectTo: ADMIN_DASHBOARD }
+  redirect(ADMIN_DASHBOARD)
 }
 
 export async function updateMomoCloak(_: unknown, formData: FormData) {
@@ -85,14 +80,10 @@ export async function updateMomoCloak(_: unknown, formData: FormData) {
       .limit(1)
       .maybeSingle()
 
-    return {
-      savedTitle: values.title,
-      redirectTo: next?.slug
-        ? `${navLinksData.admin.momoCloaks.cloaks.edit}/${next.slug}`
-        : ADMIN_DASHBOARD,
-    }
+    if (next?.slug) redirect(`${navLinksData.admin.momoCloaks.cloaks.edit}/${next.slug}`)
+    redirect(ADMIN_DASHBOARD)
   }
-  return { savedTitle: values.title, redirectTo: ADMIN_DASHBOARD }
+  redirect(ADMIN_DASHBOARD)
 }
 
 export async function deleteMomoCloak(slug: string) {

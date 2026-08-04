@@ -1,7 +1,6 @@
 'use client'
 
 import { Fragment, useActionState, useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   Alert,
   Box,
@@ -40,7 +39,7 @@ import {
 type ActionState =
   | { error: string }
   | { addAnother: true; savedTitle?: string }
-  | { savedTitle?: string; redirectTo?: string }
+  | { savedTitle?: string }
   | null
 
 type EntityAction = (state: unknown, formData: FormData) => Promise<unknown>
@@ -114,7 +113,6 @@ export default function EntityForm({
   maxWidth?: Breakpoint
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
-  const router = useRouter()
   // Field builders emit function-valued props, so they must run on the client.
   // We build here (not in the server page) to keep those closures off the wire.
   const fields = useMemo(
@@ -172,10 +170,6 @@ export default function EntityForm({
       setSlugEdited(false)
     } else if ('savedTitle' in state && !('error' in state)) {
       setFormConfig({ savedTitle: state.savedTitle })
-      // An action may hand back a redirect target instead of calling Next's
-      // redirect(); see the NOTE in app/admin/makeup/sets/actions.ts. Actions
-      // that still redirect server-side simply never set this.
-      if ('redirectTo' in state && state.redirectTo) router.push(state.redirectTo)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state])
