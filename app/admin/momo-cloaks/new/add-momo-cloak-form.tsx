@@ -1,7 +1,6 @@
 'use client'
 
 import { useActionState, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import {
   Alert,
   Autocomplete,
@@ -42,7 +41,6 @@ export default function AddMomoCloakForm({
   outfitSets: OutfitSetRaw[]
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
-  const router = useRouter()
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [description, setDescription] = useState('')
@@ -85,13 +83,6 @@ export default function AddMomoCloakForm({
   }, [pending])
 
   useEffect(() => {
-    // The action hands back a redirect target instead of calling Next's
-    // redirect(); see the NOTE at the top of app/admin/momo-cloaks/actions.ts.
-    if (state && 'redirectTo' in state && state.redirectTo) {
-      setFormConfig({ savedTitle: state.savedTitle })
-      router.push(state.redirectTo)
-      return
-    }
     if (state && 'addAnother' in state) {
       setFormConfig({ savedTitle: state.savedTitle })
       setTitle('')

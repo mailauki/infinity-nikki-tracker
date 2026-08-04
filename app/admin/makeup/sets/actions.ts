@@ -1,35 +1,6 @@
 'use server'
 
-// NOTE — TEMPORARY WORKAROUND: client-side redirect instead of redirect().
-//
-// Calling Next's `redirect()` from these actions makes the POST fail with:
-//   TypeError: Invalid character in header content ["x-action-redirect"]
-//   POST /admin/makeup/sets/new 500  (ERR_INVALID_CHAR)
-// The DB write succeeds first, so the row is saved and only the response is
-// broken — the browser then reports "An unexpected response was received from
-// the server". Next builds that header as `${redirectUrl};${redirectType}`,
-// and header values must be ASCII-only.
-//
-// Ruled out while investigating (all verified clean ASCII):
-//   - ADMIN_DASHBOARD ('/admin') and every string in lib/nav-links.tsx
-//   - every makeup_sets / makeup_variants slug and title in the DB
-//   - NEXT_PUBLIC_SITE_URL
-//   - the request's Host/Origin headers and all cookies (probed at runtime;
-//     this disproved the theory that a refreshed Supabase session cookie was
-//     being written back onto the request by lib/supabase/proxy.ts)
-//   - `redirect('/admin')` in isolation, which yields a clean "/admin;replace"
-// So the corrupting value had not been identified when this workaround landed.
-//
-// These actions therefore return `{ redirectTo }` and the forms navigate with
-// router.push(). Everything else (validation, the variant sync, add_another,
-// update_next) is unchanged.
-//
-// TO REVISIT: this also affects the outfit and eureka admin forms, which still
-// call redirect() directly — the bug is not makeup-specific. Instrument the
-// `res.setHeader('x-action-redirect', ...)` call in
-// node_modules/next/dist/server/app-render/action-handler.js to capture the
-// offending value, then fix at the source and drop this workaround.
-
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
@@ -126,9 +97,7 @@ export async function addMakeupSet(_: unknown, formData: FormData) {
 
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: values.title }
-  // WORKAROUND (see NOTE at the top of this file): return a redirect target for
-  // the client instead of calling redirect() here.
-  return { savedTitle: values.title, redirectTo: ADMIN_DASHBOARD }
+  redirect(ADMIN_DASHBOARD)
 }
 
 export async function updateMakeupSet(_: unknown, formData: FormData) {
@@ -288,16 +257,10 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
       .limit(1)
       .maybeSingle()
 
-    // WORKAROUND (see NOTE at the top of this file).
-    return {
-      savedTitle: values.title,
-      redirectTo: next?.slug
-        ? `${navLinksData.admin.makeup.sets.edit}/${next.slug}`
-        : ADMIN_DASHBOARD,
-    }
+    if (next?.slug) redirect(`${navLinksData.admin.makeup.sets.edit}/${next.slug}`)
+    redirect(ADMIN_DASHBOARD)
   }
-  // WORKAROUND (see NOTE at the top of this file).
-  return { savedTitle: values.title, redirectTo: ADMIN_DASHBOARD }
+  redirect(ADMIN_DASHBOARD)
 }
 
 export async function deleteMakeupSet(slug: string) {
