@@ -1,63 +1,34 @@
 'use client'
 
-import { List, ListSubheader, Typography } from '@mui/material'
-import { OutfitSet, SeasonCategory } from '@/lib/types/outfit'
-import { isEvolutionVisible, isGlowup } from '@/hooks/outfit'
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Box,
+  Divider,
+  List,
+  Typography,
+} from '@mui/material'
+import { MakeupSet } from '@/lib/types/makeup'
+import { OutfitSet, OutfitVariant, SeasonCategory } from '@/lib/types/outfit'
 import { useSeasonFilter } from './season-filter-context'
-import OutfitSetListItem, { OutfitSetListEntry } from './outfit-set-item'
-
-// Expand a set into its base entry plus one entry per evolution (including the
-// glow-up). Each entry is rendered as its own list item — the same model as the
-// outfits grid, where evolutions and glow-ups stand alongside base sets — and is
-// shown or hidden by the evolution / glow-up toggles. The base entry is always
-// shown; progress is measured against each entry's own variants.
-export function expandSet(
-  set: OutfitSet,
-  hideEvolutions: boolean,
-  hideGlowups: boolean
-): OutfitSetListEntry[] {
-  const baseSlug = set.slug
-
-  const entries: OutfitSetListEntry[] = [
-    {
-      key: baseSlug,
-      set,
-      evolution: null,
-      variants: set.outfit_variants.filter((v) => v.outfit_set === baseSlug),
-    },
-  ]
-
-  for (const evolution of set.evolutions) {
-    const visible = isEvolutionVisible({
-      stateSlug: evolution.slug,
-      baseSlug,
-      isGlowupState: isGlowup(evolution),
-      hideEvolutions,
-      hideGlowups,
-    })
-    if (!visible) continue
-
-    const variants = set.outfit_variants.filter((v) => v.outfit_set === evolution.slug)
-    if (variants.length === 0) continue
-
-    entries.push({
-      key: evolution.slug,
-      set,
-      evolution,
-      variants,
-      isGlowup: isGlowup(evolution),
-    })
-  }
-
-  return entries
-}
+import OutfitSetListItem from './outfit-set-item'
+import StandalonePieceItem from './standalone-piece-item'
+import MakeupSetListItem from './makeup-set-item'
+import { ExpandMore } from '@mui/icons-material'
+import ProgressChip from '@/components/progress-chip'
+import { countEntries, groupSeasonEntries, OTHER_CATEGORY, SeasonEntry } from './season-entries'
 
 export default function SeasonOutfitList({
   seasonSets,
+  standaloneVariants,
+  makeupSets,
   seasonCategories,
   isLoggedIn,
 }: {
   seasonSets: OutfitSet[]
+  standaloneVariants: OutfitVariant[]
+  makeupSets: MakeupSet[]
   seasonCategories: SeasonCategory[]
   isLoggedIn: boolean
 }) {
@@ -66,38 +37,82 @@ export default function SeasonOutfitList({
   const categoryTitle = (categorySlug: string) =>
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
 
-  // Group the sets by their season_category (the season<->category link lives on
-  // outfit_sets); sets without a category fall under "Other".
-  const categoryGroups = Object.entries(
-    seasonSets.reduce<Record<string, OutfitSet[]>>((groups, set) => {
-      const category = set.season_category ?? 'Other'
-      ;(groups[category] ??= []).push(set)
-      return groups
-    }, {})
+  // Rows currently visible, grouped by season_category — respects the evolution
+  // and glow-up toggles.
+  const categoryGroups = groupSeasonEntries({
+    seasonSets,
+    standaloneVariants,
+    makeupSets,
+    hideEvolutions,
+    hideGlowups,
+  })
+
+  // Category chips report full contents, so a total stays put as the toggles
+  // hide rows. Built with both toggles off and read back by category slug.
+  const fullTotals = new Map(
+    groupSeasonEntries({
+      seasonSets,
+      standaloneVariants,
+      makeupSets,
+      hideEvolutions: false,
+      hideGlowups: false,
+    }).map(([category, entries]) => [category, countEntries(entries)])
   )
 
   if (!categoryGroups.length) {
-    return <Typography color="text.secondary">No outfit sets in this season yet.</Typography>
+    return <Typography color="text.secondary">Nothing in this season yet.</Typography>
+  }
+
+  const renderEntry = (entry: SeasonEntry) => {
+    if (entry.kind === 'standalone') {
+      return <StandalonePieceItem key={entry.key} isLoggedIn={isLoggedIn} variant={entry.variant} />
+    }
+
+    if (entry.kind === 'makeup') {
+      return (
+        <MakeupSetListItem
+          key={entry.key}
+          evolution={entry.evolution}
+          isLoggedIn={isLoggedIn}
+          set={entry.set}
+          variants={entry.variants}
+        />
+      )
+    }
+
+    return <OutfitSetListItem key={entry.key} entry={entry} isLoggedIn={isLoggedIn} />
   }
 
   return (
     <>
-      {categoryGroups.map(([category, sets]) => (
-        <List
-          key={category}
-          subheader={
-            <ListSubheader sx={{ bgcolor: 'surface.containerLowest' }}>
-              {category === 'Other' ? 'Other' : categoryTitle(category)}
-            </ListSubheader>
-          }
-        >
-          {sets
-            .flatMap((set) => expandSet(set, hideEvolutions, hideGlowups))
-            .map((entry) => (
-              <OutfitSetListItem key={entry.key} entry={entry} isLoggedIn={isLoggedIn} />
-            ))}
-        </List>
-      ))}
+      {categoryGroups.map(([category, entries]) => {
+        const { obtained, total } = fullTotals.get(category) ?? { obtained: 0, total: 0 }
+
+        return (
+          <Box key={category}>
+            <Accordion variant="filled">
+              <AccordionSummary
+                aria-controls={`${category}-content`}
+                expandIcon={<ExpandMore />}
+                id={`${category}-header`}
+              >
+                <Typography component="span" sx={{ flexGrow: 1 }}>
+                  {category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)}
+                </Typography>
+                {isLoggedIn && (
+                  <Box sx={{ mr: 2 }}>
+                    <ProgressChip obtained={obtained} total={total} variant="parts" />
+                  </Box>
+                )}
+              </AccordionSummary>
+              <AccordionDetails>
+                <Divider />
+                <List>{entries.map(renderEntry)}</List>
+              </AccordionDetails>
+            </Accordion>
+          </Box>
+        )
+      })}
     </>
   )
 }

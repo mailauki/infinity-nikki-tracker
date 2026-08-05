@@ -4,7 +4,9 @@ import { Metadata } from 'next'
 import { getSeasonRaw } from '@/hooks/data/admin/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
+import { getMakeupSets } from '@/hooks/data/makeup-sets'
 import { getUserID } from '@/hooks/user'
+import { STANDALONE_SLUG } from './season-entries'
 import LazyImage from '@/components/lazy-image'
 import SlugToolBar from '@/components/navbar/slug-toolbar'
 import { SeasonFilterProvider } from './season-filter-context'
@@ -26,10 +28,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SeasonPage({ params }: Props) {
   const { slug } = await params
 
-  const [season, seasonCategories, outfitSets, userId] = await Promise.all([
+  const [season, seasonCategories, outfitSets, makeupSets, userId] = await Promise.all([
     getSeasonRaw(slug),
     getSeasonCategories(),
     getOutfitSets(),
+    getMakeupSets(),
     getUserID(),
   ])
 
@@ -37,8 +40,19 @@ export default async function SeasonPage({ params }: Props) {
 
   const isLoggedIn = !!userId
 
-  // Sets in this season (the season<->set link lives on outfit_sets).
-  const seasonSets = outfitSets.filter((set) => set.seasons === slug)
+  // Sets in this season (the season<->set link lives on outfit_sets). The
+  // standalone-pieces container has no season of its own — each of its variants
+  // carries one — so it is excluded here and its variants are pulled out below.
+  const seasonSets = outfitSets.filter(
+    (set) => set.seasons === slug && set.slug !== STANDALONE_SLUG
+  )
+
+  const standaloneVariants =
+    outfitSets
+      .find((set) => set.slug === STANDALONE_SLUG)
+      ?.outfit_variants.filter((variant) => variant.seasons === slug) ?? []
+
+  const seasonMakeupSets = makeupSets.filter((set) => set.seasons === slug)
 
   return (
     <SeasonFilterProvider>
@@ -54,14 +68,22 @@ export default async function SeasonPage({ params }: Props) {
           <Typography component="h1" variant="h4">
             {season.title}
           </Typography>
-          {isLoggedIn && <SeasonProgress seasonSets={seasonSets} />}
+          {isLoggedIn && (
+            <SeasonProgress
+              makeupSets={seasonMakeupSets}
+              seasonSets={seasonSets}
+              standaloneVariants={standaloneVariants}
+            />
+          )}
         </Stack>
         <Typography variant="body2">{season.description}</Typography>
 
         <SeasonOutfitList
           isLoggedIn={isLoggedIn}
+          makeupSets={seasonMakeupSets}
           seasonCategories={seasonCategories}
           seasonSets={seasonSets}
+          standaloneVariants={standaloneVariants}
         />
       </PageShell>
     </SeasonFilterProvider>
