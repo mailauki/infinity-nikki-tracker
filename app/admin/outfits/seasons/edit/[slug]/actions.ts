@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
 import { navLinksData } from '@/lib/nav-links'
-import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
+import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 
 export async function editSeason(currentSlug: string, _: unknown, formData: FormData) {
   const role = await getUserRole()

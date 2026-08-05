@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { navLinksData } from '@/lib/nav-links'
-import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
+import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 
 function readForm(formData: FormData) {

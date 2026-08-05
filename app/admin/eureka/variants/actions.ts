@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { toSlugVariant } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
-import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
+import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 
 export async function addEurekaVariant(_: unknown, formData: FormData) {

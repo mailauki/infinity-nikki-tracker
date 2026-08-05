@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
 import { navLinksData } from '@/lib/nav-links'
 import { evolutionSortKey } from '@/hooks/outfit'
-import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
+import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 
 export async function editEvolution(
   currentSlug: string,

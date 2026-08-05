@@ -1,6 +1,14 @@
 'use client'
 
-import { Button, IconButton, Tooltip, useMediaQuery, useTheme } from '@mui/material'
+import {
+  Button,
+  CardActionArea,
+  Chip,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close'
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd'
 import CheckIcon from '@mui/icons-material/Check'
@@ -40,7 +48,7 @@ export default function FormToolBar() {
       <ToolbarButton
         component="a"
         href={ADMIN_DASHBOARD}
-        icon={<CloseIcon />}
+        icon={<CloseIcon fontSize="small" />}
         isMobile={isMobile}
         label="Cancel"
         variant="outlined"
@@ -49,9 +57,9 @@ export default function FormToolBar() {
         <ToolbarButton
           disabled={pending}
           form={formId}
-          icon={<PlaylistAddIcon />}
+          icon={<PlaylistAddIcon fontSize="small" />}
           isMobile={isMobile}
-          label={pending ? 'Saving...' : 'Save & add another'}
+          label={pending ? 'Saving...' : 'Add More'}
           name="add_another"
           type="submit"
           value="true"
@@ -62,7 +70,7 @@ export default function FormToolBar() {
         <ToolbarButton
           disabled={pending}
           form={formId}
-          icon={<CheckIcon />}
+          icon={<CheckIcon fontSize="small" />}
           isMobile={isMobile}
           label={pending ? 'Saving...' : 'Update'}
           name="update_only"
@@ -75,9 +83,9 @@ export default function FormToolBar() {
         <ToolbarButton
           disabled={pending}
           form={formId}
-          icon={<SkipNextIcon />}
+          icon={<SkipNextIcon fontSize="small" />}
           isMobile={isMobile}
-          label={pending ? 'Saving...' : 'Update & next item'}
+          label={pending ? 'Saving...' : 'Next Item'}
           name="update_next"
           type="submit"
           value="true"
@@ -87,7 +95,7 @@ export default function FormToolBar() {
       <ToolbarButton
         disabled={pending}
         form={formId}
-        icon={<SaveIcon />}
+        icon={<SaveIcon fontSize="small" />}
         isMobile={isMobile}
         label={pending ? 'Saving...' : 'Save'}
         type="submit"
@@ -114,18 +122,18 @@ type ToolbarButtonProps = {
 function ToolbarButton({ isMobile, label, icon, variant, ...props }: ToolbarButtonProps) {
   if (isMobile) {
     return (
-      <Tooltip title={label}>
-        <span>
-          <IconButton
-            aria-label={label}
-            color={variant === 'contained' ? 'primary' : 'default'}
-            size="small"
-            {...props}
-          >
-            {icon}
-          </IconButton>
-        </span>
-      </Tooltip>
+      <CardActionArea
+        aria-label={label}
+        sx={{ p: 0.5, borderRadius: (theme) => `${theme.shape.borderRadius}px` }}
+        {...props}
+      >
+        <Stack sx={{ alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+          <Chip color={variant === 'contained' ? 'primary' : 'default'} label={icon} size="small" />
+          <Typography noWrap variant="caption">
+            {label}
+          </Typography>
+        </Stack>
+      </CardActionArea>
     )
   }
 
