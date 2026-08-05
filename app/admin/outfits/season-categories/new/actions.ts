@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
-import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
+import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { toSlug } from '@/lib/utils'
 
 export async function addSeasonCategory(_: unknown, formData: FormData) {

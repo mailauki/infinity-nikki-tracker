@@ -2,7 +2,11 @@
 
 import { createContext, useCallback, useContext, useState } from 'react'
 
-export const ADMIN_DASHBOARD = '/admin'
+// Re-exported from lib/admin-routes so client components can keep importing it
+// from here. The canonical definition MUST stay in that server-safe module:
+// anything importing this constant from a Server Action or Server Component gets
+// a client reference (a throwing stub), not the string — see lib/admin-routes.ts.
+export { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 
 interface FormConfig {
   formId: string

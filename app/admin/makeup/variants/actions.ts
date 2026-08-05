@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { navLinksData } from '@/lib/nav-links'
-import { ADMIN_DASHBOARD } from '@/app/admin/form-context'
+import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 
 // makeup_set is nullable — a variant with no set is a standalone piece with
