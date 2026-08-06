@@ -2,9 +2,14 @@
 
 import { Fragment } from 'react'
 import Link from 'next/link'
-import { Button, Typography } from '@mui/material'
+import { Link as Anchor, Button, Typography } from '@mui/material'
 
 import LazyImage from '@/components/lazy-image'
+import SlugToolBar from '@/components/navbar/slug-toolbar'
+import {
+  resolveOutfitImage,
+  useOutfitImageMode,
+} from '@/components/outfits/outfit-image-mode-context'
 import SetDetailCard from '@/components/set-detail-card'
 import { MomoCloak } from '@/lib/types/momo'
 import { toTitle } from '@/lib/utils'
@@ -22,12 +27,34 @@ function MetaRow({ label, value }: { label: string; value: string }) {
   )
 }
 
-export default function MomoCloakDetail({ cloak }: { cloak: MomoCloak }) {
+export default function MomoCloakDetail({
+  cloak,
+  isAdmin,
+}: {
+  cloak: MomoCloak
+  isAdmin: boolean
+}) {
   const { obtainedSlugs, isLoggedIn } = useMomoCloakData()
+  const { mode } = useOutfitImageMode()
   const isObtained = obtainedSlugs.has(cloak.slug)
 
   const extraRows = [
-    cloak.seasons ? <MetaRow key="season" label="Season" value={toTitle(cloak.seasons)} /> : null,
+    // The season links through to its own page; every cloak season slug resolves
+    // to a real `seasons` row, so the link is never dead.
+    cloak.seasons ? (
+      <Fragment key="season">
+        <Typography variant="body2">Season</Typography>
+        <Anchor
+          component={Link}
+          href={`/outfits/seasons/${cloak.seasons}`}
+          sx={{ cursor: 'pointer' }}
+          underline="hover"
+          variant="body2"
+        >
+          {toTitle(cloak.seasons)}
+        </Anchor>
+      </Fragment>
+    ) : null,
     cloak.season_category ? (
       <MetaRow
         key="season-category"
@@ -49,22 +76,31 @@ export default function MomoCloakDetail({ cloak }: { cloak: MomoCloak }) {
   ].filter((row): row is React.ReactElement => row !== null)
 
   return (
-    <SetDetailCard
-      description={cloak.description}
-      extraRows={extraRows}
-      isLoggedIn={isLoggedIn}
-      media={
-        <LazyImage
-          image={cloak.image_url ?? ''}
-          kind="media"
-          sx={{ width: '100%', maxWidth: 320, aspectRatio: '2 / 3' }}
-          title={cloak.title}
-        />
-      }
-      obtained={isObtained ? 1 : 0}
-      rarity={cloak.rarity ?? 0}
-      title={cloak.title}
-      total={1}
-    />
+    <>
+      <SlugToolBar isAdmin={isAdmin} />
+      <SetDetailCard
+        description={cloak.description}
+        extraRows={extraRows}
+        isLoggedIn={isLoggedIn}
+        media={
+          <LazyImage
+            image={
+              resolveOutfitImage(mode, { image: cloak.image_url, alt: cloak.alt_image_url }) ?? ''
+            }
+            kind="media"
+            sx={{
+              width: '100%',
+              maxWidth: 320,
+              aspectRatio: mode === 'alt' ? '1 / 1' : '2 / 3',
+            }}
+            title={cloak.title}
+          />
+        }
+        obtained={isObtained ? 1 : 0}
+        rarity={cloak.rarity ?? 0}
+        title={cloak.title}
+        total={1}
+      />
+    </>
   )
 }

@@ -19,18 +19,23 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
   const { sidebarOpen, setSidebarOpen, hasBody } = useSidebar()
 
   // The image swap is available to everyone on the outfits slug pages, including
-  // a season's page — its cards render through the same image-mode-aware cards.
-  const showImageSwap = pathname.startsWith('/outfits/')
+  // a season's page — its cards render through the same image-mode-aware cards —
+  // and on momo-cloaks, whose detail page renders a set image with an alternate.
+  const showImageSwap = pathname.startsWith('/outfits/') || pathname.startsWith('/momo-cloaks/')
 
   const IMAGE_MODE_LABEL = {
     image: 'Showing main image',
     alt: 'Showing alternate image',
   } as const
 
-  const path =
-    pathname.split('/')[2] === slug
-      ? `${pathname.split('/')[1]}/sets`
-      : pathname.split('/').slice(1, 3).join('/')
+  // Most domains nest their admin CRUD under a `/sets` segment
+  // (/admin/eureka/sets/edit/…), so a top-level slug page maps to `<domain>/sets`.
+  // Momo's Cloaks is flat — its admin route is /admin/momo-cloaks/edit/… with no
+  // `/sets` — because a cloak has no variants to separate sets from.
+  const domain = pathname.split('/')[1]
+  const isTopLevelSlug = pathname.split('/')[2] === slug
+  const adminRoot = domain === 'momo-cloaks' ? domain : `${domain}/sets`
+  const path = isTopLevelSlug ? adminRoot : pathname.split('/').slice(1, 3).join('/')
   const backUrl =
     pathname.split('/')[2] === slug
       ? `${pathname.split('/')[1]}`
