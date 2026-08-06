@@ -1,6 +1,15 @@
 'use client'
 
-import { Link as Anchor, Typography, Chip, IconButton, Tooltip } from '@mui/material'
+import {
+  Link as Anchor,
+  Typography,
+  Chip,
+  IconButton,
+  Tooltip,
+  Card,
+  CardActionArea,
+  CardHeader,
+} from '@mui/material'
 import { Collections } from '@mui/icons-material'
 import Link from 'next/link'
 import { CarouselImage, OutfitSet } from '@/lib/types/outfit'
@@ -97,10 +106,44 @@ export default function OutfitSetDetailCard({
     </>
   )
 
+  // Linked makeup set and Momo's Cloak, resolved from their `outfit_set` FKs
+  // rather than guessed from the slug: only 39 of 292 outfits follow the
+  // `<slug>_makeup` pattern and 1 of 292 follows `momos_cloak_<slug>`, so a
+  // derived href is a 404 for most sets. Each card renders only when the link
+  // actually exists.
+  const linked: { href: string; title: string; image: string | null }[] = [
+    outfitSet.makeupSet && {
+      href: `/makeup/${outfitSet.makeupSet.slug}`,
+      title: 'Makeup',
+      image: outfitSet.makeupSet.image_url,
+    },
+    outfitSet.momoCloak && {
+      href: `/momo-cloaks/${outfitSet.momoCloak.slug}`,
+      title: "Momo's Cloak",
+      image: outfitSet.momoCloak.image_url,
+    },
+  ].filter((item): item is { href: string; title: string; image: string | null } => !!item)
+
+  const associatedRow = linked.length ? (
+    <>
+      {linked.map((item) => (
+        <Card key={item.href} sx={{ width: '48%' }}>
+          <CardActionArea component={Link} href={item.href}>
+            <CardHeader
+              avatar={<LazyImage kind="avatar" src={item.image} />}
+              sx={{ py: 1, px: 1.5 }}
+              title={item.title}
+            />
+          </CardActionArea>
+        </Card>
+      ))}
+    </>
+  ) : null
+
   return (
     <SetDetailCard
       description={description}
-      extraRows={[abilityRow, seasonRow]}
+      extraRows={[seasonRow, associatedRow, abilityRow].filter(Boolean)}
       isLoggedIn={isLoggedIn}
       labels={[label, label_2]}
       media={media}

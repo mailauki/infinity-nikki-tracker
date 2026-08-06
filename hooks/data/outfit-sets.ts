@@ -120,7 +120,9 @@ export const getOutfitSet = cache(async (slug: string) => {
         id,
         image_url,
         sort_order
-      )
+      ),
+      momoCloak:momo_cloaks!momo_cloaks_outfit_set_fkey ( slug, title, image_url ),
+      makeupSet:makeup_sets!makeup_sets_outfit_set_fkey ( slug, title, image_url )
     `
     )
     .order('id', { ascending: true })
@@ -134,10 +136,19 @@ export const getOutfitSet = cache(async (slug: string) => {
   const outfitCategories = await getOutfitCategories()
   const evolutions = await getEvolutions()
 
+  // momo_cloaks/makeup_sets point AT outfit_sets, so these embeds come back as
+  // arrays even though no outfit has more than one of either today — nothing at
+  // the DB level enforces that. Collapse to the first row (or null) so consumers
+  // get a single linked set rather than having to index into an array.
+  const first = <T>(rows: T[] | T | null | undefined): T | null =>
+    Array.isArray(rows) ? (rows[0] ?? null) : (rows ?? null)
+
   const outfit = createOutfitSet({
     outfitSet: {
       ...outfitSet,
       carousel_images: outfitSet.outfit_set_carousel_images ?? [],
+      momoCloak: first(outfitSet.momoCloak),
+      makeupSet: first(outfitSet.makeupSet),
     },
     outfitCategories,
     evolutions,

@@ -27,6 +27,9 @@ export type CarouselImage = Pick<
   'id' | 'image_url' | 'sort_order'
 >
 
+/** A sibling item linked to an outfit set by its `outfit_set` FK. */
+export type LinkedSet = { slug: string; title: string; image_url: string | null }
+
 export type OutfitSet = Tables<'outfit_sets'> & {
   image_url: string | null | undefined
   outfit_variants: OutfitVariant[]
@@ -35,6 +38,12 @@ export type OutfitSet = Tables<'outfit_sets'> & {
   carousel_images: CarouselImage[]
   season: { title: string } | null
   seasonCategory: { title: string } | null
+  // Reverse FK lookups (momo_cloaks.outfit_set / makeup_sets.outfit_set).
+  // Populated only by getOutfitSet — the list query has no use for them.
+  // Nothing enforces one-per-outfit at the DB level, so the query returns an
+  // array and the data layer normalizes it to the first row.
+  momoCloak?: LinkedSet | null
+  makeupSet?: LinkedSet | null
 }
 
 // An evolution is now just an outfit_sets row with base_set IS NOT NULL

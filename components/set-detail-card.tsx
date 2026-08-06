@@ -65,14 +65,10 @@ export default function SetDetailCard({
           </Typography>
           <Stack
             direction="row"
-            sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
+            sx={{ width: '100%', alignItems: 'flex-start', justifyContent: 'space-between' }}
           >
             <RarityStars rarity={rarity} />
-            <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
-              {visibleLabels.map((label) => (
-                <Chip key={label} label={toTitle(label)} variant="outlined" />
-              ))}
-            </Stack>
+            {isLoggedIn && <ProgressChip obtained={obtained} size="md" total={total} />}
           </Stack>
           <Stack
             direction="row"
@@ -81,7 +77,11 @@ export default function SetDetailCard({
             <Typography color="textSecondary" variant="body1">
               {toTitle(style ?? '')}
             </Typography>
-            {isLoggedIn && <ProgressChip obtained={obtained} size="md" total={total} />}
+            <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
+              {visibleLabels.map((label) => (
+                <Chip key={label} label={toTitle(label)} variant="outlined" />
+              ))}
+            </Stack>
           </Stack>
           {extraRows.map((row, index) => (
             <Stack
