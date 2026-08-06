@@ -1271,6 +1271,10 @@ export type Database = {
           eureka_style: string | null
           eureka_trial: string | null
           group_by_set: boolean
+          momo_obtained_filter: string | null
+          momo_rarity_filter: string | null
+          momo_season_category_filter: string | null
+          momo_season_filter: string | null
           outfit_category_filter: string | null
           outfit_density: string | null
           outfit_evolution_filter: string | null
@@ -1304,6 +1308,10 @@ export type Database = {
           eureka_style?: string | null
           eureka_trial?: string | null
           group_by_set?: boolean
+          momo_obtained_filter?: string | null
+          momo_rarity_filter?: string | null
+          momo_season_category_filter?: string | null
+          momo_season_filter?: string | null
           outfit_category_filter?: string | null
           outfit_density?: string | null
           outfit_evolution_filter?: string | null
@@ -1337,6 +1345,10 @@ export type Database = {
           eureka_style?: string | null
           eureka_trial?: string | null
           group_by_set?: boolean
+          momo_obtained_filter?: string | null
+          momo_rarity_filter?: string | null
+          momo_season_category_filter?: string | null
+          momo_season_filter?: string | null
           outfit_category_filter?: string | null
           outfit_density?: string | null
           outfit_evolution_filter?: string | null

@@ -103,6 +103,10 @@ export type UserPreferences = Pick<
   | 'outfit_density'
   | 'sort_order'
   | 'outfit_sort_axis'
+  | 'momo_rarity_filter'
+  | 'momo_season_filter'
+  | 'momo_season_category_filter'
+  | 'momo_obtained_filter'
 >
 
 export type ColorTheme = 'default' | 'moonlight' | 'blossom' | 'forest'

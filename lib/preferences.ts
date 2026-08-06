@@ -29,6 +29,10 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   outfit_density: 'standard',
   sort_order: 'new',
   outfit_sort_axis: 'date',
+  momo_rarity_filter: null,
+  momo_season_filter: null,
+  momo_season_category_filter: null,
+  momo_obtained_filter: null,
 }
 
 export const DEFAULT_ADMIN_PREFERENCES: AdminPreferences = {
