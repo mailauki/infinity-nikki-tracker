@@ -19,6 +19,14 @@ const CLOAK_COLUMNS = `
 	updated_at
 `
 
+// getMomoCloak only: the list query has no use for the outfit join. `outfit_set`
+// is a slug FK, so this resolves the referenced row for display.
+const CLOAK_DETAIL_COLUMNS = `
+	${CLOAK_COLUMNS},
+	outfit_set,
+	outfitSet:outfit_sets!momo_cloaks_outfit_set_fkey ( slug, title, image_url )
+`
+
 export const getMomoCloaks = cache(async () => {
   const supabase = await createClient()
 
@@ -35,7 +43,7 @@ export const getMomoCloak = cache(async (slug: string): Promise<MomoCloak | null
 
   const { data } = await supabase
     .from('momo_cloaks')
-    .select(CLOAK_COLUMNS)
+    .select(CLOAK_DETAIL_COLUMNS)
     .eq('slug', slug)
     .maybeSingle()
 
