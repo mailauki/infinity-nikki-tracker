@@ -34,6 +34,9 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   momo_season_category_filter: null,
   momo_obtained_filter: null,
   momo_location_filter: null,
+  makeup_sort_axis: 'date',
+  makeup_density: 'standard',
+  makeup_image_mode: 'image',
 }
 
 export const DEFAULT_ADMIN_PREFERENCES: AdminPreferences = {
