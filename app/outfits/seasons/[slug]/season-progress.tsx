@@ -20,7 +20,7 @@ export default function SeasonProgress({
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
 }) {
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup } = useSeasonFilter()
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
 
   const entries = groupSeasonEntries({
@@ -31,6 +31,7 @@ export default function SeasonProgress({
     hideGlowups,
     hidePieces,
     hideMakeup,
+    hideBaseSets,
     obtainedOutfit,
   }).flatMap(([, groupEntries]) => groupEntries)
 

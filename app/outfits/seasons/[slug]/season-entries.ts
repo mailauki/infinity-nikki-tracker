@@ -80,25 +80,28 @@ export function applyLiveObtained<T extends { slug: string; obtained?: boolean }
 }
 
 // Expand a set into its base entry plus one entry per evolution (including the
-// glow-up). Each entry is rendered as its own list item — the same model as the
+// glow-up). Each entry is rendered as its own card — the same model as the
 // outfits grid, where evolutions and glow-ups stand alongside base sets — and is
-// shown or hidden by the evolution / glow-up toggles. The base entry is always
-// shown; progress is measured against each entry's own variants.
+// shown or hidden by the visibility toggles. Progress is measured against each
+// entry's own variants.
 export function expandSet(
   set: OutfitSet,
   hideEvolutions: boolean,
-  hideGlowups: boolean
+  hideGlowups: boolean,
+  hideBaseSets = false
 ): OutfitSetListEntry[] {
   const baseSlug = set.slug
 
-  const entries: OutfitSetListEntry[] = [
-    {
-      key: baseSlug,
-      set,
-      evolution: null,
-      variants: set.outfit_variants.filter((v) => v.outfit_set === baseSlug),
-    },
-  ]
+  const entries: OutfitSetListEntry[] = hideBaseSets
+    ? []
+    : [
+        {
+          key: baseSlug,
+          set,
+          evolution: null,
+          variants: set.outfit_variants.filter((v) => v.outfit_set === baseSlug),
+        },
+      ]
 
   for (const evolution of set.evolutions) {
     const visible = isEvolutionVisible({
@@ -126,17 +129,23 @@ export function expandSet(
 }
 
 // Makeup mirrors the outfit model — a base set plus one row per evolution — but
-// has no glow-up concept, so only the evolution toggle applies.
-function expandMakeupSet(set: MakeupSet, hideEvolutions: boolean): SeasonEntry[] {
-  const entries: SeasonEntry[] = [
-    {
-      kind: 'makeup',
-      key: `makeup:${set.slug}`,
-      set,
-      evolution: null,
-      variants: set.makeup_variants,
-    },
-  ]
+// has no glow-up concept, so only the evolution and base-set toggles apply.
+function expandMakeupSet(
+  set: MakeupSet,
+  hideEvolutions: boolean,
+  hideBaseSets = false
+): SeasonEntry[] {
+  const entries: SeasonEntry[] = hideBaseSets
+    ? []
+    : [
+        {
+          kind: 'makeup',
+          key: `makeup:${set.slug}`,
+          set,
+          evolution: null,
+          variants: set.makeup_variants,
+        },
+      ]
 
   if (hideEvolutions) return entries
 
@@ -170,6 +179,7 @@ export function groupSeasonEntries({
   hideGlowups,
   hidePieces = false,
   hideMakeup = false,
+  hideBaseSets = false,
   obtainedOutfit,
 }: {
   seasonSets: OutfitSet[]
@@ -177,6 +187,9 @@ export function groupSeasonEntries({
   makeupSets: MakeupSet[]
   hideEvolutions: boolean
   hideGlowups: boolean
+  // Drops the base state of every set (outfit and makeup), leaving only
+  // evolutions and glow-ups.
+  hideBaseSets?: boolean
   // Drops standalone pieces (individual variants). Makeup sets are unaffected —
   // they are sets with their own variants, not individual pieces.
   hidePieces?: boolean
@@ -205,7 +218,7 @@ export function groupSeasonEntries({
 
     push(
       set.season_category,
-      expandSet(live, hideEvolutions, hideGlowups).map((entry) => ({
+      expandSet(live, hideEvolutions, hideGlowups, hideBaseSets).map((entry) => ({
         kind: 'outfit' as const,
         ...entry,
       }))
@@ -226,7 +239,7 @@ export function groupSeasonEntries({
 
   if (!hideMakeup) {
     for (const set of makeupSets) {
-      push(set.season_category, expandMakeupSet(set, hideEvolutions))
+      push(set.season_category, expandMakeupSet(set, hideEvolutions, hideBaseSets))
     }
   }
 

@@ -4,6 +4,7 @@ import { useId, useState } from 'react'
 import {
   Button,
   Checkbox,
+  Divider,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -14,10 +15,12 @@ import { ExpandMore, Visibility } from '@mui/icons-material'
 import ToggleIcon from '@/components/toggle-icon'
 import { useSeasonFilter } from './season-filter-context'
 
-// The four content kinds a season can show. `hidden` is what the filter context
+// Every kind of card a season can display. Together these are exhaustive, so the
+// "All" row above them genuinely means all. `hidden` is what the filter context
 // stores, but the menu is phrased positively ("Evolutions" checked = shown), so
 // each row inverts it — a hide-flag reads badly as a checkable item.
 const KINDS = [
+  { key: 'baseSets', label: 'Base sets', icon: '/icons/outfits.png' },
   { key: 'evolutions', label: 'Evolutions', icon: '/icons/evolution.png' },
   { key: 'glowups', label: 'Glow-ups', icon: '/icons/glowup.png' },
   { key: 'pieces', label: 'Pieces', icon: '/icons/accessories.png' },
@@ -38,26 +41,32 @@ export default function SeasonVisibilityMenu() {
   const isOpen = Boolean(anchorEl)
 
   const {
+    hideBaseSets,
     hideEvolutions,
     hideGlowups,
     hidePieces,
     hideMakeup,
+    onHideBaseSetsChange,
     onHideEvolutionsChange,
     onHideGlowupsChange,
     onHidePiecesChange,
     onHideMakeupChange,
+    onSetAllVisible,
   } = useSeasonFilter()
 
   const state = {
+    baseSets: { hidden: hideBaseSets, toggle: onHideBaseSetsChange },
     evolutions: { hidden: hideEvolutions, toggle: onHideEvolutionsChange },
     glowups: { hidden: hideGlowups, toggle: onHideGlowupsChange },
     pieces: { hidden: hidePieces, toggle: onHidePiecesChange },
     makeup: { hidden: hideMakeup, toggle: onHideMakeupChange },
   }
 
-  const hiddenCount = KINDS.filter((kind) => state[kind.key].hidden).length
-  const label =
-    hiddenCount > 0 ? `Showing ${KINDS.length - hiddenCount} of ${KINDS.length}` : 'Show all'
+  const shownCount = KINDS.filter((kind) => !state[kind.key].hidden).length
+  const allShown = shownCount === KINDS.length
+  const noneShown = shownCount === 0
+
+  const label = allShown ? 'Showing all' : `Showing ${shownCount} of ${KINDS.length}`
 
   return (
     <>
@@ -80,11 +89,28 @@ export default function SeasonVisibilityMenu() {
       <Menu
         disableScrollLock
         anchorEl={anchorEl}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         id={`${id}-menu`}
         open={isOpen}
         slotProps={{ list: { 'aria-labelledby': `${id}-button`, dense: true } }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         onClose={() => setAnchorEl(null)}
       >
+        <MenuItem onClick={() => onSetAllVisible(!allShown)}>
+          <Checkbox
+            disableRipple
+            checked={allShown}
+            // Some-but-not-all shown reads as a partial selection.
+            indeterminate={!allShown && !noneShown}
+            size="small"
+            slotProps={{ input: { 'aria-label': allShown ? 'Hide all' : 'Show all' } }}
+            sx={{ mr: 0.5, p: 0.5 }}
+          />
+          <ListItemText slotProps={{ primary: { sx: { fontWeight: 'medium' } } }}>All</ListItemText>
+        </MenuItem>
+
+        <Divider />
+
         {KINDS.map((kind) => {
           const { hidden, toggle } = state[kind.key]
           const shown = !hidden
@@ -99,7 +125,7 @@ export default function SeasonVisibilityMenu() {
                 sx={{ mr: 0.5, p: 0.5 }}
               />
               <ListItemIcon sx={{ minWidth: 36 }}>
-                <ToggleIcon image={kind.icon} isSelected={shown} size="xs" title={kind.label} />
+                <ToggleIcon image={kind.icon} size="xs" title={kind.label} />
               </ListItemIcon>
               <ListItemText>{kind.label}</ListItemText>
             </MenuItem>

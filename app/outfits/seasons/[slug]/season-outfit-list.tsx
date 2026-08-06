@@ -62,15 +62,15 @@ export default function SeasonOutfitList({
   seasonCategories: SeasonCategory[]
   isLoggedIn: boolean
 }) {
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup } = useSeasonFilter()
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
 
   const categoryTitle = (categorySlug: string) =>
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
 
   // Cards currently visible, grouped by season_category — respects every toggle
-  // (evolutions, glow-ups, pieces, makeup). Each category's progress is measured
-  // from these same entries, so a header always describes what is on screen.
+  // (base sets, evolutions, glow-ups, pieces, makeup). Each category's progress is
+  // measured from these same entries, so a header always describes what is shown.
   const categoryGroups = groupSeasonEntries({
     seasonSets,
     standaloneVariants,
@@ -79,6 +79,7 @@ export default function SeasonOutfitList({
     hideGlowups,
     hidePieces,
     hideMakeup,
+    hideBaseSets,
     obtainedOutfit,
   })
 

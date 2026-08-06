@@ -50,7 +50,7 @@ export default function SeasonOverview({
   isLoggedIn: boolean
 }) {
   const { obtainedOutfit } = useOutfitData()
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup } = useSeasonFilter()
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
 
   const groups = groupSeasonEntries({
     seasonSets,
@@ -60,6 +60,7 @@ export default function SeasonOverview({
     hideGlowups,
     hidePieces,
     hideMakeup,
+    hideBaseSets,
     obtainedOutfit,
   })
 
