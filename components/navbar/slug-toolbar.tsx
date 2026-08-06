@@ -3,8 +3,8 @@
 import { IconButton, Tooltip } from '@mui/material'
 import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import { useParams, usePathname } from 'next/navigation'
-import { ChevronLeft, Compare, Edit, InfoOutlined } from '@mui/icons-material'
-import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
+import { ChevronLeft, Edit, InfoOutlined } from '@mui/icons-material'
+import ImageModeButton from '@/components/navbar/image-mode-button'
 import { useSeasonFilterOptional } from '@/app/outfits/seasons/[slug]/season-filter-context'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import SeasonVisibilityMenu from '@/app/outfits/seasons/[slug]/season-visibility-menu'
@@ -12,7 +12,6 @@ import SeasonVisibilityMenu from '@/app/outfits/seasons/[slug]/season-visibility
 export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname()
   const { slug } = useParams()
-  const { mode, cycleMode } = useOutfitImageMode()
   const seasonFilter = useSeasonFilterOptional()
   // The details sidebar toggle only shows once a page has mounted a <SidebarBody>
   // (e.g. the outfit set-detail card) — self-activating and inert elsewhere.
@@ -22,11 +21,6 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
   // a season's page — its cards render through the same image-mode-aware cards —
   // and on momo-cloaks, whose detail page renders a set image with an alternate.
   const showImageSwap = pathname.startsWith('/outfits/') || pathname.startsWith('/momo-cloaks/')
-
-  const IMAGE_MODE_LABEL = {
-    image: 'Showing main image',
-    alt: 'Showing alternate image',
-  } as const
 
   // Most domains nest their admin CRUD under a `/sets` segment
   // (/admin/eureka/sets/edit/…), so a top-level slug page maps to `<domain>/sets`.
@@ -49,14 +43,8 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
         </IconButton>
       }
     >
-      {showImageSwap && (
-        <Tooltip title={IMAGE_MODE_LABEL[mode]}>
-          <IconButton aria-label={IMAGE_MODE_LABEL[mode]} onClick={cycleMode}>
-            <Compare />
-          </IconButton>
-        </Tooltip>
-      )}
       {seasonFilter && <SeasonVisibilityMenu />}
+      {showImageSwap && <ImageModeButton />}
       {isAdmin && (
         <IconButton component="a" href={`/admin/${path}/edit/${slug}`}>
           <Edit />
