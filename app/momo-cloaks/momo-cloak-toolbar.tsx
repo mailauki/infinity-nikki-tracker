@@ -3,6 +3,7 @@
 import { IconButton, Tooltip } from '@mui/material'
 import { Compare } from '@mui/icons-material'
 
+import { SortButton } from '@/components/navbar/appbar-actions'
 import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 
@@ -23,6 +24,7 @@ export default function MomoCloakToolBar() {
           <Compare />
         </IconButton>
       </Tooltip>
+      <SortButton />
       <MomoCloakFilterMenu />
     </ToolbarSlot>
   )

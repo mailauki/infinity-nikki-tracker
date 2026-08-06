@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 
 import { OutfitImageModeProvider } from '@/components/outfits/outfit-image-mode-context'
+import { SortProvider } from '@/components/sort-context'
 import { getMomoCloaks } from '@/hooks/data/momo-cloaks'
 import { getObtainedMomoCloaks } from '@/hooks/data/obtained-momo-cloaks'
 import { getUserID } from '@/hooks/user'
@@ -41,17 +42,19 @@ async function MomoCloakProviders({ children }: { children: React.ReactNode }) {
   // context, so it mounts standalone. Note the mode is shared with /outfits via
   // the `outfit_image_mode` preference — switching here also switches there.
   return (
-    <OutfitImageModeProvider isLoggedIn={!!userId}>
-      <MomoCloakDataProvider
-        cloaks={cloaks}
-        isError={isError}
-        isLoggedIn={!!userId}
-        isObtainedError={isObtainedError}
-        obtainedSlugs={obtainedSlugs}
-      >
-        {children}
-      </MomoCloakDataProvider>
-    </OutfitImageModeProvider>
+    <SortProvider isLoggedIn={!!userId}>
+      <OutfitImageModeProvider isLoggedIn={!!userId}>
+        <MomoCloakDataProvider
+          cloaks={cloaks}
+          isError={isError}
+          isLoggedIn={!!userId}
+          isObtainedError={isObtainedError}
+          obtainedSlugs={obtainedSlugs}
+        >
+          {children}
+        </MomoCloakDataProvider>
+      </OutfitImageModeProvider>
+    </SortProvider>
   )
 }
 

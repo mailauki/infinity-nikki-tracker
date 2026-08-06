@@ -16,10 +16,12 @@ import { FilterList } from '@mui/icons-material'
 
 import ObtainedToggle from '@/components/filter/obtained-toggle'
 import RarityToggle from '@/components/filter/rarity-toggle'
+import SortAxisToggle from '@/components/filter/sort-axis-toggle'
 import StyleLabelSelect from '@/components/filter/style-label-select'
 import ToggleGroupLabel from '@/components/forms/toggle-group-label'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import SidebarBody from '@/components/sidebar/sidebar-body'
+import { SortAxis, useSortOrder } from '@/components/sort-context'
 import { toTitle } from '@/lib/utils'
 
 import { useMomoCloakData } from './momo-cloak-context'
@@ -28,10 +30,17 @@ import { useMomoCloakData } from './momo-cloak-context'
 // default of [2, 3, 4, 5] would render a permanently dead button.
 const CLOAK_RARITY_OPTIONS = [3, 4, 5]
 
+// 'progress' is deliberately absent: a cloak is a single unit, so its obtained
+// state is a boolean and sorting by it only groups obtained from missing —
+// which the obtained filter already does directly. Exported so the grid can
+// fall back off a `progress` axis persisted by another domain's page.
+export const CLOAK_SORT_AXES: SortAxis[] = ['date', 'rarity', 'title']
+
 export default function MomoCloakFilterMenu() {
   const { sidebarOpen, setSidebarOpen } = useSidebar()
   const { cloaks, isLoggedIn, isObtainedError, filters, onFiltersChange, onClearFilters } =
     useMomoCloakData()
+  const { resetSort, isSortDefault } = useSortOrder()
 
   const {
     selectedRarity,
@@ -78,6 +87,13 @@ export default function MomoCloakFilterMenu() {
       </IconButton>
       <SidebarBody>
         <List>
+          <ListItem>
+            {/* Explicit isLoggedIn: this route has no OutfitDataProvider, which
+                is where the toggle otherwise reads it from. `progress` is
+                omitted — a cloak is a single unit, so its obtained state is a
+                boolean and sorting by it just replays the obtained filter. */}
+            <SortAxisToggle axes={CLOAK_SORT_AXES} isLoggedIn={isLoggedIn} />
+          </ListItem>
           {isLoggedIn && (
             <ListItem>
               <ObtainedToggle
@@ -132,6 +148,13 @@ export default function MomoCloakFilterMenu() {
           <Divider sx={{ mx: 2, mt: 2 }} />
           <ListItem>
             <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
+              {/* "Reset" restores only the sort controls, leaving filter
+                  selections intact — same split as the outfits menu. */}
+              {!isSortDefault && (
+                <Button color="secondary" variant="outlined" onClick={resetSort}>
+                  Reset
+                </Button>
+              )}
               {hasActiveFilters && (
                 <Button color="secondary" variant="outlined" onClick={onClearFilters}>
                   Clear all
