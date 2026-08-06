@@ -6,6 +6,10 @@ import { Alert, Stack, Typography } from '@mui/material'
 import CardGrid from '@/components/card-grid'
 import ErrorAlert from '@/components/error-alert'
 import LoginAlert from '@/components/login-alert'
+import {
+  resolveOutfitImage,
+  useOutfitImageMode,
+} from '@/components/outfits/outfit-image-mode-context'
 import ProgressChip from '@/components/progress-chip'
 import SetCard from '@/components/set-card'
 
@@ -14,7 +18,14 @@ import { useMomoCloakData } from './momo-cloak-context'
 export default function FilterMomoCloaks() {
   const { cloaks, obtainedSlugs, isLoggedIn, isObtainedError, isError, filters, onToggleObtained } =
     useMomoCloakData()
-  const { selectedRarity, selectedSeason, selectedSeasonCategory, selectedObtainedFilter } = filters
+  const { mode } = useOutfitImageMode()
+  const {
+    selectedRarity,
+    selectedSeason,
+    selectedSeasonCategory,
+    selectedLocation,
+    selectedObtainedFilter,
+  } = filters
 
   const visible = useMemo(
     () =>
@@ -26,6 +37,7 @@ export default function FilterMomoCloaks() {
           !selectedSeasonCategory.includes(cloak.season_category ?? '')
         )
           return false
+        if (selectedLocation !== null && cloak.location !== selectedLocation) return false
         // The obtained filter is meaningless logged out — every cloak reads as
         // not-obtained — so it only applies for signed-in users.
         if (isLoggedIn && selectedObtainedFilter) {
@@ -42,6 +54,7 @@ export default function FilterMomoCloaks() {
       selectedRarity,
       selectedSeason,
       selectedSeasonCategory,
+      selectedLocation,
       selectedObtainedFilter,
     ]
   )
@@ -85,11 +98,16 @@ export default function FilterMomoCloaks() {
                     key={cloak.slug}
                     in
                     href={`/momo-cloaks/${cloak.slug}`}
-                    imageSrc={cloak.image_url ?? ''}
+                    imageSrc={
+                      resolveOutfitImage(mode, {
+                        image: cloak.image_url,
+                        alt: cloak.alt_image_url,
+                      }) ?? ''
+                    }
                     isLoggedIn={isLoggedIn && !isObtainedError}
                     obtained={isObtained ? 1 : 0}
                     rarity={cloak.rarity ?? 0}
-                    showAlt={false}
+                    showAlt={mode === 'alt'}
                     title={cloak.title}
                     total={1}
                     onToggle={() => onToggleObtained(cloak.slug)}

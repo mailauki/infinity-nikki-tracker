@@ -107,6 +107,7 @@ export type UserPreferences = Pick<
   | 'momo_season_filter'
   | 'momo_season_category_filter'
   | 'momo_obtained_filter'
+  | 'momo_location_filter'
 >
 
 export type ColorTheme = 'default' | 'moonlight' | 'blossom' | 'forest'

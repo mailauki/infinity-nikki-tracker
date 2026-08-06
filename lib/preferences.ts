@@ -33,6 +33,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   momo_season_filter: null,
   momo_season_category_filter: null,
   momo_obtained_filter: null,
+  momo_location_filter: null,
 }
 
 export const DEFAULT_ADMIN_PREFERENCES: AdminPreferences = {

@@ -1,14 +1,26 @@
 'use client'
 
 import { useMemo } from 'react'
-import { Button, Divider, IconButton, List, ListItem, Stack } from '@mui/material'
+import {
+  Button,
+  Divider,
+  FormControl,
+  IconButton,
+  List,
+  ListItem,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+} from '@mui/material'
 import { FilterList } from '@mui/icons-material'
 
 import ObtainedToggle from '@/components/filter/obtained-toggle'
 import RarityToggle from '@/components/filter/rarity-toggle'
 import StyleLabelSelect from '@/components/filter/style-label-select'
+import ToggleGroupLabel from '@/components/forms/toggle-group-label'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import SidebarBody from '@/components/sidebar/sidebar-body'
+import { toTitle } from '@/lib/utils'
 
 import { useMomoCloakData } from './momo-cloak-context'
 
@@ -21,7 +33,13 @@ export default function MomoCloakFilterMenu() {
   const { cloaks, isLoggedIn, isObtainedError, filters, onFiltersChange, onClearFilters } =
     useMomoCloakData()
 
-  const { selectedRarity, selectedSeason, selectedSeasonCategory, selectedObtainedFilter } = filters
+  const {
+    selectedRarity,
+    selectedSeason,
+    selectedSeasonCategory,
+    selectedLocation,
+    selectedObtainedFilter,
+  } = filters
 
   // Options come from the values actually present on the loaded cloaks, so a
   // season with no cloaks never appears as a dead choice.
@@ -35,10 +53,18 @@ export default function MomoCloakFilterMenu() {
     return slugs.sort().map((slug) => ({ slug, title: slug }))
   }, [cloaks])
 
+  // Only two locations exist in the data (wishfield, itzaland), so these render
+  // as a pair of exclusive toggle buttons rather than a select.
+  const locationOptions = useMemo(() => {
+    const slugs = [...new Set(cloaks.map((c) => c.location).filter((s): s is string => !!s))]
+    return slugs
+  }, [cloaks])
+
   const hasActiveFilters =
     selectedRarity !== null ||
     selectedSeason.length > 0 ||
     selectedSeasonCategory.length > 0 ||
+    selectedLocation !== null ||
     selectedObtainedFilter !== null
 
   return (
@@ -68,6 +94,25 @@ export default function MomoCloakFilterMenu() {
               onRarityChange={(_e, v) => onFiltersChange({ selectedRarity: v })}
             />
           </ListItem>
+          {locationOptions.length > 0 && (
+            <ListItem>
+              <FormControl>
+                <ToggleGroupLabel id="momo-location-group-label">Location</ToggleGroupLabel>
+                <ToggleButtonGroup
+                  exclusive
+                  aria-labelledby="momo-location-group-label"
+                  value={selectedLocation}
+                  onChange={(_e, v: string | null) => onFiltersChange({ selectedLocation: v })}
+                >
+                  {locationOptions.map((slug) => (
+                    <ToggleButton key={slug} sx={{ py: 0.75 }} value={slug}>
+                      {toTitle(slug)}
+                    </ToggleButton>
+                  ))}
+                </ToggleButtonGroup>
+              </FormControl>
+            </ListItem>
+          )}
           <ListItem sx={{ gap: 1 }}>
             <StyleLabelSelect
               id="momo-season-select"
