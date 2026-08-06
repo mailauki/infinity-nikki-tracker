@@ -1,7 +1,6 @@
 import { MakeupSet, MakeupVariant } from '@/lib/types/makeup'
-import { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
+import { Evolution, ObtainedOutfit, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { isEvolutionVisible, isGlowup } from '@/hooks/outfit'
-import { OutfitSetListEntry } from './outfit-set-item'
 
 // The container set that holds individually-authored standalone pieces. Its
 // variants each carry their own season / season_category, so they are grouped
@@ -11,9 +10,20 @@ export const STANDALONE_SLUG = 'standalone_pieces'
 // Sets without a season_category group here, matching the outfit-set behavior.
 export const OTHER_CATEGORY = 'Other'
 
-// A single row in a category accordion. Outfit sets keep the existing shape
+// One outfit card: either the base set (evolution === null) or one of its
+// evolutions / glow-up. `variants` are that state's own variants, so each card
+// shows its own completion.
+export type OutfitSetListEntry = {
+  key: string
+  set: OutfitSet
+  evolution: Evolution | null
+  variants: OutfitVariant[]
+  isGlowup?: boolean
+}
+
+// A single card in a category section. Outfit sets keep the existing shape
 // (base set or one evolution); standalone pieces and makeup add two more kinds
-// so one list can render all three.
+// so one section can render all three.
 export type SeasonEntry =
   | ({ kind: 'outfit' } & OutfitSetListEntry)
   | {
@@ -41,6 +51,32 @@ export function countEntries(entries: SeasonEntry[]) {
     total: variants.length,
     obtained: variants.reduce((sum, variant) => sum + (variant.obtained ? 1 : 0), 0),
   }
+}
+
+/** How many cards of each kind a season holds — drives the overview stat row. */
+export function countEntryKinds(entries: SeasonEntry[]) {
+  return {
+    outfit: entries.filter((e) => e.kind === 'outfit').length,
+    standalone: entries.filter((e) => e.kind === 'standalone').length,
+    makeup: entries.filter((e) => e.kind === 'makeup').length,
+  }
+}
+
+/**
+ * Re-derive `obtained` from the provider's live obtained rows.
+ *
+ * The season page fetches its sets server-side, so their `obtained` flags are a
+ * snapshot from render time. The provider holds the live set (kept current by
+ * its realtime subscription), so without this a toggle would update provider
+ * state while these props stayed stale and the card would never visibly change.
+ * Mirrors `app/outfits/[slug]/outfit-set-detail.tsx`.
+ */
+export function applyLiveObtained<T extends { slug: string; obtained?: boolean }>(
+  variants: T[],
+  obtainedOutfit: ObtainedOutfit[]
+): T[] {
+  const keys = new Set(obtainedOutfit.map((o) => o.outfit_variant))
+  return variants.map((variant) => ({ ...variant, obtained: keys.has(variant.slug) }))
 }
 
 // Expand a set into its base entry plus one entry per evolution (including the
@@ -132,12 +168,16 @@ export function groupSeasonEntries({
   makeupSets,
   hideEvolutions,
   hideGlowups,
+  obtainedOutfit,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
   hideEvolutions: boolean
   hideGlowups: boolean
+  // Live obtained rows from the outfit provider. Omit to trust the flags already
+  // on the passed-in data (e.g. server-rendered output with no provider).
+  obtainedOutfit?: ObtainedOutfit[]
 }): [string, SeasonEntry[]][] {
   const groups = new Map<string, SeasonEntry[]>()
 
@@ -150,16 +190,26 @@ export function groupSeasonEntries({
   }
 
   for (const set of seasonSets) {
+    // Refresh the set's variants before expanding so every card, category bar,
+    // and total downstream reads the same live obtained state.
+    const live = obtainedOutfit
+      ? { ...set, outfit_variants: applyLiveObtained(set.outfit_variants, obtainedOutfit) }
+      : set
+
     push(
       set.season_category,
-      expandSet(set, hideEvolutions, hideGlowups).map((entry) => ({
+      expandSet(live, hideEvolutions, hideGlowups).map((entry) => ({
         kind: 'outfit' as const,
         ...entry,
       }))
     )
   }
 
-  for (const variant of standaloneVariants) {
+  const liveStandalone = obtainedOutfit
+    ? applyLiveObtained(standaloneVariants, obtainedOutfit)
+    : standaloneVariants
+
+  for (const variant of liveStandalone) {
     push(variant.season_category, [
       { kind: 'standalone', key: `standalone:${variant.slug}`, variant },
     ])

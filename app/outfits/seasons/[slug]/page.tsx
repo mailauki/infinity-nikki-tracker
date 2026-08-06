@@ -11,6 +11,7 @@ import LazyImage from '@/components/lazy-image'
 import SlugToolBar from '@/components/navbar/slug-toolbar'
 import { SeasonFilterProvider } from './season-filter-context'
 import SeasonOutfitList from './season-outfit-list'
+import SeasonOverview from './season-overview'
 import SeasonProgress from './season-progress'
 import PageShell from '@/components/page-shell'
 
@@ -77,6 +78,13 @@ export default async function SeasonPage({ params }: Props) {
           )}
         </Stack>
         <Typography variant="body2">{season.description}</Typography>
+
+        <SeasonOverview
+          isLoggedIn={isLoggedIn}
+          makeupSets={seasonMakeupSets}
+          seasonSets={seasonSets}
+          standaloneVariants={standaloneVariants}
+        />
 
         <SeasonOutfitList
           isLoggedIn={isLoggedIn}
