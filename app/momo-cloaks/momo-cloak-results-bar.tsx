@@ -20,7 +20,7 @@ export default function MomoCloakResultsBar() {
 
   return (
     <StickyBar>
-      <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+      <Stack direction="row" spacing={1} sx={{ flexGrow: 1, justifyContent: 'space-between', alignItems: 'center' }}>
         <Chip
           color="secondary"
           label={`Showing: ${visible.length} results`}
@@ -28,7 +28,7 @@ export default function MomoCloakResultsBar() {
           variant="outlined"
         />
         {isLoggedIn && !isObtainedError && (
-          <ProgressChip obtained={obtainedCount} size="md" total={cloaks.length} />
+          <ProgressChip obtained={obtainedCount} size="sm" total={cloaks.length} />
         )}
       </Stack>
     </StickyBar>
