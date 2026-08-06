@@ -23,10 +23,15 @@ export type MomoCloak = Tables<'momo_cloaks'> & {
   // Resolved lookup titles; the columns themselves hold slugs.
   season?: { title: string } | null
   seasonCategory?: { title: string } | null
-  // The associated outfit, mirroring MakeupSet.outfitSet. Not yet populated by
-  // the momo data hooks — optional so a future consumer gets a compile-time
-  // signal instead of a silent null.
-  outfitSet?: { slug: string; title: string; image_url: string | null } | null
+  // The associated outfit, mirroring MakeupSet.outfitSet. Populated only by
+  // getMomoCloak (the detail query) — the list query has no use for the join,
+  // so this stays optional and reads as undefined there.
+  outfitSet?: {
+    slug: string
+    title: string
+    image_url: string | null
+    alt_image_url: string | null
+  } | null
   obtained?: boolean
 }
 

@@ -2,7 +2,7 @@
 
 import { Fragment } from 'react'
 import Link from 'next/link'
-import { Link as Anchor, Button, Typography } from '@mui/material'
+import { Link as Anchor, Typography, Card, CardActionArea, CardHeader } from '@mui/material'
 
 import LazyImage from '@/components/lazy-image'
 import SlugToolBar from '@/components/navbar/slug-toolbar'
@@ -12,68 +12,63 @@ import {
 } from '@/components/outfits/outfit-image-mode-context'
 import SetDetailCard from '@/components/set-detail-card'
 import { MomoCloak } from '@/lib/types/momo'
-import { toTitle } from '@/lib/utils'
 
 import { useMomoCloakData } from '../momo-cloak-context'
 
-// SetDetailCard already wraps each extraRows entry in its own space-between
-// Stack, so MetaRow only needs to supply the two children — no nested wrapper.
-function MetaRow({ label, value }: { label: string; value: string }) {
-  return (
-    <>
-      <Typography variant="body2">{label}</Typography>
-      <Typography variant="body2">{value}</Typography>
-    </>
-  )
-}
-
 export default function MomoCloakDetail({
   cloak,
-  isAdmin,
+  isAdmin = false,
 }: {
   cloak: MomoCloak
-  isAdmin: boolean
+  isAdmin?: boolean
 }) {
   const { obtainedSlugs, isLoggedIn } = useMomoCloakData()
   const { mode } = useOutfitImageMode()
   const isObtained = obtainedSlugs.has(cloak.slug)
 
-  const extraRows = [
-    // The season links through to its own page; every cloak season slug resolves
-    // to a real `seasons` row, so the link is never dead.
-    cloak.seasons ? (
-      <Fragment key="season">
-        <Typography variant="body2">Season</Typography>
-        <Anchor
-          component={Link}
-          href={`/outfits/seasons/${cloak.seasons}`}
-          sx={{ cursor: 'pointer' }}
-          underline="hover"
-          variant="body2"
-        >
-          {toTitle(cloak.seasons)}
-        </Anchor>
-      </Fragment>
-    ) : null,
-    cloak.season_category ? (
-      <MetaRow
-        key="season-category"
-        label="Season Category"
-        value={toTitle(cloak.season_category)}
-      />
-    ) : null,
-    cloak.location ? (
-      <MetaRow key="location" label="Location" value={toTitle(cloak.location)} />
-    ) : null,
-    cloak.outfitSet ? (
-      <Fragment key="outfit">
-        <Typography variant="body2">Outfit</Typography>
-        <Button component={Link} href={`/outfits/${cloak.outfitSet.slug}`} size="small">
-          {cloak.outfitSet.title}
-        </Button>
-      </Fragment>
-    ) : null,
-  ].filter((row): row is React.ReactElement => row !== null)
+  const associatedRow = (
+    <>
+      <Card>
+        <CardActionArea component={Link} href={`/outfits/${cloak.outfitSet?.slug}`}>
+          <CardHeader
+            avatar={
+              <LazyImage
+                kind="avatar"
+                src={cloak.outfitSet?.alt_image_url || cloak.outfitSet?.image_url}
+              />
+            }
+            sx={{ py: 1, px: 1.5 }}
+            title={cloak.outfitSet?.title}
+          />
+        </CardActionArea>
+      </Card>
+      {/* TODO: Make into reusable mini card for outfits, makeup, and cloaks */}
+    </>
+  )
+
+  const seasonRow = (
+    <>
+      <Anchor
+        component={Link}
+        href={`/outfits/seasons/${cloak.seasons}`}
+        sx={{ cursor: 'pointer' }}
+        underline="hover"
+        variant="subtitle2"
+      >
+        {cloak.season?.title}
+      </Anchor>
+      <Typography sx={{ textAlign: 'right' }} variant="body1">
+        {cloak.seasonCategory?.title}
+      </Typography>
+    </>
+  )
+
+  // 74 of 119 cloaks have no season and 78 have no outfit_set, so each row is
+  // dropped when its data is absent — otherwise they render an empty card and a
+  // `/outfits/seasons/null` link.
+  const extraRows = [cloak.seasons ? seasonRow : null, cloak.outfitSet ? associatedRow : null]
+    .filter((row): row is React.ReactElement => row !== null)
+    .map((row, i) => <Fragment key={i}>{row}</Fragment>)
 
   return (
     <>
@@ -98,6 +93,7 @@ export default function MomoCloakDetail({
         }
         obtained={isObtained ? 1 : 0}
         rarity={cloak.rarity ?? 0}
+        style={cloak.location}
         title={cloak.title}
         total={1}
       />
