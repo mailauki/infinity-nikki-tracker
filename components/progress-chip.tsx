@@ -11,7 +11,7 @@ export default function ProgressChip({
 }: {
   obtained: number
   total: number
-  size?: CardSize
+  size?: CardSize // md & lg return the same
   variant?: 'percent' | 'parts'
 }) {
   const percentage = percent(obtained, total)
