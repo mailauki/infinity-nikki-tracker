@@ -1,0 +1,51 @@
+'use client'
+
+import { createContext, useContext } from 'react'
+
+import { MomoCloak } from '@/lib/types/momo'
+import { ObtainedFilter } from '@/lib/types/props'
+
+// Season and season-category are multi-select (11 and 3 distinct values in the
+// data) so they mirror the outfits page's string[] shape. Rarity and obtained are
+// exclusive toggles, matching eureka.
+export interface MomoCloakFilterState {
+  selectedRarity: number | null
+  selectedSeason: string[]
+  selectedSeasonCategory: string[]
+  selectedObtainedFilter: ObtainedFilter | null
+}
+
+export const DEFAULT_MOMO_FILTERS: MomoCloakFilterState = {
+  selectedRarity: null,
+  selectedSeason: [],
+  selectedSeasonCategory: [],
+  selectedObtainedFilter: null,
+}
+
+interface MomoCloakDataContextValue {
+  cloaks: MomoCloak[]
+  /** Slugs of cloaks the signed-in user has obtained. O(1) lookups. */
+  obtainedSlugs: Set<string>
+  isLoggedIn: boolean
+  /** The cloaks themselves loaded, but the obtained rows failed — toggles disabled. */
+  isObtainedError: boolean
+  filters: MomoCloakFilterState
+  onFiltersChange: (updates: Partial<MomoCloakFilterState>) => void
+  onClearFilters: () => void
+  onToggleObtained: (slug: string) => void
+}
+
+export const MomoCloakDataContext = createContext<MomoCloakDataContextValue>({
+  cloaks: [],
+  obtainedSlugs: new Set(),
+  isLoggedIn: false,
+  isObtainedError: false,
+  filters: DEFAULT_MOMO_FILTERS,
+  onFiltersChange: () => {},
+  onClearFilters: () => {},
+  onToggleObtained: () => {},
+})
+
+export function useMomoCloakData() {
+  return useContext(MomoCloakDataContext)
+}
