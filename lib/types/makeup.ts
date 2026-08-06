@@ -44,17 +44,15 @@ export type MakeupVariantRaw = Tables<'makeup_variants'> & {
 
 export type MakeupSet = Tables<'makeup_sets'> & {
   makeup_variants: MakeupVariant[]
-  // Not yet populated by createMakeupSet — always [] until the public makeup
-  // pages wire up category resolution. Optional so a future consumer gets a
-  // compile-time signal instead of a silent [].
-  makeup_categories?: MakeupCategory[]
+  // Every makeup set carries all five categories (see commit caf8edb8), so this
+  // is the lookup list, not a per-set subset. Populated by createMakeupSet().
+  makeup_categories: MakeupCategory[]
   evolutions: MakeupEvolution[]
   season: { title: string } | null
   seasonCategory: { title: string } | null
-  // Not yet populated by createMakeupSet — always null until the public
-  // makeup pages wire up the outfit-set join. Optional so a future consumer
-  // gets a compile-time signal instead of a silent null.
-  outfitSet?: { slug: string; title: string; image_url: string | null } | null
+  // The paired outfit set, resolved from makeup_sets.outfit_set. Null when the
+  // set has no pairing. Populated by createMakeupSet().
+  outfitSet: { slug: string; title: string; image_url: string | null } | null
 }
 
 // A makeup evolution is just a makeup_sets row with base_set IS NOT NULL
