@@ -1,18 +1,23 @@
 'use client'
 
-import { Chip, Stack, Typography } from '@mui/material'
 import { MakeupSet, MakeupVariant } from '@/lib/types/makeup'
-import CardShell from '@/components/card-shell'
-import LazyImage from '@/components/lazy-image'
+import {
+  resolveOutfitImage,
+  useOutfitImageMode,
+} from '@/components/outfits/outfit-image-mode-context'
+import SetCard from '@/components/set-card'
 import ProgressChip from '@/components/progress-chip'
-import RarityStars from '@/components/rarity-stars'
 import ToggleIcon from '@/components/toggle-icon'
 
 // A makeup card: either the base set (evolution === null) or one of its
-// evolutions. Built on CardShell rather than SetCard because SetCard requires an
-// `href` and an `onToggle` that makeup cannot supply yet — the public makeup
-// route is still a Coming Soon stub and obtained_makeup has no provider-backed
-// toggle. Presentation matches the outfit cards so the sections stay uniform.
+// evolutions. Uses the shared SetCard so makeup matches the outfit cards in the
+// same grid.
+//
+// There is no public makeup detail route yet (`/makeup` is a Coming Soon stub),
+// so every card links there rather than to a 404. Collection toggling is
+// likewise inert: obtained_makeup has no provider-backed mutation, so the card
+// reports progress but cannot change it — passing `isLoggedIn={false}` hides
+// SetCard's toggle button instead of showing one that does nothing.
 export default function MakeupSetCard({
   set,
   evolution,
@@ -24,39 +29,30 @@ export default function MakeupSetCard({
   variants: MakeupVariant[]
   isLoggedIn: boolean
 }) {
+  const { mode } = useOutfitImageMode()
+
   const total = variants.length
   const obtained = variants.reduce((sum, variant) => sum + (variant.obtained ? 1 : 0), 0)
 
   const row = evolution ?? set
-  const imageSrc = row.alt_image_url || row.image_url || ''
+  const imageSrc = resolveOutfitImage(mode, { image: row.image_url, alt: row.alt_image_url }) || ''
 
   return (
-    <CardShell
+    <SetCard
       in
-      topLeft={
-        evolution ? (
-          <ToggleIcon image="/icons/evolution.png" size="xs" title="evolution" />
-        ) : undefined
-      }
+      href="/makeup"
+      imageSrc={imageSrc}
+      isLoggedIn={false}
+      obtained={obtained}
+      rarity={row.rarity}
+      showAlt={mode === 'alt'}
+      title={row.title}
+      topLeft={<ToggleIcon image="/icons/makeup.png" size="xs" title="makeup" />}
       topRight={
         isLoggedIn ? <ProgressChip obtained={obtained} total={total} variant="parts" /> : undefined
       }
-    >
-      <LazyImage
-        image={imageSrc}
-        kind="media"
-        sx={{ width: '100%', aspectRatio: '2 / 3' }}
-        title={row.title}
-      />
-      <Stack spacing={1} sx={{ px: 2, py: 2 }}>
-        <Typography noWrap variant="overline">
-          {row.title}
-        </Typography>
-        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-          <RarityStars rarity={row.rarity} />
-          <Chip label="Makeup" size="small" sx={{ ml: 'auto' }} variant="outlined" />
-        </Stack>
-      </Stack>
-    </CardShell>
+      total={total}
+      onToggle={() => {}}
+    />
   )
 }

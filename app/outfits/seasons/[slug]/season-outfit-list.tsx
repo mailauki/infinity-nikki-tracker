@@ -62,35 +62,25 @@ export default function SeasonOutfitList({
   seasonCategories: SeasonCategory[]
   isLoggedIn: boolean
 }) {
-  const { hideEvolutions, hideGlowups } = useSeasonFilter()
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup } = useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
 
   const categoryTitle = (categorySlug: string) =>
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
 
-  // Cards currently visible, grouped by season_category — respects the evolution
-  // and glow-up toggles.
+  // Cards currently visible, grouped by season_category — respects every toggle
+  // (evolutions, glow-ups, pieces, makeup). Each category's progress is measured
+  // from these same entries, so a header always describes what is on screen.
   const categoryGroups = groupSeasonEntries({
     seasonSets,
     standaloneVariants,
     makeupSets,
     hideEvolutions,
     hideGlowups,
+    hidePieces,
+    hideMakeup,
     obtainedOutfit,
   })
-
-  // Category progress reports full contents, so a denominator stays put as the
-  // toggles hide cards. Built with both toggles off and read back by slug.
-  const fullTotals = new Map(
-    groupSeasonEntries({
-      seasonSets,
-      standaloneVariants,
-      makeupSets,
-      hideEvolutions: false,
-      hideGlowups: false,
-      obtainedOutfit,
-    }).map(([category, entries]) => [category, countEntries(entries)])
-  )
 
   if (!categoryGroups.length) {
     return <Typography color="text.secondary">Nothing in this season yet.</Typography>
@@ -132,7 +122,7 @@ export default function SeasonOutfitList({
   return (
     <Stack spacing={4}>
       {categoryGroups.map(([category, entries]) => {
-        const { obtained, total } = fullTotals.get(category) ?? { obtained: 0, total: 0 }
+        const { obtained, total } = countEntries(entries)
 
         return (
           <CardGrid

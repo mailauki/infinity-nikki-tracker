@@ -7,11 +7,10 @@ import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useSeasonFilter } from './season-filter-context'
 import { countEntries, groupSeasonEntries } from './season-entries'
 
-// Season completion aggregates the variants of every row currently shown in the
-// list — i.e. it reflects the evolution / glow-up toggles. With both toggles off
-// (default) this counts base + evolutions + glow-ups; hiding either drops those
-// variants from the total, matching exactly what the list displays. Standalone
-// pieces and makeup count alongside outfit sets, as they do in the list.
+// Season completion aggregates the variants of every card currently shown — i.e.
+// it reflects the evolution / glow-up / pieces toggles. With all toggles off
+// (default) this counts base + evolutions + glow-ups + pieces + makeup; hiding
+// any drops those variants from the total, matching what the sections display.
 export default function SeasonProgress({
   seasonSets,
   standaloneVariants,
@@ -21,7 +20,7 @@ export default function SeasonProgress({
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
 }) {
-  const { hideEvolutions, hideGlowups } = useSeasonFilter()
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup } = useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
 
   const entries = groupSeasonEntries({
@@ -30,10 +29,12 @@ export default function SeasonProgress({
     makeupSets,
     hideEvolutions,
     hideGlowups,
+    hidePieces,
+    hideMakeup,
     obtainedOutfit,
   }).flatMap(([, groupEntries]) => groupEntries)
 
   const { obtained, total } = countEntries(entries)
 
-  return <ProgressChip obtained={obtained} total={total} />
+  return <ProgressChip obtained={obtained} size="lg" total={total} />
 }

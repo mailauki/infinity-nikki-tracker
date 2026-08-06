@@ -7,8 +7,8 @@ import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import { getMakeupSets } from '@/hooks/data/makeup-sets'
 import { getUserID } from '@/hooks/user'
 import { STANDALONE_SLUG } from './season-entries'
-import LazyImage from '@/components/lazy-image'
 import SlugToolBar from '@/components/navbar/slug-toolbar'
+import SeasonBanner from './season-banner'
 import { SeasonFilterProvider } from './season-filter-context'
 import SeasonOutfitList from './season-outfit-list'
 import SeasonOverview from './season-overview'
@@ -57,12 +57,11 @@ export default async function SeasonPage({ params }: Props) {
 
   return (
     <SeasonFilterProvider>
-      <SlugToolBar isAdmin={false} />
+      <SlugToolBar />
       <PageShell>
-        <LazyImage
-          image={season.image_url!}
-          kind="media"
-          sx={{ height: 360 }}
+        <SeasonBanner
+          altImage={season.alt_image_url}
+          image={season.image_url}
           title={season.title}
         />
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>

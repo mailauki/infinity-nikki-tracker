@@ -168,6 +168,8 @@ export function groupSeasonEntries({
   makeupSets,
   hideEvolutions,
   hideGlowups,
+  hidePieces = false,
+  hideMakeup = false,
   obtainedOutfit,
 }: {
   seasonSets: OutfitSet[]
@@ -175,6 +177,11 @@ export function groupSeasonEntries({
   makeupSets: MakeupSet[]
   hideEvolutions: boolean
   hideGlowups: boolean
+  // Drops standalone pieces (individual variants). Makeup sets are unaffected —
+  // they are sets with their own variants, not individual pieces.
+  hidePieces?: boolean
+  // Drops makeup sets and their evolutions.
+  hideMakeup?: boolean
   // Live obtained rows from the outfit provider. Omit to trust the flags already
   // on the passed-in data (e.g. server-rendered output with no provider).
   obtainedOutfit?: ObtainedOutfit[]
@@ -209,14 +216,18 @@ export function groupSeasonEntries({
     ? applyLiveObtained(standaloneVariants, obtainedOutfit)
     : standaloneVariants
 
-  for (const variant of liveStandalone) {
-    push(variant.season_category, [
-      { kind: 'standalone', key: `standalone:${variant.slug}`, variant },
-    ])
+  if (!hidePieces) {
+    for (const variant of liveStandalone) {
+      push(variant.season_category, [
+        { kind: 'standalone', key: `standalone:${variant.slug}`, variant },
+      ])
+    }
   }
 
-  for (const set of makeupSets) {
-    push(set.season_category, expandMakeupSet(set, hideEvolutions))
+  if (!hideMakeup) {
+    for (const set of makeupSets) {
+      push(set.season_category, expandMakeupSet(set, hideEvolutions))
+    }
   }
 
   return [...groups.entries()]

@@ -86,6 +86,14 @@ declare module '@mui/material/Paper' {
   }
 }
 
+// Opts the M3 tertiary role into LinearProgress's `color` prop, matching the
+// `props: { color: 'tertiary' }` style variant registered below.
+declare module '@mui/material/LinearProgress' {
+  interface LinearProgressPropsColorOverrides {
+    tertiary: true
+  }
+}
+
 declare module '@mui/material/styles' {
   interface PaletteColor {
     // M3 tonal roles for primary/secondary/tertiary
@@ -260,6 +268,7 @@ export const baseThemeOptions: ThemeOptions = {
     MuiCardActionArea: {
       styleOverrides: {
         root: {
+          borderRadius: 12,
           '&:not(:disabled):not([aria-disabled="true"])': {
             cursor: 'pointer',
           },
@@ -438,7 +447,16 @@ export const baseThemeOptions: ThemeOptions = {
     },
     MuiAccordion: {
       defaultProps: {
-        elevation: 0,
+        disableGutters: true,
+        sx: {
+          border: 0,
+          '&:not(:last-child)': {
+            borderBottom: 0,
+          },
+          '&::before': {
+            display: 'none',
+          },
+        },
       },
     },
     MuiPaper: {
@@ -477,6 +495,20 @@ export const baseThemeOptions: ThemeOptions = {
               style: ({ theme }) => ({
                 backgroundColor: alpha(theme.palette.success.main, 0.04),
                 borderColor: alpha(theme.palette.success.main, 0.44),
+              }),
+            },
+          ],
+        },
+      },
+    },
+    MuiLinearProgress: {
+      styleOverrides: {
+        root: {
+          variants: [
+            {
+              props: { color: 'tertiary' },
+              style: ({ theme }) => ({
+                backgroundColor: alpha(theme.palette.tertiary.main, 0.24),
               }),
             },
           ],

@@ -9,8 +9,10 @@ import { useSeasonFilterOptional } from '@/app/outfits/seasons/[slug]/season-fil
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import EvolutionToggle from '@/components/filter/evolution-toggle'
 import GlowupToggle from '@/components/filter/glowup-toggle'
+import PiecesToggle from '@/components/filter/pieces-toggle'
+import MakeupToggle from '@/components/filter/makeup-toggle'
 
-export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
+export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname()
   const { slug } = useParams()
   const { mode, cycleMode } = useOutfitImageMode()
@@ -19,8 +21,9 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
   // (e.g. the outfit set-detail card) — self-activating and inert elsewhere.
   const { sidebarOpen, setSidebarOpen, hasBody } = useSidebar()
 
-  // The image swap is available to everyone on the outfits slug page.
-  const showImageSwap = pathname.startsWith('/outfits/') && !pathname.includes('seasons')
+  // The image swap is available to everyone on the outfits slug pages, including
+  // a season's page — its cards render through the same image-mode-aware cards.
+  const showImageSwap = pathname.startsWith('/outfits/')
 
   const IMAGE_MODE_LABEL = {
     image: 'Showing main image',
@@ -44,6 +47,13 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
         </IconButton>
       }
     >
+      {showImageSwap && (
+        <Tooltip title={IMAGE_MODE_LABEL[mode]}>
+          <IconButton aria-label={IMAGE_MODE_LABEL[mode]} onClick={cycleMode}>
+            <Compare />
+          </IconButton>
+        </Tooltip>
+      )}
       {seasonFilter && (
         <>
           <EvolutionToggle
@@ -54,14 +64,15 @@ export default function SlugToolBar({ isAdmin }: { isAdmin: boolean }) {
             hideGlowups={seasonFilter.hideGlowups}
             onHideGlowupsChange={seasonFilter.onHideGlowupsChange}
           />
+          <PiecesToggle
+            hidePieces={seasonFilter.hidePieces}
+            onHidePiecesChange={seasonFilter.onHidePiecesChange}
+          />
+          <MakeupToggle
+            hideMakeup={seasonFilter.hideMakeup}
+            onHideMakeupChange={seasonFilter.onHideMakeupChange}
+          />
         </>
-      )}
-      {showImageSwap && (
-        <Tooltip title={IMAGE_MODE_LABEL[mode]}>
-          <IconButton aria-label={IMAGE_MODE_LABEL[mode]} onClick={cycleMode}>
-            <Compare />
-          </IconButton>
-        </Tooltip>
       )}
       {isAdmin && (
         <IconButton component="a" href={`/admin/${path}/edit/${slug}`}>
