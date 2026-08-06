@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
-import { Alert, Stack, Typography } from '@mui/material'
+import { Alert } from '@mui/material'
 
 import CardGrid from '@/components/card-grid'
 import ErrorAlert from '@/components/error-alert'
@@ -10,15 +10,15 @@ import {
   resolveOutfitImage,
   useOutfitImageMode,
 } from '@/components/outfits/outfit-image-mode-context'
-import ProgressChip from '@/components/progress-chip'
 import SetCard from '@/components/set-card'
 import { useSortOrder } from '@/components/sort-context'
 
 import { useMomoCloakData } from './momo-cloak-context'
 import { CLOAK_SORT_AXES } from './momo-cloak-filter-menu'
+import { useVisibleCloaks } from './use-visible-cloaks'
 
 export default function FilterMomoCloaks() {
-  const { cloaks, obtainedSlugs, isLoggedIn, isObtainedError, isError, filters, onToggleObtained } =
+  const { obtainedSlugs, isLoggedIn, isObtainedError, isError, onToggleObtained } =
     useMomoCloakData()
   const { mode } = useOutfitImageMode()
   const { sortAxis, sortDir } = useSortOrder()
@@ -26,45 +26,9 @@ export default function FilterMomoCloaks() {
   // the outfits page. Cloaks don't offer that axis (obtained is a boolean here),
   // so fall back to date rather than leaving the grid on an axis with no button.
   const axis = CLOAK_SORT_AXES.includes(sortAxis) ? sortAxis : 'date'
-  const {
-    selectedRarity,
-    selectedSeason,
-    selectedSeasonCategory,
-    selectedLocation,
-    selectedObtainedFilter,
-  } = filters
 
-  const visible = useMemo(
-    () =>
-      cloaks.filter((cloak) => {
-        if (selectedRarity !== null && cloak.rarity !== selectedRarity) return false
-        if (selectedSeason.length > 0 && !selectedSeason.includes(cloak.seasons ?? '')) return false
-        if (
-          selectedSeasonCategory.length > 0 &&
-          !selectedSeasonCategory.includes(cloak.season_category ?? '')
-        )
-          return false
-        if (selectedLocation !== null && cloak.location !== selectedLocation) return false
-        // The obtained filter is meaningless logged out — every cloak reads as
-        // not-obtained — so it only applies for signed-in users.
-        if (isLoggedIn && selectedObtainedFilter) {
-          const isObtained = obtainedSlugs.has(cloak.slug)
-          if (selectedObtainedFilter === 'obtained' && !isObtained) return false
-          if (selectedObtainedFilter === 'missing' && isObtained) return false
-        }
-        return true
-      }),
-    [
-      cloaks,
-      obtainedSlugs,
-      isLoggedIn,
-      selectedRarity,
-      selectedSeason,
-      selectedSeasonCategory,
-      selectedLocation,
-      selectedObtainedFilter,
-    ]
-  )
+  // Same hook the results bar uses, so the count can't drift from the grid.
+  const visible = useVisibleCloaks()
 
   // Mirrors the outfits comparator, minus `progress` — a cloak is a single unit,
   // so obtained is a boolean and that axis would only replay the obtained filter.
@@ -95,11 +59,6 @@ export default function FilterMomoCloaks() {
     })
   }, [visible, axis, sortDir])
 
-  const obtainedCount = useMemo(
-    () => cloaks.filter((c) => obtainedSlugs.has(c.slug)).length,
-    [cloaks, obtainedSlugs]
-  )
-
   return (
     <>
       {!isLoggedIn && <LoginAlert />}
@@ -112,17 +71,8 @@ export default function FilterMomoCloaks() {
         <ErrorAlert message="We couldn't load momo cloaks. Please try again." />
       ) : (
         <>
-          <Stack
-            direction="row"
-            sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1, mt: 1 }}
-          >
-            <Typography variant="body2">
-              {sorted.length} of {cloaks.length} cloaks
-            </Typography>
-            {isLoggedIn && !isObtainedError && (
-              <ProgressChip obtained={obtainedCount} size="md" total={cloaks.length} />
-            )}
-          </Stack>
+          {/* The result count and collection progress live in the sticky bar
+              (momo-cloak-results-bar.tsx), matching the outfits page. */}
           {sorted.length === 0 ? (
             <Alert severity="info">No cloaks match these filters.</Alert>
           ) : (
