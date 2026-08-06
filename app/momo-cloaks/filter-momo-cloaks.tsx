@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { Alert, Stack, Typography } from '@mui/material'
 
 import CardGrid from '@/components/card-grid'
+import ErrorAlert from '@/components/error-alert'
 import LoginAlert from '@/components/login-alert'
 import ProgressChip from '@/components/progress-chip'
 import SetCard from '@/components/set-card'
@@ -11,8 +12,8 @@ import SetCard from '@/components/set-card'
 import { useMomoCloakData } from './momo-cloak-context'
 
 export default function FilterMomoCloaks() {
-  const { cloaks, obtainedSlugs, isLoggedIn, isObtainedError, filters } = useMomoCloakData()
-  const { onToggleObtained } = useMomoCloakData()
+  const { cloaks, obtainedSlugs, isLoggedIn, isObtainedError, isError, filters, onToggleObtained } =
+    useMomoCloakData()
   const { selectedRarity, selectedSeason, selectedSeasonCategory, selectedObtainedFilter } = filters
 
   const visible = useMemo(
@@ -58,40 +59,46 @@ export default function FilterMomoCloaks() {
           We couldn&apos;t load your collection. Cloaks are shown, but tracking is unavailable.
         </Alert>
       )}
-      <Stack
-        direction="row"
-        sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1, mt: 1 }}
-      >
-        <Typography variant="body2">
-          {visible.length} of {cloaks.length} cloaks
-        </Typography>
-        {isLoggedIn && !isObtainedError && (
-          <ProgressChip obtained={obtainedCount} size="md" total={cloaks.length} />
-        )}
-      </Stack>
-      {visible.length === 0 ? (
-        <Alert severity="info">No cloaks match these filters.</Alert>
+      {isError ? (
+        <ErrorAlert message="We couldn't load momo cloaks. Please try again." />
       ) : (
-        <CardGrid columns="outfit">
-          {visible.map((cloak) => {
-            const isObtained = obtainedSlugs.has(cloak.slug)
-            return (
-              <SetCard
-                key={cloak.slug}
-                in
-                href={`/momo-cloaks/${cloak.slug}`}
-                imageSrc={cloak.image_url ?? ''}
-                isLoggedIn={isLoggedIn && !isObtainedError}
-                obtained={isObtained ? 1 : 0}
-                rarity={cloak.rarity ?? 0}
-                showAlt={false}
-                title={cloak.title}
-                total={1}
-                onToggle={() => onToggleObtained(cloak.slug)}
-              />
-            )
-          })}
-        </CardGrid>
+        <>
+          <Stack
+            direction="row"
+            sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1, mt: 1 }}
+          >
+            <Typography variant="body2">
+              {visible.length} of {cloaks.length} cloaks
+            </Typography>
+            {isLoggedIn && !isObtainedError && (
+              <ProgressChip obtained={obtainedCount} size="md" total={cloaks.length} />
+            )}
+          </Stack>
+          {visible.length === 0 ? (
+            <Alert severity="info">No cloaks match these filters.</Alert>
+          ) : (
+            <CardGrid columns="outfit">
+              {visible.map((cloak) => {
+                const isObtained = obtainedSlugs.has(cloak.slug)
+                return (
+                  <SetCard
+                    key={cloak.slug}
+                    in
+                    href={`/momo-cloaks/${cloak.slug}`}
+                    imageSrc={cloak.image_url ?? ''}
+                    isLoggedIn={isLoggedIn && !isObtainedError}
+                    obtained={isObtained ? 1 : 0}
+                    rarity={cloak.rarity ?? 0}
+                    showAlt={false}
+                    title={cloak.title}
+                    total={1}
+                    onToggle={() => onToggleObtained(cloak.slug)}
+                  />
+                )
+              })}
+            </CardGrid>
+          )}
+        </>
       )}
     </>
   )

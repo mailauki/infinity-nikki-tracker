@@ -30,10 +30,12 @@ const CLOAK_DETAIL_COLUMNS = `
 export const getMomoCloaks = cache(async () => {
   const supabase = await createClient()
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('momo_cloaks')
     .select(CLOAK_COLUMNS)
     .order('title', { ascending: true })
+
+  if (error) throw error
 
   return (data ?? []) as MomoCloak[]
 })

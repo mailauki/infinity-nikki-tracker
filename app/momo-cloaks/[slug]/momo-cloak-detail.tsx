@@ -1,7 +1,8 @@
 'use client'
 
+import { Fragment } from 'react'
 import Link from 'next/link'
-import { Button, Stack, Typography } from '@mui/material'
+import { Button, Typography } from '@mui/material'
 
 import LazyImage from '@/components/lazy-image'
 import SetDetailCard from '@/components/set-detail-card'
@@ -10,12 +11,14 @@ import { toTitle } from '@/lib/utils'
 
 import { useMomoCloakData } from '../momo-cloak-context'
 
+// SetDetailCard already wraps each extraRows entry in its own space-between
+// Stack, so MetaRow only needs to supply the two children — no nested wrapper.
 function MetaRow({ label, value }: { label: string; value: string }) {
   return (
-    <Stack direction="row" sx={{ justifyContent: 'space-between', width: '100%' }}>
+    <>
       <Typography variant="body2">{label}</Typography>
       <Typography variant="body2">{value}</Typography>
-    </Stack>
+    </>
   )
 }
 
@@ -36,12 +39,12 @@ export default function MomoCloakDetail({ cloak }: { cloak: MomoCloak }) {
       <MetaRow key="location" label="Location" value={toTitle(cloak.location)} />
     ) : null,
     cloak.outfitSet ? (
-      <Stack key="outfit" direction="row" sx={{ justifyContent: 'space-between', width: '100%' }}>
+      <Fragment key="outfit">
         <Typography variant="body2">Outfit</Typography>
         <Button component={Link} href={`/outfits/${cloak.outfitSet.slug}`} size="small">
           {cloak.outfitSet.title}
         </Button>
-      </Stack>
+      </Fragment>
     ) : null,
   ].filter((row): row is React.ReactElement => row !== null)
 

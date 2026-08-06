@@ -29,6 +29,8 @@ interface MomoCloakDataContextValue {
   isLoggedIn: boolean
   /** The cloaks themselves loaded, but the obtained rows failed — toggles disabled. */
   isObtainedError: boolean
+  /** The cloak fetch itself failed — no data to show, render an ErrorAlert. */
+  isError: boolean
   filters: MomoCloakFilterState
   onFiltersChange: (updates: Partial<MomoCloakFilterState>) => void
   onClearFilters: () => void
@@ -40,6 +42,7 @@ export const MomoCloakDataContext = createContext<MomoCloakDataContextValue>({
   obtainedSlugs: new Set(),
   isLoggedIn: false,
   isObtainedError: false,
+  isError: false,
   filters: DEFAULT_MOMO_FILTERS,
   onFiltersChange: () => {},
   onClearFilters: () => {},
