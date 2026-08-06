@@ -7,10 +7,7 @@ import { ChevronLeft, Compare, Edit, InfoOutlined } from '@mui/icons-material'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSeasonFilterOptional } from '@/app/outfits/seasons/[slug]/season-filter-context'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
-import EvolutionToggle from '@/components/filter/evolution-toggle'
-import GlowupToggle from '@/components/filter/glowup-toggle'
-import PiecesToggle from '@/components/filter/pieces-toggle'
-import MakeupToggle from '@/components/filter/makeup-toggle'
+import SeasonVisibilityMenu from '@/app/outfits/seasons/[slug]/season-visibility-menu'
 
 export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname()
@@ -54,26 +51,7 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
           </IconButton>
         </Tooltip>
       )}
-      {seasonFilter && (
-        <>
-          <EvolutionToggle
-            hideEvolutions={seasonFilter.hideEvolutions}
-            onHideEvolutionsChange={seasonFilter.onHideEvolutionsChange}
-          />
-          <GlowupToggle
-            hideGlowups={seasonFilter.hideGlowups}
-            onHideGlowupsChange={seasonFilter.onHideGlowupsChange}
-          />
-          <PiecesToggle
-            hidePieces={seasonFilter.hidePieces}
-            onHidePiecesChange={seasonFilter.onHidePiecesChange}
-          />
-          <MakeupToggle
-            hideMakeup={seasonFilter.hideMakeup}
-            onHideMakeupChange={seasonFilter.onHideMakeupChange}
-          />
-        </>
-      )}
+      {seasonFilter && <SeasonVisibilityMenu />}
       {isAdmin && (
         <IconButton component="a" href={`/admin/${path}/edit/${slug}`}>
           <Edit />
