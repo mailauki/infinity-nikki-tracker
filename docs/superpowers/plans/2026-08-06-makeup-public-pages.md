@@ -434,16 +434,38 @@ EOF
 node --experimental-strip-types verify-makeup.ts
 ```
 
-Expected output ends with `all assertions passed` and prints no `FAIL:` lines. Note `console.assert` does not exit non-zero — read the output rather than trusting the exit code.
+**Known limitation (verified 2026-08-06):** the bare command above does NOT work in this repo. Node's type stripping erases annotations syntactically but cannot resolve the `@/` path alias or erase a cross-file type-only import (`Tables` from `lib/types/supabase.ts`) — both need full TypeScript semantics. Expect `ERR_MODULE_NOT_FOUND` or an unresolved-type error.
 
-If Node rejects the flag, check `node --version`; native type stripping needs Node 22.6+ (this machine has v25).
+Use the repo's own `typescript` package to transpile on load instead:
+
+```bash
+cat > verify-loader.mjs <<'EOF'
+import { readFileSync } from 'node:fs'
+import ts from 'typescript'
+
+export async function load(url, context, nextLoad) {
+  if (!url.endsWith('.ts')) return nextLoad(url, context)
+  const src = readFileSync(new URL(url), 'utf8')
+  const { outputText } = ts.transpileModule(src, {
+    compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 },
+  })
+  return { format: 'module', shortCircuit: true, source: outputText }
+}
+EOF
+node --import ./verify-loader.mjs verify-makeup.ts
+```
+
+Delete BOTH throwaway files in Step 5. Neither may be committed.
+
+Expected output ends with `all assertions passed` and prints no `FAIL:` lines. Note `console.assert` does not exit non-zero — read the output rather than trusting the exit code. If an assertion fails, fix the code; never weaken the assertion.
 
 - [ ] **Step 5: Delete the script and typecheck**
 
 The script must not be committed — it imports nothing the app uses and would fail `yarn lint`.
 
 ```bash
-rm verify-makeup.ts
+rm -f verify-makeup.ts verify-loader.mjs
+git status --short   # confirm neither file is staged or untracked
 yarn tsc --noEmit && yarn lint
 ```
 
