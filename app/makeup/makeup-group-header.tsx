@@ -6,7 +6,7 @@ import { Box, Button, Divider, IconButton, Stack } from '@mui/material'
 import ProgressChip from '@/components/progress-chip'
 
 // The header for one evolution group (base set or one evolution) in the grouped
-// compact view. Extracted from the former MakeupSetSection so the virtualized
+// compact view. Extracted from the outfits domain's former set-section so the virtualized
 // row model can render it as a standalone row.
 //
 // `obtained` / `total` / `allObtained` are always computed by the caller from

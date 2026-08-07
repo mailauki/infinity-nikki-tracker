@@ -244,7 +244,7 @@ export default function VirtualGroupedGrid({
 
   // Batch-toggle the whole evolution group: when fully obtained, clear it;
   // otherwise mark the remaining (not-yet-obtained) variants obtained. Carried
-  // over verbatim from the former MakeupSetSection — it acts on `groupVariants`,
+  // over verbatim from the outfits domain's former set-section — it acts on `groupVariants`,
   // the full group, so filtered-out variants are toggled too.
   const handleToggle = (row: Extract<GroupRow, { kind: 'header' }>) => {
     const toToggle = row.groupVariants
