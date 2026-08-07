@@ -40,7 +40,9 @@ export const getMakeupSets = cache(async (forUserId?: string) => {
   // these through matters: createMakeupSet defaults both to [], so omitting
   // them silently yields outfitSet: null and makeup_categories: [] on every
   // set — which is what previously stopped the detail page's paired-outfit
-  // link from ever rendering. Keep in step with app/api/makeup/route.ts.
+  // link from ever rendering. Keep in step with app/api/makeup/route.ts —
+  // that route surfaces a query error here as a 500; this hook has no
+  // response to return, so it deliberately falls back to [] instead.
   const pairedSlugs = [
     ...new Set((rows ?? []).map((r) => r.outfit_set).filter(Boolean)),
   ] as string[]

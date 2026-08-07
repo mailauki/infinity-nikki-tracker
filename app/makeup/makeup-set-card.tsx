@@ -62,8 +62,11 @@ function MakeupSetCard({
     }
   }
 
+  // Evolution slugs are independent, opaque strings (no shared prefix with the
+  // base set's slug), unlike outfits where an evolution slug is `{baseSlug}-{suffix}`.
+  // Pass it through whole as a query param instead of splicing it into the path.
   const detailHref = evolution
-    ? `/makeup/${evolution.slug.replace('-', '?evolution=')}`
+    ? `/makeup/${set.slug}?evolution=${evolution.slug}`
     : `/makeup/${set.slug}?evolution=base`
   // The standalone bucket is a client-side pseudo-set whose slug is not in
   // makeup_sets, so it has no detail route. Pieces are toggled inline instead.

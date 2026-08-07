@@ -36,11 +36,13 @@ export default function MakeupSetDetail({
   const searchParams = useSearchParams()
   const evolutionParams = searchParams.get('evolution')
   // The base state's slug is the bare set slug (no `{set}-base`), so `evolution=base`
-  // seeds the set slug itself; every other evolution seeds `{set}-{evolution}`.
+  // seeds the set slug itself. Every other value IS the evolution's slug — makeup
+  // evolution slugs are independent, opaque strings, unlike outfits' `{baseSlug}-{suffix}`
+  // shape, so the param is passed through whole rather than reconstructed.
   const resolveEvolutionSlug = () => {
     if (!evolutionParams) return null
     if (evolutionParams === 'base') return makeupSet.slug
-    return `${makeupSet.slug}-${evolutionParams}`
+    return evolutionParams
   }
   const [selected, setSelected] = useState<string | null>(resolveEvolutionSlug())
 

@@ -176,8 +176,11 @@ export default function VirtualGroupedGrid({
         const variants = set.makeup_variants.filter(inState)
         if (variants.length === 0) continue
 
+        // Evolution slugs are independent, opaque strings (no shared prefix with the
+        // base set's slug), unlike outfits where an evolution slug is `{baseSlug}-{suffix}`.
+        // Pass it through whole as a query param instead of splicing it into the path.
         const href = evolution
-          ? `/makeup/${evolution.slug.replace('-', '?evolution=')}`
+          ? `/makeup/${set.slug}?evolution=${evolution.slug}`
           : `/makeup/${set.slug}`
         // MakeupEvolution titles are stored pre-composed as "{base set title}: {subtitle}".
         const title = evolution ? evolution.title : set.title

@@ -59,7 +59,14 @@ export function createMakeupSet(
   const build = (row: MakeupSetRaw, evolutions: MakeupEvolution[]) =>
     ({
       ...row,
-      makeup_variants: variantsBySet.get(row.slug) ?? [],
+      // Base rows must carry their evolutions' variants too, so consumers ported
+      // from outfits (which filter this list by state slug) can find them. Makeup
+      // has no glow-up title derivation, so this is a plain concatenation — see
+      // hooks/outfit.ts's `allVariants` for the richer outfits equivalent.
+      makeup_variants: [
+        ...(variantsBySet.get(row.slug) ?? []),
+        ...evolutions.flatMap((e) => e.makeup_variants ?? []),
+      ],
       makeup_categories: categories,
       evolutions,
       season: row.seasons ? { title: row.seasons } : null,

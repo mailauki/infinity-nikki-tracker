@@ -38,9 +38,14 @@ export async function GET() {
   const pairedSlugs = [
     ...new Set((rows ?? []).map((r) => r.outfit_set).filter(Boolean)),
   ] as string[]
-  const { data: outfitSets } = pairedSlugs.length
+  const { data: outfitSets, error: outfitSetsError } = pairedSlugs.length
     ? await supabase.from('outfit_sets').select('slug, title, image_url').in('slug', pairedSlugs)
-    : { data: [] }
+    : { data: [], error: null }
+
+  if (outfitSetsError) {
+    console.error('Failed to fetch paired outfit sets:', outfitSetsError)
+    return NextResponse.json({ error: outfitSetsError.message }, { status: 500 })
+  }
 
   const [styles, labels, seasons, seasonCategories] = await Promise.all([
     getStyles(),
