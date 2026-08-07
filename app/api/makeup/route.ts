@@ -58,7 +58,9 @@ export async function GET() {
     (rows ?? []) as MakeupSetRaw[],
     variants,
     makeupCategories,
-    outfitSets ?? []
+    outfitSets ?? [],
+    seasons,
+    seasonCategories
   )
 
   const base = { makeupSets, makeupCategories, styles, labels, seasons, seasonCategories }

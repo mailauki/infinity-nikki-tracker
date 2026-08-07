@@ -5,6 +5,8 @@ import { applyObtainedMakeupKeys, buildObtainedMakeupKeySet, createMakeupSet } f
 import { getMakeupCategories } from './makeup-categories'
 import { getMakeupVariants } from './makeup-variants'
 import { getObtainedMakeup } from './obtained-makeup'
+import { getSeasons } from './seasons'
+import { getSeasonCategories } from './season-categories'
 import { getUserID } from '../user'
 
 const SET_COLUMNS = `
@@ -30,11 +32,15 @@ const SET_COLUMNS = `
 export const getMakeupSets = cache(async (forUserId?: string) => {
   const supabase = await createClient()
 
-  const [{ data: rows }, variants, makeupCategories] = await Promise.all([
-    supabase.from('makeup_sets').select(SET_COLUMNS).order('title', { ascending: true }),
-    getMakeupVariants(),
-    getMakeupCategories(),
-  ])
+  const [{ data: rows }, variants, makeupCategories, seasons, seasonCategories] = await Promise.all(
+    [
+      supabase.from('makeup_sets').select(SET_COLUMNS).order('title', { ascending: true }),
+      getMakeupVariants(),
+      getMakeupCategories(),
+      getSeasons(),
+      getSeasonCategories(),
+    ]
+  )
 
   // Resolve only the outfit sets actually paired with a makeup set. Passing
   // these through matters: createMakeupSet defaults both to [], so omitting
@@ -54,7 +60,9 @@ export const getMakeupSets = cache(async (forUserId?: string) => {
     (rows ?? []) as MakeupSetRaw[],
     variants,
     makeupCategories,
-    outfitSets ?? []
+    outfitSets ?? [],
+    seasons,
+    seasonCategories
   )
 
   const user_id = forUserId ?? (await getUserID())

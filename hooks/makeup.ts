@@ -22,6 +22,11 @@ export const STANDALONE_MAKEUP_SLUG = 'standalone-pieces'
 
 export type OutfitSetRef = { slug: string; title: string; image_url: string | null }
 
+// Lookup rows used only to resolve display titles for makeup_sets.seasons /
+// season_category, whose stored values are slug-shaped rather than titles.
+export type SeasonRef = { slug: string; title: string }
+export type SeasonCategoryRef = { title: string }
+
 export function isStandaloneMakeupSet(set: Pick<MakeupSet, 'slug'>) {
   return set.slug === STANDALONE_MAKEUP_SLUG
 }
@@ -40,7 +45,9 @@ export function createMakeupSet(
   rows: MakeupSetRaw[],
   variants: MakeupVariant[],
   categories: MakeupCategory[] = [],
-  outfitSets: OutfitSetRef[] = []
+  outfitSets: OutfitSetRef[] = [],
+  seasons: SeasonRef[] = [],
+  seasonCategories: SeasonCategoryRef[] = []
 ): MakeupSet[] {
   const variantsBySet = new Map<string, MakeupVariant[]>()
   const standaloneVariants: MakeupVariant[] = []
@@ -55,6 +62,16 @@ export function createMakeupSet(
   }
 
   const outfitSetBySlug = new Map(outfitSets.map((o) => [o.slug, o]))
+  const seasonTitleBySlug = new Map(seasons.map((s) => [s.slug, s.title]))
+  // season_categories has no slug column, so match on a normalized title.
+  // `toSlug` alone is not enough: it maps "Limited-Time Resonance" to
+  // 'limited-time_resonance', but makeup_sets stores 'limited_time_resonance'
+  // — the hyphen is an underscore there. Collapse both separators to one form
+  // on each side so the two meet.
+  const normalize = (value: string) => value.toLowerCase().replace(/[\s\-_]+/g, '_')
+  const seasonCategoryTitleBySlug = new Map(
+    seasonCategories.map((c) => [normalize(c.title), c.title])
+  )
 
   const build = (row: MakeupSetRaw, evolutions: MakeupEvolution[]) =>
     ({
@@ -69,8 +86,27 @@ export function createMakeupSet(
       ],
       makeup_categories: categories,
       evolutions,
-      season: row.seasons ? { title: row.seasons } : null,
-      seasonCategory: row.season_category ? { title: row.season_category } : null,
+      // makeup_sets.seasons / season_category declare FKs to seasons(title) and
+      // season_categories(title), but the stored values are slug-shaped
+      // ('firework_season', 'limited_time_resonance') rather than the display
+      // titles — so the FK does not resolve and the raw column renders as a slug.
+      //
+      // Resolve against the real lookup rows. Deriving the title by string
+      // munging is NOT sufficient: 'heart_of_infinity' and
+      // 'limited_time_resonance' become "Heart Of Infinity" and "Limited Time
+      // Resonance", where the actual titles are "Heart of Infinity" and
+      // "Limited-Time Resonance". Fall back to the raw value so an unmatched
+      // row still shows something rather than blanking out.
+      //
+      // The raw `seasons` column stays untouched — it is what the
+      // /outfits/seasons/{slug} href needs.
+      season: row.seasons ? { title: seasonTitleBySlug.get(row.seasons) ?? row.seasons } : null,
+      seasonCategory: row.season_category
+        ? {
+            title:
+              seasonCategoryTitleBySlug.get(normalize(row.season_category)) ?? row.season_category,
+          }
+        : null,
       outfitSet: row.outfit_set ? (outfitSetBySlug.get(row.outfit_set) ?? null) : null,
     }) as MakeupSet
 
