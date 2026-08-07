@@ -62,9 +62,12 @@ function MakeupSetCard({
     }
   }
 
+  const detailHref = evolution
+    ? `/makeup/${evolution.slug.replace('-', '?evolution=')}`
+    : `/makeup/${set.slug}?evolution=base`
   // The standalone bucket is a client-side pseudo-set whose slug is not in
   // makeup_sets, so it has no detail route. Pieces are toggled inline instead.
-  const href = isStandaloneMakeupSet(set) ? '' : `/makeup/${evolution?.slug ?? set.slug}`
+  const href = isStandaloneMakeupSet(set) ? '' : detailHref
   // MakeupEvolution titles are stored pre-composed as "{base set title}: {subtitle}".
   const title = evolution ? evolution.title : set.title
 
