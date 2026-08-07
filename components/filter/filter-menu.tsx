@@ -18,6 +18,7 @@ import SidebarBody from '@/components/sidebar/sidebar-body'
 
 import { useEurekaData } from '../eureka/eureka-context'
 import { useOutfitData } from '../outfits/outfit-context'
+import { useMakeupData } from '../makeup/makeup-context'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
 import ObtainedToggle from './obtained-toggle'
 import ColorSelect from './color-select'
@@ -28,8 +29,11 @@ import EurekaSelect from './eureka-select'
 import RarityToggle from './rarity-toggle'
 import OutfitSelect from './outfit-select'
 import SortOutfitToggle from './sort-outfit-toggle'
+import MakeupSelect from './makeup-select'
+import MakeupCategorySelect from './makeup-category-select'
 import DensityToggle from './density-toggle'
 import { useOutfitImageMode } from '../outfits/outfit-image-mode-context'
+import { useMakeupImageMode } from '../makeup/makeup-image-mode-context'
 import { useSortOrder } from '../sort-context'
 import OutfitCategorySelect from './outfit-category-select'
 import EvolutionOrderToggle from './evolution-order-toggle'
@@ -96,10 +100,33 @@ export default function FilterMenu() {
     onClearFilters: onClearOutfitFilters,
   } = useOutfitData()
 
-  const { density, mode: imageMode, reset: resetImageMode } = useOutfitImageMode()
+  const { density, mode: imageMode, setDensity, reset: resetImageMode } = useOutfitImageMode()
   const { resetSort, isSortDefault } = useSortOrder()
 
+  const {
+    makeupSets,
+    makeupCategories,
+    styles: makeupStyles,
+    labels: makeupLabels,
+    seasons: makeupSeasons,
+    seasonCategories: makeupSeasonCategories,
+    isLoggedIn: makeupLoggedIn,
+    groupBySet: makeupGroupBySet,
+    onGroupBySetChange: onMakeupGroupBySetChange,
+    filters: makeupFilters,
+    onFiltersChange: onMakeupFiltersChange,
+    onClearFilters: onClearMakeupFilters,
+  } = useMakeupData()
+
+  const {
+    density: makeupDensity,
+    mode: makeupImageMode,
+    setDensity: setMakeupDensity,
+    reset: resetMakeupImageMode,
+  } = useMakeupImageMode()
+
   const isOutfits = pathname.startsWith('/outfits')
+  const isMakeup = pathname.startsWith('/makeup')
 
   // Category filtering only applies in compact view. Density can settle on
   // 'standard' after the toggle handler runs (e.g. hydrated from saved
@@ -203,6 +230,8 @@ export default function FilterMenu() {
           <List>
             <ListItem>
               <DensityToggle
+                density={density}
+                setDensity={setDensity}
                 onDensityChange={(next) => {
                   // Category filtering only applies in compact view; clear the
                   // selection when switching back to standard so it isn't retained
@@ -214,7 +243,7 @@ export default function FilterMenu() {
               />
             </ListItem>
             <ListItem>
-              <SortAxisToggle />
+              <SortAxisToggle isLoggedIn={outfitLoggedIn} />
             </ListItem>
             <ListItem sx={{ gap: 1 }}>
               <SortOutfitToggle
@@ -319,6 +348,163 @@ export default function FilterMenu() {
                 options={seasonCategories}
                 selected={selectedSeasonCategory}
                 onChange={(next) => onOutfitFiltersChange({ selectedSeasonCategory: next })}
+              />
+            </ListItem>
+            <Divider sx={{ mx: 2, mt: 2 }} />
+            <ListItem>
+              <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
+                {hasViewChanges && (
+                  <Button color="secondary" variant="outlined" onClick={handleReset}>
+                    Reset
+                  </Button>
+                )}
+                {hasActiveFilters && (
+                  <Button color="secondary" variant="outlined" onClick={handleClearAll}>
+                    Clear all
+                  </Button>
+                )}
+                <Button variant="contained" onClick={closeFilter}>
+                  Apply
+                </Button>
+              </Stack>
+            </ListItem>
+          </List>
+        </SidebarBody>
+      </>
+    )
+  }
+
+  if (isMakeup) {
+    const {
+      selectedMakeupSet,
+      selectedMakeupCategory,
+      selectedObtainedFilter,
+      selectedRarity,
+      selectedStyle,
+      selectedLabel,
+      selectedSeason,
+      selectedSeasonCategory,
+    } = makeupFilters
+
+    // "Clear all" resets every control in this drawer, so it should appear when
+    // any of them is non-default — the filters, the grouping toggle, or the
+    // density / image-mode controls. Mirrors the outfits branch, minus the
+    // evolution/glow-up axes makeup doesn't have.
+    const hasActiveFilters =
+      selectedMakeupSet ||
+      selectedMakeupCategory.length > 0 ||
+      selectedObtainedFilter ||
+      selectedRarity ||
+      selectedStyle.length > 0 ||
+      selectedLabel.length > 0 ||
+      selectedSeason.length > 0 ||
+      selectedSeasonCategory.length > 0 ||
+      !makeupGroupBySet ||
+      makeupDensity !== 'standard' ||
+      makeupImageMode !== 'image'
+
+    const handleClearAll = () => {
+      onClearMakeupFilters()
+      resetMakeupImageMode()
+    }
+
+    // "Reset" restores only the view controls — density, image mode, and sort —
+    // to their defaults, leaving the filter selections intact.
+    const hasViewChanges =
+      makeupDensity !== 'standard' || makeupImageMode !== 'image' || !isSortDefault
+
+    const handleReset = () => {
+      resetMakeupImageMode()
+      resetSort()
+    }
+
+    return (
+      <>
+        <IconButton
+          color={sidebarOpen ? 'primary' : 'default'}
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          <FilterList />
+        </IconButton>
+        <SidebarBody>
+          <List>
+            <ListItem>
+              <DensityToggle density={makeupDensity} setDensity={setMakeupDensity} />
+            </ListItem>
+            <ListItem>
+              <SortAxisToggle isLoggedIn={makeupLoggedIn} />
+            </ListItem>
+            <ListItem sx={{ gap: 1 }}>
+              <SortOutfitToggle
+                groupBySet={makeupGroupBySet}
+                onGroupBySetChange={onMakeupGroupBySetChange}
+              />
+              <MakeupSelect
+                makeupSets={makeupSets}
+                selectedMakeupSet={selectedMakeupSet}
+                onMakeupSetChange={(slug) => onMakeupFiltersChange({ selectedMakeupSet: slug })}
+              />
+            </ListItem>
+            {makeupLoggedIn && (
+              <ListItem>
+                <ObtainedToggle
+                  selectedObtainedFilter={selectedObtainedFilter}
+                  onObtainedFilterChange={(_e, v) =>
+                    onMakeupFiltersChange({ selectedObtainedFilter: v })
+                  }
+                />
+              </ListItem>
+            )}
+            <ListItem>
+              <MakeupCategorySelect
+                categories={makeupCategories}
+                selectedCategory={selectedMakeupCategory}
+                onCategoryChange={(e) =>
+                  onMakeupFiltersChange({
+                    selectedMakeupCategory:
+                      typeof e.target.value === 'string'
+                        ? e.target.value.split(',').filter(Boolean)
+                        : e.target.value,
+                  })
+                }
+              />
+            </ListItem>
+            <ListItem>
+              <RarityToggle
+                selectedRarity={selectedRarity}
+                onRarityChange={(_e, v) => onMakeupFiltersChange({ selectedRarity: v })}
+              />
+            </ListItem>
+            <ListItem sx={{ gap: 1 }}>
+              <StyleLabelSelect
+                id="makeup-style-select"
+                label="Style"
+                options={makeupStyles}
+                selected={selectedStyle}
+                onChange={(next) => onMakeupFiltersChange({ selectedStyle: next })}
+              />
+              <StyleLabelSelect
+                id="makeup-label-select"
+                label="Label"
+                options={makeupLabels}
+                selected={selectedLabel}
+                onChange={(next) => onMakeupFiltersChange({ selectedLabel: next })}
+              />
+            </ListItem>
+            <ListItem sx={{ gap: 1 }}>
+              <StyleLabelSelect
+                id="makeup-season-select"
+                label="Season"
+                options={makeupSeasons}
+                selected={selectedSeason}
+                onChange={(next) => onMakeupFiltersChange({ selectedSeason: next })}
+              />
+              <StyleLabelSelect
+                id="makeup-season-category-select"
+                label="Season Category"
+                options={makeupSeasonCategories}
+                selected={selectedSeasonCategory}
+                onChange={(next) => onMakeupFiltersChange({ selectedSeasonCategory: next })}
               />
             </ListItem>
             <Divider sx={{ mx: 2, mt: 2 }} />

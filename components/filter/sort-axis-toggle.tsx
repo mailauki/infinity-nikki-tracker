@@ -13,8 +13,9 @@ const AXIS_OPTIONS: { value: SortAxis; label: string; loggedInOnly?: boolean }[]
 ]
 
 // `isLoggedIn` defaults to the outfit context so existing outfit call sites keep
-// working untouched. Routes without that provider mounted (e.g. /momo-cloaks)
-// pass it explicitly rather than silently reading the context's `false` default.
+// working untouched. Routes without that provider mounted (e.g. /momo-cloaks,
+// /makeup) pass it explicitly rather than silently reading the context's `false`
+// default.
 //
 // `axes` narrows which axes are offered. Domains whose items are a single unit
 // (Momo's Cloaks) omit 'progress': obtained is a boolean there, so sorting by it
