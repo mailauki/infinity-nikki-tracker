@@ -100,6 +100,8 @@ export default function FilterMenu() {
     onClearFilters: onClearOutfitFilters,
   } = useOutfitData()
 
+  // `mode` is read only to decide whether "Clear all"/"Reset" should appear —
+  // the image swap itself lives in the page toolbar, not in this drawer.
   const { density, mode: imageMode, setDensity, reset: resetImageMode } = useOutfitImageMode()
   const { resetSort, isSortDefault } = useSortOrder()
 
@@ -164,6 +166,18 @@ export default function FilterMenu() {
       onOutfitFiltersChange({ selectedEvolution: null })
     }
   }, [isOutfits, selectedEvolutionForReconcile, isOrderShown, onOutfitFiltersChange])
+
+  // Same reconciliation for makeup: density can settle on 'standard' after the
+  // toggle handler runs (e.g. hydrated from saved preferences), so clear any
+  // category selection whenever density is standard. Idempotent — only fires an
+  // update when a selection is actually present.
+  const { selectedMakeupCategory: selectedMakeupCategoryForReconcile } = makeupFilters
+
+  React.useEffect(() => {
+    if (isMakeup && makeupDensity === 'standard' && selectedMakeupCategoryForReconcile.length > 0) {
+      onMakeupFiltersChange({ selectedMakeupCategory: [] })
+    }
+  }, [isMakeup, makeupDensity, selectedMakeupCategoryForReconcile, onMakeupFiltersChange])
 
   if (isOutfits) {
     const {
@@ -429,13 +443,25 @@ export default function FilterMenu() {
         <SidebarBody>
           <List>
             <ListItem>
-              <DensityToggle density={makeupDensity} setDensity={setMakeupDensity} />
+              <DensityToggle
+                density={makeupDensity}
+                setDensity={setMakeupDensity}
+                onDensityChange={(next) => {
+                  // Category filtering only applies in compact view; clear the
+                  // selection when switching back to standard so it isn't retained
+                  // while the (disabled) control is hidden from effect.
+                  if (next === 'standard' && selectedMakeupCategory.length > 0) {
+                    onMakeupFiltersChange({ selectedMakeupCategory: [] })
+                  }
+                }}
+              />
             </ListItem>
             <ListItem>
               <SortAxisToggle isLoggedIn={makeupLoggedIn} />
             </ListItem>
             <ListItem sx={{ gap: 1 }}>
               <SortOutfitToggle
+                disabled={makeupDensity === 'standard'}
                 groupBySet={makeupGroupBySet}
                 onGroupBySetChange={onMakeupGroupBySetChange}
               />
@@ -458,6 +484,7 @@ export default function FilterMenu() {
             <ListItem>
               <MakeupCategorySelect
                 categories={makeupCategories}
+                disabled={makeupDensity === 'standard'}
                 selectedCategory={selectedMakeupCategory}
                 onCategoryChange={(e) =>
                   onMakeupFiltersChange({

@@ -7,9 +7,10 @@ import { ToggleButton, ToggleButtonGroup } from '@mui/material'
 // declared locally so this widget doesn't couple to either domain's context.
 type Density = 'standard' | 'compact'
 
-// The image swap used to live here as a trailing toggle button. It now sits in
-// the page toolbar (ImageModeButton), matching every other page that offers it —
-// eureka, seasons, momo-cloaks, and the slug pages.
+// Density only. The main/alt image swap deliberately does NOT live here — it
+// belongs in the page toolbar (ImageModeButton / MakeupImageModeButton /
+// SlugToolBar) so there is exactly one image toggle per page, in the same place
+// on every route. Rendering it here too gave /makeup two.
 export default function DensityToggle({
   density,
   setDensity,
