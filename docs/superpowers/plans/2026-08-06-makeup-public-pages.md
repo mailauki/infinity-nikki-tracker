@@ -1366,13 +1366,19 @@ In `makeup-set-card.tsx`, a standalone card must not link anywhere (its slug is 
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
 ```
 
-and gate the `href` so `SetCard` receives an empty string for the bucket, keeping the toggle live:
+and layer the gate ON TOP of the source's existing href construction — do not replace it. The `?evolution=` query param must survive, because Task 8's detail page resolves the selected evolution from it; dropping it makes every evolution card deep-link to the base state instead:
 
 ```ts
 // The standalone bucket is a client-side pseudo-set whose slug is not in
 // makeup_sets, so it has no detail route. Pieces are toggled inline instead.
-const href = isStandaloneMakeupSet(set) ? '' : `/makeup/${evolution?.slug ?? set.slug}`
+const href = isStandaloneMakeupSet(set)
+  ? ''
+  : evolution
+    ? `/makeup/${evolution.slug.replace('-', '?evolution=')}`
+    : `/makeup/${set.slug}?evolution=base`
 ```
+
+This mirrors `app/outfits/outfit-set-card.tsx:65-67` exactly, with the gate added. Note `virtual-grouped-grid.tsx` builds its header href with the same `replace('-', '?evolution=')` rule but omits `?evolution=base` on the base branch — that asymmetry exists in the outfits source too, so preserve it rather than harmonizing the two (Task 8 treats a missing param and `evolution=base` identically).
 
 - [ ] **Step 5: Typecheck and fix fallout**
 
