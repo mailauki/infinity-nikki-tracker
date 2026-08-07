@@ -94,7 +94,11 @@ export default function MakeupDataProvider({
 
   const onGroupBySetChange = useCallback(() => setGroupBySet((prev) => !prev), [])
 
-  // Optimistic: flip local state first, roll back the same rows on failure.
+  // Unconditionally flips `rows` into `targetObtained` state — used both for
+  // the forward optimistic update (already pre-filtered to the genuinely
+  // mutated subset by the caller) and for rollback (flipping that exact same
+  // subset back). Never re-derives "did this actually change" itself, so it
+  // has no dependency on a possibly-stale `obtainedMakeup` snapshot.
   const applyToggles = useCallback(
     (
       rows: Array<{ makeup_set: string; makeup_category: string; makeup_variant: string }>,
@@ -119,17 +123,32 @@ export default function MakeupDataProvider({
       targetObtained: boolean
     ) => {
       if (!isLoggedIn || rows.length === 0) return
-      applyToggles(rows, targetObtained)
+
+      // Compute the genuinely-mutated subset synchronously, against the
+      // current `obtainedMakeup` value, before scheduling the state update.
+      // This is what makes the rollback exact: a row already in the target
+      // state (e.g. a mixed-state batch where only some rows need to flip)
+      // is excluded here and therefore never rolled back either, even though
+      // it appeared in the original `rows` request.
+      const existing = new Set(obtainedMakeup.map((o) => o.makeup_variant))
+      const mutated = targetObtained
+        ? rows.filter((r) => !existing.has(r.makeup_variant))
+        : rows.filter((r) => existing.has(r.makeup_variant))
+      if (mutated.length === 0) return
+
+      applyToggles(mutated, targetObtained)
       Promise.all(
-        rows.map((r) => handleObtainedMakeup(r.makeup_set, r.makeup_category, r.makeup_variant))
+        mutated.map((r) => handleObtainedMakeup(r.makeup_set, r.makeup_category, r.makeup_variant))
       ).catch((err) => {
         console.error('Failed to toggle obtained makeup:', err)
-        applyToggles(rows, !targetObtained)
+        // Roll back exactly the rows this call mutated — never the full
+        // requested batch, which may include rows this call never touched.
+        applyToggles(mutated, !targetObtained)
         setIsObtainedError(true)
         enqueueSnackbar('Could not save that change', { variant: 'error' })
       })
     },
-    [applyToggles, isLoggedIn]
+    [applyToggles, isLoggedIn, obtainedMakeup]
   )
 
   const onToggleObtained = useCallback(
