@@ -5,6 +5,7 @@ import ToolbarSlot from '@/components/navbar/toolbar-slot'
 import { useParams, usePathname } from 'next/navigation'
 import { ChevronLeft, Edit, InfoOutlined } from '@mui/icons-material'
 import ImageModeButton from '@/components/navbar/image-mode-button'
+import MakeupImageModeButton from '@/components/makeup/makeup-image-mode-button'
 import { useSeasonFilterOptional } from '@/app/outfits/seasons/[slug]/season-filter-context'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import SeasonVisibilityMenu from '@/app/outfits/seasons/[slug]/season-visibility-menu'
@@ -19,8 +20,12 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
 
   // The image swap is available to everyone on the outfits slug pages, including
   // a season's page — its cards render through the same image-mode-aware cards —
-  // and on momo-cloaks, whose detail page renders a set image with an alternate.
-  const showImageSwap = pathname.startsWith('/outfits/') || pathname.startsWith('/momo-cloaks/')
+  // and on momo-cloaks and makeup, whose detail pages render a set image with an
+  // alternate. Each domain has its own image-mode context, so the matching
+  // button is rendered rather than the context being picked here.
+  const isMakeupSlug = pathname.startsWith('/makeup/')
+  const showImageSwap =
+    isMakeupSlug || pathname.startsWith('/outfits/') || pathname.startsWith('/momo-cloaks/')
 
   // Most domains nest their admin CRUD under a `/sets` segment
   // (/admin/eureka/sets/edit/…), so a top-level slug page maps to `<domain>/sets`.
@@ -44,7 +49,7 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
       }
     >
       {seasonFilter && <SeasonVisibilityMenu />}
-      {showImageSwap && <ImageModeButton />}
+      {showImageSwap && (isMakeupSlug ? <MakeupImageModeButton /> : <ImageModeButton />)}
       {isAdmin && (
         <IconButton component="a" href={`/admin/${path}/edit/${slug}`}>
           <Edit />

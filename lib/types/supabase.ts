@@ -1271,6 +1271,9 @@ export type Database = {
           eureka_style: string | null
           eureka_trial: string | null
           group_by_set: boolean
+          makeup_density: string | null
+          makeup_image_mode: string | null
+          makeup_sort_axis: string | null
           momo_location_filter: string | null
           momo_obtained_filter: string | null
           momo_rarity_filter: string | null
@@ -1309,6 +1312,9 @@ export type Database = {
           eureka_style?: string | null
           eureka_trial?: string | null
           group_by_set?: boolean
+          makeup_density?: string | null
+          makeup_image_mode?: string | null
+          makeup_sort_axis?: string | null
           momo_location_filter?: string | null
           momo_obtained_filter?: string | null
           momo_rarity_filter?: string | null
@@ -1347,6 +1353,9 @@ export type Database = {
           eureka_style?: string | null
           eureka_trial?: string | null
           group_by_set?: boolean
+          makeup_density?: string | null
+          makeup_image_mode?: string | null
+          makeup_sort_axis?: string | null
           momo_location_filter?: string | null
           momo_obtained_filter?: string | null
           momo_rarity_filter?: string | null

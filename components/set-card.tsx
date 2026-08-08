@@ -38,6 +38,15 @@ export default function SetCard({
   topLeft?: ReactNode
   topRight?: ReactNode
 }) {
+  const media = (
+    <LazyImage
+      image={imageSrc}
+      kind="media"
+      sx={{ width: '100%', aspectRatio: showAlt ? '1 / 1' : '2 / 3' }}
+      title={title}
+    />
+  )
+
   return (
     <CardShell
       in={shown}
@@ -46,14 +55,13 @@ export default function SetCard({
       unmountOnExit={unmountOnExit}
       onExited={onExited}
     >
-      <CardActionArea aria-label={`${title} — rarity ${rarity}`} component={Link} href={href}>
-        <LazyImage
-          image={imageSrc}
-          kind="media"
-          sx={{ width: '100%', aspectRatio: showAlt ? '1 / 1' : '2 / 3' }}
-          title={title}
-        />
-      </CardActionArea>
+      {href ? (
+        <CardActionArea aria-label={`${title} — rarity ${rarity}`} component={Link} href={href}>
+          {media}
+        </CardActionArea>
+      ) : (
+        media
+      )}
       <Stack direction="row" sx={{ px: 1, alignItems: 'center', justifyContent: 'space-between' }}>
         <Stack
           spacing={1}

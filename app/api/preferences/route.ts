@@ -39,12 +39,15 @@ const WRITABLE_KEYS = new Set([
   'momo_season_category_filter',
   'momo_obtained_filter',
   'momo_location_filter',
+  'makeup_sort_axis',
+  'makeup_density',
+  'makeup_image_mode',
 ])
 
 // Kept in sync with WRITABLE_KEYS and the UserPreferences type. Every field the
 // type exposes must be selected here, or clients silently read `undefined`.
 const PREFERENCE_COLUMNS =
-  'group_by_set, show_by_color, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity, eureka_style, eureka_label, eureka_trial, theme, color_theme, outfit_set_filter, outfit_category_filter, outfit_evolution_filter, outfit_rarity_filter, outfit_obtained_filter, outfit_style_filter, outfit_label_filter, outfit_season_filter, outfit_season_category_filter, outfit_group_by_set, outfit_hide_evolutions, outfit_hide_glowups, outfit_image_mode, outfit_density, sort_order, outfit_sort_axis, momo_rarity_filter, momo_season_filter, momo_season_category_filter, momo_obtained_filter, momo_location_filter'
+  'group_by_set, show_by_color, eureka_set_filter, eureka_category, eureka_obtained_filter, eureka_color, eureka_rarity, eureka_style, eureka_label, eureka_trial, theme, color_theme, outfit_set_filter, outfit_category_filter, outfit_evolution_filter, outfit_rarity_filter, outfit_obtained_filter, outfit_style_filter, outfit_label_filter, outfit_season_filter, outfit_season_category_filter, outfit_group_by_set, outfit_hide_evolutions, outfit_hide_glowups, outfit_image_mode, outfit_density, sort_order, outfit_sort_axis, momo_rarity_filter, momo_season_filter, momo_season_category_filter, momo_obtained_filter, momo_location_filter, makeup_sort_axis, makeup_density, makeup_image_mode'
 
 export async function GET() {
   const supabase = await createClient()

@@ -108,6 +108,9 @@ export type UserPreferences = Pick<
   | 'momo_season_category_filter'
   | 'momo_obtained_filter'
   | 'momo_location_filter'
+  | 'makeup_sort_axis'
+  | 'makeup_density'
+  | 'makeup_image_mode'
 >
 
 export type ColorTheme = 'default' | 'moonlight' | 'blossom' | 'forest'
