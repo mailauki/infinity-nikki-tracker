@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Typography } from '@mui/material'
+import { Button, Link as Anchor, Typography } from '@mui/material'
 import Link from 'next/link'
 import { MakeupSet } from '@/lib/types/makeup'
 import LazyImage from '@/components/lazy-image'
@@ -46,7 +46,15 @@ export default function MakeupSetDetailCard({
 
   const seasonRow = (
     <>
-      <Typography variant="subtitle2">{season?.title}</Typography>
+      <Anchor
+        component={Link}
+        href={`/outfits/seasons/${makeupSet.seasons}`}
+        sx={{ cursor: 'pointer' }}
+        underline="hover"
+        variant="subtitle2"
+      >
+        {season?.title}
+      </Anchor>
       <Typography sx={{ textAlign: 'right' }} variant="body1">
         {seasonCategory?.title}
       </Typography>
@@ -69,8 +77,7 @@ export default function MakeupSetDetailCard({
       obtained={obtained}
       rarity={rarity!}
       style={style}
-      title={makeupSet.title}
-      titleSuffix={selectedEvolution}
+      title={selectedEvolution ? selectedEvolution : makeupSet.title}
       total={total}
     />
   )
