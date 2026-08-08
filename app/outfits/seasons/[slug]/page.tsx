@@ -4,11 +4,14 @@ import { Metadata } from 'next'
 import { getSeasonRaw } from '@/hooks/data/admin/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
+import { getMakeupSets } from '@/hooks/data/makeup-sets'
 import { getUserID } from '@/hooks/user'
-import LazyImage from '@/components/lazy-image'
+import { STANDALONE_SLUG } from './season-entries'
 import SlugToolBar from '@/components/navbar/slug-toolbar'
+import SeasonBanner from './season-banner'
 import { SeasonFilterProvider } from './season-filter-context'
 import SeasonOutfitList from './season-outfit-list'
+import SeasonOverview from './season-overview'
 import SeasonProgress from './season-progress'
 import PageShell from '@/components/page-shell'
 
@@ -26,10 +29,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SeasonPage({ params }: Props) {
   const { slug } = await params
 
-  const [season, seasonCategories, outfitSets, userId] = await Promise.all([
+  const [season, seasonCategories, outfitSets, makeupSets, userId] = await Promise.all([
     getSeasonRaw(slug),
     getSeasonCategories(),
     getOutfitSets(),
+    getMakeupSets(),
     getUserID(),
   ])
 
@@ -37,31 +41,56 @@ export default async function SeasonPage({ params }: Props) {
 
   const isLoggedIn = !!userId
 
-  // Sets in this season (the season<->set link lives on outfit_sets).
-  const seasonSets = outfitSets.filter((set) => set.seasons === slug)
+  // Sets in this season (the season<->set link lives on outfit_sets). The
+  // standalone-pieces container has no season of its own — each of its variants
+  // carries one — so it is excluded here and its variants are pulled out below.
+  const seasonSets = outfitSets.filter(
+    (set) => set.seasons === slug && set.slug !== STANDALONE_SLUG
+  )
+
+  const standaloneVariants =
+    outfitSets
+      .find((set) => set.slug === STANDALONE_SLUG)
+      ?.outfit_variants.filter((variant) => variant.seasons === slug) ?? []
+
+  const seasonMakeupSets = makeupSets.filter((set) => set.seasons === slug)
 
   return (
     <SeasonFilterProvider>
-      <SlugToolBar isAdmin={false} />
+      <SlugToolBar />
       <PageShell>
-        <LazyImage
-          image={season.image_url!}
-          kind="media"
-          sx={{ height: 360 }}
+        <SeasonBanner
+          altImage={season.alt_image_url}
+          image={season.image_url}
           title={season.title}
         />
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography component="h1" variant="h4">
             {season.title}
           </Typography>
-          {isLoggedIn && <SeasonProgress seasonSets={seasonSets} />}
+          {isLoggedIn && (
+            <SeasonProgress
+              makeupSets={seasonMakeupSets}
+              seasonSets={seasonSets}
+              standaloneVariants={standaloneVariants}
+            />
+          )}
         </Stack>
         <Typography variant="body2">{season.description}</Typography>
 
+        <SeasonOverview
+          isLoggedIn={isLoggedIn}
+          makeupSets={seasonMakeupSets}
+          seasonSets={seasonSets}
+          standaloneVariants={standaloneVariants}
+        />
+
         <SeasonOutfitList
           isLoggedIn={isLoggedIn}
+          makeupSets={seasonMakeupSets}
           seasonCategories={seasonCategories}
           seasonSets={seasonSets}
+          standaloneVariants={standaloneVariants}
         />
       </PageShell>
     </SeasonFilterProvider>

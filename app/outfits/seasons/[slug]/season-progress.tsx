@@ -1,23 +1,41 @@
 'use client'
 
 import ProgressChip from '@/components/progress-chip'
-import { OutfitSet } from '@/lib/types/outfit'
+import { MakeupSet } from '@/lib/types/makeup'
+import { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
+import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useSeasonFilter } from './season-filter-context'
-import { expandSet } from './season-outfit-list'
+import { countEntries, groupSeasonEntries } from './season-entries'
 
-// Season completion aggregates the variants of every row currently shown in the
-// list — i.e. it reflects the evolution / glow-up toggles. With both toggles off
-// (default) this counts base + evolutions + glow-ups; hiding either drops those
-// variants from the total, matching exactly what the list displays.
-export default function SeasonProgress({ seasonSets }: { seasonSets: OutfitSet[] }) {
-  const { hideEvolutions, hideGlowups } = useSeasonFilter()
+// Season completion aggregates the variants of every card currently shown — i.e.
+// it reflects the evolution / glow-up / pieces toggles. With all toggles off
+// (default) this counts base + evolutions + glow-ups + pieces + makeup; hiding
+// any drops those variants from the total, matching what the sections display.
+export default function SeasonProgress({
+  seasonSets,
+  standaloneVariants,
+  makeupSets,
+}: {
+  seasonSets: OutfitSet[]
+  standaloneVariants: OutfitVariant[]
+  makeupSets: MakeupSet[]
+}) {
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
+  const { obtainedOutfit } = useOutfitData()
 
-  const visibleVariants = seasonSets
-    .flatMap((set) => expandSet(set, hideEvolutions, hideGlowups))
-    .flatMap((entry) => entry.variants)
+  const entries = groupSeasonEntries({
+    seasonSets,
+    standaloneVariants,
+    makeupSets,
+    hideEvolutions,
+    hideGlowups,
+    hidePieces,
+    hideMakeup,
+    hideBaseSets,
+    obtainedOutfit,
+  }).flatMap(([, groupEntries]) => groupEntries)
 
-  const total = visibleVariants.length
-  const obtained = visibleVariants.reduce((sum, variant) => sum + (variant.obtained ? 1 : 0), 0)
+  const { obtained, total } = countEntries(entries)
 
-  return <ProgressChip obtained={obtained} total={total} />
+  return <ProgressChip obtained={obtained} size="lg" total={total} />
 }
