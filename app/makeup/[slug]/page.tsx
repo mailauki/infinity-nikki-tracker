@@ -34,8 +34,11 @@ async function MakeupSetLoader({ slug }: { slug: string }) {
     getUserRole(),
   ])
 
-  // Covers both a bad slug and 'standalone-pieces', which is a client-side
-  // pseudo-set with no row in makeup_sets and therefore no detail page.
+  // Covers a bad slug. Note `standalone_pieces` DOES resolve here — it has a
+  // real makeup_sets row, and createMakeupSet emits a synthetic bucket under
+  // the same slug carrying the set-less pieces — so this page renders it as a
+  // normal set rather than 404ing the way it did when the bucket was
+  // client-side only.
   if (!makeupSet) notFound()
 
   return <MakeupSetDetail isAdmin={role === 'admin'} isLoggedIn={!!user_id} makeupSet={makeupSet} />

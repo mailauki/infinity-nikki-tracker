@@ -6,7 +6,11 @@ import { MakeupCategory, MakeupSet, ObtainedMakeup } from '@/lib/types/makeup'
 import { Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import { handleObtainedMakeup } from '@/app/makeup/actions'
-import { STANDALONE_MAKEUP_SLUG } from '@/hooks/makeup'
+import {
+  applyObtainedMakeupKeys,
+  buildObtainedMakeupKeySet,
+  STANDALONE_MAKEUP_SLUG,
+} from '@/hooks/makeup'
 import {
   DEFAULT_MAKEUP_FILTERS,
   MakeupDataContext,
@@ -40,7 +44,10 @@ export default function MakeupDataProvider({
   userId: string | null
   children: React.ReactNode
 }) {
-  const [makeupSets, setMakeupSets] = useState<MakeupSet[]>([])
+  // Raw sets exactly as the API returned them — their variants carry no
+  // `obtained` flag. The flags are derived below from `obtainedMakeup` so that
+  // the initial DB load and every optimistic toggle share one code path.
+  const [rawMakeupSets, setRawMakeupSets] = useState<MakeupSet[]>([])
   const [makeupCategories, setMakeupCategories] = useState<MakeupCategory[]>([])
   const [styles, setStyles] = useState<Style[]>([])
   const [labels, setLabels] = useState<Label[]>([])
@@ -59,7 +66,7 @@ export default function MakeupDataProvider({
     fetchJson<MakeupPayload>('/api/makeup')
       .then((payload) => {
         if (cancelled) return
-        setMakeupSets(payload.makeupSets ?? [])
+        setRawMakeupSets(payload.makeupSets ?? [])
         setMakeupCategories(payload.makeupCategories ?? [])
         setStyles(payload.styles ?? [])
         setLabels(payload.labels ?? [])
@@ -80,6 +87,26 @@ export default function MakeupDataProvider({
       cancelled = true
     }
   }, [])
+
+  // `obtainedMakeup` is the single source of truth for collection state; the
+  // per-variant `obtained` flag every card, count, and filter reads is derived
+  // from it here rather than baked in by the API. This mirrors what
+  // `getMakeupSets` does server-side for the detail page, and is what makes an
+  // optimistic toggle actually repaint — mutating `obtainedMakeup` alone used
+  // to leave `obtained` undefined on every variant.
+  const makeupSets = useMemo(() => {
+    if (!isLoggedIn) return rawMakeupSets
+    const keys = buildObtainedMakeupKeySet(obtainedMakeup)
+    // Evolutions carry their own variants, so both levels need the flags.
+    return rawMakeupSets.map((set) => ({
+      ...set,
+      makeup_variants: applyObtainedMakeupKeys(set.makeup_variants, keys),
+      evolutions: set.evolutions.map((evolution) => ({
+        ...evolution,
+        makeup_variants: applyObtainedMakeupKeys(evolution.makeup_variants, keys),
+      })),
+    }))
+  }, [rawMakeupSets, obtainedMakeup, isLoggedIn])
 
   const onFiltersChange = useCallback((updates: Partial<MakeupFilterState>) => {
     // Filter axes are session-only by design — no preference write here.
