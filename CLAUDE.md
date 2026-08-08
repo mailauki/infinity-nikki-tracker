@@ -39,29 +39,9 @@ STRIPE_WEBHOOK_SECRET=
 
 ### Route Structure
 
-Routes are **flat under `app/`** — there is no `(main)` or `(admin)` route group. The only group is `(auth)`. Admin lives at `app/admin/` (literal segment, not a group).
+Routes are **flat under `app/`** — there is no `(main)` or `(admin)` route group. The only group is `(auth)`. Admin lives at `app/admin/` (literal segment, not a group). Each domain (`outfits`, `eureka`, `looks`) owns its own `layout.tsx` and colocated `actions.ts`; run `ls app/` for the current tree.
 
-- `app/layout.tsx` — Root layout: `InitColorSchemeScript` → `AppRouterCacheProvider` → `ThemeClientProvider` → `NavBarToolbarProvider` → `SnackbarAlertProvider`, with `NavDrawer`, `NavBar`, `PullToRefresh`, `Footer`, and Vercel `Analytics`
-- `app/page.tsx` — Home / hero
-- `app/(auth)/` — Auth pages: `login`, `sign-up`, `sign-up-success`, `forgot-password`, `update-password`, `auth/confirm/route.ts` (email OTP → session), `auth/error`
-- `app/outfits/` — Outfits domain (own `layout.tsx` wrapping `OutfitDataProvider`)
-  - `page.tsx`, `[slug]/page.tsx`, `actions.ts` (`handleObtainedOutfit`)
-  - `seasons/page.tsx`, `seasons/[slug]/page.tsx`
-- `app/eureka/` — Eureka domain (own `layout.tsx` wrapping `EurekaDataProvider` + `SortProvider`)
-  - `page.tsx`, `sets/page.tsx`, `[slug]/page.tsx`, `actions.ts` (`handleObtained`)
-  - `trials/page.tsx`, `trials/[slug]/page.tsx`
-- `app/looks/` — Custom Looks: `page.tsx`, `[slug]/page.tsx`, `new/page.tsx`, `edit/[slug]/page.tsx`, `actions.ts` (`createLook`, `updateLook`, `deleteLook`)
-- `app/profile/page.tsx`, `app/u/[username]/page.tsx` — own + public profiles
-- `app/settings/page.tsx` + `actions.ts`, `app/help/page.tsx`, `app/about/page.tsx`
-- `app/admin/` — Admin section (own `layout.tsx` redirects non-admins). Two sub-trees, each with `page.tsx` + `new` + `edit/[slug]` + colocated `actions.ts` and `loading.tsx`:
-  - `admin/eureka/{sets,variants,trials}/`
-  - `admin/outfits/{sets,evolutions,abilities,seasons}/`
-- `app/api/` — Route handlers:
-  - `eureka/bootstrap/route.ts` — single round-trip payload for the Eureka client provider
-  - `outfits/route.ts`, `obtained-outfit/route.ts` — Outfit data + toggle
-  - `preferences/route.ts` — user preferences fetch
-  - `stripe/checkout/route.ts`, `stripe/webhook/route.ts`
-- `app/actions/preferences.ts` — shared Server Actions for all preference writes (theme, filters, group/show toggles, sort, outfit/eureka view state)
+`app/actions/preferences.ts` is the one cross-cutting exception — shared Server Actions for all preference writes (theme, filters, group/show toggles, sort, outfit/eureka view state), used by every domain.
 
 ### Middleware
 
@@ -81,22 +61,9 @@ The app moved away from MUI realtime `postgres_changes` subscriptions to a **cli
 
 **Colocation rule:** a component whose entire (transitive) consumer set lives under one route subtree is colocated as a flat `.tsx` file beside that route's `page.tsx` — not under `components/`. (Next.js only treats `page`/`layout`/`route`/`loading`/`error` as special segments; any other `.tsx` in a route folder is a plain module.) `components/` holds only genuinely shared code: anything imported by 2+ unrelated routes, the root layout, or a global Server Action (`app/actions/preferences.ts`). When adding a component, place it next to its page if single-route; promote it to `components/` only when a second route starts importing it.
 
-Colocated, by route:
+Admin sub-trees additionally colocate their `*-table.tsx` list views and `{new,edit/[slug]}/*-form.tsx` forms next to their pages, plus DataGrid helpers in `app/admin/eureka/table-utils.tsx` (`LockedCell`, `useRowActions`).
 
-- `app/eureka/` — eureka-data-provider, eureka-toolbar, filter-eureka, eureka-color-set-card, eureka-variant-card; `sets/sets-content`; `[slug]/{eureka-variant-color-filter, color-chip}`; `trials/{eureka-card, eureka-card-content, eureka-card-progress, eureka-set-image}`; `trials/[slug]/eureka-set-card`
-- `app/outfits/` — outfit-data-provider, filter-outfits, outfit-toolbar, outfit-set-card, outfit-set-section, outfit-variant-card; `[slug]/{outfit-set-detail, outfit-carousel, outfit-evolution-variants}`
-- `app/looks/` — look-builder, look-card; `[slug]/look-detail`
-- `app/help/` — bug-report-form, feature-request-form
-- `app/admin/eureka/table-utils.tsx` (DataGrid helpers: `LockedCell`, `useRowActions`); `app/admin/outfits/{variant-image-cell, carousel-image-upload}`. Each admin sub-tree also colocates its `*-table.tsx` list views and `{new,edit/[slug]}/*-form.tsx` forms next to their pages.
-
-Shared, under `components/`:
-
-- `components/navbar/` — nav-bar, nav-drawer, nav-section, nav-styled, nav-user, nav-footer, page-title, appbar-actions, auth-appbar, coffee-button, theme-switcher, navbar-toolbar(+context)
-- `components/eureka/` — eureka-context (the rest of the eureka files are colocated; `eureka-button`, `eureka-variant-grid`, `category-image`, `category-item` remain here but are currently unreferenced)
-- `components/outfits/` — outfit-context, outfit-image-mode-context
-- `components/filter/` — per-control filter widgets (category/color/rarity/obtained/evolution/glowup toggles, sort toggles, select menus, filter-menu, filter-content-shim, density-toggle)
-- `components/forms/` — image-upload; `forms/eureka-set/color-select`
-- `components/` (root) — grid-container, hero(+ctas), section, slug-toolbar, quick-access, pull-to-refresh, progress-chip, percent-label, rarity-stars, color-theme-context, sort-context, theme-client-provider, snackbar-provider, lazy-image, toggle-icon, login-alert, logout-button, view-all-button, error-alert
+Note: `components/eureka/` still holds `eureka-button`, `eureka-variant-grid`, `category-image`, and `category-item`, which are currently unreferenced — don't assume they're live code.
 
 ### Admin Tables
 
@@ -115,32 +82,13 @@ Admin list pages use **`@mui/x-data-grid` (v9)** with inline row editing, not a 
 
 ### Key Database Tables
 
-Outfit domain:
+Column-level schema lives in `lib/types/supabase.ts` (generated — the source of truth). Non-obvious constraints and things the generated types don't show:
 
-- `outfit_sets` — title, slug, rarity, image_url, alt_image_url, description, style, label, ability, seasons (FK), season_category (FK), glowup_evolution
-- `outfit_variants`, `outfit_categories`, `outfit_set_carousel_images`
-- `evolutions`, `evolution_carousel_images` — outfit evolution stages (FK → outfit_sets)
-- `abilities` — outfit ability lookup
-- `seasons` — title, slug, image_url, alt_image_url, description, location (FK); `season_categories`
-- `obtained_outfit` — per-user outfit collection records
-- `locations` — location lookup
-
-Eureka domain:
-
-- `eureka_sets` — title, slug, rarity, style, label; CHECK rarity BETWEEN 2 AND 5
-- `eureka_variants` — eureka_set FK, eureka_category, eureka_color, image_url, alt_image_url, default, slug
-- `eureka_categories`, `eureka_colors` — lookups (renamed from `categories`/`colors`)
-- `eureka_set_trials` — join table eureka_sets ↔ trials
-- `trials` — title, slug, image_url
-- `obtained_eureka` — per-user eureka collection records (renamed from `obtained`)
-
-Shared / user:
-
-- `profiles` — full_name, username, avatar_url, role: 'user' | 'admin'
-- `custom_looks` — user-created looks: name, slug, description, image_url, `eureka_variant_slugs` text[], `outfit_variant_slugs` text[], user_id
-- `user_preferences` — per-user theme/color_theme/sort + eureka & outfit filter persistence (one row per user_id); `admin_preferences` — admin view mode
-- `styles`, `labels` — lookups; UNIQUE on title; RLS public read / admin write
-- DB also defines RPCs `is_admin`, `toggle_obtained`, `toggle_obtained_outfit`
+- `eureka_sets` — CHECK rarity BETWEEN 2 AND 5
+- `eureka_categories` / `eureka_colors` / `obtained_eureka` — renamed from `categories` / `colors` / `obtained`; older migrations and code comments may use the old names
+- `user_preferences` — exactly one row per user_id; `admin_preferences` is separate (admin view mode)
+- `styles`, `labels` — UNIQUE on title; RLS public read / admin write
+- RPCs (not in the generated table types): `is_admin`, `toggle_obtained`, `toggle_obtained_outfit`
 
 ### Slug Helpers
 
@@ -172,39 +120,18 @@ Configured in `.claude/settings.json`:
 - **PreToolUse hook** — blocks edits to any `.env` file
 - **`/new-data-hook` skill** — scaffolds `hooks/data/` files with the correct `use cache` vs React `cache()` pattern
 - **`/format-fix` skill** — runs format/lint/tsc and fixes remaining issues
+- **`/git-workflow` skill** — branch/PR/merge workflow plus Vercel & Supabase CLI gotchas
 - **`a11y-reviewer` subagent** — audits MUI components for WCAG 2.1 AA violations
 - Stripe skills (`stripe-best-practices`, `upgrade-stripe`) and `ui-ux-pro-max` are installed
-- Enabled plugins: frontend-design, github, commit-commands, typescript-lsp, claude-md-management, supabase, vercel
+- Enabled plugins: frontend-design, commit-commands, typescript-lsp, supabase, vercel
 
 ## Git & Deployment
 
-**Branch protection:** `main` requires a PR with 1 approving review + Vercel status check. Force push and deletion are blocked.
+**Never push directly to `main`** — it's protected (PR + 1 approving review + Vercel status check; force push and deletion blocked). Always branch before committing.
 
-**Merge-race guard (do not strand commits):** A squash-merge captures only the commits that existed on the branch _at merge time_. Pushing more commits to a branch after its PR is merged silently strands that work outside `main`. Therefore: **before a PR is merged, confirm all intended commits are already pushed; never push to a branch whose PR is already merged** — branch from `main` and cherry-pick instead. A tracked `pre-push` hook (`.githooks/pre-push`, enabled via `core.hooksPath .githooks`) blocks pushes to any branch whose PR is `MERGED` (override with `git push --no-verify`). The repo also has "automatically delete head branch on merge" enabled so a late push reopens the PR visibly rather than riding a stale branch.
+**Never push to a branch whose PR is already merged.** A squash-merge captures only the commits that existed at merge time, so a later push silently strands that work outside `main`. Branch from `main` and cherry-pick instead. The `.githooks/pre-push` hook enforces this.
 
-**Cleaning up merged local branches:** Run `git cleanup-merged` (alias → `.githooks/cleanup-merged-branches.sh`) to delete local branches whose PR is `MERGED` **and** whose commits are all in `origin/main`. It deletes only when `git cherry origin/main <branch>` confirms nothing is stranded — a branch with a post-squash commit is kept with a warning, never deleted. Flags: `--dry-run`, `--yes`. Don't `git branch -D` a merged branch by hand without this check.
-
-**Lock PRs after merge:** Merge via the project `/merge-pr` command, which squash-merges, verifies the PR is `MERGED`, then runs `gh pr lock <n> --reason resolved` and finally `git cleanup-merged`. GitHub has no native auto-lock, so the lock lives in the merge flow; if you merge via the web UI, lock manually with `gh pr lock <n> --reason resolved`. Locking marks the PR done and stops the thread reopening (it does not by itself prevent pushes to the head branch — that's the pre-push hook's job).
-
-**Per-clone setup (local git config, not auto-applied on clone):** after a fresh clone, run `git config core.hooksPath .githooks` (enables the pre-push hook) and `git config alias.cleanup-merged '!bash "$(git rev-parse --show-toplevel)/.githooks/cleanup-merged-branches.sh"'` (registers the cleanup command).
-
-**Claude branches:** Auto-generated branches use pattern `claude/<feature>-<id>` — check for unmerged remote branches and create PRs as needed.
-
-**Vercel CLI:**
-
-- `vercel ls --yes` — list deployments (`--yes` skips interactive confirmation)
-- `vercel inspect <url>` — check deployment status and build output
-- `vercel logs <url>` — stream runtime logs (fails for errored deployments; use Vercel dashboard instead)
-
-**Supabase CLI:**
-
-- `supabase db push --include-all` — use when local migrations predate the latest remote migration
-- `supabase gen types typescript --project-id $(cat supabase/.temp/project-ref) > lib/types/supabase.ts` — regenerate types after schema changes
-- `supabase db dump` requires Docker Desktop to be running; `supabase db execute --sql` does not exist
-- FK on a non-PK column requires a UNIQUE constraint on the referenced column first
-- Use `ON UPDATE CASCADE` on string FKs so renaming a referenced title cascades automatically
-- RLS `WITH CHECK` sub-selects on the same table risk infinite recursion — use `current_setting('request.jwt.claims', true)::jsonb` for role comparisons instead of a sub-select
-- **A red "Supabase Preview" PR check is usually benign and self-clearing.** The Supabase GitHub integration spins up a throwaway branch DB per PR and replays migrations on it. If the PR's migration files are **rebased or renamed after that branch DB was first created**, the branch's `schema_migrations` ends up pointing at versions no longer in the repo, and the CLI fails the check with `Remote migration versions not found in local migrations directory`. This is a per-PR branch-history mismatch, not a broken migration — production and `main`'s preview are unaffected (verify: the production `supabase_migrations.schema_migrations` versions match `supabase/migrations/*.sql` exactly, and `branch-action` logs on `git_ref=main` say "All migrations are up to date"). The stale branch DB is deleted on merge (`--delete-branch`), so the red check dies with it. To avoid triggering it mid-PR, **add new migrations rather than rewriting existing migration timestamps once a PR is open**; if a preview does go stale, reset that branch (MCP `reset_branch` or the dashboard) instead of letting the check ride red. Diagnose via the `branch-action` service in `get_logs` on the production project ref.
+Full workflow details — the merge-race guard, `/merge-pr` and PR locking, `git cleanup-merged`, per-clone hook setup, and the Vercel/Supabase CLI gotchas (including the benign red "Supabase Preview" check) — are in the **`git-workflow` skill**. Load it before any commit, push, PR, merge, branch cleanup, deploy, or `supabase`/`vercel` CLI work.
 
 ### Code Style
 
