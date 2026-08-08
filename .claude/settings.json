@@ -15,11 +15,14 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && yarn format && yarn lint:fix"
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && jq -r '.tool_input.file_path // empty' | { read -r f || exit 0; case \"$f\" in *.ts|*.tsx|*.js|*.jsx|*.json|*.css|*.md) ;; *) exit 0;; esac; yarn prettier --write \"$f\" && yarn eslint --fix \"$f\"; } 2>/dev/null || true",
+            "statusMessage": "Formatting edited file..."
           },
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && yarn tsc --noEmit 2>&1 | head -20"
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && yarn tsc --noEmit 2>&1 | head -20",
+            "async": true,
+            "statusMessage": "Type-checking..."
           }
         ]
       }
