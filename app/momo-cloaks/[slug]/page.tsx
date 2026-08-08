@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 
 import PageShell from '@/components/page-shell'
 import { getMomoCloak } from '@/hooks/data/momo-cloaks'
+import { getUserRole } from '@/hooks/user'
 
 import MomoCloakDetail from './momo-cloak-detail'
 
@@ -19,12 +20,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 async function MomoCloakContent({ slug }: { slug: string }) {
-  const cloak = await getMomoCloak(slug)
+  const [cloak, role] = await Promise.all([getMomoCloak(slug), getUserRole()])
 
   // getMomoCloak uses maybeSingle() and returns null for an unknown slug.
   if (!cloak) notFound()
 
-  return <MomoCloakDetail cloak={cloak} />
+  return <MomoCloakDetail cloak={cloak} isAdmin={role === 'admin'} />
 }
 
 export default async function MomoCloakPage({ params }: Props) {

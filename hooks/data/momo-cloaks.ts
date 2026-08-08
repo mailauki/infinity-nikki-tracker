@@ -19,12 +19,17 @@ const CLOAK_COLUMNS = `
 	updated_at
 `
 
-// getMomoCloak only: the list query has no use for the outfit join. `outfit_set`
-// is a slug FK, so this resolves the referenced row for display.
+// getMomoCloak only: the list query has no use for these joins. The columns
+// themselves hold slugs, so these resolve the referenced rows for display —
+// the detail page shows real titles ("Golden Dust") rather than slug-derived
+// ones, and populates the `season`/`seasonCategory`/`outfitSet` fields that
+// `MomoCloak` declares.
 const CLOAK_DETAIL_COLUMNS = `
 	${CLOAK_COLUMNS},
 	outfit_set,
-	outfitSet:outfit_sets!momo_cloaks_outfit_set_fkey ( slug, title, image_url )
+	outfitSet:outfit_sets!momo_cloaks_outfit_set_fkey ( slug, title, image_url, alt_image_url ),
+	season:seasons!momo_cloaks_seasons_fkey ( title ),
+	seasonCategory:season_categories!momo_cloaks_season_category_fkey ( title )
 `
 
 export const getMomoCloaks = cache(async () => {

@@ -6,12 +6,14 @@ import { MomoCloak } from '@/lib/types/momo'
 import { ObtainedFilter } from '@/lib/types/props'
 
 // Season and season-category are multi-select (11 and 3 distinct values in the
-// data) so they mirror the outfits page's string[] shape. Rarity and obtained are
-// exclusive toggles, matching eureka.
+// data) so they mirror the outfits page's string[] shape. Rarity, location, and
+// obtained are exclusive toggles, matching eureka. Location has only two values
+// in the data (wishfield, itzaland), so a pair of toggle buttons beats a select.
 export interface MomoCloakFilterState {
   selectedRarity: number | null
   selectedSeason: string[]
   selectedSeasonCategory: string[]
+  selectedLocation: string | null
   selectedObtainedFilter: ObtainedFilter | null
 }
 
@@ -19,6 +21,7 @@ export const DEFAULT_MOMO_FILTERS: MomoCloakFilterState = {
   selectedRarity: null,
   selectedSeason: [],
   selectedSeasonCategory: [],
+  selectedLocation: null,
   selectedObtainedFilter: null,
 }
 

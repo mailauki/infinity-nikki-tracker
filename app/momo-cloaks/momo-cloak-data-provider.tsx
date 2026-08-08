@@ -61,6 +61,7 @@ export default function MomoCloakDataProvider({
           selectedSeasonCategory: prefs.momo_season_category_filter
             ? prefs.momo_season_category_filter.split(',').filter(Boolean)
             : [],
+          selectedLocation: prefs.momo_location_filter ?? null,
           selectedObtainedFilter: (prefs.momo_obtained_filter as ObtainedFilter) ?? null,
         })
         setPrefsLoaded(true)
@@ -87,6 +88,7 @@ export default function MomoCloakDataProvider({
         momo_season_category_filter: filters.selectedSeasonCategory.length
           ? filters.selectedSeasonCategory.join(',')
           : null,
+        momo_location_filter: filters.selectedLocation,
         momo_obtained_filter: filters.selectedObtainedFilter,
       }).catch((err) => {
         // Non-blocking: the filter still applies in-session.

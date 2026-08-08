@@ -12,11 +12,27 @@ const AXIS_OPTIONS: { value: SortAxis; label: string; loggedInOnly?: boolean }[]
   { value: 'progress', label: 'Progress', loggedInOnly: true },
 ]
 
-export default function SortAxisToggle() {
+// `isLoggedIn` defaults to the outfit context so existing outfit call sites keep
+// working untouched. Routes without that provider mounted (e.g. /momo-cloaks)
+// pass it explicitly rather than silently reading the context's `false` default.
+//
+// `axes` narrows which axes are offered. Domains whose items are a single unit
+// (Momo's Cloaks) omit 'progress': obtained is a boolean there, so sorting by it
+// only groups obtained from missing — which the obtained filter already does.
+export default function SortAxisToggle({
+  isLoggedIn: isLoggedInProp,
+  axes,
+}: {
+  isLoggedIn?: boolean
+  axes?: SortAxis[]
+}) {
   const { sortAxis, setSortAxis } = useSortOrder()
-  const { isLoggedIn } = useOutfitData()
+  const { isLoggedIn: outfitIsLoggedIn } = useOutfitData()
+  const isLoggedIn = isLoggedInProp ?? outfitIsLoggedIn
 
-  const options = AXIS_OPTIONS.filter((o) => !o.loggedInOnly || isLoggedIn)
+  const options = AXIS_OPTIONS.filter(
+    (o) => (!o.loggedInOnly || isLoggedIn) && (!axes || axes.includes(o.value))
+  )
 
   return (
     <FormControl>
