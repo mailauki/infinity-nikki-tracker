@@ -20,7 +20,11 @@ export default function MomoCloakResultsBar() {
 
   return (
     <StickyBar>
-      <Stack direction="row" spacing={1} sx={{ flexGrow: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{ flexGrow: 1, justifyContent: 'space-between', alignItems: 'center' }}
+      >
         <Chip
           color="secondary"
           label={`Showing: ${visible.length} results`}
