@@ -124,8 +124,13 @@ export function createMakeupSet(
     list.sort((a, b) => a.order - b.order)
   }
 
+  // The standalone bucket now has a real makeup_sets row (so obtained_makeup
+  // can carry an FK on makeup_set), but its variants still have makeup_set
+  // IS NULL and are collected into `standaloneVariants` below. Exclude the row
+  // here so it isn't emitted twice — once empty from the table and once
+  // populated from the synthetic branch.
   const sets = rows
-    .filter(isBaseMakeupSet)
+    .filter((row) => isBaseMakeupSet(row) && row.slug !== STANDALONE_MAKEUP_SLUG)
     .map((row) => build(row, evolutionsByBase.get(row.slug) ?? []))
 
   if (standaloneVariants.length === 0) return sets

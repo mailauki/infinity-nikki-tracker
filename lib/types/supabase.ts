@@ -715,7 +715,29 @@ export type Database = {
           makeup_variant?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "obtained_makeup_makeup_category_fkey"
+            columns: ["makeup_category"]
+            isOneToOne: false
+            referencedRelation: "makeup_categories"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "obtained_makeup_makeup_set_fkey"
+            columns: ["makeup_set"]
+            isOneToOne: false
+            referencedRelation: "makeup_sets"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "obtained_makeup_makeup_variant_fkey"
+            columns: ["makeup_variant"]
+            isOneToOne: false
+            referencedRelation: "makeup_variants"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       obtained_momo_cloaks: {
         Row: {
