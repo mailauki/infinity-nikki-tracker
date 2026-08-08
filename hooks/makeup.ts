@@ -14,11 +14,12 @@ export function isBaseMakeupSet(row: Pick<MakeupSetRaw, 'base_set'>) {
   return row.base_set === null
 }
 
-// The client-side bucket for set-less variants. Unlike outfits — which stores a
-// real `standalone_pieces` row — makeup has no container row: a standalone piece
-// is a variant with makeup_set IS NULL. This slug therefore never exists in
-// makeup_sets, so /makeup/standalone-pieces correctly 404s and nothing links to it.
-export const STANDALONE_MAKEUP_SLUG = 'standalone-pieces'
+// The bucket for set-less variants. A standalone piece is a variant with
+// makeup_set IS NULL, but `makeup_sets` now carries a real `standalone_pieces`
+// row so obtained_makeup.makeup_set can hold an FK. `createMakeupSet` excludes
+// that row from the table-driven sets and emits the synthetic bucket below
+// instead, which is the one that actually carries the pieces.
+export const STANDALONE_MAKEUP_SLUG = 'standalone_pieces'
 
 export type OutfitSetRef = { slug: string; title: string; image_url: string | null }
 
