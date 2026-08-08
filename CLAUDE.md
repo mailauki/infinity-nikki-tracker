@@ -116,7 +116,7 @@ Column-level schema lives in `lib/types/supabase.ts` (generated — the source o
 
 Configured in `.claude/settings.json`:
 
-- **PostToolUse hooks** — `yarn format && yarn lint:fix`, then `yarn tsc --noEmit` (head -20) run after every Edit/Write
+- **PostToolUse hooks** — after every Edit/Write: `prettier --write` + `eslint --fix` on **just the edited file** (~1.1s, blocking; skips non-source extensions), plus a project-wide `yarn tsc --noEmit` marked `"async": true` so the typecheck reports without blocking the loop. Don't revert these to the whole-repo `yarn format && yarn lint:fix` — that ran `prettier --write .` over 488 files on every single edit (~13s each).
 - **PreToolUse hook** — blocks edits to any `.env` file
 - **`/new-data-hook` skill** — scaffolds `hooks/data/` files with the correct `use cache` vs React `cache()` pattern
 - **`/format-fix` skill** — runs format/lint/tsc and fixes remaining issues
