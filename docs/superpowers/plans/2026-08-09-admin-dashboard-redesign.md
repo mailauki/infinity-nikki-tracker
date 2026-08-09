@@ -1738,3 +1738,202 @@ git commit -m "feat(admin): make Update & next walk the gap queue when invoked f
 **Known deviations from the skill's template:** the standard TDD cycle (write failing test → run → implement → pass) is not used, because the repo has no test runner and adding one is out of scope. Each task instead ends in a concrete, runnable assertion — a SQL result compared against the measured baseline, a `grep` that must return nothing, or `yarn tsc --noEmit && yarn lint && yarn build`. Task 1's baseline comparison is the highest-value check in the plan; if `outfit-variants.gaps` reads 5222 instead of 2699, stop and fix the view before continuing.
 
 **Deferred to its own spec:** `alt_slug` and write-time duplicate prevention. The `duplicate` filter in Task 4 computes the key on the fly and currently returns zero rows.
+
+---
+
+# Revision A — set-focused queue, no search params (2026-08-09)
+
+**Why:** the user edits variants inside the owning set's edit form, not one variant
+at a time. Confirmed in the code: `edit-outfit-set-form.tsx`,
+`edit-evolution-form.tsx`, and `edit-makeup-set-form.tsx` all hold `variantRows`
+/ `variantTitles` / `variantImages` state and render an `OutfitVariantImageCard`
+per variant — exactly the fields this dashboard tracks.
+
+The data makes the case decisively. Grouping gap variants by their owning
+container collapses the queue ~8×, and each visit fixes every gap in that
+container at once:
+
+| Domain  | gap variants | containers |
+| ------- | -----------: | ---------: |
+| Outfits |        2,699 |    **314** |
+| Makeup  |          281 |     **54** |
+| Eureka  |           16 |      **2** |
+| Total   |    **2,996** |    **370** |
+
+Also decisive: **96% of the outfit backlog is on evolution variants** (2,584 of
+2,699), and the *set* form deliberately excludes them — `isBaseVariant` filters
+to `v.outfit_set === baseSlug`, with a comment that evolutions are edited on
+their own pages. Routing everything to base-set forms would reach 4% of the work.
+Evolution variants must route to `/admin/outfits/evolutions/edit/{slug}`, whose
+form manages variants the same way.
+
+**Decisions:** set-focused queue; selection lives in `useState`, session-only —
+no `admin_preferences` column, no migration.
+
+## What this undoes
+
+Task 9 exists to carry `entity/gap/page` through the URL into the edit form and
+back, plus a gap-aware "Save & next". With no dashboard search params there is no
+URL state to return to, and with container grouping there is no variant-by-variant
+walk to continue. **Task 9 is reverted in full**, and `buildDashboardHref` (added
+in Task 2) becomes dead and is removed.
+
+## Consequence: the gap chips stop being links
+
+`admin-totals-strip.tsx` and `admin-completeness-list.tsx` are Server Components
+whose chips currently deep-link into the queue via `buildDashboardHref`. Without
+URL state they cannot drive client state from across a server boundary. They
+become **non-interactive display chips**; the queue owns its own entity dropdown
+and gap filters. Restoring chip → queue linking later means lifting all three
+into one client boundary — deliberately not done now.
+
+---
+
+### Task 10: Revert Task 9
+
+**Files:** the 9 files of commit `c63307d4`, plus `lib/admin-routes.ts`.
+
+- [ ] **Step 1: Revert the commit**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && git revert --no-edit c63307d4
+```
+
+- [ ] **Step 2: Remove the now-dead `buildDashboardHref`**
+
+Delete the function from `lib/admin-routes.ts`. Leave `ADMIN_DASHBOARD` and the
+file's header comment untouched — that comment explains why server-consumed
+constants must not live in a client module and is still load-bearing.
+
+Callers in `admin-totals-strip.tsx` and `admin-completeness-list.tsx` are removed
+in Task 12; expect `yarn tsc --noEmit` to fail on those two files until then.
+This task's gate is Step 3, not a clean typecheck.
+
+- [ ] **Step 3: Confirm the revert is complete**
+
+```bash
+grep -rn "returnTo\|buildDashboardHref\|formId} name=\"entity\"" app/admin lib hooks
+```
+
+Expected: only the two prose lines in `lib/admin-routes.ts`'s comment. No hidden
+inputs, no `searchParams` in the four edit pages, and all four actions back to
+`redirect(ADMIN_DASHBOARD)`.
+
+- [ ] **Step 4: Commit** (the revert commits itself; commit the `admin-routes.ts` edit)
+
+```bash
+git add lib/admin-routes.ts && git commit -m "refactor(admin): drop buildDashboardHref with the search-param queue"
+```
+
+---
+
+### Task 11: `getGapContainers()`
+
+**Files:** Create `hooks/data/admin/gap-containers.ts`.
+
+**Interfaces — Produces:**
+
+```ts
+export interface GapWorkItem {
+  /** Unique row key, `${entity}:${slug}`. */
+  key: string
+  /** Container slug, or the record's own slug for non-variant entities. */
+  slug: string
+  title: string
+  /** Row type label, e.g. "Evolution" or "Outfit Set". */
+  kind: string
+  imageUrl: string | null
+  /** Gap variants inside this container (1 for non-variant entities). */
+  noTitle: number
+  noImage: number
+  noDescription: number
+  /** Edit form for the container itself. */
+  editHref: string
+}
+
+export const getGapWorkItems: () => Promise<Record<AdminEntityKey, GapWorkItem[]>>
+```
+
+**Grouping rule — the core of this task:**
+
+| Entity | Rows are | `editHref` |
+| --- | --- | --- |
+| `outfit-variants` | grouped by `outfit_set` | owning row's `base_set IS NULL` → sets edit form; else evolutions edit form |
+| `makeup-variants` | grouped by `makeup_set` | makeup sets edit form |
+| `eureka-variants` | grouped by `eureka_set` | eureka sets edit form |
+| all others | one row per record | that entity's own `editHref` |
+
+- [ ] **Step 1: Write the hook**
+
+Use React `cache()` (it calls `createClient()`, which reads cookies — `use cache`
+forbids that). Reads only; never wrap a mutation in `cache()`.
+
+For each variant entity: select `slug, title, image_url` plus the owning-set
+column, filtered to rows missing a tracked field, **paginated in 1000-row
+batches** — PostgREST caps responses at 1000 and outfit_variants has ~2.7k gap
+rows. Then group in memory and join to the owning set's `title`/`image_url`
+and `base_set` to pick the right edit route.
+
+Total result is ~370 containers plus the handful of non-variant rows, so the
+whole payload crosses to the client in one go and the client filters it in
+memory — no per-selection round trip and no API route.
+
+- [ ] **Step 2: Verify counts against the measured baseline**
+
+Via Supabase MCP `execute_sql`, confirm the hook's grouping reproduces:
+outfit-variants → **314** containers over 2,699 gap variants (298 of them
+evolutions); makeup-variants → **54** over 281; eureka-variants → **2** over 16.
+
+- [ ] **Step 3:** `yarn tsc --noEmit` and `yarn lint` pass. Commit.
+
+---
+
+### Task 12: Client-state Needs Attention section
+
+**Files:**
+- Rewrite `app/admin/admin-gap-queue.tsx` as `'use client'`
+- Delete `app/admin/admin-gap-entity-select.tsx` (folded in)
+- Modify `app/admin/admin-totals-strip.tsx`, `app/admin/admin-completeness-list.tsx` (chips → non-interactive)
+- Modify `app/admin/page.tsx` (drop `searchParams` entirely)
+
+- [ ] **Step 1: Rewrite the queue as a client component**
+
+It receives `items: Record<AdminEntityKey, GapWorkItem[]>` and `stats: AdminStat[]`
+as props from the server page, and holds three pieces of `useState`: `entity`,
+`gap`, `page`. Filtering and pagination happen in memory over `items[entity]`.
+Page size stays 10. Reset `page` to 1 whenever `entity` or `gap` changes, or a
+filter switch can strand you on a page that no longer exists.
+
+Each row shows the container title, its kind, and its gap counts, and links to
+`editHref` — a normal `next/link` is fine here because this file is now a Client
+Component. Keep the filter chips hidden where the gap cannot apply
+(`tracksTitle`/`tracksImage`/`tracksDescription`/`isVariant`), same as before.
+
+- [ ] **Step 2: Make the chips non-interactive**
+
+In `admin-totals-strip.tsx` and `admin-completeness-list.tsx`, drop
+`component="a"` / `href` / `clickable` from the gap chips and remove the
+`buildDashboardHref` imports. They become plain `<Chip variant="outlined">`.
+
+- [ ] **Step 3: Simplify the page**
+
+`app/admin/page.tsx` no longer takes `searchParams` and no longer parses or
+validates `entity`/`gap`/`page`. It fetches `getAdminStats()` and
+`getGapWorkItems()` and passes both down. Keep the separate `Suspense`
+boundaries and the `Alert` on a failed stats read. Drop the `key` on the queue's
+boundary — there are no URL-derived params left to key on.
+
+- [ ] **Step 4: Verify**
+
+`yarn tsc --noEmit`, `yarn lint` (0 errors), `yarn build`. Then:
+
+```bash
+grep -rn "searchParams\|buildDashboardHref" app/admin/page.tsx app/admin/admin-gap-queue.tsx
+```
+
+Expected: no output.
+
+**Human verification required** — a subagent cannot drive a browser. Load
+`/admin` and confirm: switching entity/gap updates the list without a page
+navigation, the URL never changes, and a row opens its set/evolution edit form
+with the variant cards present.
