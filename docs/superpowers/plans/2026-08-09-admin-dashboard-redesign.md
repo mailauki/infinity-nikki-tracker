@@ -177,20 +177,38 @@ alter view admin_entity_stats set (security_invoker = on);
 grant select on admin_entity_stats to authenticated;
 ```
 
-- [ ] **Step 2: Apply the migration**
+- [ ] **Step 2: Apply the migration — NOT with `supabase db push`**
 
-```bash
-cd /Users/mailauki/Developer/infinity-nikki-tracker && npx supabase db push
-```
+> **DO NOT RUN `npx supabase db push`.** Local migrations and production have
+> drifted. Two local files are unapplied on production —
+> `20260807120000_fix_obtained_makeup_unique_constraint.sql` and
+> `20260807130000_normalize_makeup_slugs.sql` — and `db push` would apply them
+> too, renaming makeup slugs across three tables and running a `DELETE` against
+> `obtained_makeup` (user collection data). Adding a read-only view must not
+> carry that. Two migrations (`20260808044246`, `20260808050100`) are also
+> applied on production with no local file; reconciling that drift is separate
+> work, deliberately deferred (user decision, 2026-08-09).
 
-Expected: the migration applies without error. If `supabase link` has not been run in this clone, run it first — the `git-workflow` skill documents the Supabase CLI gotchas.
+Apply **only** this migration, via the Supabase MCP `apply_migration` tool:
+
+- `project_id`: `ykfuevyqpjvtxidjnhxm`
+- `name`: `add_admin_entity_stats_view`
+- `query`: the full SQL from Step 1
+
+This records the version in `supabase_migrations.schema_migrations` without
+touching any other pending migration.
+
+Expected: applies without error. If it fails, stop and report — do not fall
+back to `db push`.
 
 - [ ] **Step 3: Assert the view reproduces the measured baseline**
 
 This is the real test for this task. Run:
 
-```bash
-cd /Users/mailauki/Developer/infinity-nikki-tracker && npx supabase db execute --query "select entity, total, no_title, no_image, gaps from admin_entity_stats order by total desc"
+Run via the Supabase MCP `execute_sql` tool against project `ykfuevyqpjvtxidjnhxm`:
+
+```sql
+select entity, total, no_title, no_image, gaps from admin_entity_stats order by total desc
 ```
 
 Expected, exactly (baseline measured 2026-08-09 — if the data has changed since, re-measure with the query in the spec and compare shapes, not literals):
