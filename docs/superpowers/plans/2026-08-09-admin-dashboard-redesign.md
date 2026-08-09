@@ -759,6 +759,19 @@ export const getNextGapSlug = cache(
 
 Note the row just saved no longer matches the gap predicate (you filled the image in), so `getNextGapSlug` cannot return the record you came from even though it uses `.gt()` on slug.
 
+**Type-fitting the snippet above.** As written it does not compile against the
+generated Supabase types: `AdminEntity.table` is `string`, while `supabase.from()`
+expects the literal union of table names. Add
+
+```ts
+type TableName = keyof Database['public']['Tables']
+```
+
+and call `.from(e.table as TableName)`. The row shapes also need
+`as unknown as { … }` casts, because `.select()` is handed a runtime-built string
+and PostgREST cannot infer the result type from it. Keep each asserted shape
+matching exactly what that call's `select` string requests.
+
 - [ ] **Step 2: Type-check and lint**
 
 ```bash
