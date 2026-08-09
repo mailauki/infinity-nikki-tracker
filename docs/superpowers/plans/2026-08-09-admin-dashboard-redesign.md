@@ -1604,13 +1604,40 @@ const gap = rawGap ? parseGapKind(rawGap) : null
 const page = Number.parseInt(rawPage ?? '1', 10)
 ```
 
-Then render these three inside the `<form>`, alongside the existing fields:
+**How to get the hidden inputs into the form without touching `EntityForm`.**
+`EntityForm` renders `<form action={formAction} id={formId}>` and maps a `fields`
+array; it has no `children` prop, and adding one would change a component shared
+by every admin form. Don't. Instead use HTML's `form` attribute, which associates
+a control with a form by id from anywhere in the document — the same mechanism
+`FormToolBar` already uses to put its submit buttons outside the `<form>` (see
+the comment in `entity-form.tsx` near the `setFormConfig` effect).
+
+The page already passes `formId` to `EntityForm`, so render the inputs as
+siblings, using that same id:
 
 ```tsx
-{entity && <input name="entity" type="hidden" value={entity} />}
-{gap && <input name="gap" type="hidden" value={gap} />}
-{entity && <input name="page" type="hidden" value={Number.isFinite(page) && page > 0 ? page : 1} />}
+{entity && <input form={formId} name="entity" type="hidden" value={entity} />}
+{gap && <input form={formId} name="gap" type="hidden" value={gap} />}
+{entity && (
+  <input
+    form={formId}
+    name="page"
+    type="hidden"
+    value={Number.isFinite(page) && page > 0 ? page : 1}
+  />
+)}
 ```
+
+`app/admin/makeup/sets/edit/[slug]/` is the exception — it uses its own
+`edit-makeup-set-form.tsx` with a local `FORM_ID` constant rather than
+`EntityForm`. Export that constant (or render the inputs inside that component's
+own `<form>`) and apply the same pattern.
+
+Do **not** add the queue params as bound Server Action arguments. Every one of
+these actions has a different signature — `updateMakeupSet` takes no `id` at all
+— and the 2026-07-09 spec's post-mortem documents that shifting a bound
+parameter silently displaces `prevState`/`formData` at any `.bind()` site you
+miss. Hidden inputs change no signatures.
 
 These are three constrained scalars, not a URL — validated here and re-validated in the action by `parseEntityKey` / `parseGapKind`. A hand-edited value can only change which queue you return to, never where `redirect()` points.
 
@@ -1618,11 +1645,16 @@ These are three constrained scalars, not a URL — validated here and re-validat
 
 Paste the identical block from Step 1 into each of the three remaining actions, changing only the four marked values below. Do **not** factor this into a shared helper yet — the four actions have differing signatures and bound-argument orders, and the 2026-07-09 spec's post-mortem shows bulk signature edits are exactly where the bugs come from.
 
-| File | `entity` value | `.from()` table | edit base | ordering column |
+| File | function (signature) | `entity` value | edit base | existing fallback orders by |
 | --- | --- | --- | --- | --- |
-| `app/admin/makeup/variants/actions.ts` | `'makeup-variants'` | `makeup_variants` | `navLinksData.admin.makeup.variants.edit` | `slug` |
-| `app/admin/makeup/sets/actions.ts` | `'makeup-sets'` | `makeup_sets` | `navLinksData.admin.makeup.sets.edit` | `slug` |
-| `app/admin/eureka/variants/actions.ts` | `'eureka-variants'` | `eureka_variants` | `navLinksData.admin.eureka.variants.edit` | `slug` |
+| `app/admin/makeup/variants/actions.ts` | `editMakeupVariant(id, _, formData)` | `'makeup-variants'` | `navLinksData.admin.makeup.variants.edit` | `slug` (uses `values.slug`) |
+| `app/admin/makeup/sets/actions.ts` | `updateMakeupSet(_, formData)` — **no bound `id`** | `'makeup-sets'` | `navLinksData.admin.makeup.sets.edit` | **`title`** then `slug` (uses `values.title`) |
+| `app/admin/eureka/variants/actions.ts` | `editEurekaVariant(id, _, formData)` | `'eureka-variants'` | `navLinksData.admin.eureka.variants.edit` | `slug` |
+
+**Leave each existing fallback query exactly as found.** `updateMakeupSet` orders
+by `title` then `slug`, not by `slug` — that is deliberate, and the gap branch
+you add above it does not change it. You are inserting a new branch, not
+rewriting the old one.
 
 So for `makeup/variants/actions.ts` the block reads:
 
