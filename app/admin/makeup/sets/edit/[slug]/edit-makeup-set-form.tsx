@@ -25,6 +25,7 @@ import ToggleField from '@/components/forms/toggle-field'
 import { useFormConfig } from '@/app/admin/form-context'
 import { updateMakeupSet } from '../../actions'
 import { MENU_PROPS } from '@/lib/types/props'
+import type { AdminEntityKey, GapKind } from '@/lib/admin-entities'
 import MakeupVariantImageCard from './makeup-variant-image-card'
 
 type MakeupVariantRow = Pick<
@@ -39,7 +40,7 @@ type MakeupVariantRow = Pick<
   | 'description'
 >
 
-const FORM_ID = 'edit-makeup-set'
+export const FORM_ID = 'edit-makeup-set'
 
 export default function EditMakeupSetForm({
   initial,
@@ -51,6 +52,9 @@ export default function EditMakeupSetForm({
   seasonCategories,
   makeupCategories,
   initialVariants = [],
+  entity = null,
+  gap = null,
+  page = 1,
 }: {
   initial: MakeupSetRaw
   makeupSets: MakeupSetRaw[]
@@ -61,6 +65,9 @@ export default function EditMakeupSetForm({
   seasonCategories: SeasonCategory[]
   makeupCategories: MakeupCategory[]
   initialVariants?: MakeupVariantRow[]
+  entity?: AdminEntityKey | null
+  gap?: GapKind | null
+  page?: number
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
   const [title, setTitle] = useState(initial.title)
@@ -171,6 +178,9 @@ export default function EditMakeupSetForm({
         {state?.error && <Alert severity="error">{state.error}</Alert>}
 
         <input name="original_slug" type="hidden" value={initial.slug ?? ''} />
+        {entity && <input name="entity" type="hidden" value={entity} />}
+        {gap && <input name="gap" type="hidden" value={gap} />}
+        {entity && <input name="page" type="hidden" value={page} />}
 
         <TextField
           required
