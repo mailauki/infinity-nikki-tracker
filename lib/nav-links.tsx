@@ -1,5 +1,14 @@
 import { AdminLinks, NavLink } from '@/lib/types/props'
-import { Help, Info, AccountCircle, Settings, AdminPanelSettings } from '@mui/icons-material'
+import {
+  Help,
+  Info,
+  AccountCircle,
+  Settings,
+  AdminPanelSettings,
+  Forest,
+  Construction,
+  Checkroom,
+} from '@mui/icons-material'
 
 export const navLinksData: {
   home: NavLink[]
@@ -24,6 +33,7 @@ export const navLinksData: {
         {
           title: 'Seasons',
           url: '/outfits/seasons',
+          icon: <Forest />,
         },
       ],
     },
@@ -36,6 +46,7 @@ export const navLinksData: {
           title: 'Trials',
           url: '/eureka/trials',
           image: '/icons/realm-of-breakthrough.png',
+          icon: <Construction />,
         },
       ],
     },
@@ -53,6 +64,7 @@ export const navLinksData: {
       title: 'Custom Looks',
       url: '/looks',
       image: '/icons/wardrobe.png',
+      icon: <Checkroom />,
     },
   ],
   navSecondary: [

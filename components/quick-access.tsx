@@ -1,19 +1,31 @@
 'use client'
 
 import {
-  Avatar,
+  Accordion,
+  AccordionDetails,
+  AccordionSummary as MuiAccordionSummary,
   Box,
   Card,
   CardActionArea,
   CardHeader,
   Stack,
   Typography,
-  useColorScheme,
+  AccordionSummaryProps,
+  accordionSummaryClasses,
+  styled,
+  Divider,
+  List,
+  ListItemIcon,
+  ListItemButton,
+  ListItemText,
+  ListItem,
 } from '@mui/material'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
 import LazyImage from './lazy-image'
 import { SimpleGrid } from './card-grid'
+import ToggleIcon from './toggle-icon'
+import { navLinksData } from '@/lib/nav-links'
+import { ArrowForward } from '@mui/icons-material'
 
 const cards = [
   {
@@ -30,63 +42,89 @@ const cards = [
   },
 ]
 
-export function QuickAccess() {
-  const { mode, systemMode } = useColorScheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isDarkMode = mounted && (mode === 'system' ? systemMode : mode) === 'dark'
+const extraCards = navLinksData.navMain.slice(2, -1)
 
+const moreCards = [
+  navLinksData.navMain.slice(-1),
+  navLinksData.navMain.filter((link) => link.items).flatMap((link) => link.items!),
+  navLinksData.navExtra,
+]
+
+const AccordionSummary = styled((props: AccordionSummaryProps) => (
+  <MuiAccordionSummary expandIcon={<ArrowForward fontSize="small" />} {...props} />
+))(() => ({
+  [`& .${accordionSummaryClasses.expandIconWrapper}.${accordionSummaryClasses.expanded}`]: {
+    transform: 'rotate(90deg)',
+  },
+}))
+
+export function QuickAccess() {
   return (
     <Box sx={{ py: 3 }}>
       <Typography sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="overline">
         Quick Access
       </Typography>
       <SimpleGrid columns="1fr 1fr">
-        {cards.map(({ title, subtitle, href, image }) => (
-          <Card key={href}>
+        {cards.map(({ title, subtitle, href }) => (
+          <Card key={href} surface="dim">
             <CardActionArea component={Link} href={href} sx={{ height: '100%' }}>
-              <Box
-                aria-hidden="true"
-                sx={{
-                  height: 150,
-                  borderRadius: (theme) => `${theme.shape.borderRadius}px`,
-                  background: (theme) =>
-                    `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                }}
-              >
-                <Stack sx={{ alignItems: 'center', justifyContent: 'center' }}>
-                  <LazyImage
-                    size="xl"
-                    src={
-                      title === 'Outfits'
-                        ? '/quick-access/perfect-start-alt.png'
-                        : '/quick-access/first-snow-head-white.png'
-                    }
-                    variant="square"
-                  />
-                </Stack>
-              </Box>
+              <Stack sx={{ alignItems: 'center', justifyContent: 'center' }}>
+                <LazyImage
+                  size="xl"
+                  src={
+                    title === 'Outfits'
+                      ? '/quick-access/perfect-start-alt.png'
+                      : '/quick-access/first-snow-head-white.png'
+                  }
+                  variant="square"
+                />
+              </Stack>
               <CardHeader
-                avatar={
-                  <Avatar
-                    alt={title}
-                    src={image}
-                    sx={{ filter: isDarkMode ? 'none' : 'grayscale(100%) brightness(40%)' }}
-                  />
-                }
                 slotProps={{
-                  avatar: { sx: { display: { xs: 'none', sm: 'flex' } } },
-                  title: { variant: 'subtitle2', component: 'span' },
-                  subheader: { variant: 'body2' },
+                  title: { variant: 'subtitle1', component: 'span' },
+                  subheader: { variant: 'overline' },
                 }}
                 subheader={subtitle}
-                sx={{ pt: 1 }}
+                sx={{ textAlign: 'center', pt: 0 }}
                 title={title}
               />
             </CardActionArea>
           </Card>
         ))}
+        {extraCards.map((link) => (
+          <Card key={link.url}>
+            <CardActionArea component={Link} href={link.url}>
+              <CardHeader
+                avatar={<ToggleIcon image={link.image} />}
+                slotProps={{
+                  title: { variant: 'subtitle2', component: 'span' },
+                }}
+                title={link.title === 'Makeup' ? 'Makeup Sets' : link.title}
+              />
+            </CardActionArea>
+          </Card>
+        ))}
       </SimpleGrid>
+      <Box sx={{ mt: 2 }}>
+        <Accordion variant="filled">
+          <AccordionSummary>See more</AccordionSummary>
+          <AccordionDetails>
+            {moreCards.map((links, index) => (
+              <List key={index} disablePadding>
+                <Divider sx={{ display: index === 0 ? 'none' : 'flex' }} />
+                {links.map((link) => (
+                  <ListItem key={link.url} disablePadding>
+                    <ListItemButton component={Link} href={link.url}>
+                      <ListItemIcon>{link.icon}</ListItemIcon>
+                      <ListItemText primary={link.title} sx={{ pl: 1 }} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
+            ))}
+          </AccordionDetails>
+        </Accordion>
+      </Box>
     </Box>
   )
 }
