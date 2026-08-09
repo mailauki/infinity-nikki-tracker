@@ -1,5 +1,4 @@
 import { Box, Card, CardContent, Chip, LinearProgress, Typography } from '@mui/material'
-import Link from 'next/link'
 import { buildDashboardHref } from '@/lib/admin-routes'
 import type { AdminStat } from '@/hooks/data/admin/stats'
 import AdminCompletenessToggle from './admin-completeness-toggle'
@@ -34,7 +33,7 @@ function Row({ stat }: { stat: AdminStat }) {
             {stat.noTitle !== null && stat.noTitle > 0 && (
               <Chip
                 clickable
-                component={Link}
+                component="a"
                 href={buildDashboardHref({ entity: stat.key, gap: 'title' })}
                 label={`${stat.noTitle.toLocaleString()} title`}
                 size="small"
@@ -44,7 +43,7 @@ function Row({ stat }: { stat: AdminStat }) {
             {stat.noImage !== null && stat.noImage > 0 && (
               <Chip
                 clickable
-                component={Link}
+                component="a"
                 href={buildDashboardHref({ entity: stat.key, gap: 'image' })}
                 label={`${stat.noImage.toLocaleString()} img`}
                 size="small"

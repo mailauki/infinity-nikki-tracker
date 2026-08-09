@@ -13,7 +13,6 @@ import {
   Typography,
 } from '@mui/material'
 import { Add, Category } from '@mui/icons-material'
-import Link from 'next/link'
 import LazyImage from '@/components/lazy-image'
 import { getGapRows, GAP_PAGE_SIZE } from '@/hooks/data/admin/gaps'
 import { ADMIN_ENTITIES, type AdminEntityKey, type GapKind } from '@/lib/admin-entities'
@@ -80,7 +79,7 @@ export default async function AdminGapQueue({
                 key={kind}
                 clickable
                 color={kind === gap ? 'primary' : 'default'}
-                component={Link}
+                component="a"
                 href={buildDashboardHref({ entity, gap: kind })}
                 label={count === null ? label : `${label} ${count.toLocaleString()}`}
                 size="small"
@@ -91,7 +90,7 @@ export default async function AdminGapQueue({
           })}
           {e.addHref && (
             <Button
-              component={Link}
+              component="a"
               href={e.addHref}
               size="small"
               startIcon={<Add />}
@@ -112,7 +111,7 @@ export default async function AdminGapQueue({
               {rows.map((row, i) => (
                 <Box key={row.slug}>
                   <ListItem disablePadding>
-                    <ListItemButton component={Link} href={row.editHref}>
+                    <ListItemButton component="a" href={row.editHref}>
                       <ListItemAvatar>
                         <LazyImage
                           alt={row.slug}
@@ -151,7 +150,7 @@ export default async function AdminGapQueue({
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button
-                  component={Link}
+                  component="a"
                   disabled={page <= 1}
                   href={buildDashboardHref({ entity, gap, page: page - 1 })}
                   size="small"
@@ -159,7 +158,7 @@ export default async function AdminGapQueue({
                   Previous
                 </Button>
                 <Button
-                  component={Link}
+                  component="a"
                   disabled={page >= lastPage}
                   href={buildDashboardHref({ entity, gap, page: page + 1 })}
                   size="small"
@@ -167,7 +166,7 @@ export default async function AdminGapQueue({
                   Next
                 </Button>
                 <Button
-                  component={Link}
+                  component="a"
                   href={`${rows[0].editHref}?entity=${entity}&gap=${gap}&page=${page}`}
                   size="small"
                   variant="outlined"
