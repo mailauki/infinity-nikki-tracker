@@ -29,7 +29,7 @@
 
 | File | Responsibility |
 | --- | --- |
-| `supabase/migrations/20260809120000_add_admin_entity_stats_view.sql` | The 12-branch aggregate view |
+| `supabase/migrations/20260809215744_add_admin_entity_stats_view.sql` | The 12-branch aggregate view |
 | `lib/admin-entities.ts` | Entity registry: key → table, tracked fields, links, domain. Server-safe. |
 | `lib/admin-routes.ts` *(modify)* | Add `buildDashboardHref` + param validators |
 | `hooks/data/admin/stats.ts` | `getAdminStats()` |
@@ -48,7 +48,7 @@
 ### Task 1: The `admin_entity_stats` view
 
 **Files:**
-- Create: `supabase/migrations/20260809120000_add_admin_entity_stats_view.sql`
+- Create: `supabase/migrations/20260809215744_add_admin_entity_stats_view.sql`
 
 **Interfaces:**
 - Consumes: nothing.
@@ -235,7 +235,7 @@ Second: `abilities.no_image`, `eureka-sets.no_image`, `season-categories.no_imag
 - [ ] **Step 4: Commit**
 
 ```bash
-git add supabase/migrations/20260809120000_add_admin_entity_stats_view.sql
+git add supabase/migrations/20260809215744_add_admin_entity_stats_view.sql
 git commit -m "feat(admin): add admin_entity_stats aggregate view"
 ```
 
