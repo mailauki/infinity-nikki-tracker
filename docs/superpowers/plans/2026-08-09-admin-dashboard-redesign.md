@@ -12,6 +12,14 @@
 
 ## Global Constraints
 
+- **Never pass `component={Link}` to a MUI component from a Server Component.** MUI
+  components are Client Components, and `Link` is a function — functions cannot cross the
+  server→client boundary. It typechecks and builds fine, then throws at render:
+  *"Functions cannot be passed directly to Client Components."* Use `component="a"` with a
+  plain `href` (a string serializes). This is the existing repo idiom — see
+  `app/admin/admin-recents-list.tsx:89`. Client Components (`'use client'`) may use
+  `component={Link}` freely; only the boundary is the problem.
+
 - **No test runner exists.** No jest, vitest, or playwright. `package.json` scripts are only `dev`/`build`/`start`/`lint`/`format`/`lint:fix`. Verification is `yarn tsc --noEmit`, `yarn lint`, `yarn build`, SQL assertions, and driving the app. **Do not add a test framework** — it is not in scope for this plan.
 - **Type-check command is `yarn tsc --noEmit`.** Not `yarn dlx tsc`, which fetches a bogus placeholder package.
 - **Prettier:** no semicolons, single quotes, 2-space indent, 100 char width, ES5 trailing commas. A PostToolUse hook runs `prettier --write` + `eslint --fix` on every edited file automatically.
@@ -810,7 +818,6 @@ git commit -m "feat(admin): add gap row queries with server-side pagination"
 
 ```tsx
 import { Box, Card, CardContent, Chip, Typography } from '@mui/material'
-import Link from 'next/link'
 import { ADMIN_DOMAINS, type AdminEntityKey } from '@/lib/admin-entities'
 import { buildDashboardHref } from '@/lib/admin-routes'
 import type { AdminStat } from '@/hooks/data/admin/stats'
@@ -871,7 +878,7 @@ export default function AdminTotalsStrip({ stats }: { stats: AdminStat[] }) {
                     <Chip
                       key={chip.key}
                       clickable
-                      component={Link}
+                      component="a"
                       href={buildDashboardHref({ entity: chip.key })}
                       label={`${(get(chip.key)?.total ?? 0).toLocaleString()} ${chip.label}`}
                       size="small"
@@ -975,7 +982,6 @@ export default function AdminCompletenessToggle({
 
 ```tsx
 import { Box, Card, CardContent, Chip, LinearProgress, Typography } from '@mui/material'
-import Link from 'next/link'
 import { buildDashboardHref } from '@/lib/admin-routes'
 import type { AdminStat } from '@/hooks/data/admin/stats'
 import AdminCompletenessToggle from './admin-completeness-toggle'
@@ -1010,7 +1016,7 @@ function Row({ stat }: { stat: AdminStat }) {
             {stat.noTitle !== null && stat.noTitle > 0 && (
               <Chip
                 clickable
-                component={Link}
+                component="a"
                 href={buildDashboardHref({ entity: stat.key, gap: 'title' })}
                 label={`${stat.noTitle.toLocaleString()} title`}
                 size="small"
@@ -1020,7 +1026,7 @@ function Row({ stat }: { stat: AdminStat }) {
             {stat.noImage !== null && stat.noImage > 0 && (
               <Chip
                 clickable
-                component={Link}
+                component="a"
                 href={buildDashboardHref({ entity: stat.key, gap: 'image' })}
                 label={`${stat.noImage.toLocaleString()} img`}
                 size="small"
@@ -1163,7 +1169,6 @@ import {
   Typography,
 } from '@mui/material'
 import { Add, Category } from '@mui/icons-material'
-import Link from 'next/link'
 import LazyImage from '@/components/lazy-image'
 import { getGapRows, GAP_PAGE_SIZE } from '@/hooks/data/admin/gaps'
 import { ADMIN_ENTITIES, type AdminEntityKey, type GapKind } from '@/lib/admin-entities'
@@ -1230,7 +1235,7 @@ export default async function AdminGapQueue({
                 key={kind}
                 clickable
                 color={kind === gap ? 'primary' : 'default'}
-                component={Link}
+                component="a"
                 href={buildDashboardHref({ entity, gap: kind })}
                 label={count === null ? label : `${label} ${count.toLocaleString()}`}
                 size="small"
@@ -1241,7 +1246,7 @@ export default async function AdminGapQueue({
           })}
           {e.addHref && (
             <Button
-              component={Link}
+              component="a"
               href={e.addHref}
               size="small"
               startIcon={<Add />}
@@ -1262,7 +1267,7 @@ export default async function AdminGapQueue({
               {rows.map((row, i) => (
                 <Box key={row.slug}>
                   <ListItem disablePadding>
-                    <ListItemButton component={Link} href={row.editHref}>
+                    <ListItemButton component="a" href={row.editHref}>
                       <ListItemAvatar>
                         <LazyImage
                           alt={row.slug}
@@ -1295,7 +1300,7 @@ export default async function AdminGapQueue({
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Button
-                  component={Link}
+                  component="a"
                   disabled={page <= 1}
                   href={buildDashboardHref({ entity, gap, page: page - 1 })}
                   size="small"
@@ -1303,7 +1308,7 @@ export default async function AdminGapQueue({
                   Previous
                 </Button>
                 <Button
-                  component={Link}
+                  component="a"
                   disabled={page >= lastPage}
                   href={buildDashboardHref({ entity, gap, page: page + 1 })}
                   size="small"
@@ -1311,7 +1316,7 @@ export default async function AdminGapQueue({
                   Next
                 </Button>
                 <Button
-                  component={Link}
+                  component="a"
                   href={`${rows[0].editHref}?entity=${entity}&gap=${gap}&page=${page}`}
                   size="small"
                   variant="outlined"
