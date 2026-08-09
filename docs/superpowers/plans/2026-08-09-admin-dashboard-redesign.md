@@ -528,9 +528,18 @@ The registry drives which counts surface, so even if the view ever returned a nu
 
 - [ ] **Step 2: Regenerate Supabase types so the view is known**
 
+> **Do not pipe `npx` straight into the file.** `npx supabase gen types … > lib/types/supabase.ts`
+> writes npm's auto-install notice and the CLI's `WARN: config section [inbucket]`
+> line into the `.ts` file, breaking compilation. Use the installed binary and
+> keep stderr off stdout:
+
 ```bash
-cd /Users/mailauki/Developer/infinity-nikki-tracker && npx supabase gen types typescript --linked > lib/types/supabase.ts
+cd /Users/mailauki/Developer/infinity-nikki-tracker && supabase gen types typescript --linked 2>/dev/null > lib/types/supabase.ts
 ```
+
+After generating, confirm the file starts with `export type Json =` and contains
+no line beginning `npm ` or `WARN`. Regenerating is read-only against the
+database — it carries none of the `db push` risk.
 
 Then confirm the view landed in the `Views` section:
 
