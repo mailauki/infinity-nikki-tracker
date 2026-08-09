@@ -1,166 +1,76 @@
 import { Suspense } from 'react'
-import { getAdminData } from '@/hooks/data/user'
-import { getEurekaSets } from '@/hooks/data/eureka-sets'
-import { getOutfitSets } from '@/hooks/data/outfit-sets'
-import { getUserRole } from '@/hooks/user'
-import { getRecentlyAdded, getRecentlyEdited } from '@/hooks/data/admin/recents'
+import { Alert, Box, Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { Box, Stack } from '@mui/material'
-import { StatCard } from './stat-card'
+import { getAdminStats } from '@/hooks/data/admin/stats'
+import { getRecentlyAdded, getRecentlyEdited } from '@/hooks/data/admin/recents'
+import { parseEntityKey, parseGapKind, type AdminEntityKey } from '@/lib/admin-entities'
 import AdminRecentsList from './admin-recents-list'
-import { navLinksData } from '@/lib/nav-links'
-import { getEvolutions } from '@/hooks/data/evolutions'
-import { getAbilities } from '@/hooks/data/abilities'
-import { getSeasons } from '@/hooks/data/seasons'
-import { getOutfitVariantsRaw } from '@/hooks/data/admin/outfit-variants'
-import { getSeasonCategories } from '@/hooks/data/season-categories'
-import { getMakeupSets } from '@/hooks/data/makeup-sets'
-import { getMakeupVariantsRaw } from '@/hooks/data/admin/makeup-variants'
-import { getMomoCloaksRaw } from '@/hooks/data/admin/momo-cloaks'
+import AdminTotalsStrip from './admin-totals-strip'
+import AdminCompletenessList from './admin-completeness-list'
+import AdminGapQueue from './admin-gap-queue'
 
 export const metadata: Metadata = {
   title: 'Admin',
 }
 
-export default function AdminPage() {
+type SearchParams = Promise<{ entity?: string; gap?: string; page?: string }>
+
+export default function AdminPage({ searchParams }: { searchParams: SearchParams }) {
   return (
-    <Suspense>
-      <AdminContent />
-    </Suspense>
+    <Stack spacing={2}>
+      {/* Separate boundaries so stats and recents stream independently and one
+          failure cannot blank the page. */}
+      <Suspense>
+        <AdminOverview searchParams={searchParams} />
+      </Suspense>
+      <Suspense>
+        <AdminRecents />
+      </Suspense>
+    </Stack>
   )
 }
 
-async function AdminContent() {
-  const [
-    eurekaSets,
-    { eurekaVariants, trials },
-    outfitSets,
-    outfitVariants,
-    evolutions,
-    abilities,
-    seasons,
-    seasonCategories,
-    makeupSets,
-    makeupVariants,
-    momoCloaks,
-    role,
-    recentlyAdded,
-    recentlyEdited,
-  ] = await Promise.all([
-    getEurekaSets(),
-    getAdminData(),
-    getOutfitSets(),
-    getOutfitVariantsRaw(),
-    getEvolutions(),
-    getAbilities(),
-    getSeasons(),
-    getSeasonCategories(),
-    // Base sets only — getMakeupSets folds evolutions into their base, matching
-    // how the Outfit Sets card counts (getOutfitSets filters base_set IS NULL).
-    getMakeupSets(),
-    getMakeupVariantsRaw(),
-    // Raw rows are the true count here — momo cloaks have no base/evolution
-    // split for a resolved hook to fold together.
-    getMomoCloaksRaw(),
-    getUserRole(),
+async function AdminOverview({ searchParams }: { searchParams: SearchParams }) {
+  const { entity: rawEntity, gap: rawGap, page: rawPage } = await searchParams
+
+  let stats
+  try {
+    stats = await getAdminStats()
+  } catch {
+    return <Alert severity="error">Could not load admin statistics. Try reloading.</Alert>
+  }
+
+  const gap = parseGapKind(rawGap)
+  // Default to the largest entity that actually has gaps, so the queue opens on
+  // real work rather than an empty state.
+  const fallback: AdminEntityKey =
+    [...stats].sort((a, b) => b.gaps - a.gaps)[0]?.key ?? 'outfit-variants'
+  const entity = parseEntityKey(rawEntity) ?? fallback
+
+  const parsedPage = Number.parseInt(rawPage ?? '1', 10)
+  const page = Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1
+
+  return (
+    <Stack spacing={2}>
+      <AdminTotalsStrip stats={stats} />
+      <AdminCompletenessList stats={stats} />
+      <Suspense key={`${entity}-${gap}-${page}`}>
+        <AdminGapQueue entity={entity} gap={gap} page={page} stats={stats} />
+      </Suspense>
+    </Stack>
+  )
+}
+
+async function AdminRecents() {
+  const [recentlyAdded, recentlyEdited] = await Promise.all([
     getRecentlyAdded(),
     getRecentlyEdited(),
   ])
 
-  const isAdmin = role === 'admin'
-
   return (
-    <Stack spacing={2}>
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr 1fr' },
-          gap: 2,
-        }}
-      >
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.outfits.sets.add : undefined}
-          count={outfitSets?.length ?? 0}
-          listHref={navLinksData.admin.outfits.sets.list}
-          title="Outfit Sets"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.outfits.variants.add : undefined}
-          count={outfitVariants?.length ?? 0}
-          listHref={navLinksData.admin.outfits.variants.list}
-          title="Outfit Variants"
-        />
-        <StatCard
-          addHref={undefined}
-          count={evolutions?.length ?? 0}
-          listHref={navLinksData.admin.outfits.evolutions.list}
-          title="Evolutions"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.outfits.abilities.add : undefined}
-          count={abilities?.length ?? 0}
-          listHref={navLinksData.admin.outfits.abilities.list}
-          title="Abilities"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.outfits.seasons.add : undefined}
-          count={seasons?.length ?? 0}
-          listHref={navLinksData.admin.outfits.seasons.list}
-          title="Seasons"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.outfits.seasonCategories.add : undefined}
-          count={seasonCategories?.length ?? 0}
-          listHref={navLinksData.admin.outfits.seasonCategories.list}
-          title="Season Categories"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.eureka.sets.add : undefined}
-          count={eurekaSets?.length ?? 0}
-          listHref={navLinksData.admin.eureka.sets.list}
-          title="Eureka Sets"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.eureka.variants.add : undefined}
-          count={eurekaVariants?.length ?? 0}
-          listHref={navLinksData.admin.eureka.variants.list}
-          title="Eureka Variants"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.eureka.trials.add : undefined}
-          count={trials?.length ?? 0}
-          listHref={navLinksData.admin.eureka.trials.list}
-          title="Trials"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.makeup.sets.add : undefined}
-          count={makeupSets?.length ?? 0}
-          listHref={navLinksData.admin.makeup.sets.list}
-          title="Makeup Sets"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.makeup.variants.add : undefined}
-          count={makeupVariants?.length ?? 0}
-          listHref={navLinksData.admin.makeup.variants.list}
-          title="Makeup Variants"
-        />
-        <StatCard
-          addHref={isAdmin ? navLinksData.admin.momoCloaks.cloaks.add : undefined}
-          count={momoCloaks?.length ?? 0}
-          listHref={navLinksData.admin.momoCloaks.cloaks.list}
-          title="Momo's Cloaks"
-        />
-      </Box>
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-          gap: 2,
-        }}
-      >
-        <AdminRecentsList items={recentlyAdded} title="Recently Added" />
-        <AdminRecentsList items={recentlyEdited} title="Recently Edited" />
-      </Box>
-    </Stack>
+    <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
+      <AdminRecentsList items={recentlyAdded} title="Recently Added" />
+      <AdminRecentsList items={recentlyEdited} title="Recently Edited" />
+    </Box>
   )
 }
