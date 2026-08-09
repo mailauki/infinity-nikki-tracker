@@ -943,7 +943,6 @@ export default function AdminCompletenessToggle({
       <Box
         aria-expanded={open}
         component="button"
-        onClick={() => setOpen((v) => !v)}
         sx={{
           alignItems: 'center',
           background: 'none',
@@ -956,6 +955,8 @@ export default function AdminCompletenessToggle({
           py: 1,
           width: '100%',
         }}
+        // eslint react/jsx-sort-props requires callbacks after all other props.
+        onClick={() => setOpen((v) => !v)}
       >
         {open ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
         <Typography color="text.secondary" variant="body2">
