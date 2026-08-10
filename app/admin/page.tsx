@@ -2,12 +2,13 @@ import { Suspense } from 'react'
 import { Alert, Box, Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { getAdminStats } from '@/hooks/data/admin/stats'
-import { getGapWorkItems } from '@/hooks/data/admin/gap-containers'
+import { getGapWorkItems, getUnassignedPieces } from '@/hooks/data/admin/gap-containers'
 import { getRecentlyAdded, getRecentlyEdited } from '@/hooks/data/admin/recents'
 import AdminRecentsList from './admin-recents-list'
 import AdminTotalsStrip from './admin-totals-strip'
 import AdminCompletenessList from './admin-completeness-list'
 import AdminGapQueue from './admin-gap-queue'
+import AdminUnassignedPieces from './admin-unassigned-pieces'
 
 export const metadata: Metadata = {
   title: 'Admin',
@@ -36,7 +37,7 @@ async function AdminOverview() {
     return <Alert severity="error">Could not load admin statistics. Try reloading.</Alert>
   }
 
-  const items = await getGapWorkItems()
+  const [items, unassignedPieces] = await Promise.all([getGapWorkItems(), getUnassignedPieces()])
 
   return (
     <Stack spacing={2}>
@@ -45,6 +46,7 @@ async function AdminOverview() {
       <Suspense>
         <AdminGapQueue items={items} stats={stats} />
       </Suspense>
+      <AdminUnassignedPieces pieces={unassignedPieces} />
     </Stack>
   )
 }

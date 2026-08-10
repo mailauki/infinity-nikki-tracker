@@ -55,6 +55,28 @@ const GROUPED_VARIANT_KEYS = new Set<AdminEntityKey>([
   'eureka-variants',
 ])
 
+/**
+ * Slugs that mean "no real owning set". `outfit_sets` uses `standalone_pieces`
+ * (underscore); an unapplied makeup migration would introduce
+ * `standalone-pieces` (hyphen). Matching both means applying that migration
+ * later changes nothing here.
+ */
+export const STANDALONE_SET_SLUGS = ['standalone_pieces', 'standalone-pieces']
+
+export interface UnassignedPiece {
+  /** `${entity}:${slug}`. */
+  key: string
+  entity: AdminEntityKey
+  entityTitle: string
+  slug: string
+  title: string
+  imageUrl: string | null
+  missingTitle: boolean
+  missingImage: boolean
+  /** The piece's own variant edit form — never a container form. */
+  editHref: string
+}
+
 const SIMPLE_ENTITY_KEYS = ADMIN_ENTITY_KEYS.filter((k) => !GROUPED_VARIANT_KEYS.has(k))
 
 type Row = Record<string, unknown>
@@ -178,7 +200,7 @@ const EUREKA_VARIANT_CONFIG: VariantGroupConfig = {
 }
 
 interface ContainerGroup {
-  ownerSlug: string | null
+  ownerSlug: string
   noTitle: number
   noImage: number
   noDescription: number
@@ -211,18 +233,18 @@ async function fetchGroupedContainers(
     return q.order('slug', { ascending: true }).range(from, to)
   })
 
-  // Group gap variants by owning-set slug. A variant with no owner (a
-  // data-integrity edge case — e.g. makeup variants missing `makeup_set`)
-  // collapses into one synthetic "unassigned" bucket instead of being
-  // dropped, or exploded into one row per orphaned variant.
+  // Group gap variants by owning-set slug. Pieces with no real owner (column
+  // NULL, or one of STANDALONE_SET_SLUGS) are unassigned — they surface
+  // individually via getUnassignedPieces() instead, so they're excluded from
+  // container grouping entirely to avoid double-counting.
   const groups = new Map<string, ContainerGroup>()
   for (const row of variantRows) {
     const ownerSlug = (row[config.ownerColumn] as string | null) ?? null
-    const groupKey = ownerSlug ?? ''
-    let group = groups.get(groupKey)
+    if (ownerSlug === null || STANDALONE_SET_SLUGS.includes(ownerSlug)) continue
+    let group = groups.get(ownerSlug)
     if (!group) {
       group = { ownerSlug, noTitle: 0, noImage: 0, noDescription: 0 }
-      groups.set(groupKey, group)
+      groups.set(ownerSlug, group)
     }
     if (e.tracksTitle && isMissing(row.title)) group.noTitle++
     if (e.tracksImage && isMissing(row.image_url)) group.noImage++
@@ -253,21 +275,6 @@ async function fetchGroupedContainers(
 
   const items: GapWorkItem[] = []
   for (const group of groups.values()) {
-    if (group.ownerSlug === null) {
-      items.push({
-        key: `${config.entityKey}:`,
-        slug: '',
-        title: 'Unassigned',
-        kind: KIND_LABELS[config.entityKey],
-        imageUrl: null,
-        noTitle: group.noTitle,
-        noImage: group.noImage,
-        noDescription: group.noDescription,
-        editHref: e.listHref,
-      })
-      continue
-    }
-
     const ownerSlug = group.ownerSlug
     const owner = ownerBySlug.get(ownerSlug)
     const isEvolution = config.routeToEvolutions && owner?.baseSet !== null && owner?.baseSet !== undefined
@@ -294,6 +301,73 @@ async function fetchGroupedContainers(
 
   return items
 }
+
+/** The owning-set column checked for "unassigned" per variant entity. */
+const UNASSIGNED_OWNER_COLUMNS: Record<
+  'outfit-variants' | 'makeup-variants' | 'eureka-variants',
+  string
+> = {
+  'outfit-variants': OUTFIT_VARIANT_CONFIG.ownerColumn,
+  'makeup-variants': MAKEUP_VARIANT_CONFIG.ownerColumn,
+  'eureka-variants': EUREKA_VARIANT_CONFIG.ownerColumn,
+}
+
+/**
+ * Gap-bearing variants whose owning-set column is NULL or a standalone-set
+ * slug — they belong to no real set, so there is no container edit form to
+ * group them under. Each surfaces individually, linking to its own edit form.
+ */
+async function fetchUnassignedPieces(
+  supabase: Client,
+  entityKey: 'outfit-variants' | 'makeup-variants' | 'eureka-variants'
+): Promise<UnassignedPiece[]> {
+  const e = ADMIN_ENTITIES[entityKey]
+  const ownerColumn = UNASSIGNED_OWNER_COLUMNS[entityKey]
+  const select = selectColumns([ownerColumn], e.tracksTitle, e.tracksImage, e.tracksDescription)
+  const orFilter = gapOrFilter(e.tracksTitle, e.tracksImage)
+
+  const rows = await fetchAllRows((from, to) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const q: any = supabase.from(e.table as TableName).select(select).or(orFilter)
+    return q.order('slug', { ascending: true }).range(from, to)
+  })
+
+  const unassignedRows = rows.filter((r) => {
+    const owner = (r[ownerColumn] as string | null) ?? null
+    return owner === null || STANDALONE_SET_SLUGS.includes(owner)
+  })
+
+  return unassignedRows.map((r) => {
+    const slug = r.slug as string
+    const rawTitle = e.tracksTitle ? ((r.title as string | null)?.trim() ?? '') : ''
+    const imageUrl = e.tracksImage ? ((r.image_url as string | null) ?? null) : null
+
+    return {
+      key: `${entityKey}:${slug}`,
+      entity: entityKey,
+      entityTitle: e.title,
+      slug,
+      title: rawTitle || toTitle(slug),
+      imageUrl,
+      missingTitle: e.tracksTitle && isMissing(r.title),
+      missingImage: e.tracksImage && isMissing(r.image_url),
+      editHref: `${e.editHref}/${slug}`,
+    }
+  })
+}
+
+// Auth-dependent (createClient reads cookies), so React cache(), not `use cache`.
+export const getUnassignedPieces = cache(async (): Promise<UnassignedPiece[]> => {
+  const supabase = await createClient()
+
+  const results = await Promise.all(
+    (['outfit-variants', 'makeup-variants', 'eureka-variants'] as const).map((key) =>
+      fetchUnassignedPieces(supabase, key)
+    )
+  )
+
+  return results.flat()
+})
 
 // Auth-dependent (createClient reads cookies), so React cache(), not `use cache`.
 export const getGapWorkItems = cache(async (): Promise<Record<AdminEntityKey, GapWorkItem[]>> => {
