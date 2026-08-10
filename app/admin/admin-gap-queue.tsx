@@ -7,7 +7,6 @@ import {
   Button,
   Card,
   CardContent,
-  Chip,
   Divider,
   List,
   ListItem,
@@ -28,6 +27,7 @@ import {
 } from '@/lib/admin-entities'
 import type { GapWorkItem } from '@/hooks/data/admin/gap-containers'
 import type { AdminStat } from '@/hooks/data/admin/stats'
+import { GapEmptyState, GapFilterChips, GapPaginationFooter } from './admin-gap-list-parts'
 
 const PAGE_SIZE = 10
 
@@ -127,45 +127,43 @@ export default function AdminGapQueue({
           </TextField>
         </Box>
 
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}>
-          {GAPS.map(({ kind, label }) => {
-            // Hide a filter the entity cannot have.
-            if (kind === 'image' && !e.tracksImage) return null
-            if (kind === 'title' && !e.tracksTitle) return null
-            if (kind === 'description' && !e.tracksDescription) return null
-            // Duplicate detection returns with the deferred alt_slug work (see
-            // `isVariant` in lib/admin-entities.ts) — GapWorkItem carries no
-            // duplicate signal yet, so GapKind has no 'duplicate' member today.
-            const count = containerGapCount(allForEntity, kind)
-            return (
-              <Chip
-                key={kind}
-                color={kind === gap ? 'primary' : 'default'}
-                label={`${label} ${count.toLocaleString()}`}
+        {/*
+          Hide a filter the entity cannot have. Duplicate detection returns
+          with the deferred alt_slug work (see `isVariant` in
+          lib/admin-entities.ts) — GapWorkItem carries no duplicate signal
+          yet, so GapKind has no 'duplicate' member today.
+        */}
+        <GapFilterChips
+          active={gap}
+          items={GAPS.filter(
+            ({ kind }) =>
+              (kind !== 'image' || e.tracksImage) &&
+              (kind !== 'title' || e.tracksTitle) &&
+              (kind !== 'description' || e.tracksDescription)
+          ).map(({ kind, label }) => ({
+            kind,
+            label,
+            count: containerGapCount(allForEntity, kind),
+            dashed: kind === 'description',
+          }))}
+          trailing={
+            e.addHref && (
+              <Button
+                component="a"
+                href={e.addHref}
                 size="small"
-                sx={kind === 'description' ? { borderStyle: 'dashed', opacity: 0.7 } : undefined}
-                variant={kind === gap ? 'filled' : 'outlined'}
-                onClick={() => handleGapChange(kind)}
-              />
+                startIcon={<Add />}
+                sx={{ ml: 'auto' }}
+              >
+                Add
+              </Button>
             )
-          })}
-          {e.addHref && (
-            <Button
-              component="a"
-              href={e.addHref}
-              size="small"
-              startIcon={<Add />}
-              sx={{ ml: 'auto' }}
-            >
-              Add
-            </Button>
-          )}
-        </Box>
+          }
+          onChange={handleGapChange}
+        />
 
         {rows.length === 0 ? (
-          <Typography color="text.disabled" sx={{ py: 3, textAlign: 'center' }} variant="body2">
-            Nothing needs attention in {e.title}.
-          </Typography>
+          <GapEmptyState message={`Nothing needs attention in ${e.title}.`} />
         ) : (
           <>
             <List disablePadding>
@@ -197,31 +195,15 @@ export default function AdminGapQueue({
               ))}
             </List>
 
-            <Box
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                gap: 1,
-                justifyContent: 'space-between',
-                mt: 1.5,
-              }}
-            >
-              <Typography color="text.secondary" variant="caption">
-                {from}–{to} of {total.toLocaleString()}
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button disabled={currentPage <= 1} size="small" onClick={() => setPage(currentPage - 1)}>
-                  Previous
-                </Button>
-                <Button
-                  disabled={currentPage >= lastPage}
-                  size="small"
-                  onClick={() => setPage(currentPage + 1)}
-                >
-                  Next
-                </Button>
-              </Box>
-            </Box>
+            <GapPaginationFooter
+              currentPage={currentPage}
+              from={from}
+              lastPage={lastPage}
+              to={to}
+              total={total}
+              onNext={() => setPage(currentPage + 1)}
+              onPrevious={() => setPage(currentPage - 1)}
+            />
           </>
         )}
       </CardContent>

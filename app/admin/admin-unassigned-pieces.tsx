@@ -4,10 +4,8 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import {
   Box,
-  Button,
   Card,
   CardContent,
-  Chip,
   Divider,
   List,
   ListItem,
@@ -19,6 +17,7 @@ import {
 import { Category } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
 import type { UnassignedPiece } from '@/hooks/data/admin/gap-containers'
+import { GapEmptyState, GapFilterChips, GapPaginationFooter } from './admin-gap-list-parts'
 
 const PAGE_SIZE = 10
 
@@ -66,26 +65,18 @@ export default function AdminUnassignedPieces({ pieces }: { pieces: UnassignedPi
           not through a set&apos;s.
         </Typography>
 
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}>
-          {GAPS.map(({ kind, label }) => {
-            const count = pieces.filter(gapPredicate(kind)).length
-            return (
-              <Chip
-                key={kind}
-                color={kind === gap ? 'primary' : 'default'}
-                label={`${label} ${count.toLocaleString()}`}
-                size="small"
-                variant={kind === gap ? 'filled' : 'outlined'}
-                onClick={() => handleGapChange(kind)}
-              />
-            )
-          })}
-        </Box>
+        <GapFilterChips
+          active={gap}
+          items={GAPS.map(({ kind, label }) => ({
+            kind,
+            label,
+            count: pieces.filter(gapPredicate(kind)).length,
+          }))}
+          onChange={handleGapChange}
+        />
 
         {rows.length === 0 ? (
-          <Typography color="text.disabled" sx={{ py: 3, textAlign: 'center' }} variant="body2">
-            No unassigned pieces need attention.
-          </Typography>
+          <GapEmptyState message="No unassigned pieces need attention." />
         ) : (
           <>
             <List disablePadding>
@@ -117,31 +108,15 @@ export default function AdminUnassignedPieces({ pieces }: { pieces: UnassignedPi
               ))}
             </List>
 
-            <Box
-              sx={{
-                alignItems: 'center',
-                display: 'flex',
-                gap: 1,
-                justifyContent: 'space-between',
-                mt: 1.5,
-              }}
-            >
-              <Typography color="text.secondary" variant="caption">
-                {from}–{to} of {total.toLocaleString()}
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button disabled={currentPage <= 1} size="small" onClick={() => setPage(currentPage - 1)}>
-                  Previous
-                </Button>
-                <Button
-                  disabled={currentPage >= lastPage}
-                  size="small"
-                  onClick={() => setPage(currentPage + 1)}
-                >
-                  Next
-                </Button>
-              </Box>
-            </Box>
+            <GapPaginationFooter
+              currentPage={currentPage}
+              from={from}
+              lastPage={lastPage}
+              to={to}
+              total={total}
+              onNext={() => setPage(currentPage + 1)}
+              onPrevious={() => setPage(currentPage - 1)}
+            />
           </>
         )}
       </CardContent>
