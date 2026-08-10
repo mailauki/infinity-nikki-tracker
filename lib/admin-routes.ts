@@ -16,29 +16,3 @@
 // Anything a Server Action imports must come from a module the server can
 // evaluate for real. Keep server-consumed constants here, not in a client module.
 export const ADMIN_DASHBOARD = '/admin'
-
-/**
- * Rebuild the dashboard URL from validated scalars.
- *
- * Deliberately NOT a `?returnTo=<url>` passthrough. The 2026-07-09
- * remove-admin-back-searchparams spec removed `?back=<url>` precisely so
- * redirect() would stop receiving a URL-decoded query value. This takes an
- * entity key, a gap kind and a page number, and always emits '/admin?…' —
- * an attacker-supplied value can change which queue you land on, nothing more.
- */
-export function buildDashboardHref({
-  entity,
-  gap,
-  page,
-}: {
-  entity?: string | null
-  gap?: string | null
-  page?: number | null
-}): string {
-  const params = new URLSearchParams()
-  if (entity) params.set('entity', entity)
-  if (gap) params.set('gap', gap)
-  if (page && page > 1) params.set('page', String(page))
-  const qs = params.toString()
-  return qs ? `${ADMIN_DASHBOARD}?${qs}` : ADMIN_DASHBOARD
-}
