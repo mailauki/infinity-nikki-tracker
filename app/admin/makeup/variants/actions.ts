@@ -5,6 +5,54 @@ import { createClient } from '@/lib/supabase/server'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
+import { toSlug } from '@/lib/utils'
+
+const STANDALONE_SLUG = 'standalone_pieces'
+
+/**
+ * Guard against re-adding a piece as standalone when it already ships inside a
+ * set. A set-owned variant's slug is `{set}-{category}`, but the same piece
+ * added standalone would slug to `{toSlug(title)}-{category}` — two different
+ * strings for one item, so `slug` alone can't detect the duplicate.
+ *
+ * `makeup_variants.alt_slug` stores exactly that title-derived form for
+ * set-owned rows (kept current by trg_set_makeup_variant_alt_slug), so the
+ * standalone candidate slug can be looked up against it.
+ *
+ * Returns an error message naming the owning set, or null when unique.
+ * Pass `excludeId` when editing so a row never collides with itself.
+ */
+async function findSetOwnedDuplicate(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  {
+    makeup_set,
+    makeup_category,
+    title,
+    excludeId,
+  }: {
+    makeup_set: string | null
+    makeup_category: string | null
+    title: string | null
+    excludeId?: number
+  }
+) {
+  // Only standalone pieces need this check — a set-owned variant is already
+  // covered by the unique index on alt_slug.
+  if (makeup_set && makeup_set !== STANDALONE_SLUG) return null
+  const titleSlug = toSlug(title ?? '')
+  if (!titleSlug || !makeup_category) return null
+
+  let query = supabase
+    .from('makeup_variants')
+    .select('slug, makeup_set')
+    .eq('alt_slug', `${titleSlug}-${makeup_category}`)
+  if (excludeId !== undefined) query = query.neq('id', excludeId)
+
+  const { data } = await query.limit(1).maybeSingle()
+  if (!data) return null
+
+  return `"${title}" already exists in the set "${data.makeup_set}" (${data.slug}). Edit that variant instead of adding a duplicate standalone piece.`
+}
 
 // makeup_set is nullable — a variant with no set is a standalone piece with
 // its own title/description/rarity/style. The select's empty-string
@@ -41,6 +89,10 @@ export async function addMakeupVariant(_: unknown, formData: FormData) {
   if (invalid) return { error: invalid }
 
   const supabase = await createClient()
+
+  const duplicate = await findSetOwnedDuplicate(supabase, values)
+  if (duplicate) return { error: duplicate }
+
   // Do not write `default` — the enforce_base_makeup_variant_default trigger
   // owns that column and would have its value silently overwritten anyway.
   const { error } = await supabase.from('makeup_variants').insert([values])
@@ -61,6 +113,10 @@ export async function editMakeupVariant(id: number, _: unknown, formData: FormDa
   if (invalid) return { error: invalid }
 
   const supabase = await createClient()
+
+  const duplicate = await findSetOwnedDuplicate(supabase, { ...values, excludeId: id })
+  if (duplicate) return { error: duplicate }
+
   // Do not write `default` — the enforce_base_makeup_variant_default trigger
   // owns that column and would have its value silently overwritten anyway.
   const { error } = await supabase

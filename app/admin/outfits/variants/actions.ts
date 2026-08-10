@@ -5,6 +5,54 @@ import { redirect } from 'next/navigation'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
+import { toSlug } from '@/lib/utils'
+
+const STANDALONE_SLUG = 'standalone_pieces'
+
+/**
+ * Guard against re-adding a piece as standalone when it already ships inside a
+ * set. A set-owned variant's slug is `{set}-{category}`, but the same piece
+ * added standalone would slug to `{toSlug(title)}-{category}` — two different
+ * strings for one item, so `slug` alone can't detect the duplicate.
+ *
+ * `outfit_variants.alt_slug` stores exactly that title-derived form for
+ * set-owned rows (kept current by trg_set_outfit_variant_alt_slug), so the
+ * standalone candidate slug can be looked up against it.
+ *
+ * Returns an error message naming the owning set, or null when unique.
+ * Pass `excludeId` when editing so a row never collides with itself.
+ */
+async function findSetOwnedDuplicate(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  {
+    outfit_set,
+    outfit_category,
+    title,
+    excludeId,
+  }: {
+    outfit_set: string | null
+    outfit_category: string | null
+    title: string | null
+    excludeId?: number
+  }
+) {
+  // Only standalone pieces need this check — a set-owned variant is already
+  // covered by the unique index on alt_slug.
+  if (outfit_set && outfit_set !== STANDALONE_SLUG) return null
+  const titleSlug = toSlug(title ?? '')
+  if (!titleSlug || !outfit_category) return null
+
+  let query = supabase
+    .from('outfit_variants')
+    .select('slug, outfit_set')
+    .eq('alt_slug', `${titleSlug}-${outfit_category}`)
+  if (excludeId !== undefined) query = query.neq('id', excludeId)
+
+  const { data } = await query.limit(1).maybeSingle()
+  if (!data) return null
+
+  return `"${title}" already exists in the set "${data.outfit_set}" (${data.slug}). Edit that variant instead of adding a duplicate standalone piece.`
+}
 
 export async function addOutfitVariant(_: unknown, formData: FormData) {
   const role = await getUserRole()
@@ -26,6 +74,13 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
   const slug = (formData.get('slug') as string | null)?.trim() ?? ''
 
   if (!slug) return { error: 'Slug is required.' }
+
+  const duplicate = await findSetOwnedDuplicate(supabase, {
+    outfit_set,
+    outfit_category,
+    title,
+  })
+  if (duplicate) return { error: duplicate }
 
   // `default` is intentionally omitted: the trg_enforce_base_variant_default
   // trigger derives it from the owning set's order on every insert/update.
@@ -71,6 +126,14 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
   const slug = (formData.get('slug') as string | null)?.trim() ?? ''
 
   if (!slug) return { error: 'Slug is required.' }
+
+  const duplicate = await findSetOwnedDuplicate(supabase, {
+    outfit_set,
+    outfit_category,
+    title,
+    excludeId: id,
+  })
+  if (duplicate) return { error: duplicate }
 
   // `default` is intentionally omitted — see the note in addOutfitVariant. The
   // trigger still fires here because `outfit_set` is part of every update.
