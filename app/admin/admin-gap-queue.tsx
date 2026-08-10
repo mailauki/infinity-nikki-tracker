@@ -35,7 +35,6 @@ const GAPS: { kind: GapKind; label: string }[] = [
   { kind: 'image', label: 'No image' },
   { kind: 'title', label: 'No title' },
   { kind: 'description', label: 'No description' },
-  { kind: 'duplicate', label: 'Dupes' },
 ]
 
 function gapCount(stat: AdminStat | undefined, kind: GapKind): number | null {
@@ -130,11 +129,12 @@ export default function AdminGapQueue({
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}>
           {GAPS.map(({ kind, label }) => {
-            // Hide a filter the entity cannot have. Duplicates apply to variants only.
+            // Hide a filter the entity cannot have.
             if (kind === 'image' && !e.tracksImage) return null
             if (kind === 'title' && !e.tracksTitle) return null
             if (kind === 'description' && !e.tracksDescription) return null
-            if (kind === 'duplicate' && !e.isVariant) return null
+            // Duplicate detection returns with the alt_slug work. It was removed
+            // here because container rows (GapWorkItem) carry no duplicate signal.
             const count = gapCount(stat, kind)
             return (
               <Chip

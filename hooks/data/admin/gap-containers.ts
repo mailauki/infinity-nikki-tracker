@@ -7,7 +7,8 @@ import type { Database } from '@/lib/types/supabase'
 // Entity table names are validated against ADMIN_ENTITIES at authoring time;
 // Supabase's generated client only accepts its own literal table-name union,
 // so this narrows the `string` field to that union for `.from()` calls.
-// Mirrors hooks/data/admin/gaps.ts.
+// PostgREST caps responses at 1000 rows, so gap queries hand-paginate in
+// 1000-row batches.
 type TableName = keyof Database['public']['Tables']
 
 type Client = Awaited<ReturnType<typeof createClient>>
