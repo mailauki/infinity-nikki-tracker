@@ -57,7 +57,9 @@ function typeDefault(field: FieldConfig): unknown {
     case 'custom':
       return field.defaultValue ?? ''
     default:
-      return field.type === 'text' || field.type === 'textarea' ? (field.defaultValue ?? '') : ''
+      return field.type === 'text' || field.type === 'textarea' || field.type === 'select'
+        ? (field.defaultValue ?? '')
+        : ''
   }
 }
 

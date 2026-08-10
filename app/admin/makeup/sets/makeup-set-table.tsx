@@ -6,7 +6,7 @@ import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toTitle } from '@/lib/utils'
 import { MakeupSetRaw } from '@/lib/types/makeup'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
-import { Label, Style } from '@/lib/types/eureka'
+import { Style } from '@/lib/types/eureka'
 import RarityStars from '@/components/rarity-stars'
 import { updateMakeupSetRow } from './actions'
 import {
@@ -21,7 +21,6 @@ type Row = MakeupSetRaw
 interface MakeupSetTableProps {
   rows: Row[]
   styles: Style[]
-  labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   outfitSets: OutfitSetRaw[]
@@ -32,7 +31,6 @@ const LOCKED_FIELDS = ['slug', 'updated_at']
 export function MakeupSetTable({
   rows: initialRows,
   styles,
-  labels,
   seasons,
   seasonCategories,
   outfitSets,
@@ -64,7 +62,6 @@ export function MakeupSetTable({
         description: newRow.description,
         rarity: newRow.rarity ?? undefined,
         style: newRow.style,
-        label: newRow.label,
         seasons: newRow.seasons,
         season_category: newRow.season_category,
         outfit_set: newRow.outfit_set,
@@ -133,18 +130,6 @@ export function MakeupSetTable({
       valueOptions: [
         { value: '', label: '—' },
         ...styles.map((s) => ({ value: s.slug, label: toTitle(s.title ?? '') })),
-      ],
-      valueFormatter: (value: string | null) => toTitle(value || '—'),
-    },
-    {
-      field: 'label',
-      headerName: 'Label',
-      width: 120,
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: [
-        { value: '', label: '—' },
-        ...labels.map((l) => ({ value: l.slug, label: toTitle(l.title ?? '') })),
       ],
       valueFormatter: (value: string | null) => toTitle(value || '—'),
     },

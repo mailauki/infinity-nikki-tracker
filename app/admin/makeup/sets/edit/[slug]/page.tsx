@@ -4,7 +4,6 @@ import EditMakeupSetForm from './edit-makeup-set-form'
 import { getMakeupSetRaw, getMakeupSetsRaw } from '@/hooks/data/admin/makeup-sets'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getStyles } from '@/hooks/data/styles'
-import { getLabels } from '@/hooks/data/labels'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getMakeupCategories } from '@/hooks/data/makeup-categories'
@@ -29,25 +28,16 @@ export default async function EditMakeupSetPage({ params }: { params: Promise<{ 
 async function EditMakeupSet({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  const [
-    makeupSet,
-    makeupSets,
-    outfitSets,
-    styles,
-    labels,
-    seasons,
-    seasonCategories,
-    makeupCategories,
-  ] = await Promise.all([
-    getMakeupSetRaw(slug),
-    getMakeupSetsRaw(),
-    getOutfitSetsRaw(),
-    getStyles(),
-    getLabels(),
-    getSeasons(),
-    getSeasonCategories(),
-    getMakeupCategories(),
-  ])
+  const [makeupSet, makeupSets, outfitSets, styles, seasons, seasonCategories, makeupCategories] =
+    await Promise.all([
+      getMakeupSetRaw(slug),
+      getMakeupSetsRaw(),
+      getOutfitSetsRaw(),
+      getStyles(),
+      getSeasons(),
+      getSeasonCategories(),
+      getMakeupCategories(),
+    ])
 
   if (!makeupSet) notFound()
 
@@ -61,7 +51,6 @@ async function EditMakeupSet({ params }: { params: Promise<{ slug: string }> }) 
     <EditMakeupSetForm
       initial={makeupSet}
       initialVariants={variantRows ?? []}
-      labels={labels}
       makeupCategories={makeupCategories}
       makeupSets={makeupSets}
       outfitSets={outfitSets}

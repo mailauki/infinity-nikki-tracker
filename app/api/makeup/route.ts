@@ -6,12 +6,11 @@ import { getMakeupCategories } from '@/hooks/data/makeup-categories'
 import { getMakeupVariants } from '@/hooks/data/makeup-variants'
 import { getObtainedMakeup } from '@/hooks/data/obtained-makeup'
 import { getStyles } from '@/hooks/data/styles'
-import { getLabels } from '@/hooks/data/labels'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 
 const SET_COLUMNS = `
-  id, slug, title, description, rarity, style, label, seasons, season_category,
+  id, slug, title, description, rarity, style, seasons, season_category,
   outfit_set, "order", base_set, image_url, alt_image_url, created_at, updated_at
 `
 
@@ -47,9 +46,8 @@ export async function GET() {
     return NextResponse.json({ error: outfitSetsError.message }, { status: 500 })
   }
 
-  const [styles, labels, seasons, seasonCategories] = await Promise.all([
+  const [styles, seasons, seasonCategories] = await Promise.all([
     getStyles(),
-    getLabels(),
     getSeasons(),
     getSeasonCategories(),
   ])
@@ -63,7 +61,7 @@ export async function GET() {
     seasonCategories
   )
 
-  const base = { makeupSets, makeupCategories, styles, labels, seasons, seasonCategories }
+  const base = { makeupSets, makeupCategories, styles, seasons, seasonCategories }
 
   const {
     data: { user },

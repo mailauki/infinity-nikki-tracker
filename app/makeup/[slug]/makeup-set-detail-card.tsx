@@ -20,8 +20,8 @@ export interface MakeupSetDetailCardProps {
 }
 
 // The makeup set-detail card: composes the shared SetDetailCard with the
-// makeup-specific media (image) and rows (style label + season, paired outfit
-// link). Kept prop-driven so the parent owns image-mode/selection state.
+// makeup-specific media (image) and rows (season, paired outfit link). Kept
+// prop-driven so the parent owns image-mode/selection state.
 export default function MakeupSetDetailCard({
   makeupSet,
   selected,
@@ -31,7 +31,7 @@ export default function MakeupSetDetailCard({
   imageSrc,
   showingAlt,
 }: MakeupSetDetailCardProps) {
-  const { rarity, label, style, description, season, seasonCategory, outfitSet } = makeupSet
+  const { rarity, style, description, season, seasonCategory, outfitSet } = makeupSet
   const selectedEvolution =
     makeupSet.evolutions.find((evolution) => evolution.slug === selected)?.title || null
 
@@ -72,7 +72,6 @@ export default function MakeupSetDetailCard({
       description={description}
       extraRows={[seasonRow, outfitRow]}
       isLoggedIn={isLoggedIn}
-      labels={[label]}
       media={media}
       obtained={obtained}
       rarity={rarity!}

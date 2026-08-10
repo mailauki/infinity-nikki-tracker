@@ -17,7 +17,6 @@ export default function MakeupResultsBar() {
     selectedObtainedFilter,
     selectedRarity,
     selectedStyle,
-    selectedLabel,
     selectedSeason,
     selectedSeasonCategory,
   } = filters
@@ -38,7 +37,6 @@ export default function MakeupResultsBar() {
       return set.rarity === selectedRarity
     })
     .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
-    .filter((set) => !selectedLabel.length || selectedLabel.includes(set.label ?? ''))
     .filter((set) => !selectedSeason.length || selectedSeason.includes(set.seasons ?? ''))
     .filter(
       (set) =>

@@ -9,7 +9,6 @@ const RAW_COLUMNS = `
 	description,
 	rarity,
 	style,
-	label,
 	seasons,
 	season_category,
 	outfit_set,

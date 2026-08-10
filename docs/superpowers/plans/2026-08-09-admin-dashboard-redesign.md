@@ -1,0 +1,2258 @@
+# Admin Dashboard Redesign Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Replace the twelve-`StatCard` admin dashboard with a totals-first layout, a completeness list, and a "Needs attention" gap queue that walks you into the existing edit forms.
+
+**Architecture:** A new read-only `admin_entity_stats` SQL view supplies ~48 aggregates in one round trip, replacing twelve full-table fetches. A server-safe entity registry maps the 12 entity keys to their tables, tracked fields, and nav links; every new component and hook reads from it. Queue state lives entirely in validated URL params.
+
+**Tech Stack:** Next.js 16 App Router (`cacheComponents: true`), Supabase (postgres-js + PostgREST), MUI v9, TypeScript, Yarn 4.
+
+**Spec:** [`docs/superpowers/specs/2026-08-09-admin-dashboard-redesign-design.md`](../specs/2026-08-09-admin-dashboard-redesign-design.md)
+
+## Global Constraints
+
+- **Never pass `component={Link}` to a MUI component from a Server Component.** MUI
+  components are Client Components, and `Link` is a function — functions cannot cross the
+  server→client boundary. It typechecks and builds fine, then throws at render:
+  *"Functions cannot be passed directly to Client Components."* Use `component="a"` with a
+  plain `href` (a string serializes). This is the existing repo idiom — see
+  `app/admin/admin-recents-list.tsx:89`. Client Components (`'use client'`) may use
+  `component={Link}` freely; only the boundary is the problem.
+
+- **No test runner exists.** No jest, vitest, or playwright. `package.json` scripts are only `dev`/`build`/`start`/`lint`/`format`/`lint:fix`. Verification is `yarn tsc --noEmit`, `yarn lint`, `yarn build`, SQL assertions, and driving the app. **Do not add a test framework** — it is not in scope for this plan.
+- **Type-check command is `yarn tsc --noEmit`.** Not `yarn dlx tsc`, which fetches a bogus placeholder package.
+- **Prettier:** no semicolons, single quotes, 2-space indent, 100 char width, ES5 trailing commas. A PostToolUse hook runs `prettier --write` + `eslint --fix` on every edited file automatically.
+- **Never push to `main`.** Work stays on branch `docs/admin-dashboard-redesign-spec` (already checked out) or a branch off it.
+- **PostgREST caps responses at 1000 rows.** Any query that could exceed it must paginate via `.range()`. See `hooks/data/admin/outfit-variants.ts:29`.
+- **React `cache()` is for reads only.** Wrapping a mutation in `cache()` makes it silently no-op. All new hooks here are reads.
+- **`use cache` cannot call `cookies()`.** Auth-dependent hooks must use React `cache()` with `lib/supabase/server.ts`.
+- **Server-consumed constants must live in a module with no `'use client'`.** Importing a constant from a client module into a Server Action yields a throwing stub, not the value — see the comment block at the top of `lib/admin-routes.ts`.
+- **Prefer CSS grid `Box` over MUI `Grid`.** `<Box sx={{ display: 'grid', gridTemplateColumns: {...}, gap: 2 }}>`.
+- **MUI `Stack` rejects layout shorthands as direct props.** Put `justifyContent`, `alignItems` etc. in `sx`.
+- **`git add` with `[slug]` in the path needs quoting** in zsh: `git add 'app/admin/.../edit/[slug]/page.tsx'`.
+- **Entity keys are fixed** and used as URL values, view rows, and registry keys. Exactly these twelve, kebab-case: `outfit-sets`, `evolutions`, `outfit-variants`, `makeup-sets`, `makeup-variants`, `momo-cloaks`, `eureka-sets`, `eureka-variants`, `trials`, `seasons`, `season-categories`, `abilities`.
+
+## File Structure
+
+| File | Responsibility |
+| --- | --- |
+| `supabase/migrations/20260809215744_add_admin_entity_stats_view.sql` | The 12-branch aggregate view |
+| `lib/admin-entities.ts` | Entity registry: key → table, tracked fields, links, domain. Server-safe. |
+| `lib/admin-routes.ts` *(modify)* | Add `buildDashboardHref` + param validators |
+| `hooks/data/admin/stats.ts` | `getAdminStats()` |
+| `hooks/data/admin/gaps.ts` | `getGapRows()`, `getNextGapSlug()` |
+| `app/admin/admin-totals-strip.tsx` | Five totals tiles |
+| `app/admin/admin-completeness-list.tsx` | Bars + collapsed complete row |
+| `app/admin/admin-completeness-toggle.tsx` | `'use client'` expand/collapse |
+| `app/admin/admin-gap-queue.tsx` | Chips, rows, pagination |
+| `app/admin/admin-gap-entity-select.tsx` | `'use client'` entity dropdown |
+| `app/admin/page.tsx` *(rewrite)* | Composes the four sections |
+| `app/admin/stat-card.tsx` *(delete)* | Superseded |
+| 4 × `actions.ts` *(modify)* | Gap-aware `update_next` |
+
+---
+
+### Task 1: The `admin_entity_stats` view
+
+**Files:**
+- Create: `supabase/migrations/20260809215744_add_admin_entity_stats_view.sql`
+
+**Interfaces:**
+- Consumes: nothing.
+- Produces: view `admin_entity_stats` with columns `entity text`, `total bigint`, `no_title bigint`, `no_image bigint`, `no_description bigint`, `gaps bigint`. Untracked columns are `null`, never `0`.
+
+- [ ] **Step 1: Write the migration**
+
+Create the file with this content. Note `outfit_sets` contributes two branches, and `eureka_variants` / `abilities` have no `description` column at all.
+
+```sql
+-- Aggregate counts for the admin dashboard. Read-only, no row data exposed.
+-- Untracked fields are NULL (not 0) so the UI can tell "none missing" from
+-- "this column is not part of the content model" — abilities and
+-- season_categories legitimately have no images.
+
+create or replace view admin_entity_stats as
+  select 'outfit-sets' as entity, count(*) as total,
+         count(*) filter (where title is null or btrim(title) = '') as no_title,
+         count(*) filter (where image_url is null or btrim(image_url) = '') as no_image,
+         count(*) filter (where description is null or btrim(description) = '') as no_description,
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = '')) as gaps
+    from outfit_sets where base_set is null
+
+  union all
+  select 'evolutions', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from outfit_sets where base_set is not null
+
+  union all
+  select 'outfit-variants', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from outfit_variants
+
+  union all
+  select 'makeup-sets', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from makeup_sets
+
+  union all
+  select 'makeup-variants', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from makeup_variants
+
+  union all
+  select 'momo-cloaks', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from momo_cloaks
+
+  -- eureka_sets: no meaningful image. title only.
+  union all
+  select 'eureka-sets', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         null,
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where title is null or btrim(title) = '')
+    from eureka_sets
+
+  -- eureka_variants: no title column, no description column. image only.
+  union all
+  select 'eureka-variants', count(*),
+         null,
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         null,
+         count(*) filter (where image_url is null or btrim(image_url) = '')
+    from eureka_variants
+
+  union all
+  select 'trials', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from trials
+
+  union all
+  select 'seasons', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from seasons
+
+  -- season_categories: lookup row, no image expected. title only.
+  union all
+  select 'season-categories', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         null,
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where title is null or btrim(title) = '')
+    from season_categories
+
+  -- abilities: lookup row, no image expected, no description column.
+  union all
+  select 'abilities', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         null, null,
+         count(*) filter (where title is null or btrim(title) = '')
+    from abilities;
+
+-- RLS of the underlying tables applies to the caller, not the view owner.
+alter view admin_entity_stats set (security_invoker = on);
+
+grant select on admin_entity_stats to authenticated;
+```
+
+- [ ] **Step 2: Apply the migration — NOT with `supabase db push`**
+
+> **DO NOT RUN `npx supabase db push`.** Local migrations and production have
+> drifted. Two local files are unapplied on production —
+> `20260807120000_fix_obtained_makeup_unique_constraint.sql` and
+> `20260807130000_normalize_makeup_slugs.sql` — and `db push` would apply them
+> too, renaming makeup slugs across three tables and running a `DELETE` against
+> `obtained_makeup` (user collection data). Adding a read-only view must not
+> carry that. Two migrations (`20260808044246`, `20260808050100`) are also
+> applied on production with no local file; reconciling that drift is separate
+> work, deliberately deferred (user decision, 2026-08-09).
+
+Apply **only** this migration, via the Supabase MCP `apply_migration` tool:
+
+- `project_id`: `ykfuevyqpjvtxidjnhxm`
+- `name`: `add_admin_entity_stats_view`
+- `query`: the full SQL from Step 1
+
+This records the version in `supabase_migrations.schema_migrations` without
+touching any other pending migration.
+
+Expected: applies without error. If it fails, stop and report — do not fall
+back to `db push`.
+
+- [ ] **Step 3: Assert the view reproduces the measured baseline**
+
+This is the real test for this task. Run:
+
+Run via the Supabase MCP `execute_sql` tool against project `ykfuevyqpjvtxidjnhxm`:
+
+```sql
+select entity, total, no_title, no_image, gaps from admin_entity_stats order by total desc
+```
+
+Expected, exactly (baseline measured 2026-08-09 — if the data has changed since, re-measure with the query in the spec and compare shapes, not literals):
+
+| entity | total | no_title | no_image | gaps |
+| --- | ---: | ---: | ---: | ---: |
+| outfit-variants | 6534 | 2643 | 2579 | **2699** |
+| eureka-variants | 456 | *null* | 16 | 16 |
+| makeup-variants | 446 | 20 | 281 | 281 |
+| evolutions | 437 | 0 | 0 | 0 |
+| outfit-sets | 292 | 0 | 0 | 0 |
+| momo-cloaks | 119 | 0 | 0 | 0 |
+| makeup-sets | 87 | 0 | 14 | 14 |
+| abilities | 47 | 0 | *null* | 0 |
+| eureka-sets | 38 | 0 | *null* | 0 |
+| seasons | 21 | 0 | 0 | 0 |
+| season-categories | 18 | 0 | *null* | 0 |
+| trials | 15 | 0 | 0 | 0 |
+
+**The single most important assertion: `outfit-variants.gaps` is 2699, not 5222.** 5222 is `2643 + 2579`, which double-counts rows missing both fields. If you see 5222, the `gaps` expression is a sum instead of an `or` filter.
+
+Second: `abilities.no_image`, `eureka-sets.no_image`, `season-categories.no_image` and `eureka-variants.no_title` must be **null**, not 0.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add supabase/migrations/20260809215744_add_admin_entity_stats_view.sql
+git commit -m "feat(admin): add admin_entity_stats aggregate view"
+```
+
+---
+
+### Task 2: Entity registry and dashboard href builder
+
+**Files:**
+- Create: `lib/admin-entities.ts`
+- Modify: `lib/admin-routes.ts`
+
+**Interfaces:**
+- Consumes: `navLinksData` from `lib/nav-links.tsx`.
+- Produces:
+  - `type AdminEntityKey` — union of the 12 kebab-case keys
+  - `type GapKind = 'image' | 'title' | 'description' | 'duplicate'`
+  - `ADMIN_ENTITIES: Record<AdminEntityKey, AdminEntity>` where `AdminEntity = { key, title, table, slugColumn, tracksTitle, tracksImage, tracksDescription, isVariant, baseSetFilter, addHref?, listHref, editHref }`
+  - `ADMIN_ENTITY_KEYS: AdminEntityKey[]`
+  - `parseEntityKey(v: unknown): AdminEntityKey | null`
+  - `parseGapKind(v: unknown): GapKind`
+  - `buildDashboardHref(p: { entity?: string; gap?: string; page?: number }): string` (from `lib/admin-routes.ts`)
+
+- [ ] **Step 1: Create the registry**
+
+`lib/admin-entities.ts` — no `'use client'`, because Server Actions import it.
+
+```ts
+import { navLinksData } from '@/lib/nav-links'
+
+export type AdminEntityKey =
+  | 'outfit-sets'
+  | 'evolutions'
+  | 'outfit-variants'
+  | 'makeup-sets'
+  | 'makeup-variants'
+  | 'momo-cloaks'
+  | 'eureka-sets'
+  | 'eureka-variants'
+  | 'trials'
+  | 'seasons'
+  | 'season-categories'
+  | 'abilities'
+
+export type GapKind = 'image' | 'title' | 'description' | 'duplicate'
+
+export interface AdminEntity {
+  key: AdminEntityKey
+  title: string
+  /** Postgres table backing this entity. */
+  table: string
+  tracksTitle: boolean
+  tracksImage: boolean
+  tracksDescription: boolean
+  /** Variant tables are the only ones the duplicate check applies to. */
+  isVariant: boolean
+  /**
+   * outfit_sets backs two entities. `true` = evolutions (base_set IS NOT NULL),
+   * `false` = base sets (base_set IS NULL), `undefined` = not applicable.
+   */
+  evolutionFilter?: boolean
+  addHref?: string
+  listHref: string
+  editHref: string
+}
+
+const A = navLinksData.admin
+
+export const ADMIN_ENTITIES: Record<AdminEntityKey, AdminEntity> = {
+  'outfit-sets': {
+    key: 'outfit-sets', title: A.outfits.sets.title, table: 'outfit_sets',
+    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
+    evolutionFilter: false,
+    addHref: A.outfits.sets.add, listHref: A.outfits.sets.list, editHref: A.outfits.sets.edit,
+  },
+  evolutions: {
+    key: 'evolutions', title: A.outfits.evolutions.title, table: 'outfit_sets',
+    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
+    evolutionFilter: true,
+    listHref: A.outfits.evolutions.list, editHref: A.outfits.evolutions.edit,
+  },
+  'outfit-variants': {
+    key: 'outfit-variants', title: A.outfits.variants.title, table: 'outfit_variants',
+    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: true,
+    addHref: A.outfits.variants.add, listHref: A.outfits.variants.list, editHref: A.outfits.variants.edit,
+  },
+  'makeup-sets': {
+    key: 'makeup-sets', title: A.makeup.sets.title, table: 'makeup_sets',
+    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
+    addHref: A.makeup.sets.add, listHref: A.makeup.sets.list, editHref: A.makeup.sets.edit,
+  },
+  'makeup-variants': {
+    key: 'makeup-variants', title: A.makeup.variants.title, table: 'makeup_variants',
+    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: true,
+    addHref: A.makeup.variants.add, listHref: A.makeup.variants.list, editHref: A.makeup.variants.edit,
+  },
+  'momo-cloaks': {
+    key: 'momo-cloaks', title: A.momoCloaks.cloaks.title, table: 'momo_cloaks',
+    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
+    addHref: A.momoCloaks.cloaks.add, listHref: A.momoCloaks.cloaks.list, editHref: A.momoCloaks.cloaks.edit,
+  },
+  'eureka-sets': {
+    key: 'eureka-sets', title: A.eureka.sets.title, table: 'eureka_sets',
+    tracksTitle: true, tracksImage: false, tracksDescription: true, isVariant: false,
+    addHref: A.eureka.sets.add, listHref: A.eureka.sets.list, editHref: A.eureka.sets.edit,
+  },
+  'eureka-variants': {
+    key: 'eureka-variants', title: A.eureka.variants.title, table: 'eureka_variants',
+    tracksTitle: false, tracksImage: true, tracksDescription: false, isVariant: true,
+    addHref: A.eureka.variants.add, listHref: A.eureka.variants.list, editHref: A.eureka.variants.edit,
+  },
+  trials: {
+    key: 'trials', title: A.eureka.trials.title, table: 'trials',
+    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
+    addHref: A.eureka.trials.add, listHref: A.eureka.trials.list, editHref: A.eureka.trials.edit,
+  },
+  seasons: {
+    key: 'seasons', title: A.outfits.seasons.title, table: 'seasons',
+    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
+    addHref: A.outfits.seasons.add, listHref: A.outfits.seasons.list, editHref: A.outfits.seasons.edit,
+  },
+  'season-categories': {
+    key: 'season-categories', title: A.outfits.seasonCategories.title, table: 'season_categories',
+    tracksTitle: true, tracksImage: false, tracksDescription: true, isVariant: false,
+    addHref: A.outfits.seasonCategories.add, listHref: A.outfits.seasonCategories.list,
+    editHref: A.outfits.seasonCategories.edit,
+  },
+  abilities: {
+    key: 'abilities', title: A.outfits.abilities.title, table: 'abilities',
+    tracksTitle: true, tracksImage: false, tracksDescription: false, isVariant: false,
+    addHref: A.outfits.abilities.add, listHref: A.outfits.abilities.list, editHref: A.outfits.abilities.edit,
+  },
+}
+
+export const ADMIN_ENTITY_KEYS = Object.keys(ADMIN_ENTITIES) as AdminEntityKey[]
+
+const GAP_KINDS: GapKind[] = ['image', 'title', 'description', 'duplicate']
+
+export function parseEntityKey(v: unknown): AdminEntityKey | null {
+  return typeof v === 'string' && v in ADMIN_ENTITIES ? (v as AdminEntityKey) : null
+}
+
+export function parseGapKind(v: unknown): GapKind {
+  return typeof v === 'string' && (GAP_KINDS as string[]).includes(v) ? (v as GapKind) : 'image'
+}
+
+/** Domain groupings for the totals strip. Lookups appear only in the all-entries total. */
+export const ADMIN_DOMAINS = [
+  { title: 'Outfits', lead: 'outfit-variants', leadNoun: 'variants',
+    chips: [{ key: 'outfit-sets', label: 'sets' }, { key: 'evolutions', label: 'evo' }] },
+  { title: 'Eureka', lead: 'eureka-variants', leadNoun: 'variants',
+    chips: [{ key: 'eureka-sets', label: 'sets' }, { key: 'trials', label: 'trials' }] },
+  { title: 'Makeup', lead: 'makeup-variants', leadNoun: 'variants',
+    chips: [{ key: 'makeup-sets', label: 'sets' }] },
+  { title: "Momo's", lead: 'momo-cloaks', leadNoun: 'cloaks', chips: [] },
+] as const satisfies ReadonlyArray<{
+  title: string
+  lead: AdminEntityKey
+  leadNoun: string
+  chips: ReadonlyArray<{ key: AdminEntityKey; label: string }>
+}>
+```
+
+- [ ] **Step 2: Add `buildDashboardHref` to `lib/admin-routes.ts`**
+
+Append to the existing file — **do not** move `ADMIN_DASHBOARD` or add a `'use client'` directive; the comment block at the top of that file explains why.
+
+```ts
+/**
+ * Rebuild the dashboard URL from validated scalars.
+ *
+ * Deliberately NOT a `?returnTo=<url>` passthrough. The 2026-07-09
+ * remove-admin-back-searchparams spec removed `?back=<url>` precisely so
+ * redirect() would stop receiving a URL-decoded query value. This takes an
+ * entity key, a gap kind and a page number, and always emits '/admin?…' —
+ * an attacker-supplied value can change which queue you land on, nothing more.
+ */
+export function buildDashboardHref({
+  entity,
+  gap,
+  page,
+}: {
+  entity?: string | null
+  gap?: string | null
+  page?: number | null
+}): string {
+  const params = new URLSearchParams()
+  if (entity) params.set('entity', entity)
+  if (gap) params.set('gap', gap)
+  if (page && page > 1) params.set('page', String(page))
+  const qs = params.toString()
+  return qs ? `${ADMIN_DASHBOARD}?${qs}` : ADMIN_DASHBOARD
+}
+```
+
+Callers pass values already through `parseEntityKey` / `parseGapKind`, so the strings are whitelisted before they reach here.
+
+- [ ] **Step 3: Type-check**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn tsc --noEmit
+```
+
+Expected: PASS. A failure here almost certainly means a `navLinksData.admin.*` path is wrong — `evolutions` has no `add`, which is why `addHref` is optional.
+
+- [ ] **Step 4: Verify no client-module leak**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && head -1 lib/admin-entities.ts && grep -c "use client" lib/admin-entities.ts lib/admin-routes.ts
+```
+
+Expected: first line is the `import`, and both files report `0`.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add lib/admin-entities.ts lib/admin-routes.ts
+git commit -m "feat(admin): add entity registry and dashboard href builder"
+```
+
+---
+
+### Task 3: `getAdminStats()`
+
+**Files:**
+- Create: `hooks/data/admin/stats.ts`
+
+**Interfaces:**
+- Consumes: `ADMIN_ENTITIES`, `AdminEntityKey` (Task 2); view `admin_entity_stats` (Task 1).
+- Produces: `getAdminStats(): Promise<AdminStat[]>` and `type AdminStat = { key, title, total, noTitle, noImage, noDescription, gaps, complete, percentComplete, addHref, listHref }`. `noTitle`/`noImage`/`noDescription` are `number | null` — null means untracked.
+
+- [ ] **Step 1: Write the hook**
+
+```ts
+import { createClient } from '@/lib/supabase/server'
+import { cache } from 'react'
+import { ADMIN_ENTITIES, ADMIN_ENTITY_KEYS, type AdminEntityKey } from '@/lib/admin-entities'
+
+export interface AdminStat {
+  key: AdminEntityKey
+  title: string
+  total: number
+  /** null = field not tracked for this entity (e.g. abilities have no image). */
+  noTitle: number | null
+  noImage: number | null
+  noDescription: number | null
+  /** Rows missing ANY tracked field. NOT noTitle + noImage — a row can lack both. */
+  gaps: number
+  complete: number
+  percentComplete: number
+  addHref?: string
+  listHref: string
+}
+
+// Auth-dependent (createClient reads cookies), so React cache(), not `use cache`.
+export const getAdminStats = cache(async (): Promise<AdminStat[]> => {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from('admin_entity_stats')
+    .select('entity, total, no_title, no_image, no_description, gaps')
+
+  if (error) throw error
+
+  const byKey = new Map((data ?? []).map((r) => [r.entity as AdminEntityKey, r]))
+
+  return ADMIN_ENTITY_KEYS.map((key) => {
+    const e = ADMIN_ENTITIES[key]
+    const row = byKey.get(key)
+    const total = row?.total ?? 0
+    const gaps = row?.gaps ?? 0
+    const complete = total - gaps
+    return {
+      key,
+      title: e.title,
+      total,
+      noTitle: e.tracksTitle ? (row?.no_title ?? 0) : null,
+      noImage: e.tracksImage ? (row?.no_image ?? 0) : null,
+      noDescription: e.tracksDescription ? (row?.no_description ?? 0) : null,
+      gaps,
+      complete,
+      percentComplete: total === 0 ? 100 : Math.round((complete / total) * 100),
+      addHref: e.addHref,
+      listHref: e.listHref,
+    }
+  })
+})
+```
+
+The registry drives which counts surface, so even if the view ever returned a number for an untracked column it would not reach the UI.
+
+- [ ] **Step 2: Regenerate Supabase types so the view is known**
+
+> **Do not pipe `npx` straight into the file.** `npx supabase gen types … > lib/types/supabase.ts`
+> writes npm's auto-install notice and the CLI's `WARN: config section [inbucket]`
+> line into the `.ts` file, breaking compilation. Use the installed binary and
+> keep stderr off stdout:
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && supabase gen types typescript --linked 2>/dev/null > lib/types/supabase.ts
+```
+
+After generating, confirm the file starts with `export type Json =` and contains
+no line beginning `npm ` or `WARN`. Regenerating is read-only against the
+database — it carries none of the `db push` risk.
+
+Then confirm the view landed in the `Views` section:
+
+```bash
+grep -n "admin_entity_stats" lib/types/supabase.ts
+```
+
+Expected: at least one hit. `lib/types/supabase.ts` is generated — regenerate it, never hand-edit.
+
+- [ ] **Step 3: Type-check**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn tsc --noEmit
+```
+
+Expected: PASS.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add hooks/data/admin/stats.ts lib/types/supabase.ts
+git commit -m "feat(admin): add getAdminStats reading the aggregate view"
+```
+
+---
+
+### Task 4: `getGapRows()` and `getNextGapSlug()`
+
+**Files:**
+- Create: `hooks/data/admin/gaps.ts`
+
+**Interfaces:**
+- Consumes: `ADMIN_ENTITIES`, `AdminEntityKey`, `GapKind` (Task 2).
+- Produces:
+  - `GAP_PAGE_SIZE = 10`
+  - `type GapRow = { slug: string; title: string; imageUrl: string | null; editHref: string }`
+  - `getGapRows(a: { entity: AdminEntityKey; gap: GapKind; page: number }): Promise<{ rows: GapRow[]; total: number }>`
+  - `getNextGapSlug(a: { entity: AdminEntityKey; gap: GapKind; afterSlug: string }): Promise<string | null>`
+
+- [ ] **Step 1: Write the hook**
+
+```ts
+import { createClient } from '@/lib/supabase/server'
+import { cache } from 'react'
+import { toSlug, toTitle } from '@/lib/utils'
+import { ADMIN_ENTITIES, type AdminEntityKey, type GapKind } from '@/lib/admin-entities'
+
+export const GAP_PAGE_SIZE = 10
+
+export interface GapRow {
+  slug: string
+  title: string
+  imageUrl: string | null
+  editHref: string
+}
+
+type Client = Awaited<ReturnType<typeof createClient>>
+
+/**
+ * Base query for one entity, with the evolution split applied.
+ * `outfit_sets` backs both outfit-sets and evolutions.
+ */
+function baseQuery(supabase: Client, key: AdminEntityKey, select: string) {
+  const e = ADMIN_ENTITIES[key]
+  let q = supabase.from(e.table).select(select, { count: 'exact' })
+  if (e.evolutionFilter === true) q = q.not('base_set', 'is', null)
+  if (e.evolutionFilter === false) q = q.is('base_set', null)
+  return q
+}
+
+/** Apply the gap predicate. `duplicate` is handled separately — it is not a column test. */
+function applyGap<T>(q: T, key: AdminEntityKey, gap: GapKind): T {
+  const e = ADMIN_ENTITIES[key]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const query = q as any
+  if (gap === 'image' && e.tracksImage) return query.or('image_url.is.null,image_url.eq.')
+  if (gap === 'title' && e.tracksTitle) return query.or('title.is.null,title.eq.')
+  if (gap === 'description' && e.tracksDescription)
+    return query.or('description.is.null,description.eq.')
+  return q
+}
+
+export const getGapRows = cache(
+  async ({
+    entity,
+    gap,
+    page,
+  }: {
+    entity: AdminEntityKey
+    gap: GapKind
+    page: number
+  }): Promise<{ rows: GapRow[]; total: number }> => {
+    const e = ADMIN_ENTITIES[entity]
+
+    // A gap that this entity does not track has no rows by definition.
+    if (gap === 'image' && !e.tracksImage) return { rows: [], total: 0 }
+    if (gap === 'title' && !e.tracksTitle) return { rows: [], total: 0 }
+    if (gap === 'description' && !e.tracksDescription) return { rows: [], total: 0 }
+    if (gap === 'duplicate') return getDuplicateRows(entity, page)
+
+    const supabase = await createClient()
+    const from = (page - 1) * GAP_PAGE_SIZE
+
+    const select = e.tracksTitle ? 'slug, title, image_url' : 'slug, image_url'
+    let query = baseQuery(supabase, entity, select)
+    query = applyGap(query, entity, gap)
+
+    // .range() is mandatory: PostgREST caps at 1000 rows and outfit_variants
+    // has ~2.6k rows in some gap sets.
+    const { data, count, error } = await query
+      .order('slug', { ascending: true })
+      .range(from, from + GAP_PAGE_SIZE - 1)
+
+    if (error) throw error
+
+    const rows = (data ?? []).map((r) => {
+      const row = r as { slug: string; title?: string | null; image_url: string | null }
+      return {
+        slug: row.slug,
+        title: row.title?.trim() || toTitle(row.slug),
+        imageUrl: row.image_url,
+        editHref: `${e.editHref}/${row.slug}`,
+      }
+    })
+
+    return { rows, total: count ?? 0 }
+  }
+)
+
+/**
+ * Title-derived duplicate detection, computed on the fly.
+ *
+ * The two slug schemes in app/admin/outfits/variants/fields.tsx never overlap —
+ * a standalone piece slugs from title+category, a set piece from set+category —
+ * so the same garment added both ways produces two different slugs. Grouping by
+ * toSlug(title) surfaces those. Variants only; other entities have no such split.
+ *
+ * Untitled rows cannot participate (~2.6k outfit variants have no title), which
+ * is why this is a detection aid, not an enforcement mechanism.
+ */
+async function getDuplicateRows(
+  entity: AdminEntityKey,
+  page: number
+): Promise<{ rows: GapRow[]; total: number }> {
+  const e = ADMIN_ENTITIES[entity]
+  if (!e.isVariant || !e.tracksTitle) return { rows: [], total: 0 }
+
+  const supabase = await createClient()
+
+  // Titled variants only. Paginated because PostgREST caps at 1000 rows.
+  const all: { slug: string; title: string | null }[] = []
+  const PAGE = 1000
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from(e.table)
+      .select('slug, title')
+      .not('title', 'is', null)
+      .order('slug', { ascending: true })
+      .range(from, from + PAGE - 1)
+    if (error) throw error
+    const batch = (data ?? []) as { slug: string; title: string | null }[]
+    all.push(...batch)
+    if (batch.length < PAGE) break
+  }
+
+  const groups = new Map<string, { slug: string; title: string | null }[]>()
+  for (const row of all) {
+    const key = toSlug(row.title?.trim() ?? '')
+    if (!key) continue
+    const bucket = groups.get(key)
+    if (bucket) bucket.push(row)
+    else groups.set(key, [row])
+  }
+
+  const dupes = [...groups.values()].filter((g) => g.length > 1).flat()
+  const from = (page - 1) * GAP_PAGE_SIZE
+
+  return {
+    rows: dupes.slice(from, from + GAP_PAGE_SIZE).map((r) => ({
+      slug: r.slug,
+      title: r.title?.trim() || toTitle(r.slug),
+      imageUrl: null,
+      editHref: `${e.editHref}/${r.slug}`,
+    })),
+    total: dupes.length,
+  }
+}
+
+/** Next row in the same gap set, for "Save & next gap". Null when exhausted. */
+export const getNextGapSlug = cache(
+  async ({
+    entity,
+    gap,
+    afterSlug,
+  }: {
+    entity: AdminEntityKey
+    gap: GapKind
+    afterSlug: string
+  }): Promise<string | null> => {
+    const e = ADMIN_ENTITIES[entity]
+    if (gap === 'duplicate') return null
+
+    const supabase = await createClient()
+    let query = baseQuery(supabase, entity, 'slug')
+    query = applyGap(query, entity, gap)
+
+    const { data, error } = await query
+      .gt('slug', afterSlug)
+      .order('slug', { ascending: true })
+      .limit(1)
+
+    if (error) throw error
+    return (data ?? [])[0] ? ((data ?? [])[0] as { slug: string }).slug : null
+  }
+)
+```
+
+Note the row just saved no longer matches the gap predicate (you filled the image in), so `getNextGapSlug` cannot return the record you came from even though it uses `.gt()` on slug.
+
+**Type-fitting the snippet above.** As written it does not compile against the
+generated Supabase types: `AdminEntity.table` is `string`, while `supabase.from()`
+expects the literal union of table names. Add
+
+```ts
+type TableName = keyof Database['public']['Tables']
+```
+
+and call `.from(e.table as TableName)`. The row shapes also need
+`as unknown as { … }` casts, because `.select()` is handed a runtime-built string
+and PostgREST cannot infer the result type from it. Keep each asserted shape
+matching exactly what that call's `select` string requests.
+
+- [ ] **Step 2: Type-check and lint**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn tsc --noEmit && yarn lint
+```
+
+Expected: both PASS. The one `eslint-disable` line is deliberate — PostgREST's builder type changes shape after `.or()`, and threading the generic through adds noise for no safety.
+
+- [ ] **Step 3: Verify pagination is real**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && grep -n "range(" hooks/data/admin/gaps.ts
+```
+
+Expected: at least 2 hits. A `getGapRows` without `.range()` reintroduces the bug this whole plan exists to fix.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add hooks/data/admin/gaps.ts
+git commit -m "feat(admin): add gap row queries with server-side pagination"
+```
+
+---
+
+### Task 5: Totals strip
+
+**Files:**
+- Create: `app/admin/admin-totals-strip.tsx`
+
+**Interfaces:**
+- Consumes: `AdminStat` (Task 3), `ADMIN_DOMAINS` (Task 2).
+- Produces: `<AdminTotalsStrip stats={AdminStat[]} />`, a Server Component.
+
+- [ ] **Step 1: Write the component**
+
+```tsx
+import { Box, Card, CardContent, Chip, Typography } from '@mui/material'
+import { ADMIN_DOMAINS, type AdminEntityKey } from '@/lib/admin-entities'
+import { buildDashboardHref } from '@/lib/admin-routes'
+import type { AdminStat } from '@/hooks/data/admin/stats'
+
+export default function AdminTotalsStrip({ stats }: { stats: AdminStat[] }) {
+  const by = new Map(stats.map((s) => [s.key, s]))
+  const get = (k: AdminEntityKey) => by.get(k)
+
+  const allEntries = stats.reduce((n, s) => n + s.total, 0)
+  const allGaps = stats.reduce((n, s) => n + s.gaps, 0)
+  const percent = allEntries === 0 ? 100 : Math.round(((allEntries - allGaps) / allEntries) * 100)
+
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr 1fr', md: '1.25fr 1fr 1fr 1fr 1fr' },
+        gap: 2,
+      }}
+    >
+      <Card sx={{ borderWidth: 2 }} variant="outlined">
+        <CardContent>
+          <Typography color="text.secondary" component="p" variant="overline">
+            All entries
+          </Typography>
+          <Typography component="p" variant="h2">
+            {allEntries.toLocaleString()}
+          </Typography>
+          <Chip label={`${percent}% complete`} size="small" sx={{ mt: 1 }} variant="outlined" />
+        </CardContent>
+      </Card>
+
+      {ADMIN_DOMAINS.map((domain) => {
+        const lead = get(domain.lead)
+        return (
+          <Card key={domain.title} variant="outlined">
+            <CardContent>
+              <Typography color="text.secondary" component="p" variant="overline">
+                {domain.title}
+              </Typography>
+              <Typography component="p" variant="h2">
+                {(lead?.total ?? 0).toLocaleString()}
+              </Typography>
+              <Typography color="text.secondary" component="p" variant="caption">
+                {domain.leadNoun}
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>
+                {domain.chips.length === 0 ? (
+                  <Chip
+                    disabled
+                    label="no sets"
+                    size="small"
+                    sx={{ opacity: 0.6 }}
+                    variant="outlined"
+                  />
+                ) : (
+                  domain.chips.map((chip) => (
+                    <Chip
+                      key={chip.key}
+                      clickable
+                      component="a"
+                      href={buildDashboardHref({ entity: chip.key })}
+                      label={`${(get(chip.key)?.total ?? 0).toLocaleString()} ${chip.label}`}
+                      size="small"
+                      variant="outlined"
+                    />
+                  ))
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        )
+      })}
+    </Box>
+  )
+}
+```
+
+`allEntries` sums all twelve entities, so it is a true total (8,510). The domain tiles report their lead entity only and deliberately do **not** sum to it — see the spec.
+
+- [ ] **Step 2: Type-check**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn tsc --noEmit
+```
+
+Expected: PASS.
+
+- [ ] **Step 3: Commit**
+
+```bash
+git add app/admin/admin-totals-strip.tsx
+git commit -m "feat(admin): add totals strip"
+```
+
+---
+
+### Task 6: Completeness list
+
+**Files:**
+- Create: `app/admin/admin-completeness-list.tsx`
+- Create: `app/admin/admin-completeness-toggle.tsx`
+
+**Interfaces:**
+- Consumes: `AdminStat` (Task 3), `buildDashboardHref` (Task 2).
+- Produces: `<AdminCompletenessList stats={AdminStat[]} />`.
+
+- [ ] **Step 1: Write the client toggle**
+
+`app/admin/admin-completeness-toggle.tsx`:
+
+```tsx
+'use client'
+
+import { useState } from 'react'
+import { Box, Collapse, Typography } from '@mui/material'
+import { ExpandLess, ExpandMore } from '@mui/icons-material'
+
+export default function AdminCompletenessToggle({
+  summary,
+  children,
+}: {
+  summary: string
+  children: React.ReactNode
+}) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <Box
+        aria-expanded={open}
+        component="button"
+        sx={{
+          alignItems: 'center',
+          background: 'none',
+          border: 0,
+          color: 'text.secondary',
+          cursor: 'pointer',
+          display: 'flex',
+          gap: 0.5,
+          px: 0,
+          py: 1,
+          width: '100%',
+        }}
+        // eslint react/jsx-sort-props requires callbacks after all other props.
+        onClick={() => setOpen((v) => !v)}
+      >
+        {open ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
+        <Typography color="text.secondary" variant="body2">
+          {summary}
+        </Typography>
+      </Box>
+      <Collapse in={open}>{children}</Collapse>
+    </>
+  )
+}
+```
+
+- [ ] **Step 2: Write the list**
+
+`app/admin/admin-completeness-list.tsx`:
+
+```tsx
+import { Box, Card, CardContent, Chip, LinearProgress, Typography } from '@mui/material'
+import { buildDashboardHref } from '@/lib/admin-routes'
+import type { AdminStat } from '@/hooks/data/admin/stats'
+import AdminCompletenessToggle from './admin-completeness-toggle'
+
+function Row({ stat }: { stat: AdminStat }) {
+  return (
+    <Box
+      sx={{
+        alignItems: 'center',
+        display: 'grid',
+        gap: 1.5,
+        gridTemplateColumns: { xs: '1fr auto', md: '150px 1fr auto 70px' },
+        py: 1,
+      }}
+    >
+      <Typography variant="body2">{stat.title}</Typography>
+      <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+        <LinearProgress
+          aria-label={`${stat.title} ${stat.percentComplete}% complete`}
+          color={stat.gaps === 0 ? 'success' : 'warning'}
+          value={stat.percentComplete}
+          variant="determinate"
+        />
+      </Box>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+        {stat.gaps === 0 ? (
+          <Chip color="success" label="complete" size="small" variant="outlined" />
+        ) : (
+          <>
+            {/* Chips render only where the field is tracked — a chip for an
+                untracked column would imply a backlog that cannot exist. */}
+            {stat.noTitle !== null && stat.noTitle > 0 && (
+              <Chip
+                clickable
+                component="a"
+                href={buildDashboardHref({ entity: stat.key, gap: 'title' })}
+                label={`${stat.noTitle.toLocaleString()} title`}
+                size="small"
+                variant="outlined"
+              />
+            )}
+            {stat.noImage !== null && stat.noImage > 0 && (
+              <Chip
+                clickable
+                component="a"
+                href={buildDashboardHref({ entity: stat.key, gap: 'image' })}
+                label={`${stat.noImage.toLocaleString()} img`}
+                size="small"
+                variant="outlined"
+              />
+            )}
+          </>
+        )}
+      </Box>
+      <Typography sx={{ fontWeight: 600, textAlign: 'right' }} variant="body2">
+        {stat.total.toLocaleString()}
+      </Typography>
+    </Box>
+  )
+}
+
+export default function AdminCompletenessList({ stats }: { stats: AdminStat[] }) {
+  const withGaps = stats.filter((s) => s.gaps > 0).sort((a, b) => b.total - a.total)
+  const complete = stats.filter((s) => s.gaps === 0).sort((a, b) => b.total - a.total)
+  const completeTotal = complete.reduce((n, s) => n + s.total, 0)
+
+  const all = stats.reduce((n, s) => n + s.total, 0)
+  const allGaps = stats.reduce((n, s) => n + s.gaps, 0)
+
+  return (
+    <Card variant="outlined">
+      <CardContent>
+        <Typography color="text.secondary" component="p" variant="overline">
+          Completeness — {(all - allGaps).toLocaleString()} of {all.toLocaleString()} complete
+        </Typography>
+        {withGaps.map((s) => (
+          <Row key={s.key} stat={s} />
+        ))}
+        {complete.length > 0 && (
+          <AdminCompletenessToggle
+            summary={`${complete.length} entities complete · ${completeTotal.toLocaleString()} entries`}
+          >
+            {complete.map((s) => (
+              <Row key={s.key} stat={s} />
+            ))}
+          </AdminCompletenessToggle>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+```
+
+- [ ] **Step 3: Type-check and lint**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn tsc --noEmit && yarn lint
+```
+
+Expected: both PASS.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add app/admin/admin-completeness-list.tsx app/admin/admin-completeness-toggle.tsx
+git commit -m "feat(admin): add completeness list with collapsed complete entities"
+```
+
+---
+
+### Task 7: Needs attention queue
+
+**Files:**
+- Create: `app/admin/admin-gap-queue.tsx`
+- Create: `app/admin/admin-gap-entity-select.tsx`
+
+**Interfaces:**
+- Consumes: `getGapRows`, `GAP_PAGE_SIZE` (Task 4); `AdminStat` (Task 3); registry + `buildDashboardHref` (Task 2).
+- Produces: `<AdminGapQueue stats={AdminStat[]} entity={AdminEntityKey} gap={GapKind} page={number} />`, a Server Component that fetches its own rows; `<AdminGapEntitySelect entity gap />`, a client dropdown.
+
+- [ ] **Step 1: Write the entity dropdown**
+
+A `<Select>` needs an onChange handler, so this is the one client component in the queue. It navigates rather than holding state — the URL stays the source of truth.
+
+`app/admin/admin-gap-entity-select.tsx`:
+
+```tsx
+'use client'
+
+import { MenuItem, TextField } from '@mui/material'
+import { useRouter } from 'next/navigation'
+import {
+  ADMIN_ENTITIES,
+  ADMIN_ENTITY_KEYS,
+  type AdminEntityKey,
+  type GapKind,
+} from '@/lib/admin-entities'
+import { buildDashboardHref } from '@/lib/admin-routes'
+
+export default function AdminGapEntitySelect({
+  entity,
+  gap,
+}: {
+  entity: AdminEntityKey
+  gap: GapKind
+}) {
+  const router = useRouter()
+
+  return (
+    <TextField
+      label="Entity"
+      onChange={(e) =>
+        router.push(buildDashboardHref({ entity: e.target.value, gap }))
+      }
+      select
+      size="small"
+      sx={{ minWidth: 200 }}
+      value={entity}
+    >
+      {ADMIN_ENTITY_KEYS.map((key) => (
+        <MenuItem key={key} value={key}>
+          {ADMIN_ENTITIES[key].title}
+        </MenuItem>
+      ))}
+    </TextField>
+  )
+}
+```
+
+- [ ] **Step 2: Write the queue component**
+
+```tsx
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  Divider,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  Typography,
+} from '@mui/material'
+import { Add, Category } from '@mui/icons-material'
+import LazyImage from '@/components/lazy-image'
+import { getGapRows, GAP_PAGE_SIZE } from '@/hooks/data/admin/gaps'
+import { ADMIN_ENTITIES, type AdminEntityKey, type GapKind } from '@/lib/admin-entities'
+import { buildDashboardHref } from '@/lib/admin-routes'
+import type { AdminStat } from '@/hooks/data/admin/stats'
+import AdminGapEntitySelect from './admin-gap-entity-select'
+
+const GAPS: { kind: GapKind; label: string }[] = [
+  { kind: 'image', label: 'No image' },
+  { kind: 'title', label: 'No title' },
+  { kind: 'description', label: 'No description' },
+  { kind: 'duplicate', label: 'Dupes' },
+]
+
+function gapCount(stat: AdminStat | undefined, kind: GapKind): number | null {
+  if (!stat) return null
+  if (kind === 'image') return stat.noImage
+  if (kind === 'title') return stat.noTitle
+  if (kind === 'description') return stat.noDescription
+  return null
+}
+
+export default async function AdminGapQueue({
+  stats,
+  entity,
+  gap,
+  page,
+}: {
+  stats: AdminStat[]
+  entity: AdminEntityKey
+  gap: GapKind
+  page: number
+}) {
+  const e = ADMIN_ENTITIES[entity]
+  const stat = stats.find((s) => s.key === entity)
+  const { rows, total } = await getGapRows({ entity, gap, page })
+
+  const lastPage = Math.max(1, Math.ceil(total / GAP_PAGE_SIZE))
+  const from = total === 0 ? 0 : (page - 1) * GAP_PAGE_SIZE + 1
+  const to = Math.min(page * GAP_PAGE_SIZE, total)
+
+  return (
+    <Card variant="outlined">
+      <CardContent>
+        <Box sx={{ alignItems: 'center', display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+          <Typography component="p" variant="overline">
+            Needs attention
+          </Typography>
+          <Box sx={{ ml: 'auto' }} />
+          {/* All 12 entities listed — confirming an entity is clean is worth doing. */}
+          <AdminGapEntitySelect entity={entity} gap={gap} />
+        </Box>
+
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}>
+          {GAPS.map(({ kind, label }) => {
+            // Hide a filter the entity cannot have. Duplicates apply to variants only.
+            if (kind === 'image' && !e.tracksImage) return null
+            if (kind === 'title' && !e.tracksTitle) return null
+            if (kind === 'description' && !e.tracksDescription) return null
+            if (kind === 'duplicate' && !e.isVariant) return null
+            const count = gapCount(stat, kind)
+            return (
+              <Chip
+                key={kind}
+                clickable
+                color={kind === gap ? 'primary' : 'default'}
+                component="a"
+                href={buildDashboardHref({ entity, gap: kind })}
+                label={count === null ? label : `${label} ${count.toLocaleString()}`}
+                size="small"
+                sx={kind === 'description' ? { borderStyle: 'dashed', opacity: 0.7 } : undefined}
+                variant={kind === gap ? 'filled' : 'outlined'}
+              />
+            )
+          })}
+          {e.addHref && (
+            <Button
+              component="a"
+              href={e.addHref}
+              size="small"
+              startIcon={<Add />}
+              sx={{ ml: 'auto' }}
+            >
+              Add
+            </Button>
+          )}
+        </Box>
+
+        {rows.length === 0 ? (
+          <Typography color="text.disabled" sx={{ py: 3, textAlign: 'center' }} variant="body2">
+            Nothing needs attention in {e.title}.
+          </Typography>
+        ) : (
+          <>
+            <List disablePadding>
+              {rows.map((row, i) => (
+                <Box key={row.slug}>
+                  <ListItem disablePadding>
+                    <ListItemButton component="a" href={row.editHref}>
+                      <ListItemAvatar>
+                        <LazyImage
+                          alt={row.slug}
+                          src={row.imageUrl ?? undefined}
+                          sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+                        >
+                          <Category fontSize="inherit" />
+                        </LazyImage>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={row.title}
+                        secondary={row.slug}
+                        slotProps={{
+                          primary: { variant: 'body2', noWrap: true },
+                          secondary: { variant: 'caption' },
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                  {i < rows.length - 1 && <Divider component="li" variant="inset" />}
+                </Box>
+              ))}
+            </List>
+
+            <Box
+              sx={{ alignItems: 'center', display: 'flex', gap: 1, justifyContent: 'space-between', mt: 1.5 }}
+            >
+              <Typography color="text.secondary" variant="caption">
+                {from}–{to} of {total.toLocaleString()}
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button
+                  component="a"
+                  disabled={page <= 1}
+                  href={buildDashboardHref({ entity, gap, page: page - 1 })}
+                  size="small"
+                >
+                  Previous
+                </Button>
+                <Button
+                  component="a"
+                  disabled={page >= lastPage}
+                  href={buildDashboardHref({ entity, gap, page: page + 1 })}
+                  size="small"
+                >
+                  Next
+                </Button>
+                <Button
+                  component="a"
+                  href={`${rows[0].editHref}?entity=${entity}&gap=${gap}&page=${page}`}
+                  size="small"
+                  variant="outlined"
+                >
+                  Start fixing
+                </Button>
+              </Box>
+            </Box>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+```
+
+"Start fixing" is the only link that carries the queue params into the edit form — that is what Task 9 reads to power "Save & next gap" and the return trip.
+
+- [ ] **Step 3: Type-check and lint**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn tsc --noEmit && yarn lint
+```
+
+Expected: both PASS.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add app/admin/admin-gap-queue.tsx app/admin/admin-gap-entity-select.tsx
+git commit -m "feat(admin): add needs-attention gap queue"
+```
+
+---
+
+### Task 8: Rewrite the dashboard page
+
+**Files:**
+- Modify: `app/admin/page.tsx` (full rewrite)
+- Delete: `app/admin/stat-card.tsx`
+
+**Interfaces:**
+- Consumes: everything from Tasks 3–7.
+- Produces: the assembled `/admin` route.
+
+- [ ] **Step 1: Rewrite `page.tsx`**
+
+Replace the entire file:
+
+```tsx
+import { Suspense } from 'react'
+import { Alert, Box, Stack } from '@mui/material'
+import { Metadata } from 'next'
+import { getAdminStats } from '@/hooks/data/admin/stats'
+import { getRecentlyAdded, getRecentlyEdited } from '@/hooks/data/admin/recents'
+import { parseEntityKey, parseGapKind, type AdminEntityKey } from '@/lib/admin-entities'
+import AdminRecentsList from './admin-recents-list'
+import AdminTotalsStrip from './admin-totals-strip'
+import AdminCompletenessList from './admin-completeness-list'
+import AdminGapQueue from './admin-gap-queue'
+
+export const metadata: Metadata = {
+  title: 'Admin',
+}
+
+type SearchParams = Promise<{ entity?: string; gap?: string; page?: string }>
+
+export default function AdminPage({ searchParams }: { searchParams: SearchParams }) {
+  return (
+    <Stack spacing={2}>
+      {/* Separate boundaries so stats and recents stream independently and one
+          failure cannot blank the page. */}
+      <Suspense>
+        <AdminOverview searchParams={searchParams} />
+      </Suspense>
+      <Suspense>
+        <AdminRecents />
+      </Suspense>
+    </Stack>
+  )
+}
+
+async function AdminOverview({ searchParams }: { searchParams: SearchParams }) {
+  const { entity: rawEntity, gap: rawGap, page: rawPage } = await searchParams
+
+  let stats
+  try {
+    stats = await getAdminStats()
+  } catch {
+    return <Alert severity="error">Could not load admin statistics. Try reloading.</Alert>
+  }
+
+  const gap = parseGapKind(rawGap)
+  // Default to the largest entity that actually has gaps, so the queue opens on
+  // real work rather than an empty state.
+  const fallback: AdminEntityKey =
+    [...stats].sort((a, b) => b.gaps - a.gaps)[0]?.key ?? 'outfit-variants'
+  const entity = parseEntityKey(rawEntity) ?? fallback
+
+  const parsedPage = Number.parseInt(rawPage ?? '1', 10)
+  const page = Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1
+
+  return (
+    <Stack spacing={2}>
+      <AdminTotalsStrip stats={stats} />
+      <AdminCompletenessList stats={stats} />
+      <Suspense key={`${entity}-${gap}-${page}`}>
+        <AdminGapQueue entity={entity} gap={gap} page={page} stats={stats} />
+      </Suspense>
+    </Stack>
+  )
+}
+
+async function AdminRecents() {
+  const [recentlyAdded, recentlyEdited] = await Promise.all([
+    getRecentlyAdded(),
+    getRecentlyEdited(),
+  ])
+
+  return (
+    <Box sx={{ display: 'grid', gap: 2, gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' } }}>
+      <AdminRecentsList items={recentlyAdded} title="Recently Added" />
+      <AdminRecentsList items={recentlyEdited} title="Recently Edited" />
+    </Box>
+  )
+}
+```
+
+The `key` on the queue's `Suspense` makes navigating between filters show a fallback rather than a stale list.
+
+- [ ] **Step 2: Delete `StatCard` — after the rewrite, not before**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && rm app/admin/stat-card.tsx && grep -rn "StatCard" app hooks lib components
+```
+
+Expected: the only remaining hit is the explanatory comment in `app/outfits/seasons/[slug]/season-overview.tsx`, which mentions `StatCard` in prose and imports nothing. If any import shows up, the rewrite in Step 1 was incomplete.
+
+- [ ] **Step 3: Type-check, lint, build**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn tsc --noEmit && yarn lint && yarn build
+```
+
+Expected: all three PASS.
+
+- [ ] **Step 4: Confirm the full-table fetches are gone**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && grep -nE "getOutfitVariantsRaw|getMakeupVariantsRaw|getMomoCloaksRaw|getOutfitSets|getEurekaSets|getAdminData" app/admin/page.tsx
+```
+
+Expected: **no output.** Any hit means the ~8,500-row fetch survived the rewrite.
+
+- [ ] **Step 5: Drive the app**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn dev
+```
+
+Visit `http://localhost:3000/admin` as an admin user and confirm:
+- Totals strip shows 8,510 all entries; Outfits tile shows 6,534 with chips `292 sets` / `437 evo`; Momo's shows 119 with a muted "no sets".
+- Completeness list shows four rows with gaps, then a collapsed "8 entities complete · 987 entries" that expands.
+- Queue opens on Outfit Variants / No image with 2,579 and ten rows.
+- `?entity=nonsense&gap=nonsense&page=999` falls back without erroring.
+- Abilities and Season Categories show no image chip anywhere.
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add app/admin/page.tsx && git rm app/admin/stat-card.tsx
+git commit -m "feat(admin): rebuild dashboard around totals, completeness and gap queue"
+```
+
+---
+
+### Task 9: Gap-aware "Save & next gap"
+
+**Files:**
+- Modify: `app/admin/outfits/variants/actions.ts:99-112`
+- Modify: `app/admin/makeup/variants/actions.ts`
+- Modify: `app/admin/makeup/sets/actions.ts`
+- Modify: `app/admin/eureka/variants/actions.ts`
+
+**Interfaces:**
+- Consumes: `getNextGapSlug` (Task 4), `buildDashboardHref`, `parseEntityKey`, `parseGapKind` (Task 2).
+- Produces: no new exports. Behavior change only.
+
+**Scope:** exactly these four entities — the ones that have gaps. The other eight `actions.ts` files are untouched.
+
+- [ ] **Step 1: Change the `update_next` branch in `outfits/variants/actions.ts`**
+
+The existing block at lines 99–110 is:
+
+```ts
+if (formData.get('update_next') === 'true') {
+  const { data: next } = await supabase
+    .from('outfit_variants')
+    .select('slug')
+    .gt('slug', slug)
+    .order('slug', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+
+  if (next?.slug) redirect(`${navLinksData.admin.outfits.variants.edit}/${next.slug}`)
+  redirect(ADMIN_DASHBOARD)
+}
+```
+
+Replace it with:
+
+```ts
+// Queue params arrive only from the dashboard's "Start fixing" link. Without
+// them this stays the alphabetical walk from the 2026-06-22 update-and-next
+// spec — guard on presence, not truthiness, so the shipped behavior is intact.
+const entityParam = parseEntityKey(formData.get('entity'))
+const gapParam = formData.get('gap') ? parseGapKind(formData.get('gap')) : null
+const pageParam = Number.parseInt(String(formData.get('page') ?? '1'), 10)
+const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1
+
+if (formData.get('update_next') === 'true') {
+  if (entityParam && gapParam) {
+    const nextSlug = await getNextGapSlug({ entity: entityParam, gap: gapParam, afterSlug: slug })
+    if (nextSlug) {
+      redirect(
+        `${navLinksData.admin.outfits.variants.edit}/${nextSlug}?entity=${entityParam}&gap=${gapParam}&page=${page}`
+      )
+    }
+    redirect(buildDashboardHref({ entity: entityParam, gap: gapParam, page }))
+  }
+
+  const { data: next } = await supabase
+    .from('outfit_variants')
+    .select('slug')
+    .gt('slug', slug)
+    .order('slug', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+
+  if (next?.slug) redirect(`${navLinksData.admin.outfits.variants.edit}/${next.slug}`)
+  redirect(ADMIN_DASHBOARD)
+}
+
+// Plain save: back to the queue position if we came from it, else the dashboard.
+redirect(buildDashboardHref({ entity: entityParam, gap: gapParam, page }))
+```
+
+Delete the bare `redirect(ADMIN_DASHBOARD)` that was the final line of the action — `buildDashboardHref` returns exactly `/admin` when all params are absent, so behavior for non-queue edits is unchanged.
+
+Add the imports:
+
+```ts
+import { getNextGapSlug } from '@/hooks/data/admin/gaps'
+import { buildDashboardHref } from '@/lib/admin-routes'
+import { parseEntityKey, parseGapKind } from '@/lib/admin-entities'
+```
+
+`redirect()` throws to signal, so every one of these calls must stay outside any `try`/`catch` and after all DB work.
+
+- [ ] **Step 2: Add the hidden params to the edit form**
+
+The form must post `entity`/`gap`/`page` or the action reads nothing. Note the 2026-07-09 spec **removed** the `searchParams` prop from four edit pages — for `app/admin/outfits/variants/edit/[slug]/page.tsx` it removed the `back` local but left the page's own signature, so check what the file currently accepts before editing.
+
+Add `searchParams` to the page and thread the three values down. The outer page and inner async component both need the signature (they are a `page` → `async` pair, as the 2026-07-09 spec notes):
+
+```tsx
+type SearchParams = Promise<{ entity?: string; gap?: string; page?: string }>
+
+export default function EditOutfitVariantPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>
+  searchParams: SearchParams
+}) {
+  return (
+    <Suspense>
+      <EditView params={params} searchParams={searchParams} />
+    </Suspense>
+  )
+}
+```
+
+Inside the inner component, resolve and validate before rendering:
+
+```tsx
+const { entity: rawEntity, gap: rawGap, page: rawPage } = await searchParams
+const entity = parseEntityKey(rawEntity)
+const gap = rawGap ? parseGapKind(rawGap) : null
+const page = Number.parseInt(rawPage ?? '1', 10)
+```
+
+**How to get the hidden inputs into the form without touching `EntityForm`.**
+`EntityForm` renders `<form action={formAction} id={formId}>` and maps a `fields`
+array; it has no `children` prop, and adding one would change a component shared
+by every admin form. Don't. Instead use HTML's `form` attribute, which associates
+a control with a form by id from anywhere in the document — the same mechanism
+`FormToolBar` already uses to put its submit buttons outside the `<form>` (see
+the comment in `entity-form.tsx` near the `setFormConfig` effect).
+
+The page already passes `formId` to `EntityForm`, so render the inputs as
+siblings, using that same id:
+
+```tsx
+{entity && <input form={formId} name="entity" type="hidden" value={entity} />}
+{gap && <input form={formId} name="gap" type="hidden" value={gap} />}
+{entity && (
+  <input
+    form={formId}
+    name="page"
+    type="hidden"
+    value={Number.isFinite(page) && page > 0 ? page : 1}
+  />
+)}
+```
+
+`app/admin/makeup/sets/edit/[slug]/` is the exception — it uses its own
+`edit-makeup-set-form.tsx` with a local `FORM_ID` constant rather than
+`EntityForm`. Export that constant (or render the inputs inside that component's
+own `<form>`) and apply the same pattern.
+
+Do **not** add the queue params as bound Server Action arguments. Every one of
+these actions has a different signature — `updateMakeupSet` takes no `id` at all
+— and the 2026-07-09 spec's post-mortem documents that shifting a bound
+parameter silently displaces `prevState`/`formData` at any `.bind()` site you
+miss. Hidden inputs change no signatures.
+
+These are three constrained scalars, not a URL — validated here and re-validated in the action by `parseEntityKey` / `parseGapKind`. A hand-edited value can only change which queue you return to, never where `redirect()` points.
+
+- [ ] **Step 3: Apply the same change to the other three entities**
+
+Paste the identical block from Step 1 into each of the three remaining actions, changing only the four marked values below. Do **not** factor this into a shared helper yet — the four actions have differing signatures and bound-argument orders, and the 2026-07-09 spec's post-mortem shows bulk signature edits are exactly where the bugs come from.
+
+| File | function (signature) | `entity` value | edit base | existing fallback orders by |
+| --- | --- | --- | --- | --- |
+| `app/admin/makeup/variants/actions.ts` | `editMakeupVariant(id, _, formData)` | `'makeup-variants'` | `navLinksData.admin.makeup.variants.edit` | `slug` (uses `values.slug`) |
+| `app/admin/makeup/sets/actions.ts` | `updateMakeupSet(_, formData)` — **no bound `id`** | `'makeup-sets'` | `navLinksData.admin.makeup.sets.edit` | **`title`** then `slug` (uses `values.title`) |
+| `app/admin/eureka/variants/actions.ts` | `editEurekaVariant(id, _, formData)` | `'eureka-variants'` | `navLinksData.admin.eureka.variants.edit` | `slug` |
+
+**Leave each existing fallback query exactly as found.** `updateMakeupSet` orders
+by `title` then `slug`, not by `slug` — that is deliberate, and the gap branch
+you add above it does not change it. You are inserting a new branch, not
+rewriting the old one.
+
+So for `makeup/variants/actions.ts` the block reads:
+
+```ts
+const entityParam = parseEntityKey(formData.get('entity'))
+const gapParam = formData.get('gap') ? parseGapKind(formData.get('gap')) : null
+const pageParam = Number.parseInt(String(formData.get('page') ?? '1'), 10)
+const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1
+
+if (formData.get('update_next') === 'true') {
+  if (entityParam && gapParam) {
+    const nextSlug = await getNextGapSlug({ entity: entityParam, gap: gapParam, afterSlug: slug })
+    if (nextSlug) {
+      redirect(
+        `${navLinksData.admin.makeup.variants.edit}/${nextSlug}?entity=${entityParam}&gap=${gapParam}&page=${page}`
+      )
+    }
+    redirect(buildDashboardHref({ entity: entityParam, gap: gapParam, page }))
+  }
+
+  const { data: next } = await supabase
+    .from('makeup_variants')
+    .select('slug')
+    .gt('slug', slug)
+    .order('slug', { ascending: true })
+    .limit(1)
+    .maybeSingle()
+
+  if (next?.slug) redirect(`${navLinksData.admin.makeup.variants.edit}/${next.slug}`)
+  redirect(ADMIN_DASHBOARD)
+}
+
+redirect(buildDashboardHref({ entity: entityParam, gap: gapParam, page }))
+```
+
+`makeup/sets/actions.ts` and `eureka/variants/actions.ts` are the same with their row substituted. Each file also needs the three imports from Step 1.
+
+**Two cautions per file.** First, some of these actions already order their existing `update_next` fallback by `title` rather than `slug` — leave that fallback query exactly as you found it; you are only adding the gap branch above it. Second, add the hidden inputs from Step 2 to each entity's `edit/[slug]/page.tsx`, or the params never reach the action and the gap branch silently never fires.
+
+- [ ] **Step 4: Type-check and lint**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn tsc --noEmit && yarn lint
+```
+
+Expected: both PASS.
+
+- [ ] **Step 5: Verify no URL passthrough crept in**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && grep -rn "returnTo\|?back=" app/admin lib hooks
+```
+
+Expected: **no output.** If a `returnTo` appears, the open-redirect fix from the 2026-07-09 spec has been undone.
+
+- [ ] **Step 6: Drive both paths**
+
+With `yarn dev` running:
+- From `/admin`, click "Start fixing" on Outfit Variants / No image → edit form opens → Save → back on `/admin?entity=outfit-variants&gap=image` with the same filter selected.
+- On that form, "Update & next item" → lands on the next variant **missing an image**, not the next alphabetically.
+- Open an edit form from the Recently Edited list (no params) → Save → lands on plain `/admin`, and "Update & next item" walks alphabetically exactly as before.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add app/admin/outfits/variants app/admin/makeup app/admin/eureka/variants
+git commit -m "feat(admin): make Update & next walk the gap queue when invoked from it"
+```
+
+---
+
+## Self-Review Notes
+
+**Spec coverage:** totals strip → Task 5; completeness list → Task 6; queue → Task 7; recents unchanged → Task 8; view → Task 1; stats hook → Task 3; gaps hook → Task 4; URL state + validation → Tasks 2 and 8; fix loop and Save & next gap → Task 9; `StatCard` deletion → Task 8; error handling → Task 8 (try/catch + per-section `Suspense`).
+
+**Known deviations from the skill's template:** the standard TDD cycle (write failing test → run → implement → pass) is not used, because the repo has no test runner and adding one is out of scope. Each task instead ends in a concrete, runnable assertion — a SQL result compared against the measured baseline, a `grep` that must return nothing, or `yarn tsc --noEmit && yarn lint && yarn build`. Task 1's baseline comparison is the highest-value check in the plan; if `outfit-variants.gaps` reads 5222 instead of 2699, stop and fix the view before continuing.
+
+**Deferred to its own spec:** `alt_slug` and write-time duplicate prevention. The `duplicate` filter in Task 4 computes the key on the fly and currently returns zero rows.
+
+---
+
+# Revision A — set-focused queue, no search params (2026-08-09)
+
+**Why:** the user edits variants inside the owning set's edit form, not one variant
+at a time. Confirmed in the code: `edit-outfit-set-form.tsx`,
+`edit-evolution-form.tsx`, and `edit-makeup-set-form.tsx` all hold `variantRows`
+/ `variantTitles` / `variantImages` state and render an `OutfitVariantImageCard`
+per variant — exactly the fields this dashboard tracks.
+
+The data makes the case decisively. Grouping gap variants by their owning
+container collapses the queue ~8×, and each visit fixes every gap in that
+container at once:
+
+| Domain  | gap variants | containers |
+| ------- | -----------: | ---------: |
+| Outfits |        2,699 |    **314** |
+| Makeup  |          281 |     **54** |
+| Eureka  |           16 |      **2** |
+| Total   |    **2,996** |    **370** |
+
+Also decisive: **96% of the outfit backlog is on evolution variants** (2,584 of
+2,699), and the *set* form deliberately excludes them — `isBaseVariant` filters
+to `v.outfit_set === baseSlug`, with a comment that evolutions are edited on
+their own pages. Routing everything to base-set forms would reach 4% of the work.
+Evolution variants must route to `/admin/outfits/evolutions/edit/{slug}`, whose
+form manages variants the same way.
+
+**Decisions:** set-focused queue; selection lives in `useState`, session-only —
+no `admin_preferences` column, no migration.
+
+## What this undoes
+
+Task 9 exists to carry `entity/gap/page` through the URL into the edit form and
+back, plus a gap-aware "Save & next". With no dashboard search params there is no
+URL state to return to, and with container grouping there is no variant-by-variant
+walk to continue. **Task 9 is reverted in full**, and `buildDashboardHref` (added
+in Task 2) becomes dead and is removed.
+
+## Consequence: the gap chips stop being links
+
+`admin-totals-strip.tsx` and `admin-completeness-list.tsx` are Server Components
+whose chips currently deep-link into the queue via `buildDashboardHref`. Without
+URL state they cannot drive client state from across a server boundary. They
+become **non-interactive display chips**; the queue owns its own entity dropdown
+and gap filters. Restoring chip → queue linking later means lifting all three
+into one client boundary — deliberately not done now.
+
+---
+
+### Task 10: Revert Task 9
+
+**Files:** the 9 files of commit `c63307d4`, plus `lib/admin-routes.ts`.
+
+- [ ] **Step 1: Revert the commit**
+
+```bash
+cd /Users/mailauki/Developer/infinity-nikki-tracker && git revert --no-edit c63307d4
+```
+
+- [ ] **Step 2: Remove the now-dead `buildDashboardHref`**
+
+Delete the function from `lib/admin-routes.ts`. Leave `ADMIN_DASHBOARD` and the
+file's header comment untouched — that comment explains why server-consumed
+constants must not live in a client module and is still load-bearing.
+
+Callers in `admin-totals-strip.tsx` and `admin-completeness-list.tsx` are removed
+in Task 12; expect `yarn tsc --noEmit` to fail on those two files until then.
+This task's gate is Step 3, not a clean typecheck.
+
+- [ ] **Step 3: Confirm the revert is complete**
+
+```bash
+grep -rn "returnTo\|buildDashboardHref\|formId} name=\"entity\"" app/admin lib hooks
+```
+
+Expected: only the two prose lines in `lib/admin-routes.ts`'s comment. No hidden
+inputs, no `searchParams` in the four edit pages, and all four actions back to
+`redirect(ADMIN_DASHBOARD)`.
+
+- [ ] **Step 4: Commit** (the revert commits itself; commit the `admin-routes.ts` edit)
+
+```bash
+git add lib/admin-routes.ts && git commit -m "refactor(admin): drop buildDashboardHref with the search-param queue"
+```
+
+---
+
+### Task 11: `getGapContainers()`
+
+**Files:** Create `hooks/data/admin/gap-containers.ts`.
+
+**Interfaces — Produces:**
+
+```ts
+export interface GapWorkItem {
+  /** Unique row key, `${entity}:${slug}`. */
+  key: string
+  /** Container slug, or the record's own slug for non-variant entities. */
+  slug: string
+  title: string
+  /** Row type label, e.g. "Evolution" or "Outfit Set". */
+  kind: string
+  imageUrl: string | null
+  /** Gap variants inside this container (1 for non-variant entities). */
+  noTitle: number
+  noImage: number
+  noDescription: number
+  /** Edit form for the container itself. */
+  editHref: string
+}
+
+export const getGapWorkItems: () => Promise<Record<AdminEntityKey, GapWorkItem[]>>
+```
+
+**Grouping rule — the core of this task:**
+
+| Entity | Rows are | `editHref` |
+| --- | --- | --- |
+| `outfit-variants` | grouped by `outfit_set` | owning row's `base_set IS NULL` → sets edit form; else evolutions edit form |
+| `makeup-variants` | grouped by `makeup_set` | makeup sets edit form |
+| `eureka-variants` | grouped by `eureka_set` | eureka sets edit form |
+| all others | one row per record | that entity's own `editHref` |
+
+- [ ] **Step 1: Write the hook**
+
+Use React `cache()` (it calls `createClient()`, which reads cookies — `use cache`
+forbids that). Reads only; never wrap a mutation in `cache()`.
+
+For each variant entity: select `slug, title, image_url` plus the owning-set
+column, filtered to rows missing a tracked field, **paginated in 1000-row
+batches** — PostgREST caps responses at 1000 and outfit_variants has ~2.7k gap
+rows. Then group in memory and join to the owning set's `title`/`image_url`
+and `base_set` to pick the right edit route.
+
+Total result is ~370 containers plus the handful of non-variant rows, so the
+whole payload crosses to the client in one go and the client filters it in
+memory — no per-selection round trip and no API route.
+
+- [ ] **Step 2: Verify counts against the measured baseline**
+
+Via Supabase MCP `execute_sql`, confirm the hook's grouping reproduces:
+outfit-variants → **314** containers over 2,699 gap variants (298 of them
+evolutions); makeup-variants → **54** over 281; eureka-variants → **2** over 16.
+
+- [ ] **Step 3:** `yarn tsc --noEmit` and `yarn lint` pass. Commit.
+
+---
+
+### Task 12: Client-state Needs Attention section
+
+**Files:**
+- Rewrite `app/admin/admin-gap-queue.tsx` as `'use client'`
+- Delete `app/admin/admin-gap-entity-select.tsx` (folded in)
+- Modify `app/admin/admin-totals-strip.tsx`, `app/admin/admin-completeness-list.tsx` (chips → non-interactive)
+- Modify `app/admin/page.tsx` (drop `searchParams` entirely)
+
+- [ ] **Step 1: Rewrite the queue as a client component**
+
+It receives `items: Record<AdminEntityKey, GapWorkItem[]>` and `stats: AdminStat[]`
+as props from the server page, and holds three pieces of `useState`: `entity`,
+`gap`, `page`. Filtering and pagination happen in memory over `items[entity]`.
+Page size stays 10. Reset `page` to 1 whenever `entity` or `gap` changes, or a
+filter switch can strand you on a page that no longer exists.
+
+Each row shows the container title, its kind, and its gap counts, and links to
+`editHref` — a normal `next/link` is fine here because this file is now a Client
+Component. Keep the filter chips hidden where the gap cannot apply
+(`tracksTitle`/`tracksImage`/`tracksDescription`/`isVariant`), same as before.
+
+- [ ] **Step 2: Make the chips non-interactive**
+
+In `admin-totals-strip.tsx` and `admin-completeness-list.tsx`, drop
+`component="a"` / `href` / `clickable` from the gap chips and remove the
+`buildDashboardHref` imports. They become plain `<Chip variant="outlined">`.
+
+- [ ] **Step 3: Simplify the page**
+
+`app/admin/page.tsx` no longer takes `searchParams` and no longer parses or
+validates `entity`/`gap`/`page`. It fetches `getAdminStats()` and
+`getGapWorkItems()` and passes both down. Keep the separate `Suspense`
+boundaries and the `Alert` on a failed stats read. Drop the `key` on the queue's
+boundary — there are no URL-derived params left to key on.
+
+- [ ] **Step 4: Verify**
+
+`yarn tsc --noEmit`, `yarn lint` (0 errors), `yarn build`. Then:
+
+```bash
+grep -rn "searchParams\|buildDashboardHref" app/admin/page.tsx app/admin/admin-gap-queue.tsx
+```
+
+Expected: no output.
+
+**Human verification required** — a subagent cannot drive a browser. Load
+`/admin` and confirm: switching entity/gap updates the list without a page
+navigation, the URL never changes, and a row opens its set/evolution edit form
+with the variant cards present.
+
+---
+
+# Revision B — Unassigned pieces section (2026-08-09)
+
+**Why:** pieces that belong to no set are a distinct kind of problem from a set
+with missing variant images, and today they are hidden. Measured:
+
+| Source | total | with gaps |
+| --- | ---: | ---: |
+| `outfit_variants` where `outfit_set = 'standalone_pieces'` | 164 | **66** |
+| `makeup_variants` where `makeup_set IS NULL` | 16 | **16** |
+| `eureka_variants` where `eureka_set IS NULL` | 0 | 0 |
+| **Total** | | **82** |
+
+There are **zero dangling set references** — every non-null set slug resolves, so
+nothing is broken-orphaned. The two domains merely represent "standalone"
+differently: outfits use a real `standalone_pieces` row in `outfit_sets`, makeup
+uses `NULL`. That divergence exists because the migration that would create a
+makeup `standalone-pieces` row is one of the two still unapplied on production.
+
+The container model actively misleads here. The 66 outfit gaps currently sit
+behind a row that looks like an ordinary set, and opening it renders a
+**164-card** form. A bag of unrelated pieces has no reason to be edited as one
+unit — each piece wants its own form.
+
+**Decisions:** unassigned pieces get their own always-visible section, listing
+pieces individually; and they are **removed** from the main Needs Attention
+queue so the same work never appears twice.
+
+---
+
+### Task 13: Unassigned pieces section
+
+**Files:**
+- Modify: `hooks/data/admin/gap-containers.ts`
+- Create: `app/admin/admin-unassigned-pieces.tsx`
+- Modify: `app/admin/page.tsx`
+
+**Interfaces — Produces:**
+
+```ts
+/** Slugs that mean "no real owning set". Both spellings: outfit_sets uses
+ *  `standalone_pieces`; the unapplied makeup migration would add
+ *  `standalone-pieces`. Match both so applying it later changes nothing here. */
+export const STANDALONE_SET_SLUGS = ['standalone_pieces', 'standalone-pieces']
+
+export interface UnassignedPiece {
+  key: string           // `${entity}:${slug}`
+  entity: AdminEntityKey
+  entityTitle: string   // "Outfit Variants"
+  slug: string
+  title: string
+  imageUrl: string | null
+  missingTitle: boolean
+  missingImage: boolean
+  editHref: string      // the piece's OWN variant edit form
+}
+
+export const getUnassignedPieces: () => Promise<UnassignedPiece[]>
+```
+
+- [ ] **Step 1: Add `getUnassignedPieces()`**
+
+A piece is unassigned when its owning-set column is `NULL` **or** matches
+`STANDALONE_SET_SLUGS`. Cover the three variant entities. Return only pieces
+with a gap in a tracked field — this section is a work queue, not an inventory.
+`editHref` is the piece's own edit form (`ADMIN_ENTITIES[entity].editHref` +
+slug), **not** a container form.
+
+React `cache()` (it reads cookies via `createClient()`); reads only. Hand-paginate
+in 1000-row batches — PostgREST caps at 1000.
+
+- [ ] **Step 2: Exclude unassigned pieces from `getGapWorkItems()`**
+
+Filter them out of the container grouping, so the "Standalone Pieces" container
+row and the makeup "Unassigned" synthetic row both disappear. The synthetic
+`Unassigned` branch and its `listHref` fallback are deleted outright.
+
+After this, outfit-variants drops from 314 containers to **313**, and
+makeup-variants from 54 to **53**.
+
+- [ ] **Step 3: Build `app/admin/admin-unassigned-pieces.tsx`**
+
+A `'use client'` component taking `pieces: UnassignedPiece[]`. Holds `gap`
+(`'image' | 'title'`) and `page` in `useState`; filters and paginates in memory;
+page size 10; clamp `page` during render rather than in a `useEffect`. Each row
+shows the piece title, its entity, and links to `editHref` — `component={Link}`
+is fine, this is a Client Component.
+
+Header states what the section is: pieces belonging to no set, edited
+individually. Render the card even when empty, with an explicit empty state —
+its absence should mean "none", not "feature missing".
+
+- [ ] **Step 4: Mount it in `app/admin/page.tsx`**
+
+Below the Needs Attention queue, inside the existing stats `Suspense` boundary.
+`getUnassignedPieces()` joins the existing `Promise.all`.
+
+- [ ] **Step 5: Verify**
+
+`yarn tsc --noEmit` green, `yarn lint` 0 errors, `yarn build` passes. Via
+Supabase MCP, confirm the section yields **82** pieces (66 outfit + 16 makeup),
+and that container counts drop to **313** / **53**.
+
+**Human verification required** — a subagent cannot drive a browser.
+
+---
+
+# Revision C — split makeup sets from makeup evolutions (2026-08-09)
+
+**Why:** `outfit_sets` was split into two dashboard entities (`outfit-sets` for
+`base_set IS NULL`, `evolutions` for the rest), but `makeup_sets` was left as one
+bucket even though it has the identical shape. That made Makeup Sets read **87**
+where the old dashboard showed **57** — the old one used `getMakeupSets()`, which
+folds evolutions into their base.
+
+Measured split:
+
+| Entity | total | no_title | no_image | no_description | gaps |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `makeup-sets` (`base_set IS NULL`) | **57** | 0 | 5 | 55 | **5** |
+| `makeup-evolutions` (`base_set IS NOT NULL`) | **30** | 0 | 9 | 30 | **9** |
+
+**Important asymmetry with outfits.** Outfits has a dedicated
+`/admin/outfits/evolutions` route. **Makeup does not** — there is no
+`app/admin/makeup/evolutions/`, and makeup evolutions are rows in `makeup_sets`
+edited through `/admin/makeup/sets/edit/{slug}`. So this is a **reporting** split
+only: both entities share one `listHref` and one `editHref`. Do not invent a
+route that does not exist.
+
+---
+
+### Task 14: Split `makeup-evolutions` out of `makeup-sets`
+
+**Files:**
+- Create: `supabase/migrations/<timestamp>_split_makeup_evolutions_in_stats_view.sql`
+- Modify: `lib/admin-entities.ts`
+- Modify: `hooks/data/admin/gap-containers.ts` if it special-cases `makeup-sets`
+
+- [ ] **Step 1: Migration — split the view's makeup branch**
+
+`create or replace view admin_entity_stats` with the single `makeup_sets` branch
+replaced by two, exactly mirroring how the existing `outfit-sets` / `evolutions`
+branches are written:
+
+```sql
+  union all
+  select 'makeup-sets', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from makeup_sets where base_set is null
+
+  union all
+  select 'makeup-evolutions', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from makeup_sets where base_set is not null
+```
+
+Every other branch stays byte-identical. Preserve
+`alter view admin_entity_stats set (security_invoker = on)` and the
+`grant select ... to authenticated`.
+
+**Apply with the Supabase MCP `apply_migration` tool only** (project
+`ykfuevyqpjvtxidjnhxm`). **Never `supabase db push`** — two unrelated makeup
+migrations are still unapplied locally and would ride along, renaming slugs and
+deleting from `obtained_makeup`. Name the migration file to match the version
+`apply_migration` records.
+
+- [ ] **Step 2: Registry**
+
+Set `evolutionFilter: false` on `makeup-sets`, and add a `makeup-evolutions`
+entry with `evolutionFilter: true`. Both use `table: 'makeup_sets'`, both track
+title/image/description, neither `isVariant`. Give `makeup-evolutions` the same
+`listHref`/`editHref` as `makeup-sets` (`navLinksData.admin.makeup.sets.*`) and
+**no `addHref`** — evolutions are not created directly, matching how outfit
+`evolutions` is defined. Add the key to `AdminEntityKey`.
+
+- [ ] **Step 3: Totals strip**
+
+In `ADMIN_DOMAINS`, add a `makeup-evolutions` chip labelled `evo` to the Makeup
+domain, so it reads like Outfits (`sets` + `evo`).
+
+- [ ] **Step 4: Verify**
+
+`yarn tsc --noEmit` green, `yarn lint` 0 errors, `yarn build` passes.
+
+Via Supabase MCP `execute_sql`, confirm the view returns **13** rows and that
+`makeup-sets` = 57/0/5/55/**5** and `makeup-evolutions` = 30/0/9/30/**9**.
+Confirm total entries across all entities is unchanged — the 87 rows are
+re-bucketed, never double-counted.
+
+**Human verification required** — a subagent cannot drive a browser.
+
+---
+
+# Revision D — makeup: drop `label`, add season fields to variants (2026-08-09)
+
+**Measured before deciding:**
+
+| column | makeup_sets | makeup_variants |
+| --- | ---: | ---: |
+| `label` populated | **0 / 87** | **0 / 446** |
+| `style` populated | 84 / 87 | 420 / 446 |
+| `seasons` | 84 populated | column absent |
+| `season_category` | 22 populated | column absent |
+
+**`style` is NOT dropped.** It holds 504 populated values and drives public
+behaviour — `app/makeup/filter-makeup.tsx:93` and `app/makeup/makeup-results-bar.tsx:40`
+filter by it, `app/makeup/[slug]/makeup-set-detail-card.tsx` displays it, and it
+appears in the sort/filter enums in `lib/types/makeup.ts`. Dropping it would be
+data loss plus a public-feature regression. User decision: keep it.
+
+**Makeup sets already have both season fields** — the columns exist and
+`edit-makeup-set-form.tsx:72-73` already reads `initial.seasons` and
+`initial.season_category`. No work needed there.
+
+So the actual change is: drop `label` from both makeup tables (zero data loss),
+and add `seasons` + `season_category` to `makeup_variants` with FKs mirroring
+`outfit_variants`.
+
+---
+
+### Task 15: Drop makeup `label`; add season fields to makeup variants
+
+Migration and code must land in **one commit** — regenerated types without
+`label` break every reference at once.
+
+- [ ] **Step 1: Migration**
+
+Mirror `outfit_variants`' constraints exactly — `ON UPDATE CASCADE`, no
+`ON DELETE` clause:
+
+```sql
+alter table public.makeup_sets drop constraint if exists makeup_sets_label_fkey;
+alter table public.makeup_sets drop column if exists label;
+
+alter table public.makeup_variants drop constraint if exists makeup_variants_label_fkey;
+alter table public.makeup_variants drop column if exists label;
+
+alter table public.makeup_variants
+  add column if not exists seasons text,
+  add column if not exists season_category text;
+
+alter table public.makeup_variants
+  add constraint makeup_variants_seasons_fkey
+    foreign key (seasons) references public.seasons(slug) on update cascade,
+  add constraint makeup_variants_season_category_fkey
+    foreign key (season_category) references public.season_categories(slug) on update cascade;
+```
+
+Apply with the Supabase MCP `apply_migration` tool **only** — never
+`supabase db push`. Name the local file to match the recorded version.
+
+- [ ] **Step 2: Regenerate types**
+
+```bash
+supabase gen types typescript --linked 2>/dev/null > lib/types/supabase.ts
+```
+
+Not `npx … > file` — that leaks npm/CLI warnings into the `.ts`. Confirm the
+file still starts with `export type Json =`.
+
+- [ ] **Step 3: Remove `label` from makeup code**
+
+Admin: `makeup/variants/{actions.ts,fields.tsx,makeup-variant-table.tsx,makeup-variant-view.tsx,page.tsx,new/page.tsx,edit/[slug]/page.tsx}`,
+`makeup/sets/{actions.ts,makeup-set-table.tsx,makeup-set-view.tsx}`, and both
+set forms. Drop the `label` grid column, the `labels` prop and its
+`getLabels()` lookup, the payload key, and `'label'` from the `FK_FIELDS`
+tuple in `variants/actions.ts:121` and the sets equivalent at
+`sets/actions.ts:305`.
+
+Public: `app/makeup/[slug]/makeup-set-detail-card.tsx` destructures `label` —
+remove it and whatever renders it.
+
+Also drop `label` from the `RAW_COLUMNS` select lists in
+`hooks/data/admin/makeup-sets.ts`, `hooks/data/admin/makeup-variants.ts`, and
+`hooks/data/makeup-sets.ts`, and from any makeup sort/filter enum in
+`lib/types/makeup.ts`.
+
+**Leave the shared `labels` table and outfit label usage alone** — this is
+makeup-only. `outfit_variants` keeps `label` and `label_2`.
+
+- [ ] **Step 4: Add season fields to the makeup variant form**
+
+In `app/admin/makeup/variants/fields.tsx`, add after the category field,
+mirroring `outfits/variants/fields.tsx`:
+
+```ts
+{ type: 'select', name: 'seasons', label: 'Season', optionsKey: 'seasons' },
+{ type: 'select', name: 'season_category', label: 'Season Category', optionsKey: 'seasonCategories' },
+```
+
+Pass `seasons` and `seasonCategories` lookups from both the `new/` and
+`edit/[slug]/` pages via `getSeasons()` / `getSeasonCategories()`, and read both
+from `formData` in the add and edit actions (`|| null`, same as the other
+nullable text columns). Optionally add them as columns to the variant DataGrid.
+
+- [ ] **Step 5: Verify**
+
+`yarn tsc --noEmit` green, `yarn lint` 0 errors, `yarn build` passes.
+
+```bash
+grep -rn "'label'\|\.label\b" app/admin/makeup app/makeup hooks/data/admin/makeup-sets.ts hooks/data/admin/makeup-variants.ts
+```
+
+Expected: no makeup column references (UI `label=` props and `{ value, label }`
+option objects are unrelated and stay).
+
+Via Supabase MCP, confirm `makeup_variants` now has `seasons` and
+`season_category` with both FKs, `label` is gone from both tables, and
+`style` still has 84 / 420 populated values.

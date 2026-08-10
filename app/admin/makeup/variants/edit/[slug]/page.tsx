@@ -5,8 +5,9 @@ import { Metadata } from 'next'
 import { getMakeupSetsRaw } from '@/hooks/data/admin/makeup-sets'
 import { getMakeupCategories } from '@/hooks/data/makeup-categories'
 import { getMakeupVariantRaw } from '@/hooks/data/admin/makeup-variants'
+import { getSeasons } from '@/hooks/data/seasons'
+import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
-import { getLabels } from '@/hooks/data/labels'
 import EntityForm from '@/app/admin/entity-form'
 import { editMakeupVariant } from '../../actions'
 
@@ -31,13 +32,15 @@ export default async function EditMakeupVariantPage({
 async function EditMakeupVariant({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  const [variant, makeupSets, makeupCategories, styles, labels] = await Promise.all([
-    getMakeupVariantRaw(slug),
-    getMakeupSetsRaw(),
-    getMakeupCategories(),
-    getStyles(),
-    getLabels(),
-  ])
+  const [variant, makeupSets, makeupCategories, seasons, seasonCategories, styles] =
+    await Promise.all([
+      getMakeupVariantRaw(slug),
+      getMakeupSetsRaw(),
+      getMakeupCategories(),
+      getSeasons(),
+      getSeasonCategories(),
+      getStyles(),
+    ])
 
   if (!variant) notFound()
 
@@ -51,16 +54,17 @@ async function EditMakeupVariant({ params }: { params: Promise<{ slug: string }>
       initialValues={{
         makeup_set: variant.makeup_set ?? '',
         makeup_category: variant.makeup_category ?? '',
+        seasons: variant.seasons ?? '',
+        season_category: variant.season_category ?? '',
         rarity: variant.rarity ?? '',
         style: variant.style ?? '',
-        label: variant.label ?? '',
         title: variant.title ?? '',
         description: variant.description ?? '',
         slug: variant.slug,
         image_url: variant.image_url,
         image_url_alt: variant.alt_image_url,
       }}
-      lookups={{ makeupSets, makeupCategories, styles, labels }}
+      lookups={{ makeupSets, makeupCategories, seasons, seasonCategories, styles }}
       mode="edit"
     />
   )

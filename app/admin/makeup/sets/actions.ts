@@ -19,7 +19,6 @@ function readForm(formData: FormData) {
     description: (formData.get('description') as string | null)?.trim() || null,
     rarity: rarityRaw ? parseInt(rarityRaw, 10) : null,
     style: (formData.get('style') as string | null) || null,
-    label: (formData.get('label') as string | null) || null,
     seasons: (formData.get('seasons') as string | null) || null,
     season_category: (formData.get('season_category') as string | null) || null,
     outfit_set: (formData.get('outfit_set') as string | null) || null,
@@ -86,7 +85,6 @@ export async function addMakeupSet(_: unknown, formData: FormData) {
       slug: toSlugMakeup(values.slug, cat.slug),
       rarity: values.rarity as number,
       style: values.style,
-      label: values.label,
     }))
     const { error: variantError } = await supabase.from('makeup_variants').insert(variants)
     if (variantError) {
@@ -153,7 +151,6 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
         slug: toSlugMakeup(stateSlug, cat.slug),
         rarity: values.rarity as number,
         style: values.style,
-        label: values.label,
       }))
     )
     const expectedSlugs = new Set(expectedVariants.map((v) => v.slug))
@@ -285,7 +282,6 @@ export async function updateMakeupSetRow(
     description?: string | null
     rarity?: number
     style?: string | null
-    label?: string | null
     seasons?: string | null
     season_category?: string | null
     outfit_set?: string | null
@@ -300,14 +296,7 @@ export async function updateMakeupSetRow(
 
   // FK columns reject '' — the grid's singleSelect '—' option yields an empty
   // string, so coerce those to null before writing.
-  const FK_FIELDS = [
-    'style',
-    'label',
-    'seasons',
-    'season_category',
-    'outfit_set',
-    'base_set',
-  ] as const
+  const FK_FIELDS = ['style', 'seasons', 'season_category', 'outfit_set', 'base_set'] as const
   const normalized = { ...fields }
   for (const key of FK_FIELDS) {
     if (normalized[key] === '') normalized[key] = null

@@ -16,7 +16,7 @@ import {
 } from '@mui/material'
 import { toSlug } from '@/lib/utils'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
-import { Label, Style } from '@/lib/types/eureka'
+import { Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
@@ -31,7 +31,6 @@ export default function AddMakeupSetForm({
   makeupSets,
   outfitSets,
   styles,
-  labels,
   seasons,
   seasonCategories,
   makeupCategories,
@@ -39,7 +38,6 @@ export default function AddMakeupSetForm({
   makeupSets: MakeupSetRaw[]
   outfitSets: OutfitSetRaw[]
   styles: Style[]
-  labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   makeupCategories: MakeupCategory[]
@@ -50,7 +48,6 @@ export default function AddMakeupSetForm({
   const [description, setDescription] = useState('')
   const [rarity, setRarity] = useState<number | ''>('')
   const [style, setStyle] = useState('')
-  const [label, setLabel] = useState('')
   const [season, setSeason] = useState('')
   const [seasonCategory, setSeasonCategory] = useState('')
   const [outfitSet, setOutfitSet] = useState<string | null>(null)
@@ -102,7 +99,6 @@ export default function AddMakeupSetForm({
       setDescription('')
       setRarity('')
       setStyle('')
-      setLabel('')
       setSeason('')
       setSeasonCategory('')
       setOutfitSet(null)
@@ -142,24 +138,6 @@ export default function AddMakeupSetForm({
           value={style}
           onChange={setStyle}
         />
-
-        <FormControl>
-          <InputLabel>Label</InputLabel>
-          <Select
-            MenuProps={MENU_PROPS}
-            label="Label"
-            name="label"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-          >
-            <MenuItem value="">—</MenuItem>
-            {labels.map((l) => (
-              <MenuItem key={l.slug} value={l.slug}>
-                {l.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
 
         <TextField
           multiline

@@ -7,16 +7,17 @@ import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 
 // makeup_set is nullable — a variant with no set is a standalone piece with
-// its own title/description/rarity/style/label. The select's empty-string
+// its own title/description/rarity/style. The select's empty-string
 // "—" option must be coerced to null here, otherwise it violates the FK.
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null
   return {
     makeup_set: (formData.get('makeup_set') as string | null) || null,
     makeup_category: (formData.get('makeup_category') as string | null) || null,
+    seasons: (formData.get('seasons') as string | null) || null,
+    season_category: (formData.get('season_category') as string | null) || null,
     rarity: rarityRaw ? parseInt(rarityRaw, 10) : null,
     style: (formData.get('style') as string | null) || null,
-    label: (formData.get('label') as string | null) || null,
     title: (formData.get('title') as string | null)?.trim() || null,
     description: (formData.get('description') as string | null)?.trim() || null,
     slug: (formData.get('slug') as string | null)?.trim() ?? '',
@@ -108,7 +109,6 @@ export async function updateMakeupVariantRow(
     title?: string | null
     rarity?: number | null
     style?: string | null
-    label?: string | null
   }
 ) {
   const role = await getUserRole()
@@ -118,7 +118,7 @@ export async function updateMakeupVariantRow(
 
   // FK columns reject '' — the grid's singleSelect '—' option yields an empty
   // string, so coerce those to null before writing.
-  const FK_FIELDS = ['makeup_set', 'makeup_category', 'style', 'label'] as const
+  const FK_FIELDS = ['makeup_set', 'makeup_category', 'style'] as const
   const normalized = { ...fields }
   for (const key of FK_FIELDS) {
     if (normalized[key] === '') normalized[key] = null

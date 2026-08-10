@@ -59,6 +59,7 @@ interface SelectField extends BaseField {
   /** Render a leading "—" (empty → null) option. Defaults to true. */
   includeEmpty?: boolean
   sortOptions?: (a: FieldOption, b: FieldOption) => number
+  defaultValue?: string
 }
 
 interface MultiSelectField extends BaseField {

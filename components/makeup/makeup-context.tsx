@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from 'react'
 import { MakeupCategory, MakeupSet, ObtainedMakeup } from '@/lib/types/makeup'
-import { Label, Style } from '@/lib/types/eureka'
+import { Style } from '@/lib/types/eureka'
 import { Season, SeasonCategory } from '@/lib/types/outfit'
 import { ObtainedFilter } from '@/lib/types/props'
 
@@ -12,7 +12,6 @@ export interface MakeupFilterState {
   selectedRarity: number | null
   selectedObtainedFilter: ObtainedFilter | null
   selectedStyle: string[]
-  selectedLabel: string[]
   selectedSeason: string[]
   selectedSeasonCategory: string[]
 }
@@ -22,7 +21,6 @@ interface MakeupDataContextValue {
   obtainedMakeup: ObtainedMakeup[]
   makeupCategories: MakeupCategory[]
   styles: Style[]
-  labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   isLoggedIn: boolean
@@ -50,7 +48,6 @@ export const DEFAULT_MAKEUP_FILTERS: MakeupFilterState = {
   selectedRarity: null,
   selectedObtainedFilter: null,
   selectedStyle: [],
-  selectedLabel: [],
   selectedSeason: [],
   selectedSeasonCategory: [],
 }
@@ -60,7 +57,6 @@ export const MakeupDataContext = createContext<MakeupDataContextValue>({
   obtainedMakeup: [],
   makeupCategories: [],
   styles: [],
-  labels: [],
   seasons: [],
   seasonCategories: [],
   isLoggedIn: false,

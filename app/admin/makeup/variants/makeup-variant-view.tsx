@@ -1,7 +1,7 @@
 'use client'
 
 import { useAdminView } from '../../admin-view-context'
-import { Label, Style } from '@/lib/types/eureka'
+import { Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw, MakeupVariantRaw } from '@/lib/types/makeup'
 import { MakeupVariantTable } from './makeup-variant-table'
 import MakeupVariantList from './makeup-variant-list'
@@ -12,20 +12,17 @@ export default function MakeupVariantView({
   makeupSets,
   makeupCategories,
   styles,
-  labels,
 }: {
   makeupVariants: MakeupVariantRaw[]
   makeupSets: MakeupSetRaw[]
   makeupCategories: MakeupCategory[]
   styles: Style[]
-  labels: Label[]
 }) {
   const { view } = useAdminView()
 
   return view === 'table' ? (
     <TableContainer>
       <MakeupVariantTable
-        labels={labels}
         makeupCategories={makeupCategories}
         makeupSets={makeupSets}
         rows={makeupVariants}

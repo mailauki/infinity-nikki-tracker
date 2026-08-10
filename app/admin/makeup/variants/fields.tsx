@@ -3,11 +3,13 @@
 import { FieldConfig, FieldValues } from '@/lib/types/form-fields'
 import { toSlug } from '@/lib/utils'
 
+const STANDALONE_SLUG = 'standalone_pieces'
+
 // A standalone piece has no set, so its slug derives from title + category
 // (multiple pieces share a category and would otherwise collide). A set-owned
 // variant derives from set + category, matching toSlugMakeup().
 function isStandalone(v: FieldValues): boolean {
-  return !v.makeup_set
+  return !v.makeup_set || v.makeup_set === STANDALONE_SLUG
 }
 
 function deriveSlug(v: FieldValues): string {
@@ -20,11 +22,25 @@ function deriveSlug(v: FieldValues): string {
 
 export function makeupVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
   return [
-    { type: 'select', name: 'makeup_set', label: 'Makeup Set', optionsKey: 'makeupSets' },
+    {
+      type: 'select',
+      name: 'makeup_set',
+      label: 'Makeup Set',
+      optionsKey: 'makeupSets',
+      // Most new pieces are standalone, so add mode starts there.
+      // Edit mode seeds from the variant's own saved set instead.
+      ...(mode === 'add' ? { defaultValue: STANDALONE_SLUG } : {}),
+    },
     { type: 'select', name: 'makeup_category', label: 'Category', optionsKey: 'makeupCategories' },
+    { type: 'select', name: 'seasons', label: 'Season', optionsKey: 'seasons' },
+    {
+      type: 'select',
+      name: 'season_category',
+      label: 'Season Category',
+      optionsKey: 'seasonCategories',
+    },
     { type: 'rarity', name: 'rarity' },
     { type: 'toggle', name: 'style', label: 'Style', optionsKey: 'styles' },
-    { type: 'select', name: 'label', label: 'Label', optionsKey: 'labels' },
     // Required only for standalone pieces: a set-owned variant inherits its
     // display name from the set, a loose piece has nothing to fall back on.
     { type: 'text', name: 'title', label: 'Title', required: (v) => isStandalone(v) },

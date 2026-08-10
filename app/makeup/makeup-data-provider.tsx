@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 import { MakeupCategory, MakeupSet, ObtainedMakeup } from '@/lib/types/makeup'
 import { Season, SeasonCategory } from '@/lib/types/outfit'
-import { Label, Style } from '@/lib/types/eureka'
+import { Style } from '@/lib/types/eureka'
 import { handleObtainedMakeup } from '@/app/makeup/actions'
 import {
   applyObtainedMakeupKeys,
@@ -27,7 +27,6 @@ type MakeupPayload = {
   makeupSets: MakeupSet[]
   makeupCategories: MakeupCategory[]
   styles: Style[]
-  labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   obtainedMakeup?: ObtainedMakeup[]
@@ -50,7 +49,6 @@ export default function MakeupDataProvider({
   const [rawMakeupSets, setRawMakeupSets] = useState<MakeupSet[]>([])
   const [makeupCategories, setMakeupCategories] = useState<MakeupCategory[]>([])
   const [styles, setStyles] = useState<Style[]>([])
-  const [labels, setLabels] = useState<Label[]>([])
   const [seasons, setSeasons] = useState<Season[]>([])
   const [seasonCategories, setSeasonCategories] = useState<SeasonCategory[]>([])
   const [obtainedMakeup, setObtainedMakeup] = useState<ObtainedMakeup[]>([])
@@ -69,7 +67,6 @@ export default function MakeupDataProvider({
         setRawMakeupSets(payload.makeupSets ?? [])
         setMakeupCategories(payload.makeupCategories ?? [])
         setStyles(payload.styles ?? [])
-        setLabels(payload.labels ?? [])
         setSeasons(payload.seasons ?? [])
         setSeasonCategories(payload.seasonCategories ?? [])
         setObtainedMakeup(payload.obtainedMakeup ?? [])
@@ -197,7 +194,6 @@ export default function MakeupDataProvider({
       obtainedMakeup,
       makeupCategories,
       styles,
-      labels,
       seasons,
       seasonCategories,
       isLoggedIn,
@@ -220,7 +216,6 @@ export default function MakeupDataProvider({
       obtainedMakeup,
       makeupCategories,
       styles,
-      labels,
       seasons,
       seasonCategories,
       isLoggedIn,

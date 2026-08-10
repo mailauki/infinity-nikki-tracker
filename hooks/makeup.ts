@@ -14,8 +14,9 @@ export function isBaseMakeupSet(row: Pick<MakeupSetRaw, 'base_set'>) {
   return row.base_set === null
 }
 
-// The bucket for set-less variants. A standalone piece is a variant with
-// makeup_set IS NULL, but `makeup_sets` now carries a real `standalone_pieces`
+// The bucket for set-less variants. A standalone piece is a variant carrying
+// the `standalone_pieces` slug on makeup_set (a straggler NULL row is still
+// tolerated), but `makeup_sets` now also carries a real `standalone_pieces`
 // row so obtained_makeup.makeup_set can hold an FK. `createMakeupSet` excludes
 // that row from the table-driven sets and emits the synthetic bucket below
 // instead, which is the one that actually carries the pieces.
@@ -53,7 +54,7 @@ export function createMakeupSet(
   const variantsBySet = new Map<string, MakeupVariant[]>()
   const standaloneVariants: MakeupVariant[] = []
   for (const variant of variants) {
-    if (!variant.makeup_set) {
+    if (!variant.makeup_set || variant.makeup_set === STANDALONE_MAKEUP_SLUG) {
       standaloneVariants.push(variant)
       continue
     }
@@ -126,10 +127,12 @@ export function createMakeupSet(
   }
 
   // The standalone bucket now has a real makeup_sets row (so obtained_makeup
-  // can carry an FK on makeup_set), but its variants still have makeup_set
-  // IS NULL and are collected into `standaloneVariants` below. Exclude the row
-  // here so it isn't emitted twice — once empty from the table and once
-  // populated from the synthetic branch.
+  // can carry an FK on makeup_set), but its variants carry the
+  // `standalone_pieces` slug (or, for a straggler row, NULL) and are collected
+  // into `standaloneVariants` above instead of `variantsBySet`. Exclude the
+  // row here so it isn't emitted twice — once empty from the table and once
+  // populated from the synthetic branch, which is the one that actually
+  // carries the pieces.
   const sets = rows
     .filter((row) => isBaseMakeupSet(row) && row.slug !== STANDALONE_MAKEUP_SLUG)
     .map((row) => build(row, evolutionsByBase.get(row.slug) ?? []))
@@ -146,7 +149,6 @@ export function createMakeupSet(
     description: null,
     rarity: 0,
     style: null,
-    label: null,
     seasons: null,
     season_category: null,
     outfit_set: null,

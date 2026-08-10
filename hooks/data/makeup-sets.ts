@@ -16,7 +16,6 @@ const SET_COLUMNS = `
 	description,
 	rarity,
 	style,
-	label,
 	seasons,
 	season_category,
 	outfit_set,
