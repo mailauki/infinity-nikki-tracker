@@ -4,10 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { toSlugVariant } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
-import { ADMIN_DASHBOARD, buildDashboardHref } from '@/lib/admin-routes'
+import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
-import { getNextGapSlug } from '@/hooks/data/admin/gaps'
-import { parseEntityKey, parseGapKind } from '@/lib/admin-entities'
 
 export async function addEurekaVariant(_: unknown, formData: FormData) {
   const role = await getUserRole()
@@ -66,25 +64,7 @@ export async function editEurekaVariant(id: number, _: unknown, formData: FormDa
 
   if (formData.get('update_only') === 'true') return { savedTitle: slug }
 
-  // Queue params arrive only from the dashboard's "Start fixing" link. Without
-  // them this stays the alphabetical walk from the 2026-06-22 update-and-next
-  // spec — guard on presence, not truthiness, so the shipped behavior is intact.
-  const entityParam = parseEntityKey(formData.get('entity'))
-  const gapParam = formData.get('gap') ? parseGapKind(formData.get('gap')) : null
-  const pageParam = Number.parseInt(String(formData.get('page') ?? '1'), 10)
-  const page = Number.isFinite(pageParam) && pageParam > 0 ? pageParam : 1
-
   if (formData.get('update_next') === 'true') {
-    if (entityParam && gapParam) {
-      const nextSlug = await getNextGapSlug({ entity: entityParam, gap: gapParam, afterSlug: slug })
-      if (nextSlug) {
-        redirect(
-          `${navLinksData.admin.eureka.variants.edit}/${nextSlug}?entity=${entityParam}&gap=${gapParam}&page=${page}`
-        )
-      }
-      redirect(buildDashboardHref({ entity: entityParam, gap: gapParam, page }))
-    }
-
     const { data: next } = await supabase
       .from('eureka_variants')
       .select('slug')
@@ -97,6 +77,5 @@ export async function editEurekaVariant(id: number, _: unknown, formData: FormDa
     redirect(ADMIN_DASHBOARD)
   }
 
-  // Plain save: back to the queue position if we came from it, else the dashboard.
-  redirect(buildDashboardHref({ entity: entityParam, gap: gapParam, page }))
+  redirect(ADMIN_DASHBOARD)
 }

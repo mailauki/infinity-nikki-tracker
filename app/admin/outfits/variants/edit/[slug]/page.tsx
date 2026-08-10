@@ -11,43 +11,28 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { deriveGlowupVariantTitle, isGlowup } from '@/hooks/outfit'
 import EntityForm from '@/app/admin/entity-form'
-import { parseEntityKey, parseGapKind } from '@/lib/admin-entities'
 import { editOutfitVariant } from '../../actions'
 
 export const metadata: Metadata = {
   title: 'Edit Outfit Variant',
 }
 
-type SearchParams = Promise<{ entity?: string; gap?: string; page?: string }>
-
-export default function EditOutfitVariantPage({
+export default async function EditOutfitVariantPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ slug: string }>
-  searchParams: SearchParams
 }) {
   return (
     <Suspense>
       <Stack spacing={3} sx={{ flexGrow: 1, py: 3 }}>
-        <EditOutfitVariant params={params} searchParams={searchParams} />
+        <EditOutfitVariant params={params} />
       </Stack>
     </Suspense>
   )
 }
 
-async function EditOutfitVariant({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ slug: string }>
-  searchParams: SearchParams
-}) {
+async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const { entity: rawEntity, gap: rawGap, page: rawPage } = await searchParams
-  const entity = parseEntityKey(rawEntity)
-  const gap = rawGap ? parseGapKind(rawGap) : null
-  const page = Number.parseInt(rawPage ?? '1', 10)
 
   const [variant, outfitSets, outfitCategories, seasons, seasonCategories, styles, labels] =
     await Promise.all([
@@ -79,44 +64,30 @@ async function EditOutfitVariant({
       }) ?? ''
   }
 
-  const formId = 'edit-outfit-variant'
-
   return (
-    <>
-      <EntityForm
-        showUpdateNext
-        showUpdateOnly
-        action={editOutfitVariant.bind(null, variant.id)}
-        formId={formId}
-        formKind="outfitVariant"
-        initialValues={{
-          outfit_set: variant.outfit_set ?? '',
-          outfit_category: variant.outfit_category ?? '',
-          seasons: variant.seasons ?? '',
-          season_category: variant.season_category ?? '',
-          rarity: variant.rarity ?? '',
-          style: variant.style ?? '',
-          label: variant.label ?? '',
-          label_2: variant.label_2 ?? '',
-          title: prefillTitle,
-          description: variant.description ?? '',
-          slug: variant.slug,
-          image_url: variant.image_url,
-          image_url_alt: variant.alt_image_url,
-        }}
-        lookups={{ outfitSets, outfitCategories, seasons, seasonCategories, styles, labels }}
-        mode="edit"
-      />
-      {entity && <input form={formId} name="entity" type="hidden" value={entity} />}
-      {gap && <input form={formId} name="gap" type="hidden" value={gap} />}
-      {entity && (
-        <input
-          form={formId}
-          name="page"
-          type="hidden"
-          value={Number.isFinite(page) && page > 0 ? page : 1}
-        />
-      )}
-    </>
+    <EntityForm
+      showUpdateNext
+      showUpdateOnly
+      action={editOutfitVariant.bind(null, variant.id)}
+      formId="edit-outfit-variant"
+      formKind="outfitVariant"
+      initialValues={{
+        outfit_set: variant.outfit_set ?? '',
+        outfit_category: variant.outfit_category ?? '',
+        seasons: variant.seasons ?? '',
+        season_category: variant.season_category ?? '',
+        rarity: variant.rarity ?? '',
+        style: variant.style ?? '',
+        label: variant.label ?? '',
+        label_2: variant.label_2 ?? '',
+        title: prefillTitle,
+        description: variant.description ?? '',
+        slug: variant.slug,
+        image_url: variant.image_url,
+        image_url_alt: variant.alt_image_url,
+      }}
+      lookups={{ outfitSets, outfitCategories, seasons, seasonCategories, styles, labels }}
+      mode="edit"
+    />
   )
 }
