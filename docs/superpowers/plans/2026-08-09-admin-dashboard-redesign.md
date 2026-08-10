@@ -1937,3 +1937,109 @@ Expected: no output.
 `/admin` and confirm: switching entity/gap updates the list without a page
 navigation, the URL never changes, and a row opens its set/evolution edit form
 with the variant cards present.
+
+---
+
+# Revision B — Unassigned pieces section (2026-08-09)
+
+**Why:** pieces that belong to no set are a distinct kind of problem from a set
+with missing variant images, and today they are hidden. Measured:
+
+| Source | total | with gaps |
+| --- | ---: | ---: |
+| `outfit_variants` where `outfit_set = 'standalone_pieces'` | 164 | **66** |
+| `makeup_variants` where `makeup_set IS NULL` | 16 | **16** |
+| `eureka_variants` where `eureka_set IS NULL` | 0 | 0 |
+| **Total** | | **82** |
+
+There are **zero dangling set references** — every non-null set slug resolves, so
+nothing is broken-orphaned. The two domains merely represent "standalone"
+differently: outfits use a real `standalone_pieces` row in `outfit_sets`, makeup
+uses `NULL`. That divergence exists because the migration that would create a
+makeup `standalone-pieces` row is one of the two still unapplied on production.
+
+The container model actively misleads here. The 66 outfit gaps currently sit
+behind a row that looks like an ordinary set, and opening it renders a
+**164-card** form. A bag of unrelated pieces has no reason to be edited as one
+unit — each piece wants its own form.
+
+**Decisions:** unassigned pieces get their own always-visible section, listing
+pieces individually; and they are **removed** from the main Needs Attention
+queue so the same work never appears twice.
+
+---
+
+### Task 13: Unassigned pieces section
+
+**Files:**
+- Modify: `hooks/data/admin/gap-containers.ts`
+- Create: `app/admin/admin-unassigned-pieces.tsx`
+- Modify: `app/admin/page.tsx`
+
+**Interfaces — Produces:**
+
+```ts
+/** Slugs that mean "no real owning set". Both spellings: outfit_sets uses
+ *  `standalone_pieces`; the unapplied makeup migration would add
+ *  `standalone-pieces`. Match both so applying it later changes nothing here. */
+export const STANDALONE_SET_SLUGS = ['standalone_pieces', 'standalone-pieces']
+
+export interface UnassignedPiece {
+  key: string           // `${entity}:${slug}`
+  entity: AdminEntityKey
+  entityTitle: string   // "Outfit Variants"
+  slug: string
+  title: string
+  imageUrl: string | null
+  missingTitle: boolean
+  missingImage: boolean
+  editHref: string      // the piece's OWN variant edit form
+}
+
+export const getUnassignedPieces: () => Promise<UnassignedPiece[]>
+```
+
+- [ ] **Step 1: Add `getUnassignedPieces()`**
+
+A piece is unassigned when its owning-set column is `NULL` **or** matches
+`STANDALONE_SET_SLUGS`. Cover the three variant entities. Return only pieces
+with a gap in a tracked field — this section is a work queue, not an inventory.
+`editHref` is the piece's own edit form (`ADMIN_ENTITIES[entity].editHref` +
+slug), **not** a container form.
+
+React `cache()` (it reads cookies via `createClient()`); reads only. Hand-paginate
+in 1000-row batches — PostgREST caps at 1000.
+
+- [ ] **Step 2: Exclude unassigned pieces from `getGapWorkItems()`**
+
+Filter them out of the container grouping, so the "Standalone Pieces" container
+row and the makeup "Unassigned" synthetic row both disappear. The synthetic
+`Unassigned` branch and its `listHref` fallback are deleted outright.
+
+After this, outfit-variants drops from 314 containers to **313**, and
+makeup-variants from 54 to **53**.
+
+- [ ] **Step 3: Build `app/admin/admin-unassigned-pieces.tsx`**
+
+A `'use client'` component taking `pieces: UnassignedPiece[]`. Holds `gap`
+(`'image' | 'title'`) and `page` in `useState`; filters and paginates in memory;
+page size 10; clamp `page` during render rather than in a `useEffect`. Each row
+shows the piece title, its entity, and links to `editHref` — `component={Link}`
+is fine, this is a Client Component.
+
+Header states what the section is: pieces belonging to no set, edited
+individually. Render the card even when empty, with an explicit empty state —
+its absence should mean "none", not "feature missing".
+
+- [ ] **Step 4: Mount it in `app/admin/page.tsx`**
+
+Below the Needs Attention queue, inside the existing stats `Suspense` boundary.
+`getUnassignedPieces()` joins the existing `Promise.all`.
+
+- [ ] **Step 5: Verify**
+
+`yarn tsc --noEmit` green, `yarn lint` 0 errors, `yarn build` passes. Via
+Supabase MCP, confirm the section yields **82** pieces (66 outfit + 16 makeup),
+and that container counts drop to **313** / **53**.
+
+**Human verification required** — a subagent cannot drive a browser.
