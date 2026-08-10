@@ -482,6 +482,7 @@ export type Database = {
       makeup_variants: {
         Row: {
           alt_image_url: string | null
+          alt_slug: string | null
           created_at: string | null
           default: boolean
           description: string | null
@@ -499,6 +500,7 @@ export type Database = {
         }
         Insert: {
           alt_image_url?: string | null
+          alt_slug?: string | null
           created_at?: string | null
           default?: boolean
           description?: string | null
@@ -516,6 +518,7 @@ export type Database = {
         }
         Update: {
           alt_image_url?: string | null
+          alt_slug?: string | null
           created_at?: string | null
           default?: boolean
           description?: string | null
@@ -1020,6 +1023,7 @@ export type Database = {
       outfit_variants: {
         Row: {
           alt_image_url: string | null
+          alt_slug: string | null
           created_at: string | null
           default: boolean
           description: string | null
@@ -1039,6 +1043,7 @@ export type Database = {
         }
         Insert: {
           alt_image_url?: string | null
+          alt_slug?: string | null
           created_at?: string | null
           default?: boolean
           description?: string | null
@@ -1058,6 +1063,7 @@ export type Database = {
         }
         Update: {
           alt_image_url?: string | null
+          alt_slug?: string | null
           created_at?: string | null
           default?: boolean
           description?: string | null
@@ -1454,6 +1460,22 @@ export type Database = {
       }
     }
     Functions: {
+      derive_makeup_variant_alt_slug: {
+        Args: {
+          p_makeup_category: string
+          p_makeup_set: string
+          p_title: string
+        }
+        Returns: string
+      }
+      derive_outfit_variant_alt_slug: {
+        Args: {
+          p_outfit_category: string
+          p_outfit_set: string
+          p_title: string
+        }
+        Returns: string
+      }
       generate_unique_username: { Args: never; Returns: string }
       generate_username: { Args: { len?: number }; Returns: string }
       is_admin: { Args: never; Returns: boolean }
@@ -1481,6 +1503,8 @@ export type Database = {
         }
         Returns: undefined
       }
+      unaccent_fallback: { Args: { t: string }; Returns: string }
+      variant_to_slug: { Args: { name: string }; Returns: string }
     }
     Enums: {
       [_ in never]: never
