@@ -2,8 +2,8 @@ import { Suspense } from 'react'
 import { Alert, Box, Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { getAdminStats } from '@/hooks/data/admin/stats'
+import { getGapWorkItems } from '@/hooks/data/admin/gap-containers'
 import { getRecentlyAdded, getRecentlyEdited } from '@/hooks/data/admin/recents'
-import { parseEntityKey, parseGapKind, type AdminEntityKey } from '@/lib/admin-entities'
 import AdminRecentsList from './admin-recents-list'
 import AdminTotalsStrip from './admin-totals-strip'
 import AdminCompletenessList from './admin-completeness-list'
@@ -13,15 +13,13 @@ export const metadata: Metadata = {
   title: 'Admin',
 }
 
-type SearchParams = Promise<{ entity?: string; gap?: string; page?: string }>
-
-export default function AdminPage({ searchParams }: { searchParams: SearchParams }) {
+export default function AdminPage() {
   return (
     <Stack spacing={2}>
       {/* Separate boundaries so stats and recents stream independently and one
           failure cannot blank the page. */}
       <Suspense>
-        <AdminOverview searchParams={searchParams} />
+        <AdminOverview />
       </Suspense>
       <Suspense>
         <AdminRecents />
@@ -30,9 +28,7 @@ export default function AdminPage({ searchParams }: { searchParams: SearchParams
   )
 }
 
-async function AdminOverview({ searchParams }: { searchParams: SearchParams }) {
-  const { entity: rawEntity, gap: rawGap, page: rawPage } = await searchParams
-
+async function AdminOverview() {
   let stats
   try {
     stats = await getAdminStats()
@@ -40,22 +36,14 @@ async function AdminOverview({ searchParams }: { searchParams: SearchParams }) {
     return <Alert severity="error">Could not load admin statistics. Try reloading.</Alert>
   }
 
-  const gap = parseGapKind(rawGap)
-  // Default to the largest entity that actually has gaps, so the queue opens on
-  // real work rather than an empty state.
-  const fallback: AdminEntityKey =
-    [...stats].sort((a, b) => b.gaps - a.gaps)[0]?.key ?? 'outfit-variants'
-  const entity = parseEntityKey(rawEntity) ?? fallback
-
-  const parsedPage = Number.parseInt(rawPage ?? '1', 10)
-  const page = Number.isFinite(parsedPage) && parsedPage > 0 ? parsedPage : 1
+  const items = await getGapWorkItems()
 
   return (
     <Stack spacing={2}>
       <AdminTotalsStrip stats={stats} />
       <AdminCompletenessList stats={stats} />
-      <Suspense key={`${entity}-${gap}-${page}`}>
-        <AdminGapQueue entity={entity} gap={gap} page={page} stats={stats} />
+      <Suspense>
+        <AdminGapQueue items={items} stats={stats} />
       </Suspense>
     </Stack>
   )

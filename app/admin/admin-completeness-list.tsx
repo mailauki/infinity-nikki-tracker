@@ -1,5 +1,4 @@
 import { Box, Card, CardContent, Chip, LinearProgress, Typography } from '@mui/material'
-import { buildDashboardHref } from '@/lib/admin-routes'
 import type { AdminStat } from '@/hooks/data/admin/stats'
 import AdminCompletenessToggle from './admin-completeness-toggle'
 
@@ -32,9 +31,6 @@ function Row({ stat }: { stat: AdminStat }) {
                 untracked column would imply a backlog that cannot exist. */}
             {stat.noTitle !== null && stat.noTitle > 0 && (
               <Chip
-                clickable
-                component="a"
-                href={buildDashboardHref({ entity: stat.key, gap: 'title' })}
                 label={`${stat.noTitle.toLocaleString()} title`}
                 size="small"
                 variant="outlined"
@@ -42,9 +38,6 @@ function Row({ stat }: { stat: AdminStat }) {
             )}
             {stat.noImage !== null && stat.noImage > 0 && (
               <Chip
-                clickable
-                component="a"
-                href={buildDashboardHref({ entity: stat.key, gap: 'image' })}
                 label={`${stat.noImage.toLocaleString()} img`}
                 size="small"
                 variant="outlined"

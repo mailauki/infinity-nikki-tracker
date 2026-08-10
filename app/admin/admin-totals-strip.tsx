@@ -1,6 +1,5 @@
 import { Box, Card, CardContent, Chip, Typography } from '@mui/material'
 import { ADMIN_DOMAINS, type AdminEntityKey } from '@/lib/admin-entities'
-import { buildDashboardHref } from '@/lib/admin-routes'
 import type { AdminStat } from '@/hooks/data/admin/stats'
 
 export default function AdminTotalsStrip({ stats }: { stats: AdminStat[] }) {
@@ -58,9 +57,6 @@ export default function AdminTotalsStrip({ stats }: { stats: AdminStat[] }) {
                   domain.chips.map((chip) => (
                     <Chip
                       key={chip.key}
-                      clickable
-                      component="a"
-                      href={buildDashboardHref({ entity: chip.key })}
                       label={`${(get(chip.key)?.total ?? 0).toLocaleString()} ${chip.label}`}
                       size="small"
                       variant="outlined"

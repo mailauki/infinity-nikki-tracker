@@ -1,3 +1,7 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import {
   Box,
   Button,
@@ -10,15 +14,22 @@ import {
   ListItemAvatar,
   ListItemButton,
   ListItemText,
+  MenuItem,
+  TextField,
   Typography,
 } from '@mui/material'
 import { Add, Category } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
-import { getGapRows, GAP_PAGE_SIZE } from '@/hooks/data/admin/gaps'
-import { ADMIN_ENTITIES, type AdminEntityKey, type GapKind } from '@/lib/admin-entities'
-import { buildDashboardHref } from '@/lib/admin-routes'
+import {
+  ADMIN_ENTITIES,
+  ADMIN_ENTITY_KEYS,
+  type AdminEntityKey,
+  type GapKind,
+} from '@/lib/admin-entities'
+import type { GapWorkItem } from '@/hooks/data/admin/gap-containers'
 import type { AdminStat } from '@/hooks/data/admin/stats'
-import AdminGapEntitySelect from './admin-gap-entity-select'
+
+const PAGE_SIZE = 10
 
 const GAPS: { kind: GapKind; label: string }[] = [
   { kind: 'image', label: 'No image' },
@@ -35,24 +46,62 @@ function gapCount(stat: AdminStat | undefined, kind: GapKind): number | null {
   return null
 }
 
-export default async function AdminGapQueue({
+/** Default to the largest entity that actually has gaps, so the queue opens on real work. */
+function defaultEntity(stats: AdminStat[]): AdminEntityKey {
+  return [...stats].sort((a, b) => b.gaps - a.gaps)[0]?.key ?? 'outfit-variants'
+}
+
+/** Compact "2 title, 1 image" summary of a container's gap counts. */
+function gapSummary(row: GapWorkItem): string {
+  const parts: string[] = []
+  if (row.noTitle > 0) parts.push(`${row.noTitle.toLocaleString()} title`)
+  if (row.noImage > 0) parts.push(`${row.noImage.toLocaleString()} image`)
+  if (row.noDescription > 0) parts.push(`${row.noDescription.toLocaleString()} desc`)
+  return parts.join(', ') || 'no gaps'
+}
+
+export default function AdminGapQueue({
+  items,
   stats,
-  entity,
-  gap,
-  page,
 }: {
+  items: Record<AdminEntityKey, GapWorkItem[]>
   stats: AdminStat[]
-  entity: AdminEntityKey
-  gap: GapKind
-  page: number
 }) {
+  const [entity, setEntity] = useState<AdminEntityKey>(() => defaultEntity(stats))
+  const [gap, setGap] = useState<GapKind>('image')
+  const [page, setPage] = useState(1)
+
   const e = ADMIN_ENTITIES[entity]
   const stat = stats.find((s) => s.key === entity)
-  const { rows, total } = await getGapRows({ entity, gap, page })
 
-  const lastPage = Math.max(1, Math.ceil(total / GAP_PAGE_SIZE))
-  const from = total === 0 ? 0 : (page - 1) * GAP_PAGE_SIZE + 1
-  const to = Math.min(page * GAP_PAGE_SIZE, total)
+  const filtered = useMemo(() => {
+    const all = items[entity] ?? []
+    if (gap === 'image') return all.filter((r) => r.noImage > 0)
+    if (gap === 'title') return all.filter((r) => r.noTitle > 0)
+    if (gap === 'description') return all.filter((r) => r.noDescription > 0)
+    // Duplicate detection has no signal on GapWorkItem (containers are unique
+    // by slug already) — keep the chip for parity, but it never has rows.
+    return []
+  }, [items, entity, gap])
+
+  const total = filtered.length
+  const lastPage = Math.max(1, Math.ceil(total / PAGE_SIZE))
+  // Clamp during render instead of a useState+useEffect pair — an entity/gap
+  // switch can strand `page` past the new, shorter list.
+  const currentPage = Math.min(page, lastPage)
+  const from = total === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1
+  const to = Math.min(currentPage * PAGE_SIZE, total)
+  const rows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+
+  function handleEntityChange(next: AdminEntityKey) {
+    setEntity(next)
+    setPage(1)
+  }
+
+  function handleGapChange(next: GapKind) {
+    setGap(next)
+    setPage(1)
+  }
 
   return (
     <Card variant="outlined">
@@ -63,7 +112,20 @@ export default async function AdminGapQueue({
           </Typography>
           <Box sx={{ ml: 'auto' }} />
           {/* All 12 entities listed — confirming an entity is clean is worth doing. */}
-          <AdminGapEntitySelect entity={entity} gap={gap} />
+          <TextField
+            select
+            label="Entity"
+            size="small"
+            sx={{ minWidth: 200 }}
+            value={entity}
+            onChange={(ev) => handleEntityChange(ev.target.value as AdminEntityKey)}
+          >
+            {ADMIN_ENTITY_KEYS.map((key) => (
+              <MenuItem key={key} value={key}>
+                {ADMIN_ENTITIES[key].title}
+              </MenuItem>
+            ))}
+          </TextField>
         </Box>
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 1.5 }}>
@@ -77,14 +139,12 @@ export default async function AdminGapQueue({
             return (
               <Chip
                 key={kind}
-                clickable
                 color={kind === gap ? 'primary' : 'default'}
-                component="a"
-                href={buildDashboardHref({ entity, gap: kind })}
                 label={count === null ? label : `${label} ${count.toLocaleString()}`}
                 size="small"
                 sx={kind === 'description' ? { borderStyle: 'dashed', opacity: 0.7 } : undefined}
                 variant={kind === gap ? 'filled' : 'outlined'}
+                onClick={() => handleGapChange(kind)}
               />
             )
           })}
@@ -109,9 +169,9 @@ export default async function AdminGapQueue({
           <>
             <List disablePadding>
               {rows.map((row, i) => (
-                <Box key={row.slug}>
+                <Box key={row.key}>
                   <ListItem disablePadding>
-                    <ListItemButton component="a" href={row.editHref}>
+                    <ListItemButton component={Link} href={row.editHref}>
                       <ListItemAvatar>
                         <LazyImage
                           alt={row.slug}
@@ -123,7 +183,7 @@ export default async function AdminGapQueue({
                       </ListItemAvatar>
                       <ListItemText
                         primary={row.title}
-                        secondary={row.slug}
+                        secondary={`${row.kind} · ${gapSummary(row)}`}
                         slotProps={{
                           primary: { variant: 'body2', noWrap: true },
                           secondary: { variant: 'caption' },
@@ -149,29 +209,15 @@ export default async function AdminGapQueue({
                 {from}–{to} of {total.toLocaleString()}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button
-                  component="a"
-                  disabled={page <= 1}
-                  href={buildDashboardHref({ entity, gap, page: page - 1 })}
-                  size="small"
-                >
+                <Button disabled={currentPage <= 1} size="small" onClick={() => setPage(currentPage - 1)}>
                   Previous
                 </Button>
                 <Button
-                  component="a"
-                  disabled={page >= lastPage}
-                  href={buildDashboardHref({ entity, gap, page: page + 1 })}
+                  disabled={currentPage >= lastPage}
                   size="small"
+                  onClick={() => setPage(currentPage + 1)}
                 >
                   Next
-                </Button>
-                <Button
-                  component="a"
-                  href={`${rows[0].editHref}?entity=${entity}&gap=${gap}&page=${page}`}
-                  size="small"
-                  variant="outlined"
-                >
-                  Start fixing
                 </Button>
               </Box>
             </Box>
