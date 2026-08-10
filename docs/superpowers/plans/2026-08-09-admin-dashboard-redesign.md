@@ -2043,3 +2043,97 @@ Supabase MCP, confirm the section yields **82** pieces (66 outfit + 16 makeup),
 and that container counts drop to **313** / **53**.
 
 **Human verification required** — a subagent cannot drive a browser.
+
+---
+
+# Revision C — split makeup sets from makeup evolutions (2026-08-09)
+
+**Why:** `outfit_sets` was split into two dashboard entities (`outfit-sets` for
+`base_set IS NULL`, `evolutions` for the rest), but `makeup_sets` was left as one
+bucket even though it has the identical shape. That made Makeup Sets read **87**
+where the old dashboard showed **57** — the old one used `getMakeupSets()`, which
+folds evolutions into their base.
+
+Measured split:
+
+| Entity | total | no_title | no_image | no_description | gaps |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `makeup-sets` (`base_set IS NULL`) | **57** | 0 | 5 | 55 | **5** |
+| `makeup-evolutions` (`base_set IS NOT NULL`) | **30** | 0 | 9 | 30 | **9** |
+
+**Important asymmetry with outfits.** Outfits has a dedicated
+`/admin/outfits/evolutions` route. **Makeup does not** — there is no
+`app/admin/makeup/evolutions/`, and makeup evolutions are rows in `makeup_sets`
+edited through `/admin/makeup/sets/edit/{slug}`. So this is a **reporting** split
+only: both entities share one `listHref` and one `editHref`. Do not invent a
+route that does not exist.
+
+---
+
+### Task 14: Split `makeup-evolutions` out of `makeup-sets`
+
+**Files:**
+- Create: `supabase/migrations/<timestamp>_split_makeup_evolutions_in_stats_view.sql`
+- Modify: `lib/admin-entities.ts`
+- Modify: `hooks/data/admin/gap-containers.ts` if it special-cases `makeup-sets`
+
+- [ ] **Step 1: Migration — split the view's makeup branch**
+
+`create or replace view admin_entity_stats` with the single `makeup_sets` branch
+replaced by two, exactly mirroring how the existing `outfit-sets` / `evolutions`
+branches are written:
+
+```sql
+  union all
+  select 'makeup-sets', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from makeup_sets where base_set is null
+
+  union all
+  select 'makeup-evolutions', count(*),
+         count(*) filter (where title is null or btrim(title) = ''),
+         count(*) filter (where image_url is null or btrim(image_url) = ''),
+         count(*) filter (where description is null or btrim(description) = ''),
+         count(*) filter (where (title is null or btrim(title) = '')
+                             or (image_url is null or btrim(image_url) = ''))
+    from makeup_sets where base_set is not null
+```
+
+Every other branch stays byte-identical. Preserve
+`alter view admin_entity_stats set (security_invoker = on)` and the
+`grant select ... to authenticated`.
+
+**Apply with the Supabase MCP `apply_migration` tool only** (project
+`ykfuevyqpjvtxidjnhxm`). **Never `supabase db push`** — two unrelated makeup
+migrations are still unapplied locally and would ride along, renaming slugs and
+deleting from `obtained_makeup`. Name the migration file to match the version
+`apply_migration` records.
+
+- [ ] **Step 2: Registry**
+
+Set `evolutionFilter: false` on `makeup-sets`, and add a `makeup-evolutions`
+entry with `evolutionFilter: true`. Both use `table: 'makeup_sets'`, both track
+title/image/description, neither `isVariant`. Give `makeup-evolutions` the same
+`listHref`/`editHref` as `makeup-sets` (`navLinksData.admin.makeup.sets.*`) and
+**no `addHref`** — evolutions are not created directly, matching how outfit
+`evolutions` is defined. Add the key to `AdminEntityKey`.
+
+- [ ] **Step 3: Totals strip**
+
+In `ADMIN_DOMAINS`, add a `makeup-evolutions` chip labelled `evo` to the Makeup
+domain, so it reads like Outfits (`sets` + `evo`).
+
+- [ ] **Step 4: Verify**
+
+`yarn tsc --noEmit` green, `yarn lint` 0 errors, `yarn build` passes.
+
+Via Supabase MCP `execute_sql`, confirm the view returns **13** rows and that
+`makeup-sets` = 57/0/5/55/**5** and `makeup-evolutions` = 30/0/9/30/**9**.
+Confirm total entries across all entities is unchanged — the 87 rows are
+re-bucketed, never double-counted.
+
+**Human verification required** — a subagent cannot drive a browser.
