@@ -2137,3 +2137,122 @@ Confirm total entries across all entities is unchanged — the 87 rows are
 re-bucketed, never double-counted.
 
 **Human verification required** — a subagent cannot drive a browser.
+
+---
+
+# Revision D — makeup: drop `label`, add season fields to variants (2026-08-09)
+
+**Measured before deciding:**
+
+| column | makeup_sets | makeup_variants |
+| --- | ---: | ---: |
+| `label` populated | **0 / 87** | **0 / 446** |
+| `style` populated | 84 / 87 | 420 / 446 |
+| `seasons` | 84 populated | column absent |
+| `season_category` | 22 populated | column absent |
+
+**`style` is NOT dropped.** It holds 504 populated values and drives public
+behaviour — `app/makeup/filter-makeup.tsx:93` and `app/makeup/makeup-results-bar.tsx:40`
+filter by it, `app/makeup/[slug]/makeup-set-detail-card.tsx` displays it, and it
+appears in the sort/filter enums in `lib/types/makeup.ts`. Dropping it would be
+data loss plus a public-feature regression. User decision: keep it.
+
+**Makeup sets already have both season fields** — the columns exist and
+`edit-makeup-set-form.tsx:72-73` already reads `initial.seasons` and
+`initial.season_category`. No work needed there.
+
+So the actual change is: drop `label` from both makeup tables (zero data loss),
+and add `seasons` + `season_category` to `makeup_variants` with FKs mirroring
+`outfit_variants`.
+
+---
+
+### Task 15: Drop makeup `label`; add season fields to makeup variants
+
+Migration and code must land in **one commit** — regenerated types without
+`label` break every reference at once.
+
+- [ ] **Step 1: Migration**
+
+Mirror `outfit_variants`' constraints exactly — `ON UPDATE CASCADE`, no
+`ON DELETE` clause:
+
+```sql
+alter table public.makeup_sets drop constraint if exists makeup_sets_label_fkey;
+alter table public.makeup_sets drop column if exists label;
+
+alter table public.makeup_variants drop constraint if exists makeup_variants_label_fkey;
+alter table public.makeup_variants drop column if exists label;
+
+alter table public.makeup_variants
+  add column if not exists seasons text,
+  add column if not exists season_category text;
+
+alter table public.makeup_variants
+  add constraint makeup_variants_seasons_fkey
+    foreign key (seasons) references public.seasons(slug) on update cascade,
+  add constraint makeup_variants_season_category_fkey
+    foreign key (season_category) references public.season_categories(slug) on update cascade;
+```
+
+Apply with the Supabase MCP `apply_migration` tool **only** — never
+`supabase db push`. Name the local file to match the recorded version.
+
+- [ ] **Step 2: Regenerate types**
+
+```bash
+supabase gen types typescript --linked 2>/dev/null > lib/types/supabase.ts
+```
+
+Not `npx … > file` — that leaks npm/CLI warnings into the `.ts`. Confirm the
+file still starts with `export type Json =`.
+
+- [ ] **Step 3: Remove `label` from makeup code**
+
+Admin: `makeup/variants/{actions.ts,fields.tsx,makeup-variant-table.tsx,makeup-variant-view.tsx,page.tsx,new/page.tsx,edit/[slug]/page.tsx}`,
+`makeup/sets/{actions.ts,makeup-set-table.tsx,makeup-set-view.tsx}`, and both
+set forms. Drop the `label` grid column, the `labels` prop and its
+`getLabels()` lookup, the payload key, and `'label'` from the `FK_FIELDS`
+tuple in `variants/actions.ts:121` and the sets equivalent at
+`sets/actions.ts:305`.
+
+Public: `app/makeup/[slug]/makeup-set-detail-card.tsx` destructures `label` —
+remove it and whatever renders it.
+
+Also drop `label` from the `RAW_COLUMNS` select lists in
+`hooks/data/admin/makeup-sets.ts`, `hooks/data/admin/makeup-variants.ts`, and
+`hooks/data/makeup-sets.ts`, and from any makeup sort/filter enum in
+`lib/types/makeup.ts`.
+
+**Leave the shared `labels` table and outfit label usage alone** — this is
+makeup-only. `outfit_variants` keeps `label` and `label_2`.
+
+- [ ] **Step 4: Add season fields to the makeup variant form**
+
+In `app/admin/makeup/variants/fields.tsx`, add after the category field,
+mirroring `outfits/variants/fields.tsx`:
+
+```ts
+{ type: 'select', name: 'seasons', label: 'Season', optionsKey: 'seasons' },
+{ type: 'select', name: 'season_category', label: 'Season Category', optionsKey: 'seasonCategories' },
+```
+
+Pass `seasons` and `seasonCategories` lookups from both the `new/` and
+`edit/[slug]/` pages via `getSeasons()` / `getSeasonCategories()`, and read both
+from `formData` in the add and edit actions (`|| null`, same as the other
+nullable text columns). Optionally add them as columns to the variant DataGrid.
+
+- [ ] **Step 5: Verify**
+
+`yarn tsc --noEmit` green, `yarn lint` 0 errors, `yarn build` passes.
+
+```bash
+grep -rn "'label'\|\.label\b" app/admin/makeup app/makeup hooks/data/admin/makeup-sets.ts hooks/data/admin/makeup-variants.ts
+```
+
+Expected: no makeup column references (UI `label=` props and `{ value, label }`
+option objects are unrelated and stay).
+
+Via Supabase MCP, confirm `makeup_variants` now has `seasons` and
+`season_category` with both FKs, `label` is gone from both tables, and
+`style` still has 84 / 420 populated values.
