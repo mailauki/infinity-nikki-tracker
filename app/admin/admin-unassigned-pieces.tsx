@@ -61,8 +61,8 @@ export default function AdminUnassignedPieces({ pieces }: { pieces: UnassignedPi
           </Typography>
         </Box>
         <Typography color="text.secondary" sx={{ mb: 1.5 }} variant="body2">
-          Pieces that belong to no set — each is edited on its own variant form,
-          not through a set&apos;s.
+          Pieces with no owning set at all — each is edited on its own variant form, not through a
+          set&apos;s. This usually means a broken reference worth fixing.
         </Typography>
 
         <GapFilterChips

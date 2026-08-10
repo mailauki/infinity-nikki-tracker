@@ -1,7 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import { cache } from 'react'
 import { toTitle } from '@/lib/utils'
-import { ADMIN_ENTITIES, ADMIN_ENTITY_KEYS, type AdminEntityKey } from '@/lib/admin-entities'
+import {
+  ADMIN_ENTITIES,
+  ADMIN_ENTITY_KEYS,
+  STANDALONE_QUEUE_KEY,
+  type AdminEntityKey,
+  type GapQueueKey,
+} from '@/lib/admin-entities'
 import type { Database } from '@/lib/types/supabase'
 
 // Entity table names are validated against ADMIN_ENTITIES at authoring time;
@@ -27,7 +33,10 @@ export interface GapWorkItem {
   /** Gap variants inside this container missing that field (1 for non-variant entities). */
   noTitle: number
   noImage: number
+  noAltImage: number
   noDescription: number
+  noSeason: number
+  noSeasonCategory: number
   /** Edit form for the container itself. */
   editHref: string
 }
@@ -57,11 +66,18 @@ const GROUPED_VARIANT_KEYS = new Set<AdminEntityKey>([
 ])
 
 /**
- * Slugs that mean "no real owning set". Both `outfit_sets` and `makeup_sets`
- * use `standalone_pieces` (underscore) — the migration that introduced it is
- * live. The `standalone-pieces` (hyphen) variant is matched too as deliberate
- * defensiveness against a future rename or a differently-spelled slug landing
- * in either table.
+ * Slugs treated as "not a groupable owning set". Both `outfit_sets` and
+ * `makeup_sets` use `standalone_pieces` (underscore) — the migration that
+ * introduced it is live. The `standalone-pieces` (hyphen) variant is matched
+ * too as deliberate defensiveness against a future rename or a
+ * differently-spelled slug landing in either table.
+ *
+ * Note these ARE real, titled set rows with working edit forms — not
+ * placeholders and not dangling references. They're excluded from container
+ * grouping on purpose: collapsing every standalone piece into a single
+ * catch-all container would bury dozens of unrelated pieces behind one row,
+ * so they surface individually via `getUnassignedPieces()` instead. Anything
+ * with a genuinely NULL owner is routed there too.
  */
 export const STANDALONE_SET_SLUGS = ['standalone_pieces', 'standalone-pieces']
 
@@ -88,16 +104,29 @@ function isMissing(value: unknown): boolean {
 }
 
 /**
- * A record "needs attention" when it is missing title or image — the two
- * fields the admin queue has always gated on (see the `admin_entity_stats`
- * SQL view: `gaps` is an OR of title/image only). Description is tracked for
- * display (`noDescription`) but deliberately never triggers inclusion —
- * almost every variant lacks one, so including it would swamp the queue.
+ * A record "needs attention" when it is missing title, image, or alt image.
+ * Description is tracked for display (`noDescription`) but deliberately never
+ * triggers inclusion — almost every variant lacks one, so including it would
+ * swamp the queue.
+ *
+ * Alt image DOES gate, unlike season. Evolutions have 0 rows missing a main
+ * image but 140 missing an alt image; gating on title/image alone reported
+ * that entity as perfectly clean while 140 real gaps sat invisible. Note the
+ * `admin_entity_stats` SQL view still computes `gaps` from title/image only,
+ * so the completeness list and this queue can disagree for alt-image-only
+ * gaps until that view is updated.
+ *
+ * Season and season-category stay non-gating. Coverage is excellent on
+ * outfits (2 of 292 base sets, 32 of 6,561 variants missing a season) but
+ * `makeup_variants` has the column entirely unpopulated — all 446 rows NULL,
+ * and most `momo_cloaks` too. Gating on either would flood the queue with
+ * rows carrying no real image work.
  */
-function gapOrFilter(tracksTitle: boolean, tracksImage: boolean): string {
+function gapOrFilter(tracksTitle: boolean, tracksImage: boolean, tracksAltImage: boolean): string {
   const parts: string[] = []
   if (tracksTitle) parts.push('title.is.null', 'title.eq.')
   if (tracksImage) parts.push('image_url.is.null', 'image_url.eq.')
+  if (tracksAltImage) parts.push('alt_image_url.is.null', 'alt_image_url.eq.')
   return parts.join(',')
 }
 
@@ -105,18 +134,25 @@ function selectColumns(
   extra: string[],
   tracksTitle: boolean,
   tracksImage: boolean,
-  tracksDescription: boolean
+  tracksDescription: boolean,
+  tracksSeason: boolean,
+  tracksAltImage: boolean
 ): string {
   const cols = ['slug', ...extra]
   if (tracksTitle) cols.push('title')
   if (tracksImage) cols.push('image_url')
   if (tracksDescription) cols.push('description')
+  if (tracksSeason) cols.push('seasons', 'season_category')
+  if (tracksAltImage) cols.push('alt_image_url')
   return cols.join(', ')
 }
 
 /** PostgREST caps a single response at 1000 rows; hand-paginate everything. */
 async function fetchAllRows(
-  queryFactory: (from: number, to: number) => PromiseLike<{ data: unknown[] | null; error: unknown }>
+  queryFactory: (
+    from: number,
+    to: number
+  ) => PromiseLike<{ data: unknown[] | null; error: unknown }>
 ): Promise<Row[]> {
   const all: Row[] = []
   for (let from = 0; ; from += PAGE) {
@@ -132,8 +168,40 @@ async function fetchAllRows(
 /** One row per gap record — every entity except the three grouped variant tables. */
 async function fetchSimpleGapItems(supabase: Client, key: AdminEntityKey): Promise<GapWorkItem[]> {
   const e = ADMIN_ENTITIES[key]
-  const select = selectColumns([], e.tracksTitle, e.tracksImage, e.tracksDescription)
-  const orFilter = gapOrFilter(e.tracksTitle, e.tracksImage)
+  const select = selectColumns(
+    [],
+    e.tracksTitle,
+    e.tracksImage,
+    e.tracksDescription,
+    e.tracksSeason,
+    e.tracksAltImage
+  )
+  /*
+   * Simple entities gate on EVERY tracked field — title, image, alt image,
+   * description and season — unlike the grouped variant path.
+   *
+   * These entities are sets/lookups where each row IS the record, so any gap
+   * is directly actionable on that row's own edit form; there is no container
+   * to flood. Gating on a subset undercounted badly, and for some entities
+   * hid the only gap they had: seasons has 19 of 21 rows missing a
+   * description and 0 missing a title/image, so the queue showed 2 rows and a
+   * "No description" chip reading 0. Likewise outfit-sets showed 0 of its 2
+   * season gaps, momo-cloaks 0 of its 74, season-categories 0 of its 23
+   * description gaps.
+   *
+   * The grouped variant path deliberately does NOT do this. There, one row is
+   * a whole set of variants, so admitting description would pull in 431
+   * outfit containers whose only gap is a description almost no variant has —
+   * the original swamping concern. Season is handled there by a separate
+   * ungated counting pass instead, keeping inclusion image/title-gated.
+   */
+  const orFilter = [
+    gapOrFilter(e.tracksTitle, e.tracksImage, e.tracksAltImage),
+    ...(e.tracksDescription ? ['description.is.null', 'description.eq.'] : []),
+    ...(e.tracksSeason ? ['seasons.is.null', 'season_category.is.null'] : []),
+  ]
+    .filter(Boolean)
+    .join(',')
 
   const rows = await fetchAllRows((from, to) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -157,7 +225,10 @@ async function fetchSimpleGapItems(supabase: Client, key: AdminEntityKey): Promi
       imageUrl,
       noTitle: e.tracksTitle && isMissing(r.title) ? 1 : 0,
       noImage: e.tracksImage && isMissing(r.image_url) ? 1 : 0,
+      noAltImage: e.tracksAltImage && isMissing(r.alt_image_url) ? 1 : 0,
       noDescription: e.tracksDescription && isMissing(r.description) ? 1 : 0,
+      noSeason: e.tracksSeason && isMissing(r.seasons) ? 1 : 0,
+      noSeasonCategory: e.tracksSeason && isMissing(r.season_category) ? 1 : 0,
       editHref: `${e.editHref}/${slug}`,
     }
   })
@@ -217,7 +288,10 @@ interface ContainerGroup {
   ownerSlug: string
   noTitle: number
   noImage: number
+  noAltImage: number
   noDescription: number
+  noSeason: number
+  noSeasonCategory: number
 }
 
 /**
@@ -237,32 +311,99 @@ async function fetchGroupedContainers(
     [config.ownerColumn],
     e.tracksTitle,
     e.tracksImage,
-    e.tracksDescription
+    e.tracksDescription,
+    e.tracksSeason,
+    e.tracksAltImage
   )
-  const orFilter = gapOrFilter(e.tracksTitle, e.tracksImage)
+  const orFilter = gapOrFilter(e.tracksTitle, e.tracksImage, e.tracksAltImage)
 
   const variantRows = await fetchAllRows((from, to) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const q: any = supabase.from(e.table as TableName).select(select).or(orFilter)
+    const q: any = supabase
+      .from(e.table as TableName)
+      .select(select)
+      .or(orFilter)
     return q.order('slug', { ascending: true }).range(from, to)
   })
 
-  // Group gap variants by owning-set slug. Pieces with no real owner (column
-  // NULL, or one of STANDALONE_SET_SLUGS) are unassigned — they surface
-  // individually via getUnassignedPieces() instead, so they're excluded from
-  // container grouping entirely to avoid double-counting.
+  /*
+   * Season counts come from a SEPARATE, ungated pass over every variant.
+   *
+   * Counting them off `variantRows` undercounted: that set is narrowed to rows
+   * missing a title/image/alt-image, so a set whose images are complete but
+   * whose variants all lack a season contributed nothing — `woodland_nesting`
+   * (8 variants, no season, no image gaps) was silently dropped, showing 2
+   * containers where 3 were correct.
+   *
+   * Folding season into `orFilter` instead would fix the count but change
+   * which containers appear: +1 outfit container, but +34 makeup ones, since
+   * `makeup_variants.seasons` is 100% NULL. That floods the queue with sets
+   * carrying no image work. So inclusion stays image/title-gated while the
+   * season *counts* describe the full variant set.
+   */
+  const seasonRows = e.tracksSeason
+    ? await fetchAllRows((from, to) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const q: any = supabase
+          .from(e.table as TableName)
+          .select(`${config.ownerColumn}, seasons, season_category`)
+          .or('seasons.is.null,season_category.is.null')
+        return q.order('slug', { ascending: true }).range(from, to)
+      })
+    : []
+
+  // Group gap variants by owning-set slug, so each row is one set with a
+  // total across its variants and a link to that set's edit form. Two kinds of
+  // row are skipped: NULL owners (nothing to group under — they go to
+  // getUnassignedPieces()), and STANDALONE_SET_SLUGS, which would otherwise
+  // collapse dozens of unrelated pieces into one catch-all container. The
+  // latter get their own per-piece bucket (STANDALONE_QUEUE_KEY), so excluding
+  // them here is what keeps the two from double-counting.
   const groups = new Map<string, ContainerGroup>()
-  for (const row of variantRows) {
-    const ownerSlug = (row[config.ownerColumn] as string | null) ?? null
-    if (ownerSlug === null || STANDALONE_SET_SLUGS.includes(ownerSlug)) continue
+
+  /** Groupable owner slug, or null for rows this queue does not group. */
+  function ownerOf(row: Row): string | null {
+    const slug = (row[config.ownerColumn] as string | null) ?? null
+    if (slug === null || STANDALONE_SET_SLUGS.includes(slug)) return null
+    return slug
+  }
+
+  function groupFor(ownerSlug: string): ContainerGroup {
     let group = groups.get(ownerSlug)
     if (!group) {
-      group = { ownerSlug, noTitle: 0, noImage: 0, noDescription: 0 }
+      group = {
+        ownerSlug,
+        noTitle: 0,
+        noImage: 0,
+        noAltImage: 0,
+        noDescription: 0,
+        noSeason: 0,
+        noSeasonCategory: 0,
+      }
       groups.set(ownerSlug, group)
     }
+    return group
+  }
+
+  for (const row of variantRows) {
+    const ownerSlug = ownerOf(row)
+    if (ownerSlug === null) continue
+    const group = groupFor(ownerSlug)
     if (e.tracksTitle && isMissing(row.title)) group.noTitle++
     if (e.tracksImage && isMissing(row.image_url)) group.noImage++
+    if (e.tracksAltImage && isMissing(row.alt_image_url)) group.noAltImage++
     if (e.tracksDescription && isMissing(row.description)) group.noDescription++
+  }
+
+  // Season counts from the ungated pass. A container can appear here without
+  // any gated rows (complete images, missing seasons) — `groupFor` creates it,
+  // so it shows up under the season chips with 0 image/title gaps.
+  for (const row of seasonRows) {
+    const ownerSlug = ownerOf(row)
+    if (ownerSlug === null) continue
+    const group = groupFor(ownerSlug)
+    if (isMissing(row.seasons)) group.noSeason++
+    if (isMissing(row.season_category)) group.noSeasonCategory++
   }
 
   const ownerCols = ['slug', 'title']
@@ -282,7 +423,8 @@ async function fetchGroupedContainers(
       {
         title: (r.title as string | null) ?? null,
         imageUrl: config.ownerTracksImage ? ((r.image_url as string | null) ?? null) : null,
-        baseSet: config.evolutionEntityKey !== undefined ? ((r.base_set as string | null) ?? null) : null,
+        baseSet:
+          config.evolutionEntityKey !== undefined ? ((r.base_set as string | null) ?? null) : null,
       },
     ])
   )
@@ -292,17 +434,23 @@ async function fetchGroupedContainers(
     const ownerSlug = group.ownerSlug
     const owner = ownerBySlug.get(ownerSlug)
     const evoKey = config.evolutionEntityKey
-    const isEvolution = evoKey !== undefined && owner?.baseSet !== null && owner?.baseSet !== undefined
+    const isEvolution =
+      evoKey !== undefined && owner?.baseSet !== null && owner?.baseSet !== undefined
 
     // Label reflects whether the owning row is a base set or an evolution,
     // resolved per-container from `base_set` — independent of routing.
-    const kind = evoKey !== undefined && isEvolution ? KIND_LABELS[evoKey] : KIND_LABELS[config.containerKindKey]
+    const kind =
+      evoKey !== undefined && isEvolution
+        ? KIND_LABELS[evoKey]
+        : KIND_LABELS[config.containerKindKey]
 
     // Routing: outfit-variants route evolutions to their own edit form.
     // Makeup-variants route everything through the shared `containerKindKey`
     // edit form regardless of label — `routeToEvolutions` is false there.
     const routeKey: AdminEntityKey =
-      config.routeToEvolutions && evoKey !== undefined && isEvolution ? evoKey : config.containerKindKey
+      config.routeToEvolutions && evoKey !== undefined && isEvolution
+        ? evoKey
+        : config.containerKindKey
     const editBase = ADMIN_ENTITIES[routeKey].editHref
 
     items.push({
@@ -313,7 +461,10 @@ async function fetchGroupedContainers(
       imageUrl: owner?.imageUrl ?? null,
       noTitle: group.noTitle,
       noImage: group.noImage,
+      noAltImage: group.noAltImage,
       noDescription: group.noDescription,
+      noSeason: group.noSeason,
+      noSeasonCategory: group.noSeasonCategory,
       // If the owning slug doesn't resolve to a real set (orphaned reference),
       // there is no edit form to route to — fall back to the entity's list.
       editHref: owner ? `${editBase}/${ownerSlug}` : e.listHref,
@@ -334,9 +485,20 @@ const UNASSIGNED_OWNER_COLUMNS: Record<
 }
 
 /**
- * Gap-bearing variants whose owning-set column is NULL or a standalone-set
- * slug — they belong to no real set, so there is no container edit form to
- * group them under. Each surfaces individually, linking to its own edit form.
+ * Gap-bearing variants whose owning-set column is genuinely NULL — rows that
+ * belong to no set at all, so there is no container edit form to reach them
+ * through. Each surfaces individually, linking to its own variant edit form.
+ *
+ * Deliberately does NOT include STANDALONE_SET_SLUGS. Those rows are assigned
+ * to a real, titled "Standalone Pieces" set with a working edit form, so
+ * listing them as unassigned was simply wrong. They remain excluded from
+ * container grouping (see STANDALONE_SET_SLUGS) — the trade-off is that they
+ * no longer appear in either dashboard section; reach them via the variants
+ * list page.
+ *
+ * Expect this to return nothing under healthy data: every variant row
+ * currently has a non-null, resolvable owner. A non-empty result means real
+ * referential damage, which is exactly what makes it worth surfacing.
  */
 async function fetchUnassignedPieces(
   supabase: Client,
@@ -344,19 +506,26 @@ async function fetchUnassignedPieces(
 ): Promise<UnassignedPiece[]> {
   const e = ADMIN_ENTITIES[entityKey]
   const ownerColumn = UNASSIGNED_OWNER_COLUMNS[entityKey]
-  const select = selectColumns([ownerColumn], e.tracksTitle, e.tracksImage, e.tracksDescription)
-  const orFilter = gapOrFilter(e.tracksTitle, e.tracksImage)
+  const select = selectColumns(
+    [ownerColumn],
+    e.tracksTitle,
+    e.tracksImage,
+    e.tracksDescription,
+    e.tracksSeason,
+    e.tracksAltImage
+  )
+  const orFilter = gapOrFilter(e.tracksTitle, e.tracksImage, e.tracksAltImage)
 
   const rows = await fetchAllRows((from, to) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const q: any = supabase.from(e.table as TableName).select(select).or(orFilter)
+    const q: any = supabase
+      .from(e.table as TableName)
+      .select(select)
+      .or(orFilter)
     return q.order('slug', { ascending: true }).range(from, to)
   })
 
-  const unassignedRows = rows.filter((r) => {
-    const owner = (r[ownerColumn] as string | null) ?? null
-    return owner === null || STANDALONE_SET_SLUGS.includes(owner)
-  })
+  const unassignedRows = rows.filter((r) => ((r[ownerColumn] as string | null) ?? null) === null)
 
   return unassignedRows.map((r) => {
     const slug = r.slug as string
@@ -377,6 +546,65 @@ async function fetchUnassignedPieces(
   })
 }
 
+/**
+ * Gap-bearing variants assigned to a STANDALONE_SET_SLUGS set, as individual
+ * per-piece rows rather than one catch-all container.
+ *
+ * These are excluded from container grouping (see `fetchGroupedContainers`),
+ * so without this they'd appear nowhere on the dashboard. Each `GapWorkItem`
+ * describes one variant: the counts are 0/1 like any non-variant entity, and
+ * `editHref` points at the piece's own variant form — never the shared
+ * "Standalone Pieces" set form, which is not where you fix a single piece.
+ */
+async function fetchStandalonePieces(
+  supabase: Client,
+  entityKey: 'outfit-variants' | 'makeup-variants' | 'eureka-variants'
+): Promise<GapWorkItem[]> {
+  const e = ADMIN_ENTITIES[entityKey]
+  const ownerColumn = UNASSIGNED_OWNER_COLUMNS[entityKey]
+  const select = selectColumns(
+    [ownerColumn],
+    e.tracksTitle,
+    e.tracksImage,
+    e.tracksDescription,
+    e.tracksSeason,
+    e.tracksAltImage
+  )
+  const orFilter = gapOrFilter(e.tracksTitle, e.tracksImage, e.tracksAltImage)
+
+  const rows = await fetchAllRows((from, to) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const q: any = supabase
+      .from(e.table as TableName)
+      .select(select)
+      .or(orFilter)
+      .in(ownerColumn, STANDALONE_SET_SLUGS)
+    return q.order('slug', { ascending: true }).range(from, to)
+  })
+
+  return rows.map((r) => {
+    const slug = r.slug as string
+    const rawTitle = e.tracksTitle ? ((r.title as string | null)?.trim() ?? '') : ''
+
+    return {
+      key: `${entityKey}:${slug}`,
+      slug,
+      title: rawTitle || toTitle(slug),
+      // Labelled by source table so the mixed list stays readable — the rows
+      // come from three different variant tables.
+      kind: KIND_LABELS[entityKey],
+      imageUrl: e.tracksImage ? ((r.image_url as string | null) ?? null) : null,
+      noTitle: e.tracksTitle && isMissing(r.title) ? 1 : 0,
+      noImage: e.tracksImage && isMissing(r.image_url) ? 1 : 0,
+      noAltImage: e.tracksAltImage && isMissing(r.alt_image_url) ? 1 : 0,
+      noDescription: e.tracksDescription && isMissing(r.description) ? 1 : 0,
+      noSeason: e.tracksSeason && isMissing(r.seasons) ? 1 : 0,
+      noSeasonCategory: e.tracksSeason && isMissing(r.season_category) ? 1 : 0,
+      editHref: `${e.editHref}/${slug}`,
+    }
+  })
+}
+
 // Auth-dependent (createClient reads cookies), so React cache(), not `use cache`.
 export const getUnassignedPieces = cache(async (): Promise<UnassignedPiece[]> => {
   const supabase = await createClient()
@@ -391,23 +619,33 @@ export const getUnassignedPieces = cache(async (): Promise<UnassignedPiece[]> =>
 })
 
 // Auth-dependent (createClient reads cookies), so React cache(), not `use cache`.
-export const getGapWorkItems = cache(async (): Promise<Record<AdminEntityKey, GapWorkItem[]>> => {
+export const getGapWorkItems = cache(async (): Promise<Record<GapQueueKey, GapWorkItem[]>> => {
   const supabase = await createClient()
 
-  const [simpleResults, outfitVariants, makeupVariants, eurekaVariants] = await Promise.all([
-    Promise.all(SIMPLE_ENTITY_KEYS.map((key) => fetchSimpleGapItems(supabase, key))),
-    fetchGroupedContainers(supabase, OUTFIT_VARIANT_CONFIG),
-    fetchGroupedContainers(supabase, MAKEUP_VARIANT_CONFIG),
-    fetchGroupedContainers(supabase, EUREKA_VARIANT_CONFIG),
-  ])
+  const [simpleResults, outfitVariants, makeupVariants, eurekaVariants, standaloneResults] =
+    await Promise.all([
+      Promise.all(SIMPLE_ENTITY_KEYS.map((key) => fetchSimpleGapItems(supabase, key))),
+      fetchGroupedContainers(supabase, OUTFIT_VARIANT_CONFIG),
+      fetchGroupedContainers(supabase, MAKEUP_VARIANT_CONFIG),
+      fetchGroupedContainers(supabase, EUREKA_VARIANT_CONFIG),
+      Promise.all(
+        (['outfit-variants', 'makeup-variants', 'eureka-variants'] as const).map((key) =>
+          fetchStandalonePieces(supabase, key)
+        )
+      ),
+    ])
 
-  const result = {} as Record<AdminEntityKey, GapWorkItem[]>
+  const result = {} as Record<GapQueueKey, GapWorkItem[]>
   SIMPLE_ENTITY_KEYS.forEach((key, i) => {
     result[key] = simpleResults[i]
   })
   result['outfit-variants'] = outfitVariants
   result['makeup-variants'] = makeupVariants
   result['eureka-variants'] = eurekaVariants
+  // Flat per-piece rows from all three variant tables, sorted into one list.
+  result[STANDALONE_QUEUE_KEY] = standaloneResults
+    .flat()
+    .sort((a, b) => a.title.localeCompare(b.title))
 
   return result
 })

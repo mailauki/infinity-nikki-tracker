@@ -46,7 +46,10 @@ async function AdminOverview() {
       <Suspense>
         <AdminGapQueue items={items} stats={stats} />
       </Suspense>
-      <AdminUnassignedPieces pieces={unassignedPieces} />
+      {/* Only rendered when rows are genuinely ownerless (NULL owning set) —
+          under healthy data there are none, so the card stays hidden rather
+          than showing a permanently empty section. */}
+      {unassignedPieces.length > 0 && <AdminUnassignedPieces pieces={unassignedPieces} />}
     </Stack>
   )
 }
