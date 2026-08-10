@@ -11,7 +11,7 @@ export const getMakeupVariants = cache(async () => {
     supabase
       .from('makeup_variants')
       .select(
-        'id, slug, makeup_set, makeup_category, title, description, rarity, style, label, default, image_url, alt_image_url'
+        'id, slug, makeup_set, makeup_category, title, description, rarity, style, default, image_url, alt_image_url'
       )
       .order('id', { ascending: true })
       .range(from, to)

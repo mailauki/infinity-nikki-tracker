@@ -3,8 +3,9 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { getMakeupSetsRaw } from '@/hooks/data/admin/makeup-sets'
 import { getMakeupCategories } from '@/hooks/data/makeup-categories'
+import { getSeasons } from '@/hooks/data/seasons'
+import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
-import { getLabels } from '@/hooks/data/labels'
 import EntityForm from '@/app/admin/entity-form'
 import { addMakeupVariant } from '../actions'
 
@@ -23,11 +24,12 @@ export default function NewMakeupVariantPage() {
 }
 
 async function NewMakeupVariant() {
-  const [makeupSets, makeupCategories, styles, labels] = await Promise.all([
+  const [makeupSets, makeupCategories, seasons, seasonCategories, styles] = await Promise.all([
     getMakeupSetsRaw(),
     getMakeupCategories(),
+    getSeasons(),
+    getSeasonCategories(),
     getStyles(),
-    getLabels(),
   ])
 
   return (
@@ -36,7 +38,7 @@ async function NewMakeupVariant() {
       action={addMakeupVariant}
       formId="add-makeup-variant"
       formKind="makeupVariant"
-      lookups={{ makeupSets, makeupCategories, styles, labels }}
+      lookups={{ makeupSets, makeupCategories, seasons, seasonCategories, styles }}
       mode="add"
     />
   )

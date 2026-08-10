@@ -3,7 +3,6 @@ import AddMakeupSetForm from './add-makeup-set-form'
 import { getMakeupSetsRaw } from '@/hooks/data/admin/makeup-sets'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getStyles } from '@/hooks/data/styles'
-import { getLabels } from '@/hooks/data/labels'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getMakeupCategories } from '@/hooks/data/makeup-categories'
@@ -25,12 +24,11 @@ export default function NewMakeupSetPage() {
 }
 
 async function NewMakeupSet() {
-  const [makeupSets, outfitSets, styles, labels, seasons, seasonCategories, makeupCategories] =
+  const [makeupSets, outfitSets, styles, seasons, seasonCategories, makeupCategories] =
     await Promise.all([
       getMakeupSetsRaw(),
       getOutfitSetsRaw(),
       getStyles(),
-      getLabels(),
       getSeasons(),
       getSeasonCategories(),
       getMakeupCategories(),
@@ -38,7 +36,6 @@ async function NewMakeupSet() {
 
   return (
     <AddMakeupSetForm
-      labels={labels}
       makeupCategories={makeupCategories}
       makeupSets={makeupSets}
       outfitSets={outfitSets}

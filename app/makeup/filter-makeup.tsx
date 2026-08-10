@@ -63,7 +63,6 @@ export default function FilterMakeup() {
     selectedObtainedFilter,
     selectedRarity,
     selectedStyle,
-    selectedLabel,
     selectedSeason,
     selectedSeasonCategory,
   } = filters
@@ -91,7 +90,6 @@ export default function FilterMakeup() {
         return set.rarity === selectedRarity
       })
       .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
-      .filter((set) => !selectedLabel.length || selectedLabel.includes(set.label ?? ''))
       .filter((set) => !selectedSeason.length || selectedSeason.includes(set.seasons ?? ''))
       .filter(
         (set) =>
@@ -184,7 +182,6 @@ export default function FilterMakeup() {
     selectedObtainedFilter,
     selectedRarity,
     selectedStyle,
-    selectedLabel,
     selectedSeason,
     selectedSeasonCategory,
     groupLevelObtained,

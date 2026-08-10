@@ -109,7 +109,6 @@ export default function FilterMenu() {
     makeupSets,
     makeupCategories,
     styles: makeupStyles,
-    labels: makeupLabels,
     seasons: makeupSeasons,
     seasonCategories: makeupSeasonCategories,
     isLoggedIn: makeupLoggedIn,
@@ -395,7 +394,6 @@ export default function FilterMenu() {
       selectedObtainedFilter,
       selectedRarity,
       selectedStyle,
-      selectedLabel,
       selectedSeason,
       selectedSeasonCategory,
     } = makeupFilters
@@ -410,7 +408,6 @@ export default function FilterMenu() {
       selectedObtainedFilter ||
       selectedRarity ||
       selectedStyle.length > 0 ||
-      selectedLabel.length > 0 ||
       selectedSeason.length > 0 ||
       selectedSeasonCategory.length > 0 ||
       !makeupGroupBySet ||
@@ -509,13 +506,6 @@ export default function FilterMenu() {
                 options={makeupStyles}
                 selected={selectedStyle}
                 onChange={(next) => onMakeupFiltersChange({ selectedStyle: next })}
-              />
-              <StyleLabelSelect
-                id="makeup-label-select"
-                label="Label"
-                options={makeupLabels}
-                selected={selectedLabel}
-                onChange={(next) => onMakeupFiltersChange({ selectedLabel: next })}
               />
             </ListItem>
             <ListItem sx={{ gap: 1 }}>

@@ -146,7 +146,6 @@ export function createMakeupSet(
     description: null,
     rarity: 0,
     style: null,
-    label: null,
     seasons: null,
     season_category: null,
     outfit_set: null,

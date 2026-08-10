@@ -397,7 +397,6 @@ export type Database = {
           description: string | null
           id: number
           image_url: string | null
-          label: string | null
           order: number
           outfit_set: string | null
           rarity: number
@@ -415,7 +414,6 @@ export type Database = {
           description?: string | null
           id?: number
           image_url?: string | null
-          label?: string | null
           order?: number
           outfit_set?: string | null
           rarity: number
@@ -433,7 +431,6 @@ export type Database = {
           description?: string | null
           id?: number
           image_url?: string | null
-          label?: string | null
           order?: number
           outfit_set?: string | null
           rarity?: number
@@ -450,13 +447,6 @@ export type Database = {
             columns: ["base_set"]
             isOneToOne: false
             referencedRelation: "makeup_sets"
-            referencedColumns: ["slug"]
-          },
-          {
-            foreignKeyName: "makeup_sets_label_fkey"
-            columns: ["label"]
-            isOneToOne: false
-            referencedRelation: "labels"
             referencedColumns: ["slug"]
           },
           {
@@ -497,10 +487,11 @@ export type Database = {
           description: string | null
           id: number
           image_url: string | null
-          label: string | null
           makeup_category: string | null
           makeup_set: string | null
           rarity: number | null
+          season_category: string | null
+          seasons: string | null
           slug: string
           style: string | null
           title: string | null
@@ -513,10 +504,11 @@ export type Database = {
           description?: string | null
           id?: number
           image_url?: string | null
-          label?: string | null
           makeup_category?: string | null
           makeup_set?: string | null
           rarity?: number | null
+          season_category?: string | null
+          seasons?: string | null
           slug: string
           style?: string | null
           title?: string | null
@@ -529,23 +521,17 @@ export type Database = {
           description?: string | null
           id?: number
           image_url?: string | null
-          label?: string | null
           makeup_category?: string | null
           makeup_set?: string | null
           rarity?: number | null
+          season_category?: string | null
+          seasons?: string | null
           slug?: string
           style?: string | null
           title?: string | null
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "makeup_variants_label_fkey"
-            columns: ["label"]
-            isOneToOne: false
-            referencedRelation: "labels"
-            referencedColumns: ["slug"]
-          },
           {
             foreignKeyName: "makeup_variants_makeup_category_fkey"
             columns: ["makeup_category"]
@@ -558,6 +544,20 @@ export type Database = {
             columns: ["makeup_set"]
             isOneToOne: false
             referencedRelation: "makeup_sets"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "makeup_variants_season_category_fkey"
+            columns: ["season_category"]
+            isOneToOne: false
+            referencedRelation: "season_categories"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "makeup_variants_seasons_fkey"
+            columns: ["seasons"]
+            isOneToOne: false
+            referencedRelation: "seasons"
             referencedColumns: ["slug"]
           },
           {

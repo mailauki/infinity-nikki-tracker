@@ -1,7 +1,7 @@
 'use client'
 
 import { useAdminView } from '../../admin-view-context'
-import { Label, Style } from '@/lib/types/eureka'
+import { Style } from '@/lib/types/eureka'
 import { MakeupSetRaw } from '@/lib/types/makeup'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { MakeupSetTable } from './makeup-set-table'
@@ -12,14 +12,12 @@ export default function MakeupSetView({
   makeupSets,
   outfitSets,
   styles,
-  labels,
   seasons,
   seasonCategories,
 }: {
   makeupSets: MakeupSetRaw[]
   outfitSets: OutfitSetRaw[]
   styles: Style[]
-  labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
 }) {
@@ -28,7 +26,6 @@ export default function MakeupSetView({
   return view === 'table' ? (
     <TableContainer>
       <MakeupSetTable
-        labels={labels}
         outfitSets={outfitSets}
         rows={makeupSets}
         seasonCategories={seasonCategories}

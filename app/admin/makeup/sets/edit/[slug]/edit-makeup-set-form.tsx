@@ -15,7 +15,7 @@ import {
   Typography,
 } from '@mui/material'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
-import { Label, Style } from '@/lib/types/eureka'
+import { Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
 import { Tables } from '@/lib/types/supabase'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
@@ -46,7 +46,6 @@ export default function EditMakeupSetForm({
   makeupSets,
   outfitSets,
   styles,
-  labels,
   seasons,
   seasonCategories,
   makeupCategories,
@@ -56,7 +55,6 @@ export default function EditMakeupSetForm({
   makeupSets: MakeupSetRaw[]
   outfitSets: OutfitSetRaw[]
   styles: Style[]
-  labels: Label[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   makeupCategories: MakeupCategory[]
@@ -68,7 +66,6 @@ export default function EditMakeupSetForm({
   const [description, setDescription] = useState(initial.description ?? '')
   const [rarity, setRarity] = useState<number | ''>(initial.rarity ?? '')
   const [style, setStyle] = useState(initial.style ?? '')
-  const [label, setLabel] = useState(initial.label ?? '')
   const [season, setSeason] = useState(initial.seasons ?? '')
   const [seasonCategory, setSeasonCategory] = useState(initial.season_category ?? '')
   const [outfitSet, setOutfitSet] = useState<string | null>(initial.outfit_set ?? null)
@@ -196,24 +193,6 @@ export default function EditMakeupSetForm({
           value={style}
           onChange={setStyle}
         />
-
-        <FormControl>
-          <InputLabel>Label</InputLabel>
-          <Select
-            MenuProps={MENU_PROPS}
-            label="Label"
-            name="label"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-          >
-            <MenuItem value="">—</MenuItem>
-            {labels.map((l) => (
-              <MenuItem key={l.slug} value={l.slug}>
-                {l.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
 
         <TextField
           multiline

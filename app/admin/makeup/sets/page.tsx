@@ -2,7 +2,6 @@ import { Suspense } from 'react'
 import { getMakeupSetsRaw } from '@/hooks/data/admin/makeup-sets'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getStyles } from '@/hooks/data/styles'
-import { getLabels } from '@/hooks/data/labels'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { byTitleThenSlug } from '@/lib/utils'
@@ -17,11 +16,10 @@ export default function MakeupSetsAdminPage() {
 }
 
 async function AdminView() {
-  const [makeupSets, outfitSets, styles, labels, seasons, seasonCategories] = await Promise.all([
+  const [makeupSets, outfitSets, styles, seasons, seasonCategories] = await Promise.all([
     getMakeupSetsRaw(),
     getOutfitSetsRaw(),
     getStyles(),
-    getLabels(),
     getSeasons(),
     getSeasonCategories(),
   ])
@@ -30,7 +28,6 @@ async function AdminView() {
 
   return (
     <MakeupSetView
-      labels={labels}
       makeupSets={sortedMakeupSets}
       outfitSets={outfitSets}
       seasonCategories={seasonCategories}
