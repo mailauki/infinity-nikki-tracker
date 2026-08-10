@@ -37,12 +37,15 @@ const GAPS: { kind: GapKind; label: string }[] = [
   { kind: 'description', label: 'No description' },
 ]
 
-function gapCount(stat: AdminStat | undefined, kind: GapKind): number | null {
-  if (!stat) return null
-  if (kind === 'image') return stat.noImage
-  if (kind === 'title') return stat.noTitle
-  if (kind === 'description') return stat.noDescription
-  return null
+/**
+ * Chip count for a gap kind, counted over the same containers the list below
+ * renders — never the row-level `AdminStat` totals, which count variants, not
+ * the containers this queue paginates.
+ */
+function containerGapCount(rows: GapWorkItem[], kind: GapKind): number {
+  if (kind === 'image') return rows.filter((r) => r.noImage > 0).length
+  if (kind === 'title') return rows.filter((r) => r.noTitle > 0).length
+  return rows.filter((r) => r.noDescription > 0).length
 }
 
 /** Default to the largest entity that actually has gaps, so the queue opens on real work. */
@@ -71,17 +74,14 @@ export default function AdminGapQueue({
   const [page, setPage] = useState(1)
 
   const e = ADMIN_ENTITIES[entity]
-  const stat = stats.find((s) => s.key === entity)
+
+  const allForEntity = useMemo(() => items[entity] ?? [], [items, entity])
 
   const filtered = useMemo(() => {
-    const all = items[entity] ?? []
-    if (gap === 'image') return all.filter((r) => r.noImage > 0)
-    if (gap === 'title') return all.filter((r) => r.noTitle > 0)
-    if (gap === 'description') return all.filter((r) => r.noDescription > 0)
-    // Duplicate detection has no signal on GapWorkItem (containers are unique
-    // by slug already) — keep the chip for parity, but it never has rows.
-    return []
-  }, [items, entity, gap])
+    if (gap === 'image') return allForEntity.filter((r) => r.noImage > 0)
+    if (gap === 'title') return allForEntity.filter((r) => r.noTitle > 0)
+    return allForEntity.filter((r) => r.noDescription > 0)
+  }, [allForEntity, gap])
 
   const total = filtered.length
   const lastPage = Math.max(1, Math.ceil(total / PAGE_SIZE))
@@ -110,7 +110,7 @@ export default function AdminGapQueue({
             Needs attention
           </Typography>
           <Box sx={{ ml: 'auto' }} />
-          {/* All 12 entities listed — confirming an entity is clean is worth doing. */}
+          {/* All 13 entities listed — confirming an entity is clean is worth doing. */}
           <TextField
             select
             label="Entity"
@@ -133,14 +133,15 @@ export default function AdminGapQueue({
             if (kind === 'image' && !e.tracksImage) return null
             if (kind === 'title' && !e.tracksTitle) return null
             if (kind === 'description' && !e.tracksDescription) return null
-            // Duplicate detection returns with the alt_slug work. It was removed
-            // here because container rows (GapWorkItem) carry no duplicate signal.
-            const count = gapCount(stat, kind)
+            // Duplicate detection returns with the deferred alt_slug work (see
+            // `isVariant` in lib/admin-entities.ts) — GapWorkItem carries no
+            // duplicate signal yet, so GapKind has no 'duplicate' member today.
+            const count = containerGapCount(allForEntity, kind)
             return (
               <Chip
                 key={kind}
                 color={kind === gap ? 'primary' : 'default'}
-                label={count === null ? label : `${label} ${count.toLocaleString()}`}
+                label={`${label} ${count.toLocaleString()}`}
                 size="small"
                 sx={kind === 'description' ? { borderStyle: 'dashed', opacity: 0.7 } : undefined}
                 variant={kind === gap ? 'filled' : 'outlined'}

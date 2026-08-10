@@ -15,7 +15,7 @@ export type AdminEntityKey =
   | 'season-categories'
   | 'abilities'
 
-export type GapKind = 'image' | 'title' | 'description' | 'duplicate'
+export type GapKind = 'image' | 'title' | 'description'
 
 export interface AdminEntity {
   key: AdminEntityKey
@@ -25,7 +25,11 @@ export interface AdminEntity {
   tracksTitle: boolean
   tracksImage: boolean
   tracksDescription: boolean
-  /** Variant tables are the only ones the duplicate check applies to. */
+  /**
+   * Variant tables are the only ones the duplicate check applies to. Nothing
+   * reads this yet — retained for the deferred alt_slug/duplicate-detection
+   * spec.
+   */
   isVariant: boolean
   /**
    * outfit_sets backs two entities. `true` = evolutions (base_set IS NOT NULL),
@@ -113,16 +117,6 @@ export const ADMIN_ENTITIES: Record<AdminEntityKey, AdminEntity> = {
 }
 
 export const ADMIN_ENTITY_KEYS = Object.keys(ADMIN_ENTITIES) as AdminEntityKey[]
-
-const GAP_KINDS: GapKind[] = ['image', 'title', 'description', 'duplicate']
-
-export function parseEntityKey(v: unknown): AdminEntityKey | null {
-  return typeof v === 'string' && v in ADMIN_ENTITIES ? (v as AdminEntityKey) : null
-}
-
-export function parseGapKind(v: unknown): GapKind {
-  return typeof v === 'string' && (GAP_KINDS as string[]).includes(v) ? (v as GapKind) : 'image'
-}
 
 /** Domain groupings for the totals strip. Lookups appear only in the all-entries total. */
 export const ADMIN_DOMAINS = [

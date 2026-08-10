@@ -57,10 +57,11 @@ const GROUPED_VARIANT_KEYS = new Set<AdminEntityKey>([
 ])
 
 /**
- * Slugs that mean "no real owning set". `outfit_sets` uses `standalone_pieces`
- * (underscore); an unapplied makeup migration would introduce
- * `standalone-pieces` (hyphen). Matching both means applying that migration
- * later changes nothing here.
+ * Slugs that mean "no real owning set". Both `outfit_sets` and `makeup_sets`
+ * use `standalone_pieces` (underscore) — the migration that introduced it is
+ * live. The `standalone-pieces` (hyphen) variant is matched too as deliberate
+ * defensiveness against a future rename or a differently-spelled slug landing
+ * in either table.
  */
 export const STANDALONE_SET_SLUGS = ['standalone_pieces', 'standalone-pieces']
 
@@ -167,10 +168,20 @@ interface VariantGroupConfig {
   ownerColumn: string
   ownerTable: TableName
   ownerTracksImage: boolean
-  /** Only outfit-variants: containers split into base sets vs. evolutions via `base_set`. */
+  /** Only outfit-variants: base sets and evolutions route to separate edit forms via `base_set`. */
   routeToEvolutions: boolean
   /** The entity whose editHref/kind containers route to when `routeToEvolutions` is false. */
   containerKindKey: AdminEntityKey
+  /**
+   * The evolutions entity for this owner table, if it has one. `outfit_sets`
+   * and `makeup_sets` both split base sets from evolutions via `base_set`;
+   * `eureka_sets` has no such column. When set, each container's *label* is
+   * resolved per-row from `base_set` — independent of `routeToEvolutions`.
+   * Makeup sets `routeToEvolutions: false` (both share one edit route) but
+   * still needs this for the label, so an evolution container isn't shown as
+   * "Makeup Set".
+   */
+  evolutionEntityKey?: AdminEntityKey
 }
 
 const OUTFIT_VARIANT_CONFIG: VariantGroupConfig = {
@@ -180,6 +191,7 @@ const OUTFIT_VARIANT_CONFIG: VariantGroupConfig = {
   ownerTracksImage: true,
   routeToEvolutions: true,
   containerKindKey: 'outfit-sets',
+  evolutionEntityKey: 'evolutions',
 }
 
 const MAKEUP_VARIANT_CONFIG: VariantGroupConfig = {
@@ -189,6 +201,7 @@ const MAKEUP_VARIANT_CONFIG: VariantGroupConfig = {
   ownerTracksImage: true,
   routeToEvolutions: false,
   containerKindKey: 'makeup-sets',
+  evolutionEntityKey: 'makeup-evolutions',
 }
 
 const EUREKA_VARIANT_CONFIG: VariantGroupConfig = {
@@ -254,7 +267,7 @@ async function fetchGroupedContainers(
 
   const ownerCols = ['slug', 'title']
   if (config.ownerTracksImage) ownerCols.push('image_url')
-  if (config.routeToEvolutions) ownerCols.push('base_set')
+  if (config.evolutionEntityKey !== undefined) ownerCols.push('base_set')
   const ownerSelect = ownerCols.join(', ')
 
   const ownerRows = await fetchAllRows((from, to) => {
@@ -269,7 +282,7 @@ async function fetchGroupedContainers(
       {
         title: (r.title as string | null) ?? null,
         imageUrl: config.ownerTracksImage ? ((r.image_url as string | null) ?? null) : null,
-        baseSet: config.routeToEvolutions ? ((r.base_set as string | null) ?? null) : null,
+        baseSet: config.evolutionEntityKey !== undefined ? ((r.base_set as string | null) ?? null) : null,
       },
     ])
   )
@@ -278,12 +291,19 @@ async function fetchGroupedContainers(
   for (const group of groups.values()) {
     const ownerSlug = group.ownerSlug
     const owner = ownerBySlug.get(ownerSlug)
-    const isEvolution = config.routeToEvolutions && owner?.baseSet !== null && owner?.baseSet !== undefined
+    const evoKey = config.evolutionEntityKey
+    const isEvolution = evoKey !== undefined && owner?.baseSet !== null && owner?.baseSet !== undefined
 
-    let containerKey: AdminEntityKey = config.containerKindKey
-    if (config.routeToEvolutions) containerKey = isEvolution ? 'evolutions' : 'outfit-sets'
-    const kind = KIND_LABELS[containerKey]
-    const editBase = ADMIN_ENTITIES[containerKey].editHref
+    // Label reflects whether the owning row is a base set or an evolution,
+    // resolved per-container from `base_set` — independent of routing.
+    const kind = evoKey !== undefined && isEvolution ? KIND_LABELS[evoKey] : KIND_LABELS[config.containerKindKey]
+
+    // Routing: outfit-variants route evolutions to their own edit form.
+    // Makeup-variants route everything through the shared `containerKindKey`
+    // edit form regardless of label — `routeToEvolutions` is false there.
+    const routeKey: AdminEntityKey =
+      config.routeToEvolutions && evoKey !== undefined && isEvolution ? evoKey : config.containerKindKey
+    const editBase = ADMIN_ENTITIES[routeKey].editHref
 
     items.push({
       key: `${config.entityKey}:${ownerSlug}`,
