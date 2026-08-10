@@ -38,6 +38,7 @@ const KIND_LABELS: Record<AdminEntityKey, string> = {
   evolutions: 'Evolution',
   'outfit-variants': 'Outfit Variant',
   'makeup-sets': 'Makeup Set',
+  'makeup-evolutions': 'Makeup Evolution',
   'makeup-variants': 'Makeup Variant',
   'momo-cloaks': "Momo's Cloak",
   'eureka-sets': 'Eureka Set',

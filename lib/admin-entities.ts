@@ -5,6 +5,7 @@ export type AdminEntityKey =
   | 'evolutions'
   | 'outfit-variants'
   | 'makeup-sets'
+  | 'makeup-evolutions'
   | 'makeup-variants'
   | 'momo-cloaks'
   | 'eureka-sets'
@@ -59,7 +60,14 @@ export const ADMIN_ENTITIES: Record<AdminEntityKey, AdminEntity> = {
   'makeup-sets': {
     key: 'makeup-sets', title: A.makeup.sets.title, table: 'makeup_sets',
     tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
+    evolutionFilter: false,
     addHref: A.makeup.sets.add, listHref: A.makeup.sets.list, editHref: A.makeup.sets.edit,
+  },
+  'makeup-evolutions': {
+    key: 'makeup-evolutions', title: 'Makeup Evolutions', table: 'makeup_sets',
+    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
+    evolutionFilter: true,
+    listHref: A.makeup.sets.list, editHref: A.makeup.sets.edit,
   },
   'makeup-variants': {
     key: 'makeup-variants', title: A.makeup.variants.title, table: 'makeup_variants',
@@ -123,7 +131,7 @@ export const ADMIN_DOMAINS = [
   { title: 'Eureka', lead: 'eureka-variants', leadNoun: 'variants',
     chips: [{ key: 'eureka-sets', label: 'sets' }, { key: 'trials', label: 'trials' }] },
   { title: 'Makeup', lead: 'makeup-variants', leadNoun: 'variants',
-    chips: [{ key: 'makeup-sets', label: 'sets' }] },
+    chips: [{ key: 'makeup-sets', label: 'sets' }, { key: 'makeup-evolutions', label: 'evo' }] },
   { title: "Momo's", lead: 'momo-cloaks', leadNoun: 'cloaks', chips: [] },
 ] as const satisfies ReadonlyArray<{
   title: string
