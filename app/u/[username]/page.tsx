@@ -4,6 +4,8 @@ import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
+import { getMakeupSets } from '@/hooks/data/makeup-sets'
+import { getObtainedMomoCloaks } from '@/hooks/data/obtained-momo-cloaks'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import { getTrials } from '@/hooks/data/trials'
 import { getSeasons } from '@/hooks/data/seasons'
@@ -57,6 +59,16 @@ async function ProfileView({ params }: Props) {
   // explicit id a visitor would see their own progress under this profile.
   const eurekaSets = await getEurekaSets(profile.id)
   const outfitSets = await getOutfitSets(profile.id)
+  const makeupSets = await getMakeupSets(profile.id)
+  // Cloaks are a flat domain — one row per cloak, no variants — so there is no
+  // set to complete and the obtained rows are themselves the count. A failed
+  // fetch shows 0 rather than taking down the whole profile.
+  const momoCloaksObtained = await getObtainedMomoCloaks(profile.id)
+    .then((rows) => rows.length)
+    .catch((err) => {
+      console.error('Failed to load obtained momo cloaks:', err)
+      return 0
+    })
   const trials = await getTrials()
   const seasons = await getSeasons()
   const recentObtained = await getRecentObtained(profile.id)
@@ -98,7 +110,14 @@ async function ProfileView({ params }: Props) {
           isOwner={isOwner}
           isPremium={isPremium}
           loadError={false}
-          stats={<ProfileStats eurekaSets={eurekaSets || []} outfitSets={outfitSets || []} />}
+          stats={
+            <ProfileStats
+              eurekaSets={eurekaSets || []}
+              makeupSets={makeupSets || []}
+              momoCloaksObtained={momoCloaksObtained}
+              outfitSets={outfitSets || []}
+            />
+          }
           username={profile.username}
         />
       }
