@@ -1,3 +1,4 @@
+import { EvolvableLinkedSet } from './outfit'
 import { Tables } from './supabase'
 
 // Every cloak's stored title carries this prefix (e.g. "Momo’s Cloak: Dream"),
@@ -26,12 +27,7 @@ export type MomoCloak = Tables<'momo_cloaks'> & {
   // The associated outfit, mirroring MakeupSet.outfitSet. Populated only by
   // getMomoCloak (the detail query) — the list query has no use for the join,
   // so this stays optional and reads as undefined there.
-  outfitSet?: {
-    slug: string
-    title: string
-    image_url: string | null
-    alt_image_url: string | null
-  } | null
+  outfitSet?: EvolvableLinkedSet | null
   obtained?: boolean
 }
 

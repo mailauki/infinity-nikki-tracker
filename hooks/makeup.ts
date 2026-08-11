@@ -6,6 +6,7 @@ import {
   MakeupVariant,
   ObtainedMakeup,
 } from '@/lib/types/makeup'
+import { EvolvableLinkedSet } from '@/lib/types/outfit'
 
 // Base vs evolution resolution lives here and nowhere else. A base row has
 // base_set === null (order 1); an evolution row points base_set at its base's
@@ -22,7 +23,9 @@ export function isBaseMakeupSet(row: Pick<MakeupSetRaw, 'base_set'>) {
 // instead, which is the one that actually carries the pieces.
 export const STANDALONE_MAKEUP_SLUG = 'standalone_pieces'
 
-export type OutfitSetRef = { slug: string; title: string; image_url: string | null }
+// Same shape as the outfit domain's linked-sibling ref, including alt art and
+// base_set — aliased rather than redeclared so the two can't drift apart.
+export type OutfitSetRef = EvolvableLinkedSet
 
 // Lookup rows used only to resolve display titles for makeup_sets.seasons /
 // season_category, whose stored values are slug-shaped rather than titles.

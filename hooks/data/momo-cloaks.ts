@@ -27,7 +27,7 @@ const CLOAK_COLUMNS = `
 const CLOAK_DETAIL_COLUMNS = `
 	${CLOAK_COLUMNS},
 	outfit_set,
-	outfitSet:outfit_sets!momo_cloaks_outfit_set_fkey ( slug, title, image_url, alt_image_url ),
+	outfitSet:outfit_sets!momo_cloaks_outfit_set_fkey ( slug, title, image_url, alt_image_url, base_set ),
 	season:seasons!momo_cloaks_seasons_fkey ( title ),
 	seasonCategory:season_categories!momo_cloaks_season_category_fkey ( title )
 `

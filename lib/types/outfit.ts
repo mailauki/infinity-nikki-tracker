@@ -27,8 +27,78 @@ export type CarouselImage = Pick<
   'id' | 'image_url' | 'sort_order'
 >
 
-/** A sibling item linked to an outfit set by its `outfit_set` FK. */
-export type LinkedSet = { slug: string; title: string; image_url: string | null }
+/**
+ * A sibling item linked to an outfit set by its `outfit_set` FK. Carries both
+ * image columns so the mini card can prefer the alt art, matching the detail
+ * pages' default image mode.
+ *
+ * Momo's Cloaks are a flat domain with no evolutions and no `base_set` column,
+ * so they use this base shape; outfits and makeup use `EvolvableLinkedSet`.
+ */
+export type LinkedSet = {
+  slug: string
+  title: string
+  image_url: string | null
+  alt_image_url: string | null
+}
+
+/**
+ * momo_cloaks/makeup_sets point AT outfit_sets, so those embeds come back as
+ * arrays even though no outfit row has more than one of either today — nothing
+ * at the DB level enforces it. Collapse to the first row (or null) so consumers
+ * get a single linked set rather than having to index into an array.
+ */
+export const firstLinked = <T>(rows: T[] | T | null | undefined): T | null =>
+  Array.isArray(rows) ? (rows[0] ?? null) : (rows ?? null)
+
+/** A linked sibling in a domain that has evolutions (outfits, makeup). */
+export type EvolvableLinkedSet = LinkedSet & {
+  /**
+   * The linked row's base slug, or null when the row IS the base. Pairings are
+   * evolution-to-evolution for 28 of 68 links (e.g. the `polar_realm_radiance`
+   * makeup pairs with `enchanted_encounter-dreamtrail`, not with the base
+   * outfit), and evolutions have no page of their own — they render under their
+   * base's route via `?evolution=`. So the href needs the base slug, not this
+   * row's slug. Resolve it with `linkedSetHref()` rather than inlining.
+   */
+  base_set: string | null
+}
+
+/**
+ * Build the detail-page href for a linked sibling, pointing at the specific
+ * evolution the pairing refers to.
+ *
+ * Evolutions have no route of their own: `/outfits/[slug]` and `/makeup/[slug]`
+ * both load the BASE row and seed the selection from `?evolution=`. So a link to
+ * an evolution addresses the base slug and carries the evolution in the param.
+ *
+ * The two domains encode that param differently — this mirrors how the grid
+ * cards already build their links, and how each detail page resolves them back
+ * in `resolveEvolutionSlug`:
+ * - outfits (`outfit-set-card.tsx`): slugs are `{base}-{suffix}` and the page
+ *   rebuilds `{base}-{param}`, so the param is only the suffix
+ * - makeup (`makeup-set-card.tsx`): slugs are opaque and the page uses the param
+ *   as-is, so it carries the whole evolution slug
+ *
+ * A base row links with `?evolution=base`, which both pages resolve to the bare
+ * set slug.
+ */
+export function linkedSetHref(
+  domain: 'outfits' | 'makeup',
+  linked: Pick<EvolvableLinkedSet, 'slug' | 'base_set'>
+): string {
+  if (!linked.base_set) return `/${domain}/${linked.slug}?evolution=base`
+
+  // Makeup passes the evolution slug through whole. Outfits strip the `{base}-`
+  // prefix, falling back to the full slug if one ever breaks the convention.
+  if (domain === 'makeup') return `/makeup/${linked.base_set}?evolution=${linked.slug}`
+
+  const param = linked.slug.startsWith(`${linked.base_set}-`)
+    ? linked.slug.slice(linked.base_set.length + 1)
+    : linked.slug
+
+  return `/outfits/${linked.base_set}?evolution=${param}`
+}
 
 export type OutfitSet = Tables<'outfit_sets'> & {
   image_url: string | null | undefined
@@ -43,7 +113,7 @@ export type OutfitSet = Tables<'outfit_sets'> & {
   // Nothing enforces one-per-outfit at the DB level, so the query returns an
   // array and the data layer normalizes it to the first row.
   momoCloak?: LinkedSet | null
-  makeupSet?: LinkedSet | null
+  makeupSet?: EvolvableLinkedSet | null
 }
 
 // An evolution is now just an outfit_sets row with base_set IS NOT NULL

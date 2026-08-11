@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { Evolution } from '@/lib/types/outfit'
+import { Evolution, firstLinked } from '@/lib/types/outfit'
 import { createClient } from '@/lib/supabase/server'
 import { getOutfitVariantsBySet } from './outfit-variants'
 
@@ -10,7 +10,9 @@ const EVOLUTION_SELECT = `
   style, label, label_2, ability, seasons, season_category, rarity, created_at, updated_at,
   season:seasons!outfit_sets_seasons_fkey ( title ),
   seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
-  outfit_set_carousel_images ( id, image_url, sort_order )
+  outfit_set_carousel_images ( id, image_url, sort_order ),
+  momoCloak:momo_cloaks!momo_cloaks_outfit_set_fkey ( slug, title, image_url, alt_image_url ),
+  makeupSet:makeup_sets!makeup_sets_outfit_set_fkey ( slug, title, image_url, alt_image_url, base_set )
 `
 
 export const getEvolutions = cache(async () => {
@@ -33,6 +35,8 @@ export const getEvolutions = cache(async () => {
     outfit_categories: [],
     evolutions: [],
     carousel_images: e.outfit_set_carousel_images ?? [],
+    momoCloak: firstLinked(e.momoCloak),
+    makeupSet: firstLinked(e.makeupSet),
   })) as unknown as Evolution[]
 })
 
@@ -59,6 +63,8 @@ export const getEvolutionsWithVariants = cache(async () => {
     outfit_categories: [],
     evolutions: [],
     carousel_images: e.outfit_set_carousel_images ?? [],
+    momoCloak: firstLinked(e.momoCloak),
+    makeupSet: firstLinked(e.makeupSet),
     outfit_variants: e.outfit_variants ?? [],
   })) as unknown as Evolution[]
 })
@@ -79,5 +85,7 @@ export const getEvolutionsBySet = cache(async (outfitSetSlug: string) => {
     outfit_categories: [],
     evolutions: [],
     carousel_images: e.outfit_set_carousel_images ?? [],
+    momoCloak: firstLinked(e.momoCloak),
+    makeupSet: firstLinked(e.makeupSet),
   })) as unknown as Evolution[]
 })

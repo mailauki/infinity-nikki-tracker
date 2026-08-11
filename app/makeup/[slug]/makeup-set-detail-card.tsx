@@ -1,9 +1,11 @@
 'use client'
 
-import { Button, Link as Anchor, Typography } from '@mui/material'
+import { Link as Anchor, Typography } from '@mui/material'
 import Link from 'next/link'
 import { MakeupSet } from '@/lib/types/makeup'
+import { linkedSetHref } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
+import LinkedSetCard from '@/components/linked-set-card'
 import SetDetailCard from '@/components/set-detail-card'
 
 export interface MakeupSetDetailCardProps {
@@ -31,9 +33,15 @@ export default function MakeupSetDetailCard({
   imageSrc,
   showingAlt,
 }: MakeupSetDetailCardProps) {
-  const { rarity, style, description, season, seasonCategory, outfitSet } = makeupSet
-  const selectedEvolution =
-    makeupSet.evolutions.find((evolution) => evolution.slug === selected)?.title || null
+  const { rarity, style, description, season, seasonCategory } = makeupSet
+  const selectedEvolutionSet =
+    makeupSet.evolutions.find((evolution) => evolution.slug === selected) ?? null
+  const selectedEvolution = selectedEvolutionSet?.title || null
+
+  // Pairings are per-row: the base makeup set and each of its evolutions carry
+  // their own `outfit_set` FK, so the link follows the current selection and
+  // falls back to the base set's own pairing.
+  const outfitSet = selectedEvolutionSet?.outfitSet ?? makeupSet.outfitSet
 
   const media = (
     <LazyImage
@@ -61,16 +69,21 @@ export default function MakeupSetDetailCard({
     </>
   )
 
-  const outfitRow = outfitSet && (
-    <Button component={Link} href={`/outfits/${outfitSet.slug}`} size="small" variant="outlined">
-      {outfitSet.title}
-    </Button>
-  )
+  // The pairing often points at an outfit evolution rather than the base set, so
+  // linkedSetHref() resolves it to the base route plus an `?evolution=` param.
+  // The alt image is preferred, matching the detail pages' default image mode.
+  const outfitRow = outfitSet ? (
+    <LinkedSetCard
+      href={linkedSetHref('outfits', outfitSet)}
+      image={outfitSet.alt_image_url || outfitSet.image_url}
+      title={outfitSet.title}
+    />
+  ) : null
 
   return (
     <SetDetailCard
       description={description}
-      extraRows={[seasonRow, outfitRow]}
+      extraRows={[seasonRow, outfitRow].filter(Boolean)}
       isLoggedIn={isLoggedIn}
       media={media}
       obtained={obtained}

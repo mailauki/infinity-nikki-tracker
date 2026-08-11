@@ -52,7 +52,10 @@ export const getMakeupSets = cache(async (forUserId?: string) => {
     ...new Set((rows ?? []).map((r) => r.outfit_set).filter(Boolean)),
   ] as string[]
   const { data: outfitSets } = pairedSlugs.length
-    ? await supabase.from('outfit_sets').select('slug, title, image_url').in('slug', pairedSlugs)
+    ? await supabase
+        .from('outfit_sets')
+        .select('slug, title, image_url, alt_image_url, base_set')
+        .in('slug', pairedSlugs)
     : { data: [] }
 
   const sets = createMakeupSet(

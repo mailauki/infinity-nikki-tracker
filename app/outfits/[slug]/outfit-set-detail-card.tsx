@@ -1,20 +1,12 @@
 'use client'
 
-import {
-  Link as Anchor,
-  Typography,
-  Chip,
-  IconButton,
-  Tooltip,
-  Card,
-  CardActionArea,
-  CardHeader,
-} from '@mui/material'
+import { Link as Anchor, Typography, Chip, IconButton, Tooltip } from '@mui/material'
 import { Collections } from '@mui/icons-material'
 import Link from 'next/link'
-import { CarouselImage, OutfitSet } from '@/lib/types/outfit'
+import { CarouselImage, OutfitSet, linkedSetHref } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
+import LinkedSetCard from '@/components/linked-set-card'
 import SetDetailCard from '@/components/set-detail-card'
 import OutfitCarousel from './outfit-carousel'
 
@@ -111,31 +103,40 @@ export default function OutfitSetDetailCard({
   // `<slug>_makeup` pattern and 1 of 292 follows `momos_cloak_<slug>`, so a
   // derived href is a 404 for most sets. Each card renders only when the link
   // actually exists.
+  //
+  // Pairings are per-row, not per-set: the base outfit and each of its evolutions
+  // carry their OWN makeup/cloak FK (e.g. `enchanted_encounter` pairs with the
+  // `enchanted_encounter` makeup, while its `-dreamtrail` evolution pairs with
+  // `polar_realm_radiance`). So the links follow the current selection, falling
+  // back to the base set's own pairings when no evolution is selected.
+  const linkSource = outfitSet.evolutions.find((e) => e.slug === selected) ?? outfitSet
+
+  // The paired makeup row is itself often an evolution, which has no route of its
+  // own — linkedSetHref() addresses its base plus an `?evolution=` param.
+  // Momo's Cloaks are flat (no evolutions), so that link is just the slug.
   const linked: { href: string; title: string; image: string | null }[] = [
-    outfitSet.makeupSet && {
-      href: `/makeup/${outfitSet.makeupSet.slug}`,
+    linkSource.makeupSet && {
+      href: linkedSetHref('makeup', linkSource.makeupSet),
       title: 'Makeup',
-      image: outfitSet.makeupSet.image_url,
+      image: linkSource.makeupSet.alt_image_url || linkSource.makeupSet.image_url,
     },
-    outfitSet.momoCloak && {
-      href: `/momo-cloaks/${outfitSet.momoCloak.slug}`,
+    linkSource.momoCloak && {
+      href: `/momo-cloaks/${linkSource.momoCloak.slug}`,
       title: "Momo's Cloak",
-      image: outfitSet.momoCloak.image_url,
+      image: linkSource.momoCloak.alt_image_url || linkSource.momoCloak.image_url,
     },
   ].filter((item): item is { href: string; title: string; image: string | null } => !!item)
 
   const associatedRow = linked.length ? (
     <>
       {linked.map((item) => (
-        <Card key={item.href} sx={{ width: '48%' }}>
-          <CardActionArea component={Link} href={item.href}>
-            <CardHeader
-              avatar={<LazyImage kind="avatar" src={item.image} />}
-              sx={{ py: 1, px: 1.5 }}
-              title={item.title}
-            />
-          </CardActionArea>
-        </Card>
+        <LinkedSetCard
+          key={item.href}
+          half={linked.length > 1}
+          href={item.href}
+          image={item.image}
+          title={item.title}
+        />
       ))}
     </>
   ) : null
