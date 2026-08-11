@@ -11,10 +11,10 @@ import {
   Typography,
 } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
-import { RecentObtainedOutfit } from '@/lib/types/outfit'
+import { RecentObtainedMakeup } from '@/lib/types/makeup'
 import { toTitle, formatDate } from '@/lib/utils'
 
-export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOutfit[] }) {
+export default function MakeupRecentUpdates({ items }: { items: RecentObtainedMakeup[] }) {
   if (!items?.length) return null
 
   return (
@@ -31,28 +31,30 @@ export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOu
       <CardContent>
         <List disablePadding>
           {items.map((item) => {
-            const variant = item.outfit_sets?.outfit_variants.find(
-              (v) => v.slug === item.outfit_variant
-            )
-            const setTitle = item.outfit_sets?.title ?? toTitle(item.outfit_set ?? '')
+            // The variant embeds directly (obtained_makeup FKs to it), unlike the
+            // outfit list which searches its set's variant array.
+            const variant = item.makeup_variants
+            const setTitle = item.makeup_sets?.title ?? toTitle(item.makeup_set ?? '')
+            const categoryTitle = item.makeup_categories?.title
+            // An obtained row can name an evolution, but /makeup/{evolution}
+            // 404s — getMakeupSet resolves base slugs only, since evolutions
+            // are reached through their base set. Link to the base when the
+            // row points at one.
+            const href = `/makeup/${item.makeup_sets?.base_set ?? item.makeup_set}`
 
             return (
               <ListItem key={item.id} disablePadding>
-                <ListItemButton component="a" href={`/outfits/${item.outfit_set}`}>
+                <ListItemButton component="a" href={href}>
                   <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
                     <LazyImage
-                      kind='avatar'
+                      kind="avatar"
                       src={variant?.image_url ?? undefined}
                       title={setTitle}
                     />
                   </ListItemAvatar>
                   <ListItemText
                     primary={variant?.title ?? setTitle}
-                    secondary={
-                      variant?.title
-                        ? `${setTitle} • ${item.outfit_categories?.title}`
-                        : item.outfit_categories?.title
-                    }
+                    secondary={variant?.title ? `${setTitle} • ${categoryTitle}` : categoryTitle}
                     slotProps={{
                       primary: { variant: 'body2' },
                       secondary: { variant: 'caption' },

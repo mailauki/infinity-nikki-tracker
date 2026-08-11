@@ -24,7 +24,7 @@ export default function EurekaRecentUpdates({ items }: { items: RecentObtained[]
         sx={{ pb: 0 }}
         title={
           <Typography color="text.secondary" variant="overline">
-            Recently Updated
+            Recently Obtained
           </Typography>
         }
       />
@@ -35,13 +35,12 @@ export default function EurekaRecentUpdates({ items }: { items: RecentObtained[]
               <ListItemButton component="a" href={`/eureka/${toSlug(item.eureka_sets!.title!)}`}>
                 <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
                   <LazyImage
-                    image={
+                    kind='avatar'
+                    src={
                       item.eureka_sets?.eureka_variants.find(
                         (v) => v.category === item.category && v.color === item.color
                       )?.image_url ?? undefined
                     }
-                    kind="media"
-                    sx={{ width: 56, aspectRatio: '1 / 1' }}
                     title={item.eureka_sets?.title ?? ''}
                   />
                 </ListItemAvatar>

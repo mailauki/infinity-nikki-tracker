@@ -23,11 +23,20 @@ export default function ProfileStatsBar() {
           if (next) setStatsView(next)
         }}
       >
+        {/* Four views no longer fit the "<Domain> Stats" phrasing on a narrow
+            screen, so the labels are bare domain names — the group's aria-label
+            already says these are stats views. */}
         <ToggleButton sx={{ backdropFilter: 'blur(8px)' }} value="outfits">
-          Outfit Stats
+          Outfits
         </ToggleButton>
         <ToggleButton sx={{ backdropFilter: 'blur(8px)' }} value="eureka">
-          Eureka Stats
+          Eureka
+        </ToggleButton>
+        <ToggleButton sx={{ backdropFilter: 'blur(8px)' }} value="makeup">
+          Makeup
+        </ToggleButton>
+        <ToggleButton sx={{ backdropFilter: 'blur(8px)' }} value="cloaks">
+          Cloaks
         </ToggleButton>
       </ToggleButtonGroup>
     </StickyBar>

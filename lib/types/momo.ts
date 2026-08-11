@@ -50,3 +50,12 @@ export type MomoCloakRaw = Pick<
 >
 
 export type ObtainedMomoCloak = Pick<Tables<'obtained_momo_cloaks'>, 'id' | 'momo_cloak'>
+
+// Cloaks are flat, so the obtained row embeds the cloak itself — there is no
+// set/category/variant hierarchy to resolve alongside it.
+export type RecentObtainedMomoCloak = Pick<
+  Tables<'obtained_momo_cloaks'>,
+  'id' | 'momo_cloak' | 'created_at'
+> & {
+  momo_cloaks: { slug: string; title: string; image_url: string | null; rarity: number } | null
+}

@@ -3,7 +3,7 @@
 import * as React from 'react'
 
 export type ProfileTabValue = 'profile' | 'stats'
-export type StatsView = 'outfits' | 'eureka'
+export type StatsView = 'outfits' | 'eureka' | 'makeup' | 'cloaks'
 
 type ProfileTabsContextType = {
   tab: ProfileTabValue
