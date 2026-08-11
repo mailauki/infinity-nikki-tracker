@@ -28,6 +28,7 @@ Three problems follow from that:
 - Let users report a problem from the page it occurs on, with route and entity captured
   automatically.
 - Give the maintainer an in-app triage surface consistent with the existing admin dashboard.
+- Confirm receipt to the submitter, both in-app and by email, showing what they sent.
 
 ## Non-Goals
 
@@ -35,7 +36,8 @@ Explicitly out of scope for this pass:
 
 - User-facing submission history ("my reports" view).
 - Reply threads / back-and-forth support ticketing.
-- Email or webhook notification on new submissions.
+- Notifying the **maintainer** by email on new submissions. (The submitter receipt is in scope;
+  maintainer alerting is not. Once Resend is wired up, adding it later is small.)
 
 Each is deferrable without reworking what this design builds. The `status` and `admin_notes`
 columns exist from the start so a history view can be added later without a migration.
@@ -44,24 +46,25 @@ columns exist from the start so a history view can be added later without a migr
 
 ### `feedback`
 
-| Column         | Type                                   | Notes                                                           |
-| -------------- | -------------------------------------- | --------------------------------------------------------------- |
-| `id`           | `uuid` PK, default `gen_random_uuid()` |                                                                 |
-| `type`         | `text NOT NULL`                        | CHECK IN (`'feature'`, `'issue'`)                               |
-| `category`     | `text NOT NULL`                        | Per-type dropdown value                                         |
-| `title`        | `text NOT NULL`                        | CHECK length 1–200                                              |
-| `description`  | `text NOT NULL`                        | CHECK length 1–5000                                             |
-| `email`        | `text`                                 | Nullable; optional contact                                      |
-| `user_id`      | `uuid`                                 | Nullable FK → `auth.users(id)` ON DELETE SET NULL               |
-| `page_path`    | `text`                                 | Nullable; auto-captured route                                   |
-| `entity_type`  | `text`                                 | Nullable; e.g. `'eureka'`, `'outfits'`, `'makeup'`              |
-| `entity_slug`  | `text`                                 | Nullable; e.g. `'blossoming_dream'`                             |
-| `entity_title` | `text`                                 | Nullable; human-readable name when the page supplies one        |
-| `user_agent`   | `text`                                 | Nullable; repro info                                            |
-| `status`       | `text NOT NULL DEFAULT 'new'`          | CHECK IN (`'new'`, `'in_progress'`, `'resolved'`, `'declined'`) |
-| `admin_notes`  | `text`                                 | Nullable; maintainer triage notes                               |
-| `created_at`   | `timestamptz NOT NULL DEFAULT now()`   |                                                                 |
-| `updated_at`   | `timestamptz NOT NULL DEFAULT now()`   |                                                                 |
+| Column            | Type                                   | Notes                                                            |
+| ----------------- | -------------------------------------- | ---------------------------------------------------------------- |
+| `id`              | `uuid` PK, default `gen_random_uuid()` |                                                                  |
+| `type`            | `text NOT NULL`                        | CHECK IN (`'feature'`, `'issue'`)                                |
+| `category`        | `text NOT NULL`                        | Per-type dropdown value                                          |
+| `title`           | `text NOT NULL`                        | CHECK length 1–200                                               |
+| `description`     | `text NOT NULL`                        | CHECK length 1–5000                                              |
+| `email`           | `text`                                 | Nullable; receipt recipient (see Receipt)                        |
+| `receipt_sent_at` | `timestamptz`                          | Nullable; set when the provider accepts the receipt for delivery |
+| `user_id`         | `uuid`                                 | Nullable FK → `auth.users(id)` ON DELETE SET NULL                |
+| `page_path`       | `text`                                 | Nullable; auto-captured route                                    |
+| `entity_type`     | `text`                                 | Nullable; e.g. `'eureka'`, `'outfits'`, `'makeup'`               |
+| `entity_slug`     | `text`                                 | Nullable; e.g. `'blossoming_dream'`                              |
+| `entity_title`    | `text`                                 | Nullable; human-readable name when the page supplies one         |
+| `user_agent`      | `text`                                 | Nullable; repro info                                             |
+| `status`          | `text NOT NULL DEFAULT 'new'`          | CHECK IN (`'new'`, `'in_progress'`, `'resolved'`, `'declined'`)  |
+| `admin_notes`     | `text`                                 | Nullable; maintainer triage notes                                |
+| `created_at`      | `timestamptz NOT NULL DEFAULT now()`   |                                                                  |
+| `updated_at`      | `timestamptz NOT NULL DEFAULT now()`   |                                                                  |
 
 Indexes: `(status, created_at DESC)` for the default admin view; `(type)` for filtering.
 
@@ -124,7 +127,9 @@ Order of operations:
    Also cap dimensions (e.g. max 2000px on the long edge) to bound storage.
 6. Insert the `feedback` row, upload the images to `feedback/{id}/{n}.webp`, insert
    `feedback_images` rows.
-7. Return `201` on success; the form renders a confirmation.
+7. Send the receipt email if an address is available (see Receipt), non-blocking.
+8. Return `201` on success, echoing back the stored submission so the form can render the in-app
+   receipt from server-confirmed data rather than local state.
 
 **Partial-failure rule.** The text of a report is the valuable part; the screenshots are
 supporting evidence. So the `feedback` row is inserted first and is never rolled back for an
@@ -159,6 +164,70 @@ delete of expired windows on write) keeps the table small.
 
 On limit exceeded: return `429` with a message the form renders inline.
 
+## Receipt
+
+Every submitter gets confirmation of what they sent, in two forms.
+
+### In-app receipt
+
+On success the dialog switches to a receipt view showing the full submission: type, category,
+title, description, page context (when present), and the names of any attached screenshots. The
+form already holds all of this at submit time, so it costs almost nothing to render.
+
+This is deliberately the primary receipt, not a fallback. It works with no email address, no
+provider, and no delivery risk — and it is the **only** receipt an anonymous user who skips the
+email field will ever get.
+
+### Email receipt
+
+Sent when an address is available:
+
+- **Logged-in users:** automatically, to their account email. They type nothing.
+- **Anonymous users:** only if they fill in the email field, which is relabeled from "Your email
+  (optional)" to "Email (optional — we'll send you a copy)" so the field's purpose is explicit.
+
+Nobody is required to supply an address to report a problem. Requiring one would add friction to
+exactly the drive-by report this feature exists to capture, and would mostly harvest fake
+addresses.
+
+The email restates the same content as the in-app receipt, plus a note that the report was
+received and that there may not be an individual reply.
+
+**Screenshots are listed by filename only** — "2 screenshots attached: screenshot-1.webp,
+screenshot-2.webp" — and are neither embedded nor attached. Embedding would require signed URLs
+long-lived enough to survive an email opened weeks later, putting durable links to private-bucket
+images into an inbox and through a third-party provider. The user already knows what they sent;
+the filenames are enough to confirm the upload registered.
+
+### Provider
+
+**Resend, installed via the Vercel Marketplace** (`vercel integration add resend`), so env vars are
+wired automatically and billing stays unified.
+
+Two caveats for implementation:
+
+- The installed Vercel CLI is **v50**, which has no `integration discover` subcommand, so the live
+  marketplace catalog could not be enumerated while writing this spec. Upgrade the CLI
+  (`npm i -g vercel@latest`) and confirm Resend is in the catalog before installing; fall back to
+  a direct resend.com signup with a `RESEND_API_KEY` env var if it is not.
+- **A verified sending domain is required.** Resend will not send to arbitrary recipients from an
+  unverified domain, and verification is a manual DNS step in their dashboard that cannot be
+  automated from here. This blocks the email receipt only — the in-app receipt is unaffected, so
+  the feature ships useful without it.
+
+### Failure handling
+
+The receipt send follows the same partial-failure rule as image uploads: it happens **after** the
+`feedback` row is committed, inside the same request, and a failure **never** fails the submission.
+A confirmation email is not worth losing a bug report over.
+
+On success, stamp `receipt_sent_at`. On failure, log server-side and leave it null — the admin view
+can then show which submissions never got a receipt. The user still sees the in-app receipt either
+way, so a send failure is invisible to them and harmless.
+
+No queue, no retry loop, no DB webhook. Those add a second deployment surface and more failure
+modes than a confirmation email justifies.
+
 ## Forms
 
 One shared component, `components/feedback/feedback-form.tsx`, taking:
@@ -186,7 +255,11 @@ Redesign changes beyond the rewiring:
 - **Real uploads** with thumbnail previews and per-file remove, replacing bare filename chips.
 - **Inline per-field validation** with messages, replacing a blanket `disabled` submit button that
   never explains what's missing.
-- **Pending state** via `useTransition`, a success confirmation, and a retry-able error state.
+- **Pending state** via `useTransition`, a success state that renders the in-app receipt (see
+  Receipt), and a retry-able error state.
+- **Email field repurposed** as the receipt recipient. Hidden entirely for logged-in users, whose
+  account address is used automatically; shown to anonymous users labeled "Email (optional — we'll
+  send you a copy)".
 - **No `mailto:` fallback on failure.** Errors show a retry affordance. Keeping the fallback would
   mean maintaining the broken screenshot flow indefinitely; the maintainer's email is already
   listed elsewhere on the help page for anyone truly stuck.
@@ -260,13 +333,20 @@ in `cache()`.
 1. Migration: `feedback`, `feedback_images`, `feedback_rate_limit`, RLS policies, private storage
    bucket. Regenerate `lib/types/supabase.ts`.
 2. `POST /api/feedback` with validation, rate limiting, `sharp` re-encoding, and uploads.
-3. Shared `feedback-form.tsx`; delete the two old forms; rewire the help page.
+3. Shared `feedback-form.tsx` including the in-app receipt success state; delete the two old forms;
+   rewire the help page.
 4. `ReportIssueLink` + pathname parser + optional context provider; mount in `nav-footer`.
 5. Admin `/admin/feedback` list, detail view, and nav entry.
-6. `a11y-reviewer` pass over the new dialog and footer link.
+6. Email receipt: upgrade the Vercel CLI, confirm and install Resend, verify the sending domain,
+   add the template and the non-blocking send.
+7. `a11y-reviewer` pass over the new dialog and footer link.
 
-Steps 1–3 are independently shippable and deliver the core value (working storage and uploads).
-Steps 4 and 5 build on them.
+Steps 1–3 are independently shippable and deliver the core value (working storage, uploads, and a
+receipt users can see). Steps 4 and 5 build on them.
+
+Step 6 is deliberately **last**: it is the only step gated on an external account and a manual DNS
+verification, and the in-app receipt from step 3 means the feature is genuinely useful before it
+lands. Nothing earlier depends on it.
 
 ## Risks
 
@@ -277,3 +357,10 @@ Steps 4 and 5 build on them.
 - **Storage growth.** Bounded by the 3-image / 5 MB caps, dimension capping, and WebP re-encoding.
   Deleting a `feedback` row cascades its image rows, but storage objects need explicit cleanup —
   worth a note in the admin delete path.
+- **Receipts to unverified addresses.** Anonymous users type an address that is never confirmed, so
+  a typo (or someone else's address) receives a copy of a report. Impact is low — the content is
+  what that sender just wrote — but it argues against ever including anything sensitive in the
+  receipt, which is a further reason the screenshots are listed by name rather than embedded.
+- **Sending reputation.** A public form that emails arbitrary typed addresses is a spam-complaint
+  vector. Resend's defaults plus the rate limit cover this at expected volume; if complaints appear,
+  the fallback is restricting receipts to authenticated users, which needs no schema change.
