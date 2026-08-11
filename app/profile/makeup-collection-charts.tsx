@@ -4,33 +4,48 @@ import { useEffect, useState } from 'react'
 import { Box, LinearProgress, Stack, Typography, useColorScheme, useTheme } from '@mui/material'
 import { alpha } from '@mui/material/styles'
 import { PieChart } from '@mui/x-charts/PieChart'
-import { countObtained, percent } from '@/hooks/count-obtained'
-import { EurekaSet, Trial } from '@/lib/types/eureka'
+import { percent } from '@/hooks/count-obtained'
+import { isStandaloneMakeupSet } from '@/hooks/makeup'
+import { MakeupSet } from '@/lib/types/makeup'
+import { Season } from '@/lib/types/outfit'
 import PercentLabel from '@/components/percent-label'
-import { SparkleIcon } from '@/components/rarity-stars'
 import ProgressChip from '@/components/progress-chip'
 import { SimpleGrid } from '@/components/card-grid'
 import { ChartCard } from './collection-layout'
 
 const RINGS_CHART_SIZE = 240
-const COLOR_SETS_CHART_SIZE = 220
+const SEASONS_CHART_SIZE = 220
 
-function CollectionRingsChart({
-  eurekaSetsObtained,
-  eurekaSetsTotal,
-  colorSetsObtained,
-  colorSetsTotal,
-  trialsObtained,
-  trialsTotal,
+// A variant group is complete when it is non-empty and every variant is obtained.
+function isComplete(variants: { obtained?: boolean }[]) {
+  return variants.length > 0 && variants.every((v) => v.obtained)
+}
+
+// The variants a set owns itself. createMakeupSet concatenates each evolution's
+// variants onto its base set, so an unscoped check would let one unfinished
+// evolution suppress a completed base set. The synthetic "Standalone Pieces"
+// bucket also collects straggler variants whose makeup_set is still NULL —
+// match those to it the way createMakeupSet does. Mirrors ProfileStats.
+function ownVariants(set: MakeupSet) {
+  return set.makeup_variants.filter((v) =>
+    isStandaloneMakeupSet(set)
+      ? !v.makeup_set || v.makeup_set === set.slug
+      : v.makeup_set === set.slug
+  )
+}
+
+function MakeupRingsChart({
+  setsObtained,
+  setsTotal,
+  evolutionsObtained,
+  evolutionsTotal,
   variantsObtained,
   variantsTotal,
 }: {
-  eurekaSetsObtained: number
-  eurekaSetsTotal: number
-  colorSetsObtained: number
-  colorSetsTotal: number
-  trialsObtained: number
-  trialsTotal: number
+  setsObtained: number
+  setsTotal: number
+  evolutionsObtained: number
+  evolutionsTotal: number
   variantsObtained: number
   variantsTotal: number
 }) {
@@ -42,39 +57,34 @@ function CollectionRingsChart({
 
   const muted = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.08)'
   const tertiary = theme.palette.tertiary.main
-  const ringColors = [1, 0.75, 0.55, 0.35].map((opacity) => alpha(tertiary, opacity))
+  // Three rings rather than the outfit chart's four (makeup has no glow-ups),
+  // so take its first, second, and fourth opacity steps — skipping one keeps
+  // the outermost ring clearly distinct from its neighbour.
+  const ringColors = [1, 0.75, 0.35].map((opacity) => alpha(tertiary, opacity))
 
   const rings = [
     {
       label: 'Sets',
-      obtained: eurekaSetsObtained,
-      total: eurekaSetsTotal,
+      obtained: setsObtained,
+      total: setsTotal,
       color: ringColors[0],
-      innerRadius: 35,
-      outerRadius: 52,
+      innerRadius: 42,
+      outerRadius: 62,
     },
     {
-      label: 'Color Sets',
-      obtained: colorSetsObtained,
-      total: colorSetsTotal,
+      label: 'Evolutions',
+      obtained: evolutionsObtained,
+      total: evolutionsTotal,
       color: ringColors[1],
-      innerRadius: 56,
-      outerRadius: 72,
-    },
-    {
-      label: 'Trials',
-      obtained: trialsObtained,
-      total: trialsTotal,
-      color: ringColors[2],
-      innerRadius: 76,
-      outerRadius: 90,
+      innerRadius: 68,
+      outerRadius: 86,
     },
     {
       label: 'Variants',
       obtained: variantsObtained,
       total: variantsTotal,
-      color: ringColors[3],
-      innerRadius: 94,
+      color: ringColors[2],
+      innerRadius: 92,
       outerRadius: 108,
     },
   ]
@@ -159,7 +169,13 @@ function CollectionRingsChart({
   )
 }
 
-function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
+function MakeupSeasonsChart({
+  makeupSets,
+  seasons,
+}: {
+  makeupSets: MakeupSet[]
+  seasons: Season[]
+}) {
   const { mode, systemMode } = useColorScheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -172,56 +188,57 @@ function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
   const primary = theme.palette.primary.main
   const secondary = theme.palette.secondary.main
 
-  const fiveStar = eurekaSets.filter((s) => s.rarity === 5)
-
-  const fiveStarTotal = fiveStar.reduce(
-    (acc, set) => acc + countObtained(set.eureka_variants).total,
-    0
-  )
-  const fiveStarSetsTotal = fiveStar.length
-  const fiveStarSetsObtained = fiveStar.filter(
-    (set) => set.eureka_variants.length > 0 && set.eureka_variants.every((v) => v.obtained)
-  ).length
-
-  const setSegments = fiveStar
-    .map((set) => {
-      const { obtained, total } = countObtained(set.eureka_variants)
-      return {
-        id: set.slug,
-        value: total,
-        label: set.title,
-        color: total > 0 && obtained === total ? secondary : muted,
-        formattedValue: `${percent(obtained, total)}% (${obtained}/${total})`,
-        obtained,
-        total,
-      }
+  // Seasons that actually have sets with variants. Progress is measured on each
+  // set's own variants, matching the Sets ring — evolution variants belong to
+  // the evolution, not the base set's season tally. (The outfit equivalent
+  // scopes to `default` variants instead; makeup has no such flag.)
+  const seasonGroups = seasons
+    .map((season) => {
+      const variants = makeupSets.filter((set) => set.seasons === season.slug).flatMap(ownVariants)
+      return { season, variants }
     })
-    .filter((s) => s.value > 0)
+    .filter(({ variants }) => variants.length > 0)
+
+  const seasonVariantsTotal = seasonGroups.reduce((acc, { variants }) => acc + variants.length, 0)
+  const seasonsTotal = seasonGroups.length
+  const seasonsObtained = seasonGroups.filter(({ variants }) => isComplete(variants)).length
+
+  const setSegments = seasonGroups.map(({ season, variants }) => {
+    const obtained = variants.filter((v) => v.obtained).length
+    const total = variants.length
+    // Heat-map: quantize completion into 5 opacity bands so a season's fill
+    // intensity reads as its progress at a glance. Mirrors the outfit chart.
+    const ratio = total > 0 ? obtained / total : 0
+    return {
+      id: season.slug,
+      value: total,
+      label: season.title,
+      color: ratio === 0 ? muted : alpha(secondary, Math.ceil(ratio * 5) / 5),
+      formattedValue: `${percent(obtained, total)}% (${obtained}/${total})`,
+      obtained,
+      total,
+    }
+  })
 
   const selected = selectedSlug ? (setSegments.find((s) => s.id === selectedSlug) ?? null) : null
 
-  const innerObtained = selected ? selected.obtained : fiveStarSetsObtained
-  const innerTotal = selected ? selected.total : fiveStarSetsTotal
+  const innerObtained = selected ? selected.obtained : seasonsObtained
+  const innerTotal = selected ? selected.total : seasonsTotal
   const innerPct = percent(innerObtained, innerTotal)
 
-  if (mounted && fiveStarTotal === 0) return null
+  if (mounted && seasonVariantsTotal === 0) return null
 
   return (
     <ChartCard
       chart={
         <>
           <PieChart
-            height={COLOR_SETS_CHART_SIZE}
+            height={SEASONS_CHART_SIZE}
             margin={{ top: 0, bottom: 0, left: 0, right: 0 }}
             series={[
               {
                 data: [
-                  {
-                    id: 'obtained',
-                    value: innerObtained,
-                    label: 'Obtained',
-                    color: primary,
-                  },
+                  { id: 'obtained', value: innerObtained, label: 'Obtained', color: primary },
                   {
                     id: 'remaining',
                     value: innerTotal - innerObtained,
@@ -236,7 +253,7 @@ function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
                 valueFormatter: (item) => `${percent(item.value, innerTotal)}%`,
               },
               {
-                id: 'sets',
+                id: 'seasons',
                 data: setSegments,
                 innerRadius: 76,
                 outerRadius: 100,
@@ -244,13 +261,13 @@ function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
                 cornerRadius: 3,
                 valueFormatter: (item) =>
                   (item as (typeof setSegments)[number]).formattedValue ??
-                  `${percent(item.value, fiveStarTotal)}%`,
+                  `${percent(item.value, seasonVariantsTotal)}%`,
               },
             ]}
             slots={{ legend: () => null }}
-            width={COLOR_SETS_CHART_SIZE}
+            width={SEASONS_CHART_SIZE}
             onItemClick={(_, { seriesId, dataIndex }) => {
-              if (seriesId !== 'sets') return
+              if (seriesId !== 'seasons') return
               const slug = setSegments[dataIndex]?.id ?? null
               setSelectedSlug((prev) => (prev === slug ? null : slug))
             }}
@@ -273,26 +290,29 @@ function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
         {
           label: selected ? selected.label : 'Overall',
           rows: [
-            { color: primary, text: 'Obtained', value: `${innerObtained} / ${innerTotal}` },
+            { color: primary, text: 'Obtained', obtained: innerObtained, total: innerTotal },
             {
               color: muted,
               text: 'Missing',
-              value: `${innerTotal - innerObtained} / ${innerTotal}`,
+              obtained: innerTotal - innerObtained,
+              total: innerTotal,
             },
           ],
         },
         {
-          label: 'Sets',
+          label: 'Seasons',
           rows: [
             {
               color: secondary,
               text: 'Complete',
-              value: `${fiveStarSetsObtained} / ${fiveStarSetsTotal}`,
+              obtained: seasonsObtained,
+              total: seasonsTotal,
             },
             {
               color: muted,
               text: 'Unfinished',
-              value: `${fiveStarSetsTotal - fiveStarSetsObtained} / ${fiveStarSetsTotal}`,
+              obtained: seasonsTotal - seasonsObtained,
+              total: seasonsTotal,
             },
           ],
         },
@@ -301,93 +321,72 @@ function CollectionSetsChart({ eurekaSets }: { eurekaSets: EurekaSet[] }) {
           <Typography color="text.secondary" variant="caption">
             {label}
           </Typography>
-          {rows.map(({ color, text, value }) => (
-            <Stack key={text} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+          {rows.map((row) => (
+            <Stack key={row.text} direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
               <Box
                 sx={{
                   width: 12,
                   height: 12,
                   borderRadius: '3px',
-                  bgcolor: color,
+                  bgcolor: row.color,
                   flexShrink: 0,
                 }}
               />
               <Typography sx={{ flex: 1 }} variant="body2">
-                {text}
+                {row.text}
               </Typography>
-              <ProgressChip
-                obtained={Number(value.split('/')[0])}
-                total={Number(value.split('/')[1])}
-                variant="parts"
-              />
+              <ProgressChip obtained={row.obtained} total={row.total} variant="parts" />
             </Stack>
           ))}
         </Stack>
       ))}
       mounted={mounted}
-      size={COLOR_SETS_CHART_SIZE}
-      title={
-        <>
-          5{' '}
-          <SparkleIcon
-            aria-label="star"
-            color="inherit"
-            fontSize="inherit"
-            sx={{ rotate: '15deg', ml: 0, mr: 0.5, mt: -0.25 }}
-          />{' '}
-          Set Progress
-        </>
-      }
+      size={SEASONS_CHART_SIZE}
+      title="Season Progress"
     />
   )
 }
 
-export default function EurekaCollectionCharts({
-  eurekaSets,
-  trials,
+export default function MakeupCollectionCharts({
+  makeupSets,
+  seasons,
 }: {
-  eurekaSets: EurekaSet[]
-  trials: Trial[]
+  makeupSets: MakeupSet[]
+  seasons: Season[]
 }) {
-  const allVariants = eurekaSets.flatMap((set) => set.eureka_variants)
+  // `makeupSets` holds base sets only (createMakeupSet nests evolutions rather
+  // than listing them at the top level), and each base already carries its
+  // evolutions' variants concatenated onto `makeup_variants`. So this flat map
+  // is the real total — every variant, evolution ones included, counted once.
+  const allVariants = makeupSets.flatMap((set) => set.makeup_variants)
+  const variantsObtained = allVariants.filter((v) => v.obtained).length
+  const variantsTotal = allVariants.length
 
-  const eurekaSetsObtained = eurekaSets.filter(
-    (set) => set.eureka_variants.length > 0 && set.eureka_variants.every((v) => v.obtained)
-  ).length
+  // Set completion, by contrast, is judged on the set's OWN variants — an
+  // unfinished evolution shouldn't keep a completed base set from counting.
+  const setsObtained = makeupSets.filter((set) => isComplete(ownVariants(set))).length
 
-  const { obtained: variantsObtained, total: variantsTotal } = countObtained(allVariants)
-
-  const colorSetsObtained = eurekaSets.reduce(
-    (count, set) =>
-      count +
-      set.colors.filter((color) =>
-        set.eureka_variants
-          .filter((variant) => variant.color === color.slug)
-          .every((variant) => variant.obtained)
-      ).length,
-    0
+  // Evolutions are nested under their base set, and each carries only its own
+  // variants (createMakeupSet builds them with no evolutions of their own), so
+  // ownVariants would be a no-op here — read makeup_variants directly. Makeup
+  // has no glow-up concept, so unlike outfits there is nothing to exclude.
+  const evolutionGroups = makeupSets.flatMap((set) =>
+    set.evolutions.map((evolution) => evolution.makeup_variants)
   )
-  const colorSetsTotal = eurekaSets.reduce((sum, set) => sum + set.colors.length, 0)
-
-  const trialsObtained = trials.filter((trial) =>
-    eurekaSets
-      .filter((set) => set.eureka_set_trials.some((setTrial) => setTrial.trial === trial.slug))
-      .every((set) => set.eureka_variants.every((variant) => variant.obtained))
-  ).length
+  const evolutionsTotal = evolutionGroups.length
+  const evolutionsObtained = evolutionGroups.filter(isComplete).length
 
   return (
     <SimpleGrid columns={{ sm: '1fr', md: '1fr 1fr' }}>
-      <CollectionRingsChart
-        colorSetsObtained={colorSetsObtained}
-        colorSetsTotal={colorSetsTotal}
-        eurekaSetsObtained={eurekaSetsObtained}
-        eurekaSetsTotal={eurekaSets.length}
-        trialsObtained={trialsObtained}
-        trialsTotal={trials.length}
+      <MakeupRingsChart
+        evolutionsObtained={evolutionsObtained}
+        evolutionsTotal={evolutionsTotal}
+        setsObtained={setsObtained}
+        setsTotal={makeupSets.length}
         variantsObtained={variantsObtained}
         variantsTotal={variantsTotal}
       />
-      <CollectionSetsChart eurekaSets={eurekaSets} />
+      <MakeupSeasonsChart makeupSets={makeupSets} seasons={seasons} />
     </SimpleGrid>
   )
 }

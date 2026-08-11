@@ -1,6 +1,6 @@
 import { cache } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import { ObtainedMomoCloak } from '@/lib/types/momo'
+import { ObtainedMomoCloak, RecentObtainedMomoCloak } from '@/lib/types/momo'
 import { UUID } from 'crypto'
 import { fetchAllRows } from './fetch-all-rows'
 
@@ -16,4 +16,24 @@ export const getObtainedMomoCloaks = cache(async (user_id: UUID | string) => {
       .order('id', { ascending: true })
       .range(from, to)
   )
+})
+
+export const getRecentObtainedMomoCloaks = cache(async (user_id: UUID | string) => {
+  const supabase = await createClient()
+
+  const { data } = await supabase
+    .from('obtained_momo_cloaks')
+    .select(
+      `
+				id,
+				momo_cloak,
+				created_at,
+				momo_cloaks ( slug, title, image_url, rarity )
+			`
+    )
+    .eq('user_id', user_id)
+    .order('created_at', { ascending: false })
+    .limit(5)
+
+  return data as RecentObtainedMomoCloak[]
 })

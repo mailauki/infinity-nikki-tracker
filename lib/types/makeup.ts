@@ -62,3 +62,17 @@ export type ObtainedMakeup = Pick<
   Tables<'obtained_makeup'>,
   'id' | 'makeup_set' | 'makeup_category' | 'makeup_variant'
 >
+
+// obtained_makeup.makeup_variant FKs straight to makeup_variants.slug, so the
+// variant embeds directly here — unlike RecentObtainedOutfit, which has to
+// carry the whole set's variant array and find the matching one client-side.
+export type RecentObtainedMakeup = Pick<
+  Tables<'obtained_makeup'>,
+  'id' | 'makeup_set' | 'makeup_category' | 'makeup_variant' | 'created_at'
+> & {
+  makeup_variants: { slug: string; title: string | null; image_url: string | null } | null
+  // `base_set` is carried so the list can link an evolution row to its base —
+  // /makeup/{evolution} 404s, since getMakeupSet resolves base slugs only.
+  makeup_sets: { title: string; base_set: string | null } | null
+  makeup_categories: { title: string | null } | null
+}

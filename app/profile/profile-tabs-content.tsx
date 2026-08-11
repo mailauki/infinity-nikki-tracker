@@ -8,10 +8,14 @@ export default function ProfileTabsContent({
   profile,
   outfits,
   eureka,
+  makeup,
+  cloaks,
 }: {
   profile: React.ReactNode
   outfits: React.ReactNode
   eureka: React.ReactNode
+  makeup: React.ReactNode
+  cloaks: React.ReactNode
 }) {
   const { tab, statsView } = useProfileTabs()
   const ref = React.useRef<HTMLDivElement>(null)
@@ -62,12 +66,21 @@ export default function ProfileTabsContent({
       >
         {tab === 'profile' && profile}
       </Box>
-      <Box hidden={tab !== 'stats' || statsView !== 'outfits'}>
-        {tab === 'stats' && statsView === 'outfits' && outfits}
-      </Box>
-      <Box hidden={tab !== 'stats' || statsView !== 'eureka'}>
-        {tab === 'stats' && statsView === 'eureka' && eureka}
-      </Box>
+      {/* One block per stats view. Kept as a mapped list rather than four
+          near-identical Boxes; each still renders its content only while
+          selected, so an unviewed collection's charts never mount. */}
+      {(
+        [
+          ['outfits', outfits],
+          ['eureka', eureka],
+          ['makeup', makeup],
+          ['cloaks', cloaks],
+        ] as const
+      ).map(([view, content]) => (
+        <Box key={view} hidden={tab !== 'stats' || statsView !== view}>
+          {tab === 'stats' && statsView === view && content}
+        </Box>
+      ))}
     </>
   )
 }

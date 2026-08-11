@@ -11,6 +11,8 @@ export default function ProfileTabs({
   profile,
   outfits,
   eureka,
+  makeup,
+  cloaks,
 }: {
   isAdmin: boolean
   /** The viewer is looking at their own profile — gates the edit affordances. */
@@ -18,6 +20,8 @@ export default function ProfileTabs({
   profile: React.ReactNode
   outfits: React.ReactNode
   eureka: React.ReactNode
+  makeup: React.ReactNode
+  cloaks: React.ReactNode
 }) {
   return (
     // ProfileToolbar and ProfileStatsBar both read the tab context, so they are
@@ -25,7 +29,13 @@ export default function ProfileTabs({
     <ProfileTabsProvider>
       <ProfileToolbar isAdmin={isAdmin} isOwner={isOwner} />
       <ProfileStatsBar />
-      <ProfileTabsContent eureka={eureka} outfits={outfits} profile={profile} />
+      <ProfileTabsContent
+        cloaks={cloaks}
+        eureka={eureka}
+        makeup={makeup}
+        outfits={outfits}
+        profile={profile}
+      />
     </ProfileTabsProvider>
   )
 }

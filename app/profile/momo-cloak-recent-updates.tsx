@@ -11,10 +11,11 @@ import {
   Typography,
 } from '@mui/material'
 import LazyImage from '@/components/lazy-image'
-import { RecentObtainedOutfit } from '@/lib/types/outfit'
+import RarityStars from '@/components/rarity-stars'
+import { RecentObtainedMomoCloak } from '@/lib/types/momo'
 import { toTitle, formatDate } from '@/lib/utils'
 
-export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOutfit[] }) {
+export default function MomoCloakRecentUpdates({ items }: { items: RecentObtainedMomoCloak[] }) {
   if (!items?.length) return null
 
   return (
@@ -31,31 +32,25 @@ export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOu
       <CardContent>
         <List disablePadding>
           {items.map((item) => {
-            const variant = item.outfit_sets?.outfit_variants.find(
-              (v) => v.slug === item.outfit_variant
-            )
-            const setTitle = item.outfit_sets?.title ?? toTitle(item.outfit_set ?? '')
+            const cloak = item.momo_cloaks
+            const title = cloak?.title ?? toTitle(item.momo_cloak ?? '')
 
             return (
               <ListItem key={item.id} disablePadding>
-                <ListItemButton component="a" href={`/outfits/${item.outfit_set}`}>
+                <ListItemButton component="a" href={`/momo-cloaks/${item.momo_cloak}`}>
                   <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
-                    <LazyImage
-                      kind='avatar'
-                      src={variant?.image_url ?? undefined}
-                      title={setTitle}
-                    />
+                    <LazyImage kind="avatar" src={cloak?.image_url ?? undefined} title={title} />
                   </ListItemAvatar>
+                  {/* Cloaks are flat — no set or category to name on the second
+                      line — so rarity stands in as the secondary detail. */}
                   <ListItemText
-                    primary={variant?.title ?? setTitle}
-                    secondary={
-                      variant?.title
-                        ? `${setTitle} • ${item.outfit_categories?.title}`
-                        : item.outfit_categories?.title
-                    }
+                    primary={title}
+                    secondary={cloak ? <RarityStars rarity={cloak.rarity ?? 0} /> : null}
                     slotProps={{
                       primary: { variant: 'body2' },
-                      secondary: { variant: 'caption' },
+                      // RarityStars wraps a Stack (a div); the secondary slot
+                      // defaults to <p>, which cannot legally contain one.
+                      secondary: { variant: 'caption', component: 'span' },
                     }}
                   />
                   <Typography color="text.secondary" variant="caption">
