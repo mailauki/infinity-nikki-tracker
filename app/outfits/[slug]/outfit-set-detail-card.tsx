@@ -117,12 +117,12 @@ export default function OutfitSetDetailCard({
   const linked: { href: string; title: string; image: string | null }[] = [
     linkSource.makeupSet && {
       href: linkedSetHref('makeup', linkSource.makeupSet),
-      title: linkSource.makeupSet.title || 'Makeup',
+      title: linkSource.makeupSet.title,
       image: linkSource.makeupSet.alt_image_url || linkSource.makeupSet.image_url,
     },
     linkSource.momoCloak && {
       href: `/momo-cloaks/${linkSource.momoCloak.slug}`,
-      title: linkSource.momoCloak.title || "Momo's Cloak",
+      title: linkSource.momoCloak.title,
       image: linkSource.momoCloak.alt_image_url || linkSource.momoCloak.image_url,
     },
   ].filter((item): item is { href: string; title: string; image: string | null } => !!item)
