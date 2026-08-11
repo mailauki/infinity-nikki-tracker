@@ -1,3 +1,4 @@
+import { EvolvableLinkedSet } from './outfit'
 import { Tables } from './supabase'
 
 export type MakeupCategory = Pick<Tables<'makeup_categories'>, 'slug' | 'title' | 'image_url'>
@@ -50,7 +51,7 @@ export type MakeupSet = Tables<'makeup_sets'> & {
   seasonCategory: { title: string } | null
   // The paired outfit set, resolved from makeup_sets.outfit_set. Null when the
   // set has no pairing. Populated by createMakeupSet().
-  outfitSet: { slug: string; title: string; image_url: string | null } | null
+  outfitSet: EvolvableLinkedSet | null
 }
 
 // A makeup evolution is just a makeup_sets row with base_set IS NOT NULL
