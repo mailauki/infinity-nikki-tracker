@@ -2,12 +2,20 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { toSlug } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { EvolutionDraft } from '@/lib/types/outfit'
 import { evolutionTitle } from '@/hooks/outfit'
+
+// The admin dashboard is a Server Component behind a client Router Cache entry.
+// Without this, redirecting back after a save re-renders the cached copy and
+// the gap-queue counts look unchanged even though the write succeeded.
+function revalidateAdmin() {
+  revalidatePath(ADMIN_DASHBOARD)
+}
 
 // The standalone-pieces set holds individually-authored variants (many per
 // category, own slugs) managed via the standalone-variant admin — its variants
@@ -151,6 +159,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
 
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: title }
+  revalidateAdmin()
   redirect(ADMIN_DASHBOARD)
 }
 
@@ -393,6 +402,25 @@ export async function editOutfitSet(id: number, _: unknown, formData: FormData) 
       if (insertError) return { error: insertError.message }
     }
 
+    // Push shared fields onto variants that already exist. Spreading
+    // `variantSharedFields` into `expectedVariants` only reaches `toInsert`,
+    // so editing a set's season (or rarity/style/label) left every existing
+    // variant on its old value — the set said one thing and its variants
+    // another, and the admin gap queue kept counting them as missing.
+    // Variants diverge from their set only on image and title; everything
+    // here is owned by the set, so overwriting is the intended behaviour.
+    const toUpdate = (currentVariants ?? [])
+      .filter((v) => expectedSlugs.has(v.slug))
+      .map((v) => v.slug)
+
+    if (toUpdate.length > 0) {
+      const { error: updateError } = await supabase
+        .from('outfit_variants')
+        .update(variantSharedFields)
+        .in('slug', toUpdate)
+      if (updateError) return { error: updateError.message }
+    }
+
     if (toDelete.length > 0) {
       const { error: deleteError } = await supabase
         .from('outfit_variants')
@@ -504,8 +532,12 @@ export async function editOutfitSet(id: number, _: unknown, formData: FormData) 
       .limit(1)
       .maybeSingle()
 
+    // Revalidate before either redirect — redirect() throws, so anything after
+    // the first one never runs.
+    revalidateAdmin()
     if (next?.slug) redirect(`${navLinksData.admin.outfits.sets.edit}/${next.slug}`)
     redirect(ADMIN_DASHBOARD)
   }
+  revalidateAdmin()
   redirect(ADMIN_DASHBOARD)
 }

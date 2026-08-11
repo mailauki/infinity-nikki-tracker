@@ -1,11 +1,19 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { toSlugMakeup } from '@/lib/utils'
+
+// The admin dashboard is a Server Component behind a client Router Cache entry.
+// Without this, redirecting back after a save re-renders the cached copy and
+// the gap-queue counts look unchanged even though the write succeeded.
+function revalidateAdmin() {
+  revalidatePath(ADMIN_DASHBOARD)
+}
 
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null
@@ -95,6 +103,7 @@ export async function addMakeupSet(_: unknown, formData: FormData) {
 
   if (formData.get('add_another') === 'true')
     return { addAnother: true as const, savedTitle: values.title }
+  revalidateAdmin()
   redirect(ADMIN_DASHBOARD)
 }
 
@@ -143,14 +152,22 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
     .eq('base_set', slug)
   const stateSlugs: string[] = [slug, ...(evolutionRows ?? []).map((e) => e.slug)]
 
+  // Fields a variant inherits from its owning set. Variants diverge from their
+  // set only on image and title; everything here is owned by the set.
+  const variantSharedFields = {
+    rarity: values.rarity as number,
+    style: values.style,
+    seasons: values.seasons,
+    season_category: values.season_category,
+  }
+
   if (makeupCategories.length > 0) {
     const expectedVariants = stateSlugs.flatMap((stateSlug) =>
       makeupCategories.map((cat) => ({
         makeup_set: stateSlug,
         makeup_category: cat.slug,
         slug: toSlugMakeup(stateSlug, cat.slug),
-        rarity: values.rarity as number,
-        style: values.style,
+        ...variantSharedFields,
       }))
     )
     const expectedSlugs = new Set(expectedVariants.map((v) => v.slug))
@@ -170,6 +187,21 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
     if (toInsert.length > 0) {
       const { error: insertError } = await supabase.from('makeup_variants').insert(toInsert)
       if (insertError) return { error: insertError.message }
+    }
+
+    // Push shared fields onto variants that already exist — the spread above
+    // only reaches `toInsert`, so editing a set left every existing variant on
+    // its old value.
+    const toUpdate = (currentVariants ?? [])
+      .filter((v) => expectedSlugs.has(v.slug))
+      .map((v) => v.slug)
+
+    if (toUpdate.length > 0) {
+      const { error: updateError } = await supabase
+        .from('makeup_variants')
+        .update(variantSharedFields)
+        .in('slug', toUpdate)
+      if (updateError) return { error: updateError.message }
     }
 
     if (toDelete.length > 0) {
@@ -254,9 +286,13 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
       .limit(1)
       .maybeSingle()
 
+    // Revalidate before either redirect — redirect() throws, so anything after
+    // the first one never runs.
+    revalidateAdmin()
     if (next?.slug) redirect(`${navLinksData.admin.makeup.sets.edit}/${next.slug}`)
     redirect(ADMIN_DASHBOARD)
   }
+  revalidateAdmin()
   redirect(ADMIN_DASHBOARD)
 }
 
