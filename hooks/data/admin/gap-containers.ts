@@ -81,6 +81,14 @@ const GROUPED_VARIANT_KEYS = new Set<AdminEntityKey>([
  */
 export const STANDALONE_SET_SLUGS = ['standalone_pieces', 'standalone-pieces']
 
+/**
+ * Owner tables that carry a "Standalone Pieces" set row. Those rows are real
+ * and have their own edit forms, but they are containers for the standalone
+ * bucket rather than collectible sets, so `fetchSimpleGapItems` excludes them
+ * from the sets queues — see the filter there.
+ */
+const OWNER_TABLES_WITH_STANDALONE_SET = new Set<string>(['outfit_sets', 'makeup_sets'])
+
 export interface UnassignedPiece {
   /** `${entity}:${slug}`. */
   key: string
@@ -209,6 +217,14 @@ async function fetchSimpleGapItems(supabase: Client, key: AdminEntityKey): Promi
     if (e.evolutionFilter === true) q = q.not('base_set', 'is', null)
     if (e.evolutionFilter === false) q = q.is('base_set', null)
     q = q.or(orFilter)
+    // The "Standalone Pieces" set rows in outfit_sets/makeup_sets back the
+    // synthetic STANDALONE_QUEUE_KEY bucket, which lists their pieces
+    // individually. Leaving the container rows in the sets queues too showed
+    // the same concept in two places, so they are filtered out here — that
+    // bucket is the one place standalone work is surfaced.
+    if (OWNER_TABLES_WITH_STANDALONE_SET.has(e.table)) {
+      q = q.not('slug', 'in', `(${STANDALONE_SET_SLUGS.join(',')})`)
+    }
     return q.order('slug', { ascending: true }).range(from, to)
   })
 
