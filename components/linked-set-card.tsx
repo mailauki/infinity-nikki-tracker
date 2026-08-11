@@ -29,7 +29,8 @@ export default function LinkedSetCard({ href, title, image, half = false }: Link
       <CardActionArea component={Link} href={href}>
         <CardHeader
           avatar={<LazyImage kind="avatar" src={image} />}
-          sx={{ py: 1, px: 1.5 }}
+          slotProps={{ title: { noWrap: true } }}
+          sx={{ py: 1, px: 1.5, '& .MuiCardHeader-content': { width: 'calc(100% - 56px)' } }}
           title={title}
         />
       </CardActionArea>
