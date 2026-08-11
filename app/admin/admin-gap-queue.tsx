@@ -23,6 +23,7 @@ import {
   ADMIN_ENTITIES,
   ADMIN_ENTITY_KEYS,
   STANDALONE_QUEUE_KEY,
+  type AdminEntityKey,
   type GapKind,
   type GapQueueKey,
 } from '@/lib/admin-entities'
@@ -64,8 +65,20 @@ const STANDALONE_BUCKET: QueueBucket = {
   tracksSeason: true,
 }
 
+/**
+ * Entities excluded from the queue dropdown. Season Categories and Abilities
+ * are small lookup tables whose only tracked gap is a description nobody
+ * fills in, so they were permanent noise in a list meant to show real work.
+ * They remain in ADMIN_ENTITIES, so the totals strip and completeness list
+ * still count them.
+ */
+const HIDDEN_QUEUE_KEYS = new Set<AdminEntityKey>(['season-categories', 'abilities'])
+
 /** Ordered dropdown options — real entities, then the synthetic bucket. */
-const QUEUE_KEYS: GapQueueKey[] = [...ADMIN_ENTITY_KEYS, STANDALONE_QUEUE_KEY]
+const QUEUE_KEYS: GapQueueKey[] = [
+  ...ADMIN_ENTITY_KEYS.filter((key) => !HIDDEN_QUEUE_KEYS.has(key)),
+  STANDALONE_QUEUE_KEY,
+]
 
 function queueBucket(key: GapQueueKey): QueueBucket {
   return key === STANDALONE_QUEUE_KEY ? STANDALONE_BUCKET : ADMIN_ENTITIES[key]
@@ -137,7 +150,13 @@ function containerGapCount(rows: GapWorkItem[], kind: GapKind): number {
  * standalone bucket has no `admin_entity_stats` row and is never the default.
  */
 function defaultEntity(stats: AdminStat[]): GapQueueKey {
-  return [...stats].sort((a, b) => b.gaps - a.gaps)[0]?.key ?? 'outfit-variants'
+  return (
+    // Hidden entities are filtered out first: `stats` still carries them (they
+    // remain in ADMIN_ENTITIES for the totals strip), and defaulting to one
+    // would open the queue on an entity the dropdown cannot display.
+    [...stats].filter((s) => !HIDDEN_QUEUE_KEYS.has(s.key)).sort((a, b) => b.gaps - a.gaps)[0]
+      ?.key ?? 'outfit-variants'
+  )
 }
 
 /** Compact "2 title, 1 image" summary of a container's gap counts. */
