@@ -8,6 +8,7 @@ import {
   CircularProgress,
   DialogActions,
   FormControl,
+  FormHelperText,
   InputLabel,
   MenuItem,
   Select,
@@ -15,7 +16,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import FeedbackReceipt, { type ReceiptData } from './feedback-receipt'
 import ImagePicker from './image-picker'
 import { createClient } from '@/lib/supabase/client'
@@ -50,6 +51,7 @@ export default function FeedbackForm({ type, context, onClose }: FeedbackFormPro
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
   const [success, setSuccess] = useState<Success | null>(null)
+  const errorAlertRef = useRef<HTMLDivElement>(null)
 
   // Resolved here rather than passed in: the two call sites (the help page and
   // the global footer link) are both auth-unaware client components, so a prop
@@ -70,6 +72,13 @@ export default function FeedbackForm({ type, context, onClose }: FeedbackFormPro
   }, [])
 
   const subject = context?.entity_title ?? context?.entity_slug
+
+  // The Alert mounts in place without a focus change, so screen reader users
+  // relying on virtual-cursor navigation may never encounter it. Move focus
+  // to it whenever a new server error appears.
+  useEffect(() => {
+    if (submitError) errorAlertRef.current?.focus()
+  }, [submitError])
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
@@ -139,7 +148,12 @@ export default function FeedbackForm({ type, context, onClose }: FeedbackFormPro
     <form noValidate onSubmit={handleSubmit}>
       <Stack spacing={2} sx={{ pt: 1 }}>
         {submitError && (
-          <Alert severity="error" onClose={() => setSubmitError(null)}>
+          <Alert
+            ref={errorAlertRef}
+            severity="error"
+            tabIndex={-1}
+            onClose={() => setSubmitError(null)}
+          >
             {submitError}
           </Alert>
         )}
@@ -147,12 +161,16 @@ export default function FeedbackForm({ type, context, onClose }: FeedbackFormPro
         {/* Captured context is shown, never hidden — people should know what
             they are sending along with their words. */}
         {context && (
-          <Box>
-            <Typography color="text.secondary" variant="caption">
+          <Box sx={{ mb: 1 }}>
+            <Typography color="text.secondary" id="feedback-context-label" variant="caption">
               Reporting about
             </Typography>
             <Box sx={{ mt: 0.5 }}>
-              <Chip label={subject ?? context.page_path} size="small" />
+              <Chip
+                aria-describedby="feedback-context-label"
+                label={subject ?? context.page_path}
+                size="small"
+              />
             </Box>
           </Box>
         )}
@@ -171,6 +189,7 @@ export default function FeedbackForm({ type, context, onClose }: FeedbackFormPro
               </MenuItem>
             ))}
           </Select>
+          {errors.category && <FormHelperText>{errors.category}</FormHelperText>}
         </FormControl>
 
         <TextField

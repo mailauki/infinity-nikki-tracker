@@ -68,12 +68,12 @@ async function FeedbackDetail({ params }: Props) {
             Screenshots
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-            {imageUrls.map((url) => (
+            {imageUrls.map((url, i) => (
               // Signed URLs expire, so these are deliberately not optimized or
               // cached by next/image.
               <Box
                 key={url}
-                alt=""
+                alt={`Screenshot ${i + 1} attached to this report`}
                 component="img"
                 src={url}
                 sx={{ maxWidth: 320, borderRadius: 1 }}

@@ -3,7 +3,7 @@
 import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined'
 import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FeedbackForm from './feedback-form'
 import { useReportSubject } from './report-context'
 import { entityFromPath } from '@/lib/feedback/entity-from-path'
@@ -19,6 +19,13 @@ export default function ReportIssueLink() {
 
   const { entity_type, entity_slug } = entityFromPath(pathname)
 
+  // If the dialog is open and the user navigates (e.g. browser back/forward),
+  // it would otherwise stay open and silently re-label itself for the new
+  // route's context.
+  useEffect(() => {
+    setOpen(false)
+  }, [pathname])
+
   const context: ReportContext = {
     page_path: pathname,
     entity_type,
@@ -32,7 +39,7 @@ export default function ReportIssueLink() {
         color="inherit"
         size="small"
         startIcon={<FlagOutlinedIcon fontSize="small" />}
-        sx={{ color: 'text.disabled', textTransform: 'none' }}
+        sx={{ color: 'text.secondary', textTransform: 'none' }}
         onClick={() => setOpen(true)}
       >
         Report a problem

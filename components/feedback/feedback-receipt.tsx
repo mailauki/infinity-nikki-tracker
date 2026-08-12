@@ -2,6 +2,7 @@
 
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import { Alert, Box, Button, DialogActions, Divider, Stack, Typography } from '@mui/material'
+import { useEffect, useRef } from 'react'
 
 export interface ReceiptData {
   type: string
@@ -43,12 +44,39 @@ export default function FeedbackReceipt({
   onClose,
 }: FeedbackReceiptProps) {
   const subject = submission.entity_title ?? submission.entity_slug
+  const headingRef = useRef<HTMLHeadingElement>(null)
+
+  // The form unmounts in place when this replaces it, taking focus with it.
+  // Move focus to the receipt's heading so screen reader users get an
+  // immediate, unambiguous signal that the submission succeeded.
+  useEffect(() => {
+    headingRef.current?.focus()
+  }, [])
 
   return (
     <Box>
+      {/* Visually-hidden live region: belt-and-suspenders in case the focus
+          move above is swallowed (e.g. by a screen reader's own heuristics). */}
+      <Box
+        aria-live="polite"
+        role="status"
+        sx={{
+          position: 'absolute',
+          width: 1,
+          height: 1,
+          overflow: 'hidden',
+          clip: 'rect(0 0 0 0)',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        Report submitted
+      </Box>
+
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
         <CheckCircleOutlineIcon color="success" />
-        <Typography variant="h6">Thanks — we got it</Typography>
+        <Typography ref={headingRef} component="h3" tabIndex={-1} variant="h6">
+          Thanks — we got it
+        </Typography>
       </Stack>
 
       <Typography color="text.secondary" sx={{ mb: 2 }} variant="body2">

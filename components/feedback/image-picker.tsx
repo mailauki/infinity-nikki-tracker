@@ -104,6 +104,7 @@ export default function ImagePicker({ files, onChange, disabled }: ImagePickerPr
 
       <Typography
         color={error ? 'error' : 'text.secondary'}
+        role="status"
         sx={{ display: 'block', mt: 0.5 }}
         variant="caption"
       >

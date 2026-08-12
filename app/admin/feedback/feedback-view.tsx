@@ -106,10 +106,6 @@ export default function FeedbackView({ rows: initialRows }: { rows: Feedback[] }
         rowModesModel={rowModesModel}
         rows={visible}
         sx={{ border: 0 }}
-        onProcessRowUpdateError={(error) => {
-          console.error('Row update failed:', error)
-          enqueueSnackbar('Could not save that change.', { variant: 'error' })
-        }}
         onRowModesModelChange={setRowModesModel}
       />
     </Box>

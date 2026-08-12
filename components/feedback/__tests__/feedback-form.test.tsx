@@ -107,6 +107,34 @@ describe('FeedbackForm', () => {
     expect(await screen.findByLabelText(/^email$/i)).toBeInTheDocument()
   })
 
+  it('renders a category error returned by the server', async () => {
+    vi.stubGlobal(
+      'fetch',
+      fetchOk({ errors: { category: 'Choose a category from the list.' } }, 400)
+    )
+    const user = userEvent.setup()
+    render(<FeedbackForm type="issue" onClose={() => {}} />)
+
+    await user.type(screen.getByLabelText(/title/i), 'Broken image')
+    await user.type(screen.getByLabelText(/what went wrong/i), 'The thumbnail is blank.')
+    await user.click(screen.getByRole('button', { name: /send/i }))
+
+    expect(await screen.findByText(/choose a category from the list/i)).toBeInTheDocument()
+  })
+
+  it('moves focus to the receipt heading and announces success on submit', async () => {
+    const user = userEvent.setup()
+    render(<FeedbackForm type="issue" onClose={() => {}} />)
+
+    await user.type(screen.getByLabelText(/title/i), 'Broken image')
+    await user.type(screen.getByLabelText(/what went wrong/i), 'The thumbnail is blank.')
+    await user.click(screen.getByRole('button', { name: /send/i }))
+
+    const heading = await screen.findByRole('heading', { name: /thanks — we got it/i })
+    expect(heading).toHaveFocus()
+    expect(screen.getByRole('status')).toHaveTextContent(/report submitted/i)
+  })
+
   it('displays the captured context', () => {
     render(
       <FeedbackForm
