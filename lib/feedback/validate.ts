@@ -38,9 +38,9 @@ function isFeedbackType(value: string): value is FeedbackType {
 export function validateSubmission(input: SubmissionInput): ValidationResult {
   const errors: Record<string, string> = {}
 
-  const title = (input.title ?? '').trim()
-  const description = (input.description ?? '').trim()
-  const email = (input.email ?? '').trim()
+  const title = typeof input.title === 'string' ? input.title.trim() : ''
+  const description = typeof input.description === 'string' ? input.description.trim() : ''
+  const email = typeof input.email === 'string' ? input.email.trim() : ''
 
   if (!isFeedbackType(input.type)) {
     errors.type = 'Unknown feedback type.'

@@ -92,4 +92,41 @@ describe('validateSubmission', () => {
       expect(Object.keys(result.errors).sort()).toEqual(['description', 'title'])
     }
   })
+
+  it('treats a non-string title as empty and rejects it', () => {
+    const result = validateSubmission({
+      ...valid,
+      title: 456 as unknown as string,
+    })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.errors.title).toBeDefined()
+  })
+
+  it('treats a non-string description as empty and rejects it', () => {
+    const result = validateSubmission({
+      ...valid,
+      description: ['array'] as unknown as string,
+    })
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.errors.description).toBeDefined()
+  })
+
+  it('treats a non-string email as empty and absent', () => {
+    const result = validateSubmission({
+      ...valid,
+      email: 789 as unknown as string,
+    })
+    expect(result.ok).toBe(true)
+    if (result.ok) expect(result.value.email).toBeNull()
+  })
+
+  it('treats null/undefined email as absent', () => {
+    const result1 = validateSubmission({ ...valid, email: null })
+    expect(result1.ok).toBe(true)
+    if (result1.ok) expect(result1.value.email).toBeNull()
+
+    const result2 = validateSubmission({ ...valid, email: undefined })
+    expect(result2.ok).toBe(true)
+    if (result2.ok) expect(result2.value.email).toBeNull()
+  })
 })
