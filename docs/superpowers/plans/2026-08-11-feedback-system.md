@@ -20,6 +20,9 @@
 - **Path alias `@/` maps to the project root.**
 - **MUI `Stack` does not accept layout shorthands** (`justifyContent`, `alignItems`) as direct props — put them in `sx` or it is a TypeScript build error.
 - **`git add` with `[slug]` paths must be quoted** in zsh: `git add 'app/admin/.../[slug]/page.tsx'`.
+- **Never create or edit any file whose path contains `.env`** — including `.env.example`. A
+  PreToolUse hook blocks Edit/Write on them, and bypassing it via Bash is not acceptable. Surface
+  the needed lines in your task report for the user to add.
 - **Email receipt (Resend) is explicitly out of scope for this plan.** It is deferred by user decision. The `receipt_sent_at` column is created now so no migration is needed when it lands, but nothing writes to it. Task 9 is the placeholder marker only.
 
 ---
@@ -755,7 +758,9 @@ git commit -m "feat(feedback): add shared submission validation"
 **Files:**
 
 - Create: `lib/feedback/rate-limit.ts`, `lib/feedback/images.ts`, `lib/feedback/__tests__/rate-limit.test.ts`
-- Modify: `package.json` (add `sharp`), `.env.example`
+- Modify: `package.json` (add `sharp`)
+- Do NOT modify: `.env.example` / `.env.local` — blocked by a PreToolUse hook; the user adds these
+  (see Step 2)
 
 **Interfaces:**
 
@@ -773,19 +778,31 @@ git commit -m "feat(feedback): add shared submission validation"
 yarn add sharp
 ```
 
-- [ ] **Step 2: Add the salt to `.env.example`**
+- [ ] **Step 2: Surface the salt env var for the user to add — do NOT edit any env file**
 
-Append:
+**Do not attempt to create or edit `.env.example` or `.env.local`.** A PreToolUse hook in
+`.claude/settings.json` blocks Edit/Write on any path containing `.env` — including
+`.env.example` — and routing around it with Bash is not acceptable. This step is documentation
+only; the user adds both lines themselves.
+
+In your task report, surface these two items verbatim for the user:
+
+1. The line to add to `.env.example`:
 
 ```env
 FEEDBACK_IP_SALT=            # server-only; salts hashed IPs in feedback_rate_limit
 ```
 
-Then add a real value to `.env.local`. **Do not edit `.env` files with the Edit tool** — a PreToolUse hook blocks it. Ask the user to add it, or instruct them to run:
+2. The command to generate a real value in `.env.local`:
 
 ```bash
 echo "FEEDBACK_IP_SALT=$(openssl rand -hex 32)" >> .env.local
 ```
+
+The tests in this task stub the variable with `vi.stubEnv`, so they pass without it being set.
+`hashIp` falls back to an empty salt when the variable is absent, so the route still functions —
+it is just less resistant to a precomputed-hash attack until the user adds the real value. Note
+this in your report as a follow-up the user must complete before deploying.
 
 - [ ] **Step 3: Write the failing test at `lib/feedback/__tests__/rate-limit.test.ts`**
 
@@ -957,7 +974,7 @@ Expected: no errors. If `sharp` types are missing, confirm it installed with `ya
 - [ ] **Step 9: Commit**
 
 ```bash
-git add package.json yarn.lock .env.example lib/feedback/rate-limit.ts lib/feedback/images.ts lib/feedback/__tests__/rate-limit.test.ts
+git add package.json yarn.lock lib/feedback/rate-limit.ts lib/feedback/images.ts lib/feedback/__tests__/rate-limit.test.ts
 git commit -m "feat(feedback): add IP rate limiting and sharp image processing"
 ```
 
