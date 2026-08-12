@@ -3,6 +3,41 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 export const RATE_LIMIT_PER_HOUR = 5
 
+// A missing salt means hashIp degrades to sha256(ip) alone, which is
+// trivially reversible across the IPv4 space — the feedback_rate_limit table
+// would silently become a de-facto visitor IP log.
+//
+// This can't be a module-load check: Next.js imports route modules (with
+// NODE_ENV=production already set) during `next build`'s page-data
+// collection, long before any real server boot or request — a throw at
+// import time takes down the build itself, not just a misconfigured deploy.
+// Instead it's checked lazily, memoized so it only runs once per process:
+// the first real call to checkRateLimit (the actual runtime entry point)
+// throws in production — failing the request path loudly the moment the
+// server actually starts handling traffic, rather than 500ing silently on
+// every submission thereafter — and warns once in dev/test.
+//
+// hashIp itself stays pure/synchronous, reading process.env directly on
+// every call rather than closing over this check, so it keeps working with
+// tests that use vi.stubEnv to set the salt per-test.
+let saltChecked = false
+function ensureIpSaltConfigured(): void {
+  if (saltChecked) return
+  saltChecked = true
+  if (process.env.FEEDBACK_IP_SALT) return
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'FEEDBACK_IP_SALT is not set. Refusing to hash IPs: without it, feedback_rate_limit ' +
+        'would store unsalted (trivially reversible) IP hashes.'
+    )
+  }
+  console.warn(
+    'FEEDBACK_IP_SALT is not set — hashIp is running unsalted. This is only tolerated ' +
+      'outside production; set FEEDBACK_IP_SALT before deploying.'
+  )
+}
+
 // Salted digest so the table never accumulates a log of raw visitor IPs.
 export function hashIp(ip: string): string {
   const salt = process.env.FEEDBACK_IP_SALT ?? ''
@@ -27,6 +62,8 @@ export async function checkRateLimit(
   client: SupabaseClient,
   ip: string
 ): Promise<{ allowed: boolean }> {
+  ensureIpSaltConfigured()
+
   const { data, error } = await client.rpc('increment_feedback_rate_limit', {
     p_ip_hash: hashIp(ip),
     p_window_start: currentWindowStart().toISOString(),
