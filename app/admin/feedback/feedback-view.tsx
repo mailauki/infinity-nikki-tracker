@@ -1,11 +1,12 @@
 'use client'
 
+import { useCallback, useState } from 'react'
 import { Box, Chip } from '@mui/material'
-import { DataGrid, type GridColDef } from '@mui/x-data-grid'
+import { DataGrid, type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid'
 import { useRouter } from 'next/navigation'
-import { useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 import { updateFeedbackRow } from './actions'
+import { actionsColumn, DATA_GRID_DEFAULTS, useRowActions } from '@/app/admin/eureka/table-utils'
 import { FEEDBACK_STATUSES, type Feedback, type FeedbackStatus } from '@/lib/types/feedback'
 
 const STATUS_COLOR: Record<FeedbackStatus, 'default' | 'info' | 'success' | 'warning'> = {
@@ -15,14 +16,45 @@ const STATUS_COLOR: Record<FeedbackStatus, 'default' | 'info' | 'success' | 'war
   declined: 'default',
 }
 
-export default function FeedbackView({ rows }: { rows: Feedback[] }) {
+const LOCKED_FIELDS = ['created_at', 'type', 'category', 'title', 'entity_slug', 'page_path']
+
+export default function FeedbackView({ rows: initialRows }: { rows: Feedback[] }) {
   const router = useRouter()
-  const [, startTransition] = useTransition()
+  const [rows, setRows] = useState<Feedback[]>(initialRows)
+  const {
+    rowModesModel,
+    setRowModesModel,
+    isEditing,
+    handleEditClick,
+    handleSaveClick,
+    handleCancelClick,
+  } = useRowActions()
   const [statusFilter, setStatusFilter] = useState<FeedbackStatus | 'all'>('new')
 
   const visible = statusFilter === 'all' ? rows : rows.filter((row) => row.status === statusFilter)
 
+  const processRowUpdate = useCallback(async (newRow: Feedback, oldRow: Feedback) => {
+    const result = await updateFeedbackRow(newRow.id, {
+      status: newRow.status as FeedbackStatus,
+      admin_notes: newRow.admin_notes,
+    })
+    if (result.error) {
+      enqueueSnackbar('Could not save that change.', { variant: 'error' })
+      return oldRow
+    }
+    setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)))
+    return newRow
+  }, [])
+
   const columns: GridColDef<Feedback>[] = [
+    actionsColumn<Feedback>({
+      isEditing,
+      handleEditClick,
+      handleSaveClick,
+      handleCancelClick,
+      onViewClick: (row) => router.push(`/admin/feedback/${row.id}`),
+      viewLabel: 'View detail',
+    }),
     {
       field: 'created_at',
       headerName: 'Received',
@@ -41,7 +73,7 @@ export default function FeedbackView({ rows }: { rows: Feedback[] }) {
       editable: true,
       type: 'singleSelect',
       valueOptions: [...FEEDBACK_STATUSES],
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams<Feedback>) => (
         <Chip
           color={STATUS_COLOR[params.value as FeedbackStatus]}
           label={params.value}
@@ -66,27 +98,19 @@ export default function FeedbackView({ rows }: { rows: Feedback[] }) {
       </Box>
 
       <DataGrid
-        disableRowSelectionOnClick
+        {...DATA_GRID_DEFAULTS}
         columns={columns}
-        initialState={{ pagination: { paginationModel: { pageSize: 25 } } }}
-        processRowUpdate={(updated: Feedback) => {
-          startTransition(async () => {
-            const result = await updateFeedbackRow(updated.id, {
-              status: updated.status as FeedbackStatus,
-              admin_notes: updated.admin_notes,
-            })
-            if (result.error) {
-              enqueueSnackbar('Could not save that change.', { variant: 'error' })
-            }
-          })
-          return updated
-        }}
+        getRowId={(row) => row.id}
+        isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
+        processRowUpdate={processRowUpdate}
+        rowModesModel={rowModesModel}
         rows={visible}
+        sx={{ border: 0 }}
         onProcessRowUpdateError={(error) => {
           console.error('Row update failed:', error)
           enqueueSnackbar('Could not save that change.', { variant: 'error' })
         }}
-        onRowDoubleClick={(params) => router.push(`/admin/feedback/${params.id}`)}
+        onRowModesModelChange={setRowModesModel}
       />
     </Box>
   )

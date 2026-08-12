@@ -36,7 +36,14 @@ export async function deleteFeedbackRow(id: string) {
     const { error: storageError } = await supabase.storage
       .from('feedback')
       .remove(images.map((image) => image.path))
-    if (storageError) console.error(`Failed to remove screenshots for ${id}:`, storageError)
+    if (storageError) {
+      // Do not delete the row if the storage objects didn't clear: an
+      // undeleted row can be retried, but an orphaned storage object (no
+      // feedback_images row pointing at it, once the FK cascade runs) is
+      // effectively unrecoverable.
+      console.error(`Failed to remove screenshots for ${id}:`, storageError)
+      return { error: storageError.message }
+    }
   }
 
   const { error } = await supabase.from('feedback').delete().eq('id', id)
