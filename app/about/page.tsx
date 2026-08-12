@@ -38,6 +38,24 @@ const featurePages = [
     ],
   },
   {
+    title: 'Makeup',
+    subtitle: 'Track makeup sets and their individual variants.',
+    bullets: [
+      'Group by set or view variants individually',
+      'Filter by makeup category, season, and season category',
+      'When signed in, filter to only obtained or only missing variants',
+    ],
+  },
+  {
+    title: "Momo's Cloaks",
+    subtitle: "Track Momo's cloaks and see which ones you're still missing.",
+    bullets: [
+      'Filter by location, and sort by name or newest first',
+      'Toggle alternate artwork where a cloak has a second image',
+      'See the outfit each cloak is associated with on its detail page',
+    ],
+  },
+  {
     title: 'Custom Looks',
     subtitle: 'Build and save your own outfit combinations from Eureka and outfit pieces.',
     bullets: [
@@ -50,7 +68,8 @@ const featurePages = [
     subtitle: 'Your collection at a glance once you’re signed in.',
     bullets: [
       'See completed Outfit Sets, Evolutions, Glow-ups, and Eureka Sets at a glance',
-      'Toggle between Outfit and Eureka stats — each with completion charts and your most recent updates',
+      'Switch between Outfit, Eureka, Makeup, and Momo’s Cloak stats — each with completion charts and your most recent updates',
+      'Share your collection with a public profile at /u/your-username',
     ],
   },
   {
@@ -60,6 +79,15 @@ const featurePages = [
       'Appearance — choose a system, light, or dark mode, set a default sort order, and pick a color theme (additional themes with premium)',
       'Profile — update your display name, username, and avatar',
       'Account — change your email or password, request admin access, or delete your account',
+    ],
+  },
+  {
+    title: 'Feedback',
+    subtitle: 'Report a problem or suggest something new, right from the app.',
+    bullets: [
+      'Report an issue — bug reports and missing content, with up to 3 screenshots',
+      'Request a feature — new features and improvements',
+      'Report from any page and the set or piece you were looking at comes along automatically',
     ],
   },
 ]
@@ -83,8 +111,8 @@ export default function AboutPage() {
           >
             Infinity Nikki
           </Anchor>{' '}
-          — see your Eureka sets and variants at a glance, track your progress, and know exactly
-          what you&apos;re still missing.
+          — see your outfits, Eureka sets, makeup, and Momo&apos;s cloaks at a glance, track your
+          progress, and know exactly what you&apos;re still missing.
         </SectionSubtitle>
       </Section>
 
@@ -239,8 +267,6 @@ export default function AboutPage() {
           bullets={[
             'Search — quickly find sets and variants by name',
             'Outfit Pieces — tracking support for pieces not part of any outfit sets',
-            'Make-up Sets — tracking support for make-up sets and pieces',
-            "Momo's Cloaks — tracking support for Momo's cloaks",
             'Favorites — save your favorite sets and pieces',
             'Friends — follow friends to compare collection progress',
             'Sharing — shareable links to your looks and collection',
