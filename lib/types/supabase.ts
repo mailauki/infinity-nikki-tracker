@@ -323,6 +323,113 @@ export type Database = {
           },
         ]
       }
+      feedback: {
+        Row: {
+          admin_notes: string | null
+          category: string
+          created_at: string
+          description: string
+          email: string | null
+          entity_slug: string | null
+          entity_title: string | null
+          entity_type: string | null
+          id: string
+          page_path: string | null
+          receipt_sent_at: string | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          category: string
+          created_at?: string
+          description: string
+          email?: string | null
+          entity_slug?: string | null
+          entity_title?: string | null
+          entity_type?: string | null
+          id?: string
+          page_path?: string | null
+          receipt_sent_at?: string | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          category?: string
+          created_at?: string
+          description?: string
+          email?: string | null
+          entity_slug?: string | null
+          entity_title?: string | null
+          entity_type?: string | null
+          id?: string
+          page_path?: string | null
+          receipt_sent_at?: string | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      feedback_images: {
+        Row: {
+          created_at: string
+          feedback_id: string
+          id: string
+          path: string
+        }
+        Insert: {
+          created_at?: string
+          feedback_id: string
+          id?: string
+          path: string
+        }
+        Update: {
+          created_at?: string
+          feedback_id?: string
+          id?: string
+          path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feedback_images_feedback_id_fkey"
+            columns: ["feedback_id"]
+            isOneToOne: false
+            referencedRelation: "feedback"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feedback_rate_limit: {
+        Row: {
+          count: number
+          ip_hash: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          ip_hash: string
+          window_start: string
+        }
+        Update: {
+          count?: number
+          ip_hash?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       labels: {
         Row: {
           created_at: string
@@ -1478,6 +1585,10 @@ export type Database = {
       }
       generate_unique_username: { Args: never; Returns: string }
       generate_username: { Args: { len?: number }; Returns: string }
+      increment_feedback_rate_limit: {
+        Args: { p_ip_hash: string; p_window_start: string }
+        Returns: number
+      }
       is_admin: { Args: never; Returns: boolean }
       toggle_obtained: {
         Args: { p_category: string; p_color: string; p_eureka_set: string }

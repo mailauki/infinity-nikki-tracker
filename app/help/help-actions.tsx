@@ -1,7 +1,5 @@
 'use client'
 
-import BugReportForm from './bug-report-form'
-import FeatureRequestForm from './feature-request-form'
 import { AddComment, BugReport, Coffee, GitHub } from '@mui/icons-material'
 import {
   Box,
@@ -17,6 +15,7 @@ import {
 } from '@mui/material'
 import { useState } from 'react'
 import { SimpleGrid } from '@/components/card-grid'
+import FeedbackForm from '@/components/feedback/feedback-form'
 
 export default function HelpActions() {
   const [featureOpen, setFeatureOpen] = useState(false)
@@ -84,14 +83,14 @@ export default function HelpActions() {
       <Dialog fullWidth maxWidth="sm" open={featureOpen} onClose={() => setFeatureOpen(false)}>
         <DialogTitle>Feature Request</DialogTitle>
         <DialogContent>
-          <FeatureRequestForm onClose={() => setFeatureOpen(false)} />
+          <FeedbackForm type="feature" onClose={() => setFeatureOpen(false)} />
         </DialogContent>
       </Dialog>
 
       <Dialog fullWidth maxWidth="sm" open={bugOpen} onClose={() => setBugOpen(false)}>
         <DialogTitle>Report an Issue</DialogTitle>
         <DialogContent>
-          <BugReportForm onClose={() => setBugOpen(false)} />
+          <FeedbackForm type="issue" onClose={() => setBugOpen(false)} />
         </DialogContent>
       </Dialog>
     </Box>
