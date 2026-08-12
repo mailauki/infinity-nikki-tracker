@@ -32,13 +32,17 @@ export default function ImagePicker({ files, onChange, disabled }: ImagePickerPr
     const room = MAX_IMAGES - files.length
     const accepted = picked.filter((f) => f.size <= MAX_IMAGE_BYTES).slice(0, room)
 
+    // Both conditions can trip at once (an oversized pick that also exceeds
+    // the remaining slots) — collect whichever clauses apply so neither
+    // problem gets silently dropped from the message.
+    const messages: string[] = []
     if (tooLarge.length > 0) {
-      setError(`Each image must be under ${MAX_IMAGE_BYTES / 1024 / 1024}MB.`)
-    } else if (picked.length > room) {
-      setError(`You can attach up to ${MAX_IMAGES} images.`)
-    } else {
-      setError(null)
+      messages.push(`Each image must be under ${MAX_IMAGE_BYTES / 1024 / 1024}MB.`)
     }
+    if (picked.length > room) {
+      messages.push(`You can attach up to ${MAX_IMAGES} images.`)
+    }
+    setError(messages.length > 0 ? messages.join(' ') : null)
 
     if (accepted.length > 0) onChange([...files, ...accepted])
   }
@@ -59,7 +63,12 @@ export default function ImagePicker({ files, onChange, disabled }: ImagePickerPr
       {previews.length > 0 && (
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
           {previews.map((src, index) => (
-            <Box key={files[index]?.name ?? index} sx={{ position: 'relative' }}>
+            // Index key, not filename: the list is short, ordered, and fully
+            // re-rendered on every change, and two picked files can share a
+            // name (e.g. "screenshot.png" from different folders), which
+            // would collide as a key and break reconciliation between the
+            // two thumbnails.
+            <Box key={index} sx={{ position: 'relative' }}>
               {/* Local object URL, not a remote asset — next/image adds nothing here. */}
               <Box
                 alt=""
