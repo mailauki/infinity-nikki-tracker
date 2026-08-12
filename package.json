@@ -33,6 +33,7 @@
     "notistack": "^3.0.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
+    "sharp": "^0.35.3",
     "stripe": "^22.2.0",
     "tailwind-merge": "^3.6.0"
   },
