@@ -18,37 +18,26 @@ export function currentWindowStart(now: Date = new Date()): Date {
 }
 
 // Returns whether this request is allowed and records it if so.
+// Increments and reads the count atomically via an RPC so two concurrent
+// requests from the same IP in the same window cannot both read a stale
+// count and each write the same value, letting the caller exceed the cap.
 // Fails OPEN on a database error: a broken counter should not take the
 // feedback form offline, and the abuse ceiling is bounded by the size caps.
 export async function checkRateLimit(
   client: SupabaseClient,
   ip: string
 ): Promise<{ allowed: boolean }> {
-  const ip_hash = hashIp(ip)
-  const window_start = currentWindowStart().toISOString()
-
-  const { data, error } = await client
-    .from('feedback_rate_limit')
-    .select('count')
-    .eq('ip_hash', ip_hash)
-    .eq('window_start', window_start)
-    .maybeSingle()
+  const { data, error } = await client.rpc('increment_feedback_rate_limit', {
+    p_ip_hash: hashIp(ip),
+    p_window_start: currentWindowStart().toISOString(),
+  })
 
   if (error) {
-    console.error('Rate limit read failed, allowing request:', error)
+    console.error('Rate limit check failed, allowing request:', error)
     return { allowed: true }
   }
 
-  const used = data?.count ?? 0
-  if (used >= RATE_LIMIT_PER_HOUR) return { allowed: false }
-
-  const { error: writeError } = await client
-    .from('feedback_rate_limit')
-    .upsert({ ip_hash, window_start, count: used + 1 }, { onConflict: 'ip_hash,window_start' })
-
-  if (writeError) {
-    console.error('Rate limit write failed, allowing request:', writeError)
-  }
-
-  return { allowed: true }
+  // The RPC returns the count AFTER incrementing: the 5th request returns 5
+  // and must be allowed, the 6th returns 6 and must be blocked.
+  return { allowed: (data ?? 0) <= RATE_LIMIT_PER_HOUR }
 }

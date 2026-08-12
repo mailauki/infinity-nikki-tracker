@@ -1,5 +1,16 @@
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { currentWindowStart, hashIp } from '@/lib/feedback/rate-limit'
+import {
+  checkRateLimit,
+  currentWindowStart,
+  hashIp,
+  RATE_LIMIT_PER_HOUR,
+} from '@/lib/feedback/rate-limit'
+
+// Minimal stand-in for SupabaseClient: checkRateLimit only ever calls `.rpc()`.
+function mockClient(rpc: (...args: unknown[]) => unknown): SupabaseClient {
+  return { rpc } as unknown as SupabaseClient
+}
 
 describe('hashIp', () => {
   beforeEach(() => {
@@ -39,5 +50,37 @@ describe('currentWindowStart', () => {
     const a = currentWindowStart(new Date('2026-08-11T14:59:59Z'))
     const b = currentWindowStart(new Date('2026-08-11T15:00:00Z'))
     expect(a.getTime()).not.toBe(b.getTime())
+  })
+})
+
+describe('checkRateLimit', () => {
+  beforeEach(() => {
+    vi.stubEnv('FEEDBACK_IP_SALT', 'test-salt')
+  })
+
+  it('allows the request when the RPC returns a low count', async () => {
+    const client = mockClient(() => Promise.resolve({ data: 1, error: null }))
+    const result = await checkRateLimit(client, '203.0.113.5')
+    expect(result.allowed).toBe(true)
+  })
+
+  it('allows the request when the RPC returns exactly the per-hour limit', async () => {
+    const client = mockClient(() => Promise.resolve({ data: RATE_LIMIT_PER_HOUR, error: null }))
+    const result = await checkRateLimit(client, '203.0.113.5')
+    expect(result.allowed).toBe(true)
+  })
+
+  it('blocks the request when the RPC returns one past the per-hour limit', async () => {
+    const client = mockClient(() => Promise.resolve({ data: RATE_LIMIT_PER_HOUR + 1, error: null }))
+    const result = await checkRateLimit(client, '203.0.113.5')
+    expect(result.allowed).toBe(false)
+  })
+
+  it('fails open and allows the request when the RPC errors', async () => {
+    const client = mockClient(() =>
+      Promise.resolve({ data: null, error: new Error('connection refused') })
+    )
+    const result = await checkRateLimit(client, '203.0.113.5')
+    expect(result.allowed).toBe(true)
   })
 })
