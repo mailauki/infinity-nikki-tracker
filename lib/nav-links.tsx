@@ -130,6 +130,7 @@ export const navLinksData: {
           { title: 'Makeup Sets', url: '/admin/makeup/sets' },
           { title: 'Makeup Variants', url: '/admin/makeup/variants' },
           { title: "Momo's Cloaks", url: '/admin/momo-cloaks' },
+          { title: 'Feedback', url: '/admin/feedback' },
         ],
       },
     ],
