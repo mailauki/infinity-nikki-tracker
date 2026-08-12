@@ -1585,6 +1585,10 @@ export type Database = {
       }
       generate_unique_username: { Args: never; Returns: string }
       generate_username: { Args: { len?: number }; Returns: string }
+      increment_feedback_rate_limit: {
+        Args: { p_ip_hash: string; p_window_start: string }
+        Returns: number
+      }
       is_admin: { Args: never; Returns: boolean }
       toggle_obtained: {
         Args: { p_category: string; p_color: string; p_eureka_set: string }
