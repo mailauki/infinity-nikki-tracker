@@ -20,18 +20,24 @@ export const RATE_LIMIT_PER_HOUR = 5
 // hashIp itself stays pure/synchronous, reading process.env directly on
 // every call rather than closing over this check, so it keeps working with
 // tests that use vi.stubEnv to set the salt per-test.
-let saltChecked = false
+let saltWarned = false
 function ensureIpSaltConfigured(): void {
-  if (saltChecked) return
-  saltChecked = true
   if (process.env.FEEDBACK_IP_SALT) return
 
+  // Checked on EVERY call, never memoized: a warm Fluid Compute instance
+  // serves many requests, so short-circuiting after the first would let every
+  // later request silently hash unsalted — exactly the vulnerability this
+  // guard exists to prevent.
   if (process.env.NODE_ENV === 'production') {
     throw new Error(
       'FEEDBACK_IP_SALT is not set. Refusing to hash IPs: without it, feedback_rate_limit ' +
         'would store unsalted (trivially reversible) IP hashes.'
     )
   }
+
+  // Only the dev/test warning is rate-limited, to avoid flooding logs.
+  if (saltWarned) return
+  saltWarned = true
   console.warn(
     'FEEDBACK_IP_SALT is not set — hashIp is running unsalted. This is only tolerated ' +
       'outside production; set FEEDBACK_IP_SALT before deploying.'

@@ -99,6 +99,25 @@ describe('missing FEEDBACK_IP_SALT', () => {
 
     vi.resetModules()
   })
+
+  it('keeps throwing in production on every call, not just the first', async () => {
+    // Regression: the guard used to memoize before evaluating the production
+    // branch, so only the first request on a warm instance threw and every
+    // later one silently hashed unsalted — the exact vulnerability the guard
+    // exists to prevent. Fluid Compute reuses instances across many requests.
+    vi.resetModules()
+    vi.stubEnv('FEEDBACK_IP_SALT', '')
+    vi.stubEnv('NODE_ENV', 'production')
+
+    const prod = await import('@/lib/feedback/rate-limit')
+    const client = mockClient(() => Promise.resolve({ data: 1, error: null }))
+
+    await expect(prod.checkRateLimit(client, '203.0.113.5')).rejects.toThrow(/FEEDBACK_IP_SALT/)
+    await expect(prod.checkRateLimit(client, '203.0.113.6')).rejects.toThrow(/FEEDBACK_IP_SALT/)
+    await expect(prod.checkRateLimit(client, '203.0.113.7')).rejects.toThrow(/FEEDBACK_IP_SALT/)
+
+    vi.resetModules()
+  })
 })
 
 describe('currentWindowStart', () => {
