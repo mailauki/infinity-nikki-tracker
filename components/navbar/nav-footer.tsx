@@ -2,6 +2,7 @@
 import { AppBar, Stack, Toolbar, Typography } from '@mui/material'
 import CoffeeButton from './coffee-button'
 import ThemeSwitcher from './theme-switcher'
+import ReportIssueLink from '@/components/feedback/report-issue-link'
 
 export default function Footer() {
   return (
@@ -32,6 +33,7 @@ export default function Footer() {
             <CoffeeButton />
             <ThemeSwitcher />
           </Stack>
+          <ReportIssueLink />
         </Stack>
       </Toolbar>
     </AppBar>
