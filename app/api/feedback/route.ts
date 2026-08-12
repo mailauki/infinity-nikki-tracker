@@ -6,6 +6,11 @@ import { checkRateLimit } from '@/lib/feedback/rate-limit'
 import { processImages } from '@/lib/feedback/images'
 import { MAX_IMAGES } from '@/lib/types/feedback'
 
+// 3 images x 5MB plus text fields and multipart overhead. Checked before
+// formData() so an oversized body is rejected without being parsed into
+// memory — the per-image caps in processImages only apply after parsing.
+const MAX_BODY_BYTES = 17 * 1024 * 1024
+
 // Service-role client: the only writer to feedback tables. RLS grants no
 // client role INSERT, so every submission — anonymous or authenticated —
 // funnels through this one validated, rate-limited path.
@@ -47,6 +52,14 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: 'You have sent several reports recently. Please try again later.' },
         { status: 429 }
+      )
+    }
+
+    const contentLength = Number(request.headers.get('content-length') ?? 0)
+    if (contentLength > MAX_BODY_BYTES) {
+      return NextResponse.json(
+        { error: 'That request is too large. Please attach smaller screenshots.' },
+        { status: 413 }
       )
     }
 
