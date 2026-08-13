@@ -19,6 +19,29 @@ A fan-made collection tracker for the game _Infinity Nikki_, built and shipped s
 
 ---
 
+## TL;DR
+
+**What it is.** A production collection tracker for a game whose built-in UI can only answer "do I own this item?" — never "how complete am I, and what am I missing?" Five collection domains, browsable by guests, tracked by accounts, with an admin CMS behind it because someone has to enter thousands of rows and that someone is me.
+
+**What's actually interesting about it.** Most of the notable engineering here is a **reversal** — a reasonable first architecture that met production and lost:
+
+- **shadcn/ui → MUI** at five weeks in, once it was clear the app needed DataGrids, charts, and a real theming layer rather than components I'd own copies of.
+- **Title-based FKs → slug-based FKs** with `ON UPDATE CASCADE`, so renaming game content stops breaking references. Paid off months later when new domains got slugs from day one.
+- **Six client fetches → one bootstrap route**, with realtime *demoted* rather than deleted — it still owns cross-device sync on obtained rows, which is what it's genuinely good at.
+- **A Server Action that had to become a route handler.** Cookie-setting actions mark their response revalidated, which remounted the provider and refired a 6.7s fetch on every density toggle. Route handlers do the identical write without the revalidation.
+- **Auth middleware from allow-list to deny-list**, after two public pages shipped redirecting guests to `/login` purely because nobody remembered to add them to the exception list.
+- **An RLS policy using `FOR ALL`** let any authenticated user update their own `role` — self-promotion to admin. Fixed with split policies that assert the role is unchanged, comparing against the JWT claim to avoid recursive policy evaluation.
+
+**Incidents worth reading.** PostgREST's 1000-row cap silently truncating large collections; the `/outfits` lag that profiling proved was re-render churn, not node count (so the plan explicitly *rejected* virtualization as the first fix); CLS 0.42 from a drawer that read `localStorage` after hydration, fixed by moving the state to a cookie readable during SSR; a 5.5s auth round-trip in front of every page load; Vercel's image optimizer returning 402 once the quota ran out, breaking every thumbnail in production while dev worked fine.
+
+**How it was built.** Solo, with Claude Code as a daily collaborator, across 312 PRs against a protected `main`. The leverage came from infrastructure rather than prompting: a `CLAUDE.md` operating manual where every entry exists because something broke once, formatter/typecheck hooks scoped to the edited file (~13s → ~1.1s per edit), 34 implementation plans and 35 design specs written before non-trivial work, and a `pre-push` hook that blocks pushes to already-merged branches — one that deliberately **fails open** when offline, because a guard that blocks work during an outage gets disabled permanently within a week.
+
+**The habit that mattered most.** When a fix is non-obvious, the code carries the reason. Why `getUser()` beats the faster `getClaims()`. Why `await connection()` sits outside the try/catch. Which preference writes may live in a Server Action and which must not. In a codebase where one person is author, reviewer, and on-call, those comments are the only institutional memory there is.
+
+**Honest gap:** test coverage arrived late and narrow — Vitest covers the feedback module, and the pure transforms in `hooks/` should have been tested from the start (§6).
+
+---
+
 ## 1. The Problem
 
 _Infinity Nikki_ is a dress-up adventure game with thousands of collectible clothing pieces spread across several unrelated collection systems. The game ships a built-in collection view, but it answers only one question — "do I own this specific item?" — and only while you're in the game.
