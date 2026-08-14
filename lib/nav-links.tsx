@@ -25,6 +25,12 @@ export const navLinksData: {
     },
   ],
   navMain: [
+    // {
+    // 	title: 'Seasons',
+    // 	url: '/outfits/seasons',
+    // 	image: '/icons/compendium.png',
+    // 	icon: <Forest />,
+    // },
     {
       title: 'Outfits',
       url: '/outfits',
@@ -33,6 +39,7 @@ export const navLinksData: {
         {
           title: 'Seasons',
           url: '/outfits/seasons',
+          image: '/icons/compendium.png',
           icon: <Forest />,
         },
       ],

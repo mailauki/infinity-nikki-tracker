@@ -236,7 +236,7 @@ export default function AdminGapQueue({
   }
 
   return (
-    <Card variant="outlined">
+    <Card elevation={3} sx={{ backgroundColor: 'surface.containerLowest' }} variant="elevation">
       <CardContent>
         <Box sx={{ alignItems: 'center', display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
           <Typography component="p" variant="overline">
@@ -320,7 +320,9 @@ export default function AdminGapQueue({
                       />
                     </ListItemButton>
                   </ListItem>
-                  {i < rows.length - 1 && <Divider component="li" role="listitem" variant="inset" />}
+                  {i < rows.length - 1 && (
+                    <Divider component="li" role="listitem" variant="inset" />
+                  )}
                 </Box>
               ))}
             </List>
