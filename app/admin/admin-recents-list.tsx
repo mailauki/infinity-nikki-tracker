@@ -59,7 +59,7 @@ export default function AdminRecentsList({
   if (!items.length) return null
 
   return (
-    <Card elevation={3} sx={{ backgroundColor: 'surface.containerLowest' }} variant='elevation'>
+    <Card elevation={3} sx={{ backgroundColor: 'surface.containerLowest' }} variant="elevation">
       <AdminRecentsToggle
         item={item}
         tab={tab}

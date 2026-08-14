@@ -18,7 +18,14 @@ export default function AdminTotalsStrip({ stats }: { stats: AdminStat[] }) {
         gap: 2,
       }}
     >
-      <Card elevation={3} sx={{ backgroundColor: 'surface.containerLowest', gridColumn: { xs: '3 / 1', md: '2 / 1' } }} variant='elevation'>
+      <Card
+        elevation={3}
+        sx={{
+          backgroundColor: 'surface.containerLowest',
+          gridColumn: { xs: '3 / 1', md: '2 / 1' },
+        }}
+        variant="elevation"
+      >
         <CardContent>
           <Typography color="text.secondary" component="p" variant="overline">
             All entries
@@ -33,7 +40,12 @@ export default function AdminTotalsStrip({ stats }: { stats: AdminStat[] }) {
       {ADMIN_DOMAINS.map((domain) => {
         const lead = get(domain.lead)
         return (
-          <Card key={domain.title}  elevation={3} sx={{ backgroundColor: 'surface.containerLowest' }} variant='elevation'>
+          <Card
+            key={domain.title}
+            elevation={3}
+            sx={{ backgroundColor: 'surface.containerLowest' }}
+            variant="elevation"
+          >
             <CardContent>
               <Typography color="text.secondary" component="p" variant="overline">
                 {domain.title}

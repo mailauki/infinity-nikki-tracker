@@ -1,41 +1,50 @@
-import { Box, Card, CardContent, CardHeader, Chip, LinearProgress, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Card,
+  CardContent,
+  CardHeader,
+  Chip,
+  LinearProgress,
+  Stack,
+  Typography,
+} from '@mui/material'
 import type { AdminStat } from '@/hooks/data/admin/stats'
 import AdminCompletenessToggle from './admin-completeness-toggle'
 
 function Row({ stat }: { stat: AdminStat }) {
   return (
-		<Stack sx={{ px: 1 }}>
-			<Stack direction='row' sx={{ justifyContent: 'space-between', py: 1 }}>
-				<Typography variant="body2">{stat.title}</Typography>
-				<Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-					{stat.gaps === 0 ? (
-						<Chip color="success" label="complete" size="small" variant="outlined" />
-					) : (
-						<>
-							{/* Chips render only where the field is tracked — a chip for an
+    <Stack sx={{ px: 1 }}>
+      <Stack direction="row" sx={{ justifyContent: 'space-between', py: 1 }}>
+        <Typography variant="body2">{stat.title}</Typography>
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {stat.gaps === 0 ? (
+            <Chip color="success" label="complete" size="small" variant="outlined" />
+          ) : (
+            <>
+              {/* Chips render only where the field is tracked — a chip for an
 									untracked column would imply a backlog that cannot exist. */}
-							{stat.noTitle !== null && stat.noTitle > 0 && (
-								<Chip
-									label={`${stat.noTitle.toLocaleString()} title`}
-									size="small"
-									variant="outlined"
-								/>
-							)}
-							{stat.noImage !== null && stat.noImage > 0 && (
-								<Chip
-									label={`${stat.noImage.toLocaleString()} img`}
-									size="small"
-									variant="outlined"
-								/>
-							)}
-						</>
-					)}
-				<Typography sx={{ fontWeight: 600, textAlign: 'right', width: 50 }} variant="body2">
-					{stat.total.toLocaleString()}
-				</Typography>
-				</Box>
-			</Stack>
-			<Box>
+              {stat.noTitle !== null && stat.noTitle > 0 && (
+                <Chip
+                  label={`${stat.noTitle.toLocaleString()} title`}
+                  size="small"
+                  variant="outlined"
+                />
+              )}
+              {stat.noImage !== null && stat.noImage > 0 && (
+                <Chip
+                  label={`${stat.noImage.toLocaleString()} img`}
+                  size="small"
+                  variant="outlined"
+                />
+              )}
+            </>
+          )}
+          <Typography sx={{ fontWeight: 600, textAlign: 'right', width: 50 }} variant="body2">
+            {stat.total.toLocaleString()}
+          </Typography>
+        </Box>
+      </Stack>
+      <Box>
         <LinearProgress
           aria-label={`${stat.title} ${stat.percentComplete}% complete`}
           color={stat.gaps === 0 ? 'success' : 'warning'}
@@ -43,7 +52,7 @@ function Row({ stat }: { stat: AdminStat }) {
           variant="determinate"
         />
       </Box>
-		</Stack>
+    </Stack>
   )
 }
 
@@ -56,15 +65,15 @@ export default function AdminCompletenessList({ stats }: { stats: AdminStat[] })
   const allGaps = stats.reduce((n, s) => n + s.gaps, 0)
 
   return (
-    <Card elevation={3} sx={{ backgroundColor: 'surface.containerLowest' }} variant='elevation'>
-			<CardHeader
-				slotProps={{
-					title: { color: "text.secondary", component:"p", variant:"overline" },
-					subheader: { color: "text.secondary", component:"p", variant: 'caption' }
-				}}
-				subheader={`${(all - allGaps).toLocaleString()} of ${all.toLocaleString()} complete`}
-				title='Completeness'
-			/>
+    <Card elevation={3} sx={{ backgroundColor: 'surface.containerLowest' }} variant="elevation">
+      <CardHeader
+        slotProps={{
+          title: { color: 'text.secondary', component: 'p', variant: 'overline' },
+          subheader: { color: 'text.secondary', component: 'p', variant: 'caption' },
+        }}
+        subheader={`${(all - allGaps).toLocaleString()} of ${all.toLocaleString()} complete`}
+        title="Completeness"
+      />
       <CardContent sx={{ pt: 0 }}>
         {withGaps.map((s) => (
           <Row key={s.key} stat={s} />
