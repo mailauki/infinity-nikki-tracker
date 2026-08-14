@@ -236,7 +236,7 @@ export default function AdminGapQueue({
   }
 
   return (
-    <Card variant="outlined">
+    <Card elevation={3} sx={{ backgroundColor: 'surface.containerLowest' }} variant='elevation'>
       <CardContent>
         <Box sx={{ alignItems: 'center', display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
           <Typography component="p" variant="overline">
