@@ -314,7 +314,7 @@ export default function FilterOutfits() {
           <Typography color="textSecondary" variant="h6">
             No results
           </Typography>
-          <Typography color="textDisabled" variant="body2">
+          <Typography color="textSecondary" variant="body2">
             Try adjusting your filters
           </Typography>
         </Stack>

@@ -40,6 +40,7 @@ export default function NavSection({
         <ListItem disablePadding sx={{ display: 'block' }}>
           <Tooltip placement="right" title={open ? '' : items[0].title}>
             <ListItemButton
+              aria-current={items[0].url === `/${pathname.split('/')[1]}` ? 'page' : undefined}
               component={Link}
               href={items[0].url}
               selected={items[0].url === `/${pathname.split('/')[1]}`}
@@ -73,9 +74,12 @@ export default function NavSection({
     <List>
       {visibleItems.map((item) => (
         <ExpandNavLink key={item.title} items={item.items!} open={open} onClose={onClose}>
-          <ListItem disablePadding sx={{ display: 'block' }}>
+          {/* component="div": ExpandNavLink wraps this in the <li>, so this must
+              not be one too — nested <li> is invalid inside a <ul>. */}
+          <ListItem disablePadding component="div" sx={{ display: 'block' }}>
             <Tooltip placement="right" title={open ? '' : item.title}>
               <ListItemButton
+                aria-current={item.url === `/${pathname.split('/')[1]}` ? 'page' : undefined}
                 component={Link}
                 href={item.url}
                 selected={item.url === `/${pathname.split('/')[1]}`}
@@ -148,13 +152,21 @@ function ExpandNavLink({
     <>
       {open && visibleItems?.length ? (
         <>
-          <Stack direction="row" sx={{ alignItems: 'center' }}>
+          {/* component="li": this renders as a direct child of NavSection's
+              <List>, and a bare <div> inside a <ul> breaks list semantics. */}
+          <Stack component="li" direction="row" sx={{ alignItems: 'center' }}>
             {children}
-            <IconButton onClick={() => setExpandOpen(!expandOpen)}>
+            <IconButton
+              aria-expanded={expandOpen}
+              aria-label={expandOpen ? 'Collapse section' : 'Expand section'}
+              onClick={() => setExpandOpen(!expandOpen)}
+            >
               {expandOpen ? <ExpandLess /> : <ExpandMore />}
             </IconButton>
           </Stack>
-          <Collapse unmountOnExit in={expandOpen} timeout="auto">
+          {/* component="li" for the same reason as the Stack above — this is
+              also a direct child of NavSection's <List>. */}
+          <Collapse unmountOnExit component="li" in={expandOpen} timeout="auto">
             <List disablePadding component="div">
               {visibleItems.map((item) => (
                 <ListItem key={item.title} disablePadding sx={{ display: 'block', py: 0.5 }}>
@@ -176,7 +188,9 @@ function ExpandNavLink({
           </Collapse>
         </>
       ) : (
-        children
+        // children is a component="div" ListItem, so it needs its own <li>
+        // wrapper here to stay a valid child of NavSection's <List>.
+        <li>{children}</li>
       )}
     </>
   )

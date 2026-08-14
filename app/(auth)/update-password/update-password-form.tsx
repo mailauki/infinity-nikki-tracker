@@ -37,6 +37,7 @@ export function UpdatePasswordForm({ className, ...props }: React.ComponentProps
             <TextField
               fullWidth
               required
+              autoComplete="new-password"
               id="password"
               label="New password"
               margin="normal"

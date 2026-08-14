@@ -22,7 +22,13 @@ export default function AdminNavMenu() {
 
   return (
     <Stack direction="row" spacing={1}>
-      <IconButton color={pathname === '/admin' ? 'primary' : 'default'} component="a" href="/admin">
+      <IconButton
+        aria-current={pathname === '/admin' ? 'page' : undefined}
+        aria-label={pathname === '/admin' ? 'Admin dashboard' : 'Back to admin dashboard'}
+        color={pathname === '/admin' ? 'primary' : 'default'}
+        component="a"
+        href="/admin"
+      >
         {pathname === '/admin' ? <AdminPanelSettings /> : <ChevronLeft />}
       </IconButton>
       {navLinksData.admin.tabs.map((section) => {

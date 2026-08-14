@@ -43,7 +43,7 @@ export function AdminList<T>({
             <Fragment key={getKey(row)}>
               {renderRow(row)}
               {row !== visibleRows.at(-1) && (
-                <Divider component="li" sx={{ mr: 2 }} variant="inset" />
+                <Divider component="li" role="listitem" sx={{ mr: 2 }} variant="inset" />
               )}
             </Fragment>
           ))}

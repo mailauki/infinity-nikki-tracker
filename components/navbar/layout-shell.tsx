@@ -123,7 +123,7 @@ const SidebarDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
 // ---- Nav content (shared by permanent + temporary drawers) -------------------
 
 const navContent = (open: boolean, onClose: () => void) => (
-  <Stack component="nav" sx={{ flexGrow: 1, mx: 1.5, pb: 3 }}>
+  <Stack aria-label="Main" component="nav" sx={{ flexGrow: 1, mx: 1.5, pb: 3 }}>
     <NavSection items={navLinksData.home} open={open} onClose={onClose} />
     <NavSection items={navLinksData.navMain} open={open} onClose={onClose} />
     <Divider sx={{ my: 0.5 }} />
@@ -243,6 +243,29 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
 
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', overflowX: 'clip' }}>
+      {/* Skip link: the first tab stop on every page, so keyboard users can jump
+          past the nav drawer straight to the content. Visually hidden until it
+          takes keyboard focus (WCAG 2.4.1). */}
+      <Box
+        component="a"
+        href="#main-content"
+        sx={{
+          position: 'absolute',
+          left: 8,
+          top: -100,
+          zIndex: (t) => t.zIndex.tooltip + 1,
+          px: 2,
+          py: 1,
+          borderRadius: 1,
+          bgcolor: 'background.paper',
+          color: 'text.primary',
+          textDecoration: 'none',
+          boxShadow: 3,
+          '&:focus-visible': { top: 8 },
+        }}
+      >
+        Skip to main content
+      </Box>
       <AppBar
         color="default"
         position="fixed"
@@ -308,8 +331,20 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
       {/* Left nav: temporary overlay below sm, permanent mini-variant at sm+ */}
       <MuiDrawer
         anchor="left"
-        open={drawerOpen}
-        slotProps={{ root: { keepMounted: true, disableScrollLock: true } }}
+        // Gated on isNavMobile for the same reason as the right sidebar below:
+        // display:none at sm+ does not stop an `open` modal from marking the
+        // app root aria-hidden.
+        open={isNavMobile && drawerOpen}
+        // keepMounted leaves the closed drawer in the DOM, where MUI marks it
+        // aria-hidden but its ~13 controls stay tabbable — keyboard users would
+        // tab into an invisible menu. inert removes them from the tab order too.
+        slotProps={{
+          root: {
+            keepMounted: true,
+            disableScrollLock: true,
+            inert: !(isNavMobile && drawerOpen) || undefined,
+          },
+        }}
         sx={{
           display: { xs: 'block', sm: 'none' },
           '& .MuiDrawer-paper': { width: '100%' },
@@ -359,7 +394,17 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
       {/* Main column: owns the gutter, minWidth:0 (grid reflow), and top spacers that track the AppBar's row count. */}
       <Stack
         component="main"
-        sx={{ flexGrow: 1, minHeight: '100vh', minWidth: { xs: 0, md: 320 }, px: 2 }}
+        id="main-content"
+        // tabIndex -1 so the skip link can actually move focus here; without it
+        // the browser scrolls but focus stays on the link.
+        sx={{
+          flexGrow: 1,
+          minHeight: '100vh',
+          minWidth: { xs: 0, md: 320 },
+          px: 2,
+          outline: 'none',
+        }}
+        tabIndex={-1}
       >
         <DrawerHeader />
         {hasToolbar && <Toolbar />}
@@ -395,7 +440,10 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
       {/* Right sidebar: temporary overlay below md, permanent at md+. Exactly one portal target div, rendered inside whichever drawer is active. */}
       <MuiDrawer
         anchor="right"
-        open={sidebarDrawerOpen}
+        // Gate on isSidebarMobile, not CSS alone: this drawer is display:none at
+        // md+, but an `open` MUI modal still marks the app root aria-hidden —
+        // which hid the entire page from screen readers on desktop.
+        open={isSidebarMobile && sidebarDrawerOpen}
         slotProps={{ root: { disableScrollLock: true } }}
         sx={{
           display: { xs: 'block', md: 'none' },

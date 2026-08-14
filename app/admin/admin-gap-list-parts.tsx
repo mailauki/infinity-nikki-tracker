@@ -52,7 +52,7 @@ export function GapFilterChips<K extends string>({
 
 export function GapEmptyState({ message }: { message: string }) {
   return (
-    <Typography color="text.disabled" sx={{ py: 3, textAlign: 'center' }} variant="body2">
+    <Typography color="text.secondary" sx={{ py: 3, textAlign: 'center' }} variant="body2">
       {message}
     </Typography>
   )

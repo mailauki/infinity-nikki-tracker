@@ -384,6 +384,10 @@ export const baseThemeOptions: ThemeOptions = {
       },
       styleOverrides: {
         root: {
+          // MUI's default unselected color is rgba(0,0,0,0.54), which lands at
+          // 4.35:1 on our filled toggle background — just under AA. The preset's
+          // text.secondary is an opaque token that clears 4.5:1 in every scheme.
+          color: 'var(--mui-palette-text-secondary)',
           variants: [
             {
               props: { variant: 'filled', color: 'primary' },

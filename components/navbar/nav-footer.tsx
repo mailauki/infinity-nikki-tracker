@@ -26,7 +26,9 @@ export default function Footer() {
           spacing={3}
           sx={{ flexGrow: 1, mx: 1, alignItems: 'center', justifyContent: 'center' }}
         >
-          <Typography color="textDisabled" variant="caption">
+          {/* textSecondary, not textDisabled: this is real content, and MUI's
+              disabled token (rgba(0,0,0,0.38)) is only 2.65:1 — below AA. */}
+          <Typography color="textSecondary" variant="caption">
             &copy; 2026 mailauki
           </Typography>
           <Stack direction="row" sx={{ gap: 0.5, alignItems: 'center' }}>

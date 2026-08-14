@@ -17,9 +17,13 @@ export default function SortOutfitToggle({
       <Tooltip
         title={disabled ? 'Standard density already groups by outfit set' : 'Group by Outfit Set'}
       >
-        {/* span keeps the tooltip working while the button is disabled */}
-        <span>
+        {/* span keeps the tooltip working while the button is disabled. MUI clones
+            its aria-label onto this wrapper, which is prohibited on a role-less
+            span — role="presentation" makes it inert instead. The button carries
+            its own aria-label, since it is icon-only. */}
+        <span role="presentation">
           <ToggleButton
+            aria-label="Group by Outfit Set"
             disabled={disabled}
             selected={disabled ? false : groupBySet}
             value="groupBySet"

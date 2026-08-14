@@ -320,7 +320,7 @@ export default function AdminGapQueue({
                       />
                     </ListItemButton>
                   </ListItem>
-                  {i < rows.length - 1 && <Divider component="li" variant="inset" />}
+                  {i < rows.length - 1 && <Divider component="li" role="listitem" variant="inset" />}
                 </Box>
               ))}
             </List>
