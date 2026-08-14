@@ -43,7 +43,7 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
   return (
     <ToolbarSlot
       lead={
-        <IconButton component="a" href={`/${backUrl}`}>
+        <IconButton aria-label="Back" component="a" href={`/${backUrl}`}>
           <ChevronLeft />
         </IconButton>
       }
@@ -51,7 +51,7 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
       {seasonFilter && <SeasonVisibilityMenu />}
       {showImageSwap && (isMakeupSlug ? <MakeupImageModeButton /> : <ImageModeButton />)}
       {isAdmin && (
-        <IconButton component="a" href={`/admin/${path}/edit/${slug}`}>
+        <IconButton aria-label="Edit in admin" component="a" href={`/admin/${path}/edit/${slug}`}>
           <Edit />
         </IconButton>
       )}

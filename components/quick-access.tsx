@@ -70,6 +70,9 @@ export function QuickAccess() {
             <CardActionArea component={Link} href={href} sx={{ height: '100%' }}>
               <Stack sx={{ alignItems: 'center', justifyContent: 'center' }}>
                 <LazyImage
+                  // Decorative: the CardActionArea is already named by the
+                  // card's title/subtitle, so alt text here would just repeat it.
+                  alt=""
                   size="xl"
                   src={
                     title === 'Outfits'
@@ -111,7 +114,11 @@ export function QuickAccess() {
           <AccordionDetails>
             {moreCards.map((links, index) => (
               <List key={index} disablePadding>
-                <Divider sx={{ display: index === 0 ? 'none' : 'flex' }} />
+                <Divider
+                  component="li"
+                  role="listitem"
+                  sx={{ display: index === 0 ? 'none' : 'flex' }}
+                />
                 {links.map((link) => (
                   <ListItem key={link.url} disablePadding>
                     <ListItemButton component={Link} href={link.url}>

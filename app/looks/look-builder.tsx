@@ -562,7 +562,7 @@ export default function LookBuilder({
   function stepOptionalLabel(step: CategoryStep) {
     if (step.disabled) {
       return (
-        <Typography color="textDisabled" variant="caption">
+        <Typography color="textSecondary" variant="caption">
           {step.disabledReason}
         </Typography>
       )
@@ -738,6 +738,8 @@ export default function LookBuilder({
           {isPending ? 'Saving…' : saveLabel}
         </Button>
         <IconButton
+          aria-expanded={sidebarOpen}
+          aria-label={sidebarOpen ? 'Hide look options' : 'Show look options'}
           color={sidebarOpen ? 'primary' : 'default'}
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >

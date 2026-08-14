@@ -254,7 +254,10 @@ function ImagePlaceholder({ title }: { title?: string }) {
     >
       <ImageIcon fontSize="large" />
       {title && (
-        <Typography align="center" color="text.secondary" variant="caption">
+        // sx, not the color prop: MUI resolves color="text.secondary" to
+        // `inherit` here, so the Stack's text.disabled won and the title
+        // rendered at 2.65:1. sx sets the value directly.
+        <Typography align="center" sx={{ color: 'text.secondary' }} variant="caption">
           {title}
         </Typography>
       )}

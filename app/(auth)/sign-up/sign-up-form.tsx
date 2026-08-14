@@ -62,6 +62,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
             <TextField
               fullWidth
               required
+              autoComplete="email"
               id="email"
               label="Email"
               margin="normal"
@@ -73,6 +74,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
             <TextField
               fullWidth
               required
+              autoComplete="new-password"
               id="password"
               label="Password"
               margin="normal"
@@ -83,6 +85,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
             <TextField
               fullWidth
               required
+              autoComplete="new-password"
               id="repeat-password"
               label="Repeat Password"
               margin="normal"

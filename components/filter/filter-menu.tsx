@@ -234,6 +234,8 @@ export default function FilterMenu() {
     return (
       <>
         <IconButton
+          aria-expanded={sidebarOpen}
+          aria-label={sidebarOpen ? 'Hide filters' : 'Show filters'}
           color={sidebarOpen ? 'primary' : 'default'}
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >
@@ -363,7 +365,7 @@ export default function FilterMenu() {
                 onChange={(next) => onOutfitFiltersChange({ selectedSeasonCategory: next })}
               />
             </ListItem>
-            <Divider sx={{ mx: 2, mt: 2 }} />
+            <Divider component="li" role="listitem" sx={{ mx: 2, mt: 2 }} />
             <ListItem>
               <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
                 {hasViewChanges && (
@@ -432,6 +434,8 @@ export default function FilterMenu() {
     return (
       <>
         <IconButton
+          aria-expanded={sidebarOpen}
+          aria-label={sidebarOpen ? 'Hide filters' : 'Show filters'}
           color={sidebarOpen ? 'primary' : 'default'}
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >
@@ -524,7 +528,7 @@ export default function FilterMenu() {
                 onChange={(next) => onMakeupFiltersChange({ selectedSeasonCategory: next })}
               />
             </ListItem>
-            <Divider sx={{ mx: 2, mt: 2 }} />
+            <Divider component="li" role="listitem" sx={{ mx: 2, mt: 2 }} />
             <ListItem>
               <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
                 {hasViewChanges && (
@@ -598,6 +602,8 @@ export default function FilterMenu() {
   return (
     <>
       <IconButton
+        aria-expanded={sidebarOpen}
+        aria-label={sidebarOpen ? 'Hide filters' : 'Show filters'}
         color={sidebarOpen ? 'primary' : 'default'}
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
@@ -670,7 +676,7 @@ export default function FilterMenu() {
               onChange={(next) => onFiltersChange({ selectedTrial: next })}
             />
           </ListItem>
-          <Divider sx={{ mx: 2, mt: 2 }} />
+          <Divider component="li" role="listitem" sx={{ mx: 2, mt: 2 }} />
           <ListItem>
             <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
               {hasActiveFilters && (

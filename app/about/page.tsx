@@ -275,7 +275,7 @@ export default function AboutPage() {
       </Section>
 
       <Container disableGutters maxWidth="sm">
-        <Typography color="textDisabled" variant="caption">
+        <Typography color="textSecondary" variant="caption">
           This is a fan-made project and is not affiliated with, endorsed by, or officially
           connected to Papergames or the Infinity Nikki development team. All game content, names,
           and assets are the property of their respective owners.

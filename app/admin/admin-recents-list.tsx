@@ -69,7 +69,7 @@ export default function AdminRecentsList({
       />
       <CardContent>
         {filtered.length === 0 ? (
-          <Typography color="text.disabled" sx={{ py: 2, textAlign: 'center' }} variant="body2">
+          <Typography color="text.secondary" sx={{ py: 2, textAlign: 'center' }} variant="body2">
             No {item.toLowerCase()} found
           </Typography>
         ) : (
@@ -117,7 +117,7 @@ export default function AdminRecentsList({
                   </ListItemButton>
                 </ListItem>
                 {i < filtered.length - 1 && (
-                  <Divider component="li" sx={{ mr: 2 }} variant="inset" />
+                  <Divider component="li" role="listitem" sx={{ mr: 2 }} variant="inset" />
                 )}
               </Fragment>
             ))}

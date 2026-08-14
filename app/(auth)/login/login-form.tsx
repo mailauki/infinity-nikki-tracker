@@ -50,6 +50,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
             <TextField
               fullWidth
               required
+              autoComplete="email"
               id="email"
               label="Email"
               margin="normal"
@@ -62,6 +63,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
             <TextField
               fullWidth
               required
+              autoComplete="current-password"
               id="password"
               label="Password"
               margin="normal"

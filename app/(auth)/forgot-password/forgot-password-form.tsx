@@ -63,6 +63,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
               <TextField
                 fullWidth
                 required
+                autoComplete="email"
                 id="email"
                 label="Email"
                 margin="normal"

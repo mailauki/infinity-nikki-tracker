@@ -145,7 +145,7 @@ export default function MomoCloakFilterMenu() {
               onChange={(next) => onFiltersChange({ selectedSeasonCategory: next })}
             />
           </ListItem>
-          <Divider sx={{ mx: 2, mt: 2 }} />
+          <Divider component="li" role="listitem" sx={{ mx: 2, mt: 2 }} />
           <ListItem>
             <Stack direction="row" spacing={1} sx={{ flex: 1, justifyContent: 'flex-end' }}>
               {/* "Reset" restores only the sort controls, leaving filter
