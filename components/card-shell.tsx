@@ -25,6 +25,7 @@ export function CollectionToggle({
 
 export default function CardShell({
   in: shown,
+  animateExit = false,
   unmountOnExit,
   onExited,
   raised,
@@ -33,6 +34,19 @@ export default function CardShell({
   children,
 }: {
   in: boolean
+  // Whether this card can ever animate out. The Grow exists for exactly one
+  // moment: completing a card while the "missing" filter is active, so it leaves
+  // the filtered view smoothly instead of vanishing. Any other time the obtained
+  // toggle just swaps its own icon and the card stays put — `in` is pinned true
+  // and the transition can never run.
+  //
+  // So it is only mounted when it can actually do something. A Grow costs a
+  // react-transition-group Transition, a cloneElement and inline transition
+  // styles per card, and these grids hold hundreds of cards at once (thousands
+  // on the non-virtualized /eureka). It also keeps exiting cards mounted for its
+  // full 300ms under `unmountOnExit`, which is the residual double-mount frame
+  // in docs/superpowers/specs/2026-07-30-known-issue-standard-grid-flash.md.
+  animateExit?: boolean
   unmountOnExit?: boolean
   onExited?: () => void
   raised?: boolean
@@ -40,13 +54,21 @@ export default function CardShell({
   topRight?: ReactNode
   children: ReactNode
 }) {
+  const card = (
+    <Card elevation={raised ? 3 : 1} sx={{ position: 'relative', flexGrow: 1 }}>
+      {children}
+      {topLeft && <Box sx={{ position: 'absolute', top: 12, left: 12 }}>{topLeft}</Box>}
+      {topRight && <Box sx={{ position: 'absolute', top: 8, right: 8 }}>{topRight}</Box>}
+    </Card>
+  )
+
+  // No animation to run: render the Card straight. `in` is still honoured so a
+  // caller that hides a card without wanting a transition behaves sensibly.
+  if (!animateExit) return shown ? card : null
+
   return (
     <Grow in={shown} timeout={300} unmountOnExit={unmountOnExit} onExited={onExited}>
-      <Card elevation={raised ? 3 : 1} sx={{ position: 'relative', flexGrow: 1 }}>
-        {children}
-        {topLeft && <Box sx={{ position: 'absolute', top: 12, left: 12 }}>{topLeft}</Box>}
-        {topRight && <Box sx={{ position: 'absolute', top: 8, right: 8 }}>{topRight}</Box>}
-      </Card>
+      {card}
     </Grow>
   )
 }

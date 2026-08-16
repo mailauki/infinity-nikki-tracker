@@ -29,6 +29,7 @@ export default function EurekaVariantCard({
   return (
     <VariantCard
       optimized
+      animateExit={isMissingFilter}
       imageAlt={eurekaVariant.slug || 'Eureka Variant'}
       imageSrc={eurekaVariant.image_url}
       in={!exiting}

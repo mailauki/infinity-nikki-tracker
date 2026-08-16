@@ -104,6 +104,11 @@ Column-level schema lives in `lib/types/supabase.ts` (generated — the source o
 - **MUI Icons** + **Lucide React** — icons
 - **Not used:** shadcn/ui, Radix UI, next-themes, class-variance-authority
 
+### Card Animations
+
+`CardShell` mounts its MUI `Grow` **only** when `animateExit` is true. The transition exists for exactly one moment: completing a card while the "missing" obtained filter is active, so it leaves the filtered view smoothly. Every other time the obtained toggle just swaps its own icon and the card stays put, so `in` is pinned true and the transition can never run. The card wrappers pass `animateExit={isMissingFilter}` — the same condition that gates their `exiting` state. Cards with no missing-filter path at all (`eureka-color-set-card`, `momo-cloaks`, `makeup-set-item`) pass a bare `in` and never mount a transition.
+
+Do **not** reintroduce a mount-**in** animation (the `const [grown, setGrown] = useState(false)` + `useEffect(() => setGrown(true))` pattern). It was removed from the outfit cards because rows mount and unmount constantly under virtualization — see `docs/superpowers/specs/2026-07-30-known-issue-standard-grid-flash.md` — and it costs an extra render plus a 300ms transition per card everywhere else.
 ### Images
 
 Every remote image goes through **`components/lazy-image.tsx`** (`LazyImage`) over **`hooks/use-lazy-image.ts`**. Three render states, never a broken-image glyph: skeleton while pending, the `<img>` once decoded, an icon placeholder when there is no src or every retry failed. The hook retries a broken URL `MAX_ATTEMPTS` (3) times on an exponential backoff with a `?retry=N` cache-buster, then gives up; module-level caches remember per-URL outcomes for the session so a virtualized row remounting skips the skeleton on a known-good URL and skips the retry ladder entirely on a known-dead one (failures expire after 30s and are cleared on `online`).

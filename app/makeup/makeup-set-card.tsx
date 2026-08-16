@@ -32,9 +32,10 @@ function MakeupSetCard({
   // a prebuilt `onToggle` closure so the prop list stays free of per-render
   // function identities, which would defeat the `memo` wrapper below.
   variants: MakeupVariant[]
-  // When the "missing" filter is active, completing this group animates the
-  // card out (the obtained toggle is committed in onExited) so it leaves the
-  // filtered view smoothly instead of vanishing instantly.
+  // When the "missing" filter is active, completing this group animates the card
+  // out so it leaves the filtered view smoothly instead of vanishing instantly.
+  // It is also the only condition under which the card can animate at all, so it
+  // decides whether CardShell mounts a Grow — see components/card-shell.tsx.
   isMissingFilter?: boolean
 }) {
   const { onBatchToggleObtained } = useMakeupData()
@@ -91,6 +92,7 @@ function MakeupSetCard({
   return (
     <SetCard
       unmountOnExit
+      animateExit={isMissingFilter}
       href={href}
       imageSrc={imageSrc || set.image_url || ''}
       in={!exiting}

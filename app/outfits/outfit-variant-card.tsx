@@ -38,6 +38,7 @@ function OutfitVariantCard({
 
   return (
     <VariantCard
+      animateExit={isMissingFilter}
       disableToggle={disableToggle}
       imageAlt={outfitVariant.slug || 'Outfit Variant'}
       imageSrc={imageSrc}

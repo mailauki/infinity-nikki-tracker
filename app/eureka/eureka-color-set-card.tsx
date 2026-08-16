@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { countObtained } from '@/hooks/count-obtained'
 import { EurekaColor, EurekaSet } from '@/lib/types/eureka'
 import { useEurekaData } from '@/components/eureka/eureka-context'
@@ -17,9 +16,6 @@ export default function EurekaColorSetCard({
   isLoggedIn: boolean
 }) {
   const { onBatchToggleObtained } = useEurekaData()
-  const [grown, setGrown] = useState(false)
-
-  useEffect(() => setGrown(true), [])
 
   const variants = eurekaSet.eureka_variants.filter((variant) => variant.color === color.slug)
   const { obtained, total } = countObtained(variants)
@@ -35,11 +31,18 @@ export default function EurekaColorSetCard({
     )
   }
 
+  // `in` is pinned true and no `animateExit` is passed: this card has no
+  // "missing" filter path, so it never animates out. It used to flip a `grown`
+  // flag in an effect to animate every card IN on mount instead — a pattern
+  // already removed from the outfit cards (see
+  // docs/superpowers/specs/2026-07-30-known-issue-standard-grid-flash.md) that
+  // cost an extra render plus a 300ms transition per card, on a page that
+  // renders every set at once.
   return (
     <SetCard
+      in
       href={`/eureka/${eurekaSet.slug}?color=${color.slug}`}
       imageSrc={variants[0].image_url ?? ''}
-      in={grown}
       isLoggedIn={isLoggedIn}
       obtained={obtained}
       rarity={eurekaSet.rarity ?? 0}
