@@ -7,6 +7,13 @@ import LazyImage from '@/components/lazy-image'
 import RarityStars from '@/components/rarity-stars'
 import CardShell, { CollectionToggle } from '@/components/card-shell'
 
+// Two fixed sx objects rather than one built inline: stable identities keep
+// `LazyImage`'s memo effective across the virtualized grids' scroll re-renders.
+const MEDIA_SX = {
+  default: { width: '100%', aspectRatio: '2 / 3' },
+  alt: { width: '100%', aspectRatio: '1 / 1' },
+} as const
+
 export default function SetCard({
   href,
   title,
@@ -42,7 +49,7 @@ export default function SetCard({
     <LazyImage
       image={imageSrc}
       kind="media"
-      sx={{ width: '100%', aspectRatio: showAlt ? '1 / 1' : '2 / 3' }}
+      sx={showAlt ? MEDIA_SX.alt : MEDIA_SX.default}
       title={title}
     />
   )

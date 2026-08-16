@@ -104,6 +104,14 @@ Column-level schema lives in `lib/types/supabase.ts` (generated — the source o
 - **MUI Icons** + **Lucide React** — icons
 - **Not used:** shadcn/ui, Radix UI, next-themes, class-variance-authority
 
+### Images
+
+Every remote image goes through **`components/lazy-image.tsx`** (`LazyImage`) over **`hooks/use-lazy-image.ts`**. Three render states, never a broken-image glyph: skeleton while pending, the `<img>` once decoded, an icon placeholder when there is no src or every retry failed. The hook retries a broken URL `MAX_ATTEMPTS` (3) times on an exponential backoff with a `?retry=N` cache-buster, then gives up; module-level caches remember per-URL outcomes for the session so a virtualized row remounting skips the skeleton on a known-good URL and skips the retry ladder entirely on a known-dead one (failures expire after 30s and are cleared on `online`).
+
+Do **not** pass a remote `src` to MUI `Avatar` directly — its internal `useLoaded` constructs a detached `new Image()` per src, which both duplicates the request and ignores `loading="lazy"`, so off-screen overscan rows fetch eagerly. `LazyImage` renders its own `<img>` as an Avatar _child_ instead; `components/__tests__/lazy-image.test.tsx` guards this.
+
+`LazyImage` is `memo`'d for the virtualized grids, so call sites must pass **hoisted** `sx` objects and fallback elements (see `components/variant-card.tsx`, `components/set-card.tsx`) — an inline object literal silently defeats it.
+
 ### Theme
 
 `lib/theme.ts` configures the MUI theme with `responsiveFontSizes`. Palette colors do NOT come from MUI's color imports — they are hex M3 token sets in `lib/theme-presets.ts` (`COLOR_THEME_PRESETS`: `default`/Terracotta, `moonlight`, `blossom`, `forest`), each with full light + dark schemes (primary/secondary/tertiary, background, text, divider, and an 8-step `surface` ladder). `buildColorSchemes(preset)` turns one into MUI `colorSchemes`. `InitColorSchemeScript attribute="class" defaultMode="system"` (root layout) must match the `ThemeProvider defaultMode` to prevent SSR flicker. A user color-theme override is wired through `ThemeClientProvider` + `color-theme-context.tsx`. Client Components checking dark mode must use `useColorScheme()` (not `useTheme().palette.mode`) — CSS variables mode doesn't re-render via `useTheme`. Pattern: `const { mode, systemMode } = useColorScheme(); const isDarkMode = (mode === 'system' ? systemMode : mode) === 'dark'`. Requires `'use client'`.
