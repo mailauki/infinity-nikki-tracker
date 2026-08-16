@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v16-appRouter'
-import { Noto_Sans_JP, Roboto } from 'next/font/google'
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 import ThemeClientProvider from '@/components/theme-client-provider'
 import { CssBaseline } from '@mui/material'
@@ -20,20 +19,10 @@ import { SPLASH_BACKGROUND_DARK, SPLASH_BACKGROUND_LIGHT } from '@/lib/splash-co
 import LayoutShell from '@/components/navbar/layout-shell'
 import SplashScreen from './splash-screen'
 
-const roboto = Roboto({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-roboto',
-})
-
-const notoSansJP = Noto_Sans_JP({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-noto-sans-jp',
-  preload: false,
-})
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -110,7 +99,6 @@ export default function RootLayout({
   return (
     <html
       suppressHydrationWarning
-      className={`${roboto.variable} ${notoSansJP.variable}`}
       lang="en"
     >
       <body>

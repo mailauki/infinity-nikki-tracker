@@ -155,7 +155,9 @@ export const baseThemeOptions: ThemeOptions = {
     colorSchemeSelector: 'class',
   },
   typography: {
-    fontFamily: 'var(--font-noto-sans-jp), var(--font-roboto), sans-serif',
+    // Roboto ships from @fontsource (app/layout.tsx imports the weight CSS), so
+    // the family is named directly rather than through a next/font CSS variable.
+    fontFamily: 'Roboto, sans-serif',
     // Display Large
     h1: {
       fontSize: '3.5625rem',
