@@ -1,4 +1,5 @@
 'use client'
+import { memo, useEffect } from 'react'
 import Avatar, { type AvatarProps } from '@mui/material/Avatar'
 import { type CardMediaProps } from '@mui/material/CardMedia'
 import Box from '@mui/material/Box'
@@ -10,6 +11,7 @@ import ImageIcon from '@mui/icons-material/Image'
 import { type SxProps, type Theme } from '@mui/material/styles'
 import Image from 'next/image'
 import { useLazyImage } from '@/hooks/use-lazy-image'
+import { reportTransformFailure, thumbnailSrc } from '@/lib/image-transform'
 import type { AvatarSize } from '@/lib/types/props'
 
 // Subtle dim so bright outfit art is easier on the eyes in dark mode.
@@ -22,6 +24,32 @@ const toSxArray = (sx: SxProps<Theme> | undefined) => (Array.isArray(sx) ? sx : 
 // Pixel sizes for the MUI Avatar `size` variants (kept in sync with lib/theme.ts).
 // Used to give next/image explicit dimensions on the `optimized` path.
 const SIZE_PX: Record<AvatarSize, number> = { xs: 24, sm: 40, md: 56, lg: 94, xl: 140 }
+
+// Sizes that request a resized thumbnail instead of the full-resolution source.
+//
+// Scoped to the small avatars on purpose. At 24–40px the gap between the file
+// and the box it's painted into is enormous — the nav-bar avatar is a raw
+// profile upload, and the Autocomplete/admin-table rows point at the same art
+// the 94px cards use. From `md` up the saving no longer justifies routing
+// through a second endpoint, and the big detail images should stay pristine.
+const THUMBNAIL_SIZES: ReadonlySet<AvatarSize> = new Set<AvatarSize>(['xs', 'sm'])
+
+// Hoisted so the object identity is stable across renders — these grids re-render
+// on every scroll frame, and a fresh sx object per render defeats MUI's style cache.
+const OVERLAY_SX = { position: 'absolute', inset: 0, width: '100%', height: '100%' } as const
+const FILL_STYLE = { objectFit: 'cover' } as const
+
+// Mirrors MUI's own `AvatarImg` styles (Avatar.js), because the <img> below is
+// rendered as an Avatar *child* rather than through Avatar's `src` prop.
+const AVATAR_IMG_SX = {
+  width: '100%',
+  height: '100%',
+  textAlign: 'center',
+  objectFit: 'cover',
+  // Hide alt text and the broken-image glyph.
+  color: 'transparent',
+  textIndent: 10000,
+} as const
 
 type AvatarCorner = 'circular' | 'rounded' | 'square'
 
@@ -45,7 +73,16 @@ type MediaKind = { kind: 'media' } & CardMediaProps<'div'>
 
 export type LazyImageProps = AvatarKind | MediaKind
 
-export default function LazyImage(props: LazyImageProps) {
+// Three render states, uniform across every path below:
+//   pending     -> skeleton, no visible <img>
+//   loaded      -> the image, faded in
+//   placeholder -> an icon (no src, or every retry attempt errored)
+//
+// The one thing that never happens is the browser's broken-image glyph: an <img>
+// is only ever painted once it has actually decoded. See hooks/use-lazy-image.ts
+// for the retry/backoff ladder and the session-scoped outcome cache that keeps
+// remounted rows in a virtualized grid from re-running it.
+function LazyImage(props: LazyImageProps) {
   if (props.kind === 'media') {
     const { kind, ...rest } = props
     void kind
@@ -73,59 +110,94 @@ export default function LazyImage(props: LazyImageProps) {
   )
 }
 
+// Memoized because the virtualized grids re-render every mounted row on each
+// scroll-driven layout pass. Call sites pass primitives plus a hoisted sx, so
+// the shallow compare actually holds; an inline sx object at a call site would
+// silently defeat it.
+export default memo(LazyImage)
+
+// The <img> is deliberately NOT handed to Avatar's `src` prop. Avatar's internal
+// `useLoaded` hook constructs a detached `new Image()` for every src it is given,
+// on top of the <img> it renders — so each thumbnail costs two requests, and that
+// detached probe ignores `loading="lazy"` entirely, fetching every off-screen
+// overscan row the instant it mounts. Rendering our own <img> as an Avatar *child*
+// keeps the theme's size/shape styling (the size variants live on the Avatar root,
+// see lib/theme.ts) while issuing exactly one, genuinely lazy request per thumbnail.
 function AvatarImage({
   variant,
   src,
   sx,
   size,
+  alt,
   children,
   ...props
 }: { variant: AvatarCorner; size?: AvatarSize; src?: string | null } & Omit<
   AvatarProps,
   'variant' | 'src'
 >) {
-  const { loaded, retrySrc, imgRef, handleLoad, handleError } = useLazyImage(src)
+  // Small avatars request an edge-resized thumbnail; `src` stays as the fallback
+  // so a project without Storage transformations still shows the image.
+  const effectiveSize = size ?? 'sm'
+  const preferredSrc =
+    src && THUMBNAIL_SIZES.has(effectiveSize) ? thumbnailSrc(src, SIZE_PX[effectiveSize]) : src
+  const { currentSrc, isPending, isFallback, isLoaded, imgRef, handleLoad, handleError } =
+    useLazyImage(preferredSrc, src)
 
-  // With no src, fall back to a caller-supplied child or the shared category icon
-  // rather than MUI's default person silhouette.
+  // The thumbnail failed where the original loaded — transformations aren't
+  // available, so stop asking for them for the rest of the session.
+  useEffect(() => {
+    if (isFallback && isLoaded && preferredSrc !== src) reportTransformFailure()
+  }, [isFallback, isLoaded, preferredSrc, src])
+
+  // With no usable image, fall back to a caller-supplied child or the shared
+  // category icon rather than MUI's default person silhouette.
   const placeholder = children ?? <CategoryIcon fontSize="inherit" />
 
   return (
     <Box sx={{ position: 'relative', display: 'inline-flex', width: 'fit-content' }}>
-      {!loaded && src && (
-        <Skeleton
-          sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-          variant={variant === 'circular' ? 'circular' : 'rounded'}
-        />
+      {isPending && (
+        <Skeleton sx={OVERLAY_SX} variant={variant === 'circular' ? 'circular' : 'rounded'} />
       )}
       <Avatar
         size={size}
-        slotProps={{
-          img: retrySrc
-            ? {
-                ref: imgRef,
-                loading: 'lazy',
-                decoding: 'async',
-                onLoad: handleLoad,
-                onError: handleError,
-              }
-            : undefined,
-        }}
-        src={retrySrc}
-        sx={[{ opacity: loaded || !src ? 1 : 0 }, ...toSxArray(sx), darkDim]}
+        sx={[
+          { opacity: isPending ? 0 : 1 },
+          // Avatar decides it is "empty" (colorDefault -> grey fill) purely from
+          // its own `src` prop, which we no longer set. Suppress that fill while
+          // our <img> covers the box; the placeholder branch keeps it, which is
+          // what an image-less Avatar looked like before. Listed ahead of the
+          // caller's sx so a call site can still paint its own background.
+          currentSrc ? { backgroundColor: 'transparent' } : false,
+          ...toSxArray(sx),
+          darkDim,
+        ]}
         variant={variant}
         {...props}
       >
-        {src ? children : placeholder}
+        {currentSrc ? (
+          <Box
+            ref={imgRef}
+            alt={alt}
+            component="img"
+            decoding="async"
+            loading="lazy"
+            src={currentSrc}
+            sx={AVATAR_IMG_SX}
+            onError={handleError}
+            onLoad={handleLoad}
+          />
+        ) : (
+          placeholder
+        )}
       </Avatar>
     </Box>
   )
 }
 
 // next/image variant of the Avatar thumbnail: same fixed box + rounded corners +
-// skeleton + retry UX, but the image is served via /_next/image (AVIF/WebP,
-// DPR-aware srcset, native lazy-load). `children` (fallback icon) shows when src
-// is absent. Drives useLazyImage's load/error so the skeleton/retry still work.
+// skeleton + retry UX, but the image goes through next/image (which, with
+// `images.unoptimized`, emits a plain <img> — see next.config.ts). `children`
+// (fallback icon) shows when there is no src or every attempt failed.
 function OptimizedAvatarImage({
   variant,
   src,
@@ -141,7 +213,15 @@ function OptimizedAvatarImage({
   alt: string
   children?: React.ReactNode
 }) {
-  const { loaded, retrySrc, imgRef, handleLoad, handleError } = useLazyImage(src)
+  const preferredSrc = src && THUMBNAIL_SIZES.has(size) ? thumbnailSrc(src, SIZE_PX[size]) : src
+  const lazy = useLazyImage(preferredSrc, src)
+  const { currentSrc, isPending, isPlaceholder, isFallback, isLoaded } = lazy
+  const { imgRef, handleLoad, handleError } = lazy
+
+  useEffect(() => {
+    if (isFallback && isLoaded && preferredSrc !== src) reportTransformFailure()
+  }, [isFallback, isLoaded, preferredSrc, src])
+
   const px = SIZE_PX[size]
   const radiusByVariant: Record<AvatarCorner, string | number> = {
     circular: '50%',
@@ -152,13 +232,14 @@ function OptimizedAvatarImage({
 
   return (
     <Box sx={{ position: 'relative', display: 'inline-flex', width: px, height: px }}>
-      {!loaded && src && (
-        <Skeleton
-          sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-          variant={variant === 'circular' ? 'circular' : 'rounded'}
-        />
+      {isPending && (
+        <Skeleton sx={OVERLAY_SX} variant={variant === 'circular' ? 'circular' : 'rounded'} />
       )}
-      {src ? (
+      {isPlaceholder ? (
+        <Avatar size={size} sx={[...toSxArray(sx)]} variant={variant}>
+          {children ?? <CategoryIcon fontSize="inherit" />}
+        </Avatar>
+      ) : (
         <Box
           sx={[
             {
@@ -167,41 +248,42 @@ function OptimizedAvatarImage({
               height: px,
               borderRadius: radius,
               overflow: 'hidden',
-              opacity: loaded ? 1 : 0,
+              opacity: isPending ? 0 : 1,
             },
             ...toSxArray(sx),
             darkDim,
           ]}
         >
-          <Image
-            ref={imgRef}
-            fill
-            alt={alt}
-            sizes={`${px * 2}px`}
-            src={retrySrc!}
-            style={{ objectFit: 'cover' }}
-            onError={handleError}
-            onLoad={handleLoad}
-          />
+          {currentSrc && (
+            <Image
+              ref={imgRef}
+              fill
+              alt={alt}
+              decoding="async"
+              sizes={`${px * 2}px`}
+              src={currentSrc}
+              style={FILL_STYLE}
+              onError={handleError}
+              onLoad={handleLoad}
+            />
+          )}
         </Box>
-      ) : (
-        <Avatar size={size} sx={[...toSxArray(sx)]} variant={variant}>
-          {children ?? <CategoryIcon fontSize="inherit" />}
-        </Avatar>
       )}
     </Box>
   )
 }
 
 function MediaImage({ image, sx, title }: CardMediaProps<'div'>) {
-  const { loaded, retrySrc, imgRef, handleLoad, handleError } = useLazyImage(image)
+  const { currentSrc, isPending, isPlaceholder, imgRef, handleLoad, handleError } =
+    useLazyImage(image)
 
   return (
     <Stack sx={{ position: 'relative', ...sx }}>
-      {!loaded && image && (
+      {isPending && (
         <Skeleton sx={{ position: 'absolute', inset: 0, height: '100%' }} variant="rectangular" />
       )}
-      {image ? (
+      {isPlaceholder && <ImagePlaceholder title={title} />}
+      {currentSrc && (
         // A real <img loading="lazy"> (not a CardMedia CSS background) so the
         // browser defers off-screen thumbnails on the large /eureka and /outfits
         // grids — background-image can't be natively lazy-loaded, so those grids
@@ -214,7 +296,7 @@ function MediaImage({ image, sx, title }: CardMediaProps<'div'>) {
           component="img"
           decoding="async"
           loading="lazy"
-          src={retrySrc}
+          src={currentSrc}
           sx={[
             {
               borderRadius: 1.5,
@@ -222,15 +304,13 @@ function MediaImage({ image, sx, title }: CardMediaProps<'div'>) {
               height: '100%',
               objectFit: 'cover',
               display: 'block',
-              opacity: loaded ? 1 : 0,
+              opacity: isPending ? 0 : 1,
             },
             darkDim,
           ]}
           onError={handleError}
           onLoad={handleLoad}
         />
-      ) : (
-        <ImagePlaceholder title={title} />
       )}
     </Stack>
   )

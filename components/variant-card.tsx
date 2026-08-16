@@ -6,6 +6,12 @@ import { Category } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
 import CardShell, { CollectionToggle } from '@/components/card-shell'
 
+// Hoisted so `LazyImage`'s memo actually holds: these cards re-render on every
+// scroll-driven pass of the virtualized grids, and an inline sx object or a
+// freshly created fallback element would change identity each time.
+const IMAGE_SX = { bgcolor: 'transparent', color: 'text.disabled' } as const
+const FALLBACK_ICON = <Category fontSize="inherit" />
+
 export default function VariantCard({
   imageSrc,
   imageAlt,
@@ -42,9 +48,9 @@ export default function VariantCard({
           optimized={optimized}
           size="lg"
           src={imageSrc ?? undefined}
-          sx={{ bgcolor: 'transparent', color: 'text.disabled' }}
+          sx={IMAGE_SX}
         >
-          <Category fontSize="inherit" />
+          {FALLBACK_ICON}
         </LazyImage>
       </Stack>
       <CardHeader
