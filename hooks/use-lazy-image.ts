@@ -53,6 +53,9 @@ function remember(src: string) {
 }
 
 function rememberFailure(src: string) {
+  // Keep the original timestamp. Re-stamping on every remount would keep
+  // pushing the TTL out, so a transiently broken URL would never be retried.
+  if (failed.has(src)) return
   failed.set(src, Date.now())
   if (failed.size > CACHE_LIMIT) {
     const oldest = failed.keys().next().value
@@ -111,39 +114,83 @@ export interface UseLazyImageResult {
   /** Nothing to paint — no src, or every attempt errored. Render the placeholder. */
   isPlaceholder: boolean
   isLoaded: boolean
+  /** The preferred src failed and `fallbackSrc` took over. */
+  isFallback: boolean
   /** Callback ref for the <img>. Also catches images that finished before hydration. */
   imgRef: (node: HTMLImageElement | null) => void
   handleLoad: () => void
   handleError: () => void
 }
 
-export function useLazyImage(src: string | null | undefined): UseLazyImageResult {
-  // src travels with the state so a changed src resets attempt and status in the
+type State = {
+  src: string | null | undefined
+  fallbackSrc: string | null | undefined
+  fallback: boolean
+  status: LazyImageStatus
+  attempt: number
+}
+
+function hasFallback(src: string | null | undefined, fallbackSrc: string | null | undefined) {
+  return !!fallbackSrc && fallbackSrc !== src
+}
+
+function initialState(
+  src: string | null | undefined,
+  fallbackSrc: string | null | undefined
+): State {
+  const status = initialStatus(src)
+  // A src already known to be dead skips straight to the fallback rather than
+  // spending a request re-proving it.
+  if (status === 'failed' && hasFallback(src, fallbackSrc)) {
+    return { src, fallbackSrc, fallback: true, status: initialStatus(fallbackSrc), attempt: 0 }
+  }
+  return { src, fallbackSrc, fallback: false, status, attempt: 0 }
+}
+
+/**
+ * @param src          the preferred URL
+ * @param fallbackSrc  tried once if `src` errors, before giving up. Used for the
+ *                     resized thumbnails in lib/image-transform.ts, which fall
+ *                     back to the untransformed original.
+ */
+export function useLazyImage(
+  src: string | null | undefined,
+  fallbackSrc?: string | null
+): UseLazyImageResult {
+  // Both URLs travel with the state so a change resets attempt and status in the
   // same render it arrives, rather than one wasted commit later via useEffect.
-  const [state, setState] = useState(() => ({
-    src,
-    status: initialStatus(src),
-    attempt: 0,
-  }))
+  const [state, setState] = useState<State>(() => initialState(src, fallbackSrc))
 
-  const current =
-    state.src === src ? state : { src, status: initialStatus(src), attempt: 0 as number }
-  if (state.src !== src) setState(current)
+  const stale = state.src !== src || state.fallbackSrc !== fallbackSrc
+  const current = stale ? initialState(src, fallbackSrc) : state
+  if (stale) setState(current)
 
-  const { status, attempt } = current
+  const { status, attempt, fallback } = current
+  // The URL actually being requested — the fallback once the preferred one has
+  // been ruled out. Everything below (caching, retries) keys off this.
+  const activeSrc = fallback ? fallbackSrc : src
   const nodeRef = useRef<HTMLImageElement | null>(null)
 
   const handleLoad = useCallback(() => {
-    if (src) remember(src)
-    setState((prev) => (prev.src === src ? { ...prev, status: 'loaded' } : prev))
+    setState((prev) => {
+      if (prev.src !== src) return prev
+      const active = prev.fallback ? prev.fallbackSrc : prev.src
+      if (active) remember(active)
+      return { ...prev, status: 'loaded' }
+    })
   }, [src])
 
   const handleError = useCallback(() => {
-    if (!src) return
     setState((prev) => {
       // Ignore errors from an <img> for a src we've already moved past, and from
       // a status that isn't actively awaiting a response.
       if (prev.src !== src || prev.status !== 'loading') return prev
+      // First failure of the preferred URL hands over to the fallback right
+      // away: it's a different resource, not a retry, so it gets no backoff and
+      // a fresh attempt count.
+      if (!prev.fallback && hasFallback(prev.src, prev.fallbackSrc)) {
+        return { ...prev, fallback: true, attempt: 0, status: 'loading' }
+      }
       const next = prev.attempt + 1
       return { ...prev, attempt: next, status: next >= MAX_ATTEMPTS ? 'failed' : 'retrying' }
     })
@@ -162,21 +209,29 @@ export function useLazyImage(src: string | null | undefined): UseLazyImageResult
     return () => clearTimeout(id)
   }, [status, attempt, src])
 
-  // Record the failure only once the component has settled on it, so nothing is
+  // Record outcomes only once the component has settled on them, so nothing is
   // written from inside a state updater (which StrictMode invokes twice).
   useEffect(() => {
-    if (status === 'failed' && src) rememberFailure(src)
-  }, [status, src])
+    if (status !== 'failed') return
+    if (src) rememberFailure(src)
+    if (fallback && fallbackSrc) rememberFailure(fallbackSrc)
+  }, [status, fallback, src, fallbackSrc])
+
+  // The preferred URL is recorded as dead as soon as the fallback takes over,
+  // not only when everything fails — otherwise every remount re-requests it.
+  useEffect(() => {
+    if (fallback && src) rememberFailure(src)
+  }, [fallback, src])
 
   // Give up-to-date failures a way back: when connectivity returns, re-arm.
   useEffect(() => {
     if (status !== 'failed') return
-    const listener = () => setState({ src, status: 'loading', attempt: 0 })
+    const listener = () => setState(initialState(src, fallbackSrc))
     failedListeners.add(listener)
     return () => {
       failedListeners.delete(listener)
     }
-  }, [status, src])
+  }, [status, src, fallbackSrc])
 
   // These components are server-rendered, so the browser can finish (or fail)
   // an <img> before hydration attaches onLoad/onError — in which case neither
@@ -203,8 +258,8 @@ export function useLazyImage(src: string | null | undefined): UseLazyImageResult
   const isPlaceholder = status === 'empty' || status === 'failed'
   // No <img> during backoff: the old element is pointing at a URL that just
   // errored, and remounting it is what triggers the next request.
-  const mountImg = !!src && !isPlaceholder && status !== 'retrying'
-  const currentSrc = mountImg ? withAttempt(src, attempt) : undefined
+  const mountImg = !!activeSrc && !isPlaceholder && status !== 'retrying'
+  const currentSrc = mountImg ? withAttempt(activeSrc, attempt) : undefined
 
   return {
     status,
@@ -212,6 +267,7 @@ export function useLazyImage(src: string | null | undefined): UseLazyImageResult
     isPending: status === 'loading' || status === 'retrying',
     isPlaceholder,
     isLoaded: status === 'loaded',
+    isFallback: fallback,
     imgRef,
     handleLoad,
     handleError,

@@ -2,8 +2,13 @@ import { act, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import LazyImage from '@/components/lazy-image'
 import { resetLazyImageCache } from '@/hooks/use-lazy-image'
+import { resetTransformAvailability } from '@/lib/image-transform'
 
 const SRC = 'https://example.test/images/outfit.png'
+const STORAGE_SRC =
+  'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/object/public/images/a/image_url.png'
+const STORAGE_THUMB =
+  'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/render/image/public/images/a/image_url.png?width=80&height=80&resize=cover&quality=75'
 
 // The <img> only exists once there is something worth painting, so its presence
 // is the assertion for "not showing a broken image".
@@ -33,6 +38,7 @@ async function failAttempts(count: number) {
 describe('LazyImage', () => {
   beforeEach(() => {
     resetLazyImageCache()
+    resetTransformAvailability()
     vi.useFakeTimers()
   })
 
@@ -174,6 +180,74 @@ describe('LazyImage', () => {
     expect(ImageSpy).not.toHaveBeenCalled()
     expect(img()).toHaveAttribute('loading', 'lazy')
     vi.unstubAllGlobals()
+  })
+
+  describe('small-avatar thumbnails', () => {
+    it('requests a resized thumbnail at sm', () => {
+      render(<LazyImage alt="Avatar" size="sm" src={STORAGE_SRC} />)
+      expect(img()).toHaveAttribute('src', STORAGE_THUMB)
+    })
+
+    it('requests a resized thumbnail at the default size', () => {
+      render(<LazyImage alt="Avatar" src={STORAGE_SRC} />)
+      expect(img()).toHaveAttribute('src', STORAGE_THUMB)
+    })
+
+    it('leaves the larger sizes on the full-resolution source', () => {
+      render(<LazyImage alt="Avatar" size="lg" src={STORAGE_SRC} />)
+      expect(img()).toHaveAttribute('src', STORAGE_SRC)
+    })
+
+    it('falls back to the original immediately — no backoff — when the thumbnail errors', async () => {
+      render(<LazyImage alt="Avatar" size="sm" src={STORAGE_SRC} />)
+      expect(img()).toHaveAttribute('src', STORAGE_THUMB)
+
+      await act(async () => {
+        img()!.dispatchEvent(new Event('error'))
+      })
+
+      // A different resource, not a retry: it swaps in the same tick and with no
+      // ?retry= cache-buster.
+      expect(img()).toHaveAttribute('src', STORAGE_SRC)
+      expect(skeleton()).toBeInTheDocument()
+
+      await act(async () => {
+        img()!.dispatchEvent(new Event('load'))
+      })
+      expect(skeleton()).not.toBeInTheDocument()
+    })
+
+    it('stops requesting thumbnails once one fails where the original loads', async () => {
+      const first = render(<LazyImage alt="Avatar" size="sm" src={STORAGE_SRC} />)
+      await act(async () => {
+        img()!.dispatchEvent(new Event('error'))
+      })
+      await act(async () => {
+        img()!.dispatchEvent(new Event('load'))
+      })
+      first.unmount()
+
+      // Transformations are evidently not enabled — later avatars shouldn't
+      // spend a doomed request discovering that again. A second, distinct
+      // object (no query string, so nothing else would exempt it).
+      const other = STORAGE_SRC.replace('/a/', '/b/')
+      render(<LazyImage alt="Avatar" size="sm" src={other} />)
+      expect(img()).toHaveAttribute('src', other)
+    })
+
+    it('still gives up to the placeholder when both the thumbnail and the original fail', async () => {
+      render(<LazyImage alt="Avatar" size="sm" src={STORAGE_SRC} />)
+
+      // Thumbnail fails -> original takes over, then burns its own 3 attempts.
+      await act(async () => {
+        img()!.dispatchEvent(new Event('error'))
+      })
+      expect(img()).toHaveAttribute('src', STORAGE_SRC)
+      await failAttempts(3)
+
+      expect(img()).not.toBeInTheDocument()
+      expect(skeleton()).not.toBeInTheDocument()
+    })
   })
 
   it('renders the media variant placeholder with its title when there is no image', () => {

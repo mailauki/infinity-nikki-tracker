@@ -1,5 +1,5 @@
 'use client'
-import { memo } from 'react'
+import { memo, useEffect } from 'react'
 import Avatar, { type AvatarProps } from '@mui/material/Avatar'
 import { type CardMediaProps } from '@mui/material/CardMedia'
 import Box from '@mui/material/Box'
@@ -11,6 +11,7 @@ import ImageIcon from '@mui/icons-material/Image'
 import { type SxProps, type Theme } from '@mui/material/styles'
 import Image from 'next/image'
 import { useLazyImage } from '@/hooks/use-lazy-image'
+import { reportTransformFailure, thumbnailSrc } from '@/lib/image-transform'
 import type { AvatarSize } from '@/lib/types/props'
 
 // Subtle dim so bright outfit art is easier on the eyes in dark mode.
@@ -23,6 +24,15 @@ const toSxArray = (sx: SxProps<Theme> | undefined) => (Array.isArray(sx) ? sx : 
 // Pixel sizes for the MUI Avatar `size` variants (kept in sync with lib/theme.ts).
 // Used to give next/image explicit dimensions on the `optimized` path.
 const SIZE_PX: Record<AvatarSize, number> = { xs: 24, sm: 40, md: 56, lg: 94, xl: 140 }
+
+// Sizes that request a resized thumbnail instead of the full-resolution source.
+//
+// Scoped to the small avatars on purpose. At 24–40px the gap between the file
+// and the box it's painted into is enormous — the nav-bar avatar is a raw
+// profile upload, and the Autocomplete/admin-table rows point at the same art
+// the 94px cards use. From `md` up the saving no longer justifies routing
+// through a second endpoint, and the big detail images should stay pristine.
+const THUMBNAIL_SIZES: ReadonlySet<AvatarSize> = new Set<AvatarSize>(['xs', 'sm'])
 
 // Hoisted so the object identity is stable across renders — these grids re-render
 // on every scroll frame, and a fresh sx object per render defeats MUI's style cache.
@@ -125,7 +135,19 @@ function AvatarImage({
   AvatarProps,
   'variant' | 'src'
 >) {
-  const { currentSrc, isPending, imgRef, handleLoad, handleError } = useLazyImage(src)
+  // Small avatars request an edge-resized thumbnail; `src` stays as the fallback
+  // so a project without Storage transformations still shows the image.
+  const effectiveSize = size ?? 'sm'
+  const preferredSrc =
+    src && THUMBNAIL_SIZES.has(effectiveSize) ? thumbnailSrc(src, SIZE_PX[effectiveSize]) : src
+  const { currentSrc, isPending, isFallback, isLoaded, imgRef, handleLoad, handleError } =
+    useLazyImage(preferredSrc, src)
+
+  // The thumbnail failed where the original loaded — transformations aren't
+  // available, so stop asking for them for the rest of the session.
+  useEffect(() => {
+    if (isFallback && isLoaded && preferredSrc !== src) reportTransformFailure()
+  }, [isFallback, isLoaded, preferredSrc, src])
 
   // With no usable image, fall back to a caller-supplied child or the shared
   // category icon rather than MUI's default person silhouette.
@@ -191,8 +213,15 @@ function OptimizedAvatarImage({
   alt: string
   children?: React.ReactNode
 }) {
-  const { currentSrc, isPending, isPlaceholder, imgRef, handleLoad, handleError } =
-    useLazyImage(src)
+  const preferredSrc = src && THUMBNAIL_SIZES.has(size) ? thumbnailSrc(src, SIZE_PX[size]) : src
+  const lazy = useLazyImage(preferredSrc, src)
+  const { currentSrc, isPending, isPlaceholder, isFallback, isLoaded } = lazy
+  const { imgRef, handleLoad, handleError } = lazy
+
+  useEffect(() => {
+    if (isFallback && isLoaded && preferredSrc !== src) reportTransformFailure()
+  }, [isFallback, isLoaded, preferredSrc, src])
+
   const px = SIZE_PX[size]
   const radiusByVariant: Record<AvatarCorner, string | number> = {
     circular: '50%',

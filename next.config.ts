@@ -37,6 +37,14 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/storage/v1/object/public/images/**',
       },
+      {
+        // Storage's edge-resize endpoint, used for the small avatar thumbnails
+        // (lib/image-transform.ts). Same objects, served resized.
+        protocol: 'https',
+        hostname: 'ykfuevyqpjvtxidjnhxm.supabase.co',
+        port: '',
+        pathname: '/storage/v1/render/image/public/images/**',
+      },
     ],
   },
 }
