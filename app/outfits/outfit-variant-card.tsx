@@ -19,7 +19,7 @@ function OutfitVariantCard({
   isMissingFilter?: boolean
   disableToggle?: boolean
 }) {
-  const { onToggleObtained } = useOutfitData()
+  const { onToggleObtained, onHoldExit } = useOutfitData()
   const { mode } = useOutfitImageMode()
   const [exiting, setExiting] = useState(false)
 
@@ -30,6 +30,9 @@ function OutfitVariantCard({
   function onToggle() {
     onToggleObtained(outfitVariant.outfit_set!, outfitVariant.outfit_category!, outfitVariant.slug)
     if (isMissingFilter) {
+      // The optimistic update culls this card from the filtered list in this
+      // same commit, so hold its key until the Grow has played out.
+      onHoldExit([outfitVariant.slug])
       setExiting(true)
     }
   }
@@ -38,6 +41,7 @@ function OutfitVariantCard({
 
   return (
     <VariantCard
+      animateExit={isMissingFilter}
       disableToggle={disableToggle}
       imageAlt={outfitVariant.slug || 'Outfit Variant'}
       imageSrc={imageSrc}

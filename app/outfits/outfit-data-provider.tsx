@@ -1,5 +1,7 @@
 'use client'
 
+import { CARD_EXIT_HOLD_MS } from '@/components/card-shell'
+import { useExitHold } from '@/hooks/use-exit-hold'
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 import { createClient } from '@/lib/supabase/client'
@@ -68,6 +70,12 @@ export default function OutfitDataProvider({
   const [filters, setFilters] = useState<OutfitFilterState>(DEFAULT_OUTFIT_FILTERS)
   const [prefsLoaded, setPrefsLoaded] = useState(false)
   const [isFiltering, startFilterTransition] = useTransition()
+
+  // Cards completed under the "missing" filter are culled by the filter memo in
+  // the same commit that starts their exit animation. This keeps their keys in
+  // the list for the length of that animation; the obtained data itself is not
+  // delayed at all. See hooks/use-exit-hold.ts.
+  const { exitingKeys, holdExit } = useExitHold(CARD_EXIT_HOLD_MS)
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
@@ -368,6 +376,8 @@ export default function OutfitDataProvider({
       filters,
       onFiltersChange: handleFiltersChange,
       onClearFilters: handleClearFilters,
+      exitingKeys,
+      onHoldExit: holdExit,
       onToggleObtained: handleToggleObtained,
       onBatchToggleObtained: handleBatchToggleObtained,
     }),
@@ -384,6 +394,8 @@ export default function OutfitDataProvider({
       isLoading,
       isError,
       isObtainedError,
+      exitingKeys,
+      holdExit,
       isFiltering,
       userId,
       groupBySet,

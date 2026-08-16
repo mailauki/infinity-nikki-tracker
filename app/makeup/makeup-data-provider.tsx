@@ -1,5 +1,7 @@
 'use client'
 
+import { CARD_EXIT_HOLD_MS } from '@/components/card-shell'
+import { useExitHold } from '@/hooks/use-exit-hold'
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 import { MakeupCategory, MakeupSet, ObtainedMakeup } from '@/lib/types/makeup'
@@ -58,6 +60,12 @@ export default function MakeupDataProvider({
   const [groupBySet, setGroupBySet] = useState(true)
   const [filters, setFilters] = useState<MakeupFilterState>(DEFAULT_MAKEUP_FILTERS)
   const [isFiltering, startFilterTransition] = useTransition()
+
+  // Cards completed under the "missing" filter are culled by the filter memo in
+  // the same commit that starts their exit animation. This keeps their keys in
+  // the list for the length of that animation; the obtained data itself is not
+  // delayed at all. See hooks/use-exit-hold.ts.
+  const { exitingKeys, holdExit } = useExitHold(CARD_EXIT_HOLD_MS)
 
   useEffect(() => {
     let cancelled = false
@@ -208,6 +216,8 @@ export default function MakeupDataProvider({
       filters,
       onFiltersChange,
       onClearFilters,
+      exitingKeys,
+      onHoldExit: holdExit,
       onToggleObtained,
       onBatchToggleObtained,
     }),
@@ -230,6 +240,8 @@ export default function MakeupDataProvider({
       filters,
       onFiltersChange,
       onClearFilters,
+      exitingKeys,
+      holdExit,
       onToggleObtained,
       onBatchToggleObtained,
     ]

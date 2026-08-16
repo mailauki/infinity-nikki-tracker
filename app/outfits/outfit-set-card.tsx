@@ -32,12 +32,13 @@ function OutfitSetCard({
   // a prebuilt `onToggle` closure so the prop list stays free of per-render
   // function identities, which would defeat the `memo` wrapper below.
   variants: OutfitVariant[]
-  // When the "missing" filter is active, completing this group animates the
-  // card out (the obtained toggle is committed in onExited) so it leaves the
-  // filtered view smoothly instead of vanishing instantly.
+  // When the "missing" filter is active, completing this group animates the card
+  // out so it leaves the filtered view smoothly instead of vanishing instantly.
+  // It is also the only condition under which the card can animate at all, so it
+  // decides whether CardShell mounts a Grow — see components/card-shell.tsx.
   isMissingFilter?: boolean
 }) {
-  const { onBatchToggleObtained } = useOutfitData()
+  const { onBatchToggleObtained, onHoldExit } = useOutfitData()
   const { mode } = useOutfitImageMode()
   // The ONE card animation that survives: set by `handleToggle` under the
   // "missing" filter so completing a group animates out instead of vanishing.
@@ -58,6 +59,9 @@ function OutfitSetCard({
       }))
     onBatchToggleObtained(toToggle, !allObtained)
     if (isMissingFilter) {
+      // The optimistic update culls this card from the filtered list in this
+      // same commit, so hold its key until the Grow has played out.
+      onHoldExit(variants.map((v) => v.slug))
       setExiting(true)
     }
   }
@@ -89,6 +93,7 @@ function OutfitSetCard({
   return (
     <SetCard
       unmountOnExit
+      animateExit={isMissingFilter}
       href={href}
       imageSrc={imageSrc || set.image_url || ''}
       in={!exiting}

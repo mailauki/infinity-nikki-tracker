@@ -20,7 +20,7 @@ function MakeupVariantCard({
   isMissingFilter?: boolean
   disableToggle?: boolean
 }) {
-  const { onToggleObtained } = useMakeupData()
+  const { onToggleObtained, onHoldExit } = useMakeupData()
   const { mode } = useMakeupImageMode()
   const [exiting, setExiting] = useState(false)
 
@@ -35,6 +35,9 @@ function MakeupVariantCard({
       makeupVariant.slug
     )
     if (isMissingFilter) {
+      // The optimistic update culls this card from the filtered list in this
+      // same commit, so hold its key until the Grow has played out.
+      onHoldExit([makeupVariant.slug])
       setExiting(true)
     }
   }
@@ -43,6 +46,7 @@ function MakeupVariantCard({
 
   return (
     <VariantCard
+      animateExit={isMissingFilter}
       disableToggle={disableToggle}
       imageAlt={makeupVariant.slug || 'Makeup Variant'}
       imageSrc={imageSrc}

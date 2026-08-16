@@ -22,6 +22,7 @@ export default function VariantCard({
   disableToggle = false,
   optimized = false,
   in: shown,
+  animateExit = false,
   onToggle,
   onExited,
   topLeft,
@@ -35,12 +36,19 @@ export default function VariantCard({
   disableToggle?: boolean
   optimized?: boolean
   in: boolean
+  animateExit?: boolean
   onToggle: () => void
   onExited?: () => void
   topLeft?: ReactNode
 }) {
   return (
-    <CardShell in={shown} raised={obtained} topLeft={topLeft} onExited={onExited}>
+    <CardShell
+      animateExit={animateExit}
+      in={shown}
+      raised={obtained}
+      topLeft={topLeft}
+      onExited={onExited}
+    >
       <Stack sx={{ pt: 1, alignItems: 'center' }}>
         <LazyImage
           alt={imageAlt}

@@ -45,6 +45,11 @@ interface EurekaDataContextValue {
   filters: FilterState
   onFiltersChange: (updates: Partial<FilterState>) => void
   onClearFilters: () => void
+  // Variant keys currently animating out under the "missing" filter. The filter
+  // pipeline keeps them visible until the animation finishes — see
+  // hooks/use-exit-hold.ts.
+  exitingKeys: ReadonlySet<string>
+  onHoldExit: (keys: string[]) => void
   onToggleObtained: (eureka_set: string, category: string, color: string) => void
   onBatchToggleObtained: (
     variants: Array<{ eureka_set: string; category: string; color: string }>,
@@ -84,6 +89,8 @@ export const EurekaDataContext = createContext<EurekaDataContextValue>({
   filters: DEFAULT_FILTERS,
   onFiltersChange: () => {},
   onClearFilters: () => {},
+  exitingKeys: new Set<string>(),
+  onHoldExit: () => {},
   onToggleObtained: () => {},
   onBatchToggleObtained: () => {},
 })

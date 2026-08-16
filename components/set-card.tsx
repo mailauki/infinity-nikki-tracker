@@ -24,6 +24,7 @@ export default function SetCard({
   total,
   isLoggedIn,
   in: shown,
+  animateExit = false,
   unmountOnExit,
   onToggle,
   onExited,
@@ -39,6 +40,7 @@ export default function SetCard({
   total: number
   isLoggedIn: boolean
   in: boolean
+  animateExit?: boolean
   unmountOnExit?: boolean
   onToggle: () => void
   onExited?: () => void
@@ -56,6 +58,7 @@ export default function SetCard({
 
   return (
     <CardShell
+      animateExit={animateExit}
       in={shown}
       topLeft={topLeft}
       topRight={topRight}
