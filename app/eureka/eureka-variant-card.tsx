@@ -16,12 +16,15 @@ export default function EurekaVariantCard({
   isLoggedIn: boolean
   isMissingFilter?: boolean
 }) {
-  const { onToggleObtained } = useEurekaData()
+  const { onToggleObtained, onHoldExit } = useEurekaData()
   const [exiting, setExiting] = useState(false)
 
   function onToggle() {
     onToggleObtained(eurekaVariant.eureka_set!, eurekaVariant.category!, eurekaVariant.color!)
     if (isMissingFilter) {
+      // The optimistic update culls this card from the filtered list in this
+      // same commit, so hold its key until the Grow has played out.
+      onHoldExit([eurekaVariant.slug])
       setExiting(true)
     }
   }

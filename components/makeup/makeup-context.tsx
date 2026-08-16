@@ -35,6 +35,11 @@ interface MakeupDataContextValue {
   filters: MakeupFilterState
   onFiltersChange: (updates: Partial<MakeupFilterState>) => void
   onClearFilters: () => void
+  // Variant keys currently animating out under the "missing" filter. The filter
+  // pipeline keeps them visible until the animation finishes — see
+  // hooks/use-exit-hold.ts.
+  exitingKeys: ReadonlySet<string>
+  onHoldExit: (keys: string[]) => void
   onToggleObtained: (makeup_set: string, makeup_category: string, makeup_variant: string) => void
   onBatchToggleObtained: (
     variants: Array<{ makeup_set: string; makeup_category: string; makeup_variant: string }>,
@@ -71,6 +76,8 @@ export const MakeupDataContext = createContext<MakeupDataContextValue>({
   filters: DEFAULT_MAKEUP_FILTERS,
   onFiltersChange: () => {},
   onClearFilters: () => {},
+  exitingKeys: new Set<string>(),
+  onHoldExit: () => {},
   onToggleObtained: () => {},
   onBatchToggleObtained: () => {},
 })

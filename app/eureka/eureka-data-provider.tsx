@@ -1,5 +1,7 @@
 'use client'
 
+import { CARD_EXIT_HOLD_MS } from '@/components/card-shell'
+import { useExitHold } from '@/hooks/use-exit-hold'
 import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 
@@ -62,6 +64,12 @@ export default function EurekaDataProvider({
   const [showByColor, setShowByColor] = useState<boolean>(DEFAULT_PREFERENCES.show_by_color)
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS)
   const [, startTransition] = useTransition()
+
+  // Cards completed under the "missing" filter are culled by the filter memo in
+  // the same commit that starts their exit animation. This keeps their keys in
+  // the list for the length of that animation; the obtained data itself is not
+  // delayed at all. See hooks/use-exit-hold.ts.
+  const { exitingKeys, holdExit } = useExitHold(CARD_EXIT_HOLD_MS)
   const supabase = useMemo(() => createClient(), [])
   const prefsLoaded = useRef(false)
 
@@ -308,6 +316,8 @@ export default function EurekaDataProvider({
         filters,
         onFiltersChange: handleFiltersChange,
         onClearFilters: handleClearFilters,
+        exitingKeys,
+        onHoldExit: holdExit,
         onToggleObtained: handleToggleObtained,
         onBatchToggleObtained: handleBatchToggleObtained,
       }}

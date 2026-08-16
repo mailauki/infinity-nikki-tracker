@@ -50,6 +50,7 @@ export default function FilterEureka() {
     showByColor,
     filters,
     onBatchToggleObtained,
+    exitingKeys,
   } = useEurekaData()
   const { sortOrder } = useSortOrder()
 
@@ -118,6 +119,10 @@ export default function FilterEureka() {
         .filter((variant) => !selectedColor || variant.color === selectedColor)
         .filter((variant) => !selectedCategory || variant.category === selectedCategory)
         .filter((variant) => {
+          // Completed under the "missing" filter and still animating out: keep it
+          // in the list so the card has something to animate. The obtained data
+          // itself already updated — only the disappearance waits.
+          if (exitingKeys.has(variant.slug)) return true
           if (selectedObtainedFilter === 'obtained') return variant.obtained === true
           if (selectedObtainedFilter === 'missing') return variant.obtained !== true
           return true

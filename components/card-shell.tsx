@@ -4,6 +4,16 @@ import { ReactNode } from 'react'
 import { Box, Card, Grow, IconButton } from '@mui/material'
 import { RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 
+// Length of the Grow exit transition.
+export const CARD_EXIT_MS = 300
+
+// How long the filter pipelines keep a completed card in the list so the exit
+// above can actually play (see hooks/use-exit-hold.ts). Slightly longer than the
+// transition so the card has finished animating before the list drops it and the
+// grid reflows — the two timers start in the same commit and their firing order
+// is otherwise unspecified.
+export const CARD_EXIT_HOLD_MS = CARD_EXIT_MS + 50
+
 export function CollectionToggle({
   show,
   obtained,
@@ -67,7 +77,7 @@ export default function CardShell({
   if (!animateExit) return shown ? card : null
 
   return (
-    <Grow in={shown} timeout={300} unmountOnExit={unmountOnExit} onExited={onExited}>
+    <Grow in={shown} timeout={CARD_EXIT_MS} unmountOnExit={unmountOnExit} onExited={onExited}>
       {card}
     </Grow>
   )

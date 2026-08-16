@@ -47,6 +47,11 @@ interface OutfitDataContextValue {
   filters: OutfitFilterState
   onFiltersChange: (updates: Partial<OutfitFilterState>) => void
   onClearFilters: () => void
+  // Variant keys currently animating out under the "missing" filter. The filter
+  // pipeline keeps them visible until the animation finishes — see
+  // hooks/use-exit-hold.ts.
+  exitingKeys: ReadonlySet<string>
+  onHoldExit: (keys: string[]) => void
   onToggleObtained: (outfit_set: string, outfit_category: string, outfit_variant: string) => void
   onBatchToggleObtained: (
     variants: Array<{
@@ -94,6 +99,8 @@ export const OutfitDataContext = createContext<OutfitDataContextValue>({
   filters: DEFAULT_OUTFIT_FILTERS,
   onFiltersChange: () => {},
   onClearFilters: () => {},
+  exitingKeys: new Set<string>(),
+  onHoldExit: () => {},
   onToggleObtained: () => {},
   onBatchToggleObtained: () => {},
 })

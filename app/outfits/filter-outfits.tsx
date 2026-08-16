@@ -57,6 +57,7 @@ export default function FilterOutfits() {
     hideEvolutions,
     hideGlowups,
     filters,
+    exitingKeys,
   } = useOutfitData()
   const { density } = useOutfitImageMode()
   const { sortAxis, sortDir } = useSortOrder()
@@ -152,7 +153,13 @@ export default function FilterOutfits() {
           }
           const keptStates = new Set<string>()
           for (const [key, group] of byState) {
-            if (matchesObtainedFilter(group, selectedObtainedFilter)) keptStates.add(key)
+            // A group holding a card that is animating out stays until it has gone.
+            if (
+              matchesObtainedFilter(group, selectedObtainedFilter) ||
+              group.some((v) => exitingKeys.has(v.slug))
+            ) {
+              keptStates.add(key)
+            }
           }
           inMatchingGroup = scopedVariants.filter((v) => keptStates.has(v.outfit_set ?? ''))
         }
@@ -167,6 +174,10 @@ export default function FilterOutfits() {
           )
           .filter((v) => {
             if (groupLevelObtained) return true
+            // Completed under the "missing" filter and still animating out: keep it
+            // in the list so the card has something to animate. The obtained data
+            // itself already updated — only the disappearance waits.
+            if (exitingKeys.has(v.slug)) return true
             if (selectedObtainedFilter === 'obtained') return v.obtained === true
             if (selectedObtainedFilter === 'missing') return v.obtained !== true
             return true
@@ -221,6 +232,7 @@ export default function FilterOutfits() {
     hideEvolutions,
     hideGlowups,
     groupLevelObtained,
+    exitingKeys,
     axis,
     sortDir,
   ])

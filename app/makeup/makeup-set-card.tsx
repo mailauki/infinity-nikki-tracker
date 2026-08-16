@@ -38,7 +38,7 @@ function MakeupSetCard({
   // decides whether CardShell mounts a Grow — see components/card-shell.tsx.
   isMissingFilter?: boolean
 }) {
-  const { onBatchToggleObtained } = useMakeupData()
+  const { onBatchToggleObtained, onHoldExit } = useMakeupData()
   const { mode } = useMakeupImageMode()
   // The ONE card animation that survives: set by `handleToggle` under the
   // "missing" filter so completing a group animates out instead of vanishing.
@@ -59,6 +59,9 @@ function MakeupSetCard({
       }))
     onBatchToggleObtained(toToggle, !allObtained)
     if (isMissingFilter) {
+      // The optimistic update culls this card from the filtered list in this
+      // same commit, so hold its key until the Grow has played out.
+      onHoldExit(variants.map((v) => v.slug))
       setExiting(true)
     }
   }
