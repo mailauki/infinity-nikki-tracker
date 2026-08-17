@@ -1,4 +1,5 @@
 import { AdminLinks, NavLink } from '@/lib/types/props'
+import { navLabel } from '@/lib/page-titles'
 import {
   Help,
   Info,
@@ -19,7 +20,7 @@ export const navLinksData: {
 } = {
   home: [
     {
-      title: 'Home',
+      title: navLabel('/'),
       url: '/',
       image: '/infinity-nikki-logo.png',
     },
@@ -32,12 +33,12 @@ export const navLinksData: {
     // 	icon: <Forest />,
     // },
     {
-      title: 'Outfits',
+      title: navLabel('/outfits'),
       url: '/outfits',
       image: '/icons/outfits.png',
       items: [
         {
-          title: 'Seasons',
+          title: navLabel('/outfits/seasons'),
           url: '/outfits/seasons',
           image: '/icons/compendium.png',
           icon: <Forest />,
@@ -45,12 +46,12 @@ export const navLinksData: {
       ],
     },
     {
-      title: 'Eureka',
+      title: navLabel('/eureka'),
       url: '/eureka',
       image: '/icons/eureka.png',
       items: [
         {
-          title: 'Trials',
+          title: navLabel('/eureka/trials'),
           url: '/eureka/trials',
           image: '/icons/realm-of-breakthrough.png',
           icon: <Construction />,
@@ -58,17 +59,17 @@ export const navLinksData: {
       ],
     },
     {
-      title: 'Makeup',
+      title: navLabel('/makeup'),
       url: '/makeup',
       image: '/icons/makeup.png',
     },
     {
-      title: "Momo's Cloaks",
+      title: navLabel('/momo-cloaks'),
       url: '/momo-cloaks',
       image: '/icons/momo-cloak.png',
     },
     {
-      title: 'Custom Looks',
+      title: navLabel('/looks'),
       url: '/looks',
       image: '/icons/wardrobe.png',
       icon: <Checkroom />,
@@ -76,17 +77,17 @@ export const navLinksData: {
   ],
   navSecondary: [
     {
-      title: 'Profile',
+      title: navLabel('/profile'),
       url: '/profile',
       icon: <AccountCircle />,
     },
     {
-      title: 'Settings',
+      title: navLabel('/settings'),
       url: '/settings',
       icon: <Settings />,
     },
     {
-      title: 'Admin',
+      title: navLabel('/admin'),
       url: '/admin',
       icon: <AdminPanelSettings />,
       adminOnly: true,
@@ -94,12 +95,12 @@ export const navLinksData: {
   ],
   navExtra: [
     {
-      title: 'About',
+      title: navLabel('/about'),
       url: '/about',
       icon: <Info />,
     },
     {
-      title: 'Help',
+      title: navLabel('/help'),
       url: '/help',
       icon: <Help />,
     },
@@ -111,12 +112,15 @@ export const navLinksData: {
         url: '/admin/outfits/sets',
         image: '/icons/outfits.png',
         items: [
-          { title: 'Sets', url: '/admin/outfits/sets' },
-          { title: 'Variants', url: '/admin/outfits/variants' },
-          { title: 'Evolutions', url: '/admin/outfits/evolutions' },
-          { title: 'Abilities', url: '/admin/outfits/abilities' },
-          { title: 'Seasons', url: '/admin/outfits/seasons' },
-          { title: 'Season Categories', url: '/admin/outfits/season-categories' },
+          { title: navLabel('/admin/outfits/sets'), url: '/admin/outfits/sets' },
+          { title: navLabel('/admin/outfits/variants'), url: '/admin/outfits/variants' },
+          { title: navLabel('/admin/outfits/evolutions'), url: '/admin/outfits/evolutions' },
+          { title: navLabel('/admin/outfits/abilities'), url: '/admin/outfits/abilities' },
+          { title: navLabel('/admin/outfits/seasons'), url: '/admin/outfits/seasons' },
+          {
+            title: navLabel('/admin/outfits/season-categories'),
+            url: '/admin/outfits/season-categories',
+          },
         ],
       },
       {
@@ -124,9 +128,9 @@ export const navLinksData: {
         url: '/admin/eureka/sets',
         image: '/icons/eureka.png',
         items: [
-          { title: 'Sets', url: '/admin/eureka/sets' },
-          { title: 'Variants', url: '/admin/eureka/variants' },
-          { title: 'Trials', url: '/admin/eureka/trials' },
+          { title: navLabel('/admin/eureka/sets'), url: '/admin/eureka/sets' },
+          { title: navLabel('/admin/eureka/variants'), url: '/admin/eureka/variants' },
+          { title: navLabel('/admin/eureka/trials'), url: '/admin/eureka/trials' },
         ],
       },
       {
@@ -134,10 +138,10 @@ export const navLinksData: {
         url: '/admin/makeup/sets',
         image: '/icons/makeup.png',
         items: [
-          { title: 'Makeup Sets', url: '/admin/makeup/sets' },
-          { title: 'Makeup Variants', url: '/admin/makeup/variants' },
-          { title: "Momo's Cloaks", url: '/admin/momo-cloaks' },
-          { title: 'Feedback', url: '/admin/feedback' },
+          { title: navLabel('/admin/makeup/sets'), url: '/admin/makeup/sets' },
+          { title: navLabel('/admin/makeup/variants'), url: '/admin/makeup/variants' },
+          { title: navLabel('/admin/momo-cloaks'), url: '/admin/momo-cloaks' },
+          { title: navLabel('/admin/feedback'), url: '/admin/feedback' },
         ],
       },
     ],

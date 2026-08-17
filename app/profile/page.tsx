@@ -1,9 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { Metadata } from 'next'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Profile',
+  title: pageTitle('/profile'),
 }
 
 // /profile is a permalink to the signed-in user's own public profile: it resolves

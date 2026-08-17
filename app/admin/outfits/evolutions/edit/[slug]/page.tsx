@@ -5,9 +5,10 @@ import EditEvolutionForm from './edit-evolution-form'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { isGlowup } from '@/hooks/outfit'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Edit Evolution',
+  title: pageTitle('/admin/outfits/evolutions/edit/[slug]'),
 }
 
 export default async function EditEvolutionPage({ params }: { params: Promise<{ slug: string }> }) {

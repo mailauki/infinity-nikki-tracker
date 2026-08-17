@@ -1,4 +1,7 @@
 import { Card, CardContent, CardHeader, Typography } from '@mui/material'
+import { pageTitle } from '@/lib/page-titles'
+
+export const metadata = { title: pageTitle('/sign-up-success') }
 
 export default function SignupSuccessPage() {
   return (

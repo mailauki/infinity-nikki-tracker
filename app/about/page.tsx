@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { Section, SectionList, SectionSubtitle, SectionTitle } from '@/components/section'
 import PageShell from '@/components/page-shell'
 import { SimpleGrid } from '@/components/card-grid'
+import { pageTitle } from '@/lib/page-titles'
 
 const featurePages = [
   {
@@ -93,12 +94,12 @@ const featurePages = [
 ]
 
 export const metadata: Metadata = {
-  title: 'About',
+  title: pageTitle('/about'),
 }
 
 export default function AboutPage() {
   return (
-    <PageShell component="article" maxWidth="md">
+    <PageShell component="article" maxWidth="md" title={pageTitle('/about')}>
       <Section>
         <SectionTitle>What is this?</SectionTitle>
         <SectionSubtitle>
@@ -195,15 +196,18 @@ export default function AboutPage() {
         </SectionSubtitle>
         <SectionList
           bullets={[
-            <Anchor
-              key="github"
-              color="textSecondary"
-              href="https://github.com/mailauki/infinity-nikki-tracker"
-              rel="noreferrer"
-              target="_blank"
-            >
-              GitHub Repository
-            </Anchor>,
+            <>
+              <Anchor
+                key="github"
+                color="textSecondary"
+                href="https://github.com/mailauki/infinity-nikki-tracker"
+                rel="noreferrer"
+                target="_blank"
+              >
+                GitHub Repository
+              </Anchor>{' '}
+              — the full source for this tracker, open to pull requests
+            </>,
             <Typography
               key="issue"
               color="textSecondary"
@@ -228,42 +232,54 @@ export default function AboutPage() {
         </SectionTitle>
         <SectionList
           bullets={[
-            <Anchor
-              key="official"
-              color="textSecondary"
-              href="https://infinitynikki.infoldgames.com/"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Infinity Nikki Official Website
-            </Anchor>,
-            <Anchor
-              key="wiki"
-              color="textSecondary"
-              href="https://infinitynikki.fandom.com/"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Infinity Nikki Wiki
-            </Anchor>,
-            <Anchor
-              key="miraland"
-              color="textSecondary"
-              href="https://www.miralandcollection.com/"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Miraland Collection
-            </Anchor>,
-            <Anchor
-              key="library"
-              color="textSecondary"
-              href="https://infinitynikkilibrary.com/"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Infinity Nikki Library
-            </Anchor>,
+            <>
+              <Anchor
+                key="official"
+                color="textSecondary"
+                href="https://infinitynikki.infoldgames.com/"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Infinity Nikki Official Website
+              </Anchor>{' '}
+              — patch notes, event schedules, and official announcements
+            </>,
+            <>
+              <Anchor
+                key="wiki"
+                color="textSecondary"
+                href="https://infinitynikki.fandom.com/"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Infinity Nikki Wiki
+              </Anchor>{' '}
+              — community-maintained reference for outfits, items, and quests
+            </>,
+            <>
+              <Anchor
+                key="miraland"
+                color="textSecondary"
+                href="https://www.miralandcollection.com/"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Miraland Collection
+              </Anchor>{' '}
+              — browsable catalog of outfits and their pieces
+            </>,
+            <>
+              <Anchor
+                key="library"
+                color="textSecondary"
+                href="https://infinitynikkilibrary.com/"
+                rel="noreferrer"
+                target="_blank"
+              >
+                Infinity Nikki Library
+              </Anchor>{' '}
+              — searchable database of in-game items and sets
+            </>,
           ]}
         />
       </Section>

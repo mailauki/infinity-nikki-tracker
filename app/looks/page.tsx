@@ -13,8 +13,9 @@ import LooksToolbar from './looks-toolbar'
 import LooksEmptyState from './looks-empty-state'
 import PageShell from '@/components/page-shell'
 import { SimpleGrid } from '@/components/card-grid'
+import { pageTitle } from '@/lib/page-titles'
 
-export const metadata: Metadata = { title: 'Custom Looks' }
+export const metadata: Metadata = { title: pageTitle('/looks') }
 
 export default function LooksPage() {
   return (
@@ -83,7 +84,12 @@ async function LooksContent() {
         )}
 
         {atLimit && (
-          <Typography color="textSecondary" size="small" sx={{ textAlign: 'center' }} variant="body">
+          <Typography
+            color="textSecondary"
+            size="small"
+            sx={{ textAlign: 'center' }}
+            variant="body"
+          >
             Upgrade to premium to create unlimited looks.{' '}
             <Link href="/profile" style={{ color: 'inherit' }}>
               Go to profile →

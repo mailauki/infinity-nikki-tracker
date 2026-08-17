@@ -2,8 +2,9 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { Box, Chip, Divider, Skeleton, Stack, Typography } from '@mui/material'
 import { getFeedbackById, getFeedbackImageUrls } from '@/hooks/data/admin/feedback'
+import { pageTitle } from '@/lib/page-titles'
 
-export const metadata = { title: 'Feedback detail' }
+export const metadata = { title: pageTitle('/admin/feedback/[id]') }
 
 type Props = { params: Promise<{ id: string }> }
 

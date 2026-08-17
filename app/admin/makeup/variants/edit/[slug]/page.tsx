@@ -10,9 +10,10 @@ import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
 import EntityForm from '@/app/admin/entity-form'
 import { editMakeupVariant } from '../../actions'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Edit Makeup Variant',
+  title: pageTitle('/admin/makeup/variants/edit/[slug]'),
 }
 
 export default async function EditMakeupVariantPage({

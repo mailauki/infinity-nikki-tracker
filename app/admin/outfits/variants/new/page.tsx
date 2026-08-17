@@ -9,9 +9,10 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import EntityForm from '@/app/admin/entity-form'
 import { addOutfitVariant } from '../actions'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Add Outfit Variant',
+  title: pageTitle('/admin/outfits/variants/new'),
 }
 
 export default function NewOutfitVariantPage() {

@@ -5,9 +5,10 @@ import { Metadata } from 'next'
 import { getAbilityRaw } from '@/hooks/data/admin/abilities'
 import EntityForm from '@/app/admin/entity-form'
 import { editAbility } from './actions'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Edit Ability',
+  title: pageTitle('/admin/outfits/abilities/edit/[slug]'),
 }
 
 export default function EditAbilityPage({ params }: { params: Promise<{ slug: string }> }) {

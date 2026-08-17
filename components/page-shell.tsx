@@ -1,7 +1,24 @@
-import { Box, Stack } from '@mui/material'
+import { Box, Stack, Typography } from '@mui/material'
 import type { SxProps, Theme } from '@mui/material/styles'
 
 export type PageWidth = 'full' | 'wide' | 'md' | 'sm' | 'xs'
+
+// Clip pattern, not `visibility: hidden` or `display: none` — those drop the
+// node from the accessibility tree, so a heading hidden that way is announced
+// to nobody and does nothing for reader mode. This keeps the h1 in the tree and
+// in the document outline while taking no visual space.
+const VISUALLY_HIDDEN = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: 0,
+  margin: '-1px',
+  overflow: 'hidden',
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  whiteSpace: 'nowrap',
+  border: 0,
+} as const
 
 // Maps the width vocabulary to a max-width cap. 'full' is uncapped so the card
 // grids on /eureka and /outfits keep reflowing when the sidebar narrows the
@@ -29,6 +46,17 @@ export interface PageShellProps {
   spacing?: number
   /** Escape hatch for one-off overrides on the outer wrapper. */
   sx?: SxProps<Theme>
+  /**
+   * The page's h1, rendered as the first child of the content root. Pass this on
+   * routes whose visible design has no heading of its own: the app-bar's
+   * PageTitle is nav chrome and deliberately not an h1, so without this a page
+   * has no top-level heading and reader mode promotes whatever h2 comes first.
+   * Set `titleVisible` to show it; it is visually hidden but screen-reader and
+   * outline visible by default.
+   */
+  title?: React.ReactNode
+  /** Render `title` visibly instead of clipping it. Default false. */
+  titleVisible?: boolean
 }
 
 // Thin per-page width wrapper. Horizontal padding, minWidth:0 (grid reflow), and
@@ -42,11 +70,23 @@ export default function PageShell({
   sideContent,
   spacing = 2,
   sx,
+  title,
+  titleVisible = false,
 }: PageShellProps) {
   const cap = WIDTH_MAP[maxWidth]
 
   const main = (
     <Stack component={component} spacing={spacing} sx={{ flexGrow: 1, minWidth: 0 }}>
+      {title ? (
+        <Typography
+          component="h1"
+          size={titleVisible ? 'medium' : 'small'}
+          sx={titleVisible ? undefined : VISUALLY_HIDDEN}
+          variant="headline"
+        >
+          {title}
+        </Typography>
+      ) : null}
       {children}
     </Stack>
   )

@@ -13,8 +13,9 @@ import { FREE_LOOKS_LIMIT } from '@/lib/types/looks'
 import { flattenEurekaVariants, flattenOutfitVariants } from '@/lib/look-utils'
 import LookBuilder from '@/app/looks/look-builder'
 import { createLook } from '../actions'
+import { pageTitle } from '@/lib/page-titles'
 
-export const metadata: Metadata = { title: 'New Look' }
+export const metadata: Metadata = { title: pageTitle('/looks/new') }
 
 export default function NewLookPage() {
   return (

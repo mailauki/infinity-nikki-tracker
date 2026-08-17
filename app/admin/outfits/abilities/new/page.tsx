@@ -3,9 +3,10 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import EntityForm from '@/app/admin/entity-form'
 import { addAbility } from './actions'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Add Ability',
+  title: pageTitle('/admin/outfits/abilities/new'),
 }
 
 export default function NewAbilityPage() {

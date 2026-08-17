@@ -6,6 +6,9 @@ import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { byTitleThenSlug } from '@/lib/utils'
 import MakeupSetView from './makeup-set-view'
+import { pageTitle } from '@/lib/page-titles'
+
+export const metadata = { title: pageTitle('/admin/makeup/sets') }
 
 export default function MakeupSetsAdminPage() {
   return (

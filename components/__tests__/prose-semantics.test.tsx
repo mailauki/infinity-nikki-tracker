@@ -48,3 +48,45 @@ describe('prose semantics for reader mode', () => {
     expect(container.querySelector('article')).toBeNull()
   })
 })
+
+// The app-bar's PageTitle is nav chrome, so PageShell owns the page's h1. If
+// this regresses, the h1 moves back outside the content root and reader mode
+// silently promotes the first h2 as the title.
+describe('page heading', () => {
+  it('renders the title as an h1 inside the content root', () => {
+    const { container } = renderWithTheme(
+      <PageShell component="article" title="About">
+        <SectionSubtitle>copy</SectionSubtitle>
+      </PageShell>
+    )
+    const h1 = container.querySelector('article > h1')
+    expect(h1?.textContent).toBe('About')
+  })
+
+  it('renders no h1 when no title is given', () => {
+    const { container } = renderWithTheme(<PageShell>grid</PageShell>)
+    expect(container.querySelector('h1')).toBeNull()
+  })
+
+  it('keeps a hidden title in the accessibility tree', () => {
+    // Clipped, not `visibility: hidden` / `display: none` — those remove the
+    // node from the a11y tree, making the heading useless to screen readers.
+    renderWithTheme(<PageShell title="About">copy</PageShell>)
+    const h1 = screen.getByRole('heading', { level: 1, name: 'About' })
+    const style = getComputedStyle(h1)
+    expect(style.visibility).not.toBe('hidden')
+    expect(style.display).not.toBe('none')
+    expect(style.position).toBe('absolute')
+  })
+
+  it('renders the title visibly when titleVisible is set', () => {
+    renderWithTheme(
+      <PageShell titleVisible title="About">
+        copy
+      </PageShell>
+    )
+    expect(getComputedStyle(screen.getByRole('heading', { level: 1 })).position).not.toBe(
+      'absolute'
+    )
+  })
+})

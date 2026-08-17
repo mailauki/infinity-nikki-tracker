@@ -1,6 +1,9 @@
 import { Suspense } from 'react'
 
 import { Card, CardContent, CardHeader, Typography } from '@mui/material'
+import { pageTitle } from '@/lib/page-titles'
+
+export const metadata = { title: pageTitle('/auth/error') }
 
 async function ErrorContent({ searchParams }: { searchParams: Promise<{ error: string }> }) {
   const params = await searchParams

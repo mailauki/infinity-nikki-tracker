@@ -6,9 +6,10 @@ import { getSeasonRaw } from '@/hooks/data/admin/seasons'
 import { getLocations } from '@/hooks/data/locations'
 import EntityForm from '@/app/admin/entity-form'
 import { editSeason } from './actions'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Edit Season',
+  title: pageTitle('/admin/outfits/seasons/edit/[slug]'),
 }
 
 export default async function EditSeasonPage({ params }: { params: Promise<{ slug: string }> }) {

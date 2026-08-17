@@ -7,9 +7,10 @@ import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getLocations } from '@/hooks/data/locations'
 import SeasonsContent from '@/app/outfits/seasons/seasons-content'
 import PageShell from '@/components/page-shell'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Outfits by Season',
+  title: pageTitle('/outfits/seasons'),
 }
 
 export default async function SeasonsPage() {

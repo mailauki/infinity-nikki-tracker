@@ -7,9 +7,10 @@ import { getEurekaColors } from '@/hooks/data/eureka-colors'
 import { getEurekaCategories } from '@/hooks/data/eureka-categories'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Add Eureka Set',
+  title: pageTitle('/admin/eureka/sets/new'),
 }
 
 export default function NewEurekaSetPage() {
