@@ -69,7 +69,7 @@ export default function AdminRecentsList({
       />
       <CardContent>
         {filtered.length === 0 ? (
-          <Typography color="text.secondary" sx={{ py: 2, textAlign: 'center' }} variant="body2">
+          <Typography color="text.secondary" sx={{ py: 2, textAlign: 'center' }} variant="body">
             No {item.toLowerCase()} found
           </Typography>
         ) : (
@@ -101,14 +101,14 @@ export default function AdminRecentsList({
                       primary={row.title}
                       secondary={row.type}
                       slotProps={{
-                        primary: { variant: 'body2', noWrap: true },
-                        secondary: { variant: 'caption' },
+                        primary: { variant: 'body', noWrap: true },
+                        secondary: { variant: 'body', size: 'small' },
                       }}
                     />
                     <ListItemText
                       disableTypography
                       secondary={
-                        <Typography color="text.secondary" variant="caption">
+                        <Typography color="text.secondary" size="small" variant="body">
                           {row.date ? formatDate(row.date) : '—'}
                         </Typography>
                       }

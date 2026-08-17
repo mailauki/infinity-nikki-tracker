@@ -10,12 +10,7 @@ export default function ToggleGroupLabel({
   id?: string
 }) {
   return (
-    <Typography
-      component={FormLabel}
-      id={id}
-      sx={{ fontSize: 'overline.fontSize', pb: 0.5 }}
-      variant="overline"
-    >
+    <Typography component={FormLabel} id={id} size="small" sx={{ pb: 0.5 }} variant="label">
       {label && label}
       {children && children}
     </Typography>

@@ -105,8 +105,8 @@ export default function ImagePicker({ files, onChange, disabled }: ImagePickerPr
       <Typography
         color={error ? 'error' : 'text.secondary'}
         role="status"
-        sx={{ display: 'block', mt: 0.5 }}
-        variant="caption"
+        size="small"
+        sx={{ display: 'block', mt: 0.5 }} variant="body"
       >
         {error ?? `Optional. Up to ${MAX_IMAGES} images, ${MAX_IMAGE_BYTES / 1024 / 1024}MB each.`}
       </Typography>

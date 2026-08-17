@@ -204,7 +204,13 @@ export default function AboutPage() {
             >
               GitHub Repository
             </Anchor>,
-            <Typography key="issue" color="textSecondary" component="span" variant="body1">
+            <Typography
+              key="issue"
+              color="textSecondary"
+              component="span"
+              size="large"
+              variant="body"
+            >
               <Anchor
                 color="textSecondary"
                 href="https://github.com/mailauki/infinity-nikki-tracker/issues"
@@ -275,7 +281,7 @@ export default function AboutPage() {
       </Section>
 
       <Container disableGutters maxWidth="sm">
-        <Typography color="textSecondary" variant="caption">
+        <Typography color="textSecondary" size="small" variant="body">
           This is a fan-made project and is not affiliated with, endorsed by, or officially
           connected to Papergames or the Infinity Nikki development team. All game content, names,
           and assets are the property of their respective owners.
@@ -297,7 +303,7 @@ function FeatureCard({
   return (
     <Card sx={{ height: '100%' }} variant="outlined">
       <CardContent>
-        <SectionTitle component="h3" variant="h6">
+        <SectionTitle component="h3" size="small">
           {title}
         </SectionTitle>
         <SectionSubtitle>{subtitle}</SectionSubtitle>

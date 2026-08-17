@@ -23,19 +23,19 @@ export default function EurekaCardContent({
       {size === 'lg' ? (
         <Stack spacing={0.5}>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography component="p" variant="h5">
+            <Typography component="p" variant="headline">
               {title}
             </Typography>
             <RarityStars rarity={rarity!} />
           </Stack>
           <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-            <Typography variant="overline">{trial}</Typography>
-            <Typography variant="body2">{style}</Typography>
+            <Typography size="small" variant="label">{trial}</Typography>
+            <Typography variant="body">{style}</Typography>
           </Stack>
         </Stack>
       ) : (
         <Stack spacing={0.5}>
-          <Typography variant="subtitle1">{title}</Typography>
+          <Typography size="large" variant="title">{title}</Typography>
           {rarity ? <RarityStars rarity={rarity} /> : subheader}
         </Stack>
       )}

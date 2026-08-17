@@ -61,7 +61,7 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 export function QuickAccess() {
   return (
     <Box sx={{ py: 3 }}>
-      <Typography sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="overline">
+      <Typography size="small" sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="label">
         Quick Access
       </Typography>
       <SimpleGrid columns="1fr 1fr">
@@ -84,8 +84,8 @@ export function QuickAccess() {
               </Stack>
               <CardHeader
                 slotProps={{
-                  title: { variant: 'subtitle1', component: 'span' },
-                  subheader: { variant: 'overline' },
+                  title: { variant: 'title', size: 'large', component: 'span' },
+                  subheader: { variant: 'label', size: 'small' },
                 }}
                 subheader={subtitle}
                 sx={{ textAlign: 'center', pt: 0 }}
@@ -100,7 +100,7 @@ export function QuickAccess() {
               <CardHeader
                 avatar={<ToggleIcon image={link.image} />}
                 slotProps={{
-                  title: { variant: 'subtitle2', component: 'span' },
+                  title: { variant: 'title', component: 'span' },
                 }}
                 title={link.title === 'Makeup' ? 'Makeup Sets' : link.title}
               />

@@ -42,7 +42,7 @@ function ChangeEmailSection() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="subtitle1">Change email</Typography>
+      <Typography size="large" variant="title">Change email</Typography>
       <Stack component="form" spacing={1} onSubmit={handleSubmit}>
         <TextField
           label="New email"
@@ -89,7 +89,7 @@ function ChangePasswordSection() {
 
   return (
     <Stack spacing={2}>
-      <Typography variant="subtitle1">Change password</Typography>
+      <Typography size="large" variant="title">Change password</Typography>
       <Stack component="form" spacing={1} onSubmit={handleSubmit}>
         <TextField
           label="New password"
@@ -139,7 +139,7 @@ function DangerZoneSection() {
   return (
     <Stack spacing={2}>
       <Divider />
-      <Typography variant="subtitle1">Danger zone</Typography>
+      <Typography size="large" variant="title">Danger zone</Typography>
       <Button
         color="error"
         sx={{ alignSelf: 'flex-start' }}
@@ -177,8 +177,8 @@ function AdminAccessSection() {
   return (
     <Stack spacing={2}>
       <Divider />
-      <Typography variant="subtitle1">Admin access</Typography>
-      <Typography color="textSecondary" variant="body2">
+      <Typography size="large" variant="title">Admin access</Typography>
+      <Typography color="textSecondary" variant="body">
         Admin access lets you manage Eureka sets, variants, and trials from the admin panel.
       </Typography>
       <Button

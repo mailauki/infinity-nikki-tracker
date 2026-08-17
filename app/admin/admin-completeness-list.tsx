@@ -15,7 +15,7 @@ function Row({ stat }: { stat: AdminStat }) {
   return (
     <Stack sx={{ px: 1 }}>
       <Stack direction="row" sx={{ justifyContent: 'space-between', py: 1 }}>
-        <Typography variant="body2">{stat.title}</Typography>
+        <Typography variant="body">{stat.title}</Typography>
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
           {stat.gaps === 0 ? (
             <Chip color="success" label="complete" size="small" variant="outlined" />
@@ -39,7 +39,7 @@ function Row({ stat }: { stat: AdminStat }) {
               )}
             </>
           )}
-          <Typography sx={{ fontWeight: 600, textAlign: 'right', width: 50 }} variant="body2">
+          <Typography sx={{ fontWeight: 600, textAlign: 'right', width: 50 }} variant="body">
             {stat.total.toLocaleString()}
           </Typography>
         </Box>
@@ -68,8 +68,8 @@ export default function AdminCompletenessList({ stats }: { stats: AdminStat[] })
     <Card elevation={3} sx={{ backgroundColor: 'surface.containerLowest' }} variant="elevation">
       <CardHeader
         slotProps={{
-          title: { color: 'text.secondary', component: 'p', variant: 'overline' },
-          subheader: { color: 'text.secondary', component: 'p', variant: 'caption' },
+          title: { color: 'text.secondary', component: 'p', variant: 'label', size: 'small' },
+          subheader: { color: 'text.secondary', component: 'p', variant: 'body', size: 'small' },
         }}
         subheader={`${(all - allGaps).toLocaleString()} of ${all.toLocaleString()} complete`}
         title="Completeness"

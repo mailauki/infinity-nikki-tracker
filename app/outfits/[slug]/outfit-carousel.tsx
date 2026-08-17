@@ -93,7 +93,7 @@ export default function OutfitCarousel({
               onClick={() => setIndex(i)}
             />
           ))}
-          <Typography color="textSecondary" sx={{ ml: 0.5 }} variant="caption">
+          <Typography color="textSecondary" size="small" sx={{ ml: 0.5 }} variant="body">
             {index + 1} / {images.length}
           </Typography>
         </Stack>

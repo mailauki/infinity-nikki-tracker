@@ -41,9 +41,13 @@ export default function EurekaSetImage({
           <Category fontSize="inherit" />
         </LazyImage>
       }
-      subheader={<Typography variant="body2">{subheader}</Typography>}
+      subheader={<Typography variant="body">{subheader}</Typography>}
       sx={{ width: '100%' }}
-      title={<Typography variant={subheader ? 'overline' : 'subtitle1'}>{title}</Typography>}
+      title={
+        <Typography size={subheader ? 'small' : 'large'} variant={subheader ? 'label' : 'title'}>
+          {title}
+        </Typography>
+      }
     />
   )
 }

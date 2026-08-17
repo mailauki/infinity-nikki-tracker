@@ -27,10 +27,10 @@ export default function AdminTotalsStrip({ stats }: { stats: AdminStat[] }) {
         variant="elevation"
       >
         <CardContent>
-          <Typography color="text.secondary" component="p" variant="overline">
+          <Typography color="text.secondary" component="p" size="small" variant="label">
             All entries
           </Typography>
-          <Typography component="p" variant="h2">
+          <Typography component="p" variant="display">
             {allEntries.toLocaleString()}
           </Typography>
           <Chip label={`${percent}% complete`} size="small" sx={{ mt: 1 }} variant="outlined" />
@@ -47,13 +47,13 @@ export default function AdminTotalsStrip({ stats }: { stats: AdminStat[] }) {
             variant="elevation"
           >
             <CardContent>
-              <Typography color="text.secondary" component="p" variant="overline">
+              <Typography color="text.secondary" component="p" size="small" variant="label">
                 {domain.title}
               </Typography>
-              <Typography component="p" variant="h2">
+              <Typography component="p" variant="display">
                 {(lead?.total ?? 0).toLocaleString()}
               </Typography>
-              <Typography color="text.secondary" component="p" variant="caption">
+              <Typography color="text.secondary" component="p" size="small" variant="body">
                 {domain.leadNoun}
               </Typography>
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 1 }}>

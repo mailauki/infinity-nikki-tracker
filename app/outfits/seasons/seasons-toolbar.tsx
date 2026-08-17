@@ -9,7 +9,7 @@ export default function SeasonsToolBar({ count }: { count: number }) {
   return (
     <ToolbarSlot
       lead={
-        <Typography color="textSecondary" sx={{ whiteSpace: 'nowrap' }} variant="caption">
+        <Typography color="textSecondary" size="small" sx={{ whiteSpace: 'nowrap' }} variant="body">
           Showing: {count} seasons
         </Typography>
       }

@@ -83,7 +83,7 @@ async function LooksContent() {
         )}
 
         {atLimit && (
-          <Typography color="textSecondary" sx={{ textAlign: 'center' }} variant="caption">
+          <Typography color="textSecondary" size="small" sx={{ textAlign: 'center' }} variant="body">
             Upgrade to premium to create unlimited looks.{' '}
             <Link href="/profile" style={{ color: 'inherit' }}>
               Go to profile →

@@ -23,7 +23,7 @@ export default function EurekaRecentUpdates({ items }: { items: RecentObtained[]
         disableTypography
         sx={{ pb: 0 }}
         title={
-          <Typography color="text.secondary" variant="overline">
+          <Typography color="text.secondary" size="small" variant="label">
             Recently Obtained
           </Typography>
         }
@@ -50,11 +50,11 @@ export default function EurekaRecentUpdates({ items }: { items: RecentObtained[]
                     .filter(Boolean)
                     .join(' • ')}
                   slotProps={{
-                    primary: { variant: 'body2' },
-                    secondary: { variant: 'caption' },
+                    primary: { variant: 'body' },
+                    secondary: { variant: 'body', size: 'small' },
                   }}
                 />
-                <Typography color="text.secondary" variant="caption">
+                <Typography color="text.secondary" size="small" variant="body">
                   {formatDate(item.created_at)}
                 </Typography>
               </ListItemButton>

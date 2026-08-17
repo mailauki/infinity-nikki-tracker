@@ -75,9 +75,9 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               color="textSecondary"
               component={Link}
               href="/forgot-password"
+              size="large"
               sx={{ fontWeight: 'medium' }}
-              underline="hover"
-              variant="body1"
+              underline="hover" variant="body"
             >
               Forgot your password?
             </Anchor>
@@ -93,7 +93,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               {isLoading ? 'Logging in...' : 'Login'}
             </Button>
 
-            <Typography color="textSecondary" variant="body1">
+            <Typography color="textSecondary" size="large" variant="body">
               Don&apos;t have an account?{' '}
               <Anchor
                 color="textSecondary"

@@ -167,8 +167,8 @@ function VariantCard({ variant, selected, onToggle }: VariantCardProps) {
         </Stack>
         <CardHeader
           slotProps={{
-            title: { variant: 'subtitle2', noWrap: true },
-            subheader: { variant: 'caption', noWrap: true },
+            title: { variant: 'title', noWrap: true },
+            subheader: { variant: 'body', size: 'small', noWrap: true },
           }}
           subheader={variant.setTitle}
           sx={{ p: 1.5, '& .MuiCardHeader-content': { maxWidth: '100%' } }}
@@ -471,7 +471,7 @@ export default function LookBuilder({
         subheader={
           <Stack direction="row" sx={{ alignItems: 'center', gap: 0.5, pb: 1, pt: 1.5 }}>
             {icon}
-            <Typography color="textSecondary" variant="caption">
+            <Typography color="textSecondary" size="small" variant="body">
               {label}
             </Typography>
           </Stack>
@@ -506,10 +506,10 @@ export default function LookBuilder({
               </ListItemAvatar>
               <ListItemText disableTypography>
                 <Stack sx={{ height: 40 }}>
-                  <Typography component="span" variant="subtitle2">
+                  <Typography component="span" variant="title">
                     {primary}
                   </Typography>
-                  <Typography variant="caption">{caption || undefined}</Typography>
+                  <Typography size="small" variant="body">{caption || undefined}</Typography>
                 </Stack>
               </ListItemText>
             </ListItem>
@@ -521,12 +521,12 @@ export default function LookBuilder({
   const composerPanel = (
     <CardContent sx={{ minWidth: 0, pr: 0 }}>
       <Stack spacing={1}>
-        <Typography component="p" variant="subtitle2">
+        <Typography component="p" variant="title">
           {name ? name : 'Name needed *'}
         </Typography>
         {selectedItems.length > 0 && (
           <Box>
-            <Typography color="textSecondary" sx={{ py: 1 }} variant="overline">
+            <Typography color="textSecondary" size="small" sx={{ py: 1 }} variant="label">
               {selectedItems.length} piece{selectedItems.length !== 1 ? 's' : ''} selected
             </Typography>
             {selectedSection(
@@ -548,7 +548,7 @@ export default function LookBuilder({
         )}
 
         {selectedItems.length === 0 && (
-          <Typography color="textSecondary" variant="caption">
+          <Typography color="textSecondary" size="small" variant="body">
             Pick pieces from the panel to add them here.
           </Typography>
         )}
@@ -562,7 +562,7 @@ export default function LookBuilder({
   function stepOptionalLabel(step: CategoryStep) {
     if (step.disabled) {
       return (
-        <Typography color="textSecondary" variant="caption">
+        <Typography color="textSecondary" size="small" variant="body">
           {step.disabledReason}
         </Typography>
       )
@@ -636,7 +636,7 @@ export default function LookBuilder({
     return (
       <Stack direction="row" sx={{ alignItems: 'center', gap: 1.5, flex: 1 }}>
         <Box sx={{ display: 'flex', color: done ? 'primary.main' : 'text.secondary' }}>{icon}</Box>
-        <Typography sx={{ fontWeight: 500, flex: 1 }} variant="body2">
+        <Typography sx={{ fontWeight: 500, flex: 1 }} variant="body">
           {label}
         </Typography>
         {done && <CheckCircleIcon color="primary" fontSize="small" sx={{ mr: 1 }} />}

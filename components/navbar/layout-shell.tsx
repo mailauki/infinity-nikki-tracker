@@ -459,7 +459,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
             direction="row"
             sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'space-between' }}
           >
-            <Typography variant="subtitle2">Details</Typography>
+            <Typography variant="title">Details</Typography>
             <IconButton aria-label="Close details" onClick={() => setSidebarOpen(false)}>
               <Close />
             </IconButton>
@@ -481,7 +481,7 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
               direction="row"
               sx={{ flexGrow: 1, alignItems: 'center', justifyContent: 'space-between' }}
             >
-              <Typography variant="subtitle2">Details</Typography>
+              <Typography variant="title">Details</Typography>
               <IconButton aria-label="Close details" onClick={() => setSidebarOpen(false)}>
                 <Close />
               </IconButton>

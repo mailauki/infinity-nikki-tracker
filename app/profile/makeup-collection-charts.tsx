@@ -148,7 +148,7 @@ function MakeupRingsChart({
                 flexShrink: 0,
               }}
             />
-            <Typography sx={{ flex: 1 }} variant="body2">
+            <Typography sx={{ flex: 1 }} variant="body">
               {ring.label}
             </Typography>
             <ProgressChip obtained={ring.obtained} total={ring.total} variant="parts" />
@@ -318,7 +318,7 @@ function MakeupSeasonsChart({
         },
       ].map(({ label, rows }) => (
         <Stack key={label} spacing={0.75}>
-          <Typography color="text.secondary" variant="caption">
+          <Typography color="text.secondary" size="small" variant="body">
             {label}
           </Typography>
           {rows.map((row) => (
@@ -332,7 +332,7 @@ function MakeupSeasonsChart({
                   flexShrink: 0,
                 }}
               />
-              <Typography sx={{ flex: 1 }} variant="body2">
+              <Typography sx={{ flex: 1 }} variant="body">
                 {row.text}
               </Typography>
               <ProgressChip obtained={row.obtained} total={row.total} variant="parts" />

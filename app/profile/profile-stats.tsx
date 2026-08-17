@@ -90,8 +90,8 @@ export default function ProfileStats({
 function Stat({ title, obtained }: { title: string; obtained: number }) {
   return (
     <Stack sx={{ alignItems: 'center', flexGrow: { xs: 1, sm: 1, md: 0 } }}>
-      <Typography variant="overline">{title}</Typography>
-      <Typography component="span" variant="h6">
+      <Typography size="small" variant="label">{title}</Typography>
+      <Typography component="span" size="small" variant="headline">
         {obtained}
       </Typography>
     </Stack>

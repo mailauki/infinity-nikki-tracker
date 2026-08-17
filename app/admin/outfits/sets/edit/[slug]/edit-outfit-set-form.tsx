@@ -417,7 +417,7 @@ export default function EditOutfitSetForm({
         )}
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Set Images</Typography>
+          <Typography variant="title">Set Images</Typography>
           <ImageUploadPair
             altImage={altSetImage}
             image={setImage}
@@ -431,7 +431,7 @@ export default function EditOutfitSetForm({
 
         {!isStandalone && (
           <Stack spacing={1}>
-            <Typography variant="subtitle2">Gallery Images</Typography>
+            <Typography variant="title">Gallery Images</Typography>
             <CarouselImageUpload
               images={carouselImages}
               slug={outfitSet.slug ?? ''}
@@ -443,7 +443,7 @@ export default function EditOutfitSetForm({
 
         {variantRows.length > 0 && (
           <Stack spacing={1}>
-            <Typography variant="subtitle2">Variant Images</Typography>
+            <Typography variant="title">Variant Images</Typography>
             <Box
               sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
             >

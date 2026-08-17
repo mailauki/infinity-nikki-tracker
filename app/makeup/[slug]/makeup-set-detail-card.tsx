@@ -59,11 +59,11 @@ export default function MakeupSetDetailCard({
         href={`/outfits/seasons/${makeupSet.seasons}`}
         sx={{ cursor: 'pointer' }}
         underline="hover"
-        variant="subtitle2"
+        variant="title"
       >
         {season?.title}
       </Anchor>
-      <Typography sx={{ textAlign: 'right' }} variant="body1">
+      <Typography size="large" sx={{ textAlign: 'right' }} variant="body">
         {seasonCategory?.title}
       </Typography>
     </>

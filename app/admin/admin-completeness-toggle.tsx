@@ -33,7 +33,7 @@ export default function AdminCompletenessToggle({
         onClick={() => setOpen((v) => !v)}
       >
         {open ? <ExpandLess fontSize="small" /> : <ExpandMore fontSize="small" />}
-        <Typography color="text.secondary" variant="body2">
+        <Typography color="text.secondary" variant="body">
           {summary}
         </Typography>
       </Box>

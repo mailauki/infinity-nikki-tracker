@@ -68,11 +68,11 @@ export default function PremiumUpgrade() {
         <Stack spacing={2}>
           <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
             <AutoAwesomeIcon color="primary" />
-            <Typography variant="subtitle1">Supporter upgrade</Typography>
+            <Typography size="large" variant="title">Supporter upgrade</Typography>
             <Chip color="primary" label="One-time" size="small" />
           </Stack>
 
-          <Typography color="textSecondary" variant="body2">
+          <Typography color="textSecondary" variant="body">
             Support the tracker with a one-time purchase and unlock cosmetic extras. No
             subscriptions, no ads, no game content — just app features built for you.
           </Typography>
@@ -89,7 +89,7 @@ export default function PremiumUpgrade() {
           </List>
 
           {error && (
-            <Typography color="error" variant="caption">
+            <Typography color="error" size="small" variant="body">
               {error}
             </Typography>
           )}

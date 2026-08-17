@@ -11,14 +11,14 @@ export function Section({ children }: { children: React.ReactNode }) {
 export function SectionTitle({
   children,
   component = 'h2',
-  variant = 'h5',
+  size = 'medium',
 }: {
   children: React.ReactNode
   component?: React.ElementType
-  variant?: 'h5' | 'h6'
+  size?: 'medium' | 'small'
 }) {
   return (
-    <Typography component={component} variant={variant}>
+    <Typography component={component} size={size} variant="headline">
       {children}
     </Typography>
   )
@@ -27,7 +27,7 @@ export function SectionTitle({
 export function SectionSubtitle({ children }: { children: React.ReactNode }) {
   return (
     <Container disableGutters maxWidth="sm">
-      <Typography color="textSecondary" sx={{ mt: 1 }} variant="subtitle2">
+      <Typography color="textSecondary" sx={{ mt: 1 }} variant="title">
         {children}
       </Typography>
     </Container>
@@ -48,7 +48,7 @@ export function SectionList({
           <ListItem key={index} sx={{ display: 'list-item' }}>
             <ListItemText
               primary={
-                <Typography color="textSecondary" variant="body1">
+                <Typography color="textSecondary" size="large" variant="body">
                   {bullet}
                 </Typography>
               }

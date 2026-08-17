@@ -68,7 +68,7 @@ export default function StyleLabelSelect({
         label={label}
         labelId={`${id}-label`}
         renderValue={(value) => (
-          <Typography variant="body2">
+          <Typography variant="body">
             {options.filter((option) => value.includes(option.slug)).length} selected
           </Typography>
         )}

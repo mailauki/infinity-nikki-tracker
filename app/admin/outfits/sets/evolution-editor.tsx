@@ -66,7 +66,7 @@ export default function EvolutionEditor({
 
   if (maxEvolutions === 0) {
     return (
-      <Typography color="text.secondary" variant="body2">
+      <Typography color="text.secondary" variant="body">
         2-star sets have no evolutions.
       </Typography>
     )
@@ -74,13 +74,13 @@ export default function EvolutionEditor({
 
   return (
     <Stack spacing={1.5}>
-      <Typography color="text.secondary" variant="subtitle2">
+      <Typography color="text.secondary" variant="title">
         Evolutions ({drafts.length}/{maxEvolutions})
       </Typography>
 
       {drafts.map((draft, index) => (
         <Stack key={index} direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-          <Typography sx={{ minWidth: 20, color: 'text.secondary' }} variant="body2">
+          <Typography sx={{ minWidth: 20, color: 'text.secondary' }} variant="body">
             {index + 1}.
           </Typography>
           <TextField

@@ -32,7 +32,7 @@ function CategoryProgress({
   return (
     <Box sx={{ width: '100%' }}>
       <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-        <Typography component="h2" variant="subtitle1">
+        <Typography component="h2" size="large" variant="title">
           {title}
         </Typography>
         {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}

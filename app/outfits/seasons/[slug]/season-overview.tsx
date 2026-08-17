@@ -15,15 +15,15 @@ import { countEntries, countEntryKinds, groupSeasonEntries } from './season-entr
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <Stack spacing={0.5}>
-      <Typography component="p" variant="h4">
+      <Typography component="p" size="large" variant="headline">
         {value.split('%')[0]}
         {value.includes('%') && (
-          <Typography component="span" variant="subtitle2">
+          <Typography component="span" variant="title">
             %
           </Typography>
         )}
       </Typography>
-      <Typography color="text.secondary" variant="overline">
+      <Typography color="text.secondary" size="small" variant="label">
         {label}
       </Typography>
     </Stack>
@@ -100,7 +100,7 @@ export default function SeasonOverview({
               value={percentage}
               variant="determinate"
             />
-            <Typography color="text.secondary" variant="caption">
+            <Typography color="text.secondary" size="small" variant="body">
               {obtained} of {total} collected
             </Typography>
           </Stack>

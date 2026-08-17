@@ -78,7 +78,7 @@ export default function AdminRecentsToggle({ title, item, tab, onItemChange, onT
         }
         sx={{ pb: 0 }}
         title={
-          <Typography color="text.secondary" variant="overline">
+          <Typography color="text.secondary" size="small" variant="label">
             {title}
           </Typography>
         }

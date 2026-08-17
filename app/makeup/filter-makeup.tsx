@@ -287,10 +287,10 @@ export default function FilterMakeup() {
 
       {filteredSets.length === 0 && (
         <Stack sx={{ py: 8, alignItems: 'center', justifyContent: 'center' }}>
-          <Typography color="textSecondary" variant="h6">
+          <Typography color="textSecondary" size="small" variant="headline">
             No results
           </Typography>
-          <Typography color="textSecondary" variant="body2">
+          <Typography color="textSecondary" variant="body">
             Try adjusting your filters
           </Typography>
         </Stack>

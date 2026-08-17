@@ -52,7 +52,7 @@ export default function EurekaSetDetailCard({
         }
         sx={{ cursor: 'pointer' }}
         underline="hover"
-        variant="subtitle2"
+        variant="title"
       >
         {eureka_set_trials.length > 1
           ? `${eureka_set_trials.length} trials`

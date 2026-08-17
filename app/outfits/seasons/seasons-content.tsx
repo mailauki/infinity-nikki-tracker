@@ -92,13 +92,13 @@ export default function SeasonsContent({
                   <CardHeader
                     disableTypography
                     avatar={
-                      <Typography component="span" variant="h3">
+                      <Typography component="span" size="small" variant="display">
                         {String(ordinal).padStart(2, '0')}
                       </Typography>
                     }
                     sx={{ '& .MuiCardHeader-content': { width: 'calc(100% - 6rem)' } }}
                     title={
-                      <Typography noWrap component="h2" variant="h6">
+                      <Typography noWrap component="h2" size="small" variant="headline">
                         {season.title}
                       </Typography>
                     }
@@ -124,7 +124,7 @@ export default function SeasonsContent({
                             key={slug}
                             disableGutters
                             secondaryAction={
-                              <Typography variant="caption">
+                              <Typography size="small" variant="body">
                                 {
                                   outfitSets.filter(
                                     (set) =>

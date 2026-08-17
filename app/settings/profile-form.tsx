@@ -239,7 +239,7 @@ export default function ProfileForm({
           onChange={handleFileInput('avatar')}
         />
         <Stack spacing={3}>
-          <Typography variant="subtitle1">Profile picture</Typography>
+          <Typography size="large" variant="title">Profile picture</Typography>
           <Stack direction="row" spacing={2}>
             <Button
               disabled={uploading}
@@ -259,14 +259,14 @@ export default function ProfileForm({
 
       <Stack spacing={1}>
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-          <Typography variant="subtitle1">Profile banner</Typography>
+          <Typography size="large" variant="title">Profile banner</Typography>
           {!isPremium && (
-            <Typography color="primary" variant="caption">
+            <Typography color="primary" size="small" variant="body">
               Premium
             </Typography>
           )}
         </Stack>
-        <Typography color="textSecondary" variant="body2">
+        <Typography color="textSecondary" variant="body">
           Shown behind your profile card. Leave empty to use the default artwork.
         </Typography>
         {/* 2:1 preview so the crop matches roughly what the profile hero shows. */}
@@ -316,7 +316,7 @@ export default function ProfileForm({
           )}
         </Stack>
         {!isPremium && (
-          <Typography color="textSecondary" variant="caption">
+          <Typography color="textSecondary" size="small" variant="body">
             Set a custom profile banner with a one-time premium upgrade.
           </Typography>
         )}

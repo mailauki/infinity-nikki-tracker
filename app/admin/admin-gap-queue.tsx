@@ -239,7 +239,7 @@ export default function AdminGapQueue({
     <Card elevation={3} sx={{ backgroundColor: 'surface.containerLowest' }} variant="elevation">
       <CardContent>
         <Box sx={{ alignItems: 'center', display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
-          <Typography component="p" variant="overline">
+          <Typography component="p" size="small" variant="label">
             Needs attention
           </Typography>
           <Box sx={{ ml: 'auto' }} />
@@ -314,8 +314,8 @@ export default function AdminGapQueue({
                         primary={row.title}
                         secondary={`${row.kind} · ${gapSummary(row)}`}
                         slotProps={{
-                          primary: { variant: 'body2', noWrap: true },
-                          secondary: { variant: 'caption' },
+                          primary: { variant: 'body', noWrap: true },
+                          secondary: { variant: 'body', size: 'small' },
                         }}
                       />
                     </ListItemButton>

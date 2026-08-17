@@ -29,8 +29,8 @@ async function FeedbackDetail({ params }: Props) {
         <Chip color="info" label={row.status} size="small" />
       </Stack>
 
-      <Typography variant="h5">{row.title}</Typography>
-      <Typography color="text.secondary" variant="caption">
+      <Typography variant="headline">{row.title}</Typography>
+      <Typography color="text.secondary" size="small" variant="body">
         {new Date(row.created_at).toLocaleString()}
         {row.email ? ` · ${row.email}` : ' · no contact address'}
       </Typography>
@@ -41,10 +41,10 @@ async function FeedbackDetail({ params }: Props) {
 
       {(row.page_path || row.entity_slug) && (
         <Box>
-          <Typography color="text.secondary" variant="overline">
+          <Typography color="text.secondary" size="small" variant="label">
             Context
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body">
             {row.entity_title ?? row.entity_slug ?? '—'}
             {row.page_path ? ` (${row.page_path})` : ''}
           </Typography>
@@ -53,10 +53,10 @@ async function FeedbackDetail({ params }: Props) {
 
       {row.user_agent && (
         <Box>
-          <Typography color="text.secondary" variant="overline">
+          <Typography color="text.secondary" size="small" variant="label">
             User agent
           </Typography>
-          <Typography sx={{ wordBreak: 'break-all' }} variant="caption">
+          <Typography size="small" sx={{ wordBreak: 'break-all' }} variant="body">
             {row.user_agent}
           </Typography>
         </Box>
@@ -64,7 +64,7 @@ async function FeedbackDetail({ params }: Props) {
 
       {imageUrls.length > 0 && (
         <Box>
-          <Typography color="text.secondary" variant="overline">
+          <Typography color="text.secondary" size="small" variant="label">
             Screenshots
           </Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>

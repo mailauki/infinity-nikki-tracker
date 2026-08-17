@@ -96,19 +96,19 @@ export default function LookCard({
             )}
 
             <Stack spacing={0.25}>
-              <Typography component="span" sx={{ fontWeight: 500 }} variant="subtitle1">
+              <Typography component="span" size="large" sx={{ fontWeight: 500 }} variant="title">
                 {look.name}
               </Typography>
               {look.description && (
                 <Typography
                   color="textSecondary"
+                  size="small"
                   sx={{
                     display: '-webkit-box',
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
-                  }}
-                  variant="caption"
+                  }} variant="body"
                 >
                   {look.description}
                 </Typography>
@@ -143,7 +143,7 @@ export default function LookCard({
               {totalItems === 0 && <Chip label="Empty" size="small" variant="outlined" />}
             </Stack>
 
-            <Typography color="textSecondary" variant="caption">
+            <Typography color="textSecondary" size="small" variant="body">
               {date}
             </Typography>
           </Stack>
@@ -191,11 +191,11 @@ export function LooksLimitBanner({ count, limit }: { count: number; limit: numbe
         <Stack spacing={1}>
           <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
             <AutoAwesomeIcon color="primary" fontSize="small" />
-            <Typography variant="subtitle2">
+            <Typography variant="title">
               {count} / {limit} looks used
             </Typography>
           </Stack>
-          <Typography color="textSecondary" variant="caption">
+          <Typography color="textSecondary" size="small" variant="body">
             Free accounts can save up to {limit} custom looks. Upgrade to create unlimited looks.
           </Typography>
         </Stack>
