@@ -17,11 +17,17 @@ import LightModeIcon from '@mui/icons-material/LightMode'
 import LockIcon from '@mui/icons-material/Lock'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import { useColorScheme } from '@mui/material/styles'
-import { updateTheme, updateColorTheme, updateSortDir } from '@/app/actions/preferences'
+import {
+  updateTheme,
+  updateColorTheme,
+  updateSortDir,
+  updateTextScale,
+} from '@/app/actions/preferences'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '@/components/color-theme-context'
 import type { SortOrder } from '@/components/sort-context'
 import type { ColorTheme } from '@/lib/types/eureka'
+import { TEXT_SCALES, TEXT_SCALE_LABELS, toTextScale, type TextScale } from '@/lib/text-scale'
 
 const modes = [
   { value: 'system', label: 'System', icon: <BrightnessMediumIcon fontSize="small" /> },
@@ -39,7 +45,7 @@ export default function AppearanceSettings({
   isLoggedIn?: boolean
 }) {
   const { mode, setMode } = useColorScheme()
-  const { colorTheme, setColorTheme } = useColorTheme()
+  const { colorTheme, setColorTheme, textScale, setTextScale } = useColorTheme()
   const [sortOrder, setSortOrder] = useState<SortOrder>('new')
 
   useEffect(() => {
@@ -55,6 +61,7 @@ export default function AppearanceSettings({
         ) {
           setMode(saved as 'system' | 'light' | 'dark')
         }
+        setTextScale(toTextScale(prefs.text_scale))
         // Accept both the legacy 'new'/'old' and the new 'asc'/'desc' shapes.
         if (prefs.sort_order === 'new' || prefs.sort_order === 'desc') setSortOrder('new')
         else if (prefs.sort_order === 'old' || prefs.sort_order === 'asc') setSortOrder('old')
@@ -69,6 +76,11 @@ export default function AppearanceSettings({
     startTransition(() => updateSortDir(value === 'new' ? 'desc' : 'asc'))
   }
 
+  function handleTextScaleChange(value: TextScale) {
+    setTextScale(value)
+    startTransition(() => updateTextScale(value))
+  }
+
   async function handleColorThemeChange(value: ColorTheme) {
     if (!isPremium && value !== 'default') return
     setColorTheme(value)
@@ -79,7 +91,9 @@ export default function AppearanceSettings({
     <Container maxWidth="sm" sx={{ mx: 0 }}>
       <Stack spacing={3}>
         <Stack spacing={2}>
-          <Typography size="large" variant="title">Mode</Typography>
+          <Typography size="large" variant="title">
+            Mode
+          </Typography>
           <ToggleButtonGroup
             exclusive
             aria-label="theme"
@@ -99,9 +113,40 @@ export default function AppearanceSettings({
           </ToggleButtonGroup>
         </Stack>
 
+        <Stack spacing={2}>
+          <Typography size="large" variant="title">
+            Text Size
+          </Typography>
+          <ToggleButtonGroup
+            exclusive
+            aria-label="text size"
+            value={textScale}
+            onChange={(_, value) => {
+              if (!value) return
+              handleTextScaleChange(value as TextScale)
+            }}
+          >
+            {TEXT_SCALES.map((scale) => (
+              <ToggleButton
+                key={scale}
+                aria-label={TEXT_SCALE_LABELS[scale]}
+                sx={{ px: 2 }}
+                value={scale}
+              >
+                {TEXT_SCALE_LABELS[scale]}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+          <Typography color="textSecondary" size="small" variant="body">
+            Scales text across the whole app, including collection grids and filters.
+          </Typography>
+        </Stack>
+
         {isLoggedIn && (
           <Stack spacing={2}>
-            <Typography size="large" variant="title">Default Sort</Typography>
+            <Typography size="large" variant="title">
+              Default Sort
+            </Typography>
             <ToggleButtonGroup
               exclusive
               aria-label="default sort order"
@@ -126,7 +171,9 @@ export default function AppearanceSettings({
 
         <Stack spacing={2}>
           <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-            <Typography size="large" variant="title">Color Theme</Typography>
+            <Typography size="large" variant="title">
+              Color Theme
+            </Typography>
             {!isPremium && (
               <Typography color="primary" size="small" variant="body">
                 Premium
