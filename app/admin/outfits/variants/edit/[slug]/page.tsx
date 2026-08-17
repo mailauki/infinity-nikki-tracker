@@ -12,9 +12,10 @@ import { getLabels } from '@/hooks/data/labels'
 import { deriveGlowupVariantTitle, isGlowup } from '@/hooks/outfit'
 import EntityForm from '@/app/admin/entity-form'
 import { editOutfitVariant } from '../../actions'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Edit Outfit Variant',
+  title: pageTitle('/admin/outfits/variants/edit/[slug]'),
 }
 
 export default async function EditOutfitVariantPage({

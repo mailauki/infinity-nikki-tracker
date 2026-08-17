@@ -7,14 +7,15 @@ import AddToHomeScreenAccordion from './add-to-accordion'
 import { AdminPanelSettings } from '@mui/icons-material'
 import { Section, SectionList, SectionSubtitle, SectionTitle } from '@/components/section'
 import PageShell from '@/components/page-shell'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Help',
+  title: pageTitle('/help'),
 }
 
 export default function HelpPage() {
   return (
-    <PageShell component="article" maxWidth="md" title="Help">
+    <PageShell component="article" maxWidth="md" title={pageTitle('/help')}>
       <Section>
         <SectionTitle>How to use</SectionTitle>
         <SectionSubtitle>

@@ -12,9 +12,10 @@ import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { EvolutionDraft } from '@/lib/types/outfit'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Edit Outfit Set',
+  title: pageTitle('/admin/outfits/sets/edit/[slug]'),
 }
 
 export default async function EditOutfitSetPage({ params }: { params: Promise<{ slug: string }> }) {

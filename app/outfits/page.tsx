@@ -6,9 +6,10 @@ import FilterOutfits from './filter-outfits'
 import OutfitsLoading from './loading'
 import { Alert } from '@mui/material'
 import PageShell from '@/components/page-shell'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Outfits',
+  title: pageTitle('/outfits'),
 }
 
 export default function OutfitsPage() {

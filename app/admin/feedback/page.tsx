@@ -2,8 +2,9 @@ import { Suspense } from 'react'
 import { Skeleton, Stack, Typography } from '@mui/material'
 import FeedbackView from './feedback-view'
 import { getFeedback } from '@/hooks/data/admin/feedback'
+import { pageTitle } from '@/lib/page-titles'
 
-export const metadata = { title: 'Feedback' }
+export const metadata = { title: pageTitle('/admin/feedback') }
 
 export default function AdminFeedbackPage() {
   return (

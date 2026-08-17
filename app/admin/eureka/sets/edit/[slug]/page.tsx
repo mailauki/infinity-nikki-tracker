@@ -9,9 +9,10 @@ import { getEurekaColors } from '@/hooks/data/eureka-colors'
 import { getEurekaCategories } from '@/hooks/data/eureka-categories'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Edit Eureka Set',
+  title: pageTitle('/admin/eureka/sets/edit/[slug]'),
 }
 
 export default async function EditEurekaSetPage({ params }: { params: Promise<{ slug: string }> }) {

@@ -8,9 +8,10 @@ import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getMakeupCategories } from '@/hooks/data/makeup-categories'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Add Makeup Set',
+  title: pageTitle('/admin/makeup/sets/new'),
 }
 
 export default function NewMakeupSetPage() {

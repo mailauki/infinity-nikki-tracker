@@ -9,9 +9,10 @@ import AdminTotalsStrip from './admin-totals-strip'
 import AdminCompletenessList from './admin-completeness-list'
 import AdminGapQueue from './admin-gap-queue'
 import AdminUnassignedPieces from './admin-unassigned-pieces'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Admin',
+  title: pageTitle('/admin'),
 }
 
 export default function AdminPage() {

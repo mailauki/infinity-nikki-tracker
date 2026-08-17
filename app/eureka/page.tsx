@@ -5,9 +5,10 @@ import EurekaLoading from './loading'
 import EurekaToolBar from './eureka-toolbar'
 import EurekaResultsBar from './eureka-results-bar'
 import PageShell from '@/components/page-shell'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Eureka Sets',
+  title: pageTitle('/eureka'),
 }
 
 export default function EurekaSetsPage() {

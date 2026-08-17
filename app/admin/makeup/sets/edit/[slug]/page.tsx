@@ -10,9 +10,10 @@ import { getMakeupCategories } from '@/hooks/data/makeup-categories'
 import { createClient } from '@/lib/supabase/server'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Edit Makeup Set',
+  title: pageTitle('/admin/makeup/sets/edit/[slug]'),
 }
 
 export default async function EditMakeupSetPage({ params }: { params: Promise<{ slug: string }> }) {

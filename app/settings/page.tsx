@@ -4,9 +4,10 @@ import SettingsTabs from '@/app/settings/settings-tabs'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { createClient } from '@/lib/supabase/server'
 import PageShell from '@/components/page-shell'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Settings',
+  title: pageTitle('/settings'),
 }
 
 export default function SettingsPage() {

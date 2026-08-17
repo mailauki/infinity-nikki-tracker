@@ -3,9 +3,10 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import EntityForm from '@/app/admin/entity-form'
 import { addSeasonCategory } from './actions'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Add Season Category',
+  title: pageTitle('/admin/outfits/season-categories/new'),
 }
 
 export default function NewSeasonCategoryPage() {

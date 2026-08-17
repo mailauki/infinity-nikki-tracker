@@ -4,6 +4,9 @@ import { getStyles } from '@/hooks/data/styles'
 import { byTitleThenSlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import EurekaSetView from './eureka-set-view'
+import { pageTitle } from '@/lib/page-titles'
+
+export const metadata = { title: pageTitle('/admin/eureka/sets') }
 
 export default function EurekaSetsAdminPage() {
   return (

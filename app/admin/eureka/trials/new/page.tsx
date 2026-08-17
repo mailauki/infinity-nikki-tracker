@@ -4,9 +4,10 @@ import { Suspense } from 'react'
 import { getLocations } from '@/hooks/data/locations'
 import EntityForm from '@/app/admin/entity-form'
 import { addTrial } from '../actions'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Add Trial',
+  title: pageTitle('/admin/eureka/trials/new'),
 }
 
 export default function NewTrialPage() {

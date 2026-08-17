@@ -7,9 +7,10 @@ import { getLocations } from '@/hooks/data/locations'
 import { toSlug } from '@/lib/utils'
 import EntityForm from '@/app/admin/entity-form'
 import { editTrial } from '../../actions'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Edit Trial',
+  title: pageTitle('/admin/eureka/trials/edit/[slug]'),
 }
 
 export default async function EditTrialPage({ params }: { params: Promise<{ slug: string }> }) {

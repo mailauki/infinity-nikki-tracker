@@ -5,9 +5,10 @@ import { bySlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import OutfitVariantView from './outfit-variant-view'
 import { Metadata } from 'next'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Outfit Variants',
+  title: pageTitle('/admin/outfits/variants'),
 }
 
 export default function OutfitVariantsAdminPage() {

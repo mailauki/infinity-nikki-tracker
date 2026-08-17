@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { Section, SectionList, SectionSubtitle, SectionTitle } from '@/components/section'
 import PageShell from '@/components/page-shell'
 import { SimpleGrid } from '@/components/card-grid'
+import { pageTitle } from '@/lib/page-titles'
 
 const featurePages = [
   {
@@ -93,12 +94,12 @@ const featurePages = [
 ]
 
 export const metadata: Metadata = {
-  title: 'About',
+  title: pageTitle('/about'),
 }
 
 export default function AboutPage() {
   return (
-    <PageShell component="article" maxWidth="md" title="About">
+    <PageShell component="article" maxWidth="md" title={pageTitle('/about')}>
       <Section>
         <SectionTitle>What is this?</SectionTitle>
         <SectionSubtitle>

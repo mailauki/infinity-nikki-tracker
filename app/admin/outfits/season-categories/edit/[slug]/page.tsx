@@ -5,9 +5,10 @@ import { Metadata } from 'next'
 import { getSeasonCategoryRaw } from '@/hooks/data/admin/season-categories'
 import EntityForm from '@/app/admin/entity-form'
 import { editSeasonCategory } from './actions'
+import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: 'Edit Season Category',
+  title: pageTitle('/admin/outfits/season-categories/edit/[slug]'),
 }
 
 export default async function EditSeasonCategoryPage({

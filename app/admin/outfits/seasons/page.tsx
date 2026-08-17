@@ -2,6 +2,9 @@ import { getSeasonsRaw } from '@/hooks/data/admin/seasons'
 import { byTitleThenSlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import OutfitSeasonView from './outfit-season-view'
+import { pageTitle } from '@/lib/page-titles'
+
+export const metadata = { title: pageTitle('/admin/outfits/seasons') }
 
 export default function OutfitSeasonsAdminPage() {
   return (
