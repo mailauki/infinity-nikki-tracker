@@ -16,6 +16,11 @@ const WIDTH_MAP: Record<PageWidth, number | 'none'> = {
 
 export interface PageShellProps {
   children: React.ReactNode
+  /**
+   * Element for the main column. Prose routes pass 'article' so browser reader
+   * modes have a content root to extract; card-grid routes leave it a div.
+   */
+  component?: React.ElementType
   /** Per-domain width variant. Default 'full' preserves the card-grid behavior. */
   maxWidth?: PageWidth
   /** Optional right-hand column (md+); stacks above the main content below md. */
@@ -32,6 +37,7 @@ export interface PageShellProps {
 // column keeps minWidth:0 so CSS grids shrink instead of overflowing.
 export default function PageShell({
   children,
+  component = 'div',
   maxWidth = 'full',
   sideContent,
   spacing = 2,
@@ -40,7 +46,7 @@ export default function PageShell({
   const cap = WIDTH_MAP[maxWidth]
 
   const main = (
-    <Stack spacing={spacing} sx={{ flexGrow: 1, minWidth: 0 }}>
+    <Stack component={component} spacing={spacing} sx={{ flexGrow: 1, minWidth: 0 }}>
       {children}
     </Stack>
   )

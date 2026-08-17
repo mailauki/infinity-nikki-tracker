@@ -24,10 +24,15 @@ export function SectionTitle({
   )
 }
 
+// Body copy renders as a real <p>. Browser reader modes (Firefox Reader View,
+// Safari Reader) run Readability, which scores a page by how much text sits
+// directly inside <p> — prose built from <span> scores ~0 and the reader icon
+// never appears. The theme maps every Typography variant to <span> by default,
+// so prose components have to opt back in explicitly.
 export function SectionSubtitle({ children }: { children: React.ReactNode }) {
   return (
     <Container disableGutters maxWidth="sm">
-      <Typography color="textSecondary" sx={{ mt: 1 }} variant="title">
+      <Typography color="textSecondary" component="p" sx={{ mt: 1 }} variant="title">
         {children}
       </Typography>
     </Container>
@@ -48,7 +53,7 @@ export function SectionList({
           <ListItem key={index} sx={{ display: 'list-item' }}>
             <ListItemText
               primary={
-                <Typography color="textSecondary" size="large" variant="body">
+                <Typography color="textSecondary" component="p" size="large" variant="body">
                   {bullet}
                 </Typography>
               }
