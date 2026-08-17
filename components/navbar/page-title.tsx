@@ -36,9 +36,16 @@ export default function PageTitle() {
   const pageTitle = prefix ? `${prefix} ${bestMatch?.title ?? baseTitle}` : baseTitle
 
   return (
+    // Renders a <span>, not an <h1>: this is the app-bar's breadcrumb label —
+    // nav chrome that repeats on every route — so it isn't the page's content
+    // heading. Owning the h1 here meant the real heading lived outside the
+    // <article>, which left reader mode promoting whatever <h2> came first
+    // ("What is this?" on /about) as the title. Each page supplies its own h1
+    // via PageShell's `title` prop.
+    //
     // label/small styling at title/medium's size — the M3 scale no longer lives
     // on theme.typography, so the size is set literally rather than by token.
-    <Typography component="h1" size="small" sx={{ fontSize: '1rem' }} variant="label">
+    <Typography component="span" size="small" sx={{ fontSize: '1rem' }} variant="label">
       {pageTitle}
     </Typography>
   )
