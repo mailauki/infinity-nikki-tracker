@@ -49,7 +49,9 @@ export default function AddToHomeScreenAccordion() {
       <Stack spacing={1}>
         <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography size="large" variant="title">iOS / iPadOS (Safari)</Typography>
+            <Typography size="large" variant="title">
+              iOS / iPadOS (Safari)
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
@@ -96,7 +98,9 @@ export default function AddToHomeScreenAccordion() {
 
         <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography size="large" variant="title">Android (Chrome)</Typography>
+            <Typography size="large" variant="title">
+              Android (Chrome)
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
@@ -143,7 +147,9 @@ export default function AddToHomeScreenAccordion() {
 
         <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography size="large" variant="title">Desktop (Chrome or Edge)</Typography>
+            <Typography size="large" variant="title">
+              Desktop (Chrome or Edge)
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
@@ -182,7 +188,9 @@ export default function AddToHomeScreenAccordion() {
 
         <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography size="large" variant="title">Desktop (Safari on macOS)</Typography>
+            <Typography size="large" variant="title">
+              Desktop (Safari on macOS)
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <List dense sx={{ listStyle: 'decimal', pl: 4 }}>

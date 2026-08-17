@@ -23,7 +23,11 @@ export default function HelpActions() {
 
   return (
     <Box sx={{ py: 3 }}>
-      <Typography size="small" sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="label">
+      <Typography
+        size="small"
+        sx={{ display: 'block', textAlign: 'center', mb: 2, textTransform: 'uppercase' }}
+        variant="label"
+      >
         Helpful Links
       </Typography>
       <SimpleGrid columns={{ sm: '1fr', md: '1fr 1fr' }} gap={0} sx={{ columnGap: 2 }}>

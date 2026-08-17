@@ -223,7 +223,9 @@ export default function AboutPage() {
             </Typography>,
           ]}
         />
-        <SectionSubtitle>Helpful resources</SectionSubtitle>
+        <SectionTitle component="h3" size="small">
+          Helpful resources
+        </SectionTitle>
         <SectionList
           bullets={[
             <Anchor
