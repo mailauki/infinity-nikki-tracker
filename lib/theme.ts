@@ -561,6 +561,14 @@ export const baseThemeOptions: ThemeOptions = {
         },
       },
     },
+    MuiListItemText: {
+      defaultProps: {
+        slotProps: {
+          primary: { variant: 'title' },
+          secondary: { variant: 'body' },
+        },
+      },
+    },
     MuiAccordion: {
       defaultProps: {
         disableGutters: true,

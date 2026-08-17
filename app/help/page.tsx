@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function HelpPage() {
   return (
-    <PageShell maxWidth="md">
+    <PageShell component="article" maxWidth="md">
       <Section>
         <SectionTitle>How to use</SectionTitle>
         <SectionSubtitle>

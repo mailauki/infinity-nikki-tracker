@@ -98,7 +98,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <PageShell maxWidth="md">
+    <PageShell component="article" maxWidth="md">
       <Section>
         <SectionTitle>What is this?</SectionTitle>
         <SectionSubtitle>
@@ -223,7 +223,9 @@ export default function AboutPage() {
             </Typography>,
           ]}
         />
-        <SectionSubtitle>Helpful resources</SectionSubtitle>
+        <SectionTitle component="h3" size="small">
+          Helpful resources
+        </SectionTitle>
         <SectionList
           bullets={[
             <Anchor
@@ -281,7 +283,7 @@ export default function AboutPage() {
       </Section>
 
       <Container disableGutters maxWidth="sm">
-        <Typography color="textSecondary" size="small" variant="body">
+        <Typography color="textSecondary" component="p" size="small" variant="body">
           This is a fan-made project and is not affiliated with, endorsed by, or officially
           connected to Papergames or the Infinity Nikki development team. All game content, names,
           and assets are the property of their respective owners.

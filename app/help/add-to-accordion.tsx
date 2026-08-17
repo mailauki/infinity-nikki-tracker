@@ -41,7 +41,7 @@ export default function AddToHomeScreenAccordion() {
       <Typography component="h2" variant="headline">
         Add to home screen <AddToHomeScreen color="action" />
       </Typography>
-      <Typography color="textSecondary" size="large" sx={{ pb: 2 }} variant="body">
+      <Typography color="textSecondary" component="p" size="large" sx={{ pb: 2 }} variant="body">
         You can add this app to your home screen or bookmark bar for quick access — no app store
         required.
       </Typography>
@@ -49,14 +49,16 @@ export default function AddToHomeScreenAccordion() {
       <Stack spacing={1}>
         <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography size="large" variant="title">iOS / iPadOS (Safari)</Typography>
+            <Typography size="large" variant="title">
+              iOS / iPadOS (Safari)
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Open the app in <strong>Safari</strong>.
                     </Typography>
                   }
@@ -65,7 +67,7 @@ export default function AddToHomeScreenAccordion() {
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Tap the <strong>Share</strong> button (the box with an arrow pointing up) in
                       the toolbar.
                     </Typography>
@@ -75,7 +77,7 @@ export default function AddToHomeScreenAccordion() {
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Scroll down and tap <strong>Add to Home Screen</strong>.
                     </Typography>
                   }
@@ -84,7 +86,7 @@ export default function AddToHomeScreenAccordion() {
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Tap <strong>Add</strong> to confirm.
                     </Typography>
                   }
@@ -96,14 +98,16 @@ export default function AddToHomeScreenAccordion() {
 
         <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography size="large" variant="title">Android (Chrome)</Typography>
+            <Typography size="large" variant="title">
+              Android (Chrome)
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Open the app in <strong>Chrome</strong>.
                     </Typography>
                   }
@@ -112,7 +116,7 @@ export default function AddToHomeScreenAccordion() {
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Tap the <strong>three-dot menu</strong> in the top-right corner.
                     </Typography>
                   }
@@ -121,7 +125,7 @@ export default function AddToHomeScreenAccordion() {
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Tap <strong>Add to Home screen</strong> or <strong>Install app</strong> if
                       shown.
                     </Typography>
@@ -131,7 +135,7 @@ export default function AddToHomeScreenAccordion() {
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Tap <strong>Add</strong> to confirm.
                     </Typography>
                   }
@@ -143,14 +147,16 @@ export default function AddToHomeScreenAccordion() {
 
         <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography size="large" variant="title">Desktop (Chrome or Edge)</Typography>
+            <Typography size="large" variant="title">
+              Desktop (Chrome or Edge)
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Open the app in <strong>Chrome</strong> or <strong>Edge</strong>.
                     </Typography>
                   }
@@ -159,7 +165,7 @@ export default function AddToHomeScreenAccordion() {
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Click the <strong>install icon</strong> (a computer with a down arrow) in the
                       address bar, or open the <strong>three-dot menu</strong> and select{' '}
                       <strong>Save and share → Install page as app</strong>.
@@ -170,7 +176,7 @@ export default function AddToHomeScreenAccordion() {
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Click <strong>Install</strong> to confirm.
                     </Typography>
                   }
@@ -182,14 +188,16 @@ export default function AddToHomeScreenAccordion() {
 
         <Accordion expanded={expanded === 'panel4'} onChange={handleChange('panel4')}>
           <AccordionSummary expandIcon={<ExpandMore />}>
-            <Typography size="large" variant="title">Desktop (Safari on macOS)</Typography>
+            <Typography size="large" variant="title">
+              Desktop (Safari on macOS)
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <List dense sx={{ listStyle: 'decimal', pl: 4 }}>
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Open the app in <strong>Safari</strong>.
                     </Typography>
                   }
@@ -198,7 +206,7 @@ export default function AddToHomeScreenAccordion() {
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       From the menu bar, click <strong>File → Add to Dock</strong> (macOS Sonoma and
                       later).
                     </Typography>
@@ -208,7 +216,7 @@ export default function AddToHomeScreenAccordion() {
               <ListItem sx={{ display: 'list-item' }}>
                 <ListItemText
                   primary={
-                    <Typography color="textSecondary" variant="body">
+                    <Typography color="textSecondary" component="p" variant="body">
                       Click <strong>Add</strong> to confirm.
                     </Typography>
                   }

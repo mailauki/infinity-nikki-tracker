@@ -61,7 +61,11 @@ const AccordionSummary = styled((props: AccordionSummaryProps) => (
 export function QuickAccess() {
   return (
     <Box sx={{ py: 3 }}>
-      <Typography size="small" sx={{ display: 'block', textAlign: 'center', mb: 2 }} variant="label">
+      <Typography
+        size="small"
+        sx={{ display: 'block', textAlign: 'center', mb: 2, textTransform: 'uppercase' }}
+        variant="label"
+      >
         Quick Access
       </Typography>
       <SimpleGrid columns="1fr 1fr">
