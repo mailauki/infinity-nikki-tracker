@@ -51,12 +51,23 @@ export function SectionList({
       <List dense sx={{ listStyle: ordered ? 'decimal' : 'disc', pl: 4 }}>
         {bullets?.map((bullet, index) => (
           <ListItem key={index} sx={{ display: 'list-item' }}>
+            {/*
+              Style the primary slot rather than passing a <Typography> element as
+              `primary`: ListItemText already wraps the slot in its own Typography,
+              so an element here nests a <p> inside that <span>. Readability treats
+              the malformed block as boilerplate and drops the bullet, which silently
+              cost /about most of its links.
+            */}
             <ListItemText
-              primary={
-                <Typography color="textSecondary" component="p" size="large" variant="body">
-                  {bullet}
-                </Typography>
-              }
+              primary={bullet}
+              slotProps={{
+                primary: {
+                  color: 'textSecondary',
+                  component: 'p',
+                  size: 'large',
+                  variant: 'body',
+                },
+              }}
             />
           </ListItem>
         ))}
