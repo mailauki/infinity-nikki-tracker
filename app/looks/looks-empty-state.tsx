@@ -13,8 +13,8 @@ export default function LooksEmptyState() {
     >
       <AutoAwesomeIcon sx={{ fontSize: 48, color: 'text.disabled' }} />
       <Stack spacing={0.5}>
-        <Typography variant="subtitle1">No looks yet</Typography>
-        <Typography color="textSecondary" variant="body2">
+        <Typography size="large" variant="title">No looks yet</Typography>
+        <Typography color="textSecondary" variant="body">
           Mix and match eureka and outfit pieces to save your own custom looks.
         </Typography>
       </Stack>

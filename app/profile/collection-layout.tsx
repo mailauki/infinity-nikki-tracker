@@ -35,7 +35,7 @@ export function ChartCard({
   return (
     <Card variant="outlined">
       <CardHeader
-        slotProps={{ title: { color: 'text.secondary', variant: 'overline' } }}
+        slotProps={{ title: { color: 'text.secondary', variant: 'label', size: 'small' } }}
         sx={{ mt: -1 }}
         title={title}
       />

@@ -162,7 +162,7 @@ export default function FeedbackForm({ type, context, onClose }: FeedbackFormPro
             they are sending along with their words. */}
         {context && (
           <Box sx={{ mb: 1 }}>
-            <Typography color="text.secondary" id="feedback-context-label" variant="caption">
+            <Typography color="text.secondary" id="feedback-context-label" size="small" variant="body">
               Reporting about
             </Typography>
             <Box sx={{ mt: 0.5 }}>

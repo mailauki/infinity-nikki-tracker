@@ -79,7 +79,7 @@ export default function AppearanceSettings({
     <Container maxWidth="sm" sx={{ mx: 0 }}>
       <Stack spacing={3}>
         <Stack spacing={2}>
-          <Typography variant="subtitle1">Mode</Typography>
+          <Typography size="large" variant="title">Mode</Typography>
           <ToggleButtonGroup
             exclusive
             aria-label="theme"
@@ -101,7 +101,7 @@ export default function AppearanceSettings({
 
         {isLoggedIn && (
           <Stack spacing={2}>
-            <Typography variant="subtitle1">Default Sort</Typography>
+            <Typography size="large" variant="title">Default Sort</Typography>
             <ToggleButtonGroup
               exclusive
               aria-label="default sort order"
@@ -118,7 +118,7 @@ export default function AppearanceSettings({
                 Oldest first
               </ToggleButton>
             </ToggleButtonGroup>
-            <Typography color="textSecondary" variant="caption">
+            <Typography color="textSecondary" size="small" variant="body">
               Applies to the Eureka and Outfits collection views.
             </Typography>
           </Stack>
@@ -126,9 +126,9 @@ export default function AppearanceSettings({
 
         <Stack spacing={2}>
           <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-            <Typography variant="subtitle1">Color Theme</Typography>
+            <Typography size="large" variant="title">Color Theme</Typography>
             {!isPremium && (
-              <Typography color="primary" variant="caption">
+              <Typography color="primary" size="small" variant="body">
                 Premium
               </Typography>
             )}
@@ -187,8 +187,8 @@ export default function AppearanceSettings({
                           }}
                         />
                       </Stack>
-                      <Typography variant="subtitle2">{preset.label}</Typography>
-                      <Typography color="textSecondary" variant="caption">
+                      <Typography variant="title">{preset.label}</Typography>
+                      <Typography color="textSecondary" size="small" variant="body">
                         {preset.description}
                       </Typography>
                     </Stack>
@@ -212,7 +212,7 @@ export default function AppearanceSettings({
             })}
           </Box>
           {!isPremium && (
-            <Typography color="textSecondary" variant="caption">
+            <Typography color="textSecondary" size="small" variant="body">
               Unlock additional color themes with a one-time premium upgrade.
             </Typography>
           )}

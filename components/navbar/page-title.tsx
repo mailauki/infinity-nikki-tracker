@@ -36,7 +36,9 @@ export default function PageTitle() {
   const pageTitle = prefix ? `${prefix} ${bestMatch?.title ?? baseTitle}` : baseTitle
 
   return (
-    <Typography component="h1" sx={{ fontSize: 'subtitle2.fontSize' }} variant="overline">
+    // label/small styling at title/medium's size — the M3 scale no longer lives
+    // on theme.typography, so the size is set literally rather than by token.
+    <Typography component="h1" size="small" sx={{ fontSize: '1rem' }} variant="label">
       {pageTitle}
     </Typography>
   )

@@ -24,10 +24,10 @@ interface FeedbackReceiptProps {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <Box>
-      <Typography color="text.secondary" variant="overline">
+      <Typography color="text.secondary" size="small" variant="label">
         {label}
       </Typography>
-      <Typography sx={{ whiteSpace: 'pre-wrap' }} variant="body2">
+      <Typography sx={{ whiteSpace: 'pre-wrap' }} variant="body">
         {value}
       </Typography>
     </Box>
@@ -74,12 +74,12 @@ export default function FeedbackReceipt({
 
       <Stack direction="row" spacing={1} sx={{ alignItems: 'center', mb: 2 }}>
         <CheckCircleOutlineIcon color="success" />
-        <Typography ref={headingRef} component="h3" tabIndex={-1} variant="h6">
+        <Typography ref={headingRef} component="h3" size="small" tabIndex={-1} variant="headline">
           Thanks — we got it
         </Typography>
       </Stack>
 
-      <Typography color="text.secondary" sx={{ mb: 2 }} variant="body2">
+      <Typography color="text.secondary" sx={{ mb: 2 }} variant="body">
         Here is a copy of what you sent. There may not be an individual reply, but every report is
         read.
       </Typography>

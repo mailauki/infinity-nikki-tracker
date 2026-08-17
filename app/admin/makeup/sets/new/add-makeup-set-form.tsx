@@ -246,13 +246,13 @@ export default function AddMakeupSetForm({
         {!baseSet && <input name="order" type="hidden" value={1} />}
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Categories</Typography>
+          <Typography variant="title">Categories</Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {makeupCategories.map((c) => (
               <Chip key={c.slug} label={c.title ?? c.slug} size="small" />
             ))}
           </Box>
-          <Typography color="text.secondary" variant="caption">
+          <Typography color="text.secondary" size="small" variant="body">
             Every makeup set gets a variant for all categories.
           </Typography>
         </Stack>

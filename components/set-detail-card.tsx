@@ -59,7 +59,7 @@ export default function SetDetailCard({
       )}
       <CardContent>
         <Stack spacing={1.5}>
-          <Typography variant="subtitle1">
+          <Typography size="large" variant="title">
             {title}
             {titleSuffix && `: ${titleSuffix}`}
           </Typography>
@@ -74,7 +74,7 @@ export default function SetDetailCard({
             direction="row"
             sx={{ width: '100%', alignItems: 'center', justifyContent: 'space-between' }}
           >
-            <Typography color="textSecondary" variant="body1">
+            <Typography color="textSecondary" size="large" variant="body">
               {toTitle(style ?? '')}
             </Typography>
             <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center' }}>
@@ -93,7 +93,7 @@ export default function SetDetailCard({
             </Stack>
           ))}
           {description && (
-            <Typography sx={{ textWrap: 'wrap' }} variant="body2">
+            <Typography sx={{ textWrap: 'wrap' }} variant="body">
               {description}
             </Typography>
           )}

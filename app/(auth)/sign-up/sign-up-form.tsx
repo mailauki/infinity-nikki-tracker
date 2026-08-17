@@ -104,7 +104,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
             >
               {isLoading ? 'Creating an account...' : 'Sign up'}
             </Button>
-            <Typography color="textSecondary" variant="body1">
+            <Typography color="textSecondary" size="large" variant="body">
               Already have an account?{' '}
               <Anchor
                 color="textSecondary"

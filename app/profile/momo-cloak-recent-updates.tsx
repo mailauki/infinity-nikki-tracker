@@ -24,7 +24,7 @@ export default function MomoCloakRecentUpdates({ items }: { items: RecentObtaine
         disableTypography
         sx={{ pb: 0 }}
         title={
-          <Typography color="text.secondary" variant="overline">
+          <Typography color="text.secondary" size="small" variant="label">
             Recently Obtained
           </Typography>
         }
@@ -47,13 +47,13 @@ export default function MomoCloakRecentUpdates({ items }: { items: RecentObtaine
                     primary={title}
                     secondary={cloak ? <RarityStars rarity={cloak.rarity ?? 0} /> : null}
                     slotProps={{
-                      primary: { variant: 'body2' },
+                      primary: { variant: 'body' },
                       // RarityStars wraps a Stack (a div); the secondary slot
                       // defaults to <p>, which cannot legally contain one.
-                      secondary: { variant: 'caption', component: 'span' },
+                      secondary: { variant: 'body', size: 'small', component: 'span' },
                     }}
                   />
-                  <Typography color="text.secondary" variant="caption">
+                  <Typography color="text.secondary" size="small" variant="body">
                     {formatDate(item.created_at)}
                   </Typography>
                 </ListItemButton>

@@ -52,7 +52,7 @@ export function GapFilterChips<K extends string>({
 
 export function GapEmptyState({ message }: { message: string }) {
   return (
-    <Typography color="text.secondary" sx={{ py: 3, textAlign: 'center' }} variant="body2">
+    <Typography color="text.secondary" sx={{ py: 3, textAlign: 'center' }} variant="body">
       {message}
     </Typography>
   )
@@ -85,7 +85,7 @@ export function GapPaginationFooter({
         mt: 1.5,
       }}
     >
-      <Typography color="text.secondary" variant="caption">
+      <Typography color="text.secondary" size="small" variant="body">
         {from}–{to} of {total.toLocaleString()}
       </Typography>
       <Box sx={{ display: 'flex', gap: 1 }}>

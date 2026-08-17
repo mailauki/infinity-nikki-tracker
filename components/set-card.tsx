@@ -77,7 +77,7 @@ export default function SetCard({
           spacing={1}
           sx={{ px: 1, py: 2, maxWidth: isLoggedIn ? 'calc(100% - 40px)' : '100%' }}
         >
-          <Typography noWrap variant="overline">
+          <Typography noWrap size="small" variant="title">
             {title}
           </Typography>
           <RarityStars rarity={rarity} />

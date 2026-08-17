@@ -28,7 +28,7 @@ export default function Footer() {
         >
           {/* textSecondary, not textDisabled: this is real content, and MUI's
               disabled token (rgba(0,0,0,0.38)) is only 2.65:1 — below AA. */}
-          <Typography color="textSecondary" variant="caption">
+          <Typography color="textSecondary" size="small" variant="body">
             &copy; 2026 mailauki
           </Typography>
           <Stack direction="row" sx={{ gap: 0.5, alignItems: 'center' }}>

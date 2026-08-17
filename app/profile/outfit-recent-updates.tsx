@@ -23,7 +23,7 @@ export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOu
         disableTypography
         sx={{ pb: 0 }}
         title={
-          <Typography color="text.secondary" variant="overline">
+          <Typography color="text.secondary" size="small" variant="label">
             Recently Obtained
           </Typography>
         }
@@ -54,11 +54,11 @@ export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOu
                         : item.outfit_categories?.title
                     }
                     slotProps={{
-                      primary: { variant: 'body2' },
-                      secondary: { variant: 'caption' },
+                      primary: { variant: 'body' },
+                      secondary: { variant: 'body', size: 'small' },
                     }}
                   />
-                  <Typography color="text.secondary" variant="caption">
+                  <Typography color="text.secondary" size="small" variant="body">
                     {formatDate(item.created_at)}
                   </Typography>
                 </ListItemButton>

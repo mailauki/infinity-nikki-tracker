@@ -56,11 +56,11 @@ export default function AdminUnassignedPieces({ pieces }: { pieces: UnassignedPi
     <Card variant="outlined">
       <CardContent>
         <Box sx={{ alignItems: 'center', display: 'flex', flexWrap: 'wrap', gap: 1, mb: 0.5 }}>
-          <Typography component="p" variant="overline">
+          <Typography component="p" size="small" variant="label">
             Unassigned pieces
           </Typography>
         </Box>
-        <Typography color="text.secondary" sx={{ mb: 1.5 }} variant="body2">
+        <Typography color="text.secondary" sx={{ mb: 1.5 }} variant="body">
           Pieces with no owning set at all — each is edited on its own variant form, not through a
           set&apos;s. This usually means a broken reference worth fixing.
         </Typography>
@@ -97,8 +97,8 @@ export default function AdminUnassignedPieces({ pieces }: { pieces: UnassignedPi
                         primary={row.title}
                         secondary={row.entityTitle}
                         slotProps={{
-                          primary: { variant: 'body2', noWrap: true },
-                          secondary: { variant: 'caption' },
+                          primary: { variant: 'body', noWrap: true },
+                          secondary: { variant: 'body', size: 'small' },
                         }}
                       />
                     </ListItemButton>

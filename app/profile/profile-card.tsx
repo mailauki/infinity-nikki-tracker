@@ -121,7 +121,7 @@ export default function ProfileCard({
             )
           }
           subheader={
-            <Typography color="textSecondary" component="span" variant="body1">
+            <Typography color="textSecondary" component="span" size="large" variant="body">
               @{username ?? '—'}
             </Typography>
           }
@@ -130,7 +130,7 @@ export default function ProfileCard({
           sx={{ '& .MuiCardHeader-action': { alignSelf: 'center', m: 0 } }}
           title={
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              <Typography component="span" variant="h5">
+              <Typography component="span" variant="headline">
                 {displayName ?? '—'}
               </Typography>
               {isPremium && (

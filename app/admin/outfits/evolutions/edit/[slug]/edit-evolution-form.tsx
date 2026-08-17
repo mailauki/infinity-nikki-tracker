@@ -155,7 +155,7 @@ export default function EditEvolutionForm({
         />
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Gallery Images</Typography>
+          <Typography variant="title">Gallery Images</Typography>
           <CarouselImageUpload
             images={carouselImages}
             slug={currentSlug}
@@ -165,7 +165,7 @@ export default function EditEvolutionForm({
         </Stack>
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Evolution Set Images</Typography>
+          <Typography variant="title">Evolution Set Images</Typography>
           <ImageUploadPair
             altImage={altImageUrl}
             image={imageUrl}
@@ -179,7 +179,7 @@ export default function EditEvolutionForm({
 
         {variantRows.length > 0 && (
           <Stack spacing={1}>
-            <Typography variant="subtitle2">Variant Images</Typography>
+            <Typography variant="title">Variant Images</Typography>
             <Box
               sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
             >

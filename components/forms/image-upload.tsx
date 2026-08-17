@@ -158,7 +158,7 @@ export default function ImageUpload({
             direction="row"
             sx={{ py: 0.75, px: 1.25, alignItems: 'center', justifyContent: 'space-between' }}
           >
-            <Typography color="textSecondary" variant="caption">
+            <Typography color="textSecondary" size="small" variant="body">
               {caption}
             </Typography>
           </Stack>

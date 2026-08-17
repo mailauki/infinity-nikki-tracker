@@ -46,7 +46,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
         <Card>
           <CardHeader subheader="Password reset instructions sent" title="Check Your Email" />
           <CardContent>
-            <Typography color="textSecondary" variant="body2">
+            <Typography color="textSecondary" variant="body">
               If you registered using your email and password, you will receive a password reset
               email.
             </Typography>
@@ -83,7 +83,7 @@ export function ForgotPasswordForm({ className, ...props }: React.ComponentProps
               >
                 {isLoading ? 'Sending...' : 'Send reset email'}
               </Button>
-              <Typography color="textSecondary" variant="body1">
+              <Typography color="textSecondary" size="large" variant="body">
                 Already have an account?{' '}
                 <Anchor
                   color="textSecondary"

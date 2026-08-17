@@ -8,7 +8,7 @@ export const metadata = { title: 'Feedback' }
 export default function AdminFeedbackPage() {
   return (
     <Stack spacing={2}>
-      <Typography variant="h5">Feedback</Typography>
+      <Typography variant="headline">Feedback</Typography>
       <Suspense fallback={<Skeleton height={400} variant="rounded" />}>
         <FeedbackContent />
       </Suspense>

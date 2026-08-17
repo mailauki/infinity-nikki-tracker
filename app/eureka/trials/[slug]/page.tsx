@@ -51,7 +51,7 @@ async function Trial({ slug }: { slug: string }) {
       <SlugToolBar isAdmin={isAdmin} />
       <PageShell>
         <LazyImage image={trial.image_url!} kind="media" sx={{ height: 360 }} title={trial.title} />
-        <Typography variant="body2">{trial.description}</Typography>
+        <Typography variant="body">{trial.description}</Typography>
         <CardGrid sx={{ py: 0 }}>
           {trialSets.map((eurekaSet) => (
             <EurekaSetCard key={eurekaSet.slug} eurekaSet={eurekaSet} />

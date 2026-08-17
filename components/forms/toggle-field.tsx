@@ -23,7 +23,7 @@ export default function ToggleField({
   const labelId = `${name}-buttons-group-label`
   return (
     <FormControl>
-      <Typography component={FormLabel} id={labelId} variant="overline">
+      <Typography component={FormLabel} id={labelId} size="small" variant="label">
         {label}
       </Typography>
       <input name={name} type="hidden" value={value} />

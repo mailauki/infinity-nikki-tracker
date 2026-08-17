@@ -301,13 +301,13 @@ export default function EditMakeupSetForm({
         {!baseSet && <input name="order" type="hidden" value={1} />}
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Categories</Typography>
+          <Typography variant="title">Categories</Typography>
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
             {makeupCategories.map((c) => (
               <Chip key={c.slug} label={c.title ?? c.slug} size="small" />
             ))}
           </Box>
-          <Typography color="text.secondary" variant="caption">
+          <Typography color="text.secondary" size="small" variant="body">
             Every makeup set has a variant for all categories.
           </Typography>
         </Stack>
@@ -319,7 +319,7 @@ export default function EditMakeupSetForm({
         />
 
         <Stack spacing={1}>
-          <Typography variant="subtitle2">Set Images</Typography>
+          <Typography variant="title">Set Images</Typography>
           <ImageUploadPair
             altImage={altSetImage}
             image={setImage}
@@ -336,7 +336,7 @@ export default function EditMakeupSetForm({
 
         {variantRows.length > 0 && (
           <Stack spacing={1}>
-            <Typography variant="subtitle2">Variant Images</Typography>
+            <Typography variant="title">Variant Images</Typography>
             <Box
               sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
             >

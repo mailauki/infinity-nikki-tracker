@@ -18,8 +18,8 @@ export async function Hero() {
         subtitle={
           <Container fixed maxWidth="xs">
             <Typography
-              sx={{ fontSize: 20, textAlign: 'center', textWrap: 'auto', pb: 0.25 }}
-              variant="subtitle1"
+              size="large"
+              sx={{ fontSize: 20, textAlign: 'center', textWrap: 'auto', pb: 0.25 }} variant="title"
             >
               Track your collection from your favorite cozy open-world game
             </Typography>
@@ -34,7 +34,7 @@ export async function Hero() {
             'rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)',
         }}
         title={
-          <Typography noWrap component="h1" sx={{ textAlign: 'center', pb: 0.25 }} variant="h3">
+          <Typography noWrap component="h1" size="small" sx={{ textAlign: 'center', pb: 0.25 }} variant="display">
             Infinity Nikki Tracker
           </Typography>
         }

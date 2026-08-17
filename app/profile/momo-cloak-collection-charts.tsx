@@ -85,7 +85,7 @@ function CloakOverallChart({ obtained, total }: { obtained: number; total: numbe
                 flexShrink: 0,
               }}
             />
-            <Typography sx={{ flex: 1 }} variant="body2">
+            <Typography sx={{ flex: 1 }} variant="body">
               {row.text}
             </Typography>
             <ProgressChip obtained={row.obtained} total={row.total} variant="parts" />
@@ -266,7 +266,7 @@ function CloakRarityChart({ cloaks }: { cloaks: MomoCloak[] }) {
         },
       ].map(({ key, label, rows }) => (
         <Stack key={key} spacing={0.75}>
-          <Typography color="text.secondary" variant="caption">
+          <Typography color="text.secondary" size="small" variant="body">
             {label}
           </Typography>
           {rows.map((row) => (
@@ -280,7 +280,7 @@ function CloakRarityChart({ cloaks }: { cloaks: MomoCloak[] }) {
                   flexShrink: 0,
                 }}
               />
-              <Typography sx={{ flex: 1 }} variant="body2">
+              <Typography sx={{ flex: 1 }} variant="body">
                 {row.text}
               </Typography>
               <ProgressChip obtained={row.obtained} total={row.total} variant="parts" />

@@ -133,7 +133,7 @@ export default function CarouselImageUpload({
           ) : (
             <Stack sx={{ alignItems: 'center', gap: 0.5 }}>
               <AddPhotoAlternate color="action" />
-              <Typography color="textSecondary" variant="caption">
+              <Typography color="textSecondary" size="small" variant="body">
                 Add
               </Typography>
             </Stack>

@@ -12,7 +12,7 @@ function PieceRow({ label, pieces }: { label: string; pieces: Piece[] }) {
   if (pieces.length === 0) return null
   return (
     <Stack spacing={0.75}>
-      <Typography color="textSecondary" variant="caption">
+      <Typography color="textSecondary" size="small" variant="body">
         {label}
       </Typography>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
@@ -61,13 +61,13 @@ export default function LookDetail({
                 />
               )}
               <Stack spacing={0.5}>
-                <Typography variant="h6">{look.name}</Typography>
+                <Typography size="small" variant="headline">{look.name}</Typography>
                 {look.description && (
-                  <Typography color="textSecondary" variant="body2">
+                  <Typography color="textSecondary" variant="body">
                     {look.description}
                   </Typography>
                 )}
-                <Typography color="textSecondary" variant="caption">
+                <Typography color="textSecondary" size="small" variant="body">
                   {total} piece{total !== 1 ? 's' : ''}
                 </Typography>
               </Stack>
@@ -79,7 +79,7 @@ export default function LookDetail({
             <PieceRow label="Accessories" pieces={accessories} />
             <PieceRow label="Eureka" pieces={eureka} />
             {total === 0 && (
-              <Typography color="textSecondary" variant="body2">
+              <Typography color="textSecondary" variant="body">
                 This look has no pieces yet.
               </Typography>
             )}

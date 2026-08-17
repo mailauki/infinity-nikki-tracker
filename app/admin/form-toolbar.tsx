@@ -129,7 +129,7 @@ function ToolbarButton({ isMobile, label, icon, variant, ...props }: ToolbarButt
       >
         <Stack sx={{ alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
           <Chip color={variant === 'contained' ? 'primary' : 'default'} label={icon} size="small" />
-          <Typography noWrap variant="caption">
+          <Typography noWrap size="small" variant="body">
             {label}
           </Typography>
         </Stack>

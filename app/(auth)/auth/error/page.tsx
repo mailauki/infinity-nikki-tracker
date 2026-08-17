@@ -6,7 +6,7 @@ async function ErrorContent({ searchParams }: { searchParams: Promise<{ error: s
   const params = await searchParams
 
   return (
-    <Typography color="textSecondary" variant="body2">
+    <Typography color="textSecondary" variant="body">
       {params?.error ? `Code error: ${params.error}` : 'An unspecified error occurred.'}
     </Typography>
   )

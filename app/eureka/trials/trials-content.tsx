@@ -91,7 +91,7 @@ function TrialCard({ trial, isLoggedIn }: { trial: Total; isLoggedIn: boolean })
           )
         }
         title={
-          <Typography noWrap component="h2" sx={{ maxWidth: { xs: 300, sm: 360 } }} variant="h6">
+          <Typography noWrap component="h2" size="small" sx={{ maxWidth: { xs: 300, sm: 360 } }} variant="headline">
             {trial.title
               .split(' ')
               .filter((word) => word !== 'Trial' && word !== 'Phantom' && word !== 'Trial:')

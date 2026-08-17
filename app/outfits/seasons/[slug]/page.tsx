@@ -65,7 +65,7 @@ export default async function SeasonPage({ params }: Props) {
           title={season.title}
         />
         <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
-          <Typography component="h1" variant="h4">
+          <Typography component="h1" size="large" variant="headline">
             {season.title}
           </Typography>
           {isLoggedIn && (
@@ -76,7 +76,7 @@ export default async function SeasonPage({ params }: Props) {
             />
           )}
         </Stack>
-        <Typography variant="body2">{season.description}</Typography>
+        <Typography variant="body">{season.description}</Typography>
 
         <SeasonOverview
           isLoggedIn={isLoggedIn}
