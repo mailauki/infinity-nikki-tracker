@@ -14,15 +14,22 @@ import { cookies } from 'next/headers'
 import type { ColorTheme } from '@/lib/types/eureka'
 import { getUserID } from '@/hooks/user'
 import { getPreferences } from '@/hooks/data/preferences'
+import {
+  DEFAULT_TEXT_SCALE,
+  TEXT_SCALE_STORAGE_KEY,
+  rootFontSizePx,
+  toTextScale,
+  type TextScale,
+} from '@/lib/text-scale'
 import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import { SPLASH_BACKGROUND_DARK, SPLASH_BACKGROUND_LIGHT } from '@/lib/splash-colors'
 import LayoutShell from '@/components/navbar/layout-shell'
 import SplashScreen from './splash-screen'
 
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
+import '@fontsource/roboto/300.css'
+import '@fontsource/roboto/400.css'
+import '@fontsource/roboto/500.css'
+import '@fontsource/roboto/700.css'
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -60,12 +67,14 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
   await connection()
 
   let colorTheme: ColorTheme = 'default'
+  let textScale: TextScale = DEFAULT_TEXT_SCALE
   const user_id = await getUserID()
 
   if (user_id) {
     const prefs = await getPreferences(user_id)
     const saved = prefs.color_theme
     if (saved && (VALID_THEMES as string[]).includes(saved)) colorTheme = saved as ColorTheme
+    textScale = toTextScale(prefs.text_scale)
   }
 
   // Seed each drawer's open state from its persisted cookie so the content-pushing
@@ -75,7 +84,7 @@ async function ThemedApp({ children }: { children: React.ReactNode }) {
   const initialSidebarOpen = cookieStore.get(SIDEBAR_STORAGE_KEY)?.value === 'true'
 
   return (
-    <ThemeClientProvider colorTheme={colorTheme}>
+    <ThemeClientProvider colorTheme={colorTheme} textScale={textScale}>
       <CssBaseline />
       <DrawerStateProvider
         initialDrawerOpen={initialDrawerOpen}
@@ -97,12 +106,21 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      suppressHydrationWarning
-      lang="en"
-    >
+    <html suppressHydrationWarning lang="en">
       <body>
         <InitColorSchemeScript attribute="class" defaultMode="system" />
+        {/*
+          Applies the saved text scale before first paint. The preference is
+          owned by the database, but the server render happens before we know
+          the viewer, and reading it after hydration would let every page paint
+          at the default size and then visibly resize. localStorage is the only
+          store readable this early; ColorThemeProvider keeps it mirrored.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var s=localStorage.getItem('${TEXT_SCALE_STORAGE_KEY}');var m={compact:${rootFontSizePx('compact')},comfortable:${rootFontSizePx('comfortable')},large:${rootFontSizePx('large')}};if(s&&m[s])document.documentElement.style.fontSize=m[s]+'px'}catch(e){}})()`,
+          }}
+        />
         <AppRouterCacheProvider options={{ key: 'css' }}>
           <Suspense fallback={<SplashScreen />}>
             <ThemedApp>{children}</ThemedApp>

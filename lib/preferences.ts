@@ -13,6 +13,7 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   eureka_trial: null,
   theme: 'system',
   color_theme: 'default',
+  text_scale: 'default',
   outfit_set_filter: null,
   outfit_category_filter: null,
   outfit_evolution_filter: null,

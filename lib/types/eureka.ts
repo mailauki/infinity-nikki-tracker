@@ -87,6 +87,7 @@ export type UserPreferences = Pick<
   | 'eureka_trial'
   | 'theme'
   | 'color_theme'
+  | 'text_scale'
   | 'outfit_set_filter'
   | 'outfit_category_filter'
   | 'outfit_evolution_filter'

@@ -81,3 +81,7 @@ export async function updateColorTheme(value: string) {
 export async function updateSortDir(value: SortDir) {
   await upsertUserPreference({ sort_order: value })
 }
+
+export async function updateTextScale(value: string) {
+  await upsertUserPreference({ text_scale: value })
+}
