@@ -65,7 +65,7 @@ export default function CardShell({
   children: ReactNode
 }) {
   const card = (
-    <Card elevation={raised ? 3 : 1} sx={{ position: 'relative', flexGrow: 1 }}>
+    <Card level={raised ? 'high' : 'low'} sx={{ position: 'relative', flexGrow: 1 }}>
       {children}
       {topLeft && <Box sx={{ position: 'absolute', top: 12, left: 12 }}>{topLeft}</Box>}
       {topRight && <Box sx={{ position: 'absolute', top: 8, right: 8 }}>{topRight}</Box>}

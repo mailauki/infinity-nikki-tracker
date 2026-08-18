@@ -14,7 +14,7 @@ const AVATAR_PX = 94
 function HeroSkeleton() {
   return (
     <Card
-      surface="main"
+      surface="base"
       sx={{ position: 'relative', borderRadius: 0, height: '100%', overflow: 'hidden', mx: 1 }}
     >
       {/* Stands in for the banner image behind the gradient. */}

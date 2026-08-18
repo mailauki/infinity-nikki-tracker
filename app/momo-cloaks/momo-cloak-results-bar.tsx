@@ -7,6 +7,7 @@ import ProgressChip from '@/components/progress-chip'
 
 import { useMomoCloakData } from './momo-cloak-context'
 import { useVisibleCloaks } from './use-visible-cloaks'
+import { TRANSLUCENT_SURFACE } from '@/lib/theme'
 
 export default function MomoCloakResultsBar() {
   const { cloaks, obtainedSlugs, isLoggedIn, isObtainedError, isError } = useMomoCloakData()
@@ -28,7 +29,7 @@ export default function MomoCloakResultsBar() {
         <Chip
           color="secondary"
           label={`Showing: ${visible.length} results`}
-          sx={{ backgroundColor: 'surface.mainHover', backdropFilter: 'blur(8px)' }}
+          sx={{ backgroundColor: TRANSLUCENT_SURFACE, backdropFilter: 'blur(8px)' }}
           variant="outlined"
         />
         {isLoggedIn && !isObtainedError && (

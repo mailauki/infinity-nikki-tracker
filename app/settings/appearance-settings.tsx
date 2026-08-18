@@ -214,7 +214,7 @@ export default function AppearanceSettings({
                             width: 20,
                             height: 20,
                             borderRadius: '50%',
-                            backgroundColor: preset.light.primary,
+                            backgroundColor: preset.light.primary.main,
                           }}
                         />
                         <Box
@@ -222,7 +222,7 @@ export default function AppearanceSettings({
                             width: 20,
                             height: 20,
                             borderRadius: '50%',
-                            backgroundColor: preset.light.secondary,
+                            backgroundColor: preset.light.secondary.main,
                           }}
                         />
                         <Box
@@ -230,7 +230,7 @@ export default function AppearanceSettings({
                             width: 20,
                             height: 20,
                             borderRadius: '50%',
-                            backgroundColor: preset.light.tertiary,
+                            backgroundColor: preset.light.tertiary.main,
                           }}
                         />
                       </Stack>

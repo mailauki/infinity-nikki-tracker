@@ -59,7 +59,7 @@ export default function ProfileCard({
 
   return (
     <Card
-      surface="main"
+      surface="base"
       sx={{ position: 'relative', borderRadius: 0, height: '100%', overflow: 'hidden', mx: 1 }}
     >
       {/* The hero fills the card rather than driving its height, so the card can
