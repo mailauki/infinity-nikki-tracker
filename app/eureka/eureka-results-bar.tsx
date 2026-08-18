@@ -3,6 +3,7 @@
 import { Chip } from '@mui/material'
 import StickyBar from '@/components/navbar/sticky-bar'
 import { useEurekaData } from '@/components/eureka/eureka-context'
+import { TRANSLUCENT_SURFACE } from '@/lib/theme'
 
 export default function EurekaResultsBar() {
   const { eurekaSets, showByColor, filters } = useEurekaData()
@@ -55,7 +56,7 @@ export default function EurekaResultsBar() {
       <Chip
         color="secondary"
         label={`Showing: ${resultsCount} results`}
-        sx={{ backgroundColor: 'surface.mainHover', backdropFilter: 'blur(8px)' }}
+        sx={{ backgroundColor: TRANSLUCENT_SURFACE, backdropFilter: 'blur(8px)' }}
         variant="outlined"
       />
     </StickyBar>

@@ -1,11 +1,5 @@
 'use client'
-import {
-  alpha,
-  createTheme,
-  type CSSObject,
-  type Theme,
-  type ThemeOptions,
-} from '@mui/material/styles'
+import { createTheme, type CSSObject, type Theme, type ThemeOptions } from '@mui/material/styles'
 import { AvatarSize } from './types/props'
 import { toggleButtonGroupClasses } from '@mui/material'
 
@@ -15,53 +9,88 @@ const toggleButtonEdgeStyle = {
   '&.Mui-disabled': { borderColor: 'transparent' },
 } as const
 
-// M3 Filled Paper: resting-only filled surfaces selected by either the numeric
-// `elevation` (M3 0-5 ladder) or the named `surface` prop. Both resolve to the
-// active color scheme via theme.vars (CSS variables) so they switch with dark mode.
-type FilledSurfaceTone =
-  | 'main'
-  | 'dim'
-  | 'bright'
-  | 'containerLowest'
-  | 'containerLow'
-  | 'container'
-  | 'containerHigh'
-  | 'containerHighest'
+// Resolves a palette lookup to its CSS variable when the theme is in
+// CSS-variables mode, and to the literal color otherwise. Reading
+// `theme.palette.*` directly inside a styleOverride freezes the value to the
+// default color scheme — under `cssVariables` one class swaps both schemes, so
+// anything derived from a palette color has to go through here to survive dark
+// mode.
+const paletteToken = (theme: Theme, pick: (palette: Theme['palette']) => string): string =>
+  pick(((theme.vars ?? theme) as Theme).palette)
 
-const restingFilled = { border: 0, boxShadow: 'none' } as const
+// A translucent version of a palette token. `alpha()` cannot parse `var(...)`,
+// and `color-mix` against `transparent` in sRGB resolves to exactly the rgba()
+// `alpha()` would have produced, so the CSS variable keeps flowing through.
+const withOpacity = (token: string, opacity: number) =>
+  `color-mix(in srgb, ${token} ${opacity * 100}%, transparent)`
 
-const filledElevationTone: Record<number, FilledSurfaceTone> = {
-  0: 'containerLowest',
-  1: 'containerLow',
-  2: 'container',
-  3: 'containerHigh',
-  4: 'containerHigh',
-  5: 'containerHighest',
+/**
+ * Semi-transparent `surface.main` for the blurred sticky bars. Exported rather
+ * than written at the call sites because it has to be a color-mix over the CSS
+ * variable — an `sx` callback reaching for `theme.palette.surface.main` would
+ * pin the bars to the light scheme.
+ */
+export const TRANSLUCENT_SURFACE = withOpacity('var(--mui-palette-surface-main)', 0.7)
+
+// The M3 surface ladder, split into a role (`surface`) and a step (`level`) the
+// same way the type scale splits `variant` from `size`. Call sites read
+// `<Card surface="container" level="high">` rather than naming a flattened
+// `containerHigh` token.
+export type SurfaceRole = 'base' | 'dim' | 'bright' | 'container'
+
+export type SurfaceLevel = 'lowest' | 'low' | 'medium' | 'high' | 'highest'
+
+// The container role's five steps. `medium` is the ladder's midpoint and the
+// step a call site gets when it names the role alone, mirroring how `medium` is
+// the type scale's default size.
+const M3_CONTAINER_TONE: Record<SurfaceLevel, keyof Theme['palette']['surface']> = {
+  lowest: 'containerLowest',
+  low: 'containerLow',
+  medium: 'container',
+  high: 'containerHigh',
+  highest: 'containerHighest',
 }
 
-const filledSurfaceTone: Record<'base' | 'main' | 'dim' | 'bright', FilledSurfaceTone> = {
+const M3_DEFAULT_SURFACE_LEVEL: SurfaceLevel = 'medium'
+
+// One tone per role, used whenever no `level` applies. M3 gives steps to the
+// container role only — `dim`, the base surface and `bright` are single fixed
+// tones — so `level` is inert on the other three.
+const M3_SURFACE_TONE: Record<SurfaceRole, keyof Theme['palette']['surface']> = {
   base: 'main',
-  main: 'main',
   dim: 'dim',
   bright: 'bright',
+  container: M3_CONTAINER_TONE[M3_DEFAULT_SURFACE_LEVEL],
 }
 
+// The role a bare `variant="filled"` falls back to when no `surface` is named.
+const M3_DEFAULT_SURFACE_ROLE: SurfaceRole = 'base'
+
+// M3 filled surfaces are resting-only: a flat tonal fill, no shadow and no
+// border. `elevation` plays no part in picking the tone — it stays MUI's plain
+// shadow number for `variant="elevation"` papers.
+const restingFilled = { border: 0, boxShadow: 'none' } as const
+
+const filledSurface = (tone: keyof Theme['palette']['surface']) => ({
+  props: { variant: 'filled' as const },
+  style: ({ theme }: { theme: Theme }) => ({
+    ...restingFilled,
+    backgroundColor: paletteToken(theme, (p) => p.surface[tone]),
+  }),
+})
+
+// MUI applies every variant whose `props` match, in source order, so the
+// broadest rule is listed first and the most specific one wins:
+// bare `filled` -> role -> role + level.
 const filledPaperVariants = [
-  // numeric M3 elevation ladder (0-5)
-  ...Object.entries(filledElevationTone).map(([elevation, tone]) => ({
-    props: { variant: 'filled' as const, elevation: Number(elevation) },
-    style: ({ theme }: { theme: Theme }) => ({
-      ...restingFilled,
-      backgroundColor: theme.vars?.palette.surface[tone] ?? theme.palette.surface[tone],
-    }),
+  filledSurface(M3_SURFACE_TONE[M3_DEFAULT_SURFACE_ROLE]),
+  ...(Object.keys(M3_SURFACE_TONE) as SurfaceRole[]).map((surface) => ({
+    ...filledSurface(M3_SURFACE_TONE[surface]),
+    props: { variant: 'filled' as const, surface },
   })),
-  // named M3 surface roles (ordered after elevation so `surface` wins when both set)
-  ...Object.entries(filledSurfaceTone).map(([surface, tone]) => ({
-    props: { variant: 'filled' as const, surface: surface as 'base' | 'main' | 'dim' | 'bright' },
-    style: ({ theme }: { theme: Theme }) => ({
-      ...restingFilled,
-      backgroundColor: theme.vars?.palette.surface[tone] ?? theme.palette.surface[tone],
-    }),
+  ...(Object.keys(M3_CONTAINER_TONE) as SurfaceLevel[]).map((level) => ({
+    ...filledSurface(M3_CONTAINER_TONE[level]),
+    props: { variant: 'filled' as const, surface: 'container' as const, level },
   })),
 ]
 
@@ -85,7 +114,10 @@ declare module '@mui/material/ToggleButtonGroup' {
 declare module '@mui/material/Paper' {
   interface PaperOwnProps {
     color?: 'surface'
-    surface?: 'base' | 'main' | 'dim' | 'bright'
+    // The M3 surface role, and the step within it. Both only mean anything on
+    // `variant="filled"`; an elevation paper still reads plain `elevation`.
+    surface?: SurfaceRole
+    level?: SurfaceLevel
   }
   interface PaperPropsVariantOverrides {
     filled: true
@@ -237,58 +269,54 @@ declare module '@mui/material/Link' {
 }
 
 declare module '@mui/material/styles' {
+  // The M3 tonal roles every accent color carries. `contrastText` is MUI's name
+  // for the same token M3 calls `on-<role>`, so both are populated from one
+  // preset value in buildColorSchemes.
   interface PaletteColor {
-    // M3 tonal roles for primary/secondary/tertiary
     on: string
     container: string
     onContainer: string
-    // M3 surface roles (surface palette only)
-    dim: string
-    dimHover: string
-    main: string
-    mainHover: string
-    bright: string
-    brightHover: string
-    containerLowest: string
-    containerLowestHover: string
-    containerLow: string
-    containerLowHover: string
-    containerHover: string
-    containerHigh: string
-    containerHighHover: string
-    containerHighest: string
-    containerHighestHover: string
   }
 
-  interface SurfacePaletteColorOptions {
-    dim?: string
-    dimHover?: string
-    main?: string
-    mainHover?: string
-    bright?: string
-    brightHover?: string
-    containerLowest?: string
-    containerLowestHover?: string
-    containerLow?: string
-    containerLowHover?: string
+  interface SimplePaletteColorOptions {
+    on?: string
     container?: string
-    containerHover?: string
-    containerHigh?: string
-    containerHighHover?: string
-    containerHighest?: string
-    containerHighestHover?: string
+    onContainer?: string
+  }
+
+  // The M3 surface roles. Deliberately not a PaletteColor — a surface has no
+  // light/dark/contrastText pair, it has the container ladder plus its content
+  // tones.
+  interface SurfacePalette {
+    main: string
+    dim: string
+    bright: string
+    containerLowest: string
+    containerLow: string
+    container: string
+    containerHigh: string
+    containerHighest: string
+    on: string
+    onVariant: string
+    variant: string
+    inverse: string
+    inverseOn: string
   }
 
   interface Palette {
-    surface: Palette['primary']
-    tertiary: Palette['primary']
-    neutral: Palette['primary']
+    surface: SurfacePalette
+    tertiary: PaletteColor
+    outline: string
+    outlineVariant: string
+    inversePrimary: string
   }
 
   interface PaletteOptions {
-    surface?: SurfacePaletteColorOptions
+    surface?: SurfacePalette
     tertiary?: PaletteOptions['primary']
-    neutral?: PaletteOptions['primary']
+    outline?: string
+    outlineVariant?: string
+    inversePrimary?: string
   }
 }
 
@@ -392,8 +420,12 @@ export const baseThemeOptions: ThemeOptions = {
     },
     MuiCard: {
       defaultProps: {
+        // M3's elevated card tone. Named through the role/step pair rather than
+        // an elevation number so the card's fill and MUI's shadow ladder stay
+        // separate concerns.
         variant: 'filled',
-        elevation: 1,
+        surface: 'container',
+        level: 'low',
       },
       styleOverrides: {
         root: {
@@ -503,52 +535,58 @@ export const baseThemeOptions: ThemeOptions = {
           variants: [
             {
               props: { variant: 'filled', color: 'primary' },
-              style: ({ theme }) => ({
-                backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                borderRadius: '6px',
-                '&:hover': {
-                  borderRadius: '12px',
-                  backgroundColor: alpha(theme.palette.primary.main, 0.16),
-                },
-                '&.Mui-selected': {
-                  borderRadius: '40px',
-                  backgroundColor: theme.palette.primary.main,
-                  color: theme.palette.primary.contrastText,
-                },
-                '&.Mui-selected:hover': {
-                  borderRadius: '12px',
-                  backgroundColor: alpha(theme.palette.primary.main, 0.84),
-                  color: theme.palette.primary.contrastText,
-                },
-                '&.Mui-disabled': {
-                  backgroundColor: alpha(theme.palette.primary.main, 0.12),
-                },
-              }),
+              style: ({ theme }) => {
+                const main = paletteToken(theme, (p) => p.primary.main)
+                return {
+                  backgroundColor: withOpacity(main, 0.08),
+                  borderRadius: '6px',
+                  '&:hover': {
+                    borderRadius: '12px',
+                    backgroundColor: withOpacity(main, 0.16),
+                  },
+                  '&.Mui-selected': {
+                    borderRadius: '40px',
+                    backgroundColor: main,
+                    color: paletteToken(theme, (p) => p.primary.contrastText),
+                  },
+                  '&.Mui-selected:hover': {
+                    borderRadius: '12px',
+                    backgroundColor: withOpacity(main, 0.84),
+                    color: paletteToken(theme, (p) => p.primary.contrastText),
+                  },
+                  '&.Mui-disabled': {
+                    backgroundColor: withOpacity(main, 0.12),
+                  },
+                }
+              },
             },
             {
               props: { variant: 'filled', color: 'secondary' },
-              style: ({ theme }) => ({
-                backgroundColor: alpha(theme.palette.secondary.main, 0.12),
-                borderRadius: '6px',
-                borderColor: 'transparent',
-                '&:hover': {
-                  borderRadius: '12px',
-                  backgroundColor: alpha(theme.palette.secondary.main, 0.24),
-                },
-                '&.Mui-selected': {
-                  borderRadius: '40px',
-                  backgroundColor: theme.palette.secondary.main,
-                  color: theme.palette.secondary.contrastText,
-                },
-                '&.Mui-selected:hover': {
-                  borderRadius: '12px',
-                  backgroundColor: alpha(theme.palette.secondary.main, 0.84),
-                  color: theme.palette.secondary.contrastText,
-                },
-                '&.Mui-disabled': {
-                  backgroundColor: alpha(theme.palette.secondary.main, 0.12),
-                },
-              }),
+              style: ({ theme }) => {
+                const main = paletteToken(theme, (p) => p.secondary.main)
+                return {
+                  backgroundColor: withOpacity(main, 0.12),
+                  borderRadius: '6px',
+                  borderColor: 'transparent',
+                  '&:hover': {
+                    borderRadius: '12px',
+                    backgroundColor: withOpacity(main, 0.24),
+                  },
+                  '&.Mui-selected': {
+                    borderRadius: '40px',
+                    backgroundColor: main,
+                    color: paletteToken(theme, (p) => p.secondary.contrastText),
+                  },
+                  '&.Mui-selected:hover': {
+                    borderRadius: '12px',
+                    backgroundColor: withOpacity(main, 0.84),
+                    color: paletteToken(theme, (p) => p.secondary.contrastText),
+                  },
+                  '&.Mui-disabled': {
+                    backgroundColor: withOpacity(main, 0.12),
+                  },
+                }
+              },
             },
           ],
         },
@@ -593,7 +631,7 @@ export const baseThemeOptions: ThemeOptions = {
     MuiDrawer: {
       defaultProps: {
         slotProps: {
-          paper: { variant: 'filled', surface: 'main' },
+          paper: { variant: 'filled', surface: 'base' },
         },
       },
     },
@@ -604,21 +642,36 @@ export const baseThemeOptions: ThemeOptions = {
             {
               props: { variant: 'filled', color: 'default' },
               style: ({ theme }) => ({
-                backgroundColor: alpha(theme.palette.secondary.main, 0.12),
+                backgroundColor: withOpacity(
+                  paletteToken(theme, (p) => p.secondary.main),
+                  0.12
+                ),
               }),
             },
             {
               props: { variant: 'outlined', color: 'default' },
               style: ({ theme }) => ({
-                backgroundColor: alpha(theme.palette.secondary.main, 0.04),
-                borderColor: alpha(theme.palette.secondary.main, 0.44),
+                backgroundColor: withOpacity(
+                  paletteToken(theme, (p) => p.secondary.main),
+                  0.04
+                ),
+                borderColor: withOpacity(
+                  paletteToken(theme, (p) => p.secondary.main),
+                  0.44
+                ),
               }),
             },
             {
               props: { variant: 'outlined', color: 'success' },
               style: ({ theme }) => ({
-                backgroundColor: alpha(theme.palette.success.main, 0.04),
-                borderColor: alpha(theme.palette.success.main, 0.44),
+                backgroundColor: withOpacity(
+                  paletteToken(theme, (p) => p.success.main),
+                  0.04
+                ),
+                borderColor: withOpacity(
+                  paletteToken(theme, (p) => p.success.main),
+                  0.44
+                ),
               }),
             },
           ],
@@ -632,7 +685,10 @@ export const baseThemeOptions: ThemeOptions = {
             {
               props: { color: 'tertiary' },
               style: ({ theme }) => ({
-                backgroundColor: alpha(theme.palette.tertiary.main, 0.24),
+                backgroundColor: withOpacity(
+                  paletteToken(theme, (p) => p.tertiary.main),
+                  0.24
+                ),
               }),
             },
           ],

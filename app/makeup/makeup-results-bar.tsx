@@ -6,6 +6,7 @@ import { matchesObtainedFilter } from '@/hooks/outfit'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
 import { useMakeupData } from '@/components/makeup/makeup-context'
 import { useMakeupImageMode } from '@/components/makeup/makeup-image-mode-context'
+import { TRANSLUCENT_SURFACE } from '@/lib/theme'
 
 export default function MakeupResultsBar() {
   const { makeupSets, groupBySet, filters } = useMakeupData()
@@ -101,7 +102,7 @@ export default function MakeupResultsBar() {
       <Chip
         color="secondary"
         label={`Showing: ${resultsCount} results`}
-        sx={{ backgroundColor: 'surface.mainHover', backdropFilter: 'blur(8px)' }}
+        sx={{ backgroundColor: TRANSLUCENT_SURFACE, backdropFilter: 'blur(8px)' }}
         variant="outlined"
       />
     </StickyBar>

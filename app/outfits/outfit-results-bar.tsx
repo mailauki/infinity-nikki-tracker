@@ -5,6 +5,7 @@ import StickyBar from '@/components/navbar/sticky-bar'
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
+import { TRANSLUCENT_SURFACE } from '@/lib/theme'
 
 const STANDALONE_SLUG = 'standalone_pieces'
 
@@ -135,7 +136,7 @@ export default function OutfitResultsBar({
       <Chip
         color="secondary"
         label={`Showing: ${resultsCount} results`}
-        sx={{ backgroundColor: 'surface.mainHover', backdropFilter: 'blur(8px)' }}
+        sx={{ backgroundColor: TRANSLUCENT_SURFACE, backdropFilter: 'blur(8px)' }}
         variant="outlined"
       />
     </StickyBar>
