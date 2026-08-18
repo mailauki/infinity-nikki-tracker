@@ -35,7 +35,8 @@ export const TRANSLUCENT_SURFACE = withOpacity('var(--mui-palette-surface-main)'
 // The M3 surface ladder, split into a role (`surface`) and a step (`level`) the
 // same way the type scale splits `variant` from `size`. Call sites read
 // `<Card surface="container" level="high">` rather than naming a flattened
-// `containerHigh` token.
+// `containerHigh` token. A paper joins the ladder by naming a role — see
+// filledPaperVariants for why `variant="filled"` alone is not enough.
 export type SurfaceRole = 'base' | 'dim' | 'bright' | 'container'
 
 export type SurfaceLevel = 'lowest' | 'low' | 'medium' | 'high' | 'highest'
@@ -63,27 +64,28 @@ const M3_SURFACE_TONE: Record<SurfaceRole, keyof Theme['palette']['surface']> = 
   container: M3_CONTAINER_TONE[M3_DEFAULT_SURFACE_LEVEL],
 }
 
-// The role a bare `variant="filled"` falls back to when no `surface` is named.
-const M3_DEFAULT_SURFACE_ROLE: SurfaceRole = 'base'
-
 // M3 filled surfaces are resting-only: a flat tonal fill, no shadow and no
 // border. `elevation` plays no part in picking the tone — it stays MUI's plain
 // shadow number for `variant="elevation"` papers.
 const restingFilled = { border: 0, boxShadow: 'none' } as const
 
 const filledSurface = (tone: keyof Theme['palette']['surface']) => ({
-  props: { variant: 'filled' as const },
   style: ({ theme }: { theme: Theme }) => ({
     ...restingFilled,
     backgroundColor: paletteToken(theme, (p) => p.surface[tone]),
   }),
 })
 
-// MUI applies every variant whose `props` match, in source order, so the
-// broadest rule is listed first and the most specific one wins:
-// bare `filled` -> role -> role + level.
+// Every rule requires `surface`, never `variant="filled"` on its own. These
+// styleOverrides land on MuiPaper, so they reach every Paper-derived component
+// — including ones that already define their own `filled` (Alert, and any
+// future MUI addition), where a surface tone would be plain wrong. Naming a
+// role is what opts a paper into the ladder, so those components never match:
+// they pass `variant="filled"` but no `surface`, and are left entirely alone.
+//
+// MUI applies every variant whose `props` match, in source order, so the role
+// rules come first and the role + level rules win over them.
 const filledPaperVariants = [
-  filledSurface(M3_SURFACE_TONE[M3_DEFAULT_SURFACE_ROLE]),
   ...(Object.keys(M3_SURFACE_TONE) as SurfaceRole[]).map((surface) => ({
     ...filledSurface(M3_SURFACE_TONE[surface]),
     props: { variant: 'filled' as const, surface },
@@ -114,8 +116,10 @@ declare module '@mui/material/ToggleButtonGroup' {
 declare module '@mui/material/Paper' {
   interface PaperOwnProps {
     color?: 'surface'
-    // The M3 surface role, and the step within it. Both only mean anything on
-    // `variant="filled"`; an elevation paper still reads plain `elevation`.
+    // The M3 surface role, and the step within it. Both only mean anything
+    // alongside `variant="filled"`; an elevation paper still reads plain
+    // `elevation`. Declared here so they reach Paper and everything built on it
+    // (Card, the Drawer/Dialog paper slots), and nothing else.
     surface?: SurfaceRole
     level?: SurfaceLevel
   }

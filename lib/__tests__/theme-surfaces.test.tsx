@@ -1,6 +1,9 @@
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import Alert from '@mui/material/Alert'
+import AppBar from '@mui/material/AppBar'
 import Card from '@mui/material/Card'
 import Paper from '@mui/material/Paper'
+import SnackbarContent from '@mui/material/SnackbarContent'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { baseThemeOptions } from '../theme'
@@ -52,9 +55,11 @@ function backgroundOf(testId: string) {
 }
 
 describe('M3 filled surfaces', () => {
-  it('falls back to the base surface when only the variant is named', () => {
+  it('leaves a paper alone when it names no role, however it is filled', () => {
+    // The scoping rule: `variant="filled"` on its own picks no tone, so a
+    // Paper-derived component that means something else by "filled" is safe.
     renderWithTheme(<Paper data-testid="paper" variant="filled" />)
-    expect(backgroundOf('paper')).toBe(surfaceVar('main'))
+    expect(backgroundOf('paper')).not.toContain('surface-')
   })
 
   it.each([
@@ -95,7 +100,7 @@ describe('M3 filled surfaces', () => {
   })
 
   it('gives filled papers no shadow, whatever the elevation says', () => {
-    renderWithTheme(<Paper data-testid="paper" elevation={5} variant="filled" />)
+    renderWithTheme(<Paper data-testid="paper" elevation={5} surface="base" variant="filled" />)
     expect(getComputedStyle(screen.getByTestId('paper')).boxShadow).toBe('none')
   })
 
@@ -118,6 +123,37 @@ describe('M3 filled surfaces', () => {
       <Paper data-testid="paper" level="highest" surface="container" variant="filled" />
     )
     expect(backgroundOf('paper')).toBe(surfaceVar('containerHighest'))
+  })
+})
+
+// MuiPaper's styleOverrides reach every component built on Paper, so the ladder
+// has to stay off the ones that already give `variant="filled"` their own
+// meaning.
+describe('components built on Paper that own their fill', () => {
+  it('leaves a filled Alert on its severity color', () => {
+    renderWithTheme(
+      <Alert data-testid="alert" severity="success" variant="filled">
+        done
+      </Alert>
+    )
+    expect(backgroundOf('alert')).toBe('var(--mui-palette-Alert-successFilledBg)')
+  })
+
+  it('leaves SnackbarContent on its own fill', () => {
+    renderWithTheme(<SnackbarContent data-testid="snackbar" message="saved" />)
+    expect(backgroundOf('snackbar')).toBe('var(--mui-palette-SnackbarContent-bg)')
+  })
+
+  it('leaves a filled AppBar on its own background', () => {
+    // AppBar drives its own --AppBar-background and its styleOverrides land
+    // after MuiPaper's, so it wins the cascade either way — the point here is
+    // that MuiPaper no longer emits a competing surface fill for it at all.
+    renderWithTheme(
+      <AppBar color="transparent" data-testid="appbar" variant="filled">
+        nav
+      </AppBar>
+    )
+    expect(backgroundOf('appbar')).toBe('var(--AppBar-background)')
   })
 })
 
