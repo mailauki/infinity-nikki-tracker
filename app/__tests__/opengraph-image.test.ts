@@ -35,12 +35,16 @@ describe('static opengraph image', () => {
 
   // The real assertion: no *text* may fall outside the square-crop safe zone.
   //
-  // Text is detected as dark pixels that cluster into horizontal runs — a
-  // glyph stem is several dark pixels wide on a row, and a word is many such
-  // runs on the same rows. Real artwork also contains dark pixels (the dress
-  // in the left strip has dark seam detail), so a naive "any dark pixel"
-  // check reports those as text. Counting only sustained runs separates a
-  // letterform from a few dark pixels of illustration.
+  // Detected by local contrast, not by absolute brightness. An earlier version
+  // looked for dark pixels, which silently stopped meaning anything when the
+  // card moved to the dark palette — on a dark background every pixel is
+  // "dark", and the check reported the empty margin as 272 rows of text.
+  //
+  // Glyph edges are high-frequency: a stem produces a sharp luminance step
+  // over 1-2px, repeatedly, along a row. Artwork and the background gradient
+  // are smooth by comparison. Counting sharp horizontal transitions therefore
+  // finds letterforms on a light OR dark ground, and does not fire on the
+  // illustration detail that a brightness threshold kept tripping over.
   it('keeps all text inside the square-crop safe zone', async () => {
     const buf = await readFile(OG)
     const { width = 0, height = 0 } = await sharp(buf).metadata()
@@ -52,32 +56,33 @@ describe('static opengraph image', () => {
     ]
 
     for (const [name, x0, x1] of margins) {
+      // Greyscale: only luminance structure matters here.
       const { data, info } = await sharp(buf)
         .extract({ left: x0, top: 0, width: x1 - x0, height })
+        .greyscale()
         .raw()
         .toBuffer({ resolveWithObject: true })
 
-      const isDark = (x: number, y: number) => {
-        const i = (y * info.width + x) * info.channels
-        return data[i] < 80 && data[i + 1] < 80 && data[i + 2] < 80
-      }
+      const at = (x: number, y: number) => data[(y * info.width + x) * info.channels]
 
-      // A run of >= 3 dark px is stem-like; >= 4 such runs on one row is
-      // word-like. Neither triggers on scattered illustration detail.
+      // A step of 60+ grey levels across 2px is an edge; text packs many such
+      // edges into one row (both sides of every stem).
+      //
+      // The threshold is measured, not guessed. On the current card the tile
+      // borders and artwork give the margins at most 30 edges in any row,
+      // while a row of injected 40px text reaches 49. 38 sits between the two
+      // with margin on both sides — high enough that illustration never trips
+      // it, low enough that a real word cannot hide under it.
+      const EDGE = 60
+      const EDGES_PER_TEXT_ROW = 38
+
       let textRows = 0
       for (let y = 0; y < info.height; y++) {
-        let runs = 0
-        let run = 0
-        for (let x = 0; x < info.width; x++) {
-          if (isDark(x, y)) {
-            run++
-          } else {
-            if (run >= 3) runs++
-            run = 0
-          }
+        let edges = 0
+        for (let x = 2; x < info.width; x++) {
+          if (Math.abs(at(x, y) - at(x - 2, y)) >= EDGE) edges++
         }
-        if (run >= 3) runs++
-        if (runs >= 4) textRows++
+        if (edges >= EDGES_PER_TEXT_ROW) textRows++
       }
 
       expect(textRows, `${name} crop margin should contain no text`).toBe(0)

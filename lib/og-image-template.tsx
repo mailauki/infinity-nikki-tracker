@@ -21,9 +21,14 @@ import { OG_SIZE } from '@/lib/og-image'
 // or if text drifts outside the square-crop safe zone.
 
 // One source of truth with the app itself: the card is drawn from the Terracotta
-// ('default') preset's light scheme, the same tokens the real UI paints with, so
-// a palette change flows into the social preview instead of silently drifting.
-const { primary, secondary, surface, outline, outlineVariant } = COLOR_THEME_PRESETS.default.light
+// ('default') preset, the same tokens the real UI paints with, so a palette
+// change flows into the social preview instead of silently drifting.
+//
+// The DARK scheme, deliberately. The collection art is pale — the eureka pieces
+// are glowing line work on transparency, and several outfits are near-white —
+// so on the light surface they washed out. Against the dark surface ladder the
+// same images read as luminous, which is how they look in the app's dark mode.
+const { primary, secondary, surface, outline, outlineVariant } = COLOR_THEME_PRESETS.default.dark
 
 // Satori parses woff, but not woff2 — @fontsource ships both, so we read the
 // .woff sibling of the stylesheet the app already loads rather than adding a
@@ -78,10 +83,11 @@ const SAFE_WIDTH = OG_SIZE.height
 // without holding any text a square crop could destroy.
 // Unobtained tiles fade back, but a faint piece is already low contrast —
 // stacking both reductions makes it read as an empty tile, so the dimming is
-// gentler there.
+// gentler there. Both values sit higher on dark than they did on light, where
+// the same fade left glowing art indistinguishable from the tile.
 function tileOpacity({ obtained, faint }: { obtained: boolean; faint: boolean }) {
   if (obtained) return 1
-  return faint ? 0.8 : 0.55
+  return faint ? 0.85 : 0.62
 }
 
 function TileStrip({ tiles }: { tiles: { src: string; obtained: boolean; faint: boolean }[] }) {
@@ -98,9 +104,9 @@ function TileStrip({ tiles }: { tiles: { src: string; obtained: boolean; faint: 
             borderRadius: 16,
             alignItems: 'center',
             justifyContent: 'center',
-            // Faint eureka art on a plain white tile all but disappears, so it
-            // sits on a surface tone the way the real cards do.
-            backgroundColor: tile.faint ? surface.containerHigh : surface.containerLowest,
+            // Faint art is glowing line work, so it reads best against the
+            // DARKEST tile — the opposite of what it needed on a light surface.
+            backgroundColor: tile.faint ? surface.containerLowest : surface.containerLow,
             border: tile.obtained ? `2px solid ${primary.main}` : `1px solid ${outlineVariant}`,
             opacity: tileOpacity(tile),
           }}
@@ -169,12 +175,12 @@ export async function renderOgPng(): Promise<ArrayBuffer> {
         alignItems: 'center',
         justifyContent: 'center',
         fontFamily: 'Roboto',
-        // Warm terracotta wash, matching the app's light surface ladder.
+        // Warm terracotta wash over the dark surface ladder.
         // Satori blends each radial toward transparent BLACK, so a stop of
         // `transparent` greys the whole wash out. Fading to the surface color
         // itself keeps these tints warm instead of muddy.
         backgroundColor: surface.main,
-        backgroundImage: `radial-gradient(circle at 82% 6%, ${primary.container} 0%, ${surface.main} 52%), radial-gradient(circle at 2% 96%, ${secondary.container} 0%, ${surface.main} 42%)`,
+        backgroundImage: `radial-gradient(circle at 84% 4%, ${primary.container} 0%, ${surface.main} 46%), radial-gradient(circle at 2% 98%, ${surface.containerHigh} 0%, ${surface.main} 38%)`,
       }}
     >
       {/*
@@ -215,9 +221,7 @@ export async function renderOgPng(): Promise<ArrayBuffer> {
         {/* Wordmark */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 13, marginBottom: 26 }}>
           {/* The real app icon — the same mark as the favicon and PWA install.
-              public/infinity-nikki-logo.png is near-white (built for a dark
-              bar) and would vanish on this light wash. Plain <img> for the same
-              reason as the tiles above. */}
+              Plain <img> for the same reason as the tiles above. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt="" height={46} src={appIcon} style={{ borderRadius: 12 }} width={46} />
           <div
