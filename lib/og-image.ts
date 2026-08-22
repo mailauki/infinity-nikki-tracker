@@ -3,7 +3,7 @@
 // app/layout.tsx. One string so the two can't describe the same picture
 // differently.
 export const OG_ALT =
-  'Infinity Nikki Tracker — the headline "Know exactly what you\'re missing" above a collection progress bar, flanked by cards of real Infinity Nikki outfit and eureka artwork, some marked obtained'
+  'Infinity Nikki Tracker — the headline "Know exactly what you\'re missing" above a collection progress bar, flanked by cards of real Infinity Nikki artwork: dresses, hair, a Momo cloak, a makeup set, and eureka pieces, some marked obtained'
 
 /** Card dimensions. The 630px height doubles as the safe-zone width: a square
  *  center-crop keeps exactly the middle `OG_SIZE.height` pixels. */

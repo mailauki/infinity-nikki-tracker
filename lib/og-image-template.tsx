@@ -41,20 +41,23 @@ function robotoPath(weight: 400 | 500 | 700) {
 // These are the local copies already shipped in public/ — the collection's own
 // images live in Supabase Storage and can't be fetched at build time.
 const TILE_ART = [
-  // The two full-art pieces lead each strip: they are the only local copies of
-  // real collection artwork, and at 112px they carry the card. The nav glyphs
-  // that follow are sparse line art by design, so they are paired with the
-  // denser Eureka colour swatches rather than stacked together where their
-  // thinness reads as an empty tile.
-  { file: 'public/quick-access/perfect-start-alt.png', obtained: true },
-  { file: 'public/icons/categories/pink.png', obtained: true },
-  { file: 'public/icons/outfits.png', obtained: true },
-  { file: 'public/icons/categories/yellow.png', obtained: false },
+  // All eight are real artwork from public/quick-access. Ordered so each strip
+  // opens with a high-contrast piece: the four-tile strips are what a viewer
+  // scans first, and the eureka pieces are genuinely faint by design (glowing
+  // line art on transparency), so they are interleaved rather than stacked.
+  //
+  // `faint` marks those pale pieces. They get a tinted tile instead of the
+  // plain white one — on white they nearly vanish, which is exactly why the
+  // real cards sit them on a surface tone too.
+  { file: 'public/quick-access/fluttering-wishes-alt.png', obtained: true },
+  { file: 'public/quick-access/afterglow-hands-yellow.png', obtained: true, faint: true },
+  { file: 'public/quick-access/momo-cloak-starwish.png', obtained: true },
+  { file: 'public/quick-access/rainbell-feet-green.png', obtained: false, faint: true },
 
-  { file: 'public/quick-access/first-snow-head-white.png', obtained: true },
-  { file: 'public/icons/categories/blue.png', obtained: true },
-  { file: 'public/icons/eureka.png', obtained: false },
-  { file: 'public/icons/categories/green.png', obtained: true },
+  { file: 'public/quick-access/born-pink-hair.png', obtained: true },
+  { file: 'public/quick-access/first-snow-head-white.png', obtained: true, faint: true },
+  { file: 'public/quick-access/silver-feathers-base-makeup.png', obtained: false },
+  { file: 'public/quick-access/perfect-start-alt.png', obtained: true },
 ] as const
 
 async function dataUri(relPath: string) {
@@ -73,7 +76,15 @@ const SAFE_WIDTH = OG_SIZE.height
 // in the crop margin on purpose — they carry the product's look (obtained
 // cards get the primary border and check badge, missing ones fade back)
 // without holding any text a square crop could destroy.
-function TileStrip({ tiles }: { tiles: { src: string; obtained: boolean }[] }) {
+// Unobtained tiles fade back, but a faint piece is already low contrast —
+// stacking both reductions makes it read as an empty tile, so the dimming is
+// gentler there.
+function tileOpacity({ obtained, faint }: { obtained: boolean; faint: boolean }) {
+  if (obtained) return 1
+  return faint ? 0.8 : 0.55
+}
+
+function TileStrip({ tiles }: { tiles: { src: string; obtained: boolean; faint: boolean }[] }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {tiles.map((tile) => (
@@ -87,9 +98,11 @@ function TileStrip({ tiles }: { tiles: { src: string; obtained: boolean }[] }) {
             borderRadius: 16,
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: surface.containerLowest,
+            // Faint eureka art on a plain white tile all but disappears, so it
+            // sits on a surface tone the way the real cards do.
+            backgroundColor: tile.faint ? surface.containerHigh : surface.containerLowest,
             border: tile.obtained ? `2px solid ${primary.main}` : `1px solid ${outlineVariant}`,
-            opacity: tile.obtained ? 1 : 0.55,
+            opacity: tileOpacity(tile),
           }}
         >
           {/* Plain <img>: Satori rasterizes only these; next/image has no
@@ -140,7 +153,11 @@ export async function renderOgPng(): Promise<ArrayBuffer> {
     ...TILE_ART.map((t) => dataUri(t.file)),
   ])
 
-  const tiles = TILE_ART.map((t, i) => ({ src: tileSrcs[i], obtained: t.obtained }))
+  const tiles = TILE_ART.map((t, i) => ({
+    src: tileSrcs[i],
+    obtained: t.obtained,
+    faint: 'faint' in t && t.faint === true,
+  }))
 
   const response = new ImageResponse(
     <div
