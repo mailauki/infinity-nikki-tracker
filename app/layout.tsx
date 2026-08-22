@@ -31,9 +31,13 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000'
+// Prefer the stable site URL over VERCEL_URL, which is the per-deployment
+// preview host — resolving metadataBase against it would point every og:image
+// and canonical URL at a throwaway deployment. Same precedence the Stripe
+// checkout route uses for its redirect URLs.
+const defaultUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
@@ -49,6 +53,22 @@ export const metadata: Metadata = {
     capable: true,
     title: 'Infinity Nikki Tracker',
     statusBarStyle: 'default',
+  },
+  // og:image itself is contributed by app/opengraph-image.tsx — Next.js picks
+  // that file up by convention and emits the url/width/height/alt tags. These
+  // keys only supply what the file convention can't infer.
+  openGraph: {
+    type: 'website',
+    siteName: 'Infinity Nikki Tracker',
+    title: 'Infinity Nikki Tracker',
+    description: 'Track your collection from your favorite cozy open-world game Infinity Nikki',
+    url: '/',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Infinity Nikki Tracker',
+    description: 'Track your collection from your favorite cozy open-world game Infinity Nikki',
   },
 }
 

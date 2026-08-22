@@ -45,6 +45,11 @@ export const PAGE_NAMES = {
   '/about': { nav: 'About' },
   '/help': { nav: 'Help' },
 
+  // Legal — the (legal) route group is not part of the URL, so these are
+  // registered at their real top-level paths.
+  '/privacy-policy': { nav: 'Privacy', title: 'Privacy Policy' },
+  '/terms-of-service': { nav: 'Terms', title: 'Terms of Service' },
+
   // Auth
   '/login': { nav: 'Log in' },
   '/sign-up': { nav: 'Sign up' },
