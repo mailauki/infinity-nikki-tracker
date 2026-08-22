@@ -1,8 +1,10 @@
 'use client'
-import { AppBar, Stack, Toolbar, Typography } from '@mui/material'
+import { AppBar, Link as Anchor, Stack, Toolbar, Typography } from '@mui/material'
+import NextLink from 'next/link'
 import CoffeeButton from './coffee-button'
 import ThemeSwitcher from './theme-switcher'
 import ReportIssueLink from '@/components/feedback/report-issue-link'
+import { navLabel } from '@/lib/page-titles'
 
 export default function Footer() {
   return (
@@ -24,7 +26,14 @@ export default function Footer() {
         <Stack
           direction="row"
           spacing={3}
-          sx={{ flexGrow: 1, mx: 1, alignItems: 'center', justifyContent: 'center' }}
+          sx={{
+            flexGrow: 1,
+            mx: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            rowGap: 1,
+          }}
         >
           {/* textSecondary, not textDisabled: this is real content, and MUI's
               disabled token (rgba(0,0,0,0.38)) is only 2.65:1 — below AA. */}
@@ -36,6 +45,29 @@ export default function Footer() {
             <ThemeSwitcher />
           </Stack>
           <ReportIssueLink />
+          {/* Legal links live only in the footer — the standard place users look
+              for them, and keeping them out of the nav drawer avoids crowding
+              the collection routes people actually navigate between. */}
+          <Stack component="nav" direction="row" sx={{ gap: 2, alignItems: 'center' }}>
+            <Anchor
+              color="textSecondary"
+              component={NextLink}
+              href="/privacy-policy"
+              size="small"
+              variant="body"
+            >
+              {navLabel('/privacy-policy')}
+            </Anchor>
+            <Anchor
+              color="textSecondary"
+              component={NextLink}
+              href="/terms-of-service"
+              size="small"
+              variant="body"
+            >
+              {navLabel('/terms-of-service')}
+            </Anchor>
+          </Stack>
         </Stack>
       </Toolbar>
     </AppBar>

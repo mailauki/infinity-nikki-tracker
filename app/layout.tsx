@@ -24,6 +24,7 @@ import {
 import { NAV_DRAWER_STORAGE_KEY, SIDEBAR_STORAGE_KEY } from '@/lib/layout-constants'
 import { SPLASH_BACKGROUND_DARK, SPLASH_BACKGROUND_LIGHT } from '@/lib/splash-colors'
 import LayoutShell from '@/components/navbar/layout-shell'
+import { OG_ALT } from '@/lib/og-image'
 import SplashScreen from './splash-screen'
 
 import '@fontsource/roboto/300.css'
@@ -31,9 +32,13 @@ import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000'
+// Prefer the stable site URL over VERCEL_URL, which is the per-deployment
+// preview host — resolving metadataBase against it would point every og:image
+// and canonical URL at a throwaway deployment. Same precedence the Stripe
+// checkout route uses for its redirect URLs.
+const defaultUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
@@ -49,6 +54,38 @@ export const metadata: Metadata = {
     capable: true,
     title: 'Infinity Nikki Tracker',
     statusBarStyle: 'default',
+  },
+  // Points at the committed public/opengraph-image.png. There is deliberately
+  // no app/opengraph-image.tsx: that file convention's generated URL overrides
+  // this `images` entry, which previously left og:image on the route while
+  // twitter:image used the file. The layout template now lives at
+  // lib/og-image-template.tsx and is rasterized by scripts/generate-og-image.mjs.
+  //
+  // The layout is composed so a center-crop to 630x630 — what WhatsApp, Slack
+  // compact previews, and LinkedIn thumbnails do — keeps every word readable;
+  // public/opengraph-image-square.png is that crop, committed for review, and
+  // app/__tests__/opengraph-image.test.ts fails if text ever drifts out of it.
+  openGraph: {
+    type: 'website',
+    siteName: 'Infinity Nikki Tracker',
+    title: 'Infinity Nikki Tracker',
+    description: 'Track your collection from your favorite cozy open-world game Infinity Nikki',
+    url: '/',
+    locale: 'en_US',
+    images: [
+      {
+        url: '/opengraph-image.png',
+        width: 1200,
+        height: 630,
+        alt: OG_ALT,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Infinity Nikki Tracker',
+    description: 'Track your collection from your favorite cozy open-world game Infinity Nikki',
+    images: ['/opengraph-image.png'],
   },
 }
 
