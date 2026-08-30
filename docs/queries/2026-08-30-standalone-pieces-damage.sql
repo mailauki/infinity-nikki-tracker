@@ -1,5 +1,27 @@
 -- Damage assessment for the standalone-pieces overwrite bug.
 -- Run in the Supabase SQL editor. All queries are READ-ONLY.
+--
+-- FINDINGS (run against production 2026-08-30) -- kept for the next incident:
+--
+--   Outfits: query 3 found a 137-row single-second write at 2026-08-03
+--   22:09:05+00 (the bug firing; no migration ran then). Titles and images
+--   SURVIVED -- 98 of 137 kept images, 0 null titles. All 137 have a null
+--   description, but that is the normal state: only 35 of 6397 set-owned
+--   outfit_variants have a description at all. No meaningful loss.
+--
+--   Makeup: no confirmed data loss. The unguarded sync inserted 5 empty
+--   generated `standalone_pieces-{category}` placeholder rows (ids 511-515)
+--   at 2026-08-30 18:52:32+00; these were deleted during cleanup. The 16 rows
+--   from 20260810043259_assign_orphan_makeup_variants_to_standalone.sql were
+--   NOT destroyed by this bug -- they were reorganized into real makeup sets
+--   during later normalization work. Evidence: every orphaned storage folder
+--   under images/makeup_variants/ dates 2026-08-03..07 (none from 08-10 or
+--   later, which a same-day deletion would have left behind), and
+--   obtained_makeup holds zero standalone_pieces rows across 250 records.
+--
+-- Recovery note: there is no PITR or daily backup on the free plan, and
+-- pageinspect needs superuser (unavailable on managed Supabase), so dead
+-- tuples are NOT readable. Recovery must come from storage paths.
 
 -- 1. How many standalone pieces exist, and how many are missing a title
 --    or description? This is the headline number.
