@@ -15,6 +15,14 @@ function revalidateAdmin() {
   revalidatePath(ADMIN_DASHBOARD)
 }
 
+// The standalone-pieces set holds individually-authored variants (many per
+// category, with their own title/description/image) managed via the
+// standalone-variant admin — its variants are NOT generated from
+// (state × category), so the set-edit variant-sync must skip it or it deletes
+// every real piece as "unexpected", and the per-variant write-back below must
+// skip it or it overwrites each piece with this page's snapshot.
+const STANDALONE_PIECES_SLUG = 'standalone_pieces'
+
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null
   const orderRaw = formData.get('order') as string | null
@@ -161,7 +169,14 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
     season_category: values.season_category,
   }
 
-  if (makeupCategories.length > 0) {
+  // See STANDALONE_PIECES_SLUG: this set's variants are authored by hand, not
+  // derived from (state × category), so the diff below would delete all of them.
+  const isManualVariantSet =
+    slug === STANDALONE_PIECES_SLUG || originalSlug === STANDALONE_PIECES_SLUG
+
+  if (isManualVariantSet) {
+    // No-op: leave the manually-authored variants untouched.
+  } else if (makeupCategories.length > 0) {
     const expectedVariants = stateSlugs.flatMap((stateSlug) =>
       makeupCategories.map((cat) => ({
         makeup_set: stateSlug,
@@ -227,43 +242,50 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
       ? submittedSlug.replace(`${originalSlug}-`, `${slug}-`)
       : submittedSlug
 
-  // Update variant images from hidden inputs.
-  const variantImageEntries = [...formData.entries()].filter(([key]) =>
-    key.startsWith('variant_image_')
-  )
-  for (const [key, value] of variantImageEntries) {
-    const variantSlug = resolveVariantSlug(key.replace('variant_image_', ''))
-    const { error: imgError } = await supabase
-      .from('makeup_variants')
-      .update({ image_url: (value as string) || null })
-      .eq('slug', variantSlug)
-    if (imgError) return { error: imgError.message }
-  }
+  // The standalone-pieces set's variants own their own title/description/image,
+  // edited one at a time in the standalone-variant admin. The set form renders a
+  // card per piece and posts all three fields back for every one on every save,
+  // touched or not, so saving here would rewrite each piece with whatever this
+  // page loaded. Nothing on this page owns those columns — skip the write-back.
+  if (!isManualVariantSet) {
+    // Update variant images from hidden inputs.
+    const variantImageEntries = [...formData.entries()].filter(([key]) =>
+      key.startsWith('variant_image_')
+    )
+    for (const [key, value] of variantImageEntries) {
+      const variantSlug = resolveVariantSlug(key.replace('variant_image_', ''))
+      const { error: imgError } = await supabase
+        .from('makeup_variants')
+        .update({ image_url: (value as string) || null })
+        .eq('slug', variantSlug)
+      if (imgError) return { error: imgError.message }
+    }
 
-  // Update variant titles from text inputs.
-  const variantTitleEntries = [...formData.entries()].filter(([key]) =>
-    key.startsWith('variant_title_')
-  )
-  for (const [key, value] of variantTitleEntries) {
-    const variantSlug = resolveVariantSlug(key.replace('variant_title_', ''))
-    const { error: titleError } = await supabase
-      .from('makeup_variants')
-      .update({ title: (value as string).trim() || null })
-      .eq('slug', variantSlug)
-    if (titleError) return { error: titleError.message }
-  }
+    // Update variant titles from text inputs.
+    const variantTitleEntries = [...formData.entries()].filter(([key]) =>
+      key.startsWith('variant_title_')
+    )
+    for (const [key, value] of variantTitleEntries) {
+      const variantSlug = resolveVariantSlug(key.replace('variant_title_', ''))
+      const { error: titleError } = await supabase
+        .from('makeup_variants')
+        .update({ title: (value as string).trim() || null })
+        .eq('slug', variantSlug)
+      if (titleError) return { error: titleError.message }
+    }
 
-  // Update variant descriptions from text inputs.
-  const variantDescriptionEntries = [...formData.entries()].filter(([key]) =>
-    key.startsWith('variant_description_')
-  )
-  for (const [key, value] of variantDescriptionEntries) {
-    const variantSlug = resolveVariantSlug(key.replace('variant_description_', ''))
-    const { error: descError } = await supabase
-      .from('makeup_variants')
-      .update({ description: (value as string).trim() || null })
-      .eq('slug', variantSlug)
-    if (descError) return { error: descError.message }
+    // Update variant descriptions from text inputs.
+    const variantDescriptionEntries = [...formData.entries()].filter(([key]) =>
+      key.startsWith('variant_description_')
+    )
+    for (const [key, value] of variantDescriptionEntries) {
+      const variantSlug = resolveVariantSlug(key.replace('variant_description_', ''))
+      const { error: descError } = await supabase
+        .from('makeup_variants')
+        .update({ description: (value as string).trim() || null })
+        .eq('slug', variantSlug)
+      if (descError) return { error: descError.message }
+    }
   }
 
   if (formData.get('update_only') === 'true') {
