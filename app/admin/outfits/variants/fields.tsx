@@ -52,7 +52,7 @@ export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
       slugFrom: deriveSlug,
       helperText:
         mode === 'edit'
-          ? 'Slug — edit with care, changing it breaks existing image links'
+          ? 'Slug — a category change moves images automatically; editing this by hand does not'
           : 'Auto-generated from outfit set (or title) and category — edit if needed',
     },
     ...(mode === 'edit'

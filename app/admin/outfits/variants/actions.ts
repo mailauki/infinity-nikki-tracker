@@ -160,6 +160,12 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
     .single()
 
   if (existing && existing.outfit_category !== outfit_category) {
+    // A cleared category ("—") is falsy but not equal to the old category, so
+    // it would otherwise reach deriveVariantSlug/recategorizeVariant below and
+    // strand two copied images before the row update fails on the FK to
+    // outfit_categories.slug. Reject it before any storage copy happens.
+    if (!outfit_category) return { error: 'Category is required to recategorize a variant.' }
+
     const derivedSlug = deriveVariantSlug({
       set: outfit_set,
       category: outfit_category,
@@ -179,7 +185,7 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
           id,
           currentSlug: existing.slug,
           newSlug: derivedSlug,
-          newCategory: outfit_category ?? '',
+          newCategory: outfit_category,
         }
       )
 
@@ -205,9 +211,12 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
 
       if (restError) return { error: restError.message }
 
-      if (formData.get('update_only') === 'true') return { savedTitle: result.newSlug }
+      // Always redirect (never honor update_only here): the slug just
+      // changed, so the edit page the admin is on no longer resolves, and the
+      // form's cached old slug would misdirect a later image upload to the
+      // abandoned folder. Send the admin to the new slug's edit page instead.
       revalidatePath(ADMIN_DASHBOARD)
-      redirect(ADMIN_DASHBOARD)
+      redirect(`${navLinksData.admin.outfits.variants.edit}/${result.newSlug}`)
     }
   }
 
