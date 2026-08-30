@@ -8,6 +8,7 @@ import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { toSlug } from '@/lib/utils'
 import { recategorizeVariant } from '@/lib/variant-recategorize'
+import { deriveVariantSlug } from '@/lib/variant-slug'
 
 const STANDALONE_SLUG = 'standalone_pieces'
 
@@ -140,59 +141,74 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
   // A category change moves the slug, and the slug is the storage key — so the
   // images have to move with it. recategorizeVariant does the whole move
   // (collision check, storage copy, row update) and returns early; falling
-  // through to the plain update below would rewrite the slug and strand every
-  // image at the old path. Note: recategorizeVariant copies storage objects
-  // BEFORE updating the row, so an { error } return does not mean nothing
-  // happened — objects may already exist at the new path. Return it as-is;
-  // no rollback here.
+  // through to the plain update below would rewrite the category and leave
+  // the old slug in place, stranding every image at the old path.
+  //
+  // The form does not maintain the slug in edit mode (fields.tsx has no
+  // deriveOnEdit, and the slug input stays locked until an admin explicitly
+  // unlocks it), so `slug` here is normally just the row's existing slug —
+  // it cannot be trusted to reflect a category change. The new slug has to
+  // be derived server-side with the same helper a fresh add would use.
+  //
+  // Note: recategorizeVariant copies storage objects BEFORE updating the
+  // row, so an { error } return does not mean nothing happened — objects
+  // may already exist at the new path. Return it as-is; no rollback here.
   const { data: existing } = await supabase
     .from('outfit_variants')
     .select('slug, outfit_category')
     .eq('id', id)
     .single()
 
-  if (existing && existing.outfit_category !== outfit_category && existing.slug !== slug) {
-    const result = await recategorizeVariant(
-      supabase,
-      {
-        table: 'outfit_variants',
-        obtainedTable: 'obtained_outfit',
-        categoryColumn: 'outfit_category',
-        variantColumn: 'outfit_variant',
-      },
-      {
-        id,
-        currentSlug: existing.slug,
-        newSlug: slug,
-        newCategory: outfit_category ?? '',
-      }
-    )
+  if (existing && existing.outfit_category !== outfit_category) {
+    const derivedSlug = deriveVariantSlug({
+      set: outfit_set,
+      category: outfit_category,
+      title,
+    })
 
-    if ('error' in result) return { error: result.error }
+    if (derivedSlug !== existing.slug) {
+      const result = await recategorizeVariant(
+        supabase,
+        {
+          table: 'outfit_variants',
+          obtainedTable: 'obtained_outfit',
+          categoryColumn: 'outfit_category',
+          variantColumn: 'outfit_variant',
+        },
+        {
+          id,
+          currentSlug: existing.slug,
+          newSlug: derivedSlug,
+          newCategory: outfit_category ?? '',
+        }
+      )
 
-    // recategorizeVariant already wrote slug, outfit_category, and the image
-    // URL columns — this saves the rest of the form.
-    const { error: restError } = await supabase
-      .from('outfit_variants')
-      .update({
-        outfit_set,
-        seasons,
-        season_category,
-        rarity,
-        style,
-        label,
-        label_2,
-        title,
-        description,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', id)
+      if ('error' in result) return { error: result.error }
 
-    if (restError) return { error: restError.message }
+      // recategorizeVariant already wrote slug, outfit_category, and the image
+      // URL columns — this saves the rest of the form.
+      const { error: restError } = await supabase
+        .from('outfit_variants')
+        .update({
+          outfit_set,
+          seasons,
+          season_category,
+          rarity,
+          style,
+          label,
+          label_2,
+          title,
+          description,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
 
-    if (formData.get('update_only') === 'true') return { savedTitle: result.newSlug }
-    revalidatePath(ADMIN_DASHBOARD)
-    redirect(ADMIN_DASHBOARD)
+      if (restError) return { error: restError.message }
+
+      if (formData.get('update_only') === 'true') return { savedTitle: result.newSlug }
+      revalidatePath(ADMIN_DASHBOARD)
+      redirect(ADMIN_DASHBOARD)
+    }
   }
 
   // `default` is intentionally omitted — see the note in addOutfitVariant. The
