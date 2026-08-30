@@ -1,4 +1,6 @@
--- Makeup variant image relink + orphan-folder cleanup (applied 2026-08-30).
+-- Variant image storage remediation, makeup + outfits (applied 2026-08-30).
+-- Relinked stranded artwork, deleted superseded files, and created the missing
+-- variant rows that owned three unreferenced outfit folders.
 -- Recorded for provenance; the writes below have ALREADY BEEN APPLIED.
 --
 -- PROBLEM
@@ -29,7 +31,12 @@
 -- those rows directly orphans the underlying S3 blobs.
 -- Backup: ~/Desktop/makeup-orphan-backup-20260830 (30 files, 1.0 MB).
 --
--- END STATE: 203 folders, 0 unreferenced, 0 broken references.
+-- END STATE (makeup): 203 folders, 0 unreferenced, 0 broken references.
+-- END STATE (outfits): 4108 folders, 0 unreferenced, 0 broken references.
+--
+-- Both buckets are fully consistent: every stored folder is referenced by a
+-- row, and every referenced folder exists. Re-run the two queries below to
+-- confirm this still holds.
 
 
 -- VERIFY (read-only) -- re-run any time to confirm storage/DB consistency.
@@ -58,6 +65,29 @@ select
 
 
 -- The same check for outfits, which has the identical rename hazard.
+--
+-- OUTFITS (2026-08-30): 4108 folders, 0 broken references. Three folders were
+-- unreferenced -- dawning_heartlight-hair_accessories, hymn_to_dusk-outerwear,
+-- and gold_seeking_night-chokers -- each holding only alt_image_url.webp,
+-- all uploaded within an hour on 2026-07-23.
+--
+-- These were NOT orphans to delete. Inspecting the images showed three real,
+-- distinct pieces (a gold feathered hair ornament, an orange/gold cape, a
+-- beaded choker) whose variant rows had never been created: an authoring
+-- session that uploaded artwork but never saved the rows. Variants 6768-6770
+-- were created to own them, inheriting each set's rarity/style/label/seasons
+-- and leaving `default` and `alt_slug` to their triggers.
+--
+-- They are intentionally left title-less and without a main image (no
+-- image_url.webp was ever uploaded); the admin gap queue gates on both
+-- `title.is.null` and `image_url.is.null`, so all three surface there until
+-- an admin fills them in. Titles are in-game names and cannot be derived --
+-- and since alt_slug is generated FROM the title and is the duplicate-detection
+-- key, guessing one would install a wrong lookup key.
+--
+-- Lesson matching the makeup case: an unreferenced folder is not automatically
+-- junk. Check whether it holds real content whose row is missing before
+-- deleting anything.
 with folders as (
   select distinct split_part(name, '/', 2) as folder
   from storage.objects
