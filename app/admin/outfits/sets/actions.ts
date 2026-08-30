@@ -471,43 +471,53 @@ export async function editOutfitSet(id: number, _: unknown, formData: FormData) 
       ? submittedSlug.replace(`${previousSlug}-`, `${slug}-`)
       : submittedSlug
 
-  // Update variant images from hidden inputs.
-  const variantImageEntries = [...formData.entries()].filter(([key]) =>
-    key.startsWith('variant_image_')
-  )
-  for (const [key, value] of variantImageEntries) {
-    const variantSlug = resolveVariantSlug(key.replace('variant_image_', ''))
-    const { error: imgError } = await supabase
-      .from('outfit_variants')
-      .update({ image_url: (value as string) || null })
-      .eq('slug', variantSlug)
-    if (imgError) return { error: imgError.message }
-  }
+  // The standalone-pieces set's variants are authored one at a time in the
+  // standalone-variant admin, which owns their title/description/image. This form
+  // renders a card per existing piece and posts all three fields back for every
+  // one of them on every save, touched or not, so a save here rewrites each piece
+  // with whatever this page happened to load — blanking titles authored elsewhere
+  // and reverting edits made since the page was opened. Nothing on this page is
+  // meant to own those columns, so skip the write-back entirely for that set
+  // (the form hides the cards to match).
+  if (!isManualVariantSet) {
+    // Update variant images from hidden inputs.
+    const variantImageEntries = [...formData.entries()].filter(([key]) =>
+      key.startsWith('variant_image_')
+    )
+    for (const [key, value] of variantImageEntries) {
+      const variantSlug = resolveVariantSlug(key.replace('variant_image_', ''))
+      const { error: imgError } = await supabase
+        .from('outfit_variants')
+        .update({ image_url: (value as string) || null })
+        .eq('slug', variantSlug)
+      if (imgError) return { error: imgError.message }
+    }
 
-  // Update variant titles from text inputs.
-  const variantTitleEntries = [...formData.entries()].filter(([key]) =>
-    key.startsWith('variant_title_')
-  )
-  for (const [key, value] of variantTitleEntries) {
-    const variantSlug = resolveVariantSlug(key.replace('variant_title_', ''))
-    const { error: titleError } = await supabase
-      .from('outfit_variants')
-      .update({ title: (value as string).trim() || null })
-      .eq('slug', variantSlug)
-    if (titleError) return { error: titleError.message }
-  }
+    // Update variant titles from text inputs.
+    const variantTitleEntries = [...formData.entries()].filter(([key]) =>
+      key.startsWith('variant_title_')
+    )
+    for (const [key, value] of variantTitleEntries) {
+      const variantSlug = resolveVariantSlug(key.replace('variant_title_', ''))
+      const { error: titleError } = await supabase
+        .from('outfit_variants')
+        .update({ title: (value as string).trim() || null })
+        .eq('slug', variantSlug)
+      if (titleError) return { error: titleError.message }
+    }
 
-  // Update variant descriptions from text inputs.
-  const variantDescriptionEntries = [...formData.entries()].filter(([key]) =>
-    key.startsWith('variant_description_')
-  )
-  for (const [key, value] of variantDescriptionEntries) {
-    const variantSlug = resolveVariantSlug(key.replace('variant_description_', ''))
-    const { error: descError } = await supabase
-      .from('outfit_variants')
-      .update({ description: (value as string).trim() || null })
-      .eq('slug', variantSlug)
-    if (descError) return { error: descError.message }
+    // Update variant descriptions from text inputs.
+    const variantDescriptionEntries = [...formData.entries()].filter(([key]) =>
+      key.startsWith('variant_description_')
+    )
+    for (const [key, value] of variantDescriptionEntries) {
+      const variantSlug = resolveVariantSlug(key.replace('variant_description_', ''))
+      const { error: descError } = await supabase
+        .from('outfit_variants')
+        .update({ description: (value as string).trim() || null })
+        .eq('slug', variantSlug)
+      if (descError) return { error: descError.message }
+    }
   }
 
   if (formData.get('update_only') === 'true') {

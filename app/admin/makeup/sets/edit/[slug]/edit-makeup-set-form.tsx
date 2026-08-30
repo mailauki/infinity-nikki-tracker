@@ -75,6 +75,7 @@ export default function EditMakeupSetForm({
   const [altSetImage, setAltSetImage] = useState<string | null>(initial.alt_image_url ?? null)
   // Only the base set's variants get cards — evolutions are edited on their own pages.
   const baseSlug = initial.slug ?? ''
+  const isStandalone = initial.slug === 'standalone_pieces'
   const isBaseVariant = (v: MakeupVariantRow) => v.makeup_set === baseSlug
   const [variantRows, setVariantRows] = useState<MakeupVariantRow[]>(
     initialVariants.filter(isBaseVariant)
@@ -334,7 +335,11 @@ export default function EditMakeupSetForm({
         <input name="image_url" type="hidden" value={setImage ?? ''} />
         <input name="alt_image_url" type="hidden" value={altSetImage ?? ''} />
 
-        {variantRows.length > 0 && (
+        {/* Standalone pieces own their own title/description/image, edited one at a
+            time in the standalone-variant admin. Rendering the cards here posts all
+            three fields back for every piece on every save, overwriting each one with
+            this page's snapshot — so this set edits set-level fields only. */}
+        {!isStandalone && variantRows.length > 0 && (
           <Stack spacing={1}>
             <Typography variant="title">Variant Images</Typography>
             <Box

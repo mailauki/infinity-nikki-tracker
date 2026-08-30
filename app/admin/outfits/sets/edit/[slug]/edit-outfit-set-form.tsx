@@ -441,7 +441,11 @@ export default function EditOutfitSetForm({
           </Stack>
         )}
 
-        {variantRows.length > 0 && (
+        {/* Standalone pieces own their own title/description/image, edited one at a
+            time in the standalone-variant admin. Rendering the cards here posted all
+            three fields back for every piece on every save, overwriting each one with
+            this page's snapshot — so this set edits set-level fields only. */}
+        {!isStandalone && variantRows.length > 0 && (
           <Stack spacing={1}>
             <Typography variant="title">Variant Images</Typography>
             <Box
