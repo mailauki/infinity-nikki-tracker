@@ -41,4 +41,16 @@ describe('safeNext', () => {
     expect(safeNext('/\\\\evil.com')).toBe('/')
     expect(safeNext('\\\\evil.com')).toBe('/')
   })
+
+  // The WHATWG URL parser strips tab, newline, and carriage return before
+  // parsing, so these collapse into '//evil.com' and resolve off-site.
+  // Verified: new URL('/\t/evil.com', 'https://site').origin === 'https://evil.com'.
+  it('rejects control characters that smuggle a protocol-relative prefix', () => {
+    expect(safeNext('/\t/evil.com')).toBe('/')
+    expect(safeNext('/\n/evil.com')).toBe('/')
+    expect(safeNext('/\r/evil.com')).toBe('/')
+    expect(safeNext('/\t//evil.com')).toBe('/')
+    expect(safeNext('\t//evil.com')).toBe('/')
+    expect(safeNext('/\\\t/evil.com')).toBe('/')
+  })
 })
