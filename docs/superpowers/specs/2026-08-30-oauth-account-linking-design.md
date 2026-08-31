@@ -274,11 +274,9 @@ The same `hasPassword` flag drives the Change password section's copy ("Set pass
 - `enable_confirmations = true` under `[auth.email]` (currently `false`).
 - `[auth.external.google]` and `[auth.external.discord]` blocks, `enabled = true`, with
   `client_id` / `secret` reading `env(...)`.
-- Manual linking. Confirm the current key name against the installed CLI's config reference before
-  writing it — it is not exposed under `[auth.external.*]`, and the self-hosted environment variable
-  is `GOTRUE_SECURITY_MANUAL_LINKING_ENABLED`. If the installed CLI version has no equivalent key,
-  note it in the file as dashboard-only rather than inventing one, since a bad key fails
-  `supabase start`.
+- `enable_manual_linking = true` under `[auth]` — the key already exists at `config.toml:175`,
+  currently `false`. (Confirmed against Supabase CLI 2.116.0; the self-hosted environment variable
+  equivalent is `GOTRUE_SECURITY_MANUAL_LINKING_ENABLED`.)
 
 Add the new variable names to the environment block in `CLAUDE.md`. Actual secrets go in
 `.env.local`, which a PreToolUse hook blocks Claude from editing, so the maintainer adds those by
