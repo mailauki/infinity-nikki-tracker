@@ -31,4 +31,14 @@ describe('safeNext', () => {
     expect(safeNext(null)).toBe('/')
     expect(safeNext('')).toBe('/')
   })
+
+  // Browsers parse a backslash as equivalent to a forward slash in the
+  // authority section (WHATWG URL), so these resolve off-site exactly as
+  // '//evil.com' does.
+  it('rejects backslash variants of a protocol-relative URL', () => {
+    expect(safeNext('/\\evil.com')).toBe('/')
+    expect(safeNext('/\\/evil.com')).toBe('/')
+    expect(safeNext('/\\\\evil.com')).toBe('/')
+    expect(safeNext('\\\\evil.com')).toBe('/')
+  })
 })
