@@ -5,6 +5,7 @@ import { useState } from 'react'
 
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
+import OAuthButtons from '@/components/oauth-buttons'
 import {
   Button,
   Card,
@@ -46,6 +47,7 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
       <Card>
         <CardHeader subheader="Enter your email below to login to your account" title="Login" />
         <CardContent>
+          <OAuthButtons />
           <form onSubmit={handleLogin}>
             <TextField
               fullWidth
@@ -77,7 +79,8 @@ export function LoginForm({ className, ...props }: React.ComponentPropsWithoutRe
               href="/forgot-password"
               size="large"
               sx={{ fontWeight: 'medium' }}
-              underline="hover" variant="body"
+              underline="hover"
+              variant="body"
             >
               Forgot your password?
             </Anchor>
