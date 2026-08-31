@@ -92,6 +92,22 @@ export async function updateSession(request: NextRequest) {
       return new NextResponse('Unauthorized', { status: 401 })
     }
 
+    // Only a PROTECTED route redirects. Reaching here on any other route means
+    // the request carried an `sb-*-auth-token` cookie (otherwise the anonymous
+    // shortcut above returned first) that getUser() rejected — an expired or
+    // invalidated session. That user is simply anonymous, and an anonymous
+    // visitor is welcome on every public page.
+    //
+    // Without this guard, one stale cookie made the WHOLE SITE unreachable:
+    // every public page redirected to /login, and /login redirected to itself,
+    // so the browser showed ERR_TOO_MANY_REDIRECTS with no escape but clearing
+    // cookies by hand. `needsAuth` is the same predicate the shortcut above
+    // uses, so the two now agree on exactly which routes require a session.
+    //
+    // The stale cookie is deliberately left alone — the Supabase client
+    // overwrites it on the next successful sign-in.
+    if (!needsAuth) return supabaseResponse
+
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
     url.pathname = '/login'
