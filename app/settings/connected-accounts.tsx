@@ -30,14 +30,24 @@ export default function ConnectedAccounts() {
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
-    const supabase = createClient()
-    const [{ data, error }, passwordSet] = await Promise.all([
-      supabase.auth.getUserIdentities(),
-      getHasPassword(),
-    ])
-    if (error) setError(error.message)
-    setIdentities((data?.identities ?? []) as Identity[])
-    setHasPassword(passwordSet)
+    try {
+      const supabase = createClient()
+      const [{ data, error }, passwordSet] = await Promise.all([
+        supabase.auth.getUserIdentities(),
+        getHasPassword(),
+      ])
+      if (error) setError(error.message)
+      setIdentities((data?.identities ?? []) as Identity[])
+      setHasPassword(passwordSet)
+    } catch (err) {
+      // getHasPassword() throws on RPC error. Leave hasPassword at its
+      // `false` default here rather than guessing `true`: an unknown
+      // password state must not make the unlink guard more permissive, so
+      // `false` keeps removableProviders() conservative and Disconnect
+      // buttons disabled instead of wrongly enabled.
+      setError(err instanceof Error ? err.message : 'Could not load your connected accounts')
+      setIdentities([])
+    }
   }, [])
 
   useEffect(() => {
