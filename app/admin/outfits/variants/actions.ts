@@ -2,10 +2,13 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { toSlug } from '@/lib/utils'
+import { recategorizeVariant } from '@/lib/variant-recategorize'
+import { deriveVariantSlug } from '@/lib/variant-slug'
 
 const STANDALONE_SLUG = 'standalone_pieces'
 
@@ -134,6 +137,88 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
     excludeId: id,
   })
   if (duplicate) return { error: duplicate }
+
+  // A category change moves the slug, and the slug is the storage key — so the
+  // images have to move with it. recategorizeVariant does the whole move
+  // (collision check, storage copy, row update) and returns early; falling
+  // through to the plain update below would rewrite the category and leave
+  // the old slug in place, stranding every image at the old path.
+  //
+  // The form does not maintain the slug in edit mode (fields.tsx has no
+  // deriveOnEdit, and the slug input stays locked until an admin explicitly
+  // unlocks it), so `slug` here is normally just the row's existing slug —
+  // it cannot be trusted to reflect a category change. The new slug has to
+  // be derived server-side with the same helper a fresh add would use.
+  //
+  // Note: recategorizeVariant copies storage objects BEFORE updating the
+  // row, so an { error } return does not mean nothing happened — objects
+  // may already exist at the new path. Return it as-is; no rollback here.
+  const { data: existing } = await supabase
+    .from('outfit_variants')
+    .select('slug, outfit_category')
+    .eq('id', id)
+    .single()
+
+  if (existing && existing.outfit_category !== outfit_category) {
+    // A cleared category ("—") is falsy but not equal to the old category, so
+    // it would otherwise reach deriveVariantSlug/recategorizeVariant below and
+    // strand two copied images before the row update fails on the FK to
+    // outfit_categories.slug. Reject it before any storage copy happens.
+    if (!outfit_category) return { error: 'Category is required to recategorize a variant.' }
+
+    const derivedSlug = deriveVariantSlug({
+      set: outfit_set,
+      category: outfit_category,
+      title,
+    })
+
+    if (derivedSlug !== existing.slug) {
+      const result = await recategorizeVariant(
+        supabase,
+        {
+          table: 'outfit_variants',
+          obtainedTable: 'obtained_outfit',
+          categoryColumn: 'outfit_category',
+          variantColumn: 'outfit_variant',
+        },
+        {
+          id,
+          currentSlug: existing.slug,
+          newSlug: derivedSlug,
+          newCategory: outfit_category,
+        }
+      )
+
+      if ('error' in result) return { error: result.error }
+
+      // recategorizeVariant already wrote slug, outfit_category, and the image
+      // URL columns — this saves the rest of the form.
+      const { error: restError } = await supabase
+        .from('outfit_variants')
+        .update({
+          outfit_set,
+          seasons,
+          season_category,
+          rarity,
+          style,
+          label,
+          label_2,
+          title,
+          description,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+
+      if (restError) return { error: restError.message }
+
+      // Always redirect (never honor update_only here): the slug just
+      // changed, so the edit page the admin is on no longer resolves, and the
+      // form's cached old slug would misdirect a later image upload to the
+      // abandoned folder. Send the admin to the new slug's edit page instead.
+      revalidatePath(ADMIN_DASHBOARD)
+      redirect(`${navLinksData.admin.outfits.variants.edit}/${result.newSlug}`)
+    }
+  }
 
   // `default` is intentionally omitted — see the note in addOutfitVariant. The
   // trigger still fires here because `outfit_set` is part of every update.

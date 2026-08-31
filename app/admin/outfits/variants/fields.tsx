@@ -1,23 +1,21 @@
 'use client'
 
 import { FieldConfig, FieldValues } from '@/lib/types/form-fields'
-import { toSlug } from '@/lib/utils'
-
-const STANDALONE_SLUG = 'standalone_pieces'
+import { deriveVariantSlug, STANDALONE_PIECES_SLUG } from '@/lib/variant-slug'
 
 // A "bag" set (standalone or no set) derives its slug from title + category so
 // multiple pieces in the same category don't collide (e.g. `silverplume-hair`).
 // A real base/evolution set derives from set + category (e.g. `moonlit-dress-hair`).
 function isBagSet(v: FieldValues): boolean {
-  return !v.outfit_set || v.outfit_set === STANDALONE_SLUG
+  return !v.outfit_set || v.outfit_set === STANDALONE_PIECES_SLUG
 }
 
 function deriveSlug(v: FieldValues): string {
-  const category = String(v.outfit_category ?? '')
-  if (!isBagSet(v)) {
-    return [String(v.outfit_set), category].filter(Boolean).join('-')
-  }
-  return [toSlug(String(v.title ?? '')), category].filter(Boolean).join('-')
+  return deriveVariantSlug({
+    set: (v.outfit_set as string | null) ?? null,
+    category: (v.outfit_category as string | null) ?? null,
+    title: (v.title as string | null) ?? null,
+  })
 }
 
 export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
@@ -28,7 +26,7 @@ export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
       component: 'groupedOutfitSet',
       // Most new variants are standalone pieces, so add mode starts there.
       // Edit mode seeds from the variant's own saved set instead.
-      ...(mode === 'add' ? { defaultValue: STANDALONE_SLUG } : {}),
+      ...(mode === 'add' ? { defaultValue: STANDALONE_PIECES_SLUG } : {}),
     },
     { type: 'select', name: 'outfit_category', label: 'Category', optionsKey: 'outfitCategories' },
     { type: 'select', name: 'seasons', label: 'Season', optionsKey: 'seasons' },
@@ -54,7 +52,7 @@ export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
       slugFrom: deriveSlug,
       helperText:
         mode === 'edit'
-          ? 'Slug — edit with care, changing it breaks existing image links'
+          ? 'Slug — a category change moves images automatically; editing this by hand does not'
           : 'Auto-generated from outfit set (or title) and category — edit if needed',
     },
     ...(mode === 'edit'

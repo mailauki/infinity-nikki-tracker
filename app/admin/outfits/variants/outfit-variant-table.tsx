@@ -121,7 +121,10 @@ export function OutfitVariantTable({
       field: 'outfit_category',
       headerName: 'Category',
       width: 140,
-      editable: true,
+      // Changing a category must move the variant's storage objects too (see
+      // lib/variant-recategorize.ts), which this inline grid path does not
+      // do — so category changes go through the edit form instead.
+      editable: false,
       type: 'singleSelect',
       valueOptions: [
         { value: '', label: '—' },

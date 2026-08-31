@@ -1,11 +1,14 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { toSlug } from '@/lib/utils'
+import { recategorizeVariant } from '@/lib/variant-recategorize'
+import { deriveVariantSlug } from '@/lib/variant-slug'
 
 const STANDALONE_SLUG = 'standalone_pieces'
 
@@ -116,6 +119,82 @@ export async function editMakeupVariant(id: number, _: unknown, formData: FormDa
 
   const duplicate = await findSetOwnedDuplicate(supabase, { ...values, excludeId: id })
   if (duplicate) return { error: duplicate }
+
+  // A category change moves the slug, and the slug is the storage key — so the
+  // images have to move with it. recategorizeVariant does the whole move
+  // (collision check, storage copy, row update) and returns early; falling
+  // through to the plain update below would rewrite the category and leave
+  // the old slug in place, stranding every image at the old path.
+  //
+  // The form does not maintain the slug in edit mode (fields.tsx has no
+  // deriveOnEdit, and the slug input stays locked until an admin explicitly
+  // unlocks it), so `values.slug` here is normally just the row's existing
+  // slug — it cannot be trusted to reflect a category change. The new slug
+  // has to be derived server-side with the same helper a fresh add would use.
+  //
+  // Note: recategorizeVariant copies storage objects BEFORE updating the
+  // row, so an { error } return does not mean nothing happened — objects
+  // may already exist at the new path. Return it as-is; no rollback here.
+  const { data: existing } = await supabase
+    .from('makeup_variants')
+    .select('slug, makeup_category')
+    .eq('id', id)
+    .single()
+
+  if (existing && existing.makeup_category !== values.makeup_category) {
+    // A cleared category ("—") is falsy but not equal to the old category, so
+    // it would otherwise reach deriveVariantSlug/recategorizeVariant below and
+    // strand two copied images before the row update fails on the FK to
+    // makeup_categories.slug. Reject it before any storage copy happens.
+    if (!values.makeup_category) return { error: 'Category is required to recategorize a variant.' }
+
+    const derivedSlug = deriveVariantSlug({
+      set: values.makeup_set,
+      category: values.makeup_category,
+      title: values.title,
+    })
+
+    if (derivedSlug !== existing.slug) {
+      const result = await recategorizeVariant(
+        supabase,
+        {
+          table: 'makeup_variants',
+          obtainedTable: 'obtained_makeup',
+          categoryColumn: 'makeup_category',
+          variantColumn: 'makeup_variant',
+        },
+        {
+          id,
+          currentSlug: existing.slug,
+          newSlug: derivedSlug,
+          newCategory: values.makeup_category,
+        }
+      )
+
+      if ('error' in result) return { error: result.error }
+
+      // recategorizeVariant already wrote slug, makeup_category, and the image
+      // URL columns — this saves the rest of the form. (readForm does not
+      // read image_url/alt_image_url, so the freshly-copied URLs are not at
+      // risk from this spread.)
+      const rest: Partial<typeof values> = { ...values }
+      delete rest.slug
+      delete rest.makeup_category
+      const { error: restError } = await supabase
+        .from('makeup_variants')
+        .update({ ...rest, updated_at: new Date().toISOString() })
+        .eq('id', id)
+
+      if (restError) return { error: restError.message }
+
+      // Always redirect (never honor update_only here): the slug just
+      // changed, so the edit page the admin is on no longer resolves, and the
+      // form's cached old slug would misdirect a later image upload to the
+      // abandoned folder. Send the admin to the new slug's edit page instead.
+      revalidatePath(ADMIN_DASHBOARD)
+      redirect(`${navLinksData.admin.makeup.variants.edit}/${result.newSlug}`)
+    }
+  }
 
   // Do not write `default` — the enforce_base_makeup_variant_default trigger
   // owns that column and would have its value silently overwritten anyway.
