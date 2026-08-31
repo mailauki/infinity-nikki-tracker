@@ -1,0 +1,16 @@
+-- supabase/migrations/20260831140000_revoke_anon_from_current_user_has_password.sql
+--
+-- 20260830130000 created current_user_has_password() with
+-- `revoke all on function ... from public`, intending to leave only
+-- `authenticated` able to execute it. That was not enough: the revoke ran
+-- before Supabase's default role grants landed, so `anon` ended up holding
+-- EXECUTE anyway (confirmed on the remote project — proacl listed anon=X).
+--
+-- An anon caller has no auth.uid(), so the function would only ever return
+-- false for them — no data leaks either way. But a SECURITY DEFINER function
+-- that reads auth.users should not be reachable unauthenticated at all, and
+-- Supabase's own linter flags exactly this
+-- (anon_security_definer_function_executable).
+--
+-- Revoking from `anon` by name is what actually sticks.
+revoke execute on function public.current_user_has_password() from anon;

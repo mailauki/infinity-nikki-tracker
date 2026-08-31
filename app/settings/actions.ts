@@ -42,14 +42,9 @@ export async function getHasPassword(): Promise<boolean> {
 
   if (!user) return false
 
-  // current_user_has_password() isn't in the generated Database type (the
-  // types are regenerated from the schema and this RPC is new), so the call
-  // is cast through this one RPC client shape rather than widening the
-  // whole Supabase client to `any`.
-  const rpc = supabase.rpc as unknown as (
-    fn: 'current_user_has_password'
-  ) => Promise<{ data: boolean | null; error: { message: string } | null }>
-  const { data, error } = await rpc('current_user_has_password')
+  // The RPC takes no arguments — it reads auth.uid() from the caller's own
+  // JWT, so a caller can only ever ask about themselves.
+  const { data, error } = await supabase.rpc('current_user_has_password')
 
   if (error) throw new Error(error.message)
 

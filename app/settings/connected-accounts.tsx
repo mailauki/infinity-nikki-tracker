@@ -3,7 +3,17 @@
 import { useCallback, useEffect, useState } from 'react'
 import GoogleIcon from '@mui/icons-material/Google'
 import MailOutlineIcon from '@mui/icons-material/MailOutline'
-import { Alert, Button, Divider, Stack, Typography } from '@mui/material'
+import {
+  Alert,
+  Button,
+  Divider,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+  Typography,
+} from '@mui/material'
 
 import DiscordIcon from '@/components/discord-icon'
 import { removableProviders, type IdentitySummary } from '@/lib/identity-guard'
@@ -85,72 +95,74 @@ export default function ConnectedAccounts() {
   return (
     <Stack spacing={2}>
       <Divider />
-      <Typography component="h2" size="large" variant="title">
-        Connected accounts
-      </Typography>
-      <Typography color="textSecondary" variant="body">
-        Sign in to your account with any of these. You can connect more than one.
-      </Typography>
+      <Stack>
+        <Typography component="h2" size="large" variant="title">
+          Connected accounts
+        </Typography>
+        <Typography color="textSecondary" variant="body">
+          Sign in to your account with any of these. You can connect more than one.
+        </Typography>
+      </Stack>
 
       {error && <Alert severity="error">{error}</Alert>}
 
-      {identities === null ? (
-        <Typography color="textSecondary" variant="body">
-          Loading…
-        </Typography>
-      ) : (
-        PROVIDERS.map(({ id, label, icon: Icon }) => {
-          const identity = identities.find((i) => i.provider === id)
-          const canRemove = removable.has(id)
+      <List>
+        {identities === null ? (
+          // component="li" because List renders a <ul>, so a bare span here
+          // would be invalid markup — same reason the Dividers in
+          // app/admin/admin-list.tsx carry it.
+          <Typography color="textSecondary" component="li" variant="body">
+            Loading…
+          </Typography>
+        ) : (
+          PROVIDERS.map(({ id, label, icon: Icon }) => {
+            const identity = identities.find((i) => i.provider === id)
+            const canRemove = removable.has(id)
 
-          return (
-            <Stack
-              key={id}
-              spacing={2}
-              sx={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}
-            >
-              <Stack spacing={1.5} sx={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Icon />
-                <Stack>
-                  <Typography variant="body">{label}</Typography>
-                  <Typography color="textSecondary" size="small" variant="body">
-                    {identity ? (identity.email ?? 'Connected') : 'Not connected'}
-                  </Typography>
-                </Stack>
-              </Stack>
+            return (
+              <ListItem key={id} disablePadding>
+                <ListItemIcon>
+                  <Icon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={label}
+                  secondary={identity ? (identity.email ?? 'Connected') : 'Not connected'}
+                />
 
-              {identity ? (
-                <Stack sx={{ alignItems: 'flex-end' }}>
-                  <Button
-                    disabled={!canRemove || pending !== null}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => handleDisconnect(identity)}
-                  >
-                    {pending === id ? 'Working…' : 'Disconnect'}
-                  </Button>
-                  {!canRemove && (
-                    <Typography color="textSecondary" size="small" variant="body">
-                      This is your only sign-in method
-                    </Typography>
-                  )}
-                </Stack>
-              ) : (
-                id !== 'email' && (
-                  <Button
-                    disabled={pending !== null}
-                    size="small"
-                    variant="outlined"
-                    onClick={() => handleConnect(id)}
-                  >
-                    {pending === id ? 'Redirecting…' : 'Connect'}
-                  </Button>
-                )
-              )}
-            </Stack>
-          )
-        })
-      )}
+                {identity ? (
+                  <Stack sx={{ alignItems: 'flex-end' }}>
+                    <Button
+                      color="secondary"
+                      disabled={!canRemove || pending !== null}
+                      size="small"
+                      variant="outlined"
+                      onClick={() => handleDisconnect(identity)}
+                    >
+                      {pending === id ? 'Working…' : 'Disconnect'}
+                    </Button>
+                    {!canRemove && (
+                      <Typography color="textSecondary" size="small" variant="body">
+                        This is your only sign-in method
+                      </Typography>
+                    )}
+                  </Stack>
+                ) : (
+                  id !== 'email' && (
+                    <Button
+                      disabled={pending !== null}
+                      size="small"
+                      variant="outlined"
+                      onClick={() => handleConnect(id)}
+                    >
+                      {pending === id ? 'Redirecting…' : 'Connect'}
+                    </Button>
+                  )
+                )}
+              </ListItem>
+            )
+          })
+        )}
+      </List>
     </Stack>
   )
 }

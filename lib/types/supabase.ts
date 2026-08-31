@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.5"
   }
   graphql_public: {
     Tables: {
@@ -1570,6 +1570,7 @@ export type Database = {
       }
     }
     Functions: {
+      current_user_has_password: { Args: never; Returns: boolean }
       derive_makeup_variant_alt_slug: {
         Args: {
           p_makeup_category: string
