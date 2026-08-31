@@ -63,17 +63,12 @@ function ChangeEmailSection() {
   )
 }
 
-function ChangePasswordSection() {
+function ChangePasswordSection({ hasPassword }: { hasPassword: boolean }) {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [hasPassword, setHasPassword] = useState(true)
-
-  useEffect(() => {
-    void getHasPassword().then(setHasPassword)
-  }, [])
 
   const mismatch = confirm.length > 0 && password !== confirm
 
@@ -208,11 +203,25 @@ function AdminAccessSection() {
 }
 
 export default function AccountSettings({ isAdmin }: { isAdmin: boolean }) {
+  // Default to `true` (has a password) while this is in flight and if the RPC
+  // fails: this flag only changes copy ("Change password" vs "Set password"),
+  // it gates nothing destructive, and most users do have a password.
+  // `connected-accounts.tsx` fetches the same flag but defaults to `false` on
+  // failure instead — there it feeds the unlink guard, so the safe fallback
+  // is the conservative one, not the common one. Different defaults, not a bug.
+  const [hasPassword, setHasPassword] = useState(true)
+
+  useEffect(() => {
+    void getHasPassword()
+      .then(setHasPassword)
+      .catch(() => setHasPassword(true))
+  }, [])
+
   return (
     <Container maxWidth="sm" sx={{ mx: 0 }}>
       <Stack spacing={3}>
         <ChangeEmailSection />
-        <ChangePasswordSection />
+        <ChangePasswordSection hasPassword={hasPassword} />
         <ConnectedAccounts />
         {!isAdmin && <AdminAccessSection />}
         <DangerZoneSection />
