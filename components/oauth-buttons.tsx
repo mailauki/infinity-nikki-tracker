@@ -25,11 +25,13 @@ export default function OAuthButtons({ next = '/' }: { next?: string }) {
       },
     })
 
-    // On success the browser navigates away, so this only runs on failure.
+    // A successful call normally navigates away before this runs. Clearing
+    // pending unconditionally guarantees the buttons recover even if that
+    // navigation never happens.
     if (error) {
       setError(error.message)
-      setPending(null)
     }
+    setPending(null)
   }
 
   return (
