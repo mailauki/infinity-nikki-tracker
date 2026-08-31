@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Alert,
   Button,
@@ -16,7 +16,8 @@ import {
   Typography,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
-import { deleteAccount } from '@/app/settings/actions'
+import { deleteAccount, getHasPassword } from '@/app/settings/actions'
+import ConnectedAccounts from '@/app/settings/connected-accounts'
 
 function ChangeEmailSection() {
   const [email, setEmail] = useState('')
@@ -42,7 +43,9 @@ function ChangeEmailSection() {
 
   return (
     <Stack spacing={2}>
-      <Typography size="large" variant="title">Change email</Typography>
+      <Typography size="large" variant="title">
+        Change email
+      </Typography>
       <Stack component="form" spacing={1} onSubmit={handleSubmit}>
         <TextField
           label="New email"
@@ -66,6 +69,11 @@ function ChangePasswordSection() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [hasPassword, setHasPassword] = useState(true)
+
+  useEffect(() => {
+    void getHasPassword().then(setHasPassword)
+  }, [])
 
   const mismatch = confirm.length > 0 && password !== confirm
 
@@ -89,7 +97,9 @@ function ChangePasswordSection() {
 
   return (
     <Stack spacing={2}>
-      <Typography size="large" variant="title">Change password</Typography>
+      <Typography size="large" variant="title">
+        {hasPassword ? 'Change password' : 'Set password'}
+      </Typography>
       <Stack component="form" spacing={1} onSubmit={handleSubmit}>
         <TextField
           label="New password"
@@ -113,7 +123,7 @@ function ChangePasswordSection() {
           type="submit"
           variant="outlined"
         >
-          {loading ? 'Saving…' : 'Update password'}
+          {loading ? 'Saving…' : hasPassword ? 'Update password' : 'Set password'}
         </Button>
       </Stack>
     </Stack>
@@ -139,7 +149,9 @@ function DangerZoneSection() {
   return (
     <Stack spacing={2}>
       <Divider />
-      <Typography size="large" variant="title">Danger zone</Typography>
+      <Typography size="large" variant="title">
+        Danger zone
+      </Typography>
       <Button
         color="error"
         sx={{ alignSelf: 'flex-start' }}
@@ -177,7 +189,9 @@ function AdminAccessSection() {
   return (
     <Stack spacing={2}>
       <Divider />
-      <Typography size="large" variant="title">Admin access</Typography>
+      <Typography size="large" variant="title">
+        Admin access
+      </Typography>
       <Typography color="textSecondary" variant="body">
         Admin access lets you manage Eureka sets, variants, and trials from the admin panel.
       </Typography>
@@ -199,6 +213,7 @@ export default function AccountSettings({ isAdmin }: { isAdmin: boolean }) {
       <Stack spacing={3}>
         <ChangeEmailSection />
         <ChangePasswordSection />
+        <ConnectedAccounts />
         {!isAdmin && <AdminAccessSection />}
         <DangerZoneSection />
       </Stack>
