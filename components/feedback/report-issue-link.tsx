@@ -1,6 +1,5 @@
 'use client'
 
-import FlagOutlinedIcon from '@mui/icons-material/FlagOutlined'
 import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -8,6 +7,7 @@ import FeedbackForm from './feedback-form'
 import { useReportSubject } from './report-context'
 import { entityFromPath } from '@/lib/feedback/entity-from-path'
 import type { ReportContext } from '@/lib/types/feedback'
+import { ReportProblem } from '@mui/icons-material';
 
 // Lives in the global footer rather than behind a per-page prop: every page
 // already renders the footer, so there are no coverage gaps now and none can
@@ -38,8 +38,8 @@ export default function ReportIssueLink() {
       <Button
         color="inherit"
         size="small"
-        startIcon={<FlagOutlinedIcon fontSize="small" />}
-        sx={{ color: 'text.secondary', textTransform: 'none' }}
+        startIcon={<ReportProblem />}
+        sx={{ color: 'text.secondary', textTransform: 'none', textWrap: 'nowrap' }}
         onClick={() => setOpen(true)}
       >
         Report a problem
