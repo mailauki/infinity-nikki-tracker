@@ -690,40 +690,37 @@ Note the quoting — `git add` on a path containing `(auth)` or `[slug]` needs q
 
 Append to `app/settings/actions.ts`:
 
+Use the **RPC path**, not `.schema('auth')` with the admin client. `lib/types/supabase.ts` types only the `graphql_public` and `public` schemas, so `.schema('auth')` cannot typecheck without casting around the generated types. The RPC is also the better design on its own merits: it reads `auth.uid()` from the caller's own JWT, so it needs no service-role client and takes **no user-id parameter at all** — which removes the "never trust a caller-supplied id" hazard rather than guarding against it.
+
 ```ts
 // Whether the signed-in user has a password set.
 //
 // The JS client's User type has no has_password field, and inferring it from
 // the presence of an 'email' identity is wrong — automatic linking can attach
 // an email identity to an account that never had a password. Reading
-// auth.users directly is the only exact answer, and being exact is the whole
-// point of the unlink guard that consumes this.
+// auth.users is the only exact answer, and being exact is the whole point of
+// the unlink guard that consumes this.
 export async function getHasPassword(): Promise<boolean> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // The user id comes from the verified session, never from a caller-supplied
-  // argument: the admin client bypasses RLS, so an id parameter here would let
-  // any caller probe any account.
   if (!user) return false
 
-  const admin = createAdminClient()
-  const { data, error } = await admin
-    .schema('auth')
-    .from('users')
-    .select('encrypted_password')
-    .eq('id', user.id)
-    .single()
+  // The RPC takes no arguments — it reads auth.uid() from the caller's own
+  // JWT, so a caller can only ever ask about themselves.
+  const { data, error } = await supabase.rpc('current_user_has_password')
 
   if (error) throw new Error(error.message)
 
-  return Boolean(data?.encrypted_password)
+  return Boolean(data)
 }
 ```
 
-If `.schema('auth')` is rejected by the generated `Database` type (it types the `public` schema only), fall back to an RPC. Create a **new** migration — `supabase/migrations/20260830130000_current_user_has_password.sql` — rather than editing Task 4's, which is already committed and may already have been applied:
+The generated types won't know about the new RPC until they are regenerated, so the `.rpc()` call needs a narrow type accommodation — cast the single call, never widen the whole client to `any`, and leave a comment saying it can be dropped after regeneration.
+
+Create a **new** migration — `supabase/migrations/20260830130000_current_user_has_password.sql` — rather than editing Task 4's, which is already committed and may already have been applied:
 
 ```sql
 create or replace function public.current_user_has_password()
@@ -743,7 +740,7 @@ revoke all on function public.current_user_has_password() from public;
 grant execute on function public.current_user_has_password() to authenticated;
 ```
 
-and call `supabase.rpc('current_user_has_password')` from the Server Action instead. The RPC reads `auth.uid()` from the caller's JWT, so it needs no admin client and no id parameter at all — prefer this if the typed path is awkward. Report which route you took.
+The RPC reads `auth.uid()` from the caller's JWT, so it needs no admin client and no id parameter at all. `revoke ... from public` removes the `EXECUTE` Postgres grants to `PUBLIC` by default, and `grant execute ... to authenticated` keeps it unreachable by `anon` — an anonymous caller has no `auth.uid()` and would only ever get `false`.
 
 - [ ] **Step 2: Build the Connected accounts component**
 
@@ -777,13 +774,23 @@ export default function ConnectedAccounts() {
 
   const load = useCallback(async () => {
     const supabase = createClient()
-    const [{ data, error }, passwordSet] = await Promise.all([
-      supabase.auth.getUserIdentities(),
-      getHasPassword(),
-    ])
-    if (error) setError(error.message)
-    setIdentities((data?.identities ?? []) as Identity[])
-    setHasPassword(passwordSet)
+    try {
+      const [{ data, error }, passwordSet] = await Promise.all([
+        supabase.auth.getUserIdentities(),
+        getHasPassword(),
+      ])
+      if (error) setError(error.message)
+      setIdentities((data?.identities ?? []) as Identity[])
+      setHasPassword(passwordSet)
+    } catch (err) {
+      // getHasPassword() throws rather than returning an error, and without
+      // this catch the rejection escapes before any setState — leaving the
+      // section on "Loading…" forever with nothing shown. hasPassword stays
+      // false on this path deliberately: an unknown password state must not
+      // make the unlink guard more permissive.
+      setError(err instanceof Error ? err.message : 'Could not load your connected accounts')
+      setIdentities([])
+    }
   }, [])
 
   useEffect(() => {
