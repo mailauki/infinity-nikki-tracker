@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Alert,
   Button,
@@ -16,7 +16,8 @@ import {
   Typography,
 } from '@mui/material'
 import { createClient } from '@/lib/supabase/client'
-import { deleteAccount } from '@/app/settings/actions'
+import { deleteAccount, getHasPassword } from '@/app/settings/actions'
+import ConnectedAccounts from '@/app/settings/connected-accounts'
 
 function ChangeEmailSection() {
   const [email, setEmail] = useState('')
@@ -42,7 +43,9 @@ function ChangeEmailSection() {
 
   return (
     <Stack spacing={2}>
-      <Typography size="large" variant="title">Change email</Typography>
+      <Typography size="large" variant="title">
+        Change email
+      </Typography>
       <Stack component="form" spacing={1} onSubmit={handleSubmit}>
         <TextField
           label="New email"
@@ -60,7 +63,7 @@ function ChangeEmailSection() {
   )
 }
 
-function ChangePasswordSection() {
+function ChangePasswordSection({ hasPassword }: { hasPassword: boolean }) {
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [loading, setLoading] = useState(false)
@@ -89,7 +92,9 @@ function ChangePasswordSection() {
 
   return (
     <Stack spacing={2}>
-      <Typography size="large" variant="title">Change password</Typography>
+      <Typography size="large" variant="title">
+        {hasPassword ? 'Change password' : 'Set password'}
+      </Typography>
       <Stack component="form" spacing={1} onSubmit={handleSubmit}>
         <TextField
           label="New password"
@@ -113,7 +118,7 @@ function ChangePasswordSection() {
           type="submit"
           variant="outlined"
         >
-          {loading ? 'Saving…' : 'Update password'}
+          {loading ? 'Saving…' : hasPassword ? 'Update password' : 'Set password'}
         </Button>
       </Stack>
     </Stack>
@@ -139,7 +144,9 @@ function DangerZoneSection() {
   return (
     <Stack spacing={2}>
       <Divider />
-      <Typography size="large" variant="title">Danger zone</Typography>
+      <Typography size="large" variant="title">
+        Danger zone
+      </Typography>
       <Button
         color="error"
         sx={{ alignSelf: 'flex-start' }}
@@ -177,7 +184,9 @@ function AdminAccessSection() {
   return (
     <Stack spacing={2}>
       <Divider />
-      <Typography size="large" variant="title">Admin access</Typography>
+      <Typography size="large" variant="title">
+        Admin access
+      </Typography>
       <Typography color="textSecondary" variant="body">
         Admin access lets you manage Eureka sets, variants, and trials from the admin panel.
       </Typography>
@@ -194,11 +203,26 @@ function AdminAccessSection() {
 }
 
 export default function AccountSettings({ isAdmin }: { isAdmin: boolean }) {
+  // Default to `true` (has a password) while this is in flight and if the RPC
+  // fails: this flag only changes copy ("Change password" vs "Set password"),
+  // it gates nothing destructive, and most users do have a password.
+  // `connected-accounts.tsx` fetches the same flag but defaults to `false` on
+  // failure instead — there it feeds the unlink guard, so the safe fallback
+  // is the conservative one, not the common one. Different defaults, not a bug.
+  const [hasPassword, setHasPassword] = useState(true)
+
+  useEffect(() => {
+    void getHasPassword()
+      .then(setHasPassword)
+      .catch(() => setHasPassword(true))
+  }, [])
+
   return (
     <Container maxWidth="sm" sx={{ mx: 0 }}>
       <Stack spacing={3}>
         <ChangeEmailSection />
-        <ChangePasswordSection />
+        <ChangePasswordSection hasPassword={hasPassword} />
+        <ConnectedAccounts />
         {!isAdmin && <AdminAccessSection />}
         <DangerZoneSection />
       </Stack>

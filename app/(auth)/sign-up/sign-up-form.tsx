@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
+import OAuthButtons from '@/components/oauth-buttons'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
 
@@ -58,6 +59,7 @@ export function SignUpForm({ className, ...props }: React.ComponentPropsWithoutR
       <Card>
         <CardHeader subheader="Create a new account" title="Sign up" />
         <CardContent>
+          <OAuthButtons />
           <form onSubmit={handleSignUp}>
             <TextField
               fullWidth
