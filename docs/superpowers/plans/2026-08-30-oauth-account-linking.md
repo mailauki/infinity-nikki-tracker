@@ -183,21 +183,30 @@ describe('removableProviders', () => {
     expect(removableProviders([google, discord], false)).toEqual(new Set(['google', 'discord']))
   })
 
-  it('allows removing OAuth when a real password remains', () => {
-    expect(removableProviders([email, google], true)).toEqual(new Set(['google']))
+  // Both are removable: dropping email leaves Google, dropping Google leaves
+  // a real password. Either way a usable method survives.
+  it('allows removing either when email has a password and Google is linked', () => {
+    expect(removableProviders([email, google], true)).toEqual(new Set(['email', 'google']))
   })
 
   // The lockout case. The email identity exists but has no password behind
-  // it, so removing Google would leave nothing to sign in with.
+  // it, so Google is the ONLY usable method and must not be removable.
+  // The passwordless email identity is still removable — it is not a usable
+  // sign-in method, so dropping it strands nobody.
   it('blocks removing the last OAuth identity when email has no password', () => {
-    expect(removableProviders([email, google], false)).toEqual(new Set())
+    expect(removableProviders([email, google], false)).toEqual(new Set(['email']))
   })
 
-  it('allows removing email when an OAuth identity remains', () => {
-    expect(removableProviders([email, google], false).has('email')).toBe(false)
+  it('allows removing anything when two OAuth identities remain', () => {
     expect(removableProviders([email, google, discord], false)).toEqual(
       new Set(['email', 'google', 'discord'])
     )
+  })
+
+  // Guards against a two-step lockout: after removing the passwordless email
+  // identity above, the guard must still refuse the sole remaining identity.
+  it('still blocks the sole remaining identity after an earlier removal', () => {
+    expect(removableProviders([google], false)).toEqual(new Set())
   })
 
   it('handles an empty identity list', () => {
@@ -206,7 +215,7 @@ describe('removableProviders', () => {
 })
 ```
 
-Note the fifth test's first assertion: with `[email, google]` and no password, _nothing_ is removable — removing `email` is safe in isolation but the set is empty because Google is the only usable method and email-without-password is not usable. With Discord also present there are two usable OAuth methods, so all three become removable.
+The rule these encode: a provider is removable when at least one **usable** method survives its removal, and an `email` identity is usable only when a password is actually set. A passwordless email identity is therefore always removable — it is not a sign-in method — while the last genuinely usable identity never is. The final test is the two-step check: unlinking is iterative, so the guard must re-refuse on the next pass rather than relying on the first.
 
 - [ ] **Step 2: Run the test and confirm it fails**
 
@@ -677,7 +686,7 @@ export async function getHasPassword(): Promise<boolean> {
 }
 ```
 
-If `.schema('auth')` is rejected by the generated `Database` type (it types the `public` schema only), fall back to an RPC. Add to the same migration file from Task 4:
+If `.schema('auth')` is rejected by the generated `Database` type (it types the `public` schema only), fall back to an RPC. Create a **new** migration — `supabase/migrations/20260830130000_current_user_has_password.sql` — rather than editing Task 4's, which is already committed and may already have been applied:
 
 ```sql
 create or replace function public.current_user_has_password()
