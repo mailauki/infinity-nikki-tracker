@@ -94,6 +94,29 @@ describe('safeNext', () => {
     expect(safeNext('http://evil.com')).toBe('/')
   })
 
+  // Browsers parse a backslash as equivalent to a forward slash in the
+  // authority section (WHATWG URL), so these resolve off-site exactly as
+  // '//evil.com' does. Verified: new URL('/\\evil.com', 'https://site').origin
+  // === 'https://evil.com'.
+  it('rejects backslash variants of a protocol-relative URL', () => {
+    expect(safeNext('/\\evil.com')).toBe('/')
+    expect(safeNext('/\\/evil.com')).toBe('/')
+    expect(safeNext('/\\\\evil.com')).toBe('/')
+    expect(safeNext('\\\\evil.com')).toBe('/')
+  })
+
+  // The same parser strips tab, newline, and carriage return before parsing,
+  // so these collapse into '//evil.com' and resolve off-site. The final case
+  // combines both tricks and is what forces the strip-then-fold ordering.
+  it('rejects control characters that smuggle a protocol-relative prefix', () => {
+    expect(safeNext('/\t/evil.com')).toBe('/')
+    expect(safeNext('/\n/evil.com')).toBe('/')
+    expect(safeNext('/\r/evil.com')).toBe('/')
+    expect(safeNext('/\t//evil.com')).toBe('/')
+    expect(safeNext('\t//evil.com')).toBe('/')
+    expect(safeNext('/\\\t/evil.com')).toBe('/')
+  })
+
   it('rejects a relative path with no leading slash', () => {
     expect(safeNext('settings')).toBe('/')
   })
@@ -118,14 +141,28 @@ Expected: FAIL — cannot resolve `../auth-redirect`.
 // Validates a `next` redirect parameter. Only a same-site absolute path is
 // allowed through; everything else falls back to the site root.
 //
-// The '//' check is the point of this function. A leading '//' makes the
-// value protocol-relative ('//evil.com' resolves to 'https://evil.com'), so
-// a bare startsWith('/') test would wave an off-site redirect straight
-// through.
+// The protocol-relative check is the point of this function. A leading '//'
+// makes the value protocol-relative ('//evil.com' resolves to
+// 'https://evil.com'), so a bare startsWith('/') test would wave an off-site
+// redirect straight through.
+//
+// The value is normalized twice before the check, because the WHATWG URL
+// parser browsers implement does two things a naive prefix test misses:
+//
+//   1. It strips tab, newline, and carriage return anywhere in the string, so
+//      '/<tab>/evil.com' collapses to '//evil.com' and resolves off-site.
+//   2. It treats '\' as equivalent to '/' in the authority section, so
+//      '/\evil.com' resolves off-site exactly as '//evil.com' does.
+//
+// Strip the control characters FIRST, then fold backslashes, or a combined
+// '/\<tab>/evil.com' slips between the two passes. Only the safety decision
+// uses the normalized string — the original value is what gets returned, since
+// a legitimate path contains none of these characters anyway.
 export function safeNext(value: string | null): string {
   if (!value) return '/'
-  if (!value.startsWith('/')) return '/'
-  if (value.startsWith('//')) return '/'
+  const normalized = value.replace(/[\t\n\r]/g, '').replace(/\\/g, '/')
+  if (!normalized.startsWith('/')) return '/'
+  if (normalized.startsWith('//')) return '/'
   return value
 }
 ```
@@ -133,7 +170,7 @@ export function safeNext(value: string | null): string {
 - [ ] **Step 4: Run the test and confirm it passes**
 
 Run: `yarn test lib/__tests__/auth-redirect.test.ts`
-Expected: PASS, 6 tests.
+Expected: PASS, 8 tests.
 
 - [ ] **Step 5: Commit**
 
