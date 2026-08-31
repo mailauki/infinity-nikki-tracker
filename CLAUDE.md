@@ -11,12 +11,14 @@ yarn start        # Start production server
 yarn lint         # Run ESLint
 yarn lint:fix     # Run ESLint with auto-fix
 yarn format       # Format with Prettier
+yarn test         # Run Vitest once
+yarn test:watch   # Vitest in watch mode
 yarn tsc --noEmit                            # Type-check (runs the local TypeScript binary; NOT `yarn dlx tsc`, which fetches a bogus placeholder package)
 npx npm-check-updates --format group         # Check outdated deps (Yarn 4 has no yarn outdated)
 npx npm-check-updates --format group -u      # Write updates to package.json
 ```
 
-Package manager: **Yarn** (not npm or pnpm). Only `dev/build/start/lint/format/lint:fix` are package scripts.
+Package manager: **Yarn** (not npm or pnpm). Only `dev/build/start/lint/format/lint:fix/test/test:watch` are package scripts.
 
 ## Environment Variables
 
@@ -31,7 +33,13 @@ STRIPE_SECRET_KEY=
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
 STRIPE_PRICE_ID=
 STRIPE_WEBHOOK_SECRET=
+SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID=      # OAuth; local dev via supabase/config.toml
+SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET=
+SUPABASE_AUTH_EXTERNAL_DISCORD_CLIENT_ID=
+SUPABASE_AUTH_EXTERNAL_DISCORD_SECRET=
 ```
+
+In production, OAuth provider credentials live in the Supabase dashboard instead, not in Vercel.
 
 ## Architecture
 
@@ -46,6 +54,21 @@ Routes are **flat under `app/`** — there is no `(main)` or `(admin)` route gro
 ### Middleware
 
 **`proxy.ts`** (root level) — exports `async function proxy()` + `config.matcher`. Calls `updateSession()` from `lib/supabase/proxy.ts` to refresh sessions on every request. Matcher excludes static files, images, favicon, and `manifest.webmanifest` (the PWA manifest must stay publicly fetchable). Note: `middleware.ts` is deprecated in Next.js 16 — the convention is `proxy.ts` with `export function proxy()`. Do NOT add a `middleware.ts` alongside it; Next.js 16 errors if both exist.
+
+### Auth Routes
+
+`app/(auth)/auth/confirm/route.ts` verifies email OTP tokens (`verifyOtp`).
+`app/(auth)/auth/callback/route.ts` exchanges a PKCE code for a session and serves BOTH
+`signInWithOAuth` and `linkIdentity` — they differ only in the `next` destination. Both routes
+validate `next` through `safeNext()` (`lib/auth-redirect.ts`), which strips tab/newline/CR
+and folds backslashes before testing the prefix — a bare `startsWith('/')` check is
+not enough, since `//evil.com`, `/\evil.com`, and `/<tab>/evil.com` all resolve off-site in a browser.
+
+One account can hold several identities (email, google, discord). Supabase auto-links a new OAuth
+identity to an existing user when the emails match AND the existing email is confirmed; when it is
+not confirmed, the unconfirmed identity is REMOVED instead. `lib/identity-guard.ts` holds the
+unlink rule — an `email` identity only counts as a usable sign-in method when a password is
+actually set.
 
 ### Data Flow & State (key pattern)
 
