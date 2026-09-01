@@ -403,13 +403,16 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
         // the browser scrolls but focus stays on the link.
         sx={{
           flexGrow: 1,
+					height: '100%',
           minHeight: '100vh',
           minWidth: { xs: 0, md: 320 },
           px: 2,
           outline: 'none',
+					justifyContent: 'space-between',
         }}
         tabIndex={-1}
       >
+				<Box>
         <DrawerHeader />
         {hasToolbar && <Toolbar />}
         <Box sx={{ height: theme.spacing(2) }} /> {/* Box spacer for AppBar mask */}
@@ -438,7 +441,10 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
           </AppBar>
         )}
         {children}
-        <Footer />
+				</Box>
+				<Box>
+					<Footer />
+				</Box>
       </Stack>
 
       {/* Right sidebar: temporary overlay below md, permanent at md+. Exactly one portal target div, rendered inside whichever drawer is active. */}
