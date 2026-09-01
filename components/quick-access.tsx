@@ -89,7 +89,7 @@ export function QuickAccess() {
               <CardHeader
                 slotProps={{
                   title: { variant: 'title', size: 'large', component: 'span' },
-                  subheader: { variant: 'label', size: 'small' },
+                  subheader: { variant: 'label', size: 'small', sx: { textTransform: 'uppercase' } },
                 }}
                 subheader={subtitle}
                 sx={{ textAlign: 'center', pt: 0 }}
