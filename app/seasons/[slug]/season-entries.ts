@@ -53,12 +53,46 @@ export function countEntries(entries: SeasonEntry[]) {
   }
 }
 
-/** How many cards of each kind a season holds — drives the overview stat row. */
+/**
+ * A card counts as obtained once every variant it shows is collected — the same
+ * rule ProgressChip uses to render its complete state, so a row's composition
+ * chip and its card's chip can never disagree. An entry with no variants is not
+ * complete: nothing was collected, so counting it as obtained would inflate the
+ * total.
+ */
+export function isEntryObtained(entry: SeasonEntry) {
+  const variants = entryVariants(entry)
+  return variants.length > 0 && variants.every((variant) => variant.obtained)
+}
+
+/**
+ * How many cards of each kind a season holds, and how many of those are fully
+ * collected — drives the overview stat row and the category composition chips.
+ */
 export function countEntryKinds(entries: SeasonEntry[]) {
+  const of = (kind: SeasonEntry['kind']) => entries.filter((e) => e.kind === kind)
+  const counts = (kind: SeasonEntry['kind']) => {
+    const kindEntries = of(kind)
+    return {
+      total: kindEntries.length,
+      obtained: kindEntries.filter(isEntryObtained).length,
+    }
+  }
+
+  const outfit = counts('outfit')
+  const standalone = counts('standalone')
+  const makeup = counts('makeup')
+
   return {
-    outfit: entries.filter((e) => e.kind === 'outfit').length,
-    standalone: entries.filter((e) => e.kind === 'standalone').length,
-    makeup: entries.filter((e) => e.kind === 'makeup').length,
+    // Plain counts, kept as numbers so existing call sites read unchanged.
+    outfit: outfit.total,
+    standalone: standalone.total,
+    makeup: makeup.total,
+    obtained: {
+      outfit: outfit.obtained,
+      standalone: standalone.obtained,
+      makeup: makeup.obtained,
+    },
   }
 }
 

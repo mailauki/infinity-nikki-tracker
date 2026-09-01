@@ -11,7 +11,68 @@ import OutfitSetCard from '@/app/outfits/outfit-set-card'
 import OutfitVariantCard from '@/app/outfits/outfit-variant-card'
 import MakeupSetCard from './makeup-set-item'
 import { useSeasonFilter } from './season-filter-context'
-import { countEntries, groupSeasonEntries, OTHER_CATEGORY, SeasonEntry } from './season-entries'
+import {
+  countEntries,
+  countEntryKinds,
+  groupSeasonEntries,
+  OTHER_CATEGORY,
+  SeasonEntry,
+} from './season-entries'
+
+// What a category is made of, in the same shape the seasons index card uses for
+// its category rows: a count of sets then a count of pieces, each behind the
+// same icon and aria label. Counts come from the entries the header already
+// measures, so the visibility toggles move these and the progress readout
+// together — the composition always describes the cards actually shown.
+//
+// Makeup sets count as sets (they are sets with their own variants), matching
+// how the index chips count them.
+//
+// One difference from the index is deliberate: the index counts base sets,
+// while these count cards, so a set showing its evolutions contributes one per
+// visible state. This header sits directly above those cards and moves with the
+// evolution / glow-up / base-set toggles, so counting anything else would
+// describe a grid the reader is not looking at.
+function CompositionCounts({
+  sets,
+  pieces,
+  obtainedSets,
+  obtainedPieces,
+}: {
+  sets: number
+  pieces: number
+  obtainedSets: number
+  obtainedPieces: number
+}) {
+  if (sets === 0 && pieces === 0) return null
+
+  return (
+    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+      {sets > 0 && (
+        <Typography
+          aria-label={`${obtainedSets} of ${sets} ${sets === 1 ? 'set' : 'sets'} collected`}
+          color="text.secondary"
+          size="small"
+          variant="body"
+        >
+          {obtainedSets}/{sets} sets
+        </Typography>
+      )}
+      {pieces > 0 && (
+        <Typography
+          aria-label={`${obtainedPieces} of ${pieces} ${
+            pieces === 1 ? 'piece' : 'pieces'
+          } collected`}
+          color="text.secondary"
+          size="small"
+          variant="body"
+        >
+          {obtainedPieces}/{pieces} pieces
+        </Typography>
+      )}
+    </Stack>
+  )
+}
 
 // The per-category header: title and obtained/total on one line, with a
 // determinate bar beneath. Mirrors the "Hierarchy Progress" rows on the profile
@@ -20,11 +81,19 @@ function CategoryProgress({
   title,
   obtained,
   total,
+  sets,
+  pieces,
+  obtainedSets,
+  obtainedPieces,
   isLoggedIn,
 }: {
   title: string
   obtained: number
   total: number
+  sets: number
+  pieces: number
+  obtainedSets: number
+  obtainedPieces: number
   isLoggedIn: boolean
 }) {
   const percentage = total > 0 ? percent(obtained, total) : 0
@@ -35,7 +104,17 @@ function CategoryProgress({
         <Typography component="h2" size="large" variant="title">
           {title}
         </Typography>
-        {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
+        {isLoggedIn && (
+          <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+            <CompositionCounts
+              obtainedPieces={obtainedPieces}
+              obtainedSets={obtainedSets}
+              pieces={pieces}
+              sets={sets}
+            />
+            <ProgressChip obtained={obtained} total={total} variant="parts" />
+          </Stack>
+        )}
       </Stack>
       {isLoggedIn && (
         <LinearProgress
@@ -124,6 +203,7 @@ export default function SeasonOutfitList({
     <Stack spacing={4}>
       {categoryGroups.map(([category, entries]) => {
         const { obtained, total } = countEntries(entries)
+        const kinds = countEntryKinds(entries)
 
         return (
           <CardGrid
@@ -135,6 +215,10 @@ export default function SeasonOutfitList({
                   <CategoryProgress
                     isLoggedIn={isLoggedIn}
                     obtained={obtained}
+                    obtainedPieces={kinds.obtained.standalone}
+                    obtainedSets={kinds.obtained.outfit + kinds.obtained.makeup}
+                    pieces={kinds.standalone}
+                    sets={kinds.outfit + kinds.makeup}
                     title={category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)}
                     total={total}
                   />
