@@ -148,7 +148,7 @@ export default function SeasonsContent({
                     </List>
                   </CardContent>
                   <CardActions>
-                    <ViewAllButton href={`/outfits/seasons/${season.slug}`} />
+                    <ViewAllButton href={`/seasons/${season.slug}`} />
                   </CardActions>
                 </Card>
               )

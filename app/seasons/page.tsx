@@ -1,11 +1,11 @@
 import { Suspense } from 'react'
 import { Metadata } from 'next'
-import SeasonsToolBar from '@/app/outfits/seasons/seasons-toolbar'
+import SeasonsToolBar from '@/app/seasons/seasons-toolbar'
 import SeasonsLoading from './loading'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getLocations } from '@/hooks/data/locations'
-import SeasonsContent from '@/app/outfits/seasons/seasons-content'
+import SeasonsContent from '@/app/seasons/seasons-content'
 import PageShell from '@/components/page-shell'
 import { pageTitle } from '@/lib/page-titles'
 

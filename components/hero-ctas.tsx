@@ -19,11 +19,11 @@ export function HeroCTAs({ isLoggedIn }: { isLoggedIn: boolean }) {
             </Button>
             <Button
               component={Link}
-              href="/eureka"
+              href="/seasons"
               sx={{ color: 'text.primary', borderColor: 'text.primary', borderRadius: 4 }}
               variant="outlined"
             >
-              Browse Sets
+              Browse Seasons
             </Button>
           </>
         ) : (

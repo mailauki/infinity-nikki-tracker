@@ -125,11 +125,11 @@ const SidebarDrawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 
 const navContent = (open: boolean, onClose: () => void) => (
   <Stack aria-label="Main" component="nav" sx={{ flexGrow: 1, mx: 1.5, pb: 3 }}>
     <NavSection items={navLinksData.home} open={open} onClose={onClose} />
-    <NavSection items={navLinksData.navMain} open={open} onClose={onClose} />
+    <NavSection items={navLinksData.collection} open={open} onClose={onClose} />
     <Divider sx={{ my: 0.5 }} />
-    <NavSection items={navLinksData.navSecondary} open={open} onClose={onClose} />
+    <NavSection items={navLinksData.account} open={open} onClose={onClose} />
     <Stack sx={{ flexGrow: 1 }} />
-    <NavSection items={navLinksData.navExtra} open={open} onClose={onClose} />
+    <NavSection items={navLinksData.support} open={open} onClose={onClose} />
   </Stack>
 )
 
