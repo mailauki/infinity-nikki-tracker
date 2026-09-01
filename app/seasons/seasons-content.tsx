@@ -94,16 +94,17 @@ export default function SeasonsContent({
   // whose own season matches (the seasons<->categories link lives on the rows,
   // not a join table). Some categories hold only pieces, so counting sets alone
   // would drop them from the list entirely.
-  const categoriesForSeason = (seasonSlug: string) => [
-    ...new Set([
-      ...outfitSets
-        .filter((set) => set.slug !== STANDALONE_SLUG && set.seasons === seasonSlug)
-        .map((set) => set.season_category),
-      ...standaloneVariants
-        .filter((variant) => variant.seasons === seasonSlug)
-        .map((variant) => variant.season_category),
-    ]).values(),
-  ].filter((slug): slug is string => Boolean(slug))
+  const categoriesForSeason = (seasonSlug: string) =>
+    [
+      ...new Set([
+        ...outfitSets
+          .filter((set) => set.slug !== STANDALONE_SLUG && set.seasons === seasonSlug)
+          .map((set) => set.season_category),
+        ...standaloneVariants
+          .filter((variant) => variant.seasons === seasonSlug)
+          .map((variant) => variant.season_category),
+      ]).values(),
+    ].filter((slug): slug is string => Boolean(slug))
 
   // Categories are derived from outfitSets, which the provider fetches on mount.
   // Until that lands every season looks empty, so the rows skeleton rather than
@@ -141,21 +142,25 @@ export default function SeasonsContent({
           disableGutters
           secondaryAction={
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              <Typography
-                aria-label={`${sets} ${sets === 1 ? 'set' : 'sets'}`}
-                size="small"
-                variant="body"
-              >
-                {sets} <Workspaces color="action" fontSize="inherit" sx={{ mb: 0.3 }} />
-              </Typography>
-              <Typography
-                aria-label={`${pieces} ${pieces === 1 ? 'piece' : 'pieces'}`}
-                size="small"
-                variant="body"
-              >
-                {pieces}{' '}
-                <Circle color="action" fontSize="inherit" sx={{ fontSize: 8, mb: 0.3 }} />
-              </Typography>
+              {sets > 0 && (
+                <Typography
+                  aria-label={`${sets} ${sets === 1 ? 'set' : 'sets'}`}
+                  size="small"
+                  variant="body"
+                >
+                  {sets} <Workspaces color="action" fontSize="inherit" sx={{ mb: 0.3 }} />
+                </Typography>
+              )}
+              {pieces > 0 && (
+                <Typography
+                  aria-label={`${pieces} ${pieces === 1 ? 'piece' : 'pieces'}`}
+                  size="small"
+                  variant="body"
+                >
+                  {pieces}{' '}
+                  <Circle color="action" fontSize="inherit" sx={{ fontSize: 8, mb: 0.3 }} />
+                </Typography>
+              )}
             </Stack>
           }
         >
