@@ -10,6 +10,7 @@ import {
   ListItem,
   ListItemText,
   ListSubheader,
+  Skeleton,
   Typography,
 } from '@mui/material'
 
@@ -23,6 +24,16 @@ import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
 import { ViewAllButton } from '@/components/view-all-button'
 
+// Mirrors the row skeleton in ./loading.tsx so a card's categories keep the
+// same shape from route-level fallback through to loaded data.
+function CategoryRowSkeleton() {
+  return (
+    <ListItem disableGutters secondaryAction={<Skeleton height={16} variant="text" width={16} />}>
+      <ListItemText primary={<Skeleton height={20} variant="text" width="50%" />} />
+    </ListItem>
+  )
+}
+
 export default function SeasonsContent({
   seasons,
   seasonCategories,
@@ -32,7 +43,7 @@ export default function SeasonsContent({
   seasonCategories: SeasonCategory[]
   locations: Location[]
 }) {
-  const { outfitSets } = useOutfitData()
+  const { outfitSets, isLoading, isError } = useOutfitData()
   const { mode } = useOutfitImageMode()
   const { sortOrder } = useSortOrder()
 
@@ -58,6 +69,51 @@ export default function SeasonsContent({
         .filter((slug): slug is string => Boolean(slug))
     ),
   ]
+
+  // Categories are derived from outfitSets, which the provider fetches on mount.
+  // Until that lands every season looks empty, so the rows skeleton rather than
+  // claiming "No categories" — that message is reserved for a season that really
+  // has none, and a failed fetch says so instead of blaming the data.
+  const renderCategories = (seasonSlug: string, categories: string[]) => {
+    if (isLoading) {
+      return (
+        <>
+          <CategoryRowSkeleton />
+          <CategoryRowSkeleton />
+          <CategoryRowSkeleton />
+        </>
+      )
+    }
+
+    if (!categories.length) {
+      return (
+        <ListItem disableGutters>
+          <ListItemText
+            primary={isError ? 'Categories unavailable' : 'No categories'}
+            slotProps={{ primary: { color: 'text.secondary' } }}
+          />
+        </ListItem>
+      )
+    }
+
+    return categories.map((slug) => (
+      <ListItem
+        key={slug}
+        disableGutters
+        secondaryAction={
+          <Typography size="small" variant="body">
+            {
+              outfitSets.filter(
+                (set) => set.season_category === slug && set.seasons === seasonSlug
+              ).length
+            }
+          </Typography>
+        }
+      >
+        <ListItemText primary={categoryTitle(slug)} />
+      </ListItem>
+    ))
+  }
 
   // Group seasons by location, mirroring how trials group by realm. Seasons are
   // pre-sorted by index so each group preserves the chosen order.
@@ -118,33 +174,7 @@ export default function SeasonsContent({
                   )}
                   <CardContent sx={{ flexGrow: 1 }}>
                     <List dense sx={{ width: '100%' }}>
-                      {categories.length ? (
-                        categories.map((slug) => (
-                          <ListItem
-                            key={slug}
-                            disableGutters
-                            secondaryAction={
-                              <Typography size="small" variant="body">
-                                {
-                                  outfitSets.filter(
-                                    (set) =>
-                                      set.season_category === slug && set.seasons === season.slug
-                                  ).length
-                                }
-                              </Typography>
-                            }
-                          >
-                            <ListItemText primary={categoryTitle(slug)} />
-                          </ListItem>
-                        ))
-                      ) : (
-                        <ListItem disableGutters>
-                          <ListItemText
-                            primary="No categories"
-                            slotProps={{ primary: { color: 'text.secondary' } }}
-                          />
-                        </ListItem>
-                      )}
+                      {renderCategories(season.slug, categories)}
                     </List>
                   </CardContent>
                   <CardActions>
