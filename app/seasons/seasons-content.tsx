@@ -21,6 +21,7 @@ import {
   useOutfitImageMode,
 } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
+import { MakeupSet } from '@/lib/types/makeup'
 import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
 import { ViewAllButton } from '@/components/view-all-button'
@@ -49,10 +50,12 @@ export default function SeasonsContent({
   seasons,
   seasonCategories,
   locations,
+  makeupSets,
 }: {
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   locations: Location[]
+  makeupSets: MakeupSet[]
 }) {
   const { outfitSets, isLoading, isError } = useOutfitData()
   const { mode } = useOutfitImageMode()
@@ -76,23 +79,34 @@ export default function SeasonsContent({
   const standaloneVariants =
     outfitSets.find((set) => set.slug === STANDALONE_SLUG)?.outfit_variants ?? []
 
+  // Makeup sets carry their own seasons / season_category, exactly like outfit
+  // sets, and the season detail page counts them alongside them — so the card
+  // chips have to as well or the index undercounts what the season opens to.
+  // getMakeupSets() folds evolutions into their base set, so this counts base
+  // sets only, matching how outfit sets are counted below.
+  const makeupSetsIn = (seasonSlug: string, categorySlug: string) =>
+    makeupSets.filter(
+      (set) => set.seasons === seasonSlug && set.season_category === categorySlug
+    ).length
+
   const setsIn = (seasonSlug: string, categorySlug: string) =>
     outfitSets.filter(
       (set) =>
         set.slug !== STANDALONE_SLUG &&
         set.seasons === seasonSlug &&
         set.season_category === categorySlug
-    ).length
+    ).length + makeupSetsIn(seasonSlug, categorySlug)
 
   const piecesIn = (seasonSlug: string, categorySlug: string) =>
     standaloneVariants.filter(
       (variant) => variant.seasons === seasonSlug && variant.season_category === categorySlug
     ).length
 
-  // A season's categories are the distinct season_category values across both
-  // sources: the outfit sets assigned to that season, and the standalone pieces
-  // whose own season matches (the seasons<->categories link lives on the rows,
-  // not a join table). Some categories hold only pieces, so counting sets alone
+  // A season's categories are the distinct season_category values across all
+  // three sources: the outfit sets assigned to that season, the standalone
+  // pieces whose own season matches, and the season's makeup sets (the
+  // seasons<->categories link lives on the rows, not a join table). Some
+  // categories hold only pieces or only makeup, so counting outfit sets alone
   // would drop them from the list entirely.
   const categoriesForSeason = (seasonSlug: string) =>
     [
@@ -103,15 +117,21 @@ export default function SeasonsContent({
         ...standaloneVariants
           .filter((variant) => variant.seasons === seasonSlug)
           .map((variant) => variant.season_category),
+        ...makeupSets.filter((set) => set.seasons === seasonSlug).map((set) => set.season_category),
       ]).values(),
     ].filter((slug): slug is string => Boolean(slug))
 
-  // Categories are derived from outfitSets, which the provider fetches on mount.
-  // Until that lands every season looks empty, so the rows skeleton rather than
+  // Outfit categories are derived from outfitSets, which the provider fetches on
+  // mount; makeup sets arrive server-rendered. Until the outfit fetch lands the
+  // outfit half of every season looks empty, so the rows skeleton rather than
   // claiming "No categories" — that message is reserved for a season that really
   // has none, and a failed fetch says so instead of blaming the data.
+  //
+  // A season whose only rows are makeup is already complete before the provider
+  // resolves, so it renders its categories immediately rather than skeletoning
+  // (or, on a failed fetch, blanking) over data that is right there.
   const renderCategories = (seasonSlug: string, categories: string[]) => {
-    if (isLoading) {
+    if (isLoading && !categories.length) {
       return (
         <>
           <CategoryRowSkeleton />

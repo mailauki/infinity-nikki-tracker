@@ -5,6 +5,7 @@ import SeasonsLoading from './loading'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getLocations } from '@/hooks/data/locations'
+import { getMakeupSets } from '@/hooks/data/makeup-sets'
 import SeasonsContent from '@/app/seasons/seasons-content'
 import PageShell from '@/components/page-shell'
 import { pageTitle } from '@/lib/page-titles'
@@ -14,10 +15,11 @@ export const metadata: Metadata = {
 }
 
 export default async function SeasonsPage() {
-  const [seasons, seasonCategories, locations] = await Promise.all([
+  const [seasons, seasonCategories, locations, makeupSets] = await Promise.all([
     getSeasons(),
     getSeasonCategories(),
     getLocations(),
+    getMakeupSets(),
   ])
 
   return (
@@ -27,6 +29,7 @@ export default async function SeasonsPage() {
         <Suspense fallback={<SeasonsLoading />}>
           <SeasonsContent
             locations={locations}
+            makeupSets={makeupSets}
             seasonCategories={seasonCategories}
             seasons={seasons}
           />
