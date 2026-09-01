@@ -11,6 +11,7 @@ import {
   ListItemText,
   ListSubheader,
   Skeleton,
+  Stack,
   Typography,
 } from '@mui/material'
 
@@ -23,12 +24,22 @@ import { useSortOrder } from '@/components/sort-context'
 import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
 import { ViewAllButton } from '@/components/view-all-button'
+import { STANDALONE_SLUG } from '@/app/seasons/[slug]/season-entries'
+import { Circle, Workspaces } from '@mui/icons-material'
 
 // Mirrors the row skeleton in ./loading.tsx so a card's categories keep the
 // same shape from route-level fallback through to loaded data.
 function CategoryRowSkeleton() {
   return (
-    <ListItem disableGutters secondaryAction={<Skeleton height={16} variant="text" width={16} />}>
+    <ListItem
+      disableGutters
+      secondaryAction={
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <Skeleton height={16} variant="text" width={16} />
+          <Skeleton height={16} variant="text" width={16} />
+        </Stack>
+      }
+    >
       <ListItemText primary={<Skeleton height={20} variant="text" width="50%" />} />
     </ListItem>
   )
@@ -58,17 +69,41 @@ export default function SeasonsContent({
 
   const locationTitle = (slug: string) => locations.find((l) => l.slug === slug)?.title ?? slug
 
-  // A season's categories are the distinct season_category values among the
-  // outfit sets assigned to that season (the seasons<->categories link lives on
-  // outfit_sets, not a join table).
+  // Standalone pieces are individual variants parked in one container set. The
+  // container carries no season of its own — each variant does — so counting
+  // pieces means looking inside it rather than at the set list. Mirrors the
+  // extraction in app/seasons/[slug]/page.tsx.
+  const standaloneVariants =
+    outfitSets.find((set) => set.slug === STANDALONE_SLUG)?.outfit_variants ?? []
+
+  const setsIn = (seasonSlug: string, categorySlug: string) =>
+    outfitSets.filter(
+      (set) =>
+        set.slug !== STANDALONE_SLUG &&
+        set.seasons === seasonSlug &&
+        set.season_category === categorySlug
+    ).length
+
+  const piecesIn = (seasonSlug: string, categorySlug: string) =>
+    standaloneVariants.filter(
+      (variant) => variant.seasons === seasonSlug && variant.season_category === categorySlug
+    ).length
+
+  // A season's categories are the distinct season_category values across both
+  // sources: the outfit sets assigned to that season, and the standalone pieces
+  // whose own season matches (the seasons<->categories link lives on the rows,
+  // not a join table). Some categories hold only pieces, so counting sets alone
+  // would drop them from the list entirely.
   const categoriesForSeason = (seasonSlug: string) => [
-    ...new Set(
-      outfitSets
-        .filter((set) => set.seasons === seasonSlug)
-        .map((set) => set.season_category)
-        .filter((slug): slug is string => Boolean(slug))
-    ),
-  ]
+    ...new Set([
+      ...outfitSets
+        .filter((set) => set.slug !== STANDALONE_SLUG && set.seasons === seasonSlug)
+        .map((set) => set.season_category),
+      ...standaloneVariants
+        .filter((variant) => variant.seasons === seasonSlug)
+        .map((variant) => variant.season_category),
+    ]).values(),
+  ].filter((slug): slug is string => Boolean(slug))
 
   // Categories are derived from outfitSets, which the provider fetches on mount.
   // Until that lands every season looks empty, so the rows skeleton rather than
@@ -96,23 +131,38 @@ export default function SeasonsContent({
       )
     }
 
-    return categories.map((slug) => (
-      <ListItem
-        key={slug}
-        disableGutters
-        secondaryAction={
-          <Typography size="small" variant="body">
-            {
-              outfitSets.filter(
-                (set) => set.season_category === slug && set.seasons === seasonSlug
-              ).length
-            }
-          </Typography>
-        }
-      >
-        <ListItemText primary={categoryTitle(slug)} />
-      </ListItem>
-    ))
+    return categories.map((slug) => {
+      const sets = setsIn(seasonSlug, slug)
+      const pieces = piecesIn(seasonSlug, slug)
+
+      return (
+        <ListItem
+          key={slug}
+          disableGutters
+          secondaryAction={
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+              <Typography
+                aria-label={`${sets} ${sets === 1 ? 'set' : 'sets'}`}
+                size="small"
+                variant="body"
+              >
+                {sets} <Workspaces color="action" fontSize="inherit" sx={{ mb: 0.3 }} />
+              </Typography>
+              <Typography
+                aria-label={`${pieces} ${pieces === 1 ? 'piece' : 'pieces'}`}
+                size="small"
+                variant="body"
+              >
+                {pieces}{' '}
+                <Circle color="action" fontSize="inherit" sx={{ fontSize: 8, mb: 0.3 }} />
+              </Typography>
+            </Stack>
+          }
+        >
+          <ListItemText primary={categoryTitle(slug)} />
+        </ListItem>
+      )
+    })
   }
 
   // Group seasons by location, mirroring how trials group by realm. Seasons are
