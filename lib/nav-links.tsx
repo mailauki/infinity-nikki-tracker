@@ -30,14 +30,6 @@ export const navLinksData: {
       title: navLabel('/outfits'),
       url: '/outfits',
       image: '/icons/outfits.png',
-      // items: [
-      //   {
-      //     title: navLabel('/outfits/seasons'),
-      //     url: '/outfits/seasons',
-      //     image: '/icons/compendium.png',
-      //     icon: <Forest />,
-      //   },
-      // ],
     },
     {
       title: navLabel('/eureka'),
@@ -63,10 +55,10 @@ export const navLinksData: {
       image: '/icons/momo-cloak.png',
     },
     {
-			title: 'Seasons',
-			url: '/seasons',
-			image: '/icons/compendium.png',
-			icon: <Forest />,
+      title: navLabel('/seasons'),
+      url: '/seasons',
+      image: '/icons/compendium.png',
+      icon: <Forest />,
     },
     {
       title: navLabel('/looks'),

@@ -85,7 +85,7 @@ export default function OutfitSetDetailCard({
     <>
       <Anchor
         component={Link}
-        href={`/outfits/seasons/${outfitSet.seasons}`}
+        href={`/seasons/${outfitSet.seasons}`}
         sx={{ cursor: 'pointer' }}
         underline="hover"
         variant="title"

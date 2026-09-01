@@ -13,8 +13,8 @@ describe('page name registry', () => {
     expect(navLabel('/eureka')).toBe('Eureka')
     expect(pageTitle('/eureka')).toBe('Eureka Sets')
 
-    expect(navLabel('/outfits/seasons')).toBe('Seasons')
-    expect(pageTitle('/outfits/seasons')).toBe('Outfits by Season')
+    expect(navLabel('/seasons')).toBe('Seasons')
+    expect(pageTitle('/seasons')).toBe('Outfits by Season')
 
     expect(navLabel('/admin/outfits/variants')).toBe('Variants')
     expect(pageTitle('/admin/outfits/variants')).toBe('Outfit Variants')
@@ -47,7 +47,7 @@ describe('resolveNavLabel', () => {
   })
 
   it('names a detail page from its own slug', () => {
-    expect(resolveNavLabel('/outfits/seasons/spring-encore')).toBe('Spring Encore')
+    expect(resolveNavLabel('/seasons/spring-encore')).toBe('Spring Encore')
     expect(resolveNavLabel('/eureka/some_set_name')).toBe('Some Set Name')
   })
 

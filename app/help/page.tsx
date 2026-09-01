@@ -31,7 +31,7 @@ export default function HelpPage() {
                 Outfits
               </Anchor>{' '}
               page, and explore them by season on the{' '}
-              <Anchor color="textSecondary" href="/outfits/seasons">
+              <Anchor color="textSecondary" href="/seasons">
                 Seasons
               </Anchor>{' '}
               page.

@@ -10,7 +10,7 @@ import PageShell from '@/components/page-shell'
 import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
-  title: pageTitle('/outfits/seasons'),
+  title: pageTitle('/seasons'),
 }
 
 export default async function SeasonsPage() {

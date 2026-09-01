@@ -3,12 +3,11 @@
 // a report without an entity is still a useful report.
 
 // Single-segment detail routes: /<domain>/<slug>
-const DETAIL_DOMAINS = ['eureka', 'outfits', 'makeup', 'momo-cloaks', 'looks'] as const
+const DETAIL_DOMAINS = ['eureka', 'outfits', 'makeup', 'momo-cloaks', 'looks', 'seasons'] as const
 
 // Nested detail routes: /<domain>/<section>/<slug>, reported as "domain-section"
 const NESTED_DETAILS: Record<string, readonly string[]> = {
   eureka: ['trials'],
-  outfits: ['seasons'],
 }
 
 // Second segments that are pages in their own right, not entity slugs.

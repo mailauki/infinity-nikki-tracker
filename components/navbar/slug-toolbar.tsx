@@ -6,9 +6,9 @@ import { useParams, usePathname } from 'next/navigation'
 import { ChevronLeft, Edit, InfoOutlined } from '@mui/icons-material'
 import ImageModeButton from '@/components/navbar/image-mode-button'
 import MakeupImageModeButton from '@/components/makeup/makeup-image-mode-button'
-import { useSeasonFilterOptional } from '@/app/outfits/seasons/[slug]/season-filter-context'
+import { useSeasonFilterOptional } from '@/app/seasons/[slug]/season-filter-context'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
-import SeasonVisibilityMenu from '@/app/outfits/seasons/[slug]/season-visibility-menu'
+import SeasonVisibilityMenu from '@/app/seasons/[slug]/season-visibility-menu'
 
 export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname()

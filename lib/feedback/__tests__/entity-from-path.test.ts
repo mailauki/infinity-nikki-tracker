@@ -26,16 +26,16 @@ describe('entityFromPath', () => {
       entity_type: 'looks',
       entity_slug: 'my_look',
     })
+    expect(entityFromPath('/seasons/spring')).toEqual({
+      entity_type: 'seasons',
+      entity_slug: 'spring',
+    })
   })
 
   it('extracts nested detail routes', () => {
     expect(entityFromPath('/eureka/trials/pear_blossom')).toEqual({
       entity_type: 'eureka-trials',
       entity_slug: 'pear_blossom',
-    })
-    expect(entityFromPath('/outfits/seasons/spring')).toEqual({
-      entity_type: 'outfits-seasons',
-      entity_slug: 'spring',
     })
   })
 
@@ -48,7 +48,7 @@ describe('entityFromPath', () => {
   it('returns no entity for known non-entity subpages', () => {
     expect(entityFromPath('/eureka/sets')).toEqual({ entity_type: null, entity_slug: null })
     expect(entityFromPath('/eureka/trials')).toEqual({ entity_type: null, entity_slug: null })
-    expect(entityFromPath('/outfits/seasons')).toEqual({ entity_type: null, entity_slug: null })
+    expect(entityFromPath('/seasons')).toEqual({ entity_type: null, entity_slug: null })
     expect(entityFromPath('/looks/new')).toEqual({ entity_type: null, entity_slug: null })
   })
 

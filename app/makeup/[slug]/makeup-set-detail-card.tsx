@@ -56,7 +56,7 @@ export default function MakeupSetDetailCard({
     <>
       <Anchor
         component={Link}
-        href={`/outfits/seasons/${makeupSet.seasons}`}
+        href={`/seasons/${makeupSet.seasons}`}
         sx={{ cursor: 'pointer' }}
         underline="hover"
         variant="title"

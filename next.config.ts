@@ -15,6 +15,22 @@ while (!fs.existsSync(path.join(workspaceRoot, 'node_modules', 'next'))) {
 
 const nextConfig: NextConfig = {
   cacheComponents: true,
+  // Seasons moved out from under /outfits to its own top-level route. Keep the
+  // old URLs working for bookmarks and anything already linking to them.
+  async redirects() {
+    return [
+      {
+        source: '/outfits/seasons',
+        destination: '/seasons',
+        permanent: true,
+      },
+      {
+        source: '/outfits/seasons/:slug',
+        destination: '/seasons/:slug',
+        permanent: true,
+      },
+    ]
+  },
   turbopack: {
     root: workspaceRoot,
   },
