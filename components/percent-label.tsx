@@ -7,7 +7,8 @@ export default function PercentLabel({ percentage }: { percentage: Percentage })
     <Typography
       color={percentage === 100 ? 'primary' : 'textPrimary'}
       size="large"
-      sx={{ pb: 0.5, fontWeight: 'medium' }} variant="title"
+      sx={{ pb: 0.5, fontWeight: 'medium' }}
+      variant="title"
     >
       {percentage === 100 ? <Check fontSize="large" /> : `${percentage}`}
       {percentage !== 100 && (

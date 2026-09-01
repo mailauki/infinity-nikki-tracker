@@ -8,14 +8,14 @@ A fan-made collection tracker for the game _Infinity Nikki_, built and shipped s
 
 ## At a Glance
 
-| | |
-| --- | --- |
-| **Timeline** | January 21 – August 13, 2026 (~7 months, ongoing) |
-| **Team** | Solo — design, frontend, backend, schema, ops |
-| **Scale** | 513 commits · 312 merged PRs · ~47,000 lines across `app/`, `components/`, `hooks/`, `lib/` |
-| **Data layer** | 124 Postgres migrations · 31 tables + 1 aggregate view · RLS enabled on 21 tables across 74 policies · `security definer` RPCs for atomic toggles |
-| **Stack** | Next.js 16 (App Router, Server Components, Server Actions, Cache Components/PPR) · React 19 · TypeScript · Supabase (Postgres, Auth, Storage, RLS) · MUI v9 · Tailwind (layout only) · Stripe · Vitest · Vercel |
-| **Domains tracked** | Outfits (+ Seasons, Evolutions) · Eureka (+ Trials) · Makeup · Momo's Cloaks · user-authored Custom Looks |
+|                     |                                                                                                                                                                                                                 |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Timeline**        | January 21 – August 13, 2026 (~7 months, ongoing)                                                                                                                                                               |
+| **Team**            | Solo — design, frontend, backend, schema, ops                                                                                                                                                                   |
+| **Scale**           | 513 commits · 312 merged PRs · ~47,000 lines across `app/`, `components/`, `hooks/`, `lib/`                                                                                                                     |
+| **Data layer**      | 124 Postgres migrations · 31 tables + 1 aggregate view · RLS enabled on 21 tables across 74 policies · `security definer` RPCs for atomic toggles                                                               |
+| **Stack**           | Next.js 16 (App Router, Server Components, Server Actions, Cache Components/PPR) · React 19 · TypeScript · Supabase (Postgres, Auth, Storage, RLS) · MUI v9 · Tailwind (layout only) · Stripe · Vitest · Vercel |
+| **Domains tracked** | Outfits (+ Seasons, Evolutions) · Eureka (+ Trials) · Makeup · Momo's Cloaks · user-authored Custom Looks                                                                                                       |
 
 ---
 
@@ -27,12 +27,12 @@ A fan-made collection tracker for the game _Infinity Nikki_, built and shipped s
 
 - **shadcn/ui → MUI** at five weeks in, once it was clear the app needed DataGrids, charts, and a real theming layer rather than components I'd own copies of.
 - **Title-based FKs → slug-based FKs** with `ON UPDATE CASCADE`, so renaming game content stops breaking references. Paid off months later when new domains got slugs from day one.
-- **Six client fetches → one bootstrap route**, with realtime *demoted* rather than deleted — it still owns cross-device sync on obtained rows, which is what it's genuinely good at.
+- **Six client fetches → one bootstrap route**, with realtime _demoted_ rather than deleted — it still owns cross-device sync on obtained rows, which is what it's genuinely good at.
 - **A Server Action that had to become a route handler.** Cookie-setting actions mark their response revalidated, which remounted the provider and refired a 6.7s fetch on every density toggle. Route handlers do the identical write without the revalidation.
 - **Auth middleware from allow-list to deny-list**, after two public pages shipped redirecting guests to `/login` purely because nobody remembered to add them to the exception list.
 - **An RLS policy using `FOR ALL`** let any authenticated user update their own `role` — self-promotion to admin. Fixed with split policies that assert the role is unchanged, comparing against the JWT claim to avoid recursive policy evaluation.
 
-**Incidents worth reading.** PostgREST's 1000-row cap silently truncating large collections; the `/outfits` lag that profiling proved was re-render churn, not node count (so the plan explicitly *rejected* virtualization as the first fix); CLS 0.42 from a drawer that read `localStorage` after hydration, fixed by moving the state to a cookie readable during SSR; a 5.5s auth round-trip in front of every page load; Vercel's image optimizer returning 402 once the quota ran out, breaking every thumbnail in production while dev worked fine.
+**Incidents worth reading.** PostgREST's 1000-row cap silently truncating large collections; the `/outfits` lag that profiling proved was re-render churn, not node count (so the plan explicitly _rejected_ virtualization as the first fix); CLS 0.42 from a drawer that read `localStorage` after hydration, fixed by moving the state to a cookie readable during SSR; a 5.5s auth round-trip in front of every page load; Vercel's image optimizer returning 402 once the quota ran out, breaking every thumbnail in production while dev worked fine.
 
 **How it was built.** Solo, with Claude Code as a daily collaborator, across 312 PRs against a protected `main`. The leverage came from infrastructure rather than prompting: a `CLAUDE.md` operating manual where every entry exists because something broke once, formatter/typecheck hooks scoped to the edited file (~13s → ~1.1s per edit), 34 implementation plans and 35 design specs written before non-trivial work, and a `pre-push` hook that blocks pushes to already-merged branches — one that deliberately **fails open** when offline, because a guard that blocks work during an outage gets disabled permanently within a week.
 
@@ -70,13 +70,13 @@ That's a **completion and gap-analysis problem**, not a catalog problem — and 
 
 The app presents every domain through the same three-layer idea — **set → variant → obtained** — even where the underlying shape differs:
 
-| Domain | Set layer | Variant layer | Obtained key |
-| --- | --- | --- | --- |
-| Eureka | `eureka_sets` (style, rarity) | color × category grid | `(set, category, color)` |
-| Outfits | `outfit_sets` + evolutions | pieces per category | `(set, category, variant)` |
-| Makeup | `makeup_sets` | variants per category | `(set, category, variant)` |
-| Momo's Cloaks | — (flat) | — | `cloak slug` |
-| Custom Looks | user-authored | mixed pieces from any domain | n/a |
+| Domain        | Set layer                     | Variant layer                | Obtained key               |
+| ------------- | ----------------------------- | ---------------------------- | -------------------------- |
+| Eureka        | `eureka_sets` (style, rarity) | color × category grid        | `(set, category, color)`   |
+| Outfits       | `outfit_sets` + evolutions    | pieces per category          | `(set, category, variant)` |
+| Makeup        | `makeup_sets`                 | variants per category        | `(set, category, variant)` |
+| Momo's Cloaks | — (flat)                      | —                            | `cloak slug`               |
+| Custom Looks  | user-authored                 | mixed pieces from any domain | n/a                        |
 
 Momo's Cloaks is the interesting one: it deliberately **doesn't** get the machinery. A cloak has no variants or evolutions to assemble, so its DB row is already the complete entity — no raw/resolved split, no variant-sync on save, no invariant validation. Copying the outfits pattern wholesale would have added three layers of abstraction to a table that needed none. Recognizing where a pattern _shouldn't_ apply saved more code than the pattern itself.
 
@@ -90,7 +90,7 @@ Payment is a Stripe Checkout session plus a signature-verified webhook that flip
 
 ### Closing the loop: in-app feedback
 
-Rather than route bug reports to GitHub issues (where players won't go), there's a feedback form reachable from the footer, plus a per-page "report this" link. The clever part is `entityFromPath()`: the report link derives *what you're reporting about* from the URL alone — `/eureka/some-set` becomes `entity_type: 'eureka'`, `entity_slug: 'some-set'` — so no page needs per-page wiring, and unknown URL shapes degrade to nulls rather than failing. Reports land in an admin triage queue with image uploads.
+Rather than route bug reports to GitHub issues (where players won't go), there's a feedback form reachable from the footer, plus a per-page "report this" link. The clever part is `entityFromPath()`: the report link derives _what you're reporting about_ from the URL alone — `/eureka/some-set` becomes `entity_type: 'eureka'`, `entity_slug: 'some-set'` — so no page needs per-page wiring, and unknown URL shapes degrade to nulls rather than failing. Reports land in an admin triage queue with image uploads.
 
 ---
 
@@ -159,7 +159,7 @@ This is my favorite bug in the project, because the correct fix looks wrong.
 
 **Symptom:** every preference toggle on `/outfits` — changing density, sort order, image mode — triggered a full ~6.7s refetch of the page's data.
 
-**Diagnosis:** a Server Action that sets cookies (which the Supabase SSR client does whenever it refreshes a session) marks its response as revalidated. That invalidates the client router cache, which remounts `OutfitDataProvider`, which refires its bootstrap fetch. The preference write was correct. Its *side effect on the router cache* was the problem.
+**Diagnosis:** a Server Action that sets cookies (which the Supabase SSR client does whenever it refreshes a session) marks its response as revalidated. That invalidates the client router cache, which remounts `OutfitDataProvider`, which refires its bootstrap fetch. The preference write was correct. Its _side effect on the router cache_ was the problem.
 
 **Fix:** move exactly those writes out of Server Actions and into `POST /api/preferences`. A route handler performs the identical cookie write without triggering revalidation.
 
@@ -177,7 +177,7 @@ A rule with a stated boundary survives contact with future-me. A rule without on
 
 The session-refresh proxy originally gated **everything** and subtracted a growing list of public exceptions. Every new public domain was broken by default until someone remembered to add it — and two of them, `/makeup` and `/momo-cloaks`, shipped as public pages that redirected anonymous visitors to `/login` for exactly that reason.
 
-Inverting it to a protected-list (`/admin`, `/profile`, `/settings`, `/looks`) changes the failure mode: forgetting to list a new *gated* route is an explicit, visible omission, while forgetting a new *public* route now does nothing at all. **Choose the default whose failure is the one you can afford.**
+Inverting it to a protected-list (`/admin`, `/profile`, `/settings`, `/looks`) changes the failure mode: forgetting to list a new _gated_ route is an explicit, visible omission, while forgetting a new _public_ route now does nothing at all. **Choose the default whose failure is the one you can afford.**
 
 The same file carries a second decision that reads as an anti-optimization until you know the story: `getUser()` (a real network round-trip) is used instead of `getClaims()` (a local JWT decode), because `getClaims()` can silently return null when the cookie format doesn't match after a sign-out/sign-in cycle — logging users out at random. The slow, correct call won.
 
@@ -185,7 +185,7 @@ The same file carries a second decision that reads as an anti-optimization until
 
 An early `profiles` policy used `FOR ALL`, which let any authenticated user `UPDATE` their own row — including the `role` column. Any user could make themselves an admin.
 
-The fix splits it into separate `SELECT` and `UPDATE` policies, with the update policy asserting the role is unchanged. The non-obvious part is *how* it asserts that: a sub-select against `profiles` inside a `WITH CHECK` on `profiles` risks infinite recursion in policy evaluation, so the comparison reads the JWT claim instead:
+The fix splits it into separate `SELECT` and `UPDATE` policies, with the update policy asserting the role is unchanged. The non-obvious part is _how_ it asserts that: a sub-select against `profiles` inside a `WITH CHECK` on `profiles` risks infinite recursion in policy evaluation, so the comparison reads the JWT claim instead:
 
 ```sql
 with check (
@@ -226,9 +226,9 @@ Deriving each variant's `obtained` flag ran a linear `.find()` over the obtained
 
 **Symptom:** the outfits page lagged badly.
 
-The obvious fix was virtualization. Profiling said otherwise — the lag was **re-render churn, not DOM node count**, and it reproduced at only a few hundred cards. So the design doc explicitly *rejected* virtualization as the first fix and specified three things instead: memoize the provider context, memoize and de-nest the ~100-line filter/sort pipeline (previously re-running on every render), and memoize the cards with stable callbacks.
+The obvious fix was virtualization. Profiling said otherwise — the lag was **re-render churn, not DOM node count**, and it reproduced at only a few hundred cards. So the design doc explicitly _rejected_ virtualization as the first fix and specified three things instead: memoize the provider context, memoize and de-nest the ~100-line filter/sort pipeline (previously re-running on every render), and memoize the cards with stable callbacks.
 
-Field testing during that work surfaced a fourth, distinct problem: applying a filter *blocked* the page — you couldn't apply a second filter until the ~6,000-card render finished. That's not a wasted-render problem, it's an urgent `setFilters` call React can't interrupt, and it needed a transition, not a memo.
+Field testing during that work surfaced a fourth, distinct problem: applying a filter _blocked_ the page — you couldn't apply a second filter until the ~6,000-card render finished. That's not a wasted-render problem, it's an urgent `setFilters` call React can't interrupt, and it needed a transition, not a memo.
 
 The filter pipeline refactor was verified by capturing output snapshots across six filter states and proving them byte-identical before and after — the check that lets you refactor a pipeline that has no test coverage without shipping a silent behavior change.
 
@@ -314,7 +314,7 @@ Those comments are what let an AI collaborator (and future-me) make correct chan
 - **Test coverage arrived late and narrow.** Vitest covers the feedback module — validation, rate limiting, path-to-entity derivation, and its components. The rest of the app has none, which is why the outfits refactor had to lean on manual six-state output snapshots. The pure transform functions in `hooks/` are trivially testable and should have been tested from the start.
 - **Schema-first, not UI-first.** The title→slug FK migration and the makeup slug normalization were both retroactive repairs. Both were predictable at design time; neither was designed for.
 - **Production-only failure modes need production-shaped checks.** The image-optimizer 402 and the `use cache` build crash both worked perfectly in dev. A staging check that runs the build with production-ish env would have caught the second one before CI did.
-- **Measure before optimizing — but also measure before *not* optimizing.** The `/outfits` lag was misdiagnosed as a node-count problem for a while. Profiling reframed it in one session.
+- **Measure before optimizing — but also measure before _not_ optimizing.** The `/outfits` lag was misdiagnosed as a node-count problem for a while. Profiling reframed it in one session.
 
 ## 7. What's Next
 

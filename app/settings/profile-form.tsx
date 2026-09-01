@@ -239,7 +239,9 @@ export default function ProfileForm({
           onChange={handleFileInput('avatar')}
         />
         <Stack spacing={3}>
-          <Typography size="large" variant="title">Profile picture</Typography>
+          <Typography size="large" variant="title">
+            Profile picture
+          </Typography>
           <Stack direction="row" spacing={2}>
             <Button
               disabled={uploading}
@@ -259,7 +261,9 @@ export default function ProfileForm({
 
       <Stack spacing={1}>
         <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
-          <Typography size="large" variant="title">Profile banner</Typography>
+          <Typography size="large" variant="title">
+            Profile banner
+          </Typography>
           {!isPremium && (
             <Typography color="primary" size="small" variant="body">
               Premium

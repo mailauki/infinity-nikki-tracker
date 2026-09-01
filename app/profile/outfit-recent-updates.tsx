@@ -41,7 +41,7 @@ export default function OutfitRecentUpdates({ items }: { items: RecentObtainedOu
                 <ListItemButton component="a" href={`/outfits/${item.outfit_set}`}>
                   <ListItemAvatar sx={{ width: 'fit-content', mr: 2 }}>
                     <LazyImage
-                      kind='avatar'
+                      kind="avatar"
                       src={variant?.image_url ?? undefined}
                       title={setTitle}
                     />
