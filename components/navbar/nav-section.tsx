@@ -167,7 +167,10 @@ function ExpandNavLink({
           {/* component="li" for the same reason as the Stack above — this is
               also a direct child of NavSection's <List>. */}
           <Collapse unmountOnExit component="li" in={expandOpen} timeout="auto">
-            <List disablePadding component="div">
+            {/* A real <ul>, not a div: these sub-links are a nested list, and
+                the ListItems below render as <li>, which needs a list parent.
+                <ul> inside the Collapse's <li> is valid HTML. */}
+            <List disablePadding>
               {visibleItems.map((item) => (
                 <ListItem key={item.title} disablePadding sx={{ display: 'block', py: 0.5 }}>
                   <ListItemButton
