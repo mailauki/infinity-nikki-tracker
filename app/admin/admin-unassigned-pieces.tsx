@@ -103,7 +103,9 @@ export default function AdminUnassignedPieces({ pieces }: { pieces: UnassignedPi
                       />
                     </ListItemButton>
                   </ListItem>
-                  {i < rows.length - 1 && <Divider component="li" role="listitem" variant="inset" />}
+                  {i < rows.length - 1 && (
+                    <Divider component="li" role="listitem" variant="inset" />
+                  )}
                 </Box>
               ))}
             </List>

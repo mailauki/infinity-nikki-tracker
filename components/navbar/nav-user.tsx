@@ -129,7 +129,7 @@ export function NavUser() {
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         onClose={() => setAnchorElUser(null)}
       >
-        {navLinksData.navSecondary
+        {navLinksData.account
           .filter((link) => !link.adminOnly || isAdmin)
           .map((link) => (
             <MenuItem

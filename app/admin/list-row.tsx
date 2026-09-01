@@ -50,7 +50,9 @@ export default function ListRow({
       <ListItemText
         disableTypography
         secondary={
-          <Typography size="small" variant="body">{updated_at ? formatDate(updated_at) : '—'}</Typography>
+          <Typography size="small" variant="body">
+            {updated_at ? formatDate(updated_at) : '—'}
+          </Typography>
         }
         sx={{ textAlign: 'right', mr: 2 }}
       />

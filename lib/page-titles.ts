@@ -30,7 +30,7 @@ export const PAGE_NAMES = {
 
   // Collection domains
   '/outfits': { nav: 'Outfits' },
-  '/outfits/seasons': { nav: 'Seasons', title: 'Outfits by Season' },
+  '/seasons': { nav: 'Seasons', title: 'Outfits by Season' },
   '/eureka': { nav: 'Eureka', title: 'Eureka Sets' },
   '/eureka/sets': { nav: 'Eureka Sets' },
   '/eureka/trials': { nav: 'Trials' },
@@ -137,7 +137,7 @@ function titleFromSlug(slug: string): string {
  * Order: an exact registry hit wins; then the same path with its last segment
  * replaced by `[slug]`/`[id]`, so detail and edit routes resolve without an
  * entry per record; otherwise the nearest registered ancestor, with the unmatched
- * tail turned into a title so `/outfits/seasons/spring-encore` reads
+ * tail turned into a title so `/seasons/spring-encore` reads
  * "Spring Encore" rather than falling back to "Seasons".
  */
 export function resolveNavLabel(pathname: string): string {

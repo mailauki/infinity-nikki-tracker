@@ -40,7 +40,7 @@ export default function MomoCloakDetail({
     <>
       <Anchor
         component={Link}
-        href={`/outfits/seasons/${cloak.seasons}`}
+        href={`/seasons/${cloak.seasons}`}
         sx={{ cursor: 'pointer' }}
         underline="hover"
         variant="title"
@@ -55,7 +55,7 @@ export default function MomoCloakDetail({
 
   // 74 of 119 cloaks have no season and 78 have no outfit_set, so each row is
   // dropped when its data is absent — otherwise they render an empty card and a
-  // `/outfits/seasons/null` link.
+  // `/seasons/null` link.
   const extraRows = [cloak.seasons ? seasonRow : null, associatedRow]
     .filter((row): row is React.ReactElement => row !== null)
     .map((row, i) => <Fragment key={i}>{row}</Fragment>)

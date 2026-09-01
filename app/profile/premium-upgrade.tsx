@@ -68,7 +68,9 @@ export default function PremiumUpgrade() {
         <Stack spacing={2}>
           <Stack direction="row" sx={{ alignItems: 'center', gap: 1 }}>
             <AutoAwesomeIcon color="primary" />
-            <Typography size="large" variant="title">Supporter upgrade</Typography>
+            <Typography size="large" variant="title">
+              Supporter upgrade
+            </Typography>
             <Chip color="primary" label="One-time" size="small" />
           </Stack>
 

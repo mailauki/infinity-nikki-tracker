@@ -104,7 +104,7 @@ export function createMakeupSet(
       // row still shows something rather than blanking out.
       //
       // The raw `seasons` column stays untouched — it is what the
-      // /outfits/seasons/{slug} href needs.
+      // /seasons/{slug} href needs.
       season: row.seasons ? { title: seasonTitleBySlug.get(row.seasons) ?? row.seasons } : null,
       seasonCategory: row.season_category
         ? {

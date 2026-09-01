@@ -15,7 +15,7 @@
 - **Never pass `component={Link}` to a MUI component from a Server Component.** MUI
   components are Client Components, and `Link` is a function — functions cannot cross the
   server→client boundary. It typechecks and builds fine, then throws at render:
-  *"Functions cannot be passed directly to Client Components."* Use `component="a"` with a
+  _"Functions cannot be passed directly to Client Components."_ Use `component="a"` with a
   plain `href` (a string serializes). This is the existing repo idiom — see
   `app/admin/admin-recents-list.tsx:89`. Client Components (`'use client'`) may use
   `component={Link}` freely; only the boundary is the problem.
@@ -35,30 +35,32 @@
 
 ## File Structure
 
-| File | Responsibility |
-| --- | --- |
-| `supabase/migrations/20260809215744_add_admin_entity_stats_view.sql` | The 12-branch aggregate view |
-| `lib/admin-entities.ts` | Entity registry: key → table, tracked fields, links, domain. Server-safe. |
-| `lib/admin-routes.ts` *(modify)* | Add `buildDashboardHref` + param validators |
-| `hooks/data/admin/stats.ts` | `getAdminStats()` |
-| `hooks/data/admin/gaps.ts` | `getGapRows()`, `getNextGapSlug()` |
-| `app/admin/admin-totals-strip.tsx` | Five totals tiles |
-| `app/admin/admin-completeness-list.tsx` | Bars + collapsed complete row |
-| `app/admin/admin-completeness-toggle.tsx` | `'use client'` expand/collapse |
-| `app/admin/admin-gap-queue.tsx` | Chips, rows, pagination |
-| `app/admin/admin-gap-entity-select.tsx` | `'use client'` entity dropdown |
-| `app/admin/page.tsx` *(rewrite)* | Composes the four sections |
-| `app/admin/stat-card.tsx` *(delete)* | Superseded |
-| 4 × `actions.ts` *(modify)* | Gap-aware `update_next` |
+| File                                                                 | Responsibility                                                            |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `supabase/migrations/20260809215744_add_admin_entity_stats_view.sql` | The 12-branch aggregate view                                              |
+| `lib/admin-entities.ts`                                              | Entity registry: key → table, tracked fields, links, domain. Server-safe. |
+| `lib/admin-routes.ts` _(modify)_                                     | Add `buildDashboardHref` + param validators                               |
+| `hooks/data/admin/stats.ts`                                          | `getAdminStats()`                                                         |
+| `hooks/data/admin/gaps.ts`                                           | `getGapRows()`, `getNextGapSlug()`                                        |
+| `app/admin/admin-totals-strip.tsx`                                   | Five totals tiles                                                         |
+| `app/admin/admin-completeness-list.tsx`                              | Bars + collapsed complete row                                             |
+| `app/admin/admin-completeness-toggle.tsx`                            | `'use client'` expand/collapse                                            |
+| `app/admin/admin-gap-queue.tsx`                                      | Chips, rows, pagination                                                   |
+| `app/admin/admin-gap-entity-select.tsx`                              | `'use client'` entity dropdown                                            |
+| `app/admin/page.tsx` _(rewrite)_                                     | Composes the four sections                                                |
+| `app/admin/stat-card.tsx` _(delete)_                                 | Superseded                                                                |
+| 4 × `actions.ts` _(modify)_                                          | Gap-aware `update_next`                                                   |
 
 ---
 
 ### Task 1: The `admin_entity_stats` view
 
 **Files:**
+
 - Create: `supabase/migrations/20260809215744_add_admin_entity_stats_view.sql`
 
 **Interfaces:**
+
 - Consumes: nothing.
 - Produces: view `admin_entity_stats` with columns `entity text`, `total bigint`, `no_title bigint`, `no_image bigint`, `no_description bigint`, `gaps bigint`. Untracked columns are `null`, never `0`.
 
@@ -221,20 +223,20 @@ select entity, total, no_title, no_image, gaps from admin_entity_stats order by 
 
 Expected, exactly (baseline measured 2026-08-09 — if the data has changed since, re-measure with the query in the spec and compare shapes, not literals):
 
-| entity | total | no_title | no_image | gaps |
-| --- | ---: | ---: | ---: | ---: |
-| outfit-variants | 6534 | 2643 | 2579 | **2699** |
-| eureka-variants | 456 | *null* | 16 | 16 |
-| makeup-variants | 446 | 20 | 281 | 281 |
-| evolutions | 437 | 0 | 0 | 0 |
-| outfit-sets | 292 | 0 | 0 | 0 |
-| momo-cloaks | 119 | 0 | 0 | 0 |
-| makeup-sets | 87 | 0 | 14 | 14 |
-| abilities | 47 | 0 | *null* | 0 |
-| eureka-sets | 38 | 0 | *null* | 0 |
-| seasons | 21 | 0 | 0 | 0 |
-| season-categories | 18 | 0 | *null* | 0 |
-| trials | 15 | 0 | 0 | 0 |
+| entity            | total | no_title | no_image |     gaps |
+| ----------------- | ----: | -------: | -------: | -------: |
+| outfit-variants   |  6534 |     2643 |     2579 | **2699** |
+| eureka-variants   |   456 |   _null_ |       16 |       16 |
+| makeup-variants   |   446 |       20 |      281 |      281 |
+| evolutions        |   437 |        0 |        0 |        0 |
+| outfit-sets       |   292 |        0 |        0 |        0 |
+| momo-cloaks       |   119 |        0 |        0 |        0 |
+| makeup-sets       |    87 |        0 |       14 |       14 |
+| abilities         |    47 |        0 |   _null_ |        0 |
+| eureka-sets       |    38 |        0 |   _null_ |        0 |
+| seasons           |    21 |        0 |        0 |        0 |
+| season-categories |    18 |        0 |   _null_ |        0 |
+| trials            |    15 |        0 |        0 |        0 |
 
 **The single most important assertion: `outfit-variants.gaps` is 2699, not 5222.** 5222 is `2643 + 2579`, which double-counts rows missing both fields. If you see 5222, the `gaps` expression is a sum instead of an `or` filter.
 
@@ -252,10 +254,12 @@ git commit -m "feat(admin): add admin_entity_stats aggregate view"
 ### Task 2: Entity registry and dashboard href builder
 
 **Files:**
+
 - Create: `lib/admin-entities.ts`
 - Modify: `lib/admin-routes.ts`
 
 **Interfaces:**
+
 - Consumes: `navLinksData` from `lib/nav-links.tsx`.
 - Produces:
   - `type AdminEntityKey` — union of the 12 kebab-case keys
@@ -313,67 +317,149 @@ const A = navLinksData.admin
 
 export const ADMIN_ENTITIES: Record<AdminEntityKey, AdminEntity> = {
   'outfit-sets': {
-    key: 'outfit-sets', title: A.outfits.sets.title, table: 'outfit_sets',
-    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
+    key: 'outfit-sets',
+    title: A.outfits.sets.title,
+    table: 'outfit_sets',
+    tracksTitle: true,
+    tracksImage: true,
+    tracksDescription: true,
+    isVariant: false,
     evolutionFilter: false,
-    addHref: A.outfits.sets.add, listHref: A.outfits.sets.list, editHref: A.outfits.sets.edit,
+    addHref: A.outfits.sets.add,
+    listHref: A.outfits.sets.list,
+    editHref: A.outfits.sets.edit,
   },
   evolutions: {
-    key: 'evolutions', title: A.outfits.evolutions.title, table: 'outfit_sets',
-    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
+    key: 'evolutions',
+    title: A.outfits.evolutions.title,
+    table: 'outfit_sets',
+    tracksTitle: true,
+    tracksImage: true,
+    tracksDescription: true,
+    isVariant: false,
     evolutionFilter: true,
-    listHref: A.outfits.evolutions.list, editHref: A.outfits.evolutions.edit,
+    listHref: A.outfits.evolutions.list,
+    editHref: A.outfits.evolutions.edit,
   },
   'outfit-variants': {
-    key: 'outfit-variants', title: A.outfits.variants.title, table: 'outfit_variants',
-    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: true,
-    addHref: A.outfits.variants.add, listHref: A.outfits.variants.list, editHref: A.outfits.variants.edit,
+    key: 'outfit-variants',
+    title: A.outfits.variants.title,
+    table: 'outfit_variants',
+    tracksTitle: true,
+    tracksImage: true,
+    tracksDescription: true,
+    isVariant: true,
+    addHref: A.outfits.variants.add,
+    listHref: A.outfits.variants.list,
+    editHref: A.outfits.variants.edit,
   },
   'makeup-sets': {
-    key: 'makeup-sets', title: A.makeup.sets.title, table: 'makeup_sets',
-    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
-    addHref: A.makeup.sets.add, listHref: A.makeup.sets.list, editHref: A.makeup.sets.edit,
+    key: 'makeup-sets',
+    title: A.makeup.sets.title,
+    table: 'makeup_sets',
+    tracksTitle: true,
+    tracksImage: true,
+    tracksDescription: true,
+    isVariant: false,
+    addHref: A.makeup.sets.add,
+    listHref: A.makeup.sets.list,
+    editHref: A.makeup.sets.edit,
   },
   'makeup-variants': {
-    key: 'makeup-variants', title: A.makeup.variants.title, table: 'makeup_variants',
-    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: true,
-    addHref: A.makeup.variants.add, listHref: A.makeup.variants.list, editHref: A.makeup.variants.edit,
+    key: 'makeup-variants',
+    title: A.makeup.variants.title,
+    table: 'makeup_variants',
+    tracksTitle: true,
+    tracksImage: true,
+    tracksDescription: true,
+    isVariant: true,
+    addHref: A.makeup.variants.add,
+    listHref: A.makeup.variants.list,
+    editHref: A.makeup.variants.edit,
   },
   'momo-cloaks': {
-    key: 'momo-cloaks', title: A.momoCloaks.cloaks.title, table: 'momo_cloaks',
-    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
-    addHref: A.momoCloaks.cloaks.add, listHref: A.momoCloaks.cloaks.list, editHref: A.momoCloaks.cloaks.edit,
+    key: 'momo-cloaks',
+    title: A.momoCloaks.cloaks.title,
+    table: 'momo_cloaks',
+    tracksTitle: true,
+    tracksImage: true,
+    tracksDescription: true,
+    isVariant: false,
+    addHref: A.momoCloaks.cloaks.add,
+    listHref: A.momoCloaks.cloaks.list,
+    editHref: A.momoCloaks.cloaks.edit,
   },
   'eureka-sets': {
-    key: 'eureka-sets', title: A.eureka.sets.title, table: 'eureka_sets',
-    tracksTitle: true, tracksImage: false, tracksDescription: true, isVariant: false,
-    addHref: A.eureka.sets.add, listHref: A.eureka.sets.list, editHref: A.eureka.sets.edit,
+    key: 'eureka-sets',
+    title: A.eureka.sets.title,
+    table: 'eureka_sets',
+    tracksTitle: true,
+    tracksImage: false,
+    tracksDescription: true,
+    isVariant: false,
+    addHref: A.eureka.sets.add,
+    listHref: A.eureka.sets.list,
+    editHref: A.eureka.sets.edit,
   },
   'eureka-variants': {
-    key: 'eureka-variants', title: A.eureka.variants.title, table: 'eureka_variants',
-    tracksTitle: false, tracksImage: true, tracksDescription: false, isVariant: true,
-    addHref: A.eureka.variants.add, listHref: A.eureka.variants.list, editHref: A.eureka.variants.edit,
+    key: 'eureka-variants',
+    title: A.eureka.variants.title,
+    table: 'eureka_variants',
+    tracksTitle: false,
+    tracksImage: true,
+    tracksDescription: false,
+    isVariant: true,
+    addHref: A.eureka.variants.add,
+    listHref: A.eureka.variants.list,
+    editHref: A.eureka.variants.edit,
   },
   trials: {
-    key: 'trials', title: A.eureka.trials.title, table: 'trials',
-    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
-    addHref: A.eureka.trials.add, listHref: A.eureka.trials.list, editHref: A.eureka.trials.edit,
+    key: 'trials',
+    title: A.eureka.trials.title,
+    table: 'trials',
+    tracksTitle: true,
+    tracksImage: true,
+    tracksDescription: true,
+    isVariant: false,
+    addHref: A.eureka.trials.add,
+    listHref: A.eureka.trials.list,
+    editHref: A.eureka.trials.edit,
   },
   seasons: {
-    key: 'seasons', title: A.outfits.seasons.title, table: 'seasons',
-    tracksTitle: true, tracksImage: true, tracksDescription: true, isVariant: false,
-    addHref: A.outfits.seasons.add, listHref: A.outfits.seasons.list, editHref: A.outfits.seasons.edit,
+    key: 'seasons',
+    title: A.outfits.seasons.title,
+    table: 'seasons',
+    tracksTitle: true,
+    tracksImage: true,
+    tracksDescription: true,
+    isVariant: false,
+    addHref: A.outfits.seasons.add,
+    listHref: A.outfits.seasons.list,
+    editHref: A.outfits.seasons.edit,
   },
   'season-categories': {
-    key: 'season-categories', title: A.outfits.seasonCategories.title, table: 'season_categories',
-    tracksTitle: true, tracksImage: false, tracksDescription: true, isVariant: false,
-    addHref: A.outfits.seasonCategories.add, listHref: A.outfits.seasonCategories.list,
+    key: 'season-categories',
+    title: A.outfits.seasonCategories.title,
+    table: 'season_categories',
+    tracksTitle: true,
+    tracksImage: false,
+    tracksDescription: true,
+    isVariant: false,
+    addHref: A.outfits.seasonCategories.add,
+    listHref: A.outfits.seasonCategories.list,
     editHref: A.outfits.seasonCategories.edit,
   },
   abilities: {
-    key: 'abilities', title: A.outfits.abilities.title, table: 'abilities',
-    tracksTitle: true, tracksImage: false, tracksDescription: false, isVariant: false,
-    addHref: A.outfits.abilities.add, listHref: A.outfits.abilities.list, editHref: A.outfits.abilities.edit,
+    key: 'abilities',
+    title: A.outfits.abilities.title,
+    table: 'abilities',
+    tracksTitle: true,
+    tracksImage: false,
+    tracksDescription: false,
+    isVariant: false,
+    addHref: A.outfits.abilities.add,
+    listHref: A.outfits.abilities.list,
+    editHref: A.outfits.abilities.edit,
   },
 }
 
@@ -391,12 +477,30 @@ export function parseGapKind(v: unknown): GapKind {
 
 /** Domain groupings for the totals strip. Lookups appear only in the all-entries total. */
 export const ADMIN_DOMAINS = [
-  { title: 'Outfits', lead: 'outfit-variants', leadNoun: 'variants',
-    chips: [{ key: 'outfit-sets', label: 'sets' }, { key: 'evolutions', label: 'evo' }] },
-  { title: 'Eureka', lead: 'eureka-variants', leadNoun: 'variants',
-    chips: [{ key: 'eureka-sets', label: 'sets' }, { key: 'trials', label: 'trials' }] },
-  { title: 'Makeup', lead: 'makeup-variants', leadNoun: 'variants',
-    chips: [{ key: 'makeup-sets', label: 'sets' }] },
+  {
+    title: 'Outfits',
+    lead: 'outfit-variants',
+    leadNoun: 'variants',
+    chips: [
+      { key: 'outfit-sets', label: 'sets' },
+      { key: 'evolutions', label: 'evo' },
+    ],
+  },
+  {
+    title: 'Eureka',
+    lead: 'eureka-variants',
+    leadNoun: 'variants',
+    chips: [
+      { key: 'eureka-sets', label: 'sets' },
+      { key: 'trials', label: 'trials' },
+    ],
+  },
+  {
+    title: 'Makeup',
+    lead: 'makeup-variants',
+    leadNoun: 'variants',
+    chips: [{ key: 'makeup-sets', label: 'sets' }],
+  },
   { title: "Momo's", lead: 'momo-cloaks', leadNoun: 'cloaks', chips: [] },
 ] as const satisfies ReadonlyArray<{
   title: string
@@ -468,9 +572,11 @@ git commit -m "feat(admin): add entity registry and dashboard href builder"
 ### Task 3: `getAdminStats()`
 
 **Files:**
+
 - Create: `hooks/data/admin/stats.ts`
 
 **Interfaces:**
+
 - Consumes: `ADMIN_ENTITIES`, `AdminEntityKey` (Task 2); view `admin_entity_stats` (Task 1).
 - Produces: `getAdminStats(): Promise<AdminStat[]>` and `type AdminStat = { key, title, total, noTitle, noImage, noDescription, gaps, complete, percentComplete, addHref, listHref }`. `noTitle`/`noImage`/`noDescription` are `number | null` — null means untracked.
 
@@ -577,9 +683,11 @@ git commit -m "feat(admin): add getAdminStats reading the aggregate view"
 ### Task 4: `getGapRows()` and `getNextGapSlug()`
 
 **Files:**
+
 - Create: `hooks/data/admin/gaps.ts`
 
 **Interfaces:**
+
 - Consumes: `ADMIN_ENTITIES`, `AdminEntityKey`, `GapKind` (Task 2).
 - Produces:
   - `GAP_PAGE_SIZE = 10`
@@ -808,9 +916,11 @@ git commit -m "feat(admin): add gap row queries with server-side pagination"
 ### Task 5: Totals strip
 
 **Files:**
+
 - Create: `app/admin/admin-totals-strip.tsx`
 
 **Interfaces:**
+
 - Consumes: `AdminStat` (Task 3), `ADMIN_DOMAINS` (Task 2).
 - Produces: `<AdminTotalsStrip stats={AdminStat[]} />`, a Server Component.
 
@@ -918,10 +1028,12 @@ git commit -m "feat(admin): add totals strip"
 ### Task 6: Completeness list
 
 **Files:**
+
 - Create: `app/admin/admin-completeness-list.tsx`
 - Create: `app/admin/admin-completeness-toggle.tsx`
 
 **Interfaces:**
+
 - Consumes: `AdminStat` (Task 3), `buildDashboardHref` (Task 2).
 - Produces: `<AdminCompletenessList stats={AdminStat[]} />`.
 
@@ -1095,10 +1207,12 @@ git commit -m "feat(admin): add completeness list with collapsed complete entiti
 ### Task 7: Needs attention queue
 
 **Files:**
+
 - Create: `app/admin/admin-gap-queue.tsx`
 - Create: `app/admin/admin-gap-entity-select.tsx`
 
 **Interfaces:**
+
 - Consumes: `getGapRows`, `GAP_PAGE_SIZE` (Task 4); `AdminStat` (Task 3); registry + `buildDashboardHref` (Task 2).
 - Produces: `<AdminGapQueue stats={AdminStat[]} entity={AdminEntityKey} gap={GapKind} page={number} />`, a Server Component that fetches its own rows; `<AdminGapEntitySelect entity gap />`, a client dropdown.
 
@@ -1133,9 +1247,7 @@ export default function AdminGapEntitySelect({
   return (
     <TextField
       label="Entity"
-      onChange={(e) =>
-        router.push(buildDashboardHref({ entity: e.target.value, gap }))
-      }
+      onChange={(e) => router.push(buildDashboardHref({ entity: e.target.value, gap }))}
       select
       size="small"
       sx={{ minWidth: 200 }}
@@ -1293,7 +1405,13 @@ export default async function AdminGapQueue({
             </List>
 
             <Box
-              sx={{ alignItems: 'center', display: 'flex', gap: 1, justifyContent: 'space-between', mt: 1.5 }}
+              sx={{
+                alignItems: 'center',
+                display: 'flex',
+                gap: 1,
+                justifyContent: 'space-between',
+                mt: 1.5,
+              }}
             >
               <Typography color="text.secondary" variant="caption">
                 {from}–{to} of {total.toLocaleString()}
@@ -1355,10 +1473,12 @@ git commit -m "feat(admin): add needs-attention gap queue"
 ### Task 8: Rewrite the dashboard page
 
 **Files:**
+
 - Modify: `app/admin/page.tsx` (full rewrite)
 - Delete: `app/admin/stat-card.tsx`
 
 **Interfaces:**
+
 - Consumes: everything from Tasks 3–7.
 - Produces: the assembled `/admin` route.
 
@@ -1478,6 +1598,7 @@ cd /Users/mailauki/Developer/infinity-nikki-tracker && yarn dev
 ```
 
 Visit `http://localhost:3000/admin` as an admin user and confirm:
+
 - Totals strip shows 8,510 all entries; Outfits tile shows 6,534 with chips `292 sets` / `437 evo`; Momo's shows 119 with a muted "no sets".
 - Completeness list shows four rows with gaps, then a collapsed "8 entities complete · 987 entries" that expands.
 - Queue opens on Outfit Variants / No image with 2,579 and ten rows.
@@ -1496,12 +1617,14 @@ git commit -m "feat(admin): rebuild dashboard around totals, completeness and ga
 ### Task 9: Gap-aware "Save & next gap"
 
 **Files:**
+
 - Modify: `app/admin/outfits/variants/actions.ts:99-112`
 - Modify: `app/admin/makeup/variants/actions.ts`
 - Modify: `app/admin/makeup/sets/actions.ts`
 - Modify: `app/admin/eureka/variants/actions.ts`
 
 **Interfaces:**
+
 - Consumes: `getNextGapSlug` (Task 4), `buildDashboardHref`, `parseEntityKey`, `parseGapKind` (Task 2).
 - Produces: no new exports. Behavior change only.
 
@@ -1621,16 +1744,22 @@ The page already passes `formId` to `EntityForm`, so render the inputs as
 siblings, using that same id:
 
 ```tsx
-{entity && <input form={formId} name="entity" type="hidden" value={entity} />}
-{gap && <input form={formId} name="gap" type="hidden" value={gap} />}
-{entity && (
-  <input
-    form={formId}
-    name="page"
-    type="hidden"
-    value={Number.isFinite(page) && page > 0 ? page : 1}
-  />
-)}
+{
+  entity && <input form={formId} name="entity" type="hidden" value={entity} />
+}
+{
+  gap && <input form={formId} name="gap" type="hidden" value={gap} />
+}
+{
+  entity && (
+    <input
+      form={formId}
+      name="page"
+      type="hidden"
+      value={Number.isFinite(page) && page > 0 ? page : 1}
+    />
+  )
+}
 ```
 
 `app/admin/makeup/sets/edit/[slug]/` is the exception — it uses its own
@@ -1650,11 +1779,11 @@ These are three constrained scalars, not a URL — validated here and re-validat
 
 Paste the identical block from Step 1 into each of the three remaining actions, changing only the four marked values below. Do **not** factor this into a shared helper yet — the four actions have differing signatures and bound-argument orders, and the 2026-07-09 spec's post-mortem shows bulk signature edits are exactly where the bugs come from.
 
-| File | function (signature) | `entity` value | edit base | existing fallback orders by |
-| --- | --- | --- | --- | --- |
-| `app/admin/makeup/variants/actions.ts` | `editMakeupVariant(id, _, formData)` | `'makeup-variants'` | `navLinksData.admin.makeup.variants.edit` | `slug` (uses `values.slug`) |
-| `app/admin/makeup/sets/actions.ts` | `updateMakeupSet(_, formData)` — **no bound `id`** | `'makeup-sets'` | `navLinksData.admin.makeup.sets.edit` | **`title`** then `slug` (uses `values.title`) |
-| `app/admin/eureka/variants/actions.ts` | `editEurekaVariant(id, _, formData)` | `'eureka-variants'` | `navLinksData.admin.eureka.variants.edit` | `slug` |
+| File                                   | function (signature)                               | `entity` value      | edit base                                 | existing fallback orders by                   |
+| -------------------------------------- | -------------------------------------------------- | ------------------- | ----------------------------------------- | --------------------------------------------- |
+| `app/admin/makeup/variants/actions.ts` | `editMakeupVariant(id, _, formData)`               | `'makeup-variants'` | `navLinksData.admin.makeup.variants.edit` | `slug` (uses `values.slug`)                   |
+| `app/admin/makeup/sets/actions.ts`     | `updateMakeupSet(_, formData)` — **no bound `id`** | `'makeup-sets'`     | `navLinksData.admin.makeup.sets.edit`     | **`title`** then `slug` (uses `values.title`) |
+| `app/admin/eureka/variants/actions.ts` | `editEurekaVariant(id, _, formData)`               | `'eureka-variants'` | `navLinksData.admin.eureka.variants.edit` | `slug`                                        |
 
 **Leave each existing fallback query exactly as found.** `updateMakeupSet` orders
 by `title` then `slug`, not by `slug` — that is deliberate, and the gap branch
@@ -1718,6 +1847,7 @@ Expected: **no output.** If a `returnTo` appears, the open-redirect fix from the
 - [ ] **Step 6: Drive both paths**
 
 With `yarn dev` running:
+
 - From `/admin`, click "Start fixing" on Outfit Variants / No image → edit form opens → Save → back on `/admin?entity=outfit-variants&gap=image` with the same filter selected.
 - On that form, "Update & next item" → lands on the next variant **missing an image**, not the next alphabetically.
 - Open an edit form from the Recently Edited list (no params) → Save → lands on plain `/admin`, and "Update & next item" walks alphabetically exactly as before.
@@ -1761,7 +1891,7 @@ container at once:
 | Total   |    **2,996** |    **370** |
 
 Also decisive: **96% of the outfit backlog is on evolution variants** (2,584 of
-2,699), and the *set* form deliberately excludes them — `isBaseVariant` filters
+2,699), and the _set_ form deliberately excludes them — `isBaseVariant` filters
 to `v.outfit_set === baseSlug`, with a comment that evolutions are edited on
 their own pages. Routing everything to base-set forms would reach 4% of the work.
 Evolution variants must route to `/admin/outfits/evolutions/edit/{slug}`, whose
@@ -1856,12 +1986,12 @@ export const getGapWorkItems: () => Promise<Record<AdminEntityKey, GapWorkItem[]
 
 **Grouping rule — the core of this task:**
 
-| Entity | Rows are | `editHref` |
-| --- | --- | --- |
+| Entity            | Rows are                | `editHref`                                                                  |
+| ----------------- | ----------------------- | --------------------------------------------------------------------------- |
 | `outfit-variants` | grouped by `outfit_set` | owning row's `base_set IS NULL` → sets edit form; else evolutions edit form |
-| `makeup-variants` | grouped by `makeup_set` | makeup sets edit form |
-| `eureka-variants` | grouped by `eureka_set` | eureka sets edit form |
-| all others | one row per record | that entity's own `editHref` |
+| `makeup-variants` | grouped by `makeup_set` | makeup sets edit form                                                       |
+| `eureka-variants` | grouped by `eureka_set` | eureka sets edit form                                                       |
+| all others        | one row per record      | that entity's own `editHref`                                                |
 
 - [ ] **Step 1: Write the hook**
 
@@ -1891,6 +2021,7 @@ evolutions); makeup-variants → **54** over 281; eureka-variants → **2** over
 ### Task 12: Client-state Needs Attention section
 
 **Files:**
+
 - Rewrite `app/admin/admin-gap-queue.tsx` as `'use client'`
 - Delete `app/admin/admin-gap-entity-select.tsx` (folded in)
 - Modify `app/admin/admin-totals-strip.tsx`, `app/admin/admin-completeness-list.tsx` (chips → non-interactive)
@@ -1945,12 +2076,12 @@ with the variant cards present.
 **Why:** pieces that belong to no set are a distinct kind of problem from a set
 with missing variant images, and today they are hidden. Measured:
 
-| Source | total | with gaps |
-| --- | ---: | ---: |
-| `outfit_variants` where `outfit_set = 'standalone_pieces'` | 164 | **66** |
-| `makeup_variants` where `makeup_set IS NULL` | 16 | **16** |
-| `eureka_variants` where `eureka_set IS NULL` | 0 | 0 |
-| **Total** | | **82** |
+| Source                                                     | total | with gaps |
+| ---------------------------------------------------------- | ----: | --------: |
+| `outfit_variants` where `outfit_set = 'standalone_pieces'` |   164 |    **66** |
+| `makeup_variants` where `makeup_set IS NULL`               |    16 |    **16** |
+| `eureka_variants` where `eureka_set IS NULL`               |     0 |         0 |
+| **Total**                                                  |       |    **82** |
 
 There are **zero dangling set references** — every non-null set slug resolves, so
 nothing is broken-orphaned. The two domains merely represent "standalone"
@@ -1972,6 +2103,7 @@ queue so the same work never appears twice.
 ### Task 13: Unassigned pieces section
 
 **Files:**
+
 - Modify: `hooks/data/admin/gap-containers.ts`
 - Create: `app/admin/admin-unassigned-pieces.tsx`
 - Modify: `app/admin/page.tsx`
@@ -1985,15 +2117,15 @@ queue so the same work never appears twice.
 export const STANDALONE_SET_SLUGS = ['standalone_pieces', 'standalone-pieces']
 
 export interface UnassignedPiece {
-  key: string           // `${entity}:${slug}`
+  key: string // `${entity}:${slug}`
   entity: AdminEntityKey
-  entityTitle: string   // "Outfit Variants"
+  entityTitle: string // "Outfit Variants"
   slug: string
   title: string
   imageUrl: string | null
   missingTitle: boolean
   missingImage: boolean
-  editHref: string      // the piece's OWN variant edit form
+  editHref: string // the piece's OWN variant edit form
 }
 
 export const getUnassignedPieces: () => Promise<UnassignedPiece[]>
@@ -2056,10 +2188,10 @@ folds evolutions into their base.
 
 Measured split:
 
-| Entity | total | no_title | no_image | no_description | gaps |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| `makeup-sets` (`base_set IS NULL`) | **57** | 0 | 5 | 55 | **5** |
-| `makeup-evolutions` (`base_set IS NOT NULL`) | **30** | 0 | 9 | 30 | **9** |
+| Entity                                       |  total | no_title | no_image | no_description |  gaps |
+| -------------------------------------------- | -----: | -------: | -------: | -------------: | ----: |
+| `makeup-sets` (`base_set IS NULL`)           | **57** |        0 |        5 |             55 | **5** |
+| `makeup-evolutions` (`base_set IS NOT NULL`) | **30** |        0 |        9 |             30 | **9** |
 
 **Important asymmetry with outfits.** Outfits has a dedicated
 `/admin/outfits/evolutions` route. **Makeup does not** — there is no
@@ -2073,6 +2205,7 @@ route that does not exist.
 ### Task 14: Split `makeup-evolutions` out of `makeup-sets`
 
 **Files:**
+
 - Create: `supabase/migrations/<timestamp>_split_makeup_evolutions_in_stats_view.sql`
 - Modify: `lib/admin-entities.ts`
 - Modify: `hooks/data/admin/gap-containers.ts` if it special-cases `makeup-sets`
@@ -2144,12 +2277,12 @@ re-bucketed, never double-counted.
 
 **Measured before deciding:**
 
-| column | makeup_sets | makeup_variants |
-| --- | ---: | ---: |
-| `label` populated | **0 / 87** | **0 / 446** |
-| `style` populated | 84 / 87 | 420 / 446 |
-| `seasons` | 84 populated | column absent |
-| `season_category` | 22 populated | column absent |
+| column            |  makeup_sets | makeup_variants |
+| ----------------- | -----------: | --------------: |
+| `label` populated |   **0 / 87** |     **0 / 446** |
+| `style` populated |      84 / 87 |       420 / 446 |
+| `seasons`         | 84 populated |   column absent |
+| `season_category` | 22 populated |   column absent |
 
 **`style` is NOT dropped.** It holds 504 populated values and drives public
 behaviour — `app/makeup/filter-makeup.tsx:93` and `app/makeup/makeup-results-bar.tsx:40`

@@ -42,12 +42,12 @@ const cards = [
   },
 ]
 
-const extraCards = navLinksData.navMain.slice(2, -1)
+const extraCards = navLinksData.collection.slice(2, -2)
 
 const moreCards = [
-  navLinksData.navMain.slice(-1),
-  navLinksData.navMain.filter((link) => link.items).flatMap((link) => link.items!),
-  navLinksData.navExtra,
+  navLinksData.collection.slice(-1),
+  navLinksData.collection.filter((link) => link.items).flatMap((link) => link.items!),
+  navLinksData.support,
 ]
 
 const AccordionSummary = styled((props: AccordionSummaryProps) => (
@@ -89,7 +89,11 @@ export function QuickAccess() {
               <CardHeader
                 slotProps={{
                   title: { variant: 'title', size: 'large', component: 'span' },
-                  subheader: { variant: 'label', size: 'small', sx: { textTransform: 'uppercase' } },
+                  subheader: {
+                    variant: 'label',
+                    size: 'small',
+                    sx: { textTransform: 'uppercase' },
+                  },
                 }}
                 subheader={subtitle}
                 sx={{ textAlign: 'center', pt: 0 }}

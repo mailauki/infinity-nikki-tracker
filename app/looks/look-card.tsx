@@ -108,7 +108,8 @@ export default function LookCard({
                     WebkitLineClamp: 2,
                     WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
-                  }} variant="body"
+                  }}
+                  variant="body"
                 >
                   {look.description}
                 </Typography>

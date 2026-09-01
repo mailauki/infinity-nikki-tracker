@@ -34,7 +34,9 @@ export default function EurekaSetCard({ eurekaSet }: { eurekaSet: EurekaSet }) {
               justifyContent: 'space-between',
             }}
           >
-            <Typography size="small" variant="label">{title}</Typography>
+            <Typography size="small" variant="label">
+              {title}
+            </Typography>
           </Stack>
 
           <Box sx={{ position: 'absolute', top: 8, left: 8 }}>

@@ -509,7 +509,9 @@ export default function LookBuilder({
                   <Typography component="span" variant="title">
                     {primary}
                   </Typography>
-                  <Typography size="small" variant="body">{caption || undefined}</Typography>
+                  <Typography size="small" variant="body">
+                    {caption || undefined}
+                  </Typography>
                 </Stack>
               </ListItemText>
             </ListItem>

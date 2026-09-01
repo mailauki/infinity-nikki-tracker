@@ -61,7 +61,9 @@ export default function LookDetail({
                 />
               )}
               <Stack spacing={0.5}>
-                <Typography size="small" variant="headline">{look.name}</Typography>
+                <Typography size="small" variant="headline">
+                  {look.name}
+                </Typography>
                 {look.description && (
                   <Typography color="textSecondary" variant="body">
                     {look.description}

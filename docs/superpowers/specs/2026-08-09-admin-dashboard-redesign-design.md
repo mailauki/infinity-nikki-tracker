@@ -22,21 +22,21 @@ Added / Recently Edited. Three things are wrong with it:
 
 Counts at time of writing. Implementation asserts against these.
 
-| Entity            |  Total | No title | No image | Any gap | No description |
-| ----------------- | -----: | -------: | -------: | ------: | -------------: |
-| Outfit Sets       |    292 |        0 |        0 |       0 |             10 |
-| Evolutions        |    437 |        0 |        0 |       0 |            292 |
-| Outfit Variants   |  6,534 |    2,643 |    2,579 |   2,699 |          6,499 |
-| Makeup Sets       |     87 |        0 |       14 |      14 |             85 |
-| Makeup Variants   |    446 |       20 |      281 |     281 |            281 |
-| Momo's Cloaks     |    119 |        0 |        0 |       0 |              0 |
-| Eureka Sets       |     38 |        0 |        — |       0 |              1 |
-| Eureka Variants   |    456 |        — |       16 |      16 |              — |
-| Trials            |     15 |        0 |        0 |       0 |              0 |
-| Seasons           |     21 |        0 |        0 |       0 |             19 |
-| Season Categories |     18 |        0 |        — |       0 |             18 |
-| Abilities         |     47 |        0 |        — |       0 |              — |
-| **Total**         |  8,510 |    2,663 |    2,890 |   3,010 |          7,195 |
+| Entity            | Total | No title | No image | Any gap | No description |
+| ----------------- | ----: | -------: | -------: | ------: | -------------: |
+| Outfit Sets       |   292 |        0 |        0 |       0 |             10 |
+| Evolutions        |   437 |        0 |        0 |       0 |            292 |
+| Outfit Variants   | 6,534 |    2,643 |    2,579 |   2,699 |          6,499 |
+| Makeup Sets       |    87 |        0 |       14 |      14 |             85 |
+| Makeup Variants   |   446 |       20 |      281 |     281 |            281 |
+| Momo's Cloaks     |   119 |        0 |        0 |       0 |              0 |
+| Eureka Sets       |    38 |        0 |        — |       0 |              1 |
+| Eureka Variants   |   456 |        — |       16 |      16 |              — |
+| Trials            |    15 |        0 |        0 |       0 |              0 |
+| Seasons           |    21 |        0 |        0 |       0 |             19 |
+| Season Categories |    18 |        0 |        — |       0 |             18 |
+| Abilities         |    47 |        0 |        — |       0 |              — |
+| **Total**         | 8,510 |    2,663 |    2,890 |   3,010 |          7,195 |
 
 Overall completeness: **5,500 of 8,510 (65%)**.
 
@@ -55,19 +55,19 @@ lookup rows. `image_url` is **not** a tracked field for them. Likewise
 
 ## Completeness definition
 
-A row is **incomplete** when a *tracked* field is null or whitespace-only.
+A row is **incomplete** when a _tracked_ field is null or whitespace-only.
 Tracked fields per entity:
 
-| Entity                       | Tracked            |
-| ---------------------------- | ------------------ |
+| Entity                       | Tracked              |
+| ---------------------------- | -------------------- |
 | Outfit Sets, Evolutions      | `title`, `image_url` |
 | Outfit Variants              | `title`, `image_url` |
 | Makeup Sets, Makeup Variants | `title`, `image_url` |
 | Momo's Cloaks                | `title`, `image_url` |
-| Eureka Sets                  | `title`            |
-| Eureka Variants              | `image_url`        |
+| Eureka Sets                  | `title`              |
+| Eureka Variants              | `image_url`          |
 | Trials, Seasons              | `title`, `image_url` |
-| Season Categories, Abilities | `title`            |
+| Season Categories, Abilities | `title`              |
 
 `description` is tracked separately and **excluded from gap counts**.
 
@@ -198,7 +198,7 @@ constraint changes.
 reads cookies via the server client, so `use cache` is unavailable per the
 `use cache` vs `cache()` rule). Returns one record per entity:
 `{ key, title, total, noTitle, noImage, noDescription, gaps, addHref, listHref }`.
-`gaps` is the count of rows missing *any* tracked field, which is not
+`gaps` is the count of rows missing _any_ tracked field, which is not
 `noTitle + noImage` (a row can lack both) and must come from the view, not
 arithmetic.
 
@@ -221,14 +221,14 @@ be wrapped in `cache()`.
 All colocated flat under `app/admin/` per the colocation rule (single-route
 consumers).
 
-| File                          | Type          | Role                                     |
-| ----------------------------- | ------------- | ---------------------------------------- |
-| `admin-totals-strip.tsx`      | server        | five tiles                               |
-| `admin-completeness-list.tsx` | server        | bars + collapsed complete row            |
-| `admin-completeness-toggle.tsx` | `'use client'` | expand/collapse the 8-complete row     |
-| `admin-gap-queue.tsx`         | server        | dropdown, chips, rows, pagination        |
-| `admin-recents-list.tsx`      | —             | **unchanged**                            |
-| `stat-card.tsx`               | —             | **deleted**                              |
+| File                            | Type           | Role                               |
+| ------------------------------- | -------------- | ---------------------------------- |
+| `admin-totals-strip.tsx`        | server         | five tiles                         |
+| `admin-completeness-list.tsx`   | server         | bars + collapsed complete row      |
+| `admin-completeness-toggle.tsx` | `'use client'` | expand/collapse the 8-complete row |
+| `admin-gap-queue.tsx`           | server         | dropdown, chips, rows, pagination  |
+| `admin-recents-list.tsx`        | —              | **unchanged**                      |
+| `stat-card.tsx`                 | —              | **deleted**                        |
 
 `StatCard` has exactly one consumer (`app/admin/page.tsx`). `season-overview.tsx`
 references it only in a comment explaining why it built its own. Safe to delete.
@@ -293,7 +293,7 @@ arbitrary URL ever reaches `redirect()`.
 **Save & next gap.** The existing `update_next` branch redirects to the next row
 ordered alphabetically by title/slug (per the
 [2026-06-22 spec](./2026-06-22-update-and-next-design.md)). When the gap params
-are present, "next" instead means *the next row carrying the same gap*, via
+are present, "next" instead means _the next row carrying the same gap_, via
 `getNextGapSlug()`. Without the params, behavior is unchanged.
 
 Scope: the four entities that actually have gaps — `outfits/variants`,

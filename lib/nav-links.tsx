@@ -13,9 +13,9 @@ import {
 
 export const navLinksData: {
   home: NavLink[]
-  navMain: NavLink[]
-  navSecondary: NavLink[]
-  navExtra: NavLink[]
+  collection: NavLink[]
+  account: NavLink[]
+  support: NavLink[]
   admin: AdminLinks
 } = {
   home: [
@@ -25,25 +25,11 @@ export const navLinksData: {
       image: '/infinity-nikki-logo.png',
     },
   ],
-  navMain: [
-    // {
-    // 	title: 'Seasons',
-    // 	url: '/outfits/seasons',
-    // 	image: '/icons/compendium.png',
-    // 	icon: <Forest />,
-    // },
+  collection: [
     {
       title: navLabel('/outfits'),
       url: '/outfits',
       image: '/icons/outfits.png',
-      items: [
-        {
-          title: navLabel('/outfits/seasons'),
-          url: '/outfits/seasons',
-          image: '/icons/compendium.png',
-          icon: <Forest />,
-        },
-      ],
     },
     {
       title: navLabel('/eureka'),
@@ -69,13 +55,19 @@ export const navLinksData: {
       image: '/icons/momo-cloak.png',
     },
     {
+      title: navLabel('/seasons'),
+      url: '/seasons',
+      image: '/icons/compendium.png',
+      icon: <Forest />,
+    },
+    {
       title: navLabel('/looks'),
       url: '/looks',
       image: '/icons/wardrobe.png',
       icon: <Checkroom />,
     },
   ],
-  navSecondary: [
+  account: [
     {
       title: navLabel('/profile'),
       url: '/profile',
@@ -93,7 +85,7 @@ export const navLinksData: {
       adminOnly: true,
     },
   ],
-  navExtra: [
+  support: [
     {
       title: navLabel('/about'),
       url: '/about',
