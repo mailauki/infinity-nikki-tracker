@@ -10,6 +10,26 @@ import type { FollowCounts, FollowProfile } from '@/lib/types/follows'
 // directions cannot drift apart.
 const PROFILE_FIELDS = 'id, username, display_name, avatar_url'
 
+// Log a Supabase error's fields explicitly rather than handing the object to
+// console.error. PostgrestError extends Error, so `message` lives on
+// Error.prototype and is non-enumerable — console.error and JSON.stringify
+// both drop it, which is how a real failure prints as a useless `{}`. `code`
+// is the field worth reading first (e.g. PGRST205 = table missing from the
+// schema cache, usually an unapplied migration; PGRST200 = an embed hint that
+// does not resolve).
+export function logQueryError(
+  label: string,
+  // Matches PostgrestError's own shape: hint and details are `string | null`,
+  // not optional-undefined, so a narrower signature would reject the real type.
+  error: { message?: string; code?: string | null; hint?: string | null }
+) {
+  console.error(
+    `${label}: ${error.message ?? 'unknown error'}` +
+      (error.code ? ` [${error.code}]` : '') +
+      (error.hint ? ` — ${error.hint}` : '')
+  )
+}
+
 // Profiles this user follows. The join walks follows.following_id -> profiles.
 export const getFollowing = cache(async (user_id: string): Promise<FollowProfile[]> => {
   const supabase = await createClient()
@@ -21,7 +41,7 @@ export const getFollowing = cache(async (user_id: string): Promise<FollowProfile
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Failed to load following:', error)
+    logQueryError('Failed to load following', error)
     return []
   }
 
@@ -41,7 +61,7 @@ export const getFollowers = cache(async (user_id: string): Promise<FollowProfile
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Failed to load followers:', error)
+    logQueryError('Failed to load followers', error)
     return []
   }
 
@@ -100,7 +120,7 @@ export const getViewerFollowingIds = cache(
       .eq('follower_id', viewerId)
 
     if (error) {
-      console.error('Failed to load viewer following ids:', error)
+      logQueryError('Failed to load viewer following ids', error)
       return new Set()
     }
 
