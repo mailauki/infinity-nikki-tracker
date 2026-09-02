@@ -103,15 +103,22 @@ export default function FollowDialog({
 
   const isFollowingProfile = (id: string) => changed.get(id) ?? viewerFollowingIds.has(id)
 
-  const list = isSearching ? results : tab === 'following' ? following : followers
+  // Flattened out of a nested ternary: searching replaces the tab body wholesale,
+  // otherwise the active tab picks its own list.
+  function currentList() {
+    if (isSearching) return results
+    return tab === 'following' ? following : followers
+  }
 
-  const emptyMessage = isSearching
-    ? searching
-      ? 'Searching…'
-      : 'No profiles found'
-    : tab === 'following'
-      ? 'Not following anyone yet'
-      : 'No followers yet'
+  const list = currentList()
+
+  // Each branch names the state it describes, rather than nesting ternaries.
+  function emptyStateMessage() {
+    if (isSearching) return searching ? 'Searching…' : 'No profiles found'
+    return tab === 'following' ? 'Not following anyone yet' : 'No followers yet'
+  }
+
+  const emptyMessage = emptyStateMessage()
 
   return (
     <Dialog fullWidth maxWidth="xs" open={open} onClose={onClose}>
