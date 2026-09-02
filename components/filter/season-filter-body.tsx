@@ -7,7 +7,6 @@ import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 import ToggleIcon from '@/components/toggle-icon'
 import ToggleGroupLabel from '@/components/forms/toggle-group-label'
-import DensityToggle from './density-toggle'
 import ObtainedToggle from './obtained-toggle'
 import RarityToggle from './rarity-toggle'
 import StyleLabelSelect from './style-label-select'
@@ -41,24 +40,24 @@ export default function SeasonFilterBody() {
     onHidePiecesChange,
     onHideMakeupChange,
     onSetAllVisible,
-    density,
-    onDensityChange,
     filters,
     onFiltersChange,
     onClearFilters,
   } = useSeasonFilter()
 
-  // "Reset" restores only the view controls — the five visibility toggles and
-  // density — to their defaults, leaving the obtained/rarity/style filter
-  // selections intact. Mirrors the Reset/Clear split in the outfits and makeup
-  // branches of FilterMenu.
+  // "Reset" restores only the view controls — the five visibility toggles — to
+  // their defaults, leaving the obtained/rarity/style filter selections intact.
+  // Mirrors the Reset/Clear split in the outfits and makeup branches of
+  // FilterMenu. Density is deliberately NOT part of this: no season grid reads
+  // it yet (see the comment in season-filter-context.tsx), so a density row was
+  // removed from this panel rather than shipping a control that visibly does
+  // nothing.
   const hasViewChanges =
     hideBaseSets !== DEFAULT_PREFERENCES.season_hide_base_sets ||
     hideEvolutions !== DEFAULT_PREFERENCES.season_hide_evolutions ||
     hideGlowups !== DEFAULT_PREFERENCES.season_hide_glowups ||
     hidePieces !== DEFAULT_PREFERENCES.season_hide_pieces ||
-    hideMakeup !== DEFAULT_PREFERENCES.season_hide_makeup ||
-    density !== DEFAULT_PREFERENCES.season_density
+    hideMakeup !== DEFAULT_PREFERENCES.season_hide_makeup
 
   const handleReset = () => {
     if (hideBaseSets !== DEFAULT_PREFERENCES.season_hide_base_sets) onHideBaseSetsChange()
@@ -66,7 +65,6 @@ export default function SeasonFilterBody() {
     if (hideGlowups !== DEFAULT_PREFERENCES.season_hide_glowups) onHideGlowupsChange()
     if (hidePieces !== DEFAULT_PREFERENCES.season_hide_pieces) onHidePiecesChange()
     if (hideMakeup !== DEFAULT_PREFERENCES.season_hide_makeup) onHideMakeupChange()
-    if (density !== DEFAULT_PREFERENCES.season_density) onDensityChange('standard')
   }
 
   const state = {
@@ -96,9 +94,6 @@ export default function SeasonFilterBody() {
 
   return (
     <List>
-      <ListItem>
-        <DensityToggle density={density} setDensity={onDensityChange} />
-      </ListItem>
       <ListItem>
         <Stack sx={{ flexGrow: 1 }}>
           <ToggleGroupLabel>Show</ToggleGroupLabel>

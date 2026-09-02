@@ -77,6 +77,12 @@ export function SeasonFilterProvider({
   const [hideMakeup, setHideMakeup] = useState(
     preferences?.season_hide_makeup ?? DEFAULT_PREFERENCES.season_hide_makeup
   )
+  // The control for this is deliberately NOT surfaced in SeasonFilterBody right
+  // now: no season grid renderer reads `density` yet (SeasonOutfitList picks its
+  // CardGrid columns unconditionally), so a visible toggle would silently do
+  // nothing. The column, this state, and onDensityChange are left in place —
+  // the plumbing is correct and tested — for whenever a compact season grid is
+  // built; that's a separate feature, not a fix for this branch.
   const [density, setDensity] = useState<SeasonDensity>(
     ((preferences?.season_density ?? DEFAULT_PREFERENCES.season_density) as SeasonDensity | null) ??
       'standard'

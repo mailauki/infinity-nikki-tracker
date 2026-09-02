@@ -1,11 +1,13 @@
 'use client'
 
+import { useEffect } from 'react'
 import { Box, List, ListItemButton, Typography } from '@mui/material'
 import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 import { MakeupSet } from '@/lib/types/makeup'
 import { OutfitSet, OutfitVariant, SeasonCategory } from '@/lib/types/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useMakeupData } from '@/components/makeup/makeup-context'
+import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import SidebarBody from '@/components/sidebar/sidebar-body'
 import { useSeasonFilter } from './season-filter-context'
 import {
@@ -40,6 +42,22 @@ export default function SeasonContents({
     useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
   const { obtainedMakeup } = useMakeupData()
+  const { activePanel, setActivePanel } = useSidebar()
+
+  // The season page mounts two panelId'd SidebarBodys (this one, plus
+  // FilterMenu's "filters" panel) sharing one sidebar, gated on activePanel.
+  // activePanel starts null, but the sidebar can already be open on arrival —
+  // its cookie persists across routes, so navigating here from e.g. an outfit
+  // set-detail page (sidebar open, no activePanel) used to render an open,
+  // empty drawer until the user clicked Contents or Filters. Defaulting to
+  // "contents" once on mount (only when nothing has claimed the panel yet)
+  // fixes that without fighting an explicit choice: an already-active panel
+  // (e.g. the user had "filters" open on a previous season visit) is left
+  // alone, and the null check keeps this from firing more than once.
+  useEffect(() => {
+    if (activePanel === null) setActivePanel('contents')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const categoryTitle = (categorySlug: string) =>
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
