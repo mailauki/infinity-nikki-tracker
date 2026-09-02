@@ -12,11 +12,14 @@ import {
   Typography,
   useTheme,
 } from '@mui/material'
-import { Add, Edit, Person, Verified } from '@mui/icons-material'
+import { Edit, Person, Verified } from '@mui/icons-material'
 import Link from 'next/link'
 import LazyImage from '@/components/lazy-image'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '@/components/color-theme-context'
+import FollowButton from '@/components/follow/follow-button'
+import FollowCountsRow from '@/components/follow/follow-counts'
+import type { FollowProfile } from '@/lib/types/follows'
 
 // Shipped hero art, used when a profile has no banner of its own. Exported so
 // the settings banner picker previews the same fallback the card renders.
@@ -31,6 +34,14 @@ export default function ProfileCard({
   isPremium,
   isOwner = false,
   stats,
+  profileId,
+  following = [],
+  followers = [],
+  followingCount = 0,
+  followersCount = 0,
+  isFollowing = false,
+  viewerId = null,
+  viewerFollowingIds,
 }: {
   displayName: string | null
   username: string | null
@@ -43,6 +54,17 @@ export default function ProfileCard({
   isOwner?: boolean
   /** Collection stat row, overlaid inside the gradient beneath the name. */
   stats?: React.ReactNode
+  /** This profile's id — the Follow button's target. */
+  profileId: string
+  following?: FollowProfile[]
+  followers?: FollowProfile[]
+  followingCount?: number
+  followersCount?: number
+  /** Whether the viewer already follows this profile. */
+  isFollowing?: boolean
+  /** null when signed out. */
+  viewerId?: string | null
+  viewerFollowingIds?: Set<string>
 }) {
   const theme = useTheme()
   const { colorTheme } = useColorTheme()
@@ -95,8 +117,8 @@ export default function ProfileCard({
         <CardHeader
           disableTypography
           action={
-            // The owner gets a working edit link; visitors get the Follow
-            // placeholder, still disabled until a follow system exists.
+            // The owner gets a working edit link; visitors get the live
+            // Follow button.
             isOwner ? (
               <Button
                 component={Link}
@@ -109,21 +131,28 @@ export default function ProfileCard({
                 Edit profile
               </Button>
             ) : (
-              <Button
-                disabled
-                endIcon={<Add />}
+              <FollowButton
+                isFollowing={isFollowing}
+                isLoggedIn={Boolean(viewerId)}
                 size="large"
-                sx={{ borderRadius: 40, whiteSpace: 'nowrap' }}
-                variant="contained"
-              >
-                Follow
-              </Button>
+                targetId={profileId}
+              />
             )
           }
           subheader={
-            <Typography color="textSecondary" component="span" size="large" variant="body">
-              @{username ?? '—'}
-            </Typography>
+            <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+              <Typography color="textSecondary" component="span" size="large" variant="body">
+                @{username ?? '—'}
+              </Typography>
+              <FollowCountsRow
+                followers={followers}
+                followersCount={followersCount}
+                following={following}
+                followingCount={followingCount}
+                viewerFollowingIds={viewerFollowingIds ?? new Set()}
+                viewerId={viewerId}
+              />
+            </Stack>
           }
           // A long display name wraps to two lines on narrow screens; without this
           // the default action margins push the button out of line beside it.
