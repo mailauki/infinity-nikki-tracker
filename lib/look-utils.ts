@@ -38,11 +38,12 @@ const CATEGORY_ICON_SLUGS = new Set([
   'head',
   'hands',
   'feet',
-  // makeup categories
-  'base-makeup',
+  // makeup categories. Underscored to match makeup_categories.slug — the icon
+  // filenames are hyphenated, which categoryIconSrc handles below.
+  'base_makeup',
   'eyebrows',
   'eyelashes',
-  'contact-lenses',
+  'contact_lenses',
   'lips',
 ])
 

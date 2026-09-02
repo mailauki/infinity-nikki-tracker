@@ -4,10 +4,11 @@ import { Card, CardContent, LinearProgress, Stack, Typography } from '@mui/mater
 import { MakeupSet } from '@/lib/types/makeup'
 import { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useMakeupData } from '@/components/makeup/makeup-context'
 import { SimpleGrid } from '@/components/card-grid'
 import { percent } from '@/hooks/count-obtained'
 import { useSeasonFilter } from './season-filter-context'
-import { countEntries, countEntryKinds, groupSeasonEntries } from './season-entries'
+import { countEntryCards, countEntryKinds, groupSeasonEntries } from './season-entries'
 
 // One figure in the overview row. Kept local rather than reusing admin's
 // StatCard: that one is built around an integer count plus add/list links,
@@ -42,34 +43,39 @@ export default function SeasonOverview({
   seasonSets,
   standaloneVariants,
   makeupSets,
+  seasonSlug,
   isLoggedIn,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
+  seasonSlug: string
   isLoggedIn: boolean
 }) {
   const { obtainedOutfit } = useOutfitData()
+  const { obtainedMakeup } = useMakeupData()
   const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
 
   const groups = groupSeasonEntries({
     seasonSets,
     standaloneVariants,
     makeupSets,
+    seasonSlug,
     hideEvolutions,
     hideGlowups,
     hidePieces,
     hideMakeup,
     hideBaseSets,
     obtainedOutfit,
+    obtainedMakeup,
   })
 
   const entries = groups.flatMap(([, groupEntries]) => groupEntries)
-  const { obtained, total } = countEntries(entries)
+  const { obtained, total } = countEntryCards(entries)
   const kinds = countEntryKinds(entries)
 
   const completeCategories = groups.filter(([, groupEntries]) => {
-    const counts = countEntries(groupEntries)
+    const counts = countEntryCards(groupEntries)
     return counts.total > 0 && counts.obtained === counts.total
   }).length
 
@@ -88,8 +94,8 @@ export default function SeasonOverview({
             <Stat label="Categories done" value={`${completeCategories}/${groups.length}`} />
           )}
           {!isLoggedIn && <Stat label="Categories" value={String(groups.length)} />}
-          <Stat label="Outfit sets" value={String(kinds.outfit)} />
-          <Stat label="Pieces" value={String(kinds.standalone + kinds.makeup)} />
+          <Stat label="Outfits" value={String(kinds.outfit)} />
+          <Stat label="Pieces" value={String(kinds.standalone)} />
         </SimpleGrid>
 
         {isLoggedIn && (

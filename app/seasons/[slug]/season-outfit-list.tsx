@@ -1,17 +1,26 @@
 'use client'
 
 import { Box, LinearProgress, Stack, Typography } from '@mui/material'
+import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 import { MakeupSet } from '@/lib/types/makeup'
 import { OutfitSet, OutfitVariant, SeasonCategory } from '@/lib/types/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useMakeupData } from '@/components/makeup/makeup-context'
 import CardGrid, { CardGridHeader } from '@/components/card-grid'
 import ProgressChip from '@/components/progress-chip'
 import { percent } from '@/hooks/count-obtained'
 import OutfitSetCard from '@/app/outfits/outfit-set-card'
 import OutfitVariantCard from '@/app/outfits/outfit-variant-card'
-import MakeupSetCard from './makeup-set-item'
+import MakeupVariantCard from '@/app/makeup/makeup-variant-card'
 import { useSeasonFilter } from './season-filter-context'
-import { countEntries, groupSeasonEntries, OTHER_CATEGORY, SeasonEntry } from './season-entries'
+import {
+  countEntries,
+  countEntryCards,
+  countEntryKinds,
+  groupSeasonEntries,
+  OTHER_CATEGORY,
+  SeasonEntry,
+} from './season-entries'
 
 // The per-category header: title and obtained/total on one line, with a
 // determinate bar beneath. Mirrors the "Hierarchy Progress" rows on the profile
@@ -20,22 +29,40 @@ function CategoryProgress({
   title,
   obtained,
   total,
+  outfits,
+  pieces,
+  obtainedOutfits,
+  obtainedPieces,
   isLoggedIn,
 }: {
   title: string
   obtained: number
   total: number
+  outfits: number
+  pieces: number
+  obtainedOutfits: number
+  obtainedPieces: number
   isLoggedIn: boolean
 }) {
   const percentage = total > 0 ? percent(obtained, total) : 0
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ ...COMPOSITION_CONTAINER, width: '100%' }}>
       <Stack direction="row" sx={{ alignItems: 'center', justifyContent: 'space-between' }}>
         <Typography component="h2" size="large" variant="title">
           {title}
         </Typography>
-        {isLoggedIn && <ProgressChip obtained={obtained} total={total} variant="parts" />}
+        {isLoggedIn && (
+          <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
+            <CompositionCounts
+              obtainedOutfits={obtainedOutfits}
+              obtainedPieces={obtainedPieces}
+              outfits={outfits}
+              pieces={pieces}
+            />
+            <ProgressChip obtained={obtained} total={total} variant="parts" />
+          </Stack>
+        )}
       </Stack>
       {isLoggedIn && (
         <LinearProgress
@@ -53,17 +80,20 @@ export default function SeasonOutfitList({
   seasonSets,
   standaloneVariants,
   makeupSets,
+  seasonSlug,
   seasonCategories,
   isLoggedIn,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
+  seasonSlug: string
   seasonCategories: SeasonCategory[]
   isLoggedIn: boolean
 }) {
   const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
+  const { obtainedMakeup } = useMakeupData()
 
   const categoryTitle = (categorySlug: string) =>
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
@@ -75,12 +105,14 @@ export default function SeasonOutfitList({
     seasonSets,
     standaloneVariants,
     makeupSets,
+    seasonSlug,
     hideEvolutions,
     hideGlowups,
     hidePieces,
     hideMakeup,
     hideBaseSets,
     obtainedOutfit,
+    obtainedMakeup,
   })
 
   if (!categoryGroups.length) {
@@ -94,14 +126,15 @@ export default function SeasonOutfitList({
       )
     }
 
-    if (entry.kind === 'makeup') {
+    if (entry.kind === 'makeup-standalone') {
+      // The same card the /makeup compact view renders, so a makeup piece looks
+      // and behaves identically in both places — including a working obtained
+      // toggle, which the seasons layout's MakeupDataProvider backs.
       return (
-        <MakeupSetCard
+        <MakeupVariantCard
           key={entry.key}
-          evolution={entry.evolution}
           isLoggedIn={isLoggedIn}
-          set={entry.set}
-          variants={entry.variants}
+          makeupVariant={entry.variant}
         />
       )
     }
@@ -123,27 +156,57 @@ export default function SeasonOutfitList({
   return (
     <Stack spacing={4}>
       {categoryGroups.map(([category, entries]) => {
-        const { obtained, total } = countEntries(entries)
+        // Cards, not variants — matches the outfits/pieces chips beside it.
+        //
+        // These count the cards actually rendered below, so a set showing its
+        // evolutions contributes one per visible state and the numbers move with
+        // the visibility toggles. The seasons index instead counts a season's
+        // full contents regardless of toggles, so with evolutions shown a
+        // category reads higher here than it does there.
+        const { obtained, total } = countEntryCards(entries)
+        const kinds = countEntryKinds(entries)
 
-        return (
-          <CardGrid
-            key={category}
-            columns="outfit"
-            header={
-              <CardGridHeader
-                title={
-                  <CategoryProgress
-                    isLoggedIn={isLoggedIn}
-                    obtained={obtained}
-                    title={category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)}
-                    total={total}
-                  />
-                }
+        // Set cards and piece cards are different shapes — a set card carries a
+        // poster image and title block, a piece card is a small square — so they
+        // get a grid each rather than sharing one. In a single grid the column
+        // width is set by the widest card, which left every piece floating in an
+        // oversized cell. Each grid also uses its own family's preset: the wider
+        // `outfit` columns for sets, the denser `eureka` ones for pieces.
+        const setEntries = entries.filter((entry) => entry.kind === 'outfit')
+        const pieceEntries = entries.filter((entry) => entry.kind !== 'outfit')
+
+        const header = (
+          <CardGridHeader
+            title={
+              <CategoryProgress
+                isLoggedIn={isLoggedIn}
+                obtained={obtained}
+                obtainedOutfits={kinds.obtained.outfit}
+                obtainedPieces={kinds.obtained.standalone}
+                outfits={kinds.outfit}
+                pieces={kinds.standalone}
+                title={category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)}
+                total={total}
               />
             }
-          >
-            {entries.map(renderEntry)}
-          </CardGrid>
+          />
+        )
+
+        return (
+          <Stack key={category} spacing={2}>
+            {setEntries.length > 0 && (
+              <CardGrid columns="outfit" header={header}>
+                {setEntries.map(renderEntry)}
+              </CardGrid>
+            )}
+            {/* The header belongs to the category, not to either grid, so it
+                rides on whichever comes first. */}
+            {pieceEntries.length > 0 && (
+              <CardGrid columns="eureka" header={setEntries.length === 0 ? header : undefined}>
+                {pieceEntries.map(renderEntry)}
+              </CardGrid>
+            )}
+          </Stack>
         )
       })}
     </Stack>

@@ -5,6 +5,7 @@ import { getSeasonRaw } from '@/hooks/data/admin/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import { getMakeupSets } from '@/hooks/data/makeup-sets'
+import { isStandaloneMakeupSet } from '@/hooks/makeup'
 import { getUserID } from '@/hooks/user'
 import { STANDALONE_SLUG } from './season-entries'
 import SlugToolBar from '@/components/navbar/slug-toolbar'
@@ -53,7 +54,14 @@ export default async function SeasonPage({ params }: Props) {
       .find((set) => set.slug === STANDALONE_SLUG)
       ?.outfit_variants.filter((variant) => variant.seasons === slug) ?? []
 
-  const seasonMakeupSets = makeupSets.filter((set) => set.seasons === slug)
+  // Makeup sets in this season, plus the standalone-piece container. The
+  // container carries no season of its own — each of its variants does — so it
+  // has to survive this filter for groupSeasonEntries to pull this season's
+  // pieces out of it, exactly as the outfit standalone container is handled
+  // above.
+  const seasonMakeupSets = makeupSets.filter(
+    (set) => set.seasons === slug || isStandaloneMakeupSet(set)
+  )
 
   return (
     <SeasonFilterProvider>
@@ -72,6 +80,7 @@ export default async function SeasonPage({ params }: Props) {
             <SeasonProgress
               makeupSets={seasonMakeupSets}
               seasonSets={seasonSets}
+              seasonSlug={slug}
               standaloneVariants={standaloneVariants}
             />
           )}
@@ -82,6 +91,7 @@ export default async function SeasonPage({ params }: Props) {
           isLoggedIn={isLoggedIn}
           makeupSets={seasonMakeupSets}
           seasonSets={seasonSets}
+          seasonSlug={slug}
           standaloneVariants={standaloneVariants}
         />
 
@@ -90,6 +100,7 @@ export default async function SeasonPage({ params }: Props) {
           makeupSets={seasonMakeupSets}
           seasonCategories={seasonCategories}
           seasonSets={seasonSets}
+          seasonSlug={slug}
           standaloneVariants={standaloneVariants}
         />
       </PageShell>

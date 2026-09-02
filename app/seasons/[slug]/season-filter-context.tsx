@@ -29,8 +29,13 @@ const SeasonFilterContext = createContext<SeasonFilterContextValue | null>(null)
 
 export function SeasonFilterProvider({ children }: { children: React.ReactNode }) {
   const [hideBaseSets, setHideBaseSets] = useState(false)
-  const [hideEvolutions, setHideEvolutions] = useState(false)
-  const [hideGlowups, setHideGlowups] = useState(false)
+  // Evolutions and glow-ups start hidden. A season page answers "what does this
+  // season contain", and an evolution is another state of a set the season
+  // already lists rather than another thing to collect — so counting them by
+  // default inflated every category against what the season actually offers.
+  // Both toggles are still there for anyone who wants the full set graph.
+  const [hideEvolutions, setHideEvolutions] = useState(true)
+  const [hideGlowups, setHideGlowups] = useState(true)
   const [hidePieces, setHidePieces] = useState(false)
   const [hideMakeup, setHideMakeup] = useState(false)
 

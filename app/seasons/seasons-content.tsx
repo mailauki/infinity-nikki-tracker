@@ -21,11 +21,13 @@ import {
   useOutfitImageMode,
 } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
+import { MakeupSet } from '@/lib/types/makeup'
 import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
 import { ViewAllButton } from '@/components/view-all-button'
 import { STANDALONE_SLUG } from '@/app/seasons/[slug]/season-entries'
-import { Circle, Workspaces } from '@mui/icons-material'
+import { STANDALONE_MAKEUP_SLUG } from '@/hooks/makeup'
+import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 
 // Mirrors the row skeleton in ./loading.tsx so a card's categories keep the
 // same shape from route-level fallback through to loaded data.
@@ -49,10 +51,12 @@ export default function SeasonsContent({
   seasons,
   seasonCategories,
   locations,
+  makeupSets,
 }: {
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   locations: Location[]
+  makeupSets: MakeupSet[]
 }) {
   const { outfitSets, isLoading, isError } = useOutfitData()
   const { mode } = useOutfitImageMode()
@@ -76,7 +80,27 @@ export default function SeasonsContent({
   const standaloneVariants =
     outfitSets.find((set) => set.slug === STANDALONE_SLUG)?.outfit_variants ?? []
 
-  const setsIn = (seasonSlug: string, categorySlug: string) =>
+  // Makeup sets carry their own seasons / season_category, exactly like outfit
+  // sets, and the season detail page counts them — so the card chips have to as
+  // well or the index undercounts what the season opens to.
+  //
+  // A makeup set counts as its individual wearables rather than as one set: it
+  // is five separate pieces (base makeup, contact lenses, eyebrows, eyelashes,
+  // lips), and the detail page lists them as five cards. `makeup_variants` on a
+  // base row already includes every evolution's variants (see createMakeupSet),
+  // so this sums the whole set graph in one go — which is what the detail page
+  // shows once the evolution toggles are off.
+  const makeupPiecesIn = (seasonSlug: string, categorySlug: string) =>
+    makeupSets
+      .filter(
+        (set) =>
+          set.slug !== STANDALONE_MAKEUP_SLUG &&
+          set.seasons === seasonSlug &&
+          set.season_category === categorySlug
+      )
+      .reduce((sum, set) => sum + set.makeup_variants.length, 0)
+
+  const outfitsIn = (seasonSlug: string, categorySlug: string) =>
     outfitSets.filter(
       (set) =>
         set.slug !== STANDALONE_SLUG &&
@@ -84,15 +108,26 @@ export default function SeasonsContent({
         set.season_category === categorySlug
     ).length
 
+  // Standalone makeup pieces live in their own container set, which carries no
+  // season — each variant does — so they are counted per-variant just like the
+  // outfit pieces above.
+  const standaloneMakeupVariants =
+    makeupSets.find((set) => set.slug === STANDALONE_MAKEUP_SLUG)?.makeup_variants ?? []
+
   const piecesIn = (seasonSlug: string, categorySlug: string) =>
     standaloneVariants.filter(
       (variant) => variant.seasons === seasonSlug && variant.season_category === categorySlug
-    ).length
+    ).length +
+    standaloneMakeupVariants.filter(
+      (variant) => variant.seasons === seasonSlug && variant.season_category === categorySlug
+    ).length +
+    makeupPiecesIn(seasonSlug, categorySlug)
 
-  // A season's categories are the distinct season_category values across both
-  // sources: the outfit sets assigned to that season, and the standalone pieces
-  // whose own season matches (the seasons<->categories link lives on the rows,
-  // not a join table). Some categories hold only pieces, so counting sets alone
+  // A season's categories are the distinct season_category values across all
+  // three sources: the outfit sets assigned to that season, the standalone
+  // pieces whose own season matches, and the season's makeup sets (the
+  // seasons<->categories link lives on the rows, not a join table). Some
+  // categories hold only pieces or only makeup, so counting outfit sets alone
   // would drop them from the list entirely.
   const categoriesForSeason = (seasonSlug: string) =>
     [
@@ -103,15 +138,26 @@ export default function SeasonsContent({
         ...standaloneVariants
           .filter((variant) => variant.seasons === seasonSlug)
           .map((variant) => variant.season_category),
+        ...makeupSets
+          .filter((set) => set.slug !== STANDALONE_MAKEUP_SLUG && set.seasons === seasonSlug)
+          .map((set) => set.season_category),
+        ...standaloneMakeupVariants
+          .filter((variant) => variant.seasons === seasonSlug)
+          .map((variant) => variant.season_category),
       ]).values(),
     ].filter((slug): slug is string => Boolean(slug))
 
-  // Categories are derived from outfitSets, which the provider fetches on mount.
-  // Until that lands every season looks empty, so the rows skeleton rather than
+  // Outfit categories are derived from outfitSets, which the provider fetches on
+  // mount; makeup sets arrive server-rendered. Until the outfit fetch lands the
+  // outfit half of every season looks empty, so the rows skeleton rather than
   // claiming "No categories" — that message is reserved for a season that really
   // has none, and a failed fetch says so instead of blaming the data.
+  //
+  // A season whose only rows are makeup is already complete before the provider
+  // resolves, so it renders its categories immediately rather than skeletoning
+  // (or, on a failed fetch, blanking) over data that is right there.
   const renderCategories = (seasonSlug: string, categories: string[]) => {
-    if (isLoading) {
+    if (isLoading && !categories.length) {
       return (
         <>
           <CategoryRowSkeleton />
@@ -133,36 +179,15 @@ export default function SeasonsContent({
     }
 
     return categories.map((slug) => {
-      const sets = setsIn(seasonSlug, slug)
+      const outfits = outfitsIn(seasonSlug, slug)
       const pieces = piecesIn(seasonSlug, slug)
 
       return (
         <ListItem
           key={slug}
           disableGutters
-          secondaryAction={
-            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              {sets > 0 && (
-                <Typography
-                  aria-label={`${sets} ${sets === 1 ? 'set' : 'sets'}`}
-                  size="small"
-                  variant="body"
-                >
-                  {sets} <Workspaces color="action" fontSize="inherit" sx={{ mb: 0.3 }} />
-                </Typography>
-              )}
-              {pieces > 0 && (
-                <Typography
-                  aria-label={`${pieces} ${pieces === 1 ? 'piece' : 'pieces'}`}
-                  size="small"
-                  variant="body"
-                >
-                  {pieces}{' '}
-                  <Circle color="action" fontSize="inherit" sx={{ fontSize: 8, mb: 0.3 }} />
-                </Typography>
-              )}
-            </Stack>
-          }
+          secondaryAction={<CompositionCounts outfits={outfits} pieces={pieces} />}
+          sx={COMPOSITION_CONTAINER}
         >
           <ListItemText primary={categoryTitle(slug)} />
         </ListItem>

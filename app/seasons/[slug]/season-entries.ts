@@ -1,6 +1,7 @@
-import { MakeupSet, MakeupVariant } from '@/lib/types/makeup'
+import { MakeupSet, MakeupVariant, ObtainedMakeup } from '@/lib/types/makeup'
 import { Evolution, ObtainedOutfit, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { isEvolutionVisible, isGlowup } from '@/hooks/outfit'
+import { isStandaloneMakeupSet } from '@/hooks/makeup'
 
 // The container set that holds individually-authored standalone pieces. Its
 // variants each carry their own season / season_category, so they are grouped
@@ -21,9 +22,9 @@ export type OutfitSetListEntry = {
   isGlowup?: boolean
 }
 
-// A single card in a category section. Outfit sets keep the existing shape
-// (base set or one evolution); standalone pieces and makeup add two more kinds
-// so one section can render all three.
+// A single card in a category section. Outfit sets keep the existing shape (base
+// set or one evolution); outfit and makeup pieces add a kind each, so one
+// section can render all three.
 export type SeasonEntry =
   | ({ kind: 'outfit' } & OutfitSetListEntry)
   | {
@@ -31,17 +32,19 @@ export type SeasonEntry =
       key: string
       variant: OutfitVariant
     }
+  // A makeup piece. Both individually-authored pieces and the members of a
+  // makeup set land here: a set is five separate wearables (base makeup,
+  // contact lenses, eyebrows, eyelashes, lips), so a season lists and counts
+  // them as pieces rather than as a single set card.
   | {
-      kind: 'makeup'
+      kind: 'makeup-standalone'
       key: string
-      set: MakeupSet
-      evolution: MakeupSet | null
-      variants: MakeupVariant[]
+      variant: MakeupVariant
     }
 
 /** Every variant a row counts toward its progress chip, regardless of kind. */
 export function entryVariants(entry: SeasonEntry): { obtained?: boolean }[] {
-  if (entry.kind === 'standalone') return [entry.variant]
+  if (entry.kind === 'standalone' || entry.kind === 'makeup-standalone') return [entry.variant]
   return entry.variants
 }
 
@@ -53,12 +56,62 @@ export function countEntries(entries: SeasonEntry[]) {
   }
 }
 
-/** How many cards of each kind a season holds — drives the overview stat row. */
-export function countEntryKinds(entries: SeasonEntry[]) {
+/**
+ * A card counts as obtained once every variant it shows is collected — the same
+ * rule ProgressChip uses to render its complete state, so a row's composition
+ * chip and its card's chip can never disagree. An entry with no variants is not
+ * complete: nothing was collected, so counting it as obtained would inflate the
+ * total.
+ */
+export function isEntryObtained(entry: SeasonEntry) {
+  const variants = entryVariants(entry)
+  return variants.length > 0 && variants.every((variant) => variant.obtained)
+}
+
+/**
+ * Progress measured in CARDS rather than variants — the denominator the
+ * composition chips report, so "8 outfits + 50 pieces" totals 58 and not the
+ * 126 variants those 58 cards contain between them.
+ *
+ * A piece is one card and one variant either way; the difference is an outfit
+ * set, which is a single card holding ten-odd variants. Use countEntries for a
+ * single card's own progress (its variants are exactly what that card shows).
+ */
+export function countEntryCards(entries: SeasonEntry[]) {
   return {
-    outfit: entries.filter((e) => e.kind === 'outfit').length,
-    standalone: entries.filter((e) => e.kind === 'standalone').length,
-    makeup: entries.filter((e) => e.kind === 'makeup').length,
+    total: entries.length,
+    obtained: entries.filter(isEntryObtained).length,
+  }
+}
+
+/**
+ * How many cards of each kind a season holds, and how many of those are fully
+ * collected — drives the overview stat row and the category composition chips.
+ */
+export function countEntryKinds(entries: SeasonEntry[]) {
+  const of = (kind: SeasonEntry['kind']) => entries.filter((e) => e.kind === kind)
+  const counts = (kind: SeasonEntry['kind']) => {
+    const kindEntries = of(kind)
+    return {
+      total: kindEntries.length,
+      obtained: kindEntries.filter(isEntryObtained).length,
+    }
+  }
+
+  const outfit = counts('outfit')
+  const outfitPiece = counts('standalone')
+  const makeupPiece = counts('makeup-standalone')
+
+  return {
+    // Outfit-set cards (base states, evolutions, glow-ups).
+    outfit: outfit.total,
+    // Every individual wearable — standalone outfit variants plus makeup, whether
+    // individually authored or a member of a makeup set — counts as a piece.
+    standalone: outfitPiece.total + makeupPiece.total,
+    obtained: {
+      outfit: outfit.obtained,
+      standalone: outfitPiece.obtained + makeupPiece.obtained,
+    },
   }
 }
 
@@ -76,6 +129,19 @@ export function applyLiveObtained<T extends { slug: string; obtained?: boolean }
   obtainedOutfit: ObtainedOutfit[]
 ): T[] {
   const keys = new Set(obtainedOutfit.map((o) => o.outfit_variant))
+  return variants.map((variant) => ({ ...variant, obtained: keys.has(variant.slug) }))
+}
+
+/**
+ * The makeup counterpart of applyLiveObtained — same reasoning, but obtained
+ * rows key off `makeup_variant` rather than `outfit_variant`, so the two cannot
+ * share one implementation.
+ */
+export function applyLiveObtainedMakeup<T extends { slug: string; obtained?: boolean }>(
+  variants: T[],
+  obtainedMakeup: ObtainedMakeup[]
+): T[] {
+  const keys = new Set(obtainedMakeup.map((o) => o.makeup_variant))
   return variants.map((variant) => ({ ...variant, obtained: keys.has(variant.slug) }))
 }
 
@@ -130,34 +196,37 @@ export function expandSet(
 
 // Makeup mirrors the outfit model — a base set plus one row per evolution — but
 // has no glow-up concept, so only the evolution and base-set toggles apply.
+//
+// Each state is expanded into one entry PER VARIANT rather than a single card
+// for the whole set. A makeup set is five separate wearables (base makeup,
+// contact lenses, eyebrows, eyelashes, lips), and a season lists what you can
+// collect — so they are shown and counted the same way standalone makeup pieces
+// are, as five pieces rather than one set.
+//
+// `set.makeup_variants` on a base row also carries every evolution's variants
+// (see createMakeupSet), so each state is filtered to its own `makeup_set` slug.
+// Without that the base state would re-emit its evolutions' pieces and every
+// count would run high.
 function expandMakeupSet(
   set: MakeupSet,
   hideEvolutions: boolean,
   hideBaseSets = false
 ): SeasonEntry[] {
-  const entries: SeasonEntry[] = hideBaseSets
-    ? []
-    : [
-        {
-          kind: 'makeup',
-          key: `makeup:${set.slug}`,
-          set,
-          evolution: null,
-          variants: set.makeup_variants,
-        },
-      ]
+  const asPieces = (stateSlug: string, variants: MakeupVariant[]): SeasonEntry[] =>
+    variants
+      .filter((variant) => variant.makeup_set === stateSlug)
+      .map((variant) => ({
+        kind: 'makeup-standalone' as const,
+        key: `makeup-piece:${variant.slug}`,
+        variant,
+      }))
+
+  const entries: SeasonEntry[] = hideBaseSets ? [] : asPieces(set.slug, set.makeup_variants)
 
   if (hideEvolutions) return entries
 
   for (const evolution of set.evolutions) {
-    if (evolution.makeup_variants.length === 0) continue
-    entries.push({
-      kind: 'makeup',
-      key: `makeup:${evolution.slug}`,
-      set,
-      evolution,
-      variants: evolution.makeup_variants,
-    })
+    entries.push(...asPieces(evolution.slug, evolution.makeup_variants))
   }
 
   return entries
@@ -175,16 +244,22 @@ export function groupSeasonEntries({
   seasonSets,
   standaloneVariants,
   makeupSets,
+  seasonSlug,
   hideEvolutions,
   hideGlowups,
   hidePieces = false,
   hideMakeup = false,
   hideBaseSets = false,
   obtainedOutfit,
+  obtainedMakeup,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
+  // Which season is being grouped. Standalone makeup pieces are matched against
+  // it per-variant; omit it to skip them entirely (the seasons index, which
+  // counts sets rather than expanding a single season).
+  seasonSlug?: string
   hideEvolutions: boolean
   hideGlowups: boolean
   // Drops the base state of every set (outfit and makeup), leaving only
@@ -198,6 +273,11 @@ export function groupSeasonEntries({
   // Live obtained rows from the outfit provider. Omit to trust the flags already
   // on the passed-in data (e.g. server-rendered output with no provider).
   obtainedOutfit?: ObtainedOutfit[]
+  // The provider's live obtained makeup rows. Same purpose as obtainedOutfit:
+  // makeup sets arrive as server-rendered props whose `obtained` flags are a
+  // render-time snapshot, so without this a toggle updates provider state while
+  // these stay stale and the card never repaints.
+  obtainedMakeup?: ObtainedMakeup[]
 }): [string, SeasonEntry[]][] {
   const groups = new Map<string, SeasonEntry[]>()
 
@@ -237,9 +317,51 @@ export function groupSeasonEntries({
     }
   }
 
+  const liveMakeupVariants = <T extends { slug: string; obtained?: boolean }>(variants: T[]) =>
+    obtainedMakeup ? applyLiveObtainedMakeup(variants, obtainedMakeup) : variants
+
   if (!hideMakeup) {
     for (const set of makeupSets) {
-      push(set.season_category, expandMakeupSet(set, hideEvolutions, hideBaseSets))
+      // The standalone-makeup container has no season of its own — each of its
+      // variants carries one — so it is grouped per-variant below rather than
+      // expanded as a set. Expanding it here would file every piece in the
+      // season under one card in the "Other" bucket.
+      if (isStandaloneMakeupSet(set)) continue
+      // Refresh before expanding, so every piece card and every count below
+      // reads the same live state.
+      const live = {
+        ...set,
+        makeup_variants: liveMakeupVariants(set.makeup_variants),
+        evolutions: set.evolutions.map((evolution) => ({
+          ...evolution,
+          makeup_variants: liveMakeupVariants(evolution.makeup_variants),
+        })),
+      }
+      push(set.season_category, expandMakeupSet(live, hideEvolutions, hideBaseSets))
+    }
+  }
+
+  // Standalone makeup pieces, matched to this season the same way standalone
+  // outfit variants are: on the variant's own columns. Gated on `hidePieces`
+  // rather than `hideMakeup` — they are individual pieces, and the pieces
+  // toggle is what a reader expects to control them.
+  //
+  // `makeupSets` is already scoped to this season by the caller, but the
+  // container set is not (it has no season), so it survives that filter with
+  // every piece in the game inside it. Re-filter per variant here.
+  const standaloneMakeupVariants = seasonSlug
+    ? liveMakeupVariants(
+        (makeupSets.find(isStandaloneMakeupSet)?.makeup_variants ?? []).filter(
+          (variant) => variant.seasons === seasonSlug
+        )
+      )
+    : []
+
+  if (!hidePieces) {
+    for (const variant of standaloneMakeupVariants) {
+      push(variant.season_category, [
+        { kind: 'makeup-standalone', key: `makeup-piece:${variant.slug}`, variant },
+      ])
     }
   }
 

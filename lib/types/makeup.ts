@@ -34,6 +34,11 @@ export type MakeupVariant = Pick<
   | 'default'
   | 'image_url'
   | 'alt_image_url'
+  // Standalone makeup pieces carry their own season the way standalone outfit
+  // variants do — their container set has none — so the season pages group them
+  // per-variant off these two columns.
+  | 'seasons'
+  | 'season_category'
 > & { obtained?: boolean }
 
 export type MakeupVariantRaw = Tables<'makeup_variants'> & {
