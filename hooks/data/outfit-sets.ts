@@ -114,6 +114,7 @@ export const getOutfitSet = cache(async (slug: string) => {
         alt_image_url,
         default,
         rarity,
+        style,
         seasons,
         season_category
       ),
