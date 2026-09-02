@@ -38,11 +38,11 @@ feed or "new since last visit" can be added later without a migration.
 
 ### `follows`
 
-| Column         | Type                           | Notes                                   |
-| -------------- | ------------------------------ | --------------------------------------- |
-| `follower_id`  | `uuid NOT NULL`                | FK → `auth.users(id)` ON DELETE CASCADE |
-| `following_id` | `uuid NOT NULL`                | FK → `auth.users(id)` ON DELETE CASCADE |
-| `created_at`   | `timestamptz NOT NULL` `now()` | Reserved for a future activity feed     |
+| Column         | Type                           | Notes                                        |
+| -------------- | ------------------------------ | -------------------------------------------- |
+| `follower_id`  | `uuid NOT NULL`                | FK → `public.profiles(id)` ON DELETE CASCADE |
+| `following_id` | `uuid NOT NULL`                | FK → `public.profiles(id)` ON DELETE CASCADE |
+| `created_at`   | `timestamptz NOT NULL` `now()` | Reserved for a future activity feed          |
 
 `PRIMARY KEY (follower_id, following_id)` — the composite PK _is_ the many-to-many join, and it
 makes follows idempotent for free: a duplicate follow is a PK violation rather than a second row.
@@ -64,8 +64,12 @@ depends on this reading.
   supporting the `ilike '%q%'` substring match used by search. Requires the `pg_trgm` extension;
   the migration creates it `if not exists`.
 
-FKs reference `auth.users`, matching `feedback.user_id` and the `obtained_*` tables. Because the
-modal displays profiles, reads join `public.profiles` on the same id.
+FKs reference `public.profiles`, NOT `auth.users` — unlike `feedback.user_id` and the `obtained_*`
+tables. PostgREST can only resolve an embed (`profiles!follows_following_id_fkey`) between two
+tables in the exposed public schema; a FK to `auth.users` is invisible to it, so every read would
+fail at runtime with `PGRST200` ("Could not find a relationship between 'follows' and 'profiles'")
+even though the migration and `tsc` both stay green. `profiles.id` itself FKs to `auth.users`
+(`profiles_id_fkey`), so cascade-on-account-delete still holds transitively.
 
 ### RLS
 
@@ -92,13 +96,13 @@ boundary, not the UI.
 All five use React `cache()`, **not** `use cache` — they call `cookies()` via `createClient()`,
 which `use cache` forbids (CLAUDE.md).
 
-| Function                             | Returns                                       |
-| ------------------------------------ | --------------------------------------------- |
-| `getFollowing(user_id)`              | Profiles this user follows                    |
-| `getFollowers(user_id)`              | Profiles following this user                  |
-| `getFollowCounts(user_id)`           | `{ following, followers }`                    |
-| `getIsFollowing(viewerId, targetId)` | `boolean` — the card's Follow button state    |
-| `getViewerFollowingIds(viewerId)`    | `Set<string>` — ids the viewer follows        |
+| Function                             | Returns                                    |
+| ------------------------------------ | ------------------------------------------ |
+| `getFollowing(user_id)`              | Profiles this user follows                 |
+| `getFollowers(user_id)`              | Profiles following this user               |
+| `getFollowCounts(user_id)`           | `{ following, followers }`                 |
+| `getIsFollowing(viewerId, targetId)` | `boolean` — the card's Follow button state |
+| `getViewerFollowingIds(viewerId)`    | `Set<string>` — ids the viewer follows     |
 
 `getFollowCounts` uses `head: true, count: 'exact'` for both numbers, so the card fetches counts
 without transferring rows. Per CLAUDE.md, `getUserID()` returns `null` for signed-out visitors —

@@ -55,7 +55,7 @@ Everything else in the spec stands as written.
 **Interfaces:**
 
 - Consumes: nothing (first task).
-- Produces: table `public.follows (follower_id uuid, following_id uuid, created_at timestamptz)`; policies `follows_public_select`, `follows_owner_insert`, `follows_owner_delete`.
+- Produces: table `public.follows (follower_id uuid FK -> public.profiles(id), following_id uuid FK -> public.profiles(id), created_at timestamptz)`; policies `follows_public_select`, `follows_owner_insert`, `follows_owner_delete`.
 
 - [ ] **Step 1: Write the migration**
 
@@ -77,10 +77,16 @@ Create `supabase/migrations/20260902120000_add_follows_table.sql`:
 create extension if not exists pg_trgm;
 
 create table public.follows (
-  -- FKs reference auth.users, matching feedback.user_id and the obtained_*
-  -- tables. Reads join public.profiles on the same id for display.
-  follower_id uuid not null references auth.users (id) on delete cascade,
-  following_id uuid not null references auth.users (id) on delete cascade,
+  -- FKs reference public.profiles, NOT auth.users — unlike feedback.user_id
+  -- and the obtained_* tables. PostgREST can only resolve an embed
+  -- (`profiles!follows_following_id_fkey`) between two tables in the exposed
+  -- public schema; a FK to auth.users is invisible to it and every read hook
+  -- in hooks/data/follows.ts would fail at runtime with PGRST200 ("Could not
+  -- find a relationship between 'follows' and 'profiles'"), even though this
+  -- migration and tsc both stay green. profiles.id itself FKs to auth.users
+  -- (profiles_id_fkey), so cascade-on-account-delete still holds transitively.
+  follower_id uuid not null references public.profiles (id) on delete cascade,
+  following_id uuid not null references public.profiles (id) on delete cascade,
   -- Reserved for a future activity feed; nothing reads it yet.
   created_at timestamptz not null default now(),
   -- The composite PK IS the many-to-many join, and it makes follows idempotent
