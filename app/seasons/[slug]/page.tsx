@@ -105,6 +105,7 @@ export default async function SeasonPage({ params }: Props) {
         />
 
         <SeasonContents
+          isLoggedIn={isLoggedIn}
           makeupSets={seasonMakeupSets}
           seasonCategories={seasonCategories}
           seasonSets={seasonSets}
