@@ -28,7 +28,7 @@ vi.mock('@/lib/supabase/client', () => ({
 const ALICE = { id: 'u1', username: 'alice', display_name: 'Alice', avatar_url: null }
 const BOB = { id: 'u2', username: 'bob', display_name: 'Bob', avatar_url: null }
 
-function setup() {
+function setup(props: Partial<React.ComponentProps<typeof FollowCountsRow>> = {}) {
   return render(
     <FollowCountsRow
       followers={[BOB]}
@@ -37,6 +37,7 @@ function setup() {
       followingCount={12}
       viewerFollowingIds={new Set<string>()}
       viewerId="viewer"
+      {...props}
     />
   )
 }
@@ -73,5 +74,37 @@ describe('FollowCountsRow', () => {
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument()
     expect(screen.getByText('@bob')).toBeInTheDocument()
+  })
+
+  // The viewer's own Following count must move when they follow/unfollow a
+  // row inside their own profile's dialog. The count button sits behind the
+  // open Dialog, which MUI marks aria-hidden on the rest of the app while
+  // open, so assert by text rather than role until the dialog is closed.
+  it('increments the displayed Following count when a row is followed on the viewer’s own profile', async () => {
+    const user = userEvent.setup()
+    setup({ profileId: 'viewer', viewerId: 'viewer' })
+
+    await user.click(screen.getByRole('button', { name: /12 following/i }))
+    await screen.findByRole('dialog')
+
+    await user.click(screen.getByRole('button', { name: /^follow$/i }))
+    await user.keyboard('{Escape}')
+
+    expect(await screen.findByRole('button', { name: /13 following/i })).toBeInTheDocument()
+  })
+
+  // On someone else's profile, following a person listed in THEIR modal does
+  // not change THAT profile's Following count.
+  it('does not change the Following count when following a row on someone else’s profile', async () => {
+    const user = userEvent.setup()
+    setup({ profileId: 'someone-else', viewerId: 'viewer' })
+
+    await user.click(screen.getByRole('button', { name: /12 following/i }))
+    await screen.findByRole('dialog')
+
+    await user.click(screen.getByRole('button', { name: /^follow$/i }))
+    await user.keyboard('{Escape}')
+
+    expect(await screen.findByRole('button', { name: /12 following/i })).toBeInTheDocument()
   })
 })

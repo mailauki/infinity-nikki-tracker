@@ -33,6 +33,7 @@ export default function FollowDialog({
   followers,
   viewerId,
   viewerFollowingIds,
+  onFollowChange,
 }: {
   open: boolean
   onClose: () => void
@@ -44,6 +45,8 @@ export default function FollowDialog({
   viewerId: string | null
   /** Ids the VIEWER follows, so row buttons reflect their relationship. */
   viewerFollowingIds: Set<string>
+  /** Fired when a row inside the dialog is followed/unfollowed, so the parent can adjust the viewer's own Following count. */
+  onFollowChange?: (isNowFollowing: boolean) => void
 }) {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<FollowProfile[]>([])
@@ -57,18 +60,18 @@ export default function FollowDialog({
   const isSearching = trimmed.length > 0
 
   useEffect(() => {
-    if (!isSearching) {
-      setResults([])
-      return
-    }
-
     // A query of only structural characters escapes to empty, which would
-    // otherwise become a bare wildcard matching every profile.
+    // otherwise become a bare wildcard matching every profile. This also
+    // covers the empty-query case, since isSearchable('') is false.
     if (!isSearchable(trimmed)) {
       setResults([])
+      setSearching(false)
       return
     }
 
+    // Clear stale results from a prior query immediately, so the previous
+    // list doesn't linger on screen through the debounce + round trip.
+    setResults([])
     setSearching(true)
     let cancelled = false
 
@@ -99,6 +102,7 @@ export default function FollowDialog({
 
   const handleFollowChange = (id: string, isFollowing: boolean) => {
     setChanged((prev) => new Map(prev).set(id, isFollowing))
+    onFollowChange?.(isFollowing)
   }
 
   const isFollowingProfile = (id: string) => changed.get(id) ?? viewerFollowingIds.has(id)

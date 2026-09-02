@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import {
   Alert,
   alpha,
@@ -69,6 +70,11 @@ export default function ProfileCard({
   const theme = useTheme()
   const { colorTheme } = useColorTheme()
 
+  // The Follow button and FollowCountsRow are siblings here, so the +1/-1 from
+  // following/unfollowing THIS profile is tracked in the shared parent and
+  // handed down as a delta rather than lifting all of FollowCountsRow's state.
+  const [followerDelta, setFollowerDelta] = useState(0)
+
   const preset = COLOR_THEME_PRESETS[colorTheme]
   const gradient = (surface: string) =>
     `linear-gradient(to top, ${alpha(surface, 1)} 20%, ${alpha(surface, 0.7)} 70%, ${alpha(surface, 0.3)} 90%, ${alpha(surface, 0)} 100%)`
@@ -136,6 +142,7 @@ export default function ProfileCard({
                 isLoggedIn={Boolean(viewerId)}
                 size="large"
                 targetId={profileId}
+                onChange={(nowFollowing) => setFollowerDelta(nowFollowing ? 1 : -1)}
               />
             )
           }
@@ -145,10 +152,12 @@ export default function ProfileCard({
                 @{username ?? '—'}
               </Typography>
               <FollowCountsRow
+                followerDelta={followerDelta}
                 followers={followers}
                 followersCount={followersCount}
                 following={following}
                 followingCount={followingCount}
+                profileId={profileId}
                 viewerFollowingIds={viewerFollowingIds ?? new Set()}
                 viewerId={viewerId}
               />

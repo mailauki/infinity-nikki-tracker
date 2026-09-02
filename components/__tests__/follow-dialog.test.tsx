@@ -107,6 +107,32 @@ describe('FollowDialog', () => {
     expect(await screen.findByText(/no profiles found/i)).toBeInTheDocument()
   })
 
+  // Regression: an in-flight search whose query then escapes to empty (e.g.
+  // trailing dots stripped by isSearchable) must not strand "Searching…"
+  // forever — both early-return paths have to clear the flag too.
+  it('does not strand "Searching…" when the query escapes to empty mid-request', async () => {
+    let resolveSearch: (value: { data: FollowProfile[]; error: null }) => void = () => {}
+    searchResults.mockReturnValue(
+      new Promise((resolve) => {
+        resolveSearch = resolve
+      })
+    )
+    const user = userEvent.setup()
+    setup()
+
+    const input = screen.getByRole('textbox', { name: /search/i })
+    await user.type(input, 'bob')
+
+    await waitFor(() => expect(screen.getByText(/searching/i)).toBeInTheDocument())
+
+    await user.clear(input)
+    await user.type(input, '..')
+
+    expect(screen.queryByText(/searching/i)).not.toBeInTheDocument()
+
+    resolveSearch({ data: [], error: null })
+  })
+
   // CORRECTION 2: signed-out visitors must still see counts/lists (follow
   // rows are public-read) but get NO follow buttons anywhere in the dialog,
   // including in search results.
