@@ -38,6 +38,15 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   makeup_sort_axis: 'date',
   makeup_density: 'standard',
   makeup_image_mode: 'image',
+  season_hide_evolutions: true,
+  season_hide_glowups: true,
+  season_hide_pieces: false,
+  season_hide_makeup: false,
+  season_hide_base_sets: false,
+  season_density: 'standard',
+  season_obtained_filter: null,
+  season_rarity_filter: null,
+  season_style_filter: null,
 }
 
 export const DEFAULT_ADMIN_PREFERENCES: AdminPreferences = {
