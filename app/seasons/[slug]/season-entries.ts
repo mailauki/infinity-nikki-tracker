@@ -69,6 +69,22 @@ export function isEntryObtained(entry: SeasonEntry) {
 }
 
 /**
+ * Progress measured in CARDS rather than variants — the denominator the
+ * composition chips report, so "8 outfits + 50 pieces" totals 58 and not the
+ * 126 variants those 58 cards contain between them.
+ *
+ * A piece is one card and one variant either way; the difference is an outfit
+ * set, which is a single card holding ten-odd variants. Use countEntries for a
+ * single card's own progress (its variants are exactly what that card shows).
+ */
+export function countEntryCards(entries: SeasonEntry[]) {
+  return {
+    total: entries.length,
+    obtained: entries.filter(isEntryObtained).length,
+  }
+}
+
+/**
  * How many cards of each kind a season holds, and how many of those are fully
  * collected — drives the overview stat row and the category composition chips.
  */

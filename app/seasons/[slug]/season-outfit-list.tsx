@@ -13,6 +13,7 @@ import MakeupPieceCard from './makeup-piece-item'
 import { useSeasonFilter } from './season-filter-context'
 import {
   countEntries,
+  countEntryCards,
   countEntryKinds,
   groupSeasonEntries,
   OTHER_CATEGORY,
@@ -198,7 +199,8 @@ export default function SeasonOutfitList({
   return (
     <Stack spacing={4}>
       {categoryGroups.map(([category, entries]) => {
-        const { obtained, total } = countEntries(entries)
+        // Cards, not variants — matches the outfits/pieces chips beside it.
+        const { obtained, total } = countEntryCards(entries)
         const kinds = countEntryKinds(entries)
 
         // Set cards and piece cards are different shapes — a set card carries a

@@ -7,7 +7,7 @@ import { useOutfitData } from '@/components/outfits/outfit-context'
 import { SimpleGrid } from '@/components/card-grid'
 import { percent } from '@/hooks/count-obtained'
 import { useSeasonFilter } from './season-filter-context'
-import { countEntries, countEntryKinds, groupSeasonEntries } from './season-entries'
+import { countEntryCards, countEntryKinds, groupSeasonEntries } from './season-entries'
 
 // One figure in the overview row. Kept local rather than reusing admin's
 // StatCard: that one is built around an integer count plus add/list links,
@@ -68,11 +68,11 @@ export default function SeasonOverview({
   })
 
   const entries = groups.flatMap(([, groupEntries]) => groupEntries)
-  const { obtained, total } = countEntries(entries)
+  const { obtained, total } = countEntryCards(entries)
   const kinds = countEntryKinds(entries)
 
   const completeCategories = groups.filter(([, groupEntries]) => {
-    const counts = countEntries(groupEntries)
+    const counts = countEntryCards(groupEntries)
     return counts.total > 0 && counts.obtained === counts.total
   }).length
 
