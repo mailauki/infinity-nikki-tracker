@@ -25,7 +25,7 @@ export default function FollowRow({
   isFollowing?: boolean
   isSelf?: boolean
   isLoggedIn?: boolean
-  onFollowChange?: (id: string, following: boolean) => void
+  onFollowChange?: (profile: FollowProfile, following: boolean) => void
 }) {
   return (
     <Stack direction="row" spacing={1} sx={ROW_SX}>
@@ -61,7 +61,7 @@ export default function FollowRow({
         isLoggedIn={isLoggedIn}
         isSelf={isSelf}
         targetId={profile.id}
-        onChange={(following) => onFollowChange?.(profile.id, following)}
+        onChange={(following) => onFollowChange?.(profile, following)}
       />
     </Stack>
   )

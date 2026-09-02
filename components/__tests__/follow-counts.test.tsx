@@ -14,13 +14,17 @@ vi.mock('notistack', () => ({ enqueueSnackbar: vi.fn() }))
 // the real code calls .neq() only when viewerId is truthy. A self-returning
 // chainable builder handles both shapes instead of hardcoding one fixed chain
 // — see components/__tests__/follow-dialog.test.tsx, which this mirrors.
+const searchResults = vi.fn(
+  (): Promise<{ data: unknown[]; error: null }> => Promise.resolve({ data: [], error: null })
+)
+
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => {
     const builder: Record<string, unknown> = {}
     for (const method of ['from', 'select', 'or', 'neq', 'order']) {
       builder[method] = () => builder
     }
-    builder.limit = () => Promise.resolve({ data: [], error: null })
+    builder.limit = () => searchResults()
     return builder
   },
 }))
@@ -107,4 +111,39 @@ describe('FollowCountsRow', () => {
 
     expect(await screen.findByRole('button', { name: /12 following/i })).toBeInTheDocument()
   })
+  // The bug this guards: following someone from search moved the count but the
+  // Following list still showed the page-load snapshot, so the two disagreed
+  // until a reload.
+  it('bumps the count AND adds the profile to the Following list', async () => {
+    const CARLA = { id: 'u3', username: 'carla', display_name: 'Carla', avatar_url: null }
+    searchResults.mockResolvedValue({ data: [CARLA], error: null })
+    const user = userEvent.setup()
+
+    render(
+      <FollowCountsRow
+        followers={[]}
+        followersCount={0}
+        following={[]}
+        followingCount={0}
+        profileId="me"
+        viewerFollowingIds={new Set<string>()}
+        viewerId="me"
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: /0 following/i }))
+    await screen.findByRole('dialog')
+
+    await user.type(screen.getByRole('textbox', { name: /search/i }), 'carla')
+    await screen.findByText('@carla')
+    await user.click(screen.getByRole('button', { name: /^follow$/i }))
+
+    // Clearing the query returns to the Following tab, which must list Carla.
+    await user.clear(screen.getByRole('textbox', { name: /search/i }))
+    expect(await screen.findByText('@carla')).toBeInTheDocument()
+
+    await user.keyboard('{Escape}')
+    expect(await screen.findByRole('button', { name: /1 following/i })).toBeInTheDocument()
+  })
+
 })

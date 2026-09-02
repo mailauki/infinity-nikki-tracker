@@ -54,7 +54,12 @@ export default function FollowDialog({
 
   // Local overlay of follow changes made inside the dialog, so a row's button
   // stays correct without refetching the whole list.
-  const [changed, setChanged] = useState<Map<string, boolean>>(new Map())
+  // id -> { profile, following }. The profile object is stored alongside the
+  // flag because the list it was acted on in is transient: clearing the search
+  // wipes `results`, and looking the profile up there afterwards would fail.
+  const [changed, setChanged] = useState<Map<string, { profile: FollowProfile; following: boolean }>>(
+    new Map()
+  )
 
   const trimmed = query.trim()
   const isSearching = trimmed.length > 0
@@ -100,18 +105,39 @@ export default function FollowDialog({
     }
   }, [trimmed, isSearching, viewerId])
 
-  const handleFollowChange = (id: string, isFollowing: boolean) => {
-    setChanged((prev) => new Map(prev).set(id, isFollowing))
+  const handleFollowChange = (profile: FollowProfile, isFollowing: boolean) => {
+    setChanged((prev) => new Map(prev).set(profile.id, { profile, following: isFollowing }))
     onFollowChange?.(isFollowing)
   }
 
-  const isFollowingProfile = (id: string) => changed.get(id) ?? viewerFollowingIds.has(id)
+  const isFollowingProfile = (id: string) => changed.get(id)?.following ?? viewerFollowingIds.has(id)
+
+  // The Following tab has to reflect follows made in this session, not just the
+  // server snapshot taken at page load: following someone from the search
+  // results moves the count, so the list has to move with it or the two
+  // disagree until a reload.
+  //
+  // Only the FOLLOWING list is derived this way. The Followers tab lists people
+  // who follow THIS profile, which the viewer following someone does not change.
+  function followingList() {
+    // Anyone unfollowed in this session drops out.
+    const kept = following.filter((profile) => changed.get(profile.id)?.following !== false)
+
+    // Anyone followed in this session and not already listed gets appended,
+    // using the profile object captured when the row was toggled.
+    const listed = new Set(kept.map((profile) => profile.id))
+    const added = [...changed.values()]
+      .filter((entry) => entry.following && !listed.has(entry.profile.id))
+      .map((entry) => entry.profile)
+
+    return [...kept, ...added]
+  }
 
   // Flattened out of a nested ternary: searching replaces the tab body wholesale,
   // otherwise the active tab picks its own list.
   function currentList() {
     if (isSearching) return results
-    return tab === 'following' ? following : followers
+    return tab === 'following' ? followingList() : followers
   }
 
   const list = currentList()

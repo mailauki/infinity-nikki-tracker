@@ -151,4 +151,53 @@ describe('FollowDialog', () => {
     expect(screen.queryByRole('button', { name: /^follow$/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /following/i })).not.toBeInTheDocument()
   })
+  // The Following tab is a server snapshot from page load. Following someone
+  // from search has to add them to it, or the count moves while the list the
+  // user opened to check stays wrong until a reload.
+  it('adds a newly followed profile to the Following list', async () => {
+    searchResults.mockResolvedValue({ data: [BOB], error: null })
+    const user = userEvent.setup()
+    setup({ following: [ALICE], viewerFollowingIds: new Set(['u1']) })
+
+    // Bob is not in the Following list yet.
+    expect(screen.queryByText('@bob')).not.toBeInTheDocument()
+
+    await user.type(screen.getByRole('textbox', { name: /search/i }), 'bob')
+    const row = await screen.findByText('@bob')
+    expect(row).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^follow$/i }))
+
+    // Clearing the query returns to the Following tab, which must now list Bob.
+    await user.clear(screen.getByRole('textbox', { name: /search/i }))
+
+    expect(await screen.findByText('@bob')).toBeInTheDocument()
+    expect(screen.getByText('@alice')).toBeInTheDocument()
+  })
+
+  it('removes an unfollowed profile from the Following list', async () => {
+    const user = userEvent.setup()
+    setup({ following: [ALICE], viewerFollowingIds: new Set(['u1']) })
+
+    expect(screen.getByText('@alice')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /following/i }))
+
+    expect(screen.queryByText('@alice')).not.toBeInTheDocument()
+    expect(screen.getByText(/not following anyone yet/i)).toBeInTheDocument()
+  })
+
+  // The Followers tab lists people who follow THIS profile. The viewer
+  // following someone does not make that person a follower, so it must not move.
+  it('does not change the Followers list when the viewer follows someone', async () => {
+    const user = userEvent.setup()
+    setup({ followers: [BOB], following: [ALICE], tab: 'followers' })
+
+    expect(screen.getByText('@bob')).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^follow$/i }))
+
+    expect(screen.getByText('@bob')).toBeInTheDocument()
+  })
+
 })
