@@ -7,6 +7,7 @@ import { ChevronLeft, Edit, InfoOutlined, Toc } from '@mui/icons-material'
 import ImageModeButton from '@/components/navbar/image-mode-button'
 import MakeupImageModeButton from '@/components/makeup/makeup-image-mode-button'
 import { SortButton } from '@/components/navbar/appbar-actions'
+import FilterMenu from '@/components/filter/filter-menu'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import { useSeasonFilterOptional } from '@/app/seasons/[slug]/season-filter-context'
 
@@ -63,6 +64,12 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
         </IconButton>
       )}
       {seasonFilter && <SortButton />}
+      {/* FilterMenu's isSeasons branch supplies its own IconButton (density,
+          visibility, obtained/rarity/style — Task 4's panel) and its own
+          <SidebarBody panelId="filters">. This is the only place that branch is
+          reachable from — no other toolbar mounts FilterMenu on a season page —
+          so without this, the filter panel exists but has no way to open. */}
+      {seasonFilter && <FilterMenu />}
       {seasonFilter && (
         <ContentsButton
           activePanel={activePanel}
