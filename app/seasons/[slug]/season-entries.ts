@@ -1,4 +1,4 @@
-import { MakeupSet, MakeupVariant } from '@/lib/types/makeup'
+import { MakeupSet, MakeupVariant, ObtainedMakeup } from '@/lib/types/makeup'
 import { Evolution, ObtainedOutfit, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { isEvolutionVisible, isGlowup } from '@/hooks/outfit'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
@@ -132,6 +132,19 @@ export function applyLiveObtained<T extends { slug: string; obtained?: boolean }
   return variants.map((variant) => ({ ...variant, obtained: keys.has(variant.slug) }))
 }
 
+/**
+ * The makeup counterpart of applyLiveObtained — same reasoning, but obtained
+ * rows key off `makeup_variant` rather than `outfit_variant`, so the two cannot
+ * share one implementation.
+ */
+export function applyLiveObtainedMakeup<T extends { slug: string; obtained?: boolean }>(
+  variants: T[],
+  obtainedMakeup: ObtainedMakeup[]
+): T[] {
+  const keys = new Set(obtainedMakeup.map((o) => o.makeup_variant))
+  return variants.map((variant) => ({ ...variant, obtained: keys.has(variant.slug) }))
+}
+
 // Expand a set into its base entry plus one entry per evolution (including the
 // glow-up). Each entry is rendered as its own card — the same model as the
 // outfits grid, where evolutions and glow-ups stand alongside base sets — and is
@@ -238,6 +251,7 @@ export function groupSeasonEntries({
   hideMakeup = false,
   hideBaseSets = false,
   obtainedOutfit,
+  obtainedMakeup,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
@@ -259,6 +273,11 @@ export function groupSeasonEntries({
   // Live obtained rows from the outfit provider. Omit to trust the flags already
   // on the passed-in data (e.g. server-rendered output with no provider).
   obtainedOutfit?: ObtainedOutfit[]
+  // The provider's live obtained makeup rows. Same purpose as obtainedOutfit:
+  // makeup sets arrive as server-rendered props whose `obtained` flags are a
+  // render-time snapshot, so without this a toggle updates provider state while
+  // these stay stale and the card never repaints.
+  obtainedMakeup?: ObtainedMakeup[]
 }): [string, SeasonEntry[]][] {
   const groups = new Map<string, SeasonEntry[]>()
 
@@ -298,6 +317,9 @@ export function groupSeasonEntries({
     }
   }
 
+  const liveMakeupVariants = <T extends { slug: string; obtained?: boolean }>(variants: T[]) =>
+    obtainedMakeup ? applyLiveObtainedMakeup(variants, obtainedMakeup) : variants
+
   if (!hideMakeup) {
     for (const set of makeupSets) {
       // The standalone-makeup container has no season of its own — each of its
@@ -305,7 +327,17 @@ export function groupSeasonEntries({
       // expanded as a set. Expanding it here would file every piece in the
       // season under one card in the "Other" bucket.
       if (isStandaloneMakeupSet(set)) continue
-      push(set.season_category, expandMakeupSet(set, hideEvolutions, hideBaseSets))
+      // Refresh before expanding, so every piece card and every count below
+      // reads the same live state.
+      const live = {
+        ...set,
+        makeup_variants: liveMakeupVariants(set.makeup_variants),
+        evolutions: set.evolutions.map((evolution) => ({
+          ...evolution,
+          makeup_variants: liveMakeupVariants(evolution.makeup_variants),
+        })),
+      }
+      push(set.season_category, expandMakeupSet(live, hideEvolutions, hideBaseSets))
     }
   }
 
@@ -318,8 +350,10 @@ export function groupSeasonEntries({
   // container set is not (it has no season), so it survives that filter with
   // every piece in the game inside it. Re-filter per variant here.
   const standaloneMakeupVariants = seasonSlug
-    ? (makeupSets.find(isStandaloneMakeupSet)?.makeup_variants ?? []).filter(
-        (variant) => variant.seasons === seasonSlug
+    ? liveMakeupVariants(
+        (makeupSets.find(isStandaloneMakeupSet)?.makeup_variants ?? []).filter(
+          (variant) => variant.seasons === seasonSlug
+        )
       )
     : []
 

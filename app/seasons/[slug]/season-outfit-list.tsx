@@ -5,6 +5,7 @@ import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/c
 import { MakeupSet } from '@/lib/types/makeup'
 import { OutfitSet, OutfitVariant, SeasonCategory } from '@/lib/types/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useMakeupData } from '@/components/makeup/makeup-context'
 import CardGrid, { CardGridHeader } from '@/components/card-grid'
 import ProgressChip from '@/components/progress-chip'
 import { percent } from '@/hooks/count-obtained'
@@ -92,6 +93,7 @@ export default function SeasonOutfitList({
 }) {
   const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
+  const { obtainedMakeup } = useMakeupData()
 
   const categoryTitle = (categorySlug: string) =>
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
@@ -110,6 +112,7 @@ export default function SeasonOutfitList({
     hideMakeup,
     hideBaseSets,
     obtainedOutfit,
+    obtainedMakeup,
   })
 
   if (!categoryGroups.length) {

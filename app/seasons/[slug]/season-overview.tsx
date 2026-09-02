@@ -4,6 +4,7 @@ import { Card, CardContent, LinearProgress, Stack, Typography } from '@mui/mater
 import { MakeupSet } from '@/lib/types/makeup'
 import { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useMakeupData } from '@/components/makeup/makeup-context'
 import { SimpleGrid } from '@/components/card-grid'
 import { percent } from '@/hooks/count-obtained'
 import { useSeasonFilter } from './season-filter-context'
@@ -52,6 +53,7 @@ export default function SeasonOverview({
   isLoggedIn: boolean
 }) {
   const { obtainedOutfit } = useOutfitData()
+  const { obtainedMakeup } = useMakeupData()
   const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
 
   const groups = groupSeasonEntries({
@@ -65,6 +67,7 @@ export default function SeasonOverview({
     hideMakeup,
     hideBaseSets,
     obtainedOutfit,
+    obtainedMakeup,
   })
 
   const entries = groups.flatMap(([, groupEntries]) => groupEntries)

@@ -4,6 +4,7 @@ import ProgressChip from '@/components/progress-chip'
 import { MakeupSet } from '@/lib/types/makeup'
 import { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useMakeupData } from '@/components/makeup/makeup-context'
 import { useSeasonFilter } from './season-filter-context'
 import { countEntryCards, groupSeasonEntries } from './season-entries'
 
@@ -24,6 +25,7 @@ export default function SeasonProgress({
 }) {
   const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
+  const { obtainedMakeup } = useMakeupData()
 
   const entries = groupSeasonEntries({
     seasonSets,
@@ -36,6 +38,7 @@ export default function SeasonProgress({
     hideMakeup,
     hideBaseSets,
     obtainedOutfit,
+    obtainedMakeup,
   }).flatMap(([, groupEntries]) => groupEntries)
 
   const { obtained, total } = countEntryCards(entries)
