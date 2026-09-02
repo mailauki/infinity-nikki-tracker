@@ -8,7 +8,12 @@ import { useMakeupData } from '@/components/makeup/makeup-context'
 import { SimpleGrid } from '@/components/card-grid'
 import { percent } from '@/hooks/count-obtained'
 import { useSeasonFilter } from './season-filter-context'
-import { countEntryCards, countEntryKinds, groupSeasonEntries } from './season-entries'
+import {
+  applySeasonFilters,
+  countEntryCards,
+  countEntryKinds,
+  groupSeasonEntries,
+} from './season-entries'
 
 // One figure in the overview row. Kept local rather than reusing admin's
 // StatCard: that one is built around an integer count plus add/list links,
@@ -54,21 +59,27 @@ export default function SeasonOverview({
 }) {
   const { obtainedOutfit } = useOutfitData()
   const { obtainedMakeup } = useMakeupData()
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, filters } =
+    useSeasonFilter()
 
-  const groups = groupSeasonEntries({
-    seasonSets,
-    standaloneVariants,
-    makeupSets,
-    seasonSlug,
-    hideEvolutions,
-    hideGlowups,
-    hidePieces,
-    hideMakeup,
-    hideBaseSets,
-    obtainedOutfit,
-    obtainedMakeup,
-  })
+  // Same filtered output the grid renders (groupSeasonEntries + applySeasonFilters),
+  // so these stats never contradict what is actually shown beneath them.
+  const groups = applySeasonFilters(
+    groupSeasonEntries({
+      seasonSets,
+      standaloneVariants,
+      makeupSets,
+      seasonSlug,
+      hideEvolutions,
+      hideGlowups,
+      hidePieces,
+      hideMakeup,
+      hideBaseSets,
+      obtainedOutfit,
+      obtainedMakeup,
+    }),
+    filters
+  )
 
   const entries = groups.flatMap(([, groupEntries]) => groupEntries)
   const { obtained, total } = countEntryCards(entries)

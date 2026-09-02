@@ -14,6 +14,7 @@ import OutfitVariantCard from '@/app/outfits/outfit-variant-card'
 import MakeupVariantCard from '@/app/makeup/makeup-variant-card'
 import { useSeasonFilter } from './season-filter-context'
 import {
+  applySeasonFilters,
   countEntries,
   countEntryCards,
   countEntryKinds,
@@ -21,6 +22,12 @@ import {
   OTHER_CATEGORY,
   SeasonEntry,
 } from './season-entries'
+
+/** Anchor id for a category's section. Shared with the contents sidebar so the
+ *  link target and the rendered section can never drift apart. */
+export function seasonSectionId(category: string) {
+  return `season-category-${category.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+}
 
 // The per-category header: title and obtained/total on one line, with a
 // determinate bar beneath. Mirrors the "Hierarchy Progress" rows on the profile
@@ -91,7 +98,8 @@ export default function SeasonOutfitList({
   seasonCategories: SeasonCategory[]
   isLoggedIn: boolean
 }) {
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, filters } =
+    useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
   const { obtainedMakeup } = useMakeupData()
 
@@ -99,21 +107,27 @@ export default function SeasonOutfitList({
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
 
   // Cards currently visible, grouped by season_category — respects every toggle
-  // (base sets, evolutions, glow-ups, pieces, makeup). Each category's progress is
-  // measured from these same entries, so a header always describes what is shown.
-  const categoryGroups = groupSeasonEntries({
-    seasonSets,
-    standaloneVariants,
-    makeupSets,
-    seasonSlug,
-    hideEvolutions,
-    hideGlowups,
-    hidePieces,
-    hideMakeup,
-    hideBaseSets,
-    obtainedOutfit,
-    obtainedMakeup,
-  })
+  // (base sets, evolutions, glow-ups, pieces, makeup) plus the obtained/rarity/
+  // style filter axes. Each category's progress is measured from these same
+  // entries, so a header always describes what is shown — and a category every
+  // one of whose entries fails the active filter drops out of both the grid and
+  // the contents sidebar, which derives from this same call.
+  const categoryGroups = applySeasonFilters(
+    groupSeasonEntries({
+      seasonSets,
+      standaloneVariants,
+      makeupSets,
+      seasonSlug,
+      hideEvolutions,
+      hideGlowups,
+      hidePieces,
+      hideMakeup,
+      hideBaseSets,
+      obtainedOutfit,
+      obtainedMakeup,
+    }),
+    filters
+  )
 
   if (!categoryGroups.length) {
     return <Typography color="text.secondary">Nothing in this season yet.</Typography>
@@ -131,11 +145,7 @@ export default function SeasonOutfitList({
       // and behaves identically in both places — including a working obtained
       // toggle, which the seasons layout's MakeupDataProvider backs.
       return (
-        <MakeupVariantCard
-          key={entry.key}
-          isLoggedIn={isLoggedIn}
-          makeupVariant={entry.variant}
-        />
+        <MakeupVariantCard key={entry.key} isLoggedIn={isLoggedIn} makeupVariant={entry.variant} />
       )
     }
 
@@ -193,7 +203,12 @@ export default function SeasonOutfitList({
         )
 
         return (
-          <Stack key={category} spacing={2}>
+          <Stack
+            key={category}
+            id={seasonSectionId(category)}
+            spacing={2}
+            sx={{ scrollMarginTop: 72 }}
+          >
             {setEntries.length > 0 && (
               <CardGrid columns="outfit" header={header}>
                 {setEntries.map(renderEntry)}

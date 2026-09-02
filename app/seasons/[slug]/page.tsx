@@ -10,6 +10,7 @@ import { getUserID } from '@/hooks/user'
 import { STANDALONE_SLUG } from './season-entries'
 import SlugToolBar from '@/components/navbar/slug-toolbar'
 import SeasonBanner from './season-banner'
+import SeasonContents from './season-contents'
 import SeasonOutfitList from './season-outfit-list'
 import SeasonOverview from './season-overview'
 import SeasonProgress from './season-progress'
@@ -96,6 +97,14 @@ export default async function SeasonPage({ params }: Props) {
 
         <SeasonOutfitList
           isLoggedIn={isLoggedIn}
+          makeupSets={seasonMakeupSets}
+          seasonCategories={seasonCategories}
+          seasonSets={seasonSets}
+          seasonSlug={slug}
+          standaloneVariants={standaloneVariants}
+        />
+
+        <SeasonContents
           makeupSets={seasonMakeupSets}
           seasonCategories={seasonCategories}
           seasonSets={seasonSets}

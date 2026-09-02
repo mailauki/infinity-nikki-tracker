@@ -6,7 +6,7 @@ import { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useMakeupData } from '@/components/makeup/makeup-context'
 import { useSeasonFilter } from './season-filter-context'
-import { countEntryCards, groupSeasonEntries } from './season-entries'
+import { applySeasonFilters, countEntryCards, groupSeasonEntries } from './season-entries'
 
 // Season completion counts every card currently shown — i.e. it reflects the
 // evolution / glow-up / pieces toggles. Cards rather than variants, so this
@@ -23,23 +23,29 @@ export default function SeasonProgress({
   makeupSets: MakeupSet[]
   seasonSlug: string
 }) {
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, filters } =
+    useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
   const { obtainedMakeup } = useMakeupData()
 
-  const entries = groupSeasonEntries({
-    seasonSets,
-    standaloneVariants,
-    makeupSets,
-    seasonSlug,
-    hideEvolutions,
-    hideGlowups,
-    hidePieces,
-    hideMakeup,
-    hideBaseSets,
-    obtainedOutfit,
-    obtainedMakeup,
-  }).flatMap(([, groupEntries]) => groupEntries)
+  // Same filtered output the grid renders, so this chip never disagrees with
+  // what the page actually shows beneath it.
+  const entries = applySeasonFilters(
+    groupSeasonEntries({
+      seasonSets,
+      standaloneVariants,
+      makeupSets,
+      seasonSlug,
+      hideEvolutions,
+      hideGlowups,
+      hidePieces,
+      hideMakeup,
+      hideBaseSets,
+      obtainedOutfit,
+      obtainedMakeup,
+    }),
+    filters
+  ).flatMap(([, groupEntries]) => groupEntries)
 
   const { obtained, total } = countEntryCards(entries)
 
