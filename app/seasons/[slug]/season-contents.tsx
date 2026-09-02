@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Box, List, ListItemButton, Typography } from '@mui/material'
+import { Box, Divider, List, ListItemButton, ListSubheader, Stack, Typography } from '@mui/material'
 import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 import { MakeupSet } from '@/lib/types/makeup'
 import { OutfitSet, OutfitVariant, SeasonCategory } from '@/lib/types/outfit'
@@ -33,12 +33,14 @@ export default function SeasonContents({
   makeupSets,
   seasonSlug,
   seasonCategories,
+  isLoggedIn,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
   seasonSlug: string
   seasonCategories: SeasonCategory[]
+  isLoggedIn: boolean
 }) {
   const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, filters } =
     useSeasonFilter()
@@ -67,18 +69,18 @@ export default function SeasonContents({
 
   const categoryGroups = sortSeasonEntries(
     applySeasonFilters(
-    groupSeasonEntries({
-      seasonSets,
-      standaloneVariants,
-      makeupSets,
-      seasonSlug,
-      hideEvolutions,
-      hideGlowups,
-      hidePieces,
-      hideMakeup,
-      hideBaseSets,
-      obtainedOutfit,
-      obtainedMakeup,
+      groupSeasonEntries({
+        seasonSets,
+        standaloneVariants,
+        makeupSets,
+        seasonSlug,
+        hideEvolutions,
+        hideGlowups,
+        hidePieces,
+        hideMakeup,
+        hideBaseSets,
+        obtainedOutfit,
+        obtainedMakeup,
       }),
       filters
     ),
@@ -92,16 +94,14 @@ export default function SeasonContents({
 
   return (
     <SidebarBody panelId="contents">
-      <List>
-        <Typography
-          color="text.secondary"
-          component="p"
-          size="small"
-          sx={{ px: 2, py: 1 }}
-          variant="label"
-        >
-          Contents
-        </Typography>
+      <List
+        subheader={
+          <ListSubheader sx={{ bgcolor: 'transparent', position: 'relative' }}>
+            Contents
+            <Divider sx={{ mb: 2 }} />
+          </ListSubheader>
+        }
+      >
         {categoryGroups.map(([category, entries]) => {
           const kinds = countEntryKinds(entries)
           const title = category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)
@@ -109,10 +109,23 @@ export default function SeasonContents({
           return (
             <ListItemButton key={category} onClick={() => scrollToCategory(category)}>
               <Box sx={{ ...COMPOSITION_CONTAINER, width: '100%' }}>
-                <Typography component="span" variant="body">
-                  {title}
-                </Typography>
-                <CompositionCounts outfits={kinds.outfit} pieces={kinds.standalone} />
+                <Stack
+                  direction="row"
+                  sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+                >
+                  <Typography component="span" variant="body">
+                    {title}
+                  </Typography>
+                  {/* Collected counts only when signed in, and only then — the
+                      same condition the category group headers use, so a row
+                      here reads exactly like the section it scrolls to. */}
+                  <CompositionCounts
+                    obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
+                    obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
+                    outfits={kinds.outfit}
+                    pieces={kinds.standalone}
+                  />
+                </Stack>
               </Box>
             </ListItemButton>
           )
