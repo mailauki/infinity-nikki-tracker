@@ -10,7 +10,6 @@ import { getUserID } from '@/hooks/user'
 import { STANDALONE_SLUG } from './season-entries'
 import SlugToolBar from '@/components/navbar/slug-toolbar'
 import SeasonBanner from './season-banner'
-import { SeasonFilterProvider } from './season-filter-context'
 import SeasonOutfitList from './season-outfit-list'
 import SeasonOverview from './season-overview'
 import SeasonProgress from './season-progress'
@@ -64,7 +63,7 @@ export default async function SeasonPage({ params }: Props) {
   )
 
   return (
-    <SeasonFilterProvider>
+    <>
       <SlugToolBar />
       <PageShell>
         <SeasonBanner
@@ -104,6 +103,6 @@ export default async function SeasonPage({ params }: Props) {
           standaloneVariants={standaloneVariants}
         />
       </PageShell>
-    </SeasonFilterProvider>
+    </>
   )
 }
