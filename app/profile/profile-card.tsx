@@ -157,7 +157,7 @@ export default function ProfileCard({
             )
           }
           subheader={
-            <Stack direction="row" spacing={2} sx={{ alignItems: 'center' }}>
+            <Stack direction="row" spacing={2} sx={{ alignItems: 'baseline' }}>
               <Typography color="textSecondary" component="span" size="large" variant="body">
                 @{username ?? '—'}
               </Typography>
