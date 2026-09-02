@@ -367,3 +367,51 @@ export function groupSeasonEntries({
 
   return [...groups.entries()]
 }
+
+/** The season page's non-visibility filter axes. Null / empty means "no filter". */
+export type SeasonFilters = {
+  obtained: 'obtained' | 'missing' | null
+  rarity: number | null
+  styles: string[]
+}
+
+/**
+ * Apply the obtained / rarity / style axes to already-grouped entries.
+ *
+ * These select WITHIN a kind, unlike the hide-flags which gate whole kinds, so
+ * they run over the grouped output rather than being threaded into the expansion
+ * functions — one predicate then covers outfit sets, outfit pieces and makeup
+ * pieces uniformly, and every count downstream follows because those counts
+ * already derive from this same entry list.
+ *
+ * An outfit set card matches on rarity/style if ANY variant it shows does: the
+ * card is one row, and hiding it because one of its ten variants disagrees would
+ * misrepresent what the set contains.
+ */
+export function applySeasonFilters(
+  groups: [string, SeasonEntry[]][],
+  filters: SeasonFilters
+): [string, SeasonEntry[]][] {
+  const { obtained, rarity, styles } = filters
+  if (!obtained && rarity === null && styles.length === 0) return groups
+
+  const matches = (entry: SeasonEntry) => {
+    const variants = entryVariants(entry) as Array<{
+      obtained?: boolean
+      rarity?: number | null
+      style?: string | null
+    }>
+    if (variants.length === 0) return false
+
+    if (obtained === 'obtained' && !variants.every((v) => v.obtained)) return false
+    if (obtained === 'missing' && variants.every((v) => v.obtained)) return false
+    if (rarity !== null && !variants.some((v) => v.rarity === rarity)) return false
+    if (styles.length > 0 && !variants.some((v) => v.style && styles.includes(v.style)))
+      return false
+    return true
+  }
+
+  return groups
+    .map(([category, entries]) => [category, entries.filter(matches)] as [string, SeasonEntry[]])
+    .filter(([, entries]) => entries.length > 0)
+}
