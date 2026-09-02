@@ -201,29 +201,47 @@ export default function SeasonOutfitList({
         const { obtained, total } = countEntries(entries)
         const kinds = countEntryKinds(entries)
 
-        return (
-          <CardGrid
-            key={category}
-            columns="outfit"
-            header={
-              <CardGridHeader
-                title={
-                  <CategoryProgress
-                    isLoggedIn={isLoggedIn}
-                    obtained={obtained}
-                    obtainedOutfits={kinds.obtained.outfit}
-                    obtainedPieces={kinds.obtained.standalone}
-                    outfits={kinds.outfit}
-                    pieces={kinds.standalone}
-                    title={category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)}
-                    total={total}
-                  />
-                }
+        // Set cards and piece cards are different shapes — a set card carries a
+        // poster image and title block, a piece card is a small square — so they
+        // get a grid each rather than sharing one. In a single grid the column
+        // width is set by the widest card, which left every piece floating in an
+        // oversized cell. Each grid also uses its own family's preset: the wider
+        // `outfit` columns for sets, the denser `eureka` ones for pieces.
+        const setEntries = entries.filter((entry) => entry.kind === 'outfit')
+        const pieceEntries = entries.filter((entry) => entry.kind !== 'outfit')
+
+        const header = (
+          <CardGridHeader
+            title={
+              <CategoryProgress
+                isLoggedIn={isLoggedIn}
+                obtained={obtained}
+                obtainedOutfits={kinds.obtained.outfit}
+                obtainedPieces={kinds.obtained.standalone}
+                outfits={kinds.outfit}
+                pieces={kinds.standalone}
+                title={category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)}
+                total={total}
               />
             }
-          >
-            {entries.map(renderEntry)}
-          </CardGrid>
+          />
+        )
+
+        return (
+          <Stack key={category} spacing={2}>
+            {setEntries.length > 0 && (
+              <CardGrid columns="outfit" header={header}>
+                {setEntries.map(renderEntry)}
+              </CardGrid>
+            )}
+            {/* The header belongs to the category, not to either grid, so it
+                rides on whichever comes first. */}
+            {pieceEntries.length > 0 && (
+              <CardGrid columns="eureka" header={setEntries.length === 0 ? header : undefined}>
+                {pieceEntries.map(renderEntry)}
+              </CardGrid>
+            )}
+          </Stack>
         )
       })}
     </Stack>
