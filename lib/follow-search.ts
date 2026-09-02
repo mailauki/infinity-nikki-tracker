@@ -27,8 +27,12 @@ export function isSearchable(q: string): boolean {
 }
 
 // Case-insensitive substring match across both searchable profile fields.
-// Callers must guard with isSearchable(q) first — see its doc comment.
+// Trims `q` before escaping — the same normalization isSearchable uses — so
+// the two functions can never disagree about the same input (e.g. a trailing
+// space from mobile autocomplete can't sneak two literal spaces into the
+// filter and make an otherwise-valid search match nothing). Callers must
+// still guard with isSearchable(q) first — see its doc comment.
 export function buildProfileSearchFilter(q: string): string {
-  const safe = escapeFilterValue(q)
+  const safe = escapeFilterValue(q.trim())
   return `username.ilike.%${safe}%,display_name.ilike.%${safe}%`
 }

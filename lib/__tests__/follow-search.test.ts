@@ -66,6 +66,20 @@ describe('buildProfileSearchFilter', () => {
       expect(filter.includes(',display_name.ilike.%')).toBe(true)
     }
   )
+
+  // Regression test: buildProfileSearchFilter used to escape the raw
+  // (untrimmed) string while isSearchable trimmed first. A trailing space —
+  // common from mobile autocomplete — passed isSearchable's guard but built
+  // a filter requiring two literal spaces around the term, matching nothing.
+  it('trims surrounding whitespace before building the filter', () => {
+    expect(buildProfileSearchFilter('  nikki  ')).toBe(
+      'username.ilike.%nikki%,display_name.ilike.%nikki%'
+    )
+  })
+
+  it('produces the same filter regardless of surrounding whitespace', () => {
+    expect(buildProfileSearchFilter('nikki')).toBe(buildProfileSearchFilter('  nikki  '))
+  })
 })
 
 describe('isSearchable', () => {
@@ -79,4 +93,23 @@ describe('isSearchable', () => {
   it.each(['nikki', 'a_b'])('returns true for %j, which is non-empty after stripping', (input) => {
     expect(isSearchable(input)).toBe(true)
   })
+})
+
+describe('isSearchable and buildProfileSearchFilter agree on normalization', () => {
+  // Ties the two functions together: whenever isSearchable says a query is
+  // usable, the filter it builds must actually carry a non-empty term —
+  // never the degenerate `username.ilike.%%,...` that matches every row.
+  // This is what would have caught the two bugs above (drift on
+  // trimming, and drift on the stripped character set) without hardcoding
+  // either function's internals.
+  it.each(['  nikki  ', ' * ', '   ', 'a_b', ' a,b '])(
+    'when isSearchable(%j) is true, its filter has a non-empty term',
+    (input) => {
+      if (isSearchable(input)) {
+        const filter = buildProfileSearchFilter(input)
+        expect(filter).not.toBe('username.ilike.%%,display_name.ilike.%%')
+        expect(filter).not.toMatch(/ilike\.%%/)
+      }
+    }
+  )
 })
