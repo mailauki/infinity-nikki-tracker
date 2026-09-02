@@ -1,10 +1,12 @@
 import { Suspense } from 'react'
 import { getUserID } from '@/hooks/user'
+import { getPreferences } from '@/hooks/data/preferences'
 import OutfitDataProvider from '@/app/outfits/outfit-data-provider'
 import MakeupDataProvider from '@/app/makeup/makeup-data-provider'
 import { OutfitImageModeProvider } from '@/components/outfits/outfit-image-mode-context'
 import { MakeupImageModeProvider } from '@/components/makeup/makeup-image-mode-context'
 import { SortProvider } from '@/components/sort-context'
+import { SeasonFilterProvider } from './[slug]/season-filter-context'
 import SeasonsLoading from './loading'
 
 // Seasons render outfit and makeup cards, so they need the same providers the
@@ -19,13 +21,18 @@ import SeasonsLoading from './loading'
 // /api/makeup fetch on mount, which the provider already dedupes per session.
 async function SeasonProviders({ children }: { children: React.ReactNode }) {
   const userId = await getUserID()
+  const preferences = userId ? await getPreferences(userId) : undefined
 
   return (
     <SortProvider isLoggedIn={!!userId}>
       <OutfitDataProvider isLoggedIn={!!userId} userId={userId}>
         <MakeupDataProvider isLoggedIn={!!userId} userId={userId}>
           <OutfitImageModeProvider isLoggedIn={!!userId}>
-            <MakeupImageModeProvider isLoggedIn={!!userId}>{children}</MakeupImageModeProvider>
+            <MakeupImageModeProvider isLoggedIn={!!userId}>
+              <SeasonFilterProvider isLoggedIn={!!userId} preferences={preferences}>
+                {children}
+              </SeasonFilterProvider>
+            </MakeupImageModeProvider>
           </OutfitImageModeProvider>
         </MakeupDataProvider>
       </OutfitDataProvider>

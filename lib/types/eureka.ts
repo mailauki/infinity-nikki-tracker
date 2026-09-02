@@ -112,6 +112,15 @@ export type UserPreferences = Pick<
   | 'makeup_sort_axis'
   | 'makeup_density'
   | 'makeup_image_mode'
+  | 'season_hide_evolutions'
+  | 'season_hide_glowups'
+  | 'season_hide_pieces'
+  | 'season_hide_makeup'
+  | 'season_hide_base_sets'
+  | 'season_density'
+  | 'season_obtained_filter'
+  | 'season_rarity_filter'
+  | 'season_style_filter'
 >
 
 export type ColorTheme = 'default' | 'moonlight' | 'blossom' | 'forest'

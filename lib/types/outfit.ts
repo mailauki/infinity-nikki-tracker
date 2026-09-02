@@ -153,6 +153,7 @@ export type OutfitVariant = Pick<
   | 'alt_image_url'
   | 'default'
   | 'rarity'
+  | 'style'
   | 'seasons'
   | 'season_category'
 > & { obtained?: boolean }

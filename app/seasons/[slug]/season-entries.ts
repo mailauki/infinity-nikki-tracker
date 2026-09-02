@@ -2,6 +2,7 @@ import { MakeupSet, MakeupVariant, ObtainedMakeup } from '@/lib/types/makeup'
 import { Evolution, ObtainedOutfit, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { isEvolutionVisible, isGlowup } from '@/hooks/outfit'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
+import type { SortAxis, SortDir } from '@/components/sort-context'
 
 // The container set that holds individually-authored standalone pieces. Its
 // variants each carry their own season / season_category, so they are grouped
@@ -77,6 +78,58 @@ export function isEntryObtained(entry: SeasonEntry) {
  * set, which is a single card holding ten-odd variants. Use countEntries for a
  * single card's own progress (its variants are exactly what that card shows).
  */
+/**
+ * Sort the cards WITHIN each category, honouring the toolbar's sort axis and
+ * direction. Category sections keep their own order — only their contents move.
+ *
+ * Mirrors the outfits grid's comparator so the two pages agree on what each axis
+ * means: `desc` is newest / highest / most-complete first for date, rarity and
+ * progress, while `title` reads A-Z under `asc`. Ties break on id so the order is
+ * stable across renders.
+ *
+ * An entry's sortable fields come from the row it represents — a set card sorts
+ * on its set, a piece on its variant — so the three kinds interleave sensibly
+ * rather than clustering by kind.
+ */
+export function sortSeasonEntries(
+  groups: [string, SeasonEntry[]][],
+  sortAxis: SortAxis,
+  sortDir: SortDir
+): [string, SeasonEntry[]][] {
+  const row = (entry: SeasonEntry) =>
+    entry.kind === 'standalone' || entry.kind === 'makeup-standalone'
+      ? entry.variant
+      : (entry.evolution ?? entry.set)
+
+  const progress = (entry: SeasonEntry) => {
+    const variants = entryVariants(entry)
+    if (variants.length === 0) return 0
+    return variants.filter((v) => v.obtained).length / variants.length
+  }
+
+  const compare = (a: SeasonEntry, b: SeasonEntry) => {
+    const ra = row(a) as { id?: number | null; rarity?: number | null; title?: string | null }
+    const rb = row(b) as { id?: number | null; rarity?: number | null; title?: string | null }
+    let cmp = 0
+    switch (sortAxis) {
+      case 'rarity':
+        cmp = (ra.rarity ?? 0) - (rb.rarity ?? 0)
+        break
+      case 'progress':
+        cmp = progress(a) - progress(b)
+        break
+      case 'title':
+        cmp = (ra.title ?? '').localeCompare(rb.title ?? '')
+        break
+      default:
+        cmp = (ra.id ?? 0) - (rb.id ?? 0)
+    }
+    return (sortDir === 'asc' ? cmp : -cmp) || (ra.id ?? 0) - (rb.id ?? 0)
+  }
+
+  return groups.map(([category, entries]) => [category, [...entries].sort(compare)])
+}
+
 export function countEntryCards(entries: SeasonEntry[]) {
   return {
     total: entries.length,
@@ -366,4 +419,52 @@ export function groupSeasonEntries({
   }
 
   return [...groups.entries()]
+}
+
+/** The season page's non-visibility filter axes. Null / empty means "no filter". */
+export type SeasonFilters = {
+  obtained: 'obtained' | 'missing' | null
+  rarity: number | null
+  styles: string[]
+}
+
+/**
+ * Apply the obtained / rarity / style axes to already-grouped entries.
+ *
+ * These select WITHIN a kind, unlike the hide-flags which gate whole kinds, so
+ * they run over the grouped output rather than being threaded into the expansion
+ * functions — one predicate then covers outfit sets, outfit pieces and makeup
+ * pieces uniformly, and every count downstream follows because those counts
+ * already derive from this same entry list.
+ *
+ * An outfit set card matches on rarity/style if ANY variant it shows does: the
+ * card is one row, and hiding it because one of its ten variants disagrees would
+ * misrepresent what the set contains.
+ */
+export function applySeasonFilters(
+  groups: [string, SeasonEntry[]][],
+  filters: SeasonFilters
+): [string, SeasonEntry[]][] {
+  const { obtained, rarity, styles } = filters
+  if (!obtained && rarity === null && styles.length === 0) return groups
+
+  const matches = (entry: SeasonEntry) => {
+    const variants = entryVariants(entry) as Array<{
+      obtained?: boolean
+      rarity?: number | null
+      style?: string | null
+    }>
+    if (variants.length === 0) return false
+
+    if (obtained === 'obtained' && !variants.every((v) => v.obtained)) return false
+    if (obtained === 'missing' && variants.every((v) => v.obtained)) return false
+    if (rarity !== null && !variants.some((v) => v.rarity === rarity)) return false
+    if (styles.length > 0 && !variants.some((v) => v.style && styles.includes(v.style)))
+      return false
+    return true
+  }
+
+  return groups
+    .map(([category, entries]) => [category, entries.filter(matches)] as [string, SeasonEntry[]])
+    .filter(([, entries]) => entries.length > 0)
 }

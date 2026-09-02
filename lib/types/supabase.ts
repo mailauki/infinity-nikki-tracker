@@ -1454,6 +1454,15 @@ export type Database = {
           outfit_set_filter: string | null
           outfit_sort_axis: string | null
           outfit_style_filter: string | null
+          season_density: string | null
+          season_hide_base_sets: boolean
+          season_hide_evolutions: boolean
+          season_hide_glowups: boolean
+          season_hide_makeup: boolean
+          season_hide_pieces: boolean
+          season_obtained_filter: string | null
+          season_rarity_filter: string | null
+          season_style_filter: string | null
           show_by_color: boolean
           sort_order: string | null
           text_scale: string
@@ -1496,6 +1505,15 @@ export type Database = {
           outfit_set_filter?: string | null
           outfit_sort_axis?: string | null
           outfit_style_filter?: string | null
+          season_density?: string | null
+          season_hide_base_sets?: boolean
+          season_hide_evolutions?: boolean
+          season_hide_glowups?: boolean
+          season_hide_makeup?: boolean
+          season_hide_pieces?: boolean
+          season_obtained_filter?: string | null
+          season_rarity_filter?: string | null
+          season_style_filter?: string | null
           show_by_color?: boolean
           sort_order?: string | null
           text_scale?: string
@@ -1538,6 +1556,15 @@ export type Database = {
           outfit_set_filter?: string | null
           outfit_sort_axis?: string | null
           outfit_style_filter?: string | null
+          season_density?: string | null
+          season_hide_base_sets?: boolean
+          season_hide_evolutions?: boolean
+          season_hide_glowups?: boolean
+          season_hide_makeup?: boolean
+          season_hide_pieces?: boolean
+          season_obtained_filter?: string | null
+          season_rarity_filter?: string | null
+          season_style_filter?: string | null
           show_by_color?: boolean
           sort_order?: string | null
           text_scale?: string
