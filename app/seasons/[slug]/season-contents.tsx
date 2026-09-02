@@ -66,7 +66,7 @@ export default function SeasonContents({
   }
 
   return (
-    <SidebarBody>
+    <SidebarBody panelId="contents">
       <List>
         <Typography
           color="text.secondary"

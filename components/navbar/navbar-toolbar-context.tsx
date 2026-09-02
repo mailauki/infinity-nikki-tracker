@@ -30,6 +30,13 @@ type SidebarContextType = {
   hasBody: boolean
   registerBody: () => void
   unregisterBody: () => void
+  // Which panel is showing when a page mounts more than one <SidebarBody>. Most
+  // pages mount exactly one body and never pass a panelId, so it renders
+  // unconditionally (activePanel stays irrelevant to it) — this only matters for
+  // a page like /seasons/[slug] that mounts two (contents + filters) and needs
+  // opening one to replace the other rather than stacking both in the portal.
+  activePanel: string | null
+  setActivePanel: (panel: string | null) => void
 }
 
 type ToolbarContextType = {
@@ -80,6 +87,7 @@ export function DrawerStateProvider({
   const registerBody = React.useCallback(() => setBodyCount((n) => n + 1), [])
   const unregisterBody = React.useCallback(() => setBodyCount((n) => Math.max(0, n - 1)), [])
   const hasBody = bodyCount > 0
+  const [activePanel, setActivePanel] = React.useState<string | null>(null)
 
   const [toolbarTarget, setToolbarTarget] = React.useState<HTMLElement | null>(null)
   const [toolbarLeadTarget, setToolbarLeadTarget] = React.useState<HTMLElement | null>(null)
@@ -130,6 +138,8 @@ export function DrawerStateProvider({
           hasBody,
           registerBody,
           unregisterBody,
+          activePanel,
+          setActivePanel,
         }}
       >
         <ToolbarContext.Provider

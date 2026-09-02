@@ -46,7 +46,7 @@ import SeasonFilterBody from './season-filter-body'
 
 export default function FilterMenu() {
   const pathname = usePathname()
-  const { sidebarOpen, setSidebarOpen } = useSidebar()
+  const { sidebarOpen, setSidebarOpen, activePanel, setActivePanel } = useSidebar()
 
   // Close used by the Apply / Close buttons inside the panel body. This is a user
   // action, so it persists the sidebar's closed state (default persist behavior).
@@ -181,17 +181,31 @@ export default function FilterMenu() {
   }, [isMakeup, makeupDensity, selectedMakeupCategoryForReconcile, onMakeupFiltersChange])
 
   if (isSeasons) {
+    // The season page also mounts a "contents" panel (SeasonContents) in the same
+    // sidebar, so opening the filter panel here has to claim activePanel — sharing
+    // the same "am I the open one" question the sidebarOpen check already answers
+    // for whether the sidebar itself is open at all.
+    const filtersOpen = sidebarOpen && activePanel === 'filters'
+    const toggleFilters = () => {
+      if (filtersOpen) {
+        setSidebarOpen(false)
+      } else {
+        setActivePanel('filters')
+        setSidebarOpen(true)
+      }
+    }
+
     return (
       <>
         <IconButton
-          aria-expanded={sidebarOpen}
-          aria-label={sidebarOpen ? 'Hide filters' : 'Show filters'}
-          color={sidebarOpen ? 'primary' : 'default'}
-          onClick={() => setSidebarOpen(!sidebarOpen)}
+          aria-expanded={filtersOpen}
+          aria-label={filtersOpen ? 'Hide filters' : 'Show filters'}
+          color={filtersOpen ? 'primary' : 'default'}
+          onClick={toggleFilters}
         >
           <FilterList />
         </IconButton>
-        <SidebarBody>
+        <SidebarBody panelId="filters">
           <SeasonFilterBody />
         </SidebarBody>
       </>
