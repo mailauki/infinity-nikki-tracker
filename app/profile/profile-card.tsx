@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Alert,
   alpha,
@@ -74,6 +74,16 @@ export default function ProfileCard({
   // following/unfollowing THIS profile is tracked in the shared parent and
   // handed down as a delta rather than lifting all of FollowCountsRow's state.
   const [followerDelta, setFollowerDelta] = useState(0)
+
+  // This card is reconciled in place across a client-side navigation between
+  // two profiles (the follow modal's rows link straight to /u/[username]), so
+  // the delta has to be cleared when the profile changes. FollowCountsRow
+  // re-seeds its own counts from the new props the same way; without this the
+  // +1 earned on the previous profile would still be added to this one's
+  // follower count.
+  useEffect(() => {
+    setFollowerDelta(0)
+  }, [profileId])
 
   const preset = COLOR_THEME_PRESETS[colorTheme]
   const gradient = (surface: string) =>
