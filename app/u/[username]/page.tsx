@@ -16,6 +16,13 @@ import { getSeasons } from '@/hooks/data/seasons'
 import { getRecentObtained } from '@/hooks/data/obtained-eureka'
 import { getRecentObtainedMakeup } from '@/hooks/data/obtained-makeup'
 import { getRecentObtainedOutfit } from '@/hooks/data/obtained-outfit'
+import {
+  getFollowCounts,
+  getFollowers,
+  getFollowing,
+  getIsFollowing,
+  getViewerFollowingIds,
+} from '@/hooks/data/follows'
 import ProfileCard from '@/app/profile/profile-card'
 import ProfileStats from '@/app/profile/profile-stats'
 import ProfileTabs from '@/app/profile/profile-tabs'
@@ -60,6 +67,16 @@ async function ProfileView({ params }: Props) {
   const viewerId = await getUserID()
   const isOwner = viewerId === profile.id
   const role = isOwner ? await getUserRole() : null
+
+  // Follow data for the card and its modal. Parallel — none depends on another,
+  // and the page already awaits ~10 collection queries sequentially.
+  const [followCounts, following, followers, isFollowing, viewerFollowingIds] = await Promise.all([
+    getFollowCounts(profile.id),
+    getFollowing(profile.id),
+    getFollowers(profile.id),
+    getIsFollowing(viewerId, profile.id),
+    getViewerFollowingIds(viewerId),
+  ])
 
   // Every collection query is scoped to the PROFILE OWNER, not the viewer.
   // getEurekaSets/getOutfitSets default to the signed-in user, so without the
@@ -147,9 +164,15 @@ async function ProfileView({ params }: Props) {
           avatar_url={profile.avatar_url}
           banner_url={profile.banner_url}
           displayName={profile.display_name}
+          followers={followers}
+          followersCount={followCounts.followers}
+          following={following}
+          followingCount={followCounts.following}
+          isFollowing={isFollowing}
           isOwner={isOwner}
           isPremium={isPremium}
           loadError={false}
+          profileId={profile.id}
           stats={
             <ProfileStats
               eurekaSets={eurekaSets || []}
@@ -159,6 +182,8 @@ async function ProfileView({ params }: Props) {
             />
           }
           username={profile.username}
+          viewerFollowingIds={viewerFollowingIds}
+          viewerId={viewerId}
         />
       }
     />
