@@ -22,9 +22,9 @@ export type OutfitSetListEntry = {
   isGlowup?: boolean
 }
 
-// A single card in a category section. Outfit sets keep the existing shape
-// (base set or one evolution); standalone pieces and makeup add two more kinds
-// so one section can render all three.
+// A single card in a category section. Outfit sets keep the existing shape (base
+// set or one evolution); outfit and makeup pieces add a kind each, so one
+// section can render all three.
 export type SeasonEntry =
   | ({ kind: 'outfit' } & OutfitSetListEntry)
   | {
@@ -32,16 +32,10 @@ export type SeasonEntry =
       key: string
       variant: OutfitVariant
     }
-  | {
-      kind: 'makeup'
-      key: string
-      set: MakeupSet
-      evolution: MakeupSet | null
-      variants: MakeupVariant[]
-    }
-  // An individually-authored makeup piece. Like a standalone outfit variant it
-  // carries its own season / season_category and is grouped per-variant, since
-  // the container set it lives in has neither.
+  // A makeup piece. Both individually-authored pieces and the members of a
+  // makeup set land here: a set is five separate wearables (base makeup,
+  // contact lenses, eyebrows, eyelashes, lips), so a season lists and counts
+  // them as pieces rather than as a single set card.
   | {
       kind: 'makeup-standalone'
       key: string
@@ -90,20 +84,17 @@ export function countEntryKinds(entries: SeasonEntry[]) {
 
   const outfit = counts('outfit')
   const outfitPiece = counts('standalone')
-  const makeup = counts('makeup')
   const makeupPiece = counts('makeup-standalone')
 
   return {
-    // Plain counts, kept as numbers so existing call sites read unchanged.
+    // Outfit-set cards (base states, evolutions, glow-ups).
     outfit: outfit.total,
-    // Both flavours of individually-authored piece — outfit and makeup — count
-    // as pieces, so callers get one number for the "pieces" readout.
+    // Every individual wearable — standalone outfit variants plus makeup, whether
+    // individually authored or a member of a makeup set — counts as a piece.
     standalone: outfitPiece.total + makeupPiece.total,
-    makeup: makeup.total,
     obtained: {
       outfit: outfit.obtained,
       standalone: outfitPiece.obtained + makeupPiece.obtained,
-      makeup: makeup.obtained,
     },
   }
 }
@@ -176,34 +167,37 @@ export function expandSet(
 
 // Makeup mirrors the outfit model — a base set plus one row per evolution — but
 // has no glow-up concept, so only the evolution and base-set toggles apply.
+//
+// Each state is expanded into one entry PER VARIANT rather than a single card
+// for the whole set. A makeup set is five separate wearables (base makeup,
+// contact lenses, eyebrows, eyelashes, lips), and a season lists what you can
+// collect — so they are shown and counted the same way standalone makeup pieces
+// are, as five pieces rather than one set.
+//
+// `set.makeup_variants` on a base row also carries every evolution's variants
+// (see createMakeupSet), so each state is filtered to its own `makeup_set` slug.
+// Without that the base state would re-emit its evolutions' pieces and every
+// count would run high.
 function expandMakeupSet(
   set: MakeupSet,
   hideEvolutions: boolean,
   hideBaseSets = false
 ): SeasonEntry[] {
-  const entries: SeasonEntry[] = hideBaseSets
-    ? []
-    : [
-        {
-          kind: 'makeup',
-          key: `makeup:${set.slug}`,
-          set,
-          evolution: null,
-          variants: set.makeup_variants,
-        },
-      ]
+  const asPieces = (stateSlug: string, variants: MakeupVariant[]): SeasonEntry[] =>
+    variants
+      .filter((variant) => variant.makeup_set === stateSlug)
+      .map((variant) => ({
+        kind: 'makeup-standalone' as const,
+        key: `makeup-piece:${variant.slug}`,
+        variant,
+      }))
+
+  const entries: SeasonEntry[] = hideBaseSets ? [] : asPieces(set.slug, set.makeup_variants)
 
   if (hideEvolutions) return entries
 
   for (const evolution of set.evolutions) {
-    if (evolution.makeup_variants.length === 0) continue
-    entries.push({
-      kind: 'makeup',
-      key: `makeup:${evolution.slug}`,
-      set,
-      evolution,
-      variants: evolution.makeup_variants,
-    })
+    entries.push(...asPieces(evolution.slug, evolution.makeup_variants))
   }
 
   return entries

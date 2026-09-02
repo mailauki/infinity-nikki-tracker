@@ -91,8 +91,8 @@ export default function SeasonOverview({
             <Stat label="Categories done" value={`${completeCategories}/${groups.length}`} />
           )}
           {!isLoggedIn && <Stat label="Categories" value={String(groups.length)} />}
-          <Stat label="Outfit sets" value={String(kinds.outfit)} />
-          <Stat label="Pieces" value={String(kinds.standalone + kinds.makeup)} />
+          <Stat label="Outfits" value={String(kinds.outfit)} />
+          <Stat label="Pieces" value={String(kinds.standalone)} />
         </SimpleGrid>
 
         {isLoggedIn && (

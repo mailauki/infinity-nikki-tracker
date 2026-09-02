@@ -81,25 +81,32 @@ export default function SeasonsContent({
     outfitSets.find((set) => set.slug === STANDALONE_SLUG)?.outfit_variants ?? []
 
   // Makeup sets carry their own seasons / season_category, exactly like outfit
-  // sets, and the season detail page counts them alongside them — so the card
-  // chips have to as well or the index undercounts what the season opens to.
-  // getMakeupSets() folds evolutions into their base set, so this counts base
-  // sets only, matching how outfit sets are counted below.
-  const makeupSetsIn = (seasonSlug: string, categorySlug: string) =>
-    makeupSets.filter(
-      (set) =>
-        set.slug !== STANDALONE_MAKEUP_SLUG &&
-        set.seasons === seasonSlug &&
-        set.season_category === categorySlug
-    ).length
+  // sets, and the season detail page counts them — so the card chips have to as
+  // well or the index undercounts what the season opens to.
+  //
+  // A makeup set counts as its individual wearables rather than as one set: it
+  // is five separate pieces (base makeup, contact lenses, eyebrows, eyelashes,
+  // lips), and the detail page lists them as five cards. `makeup_variants` on a
+  // base row already includes every evolution's variants (see createMakeupSet),
+  // so this sums the whole set graph in one go — which is what the detail page
+  // shows once the evolution toggles are off.
+  const makeupPiecesIn = (seasonSlug: string, categorySlug: string) =>
+    makeupSets
+      .filter(
+        (set) =>
+          set.slug !== STANDALONE_MAKEUP_SLUG &&
+          set.seasons === seasonSlug &&
+          set.season_category === categorySlug
+      )
+      .reduce((sum, set) => sum + set.makeup_variants.length, 0)
 
-  const setsIn = (seasonSlug: string, categorySlug: string) =>
+  const outfitsIn = (seasonSlug: string, categorySlug: string) =>
     outfitSets.filter(
       (set) =>
         set.slug !== STANDALONE_SLUG &&
         set.seasons === seasonSlug &&
         set.season_category === categorySlug
-    ).length + makeupSetsIn(seasonSlug, categorySlug)
+    ).length
 
   // Standalone makeup pieces live in their own container set, which carries no
   // season — each variant does — so they are counted per-variant just like the
@@ -113,7 +120,8 @@ export default function SeasonsContent({
     ).length +
     standaloneMakeupVariants.filter(
       (variant) => variant.seasons === seasonSlug && variant.season_category === categorySlug
-    ).length
+    ).length +
+    makeupPiecesIn(seasonSlug, categorySlug)
 
   // A season's categories are the distinct season_category values across all
   // three sources: the outfit sets assigned to that season, the standalone
@@ -171,7 +179,7 @@ export default function SeasonsContent({
     }
 
     return categories.map((slug) => {
-      const sets = setsIn(seasonSlug, slug)
+      const outfits = outfitsIn(seasonSlug, slug)
       const pieces = piecesIn(seasonSlug, slug)
 
       return (
@@ -180,13 +188,13 @@ export default function SeasonsContent({
           disableGutters
           secondaryAction={
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              {sets > 0 && (
+              {outfits > 0 && (
                 <Typography
-                  aria-label={`${sets} ${sets === 1 ? 'set' : 'sets'}`}
+                  aria-label={`${outfits} ${outfits === 1 ? 'outfit' : 'outfits'}`}
                   size="small"
                   variant="body"
                 >
-                  {sets} <Workspaces color="action" fontSize="inherit" sx={{ mb: 0.3 }} />
+                  {outfits} <Workspaces color="action" fontSize="inherit" sx={{ mb: 0.3 }} />
                 </Typography>
               )}
               {pieces > 0 && (
