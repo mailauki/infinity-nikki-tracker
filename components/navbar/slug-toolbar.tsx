@@ -6,14 +6,11 @@ import { useParams, usePathname } from 'next/navigation'
 import { ChevronLeft, Edit, InfoOutlined } from '@mui/icons-material'
 import ImageModeButton from '@/components/navbar/image-mode-button'
 import MakeupImageModeButton from '@/components/makeup/makeup-image-mode-button'
-import { useSeasonFilterOptional } from '@/app/seasons/[slug]/season-filter-context'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
-import SeasonVisibilityMenu from '@/app/seasons/[slug]/season-visibility-menu'
 
 export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname()
   const { slug } = useParams()
-  const seasonFilter = useSeasonFilterOptional()
   // The details sidebar toggle only shows once a page has mounted a <SidebarBody>
   // (e.g. the outfit set-detail card) — self-activating and inert elsewhere.
   const { sidebarOpen, setSidebarOpen, hasBody } = useSidebar()
@@ -48,7 +45,6 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
         </IconButton>
       }
     >
-      {seasonFilter && <SeasonVisibilityMenu />}
       {showImageSwap && (isMakeupSlug ? <MakeupImageModeButton /> : <ImageModeButton />)}
       {isAdmin && (
         <IconButton aria-label="Edit in admin" component="a" href={`/admin/${path}/edit/${slug}`}>

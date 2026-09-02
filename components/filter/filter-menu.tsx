@@ -42,6 +42,7 @@ import GlowupToggle from './glowup-toggle'
 import SortAxisToggle from './sort-axis-toggle'
 import StyleLabelSelect from './style-label-select'
 import ToggleGroupLabel from '../forms/toggle-group-label'
+import SeasonFilterBody from './season-filter-body'
 
 export default function FilterMenu() {
   const pathname = usePathname()
@@ -128,6 +129,7 @@ export default function FilterMenu() {
 
   const isOutfits = pathname.startsWith('/outfits')
   const isMakeup = pathname.startsWith('/makeup')
+  const isSeasons = pathname.startsWith('/seasons/')
 
   // Category filtering only applies in compact view. Density can settle on
   // 'standard' after the toggle handler runs (e.g. hydrated from saved
@@ -177,6 +179,24 @@ export default function FilterMenu() {
       onMakeupFiltersChange({ selectedMakeupCategory: [] })
     }
   }, [isMakeup, makeupDensity, selectedMakeupCategoryForReconcile, onMakeupFiltersChange])
+
+  if (isSeasons) {
+    return (
+      <>
+        <IconButton
+          aria-expanded={sidebarOpen}
+          aria-label={sidebarOpen ? 'Hide filters' : 'Show filters'}
+          color={sidebarOpen ? 'primary' : 'default'}
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+          <FilterList />
+        </IconButton>
+        <SidebarBody>
+          <SeasonFilterBody />
+        </SidebarBody>
+      </>
+    )
+  }
 
   if (isOutfits) {
     const {
