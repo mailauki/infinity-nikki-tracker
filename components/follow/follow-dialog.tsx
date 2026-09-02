@@ -6,6 +6,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  IconButton,
   InputAdornment,
   Stack,
   Tab,
@@ -13,7 +14,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { Search } from '@mui/icons-material'
+import { Close, Search } from '@mui/icons-material'
 import { createClient } from '@/lib/supabase/client'
 import { buildProfileSearchFilter, isSearchable } from '@/lib/follow-search'
 import type { FollowProfile } from '@/lib/types/follows'
@@ -161,6 +162,20 @@ export default function FollowDialog({
           slotProps={{
             htmlInput: { 'aria-label': 'Search profiles' },
             input: {
+              // Gated on the raw query, not `isSearching` (which is trimmed): a
+              // field holding only spaces still looks non-empty and needs clearing.
+              endAdornment: query ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="Clear search"
+                    edge="end"
+                    size="small"
+                    onClick={() => setQuery('')}
+                  >
+                    <Close fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
               startAdornment: (
                 <InputAdornment position="start">
                   <Search fontSize="small" />

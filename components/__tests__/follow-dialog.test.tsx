@@ -200,4 +200,37 @@ describe('FollowDialog', () => {
     expect(screen.getByText('@bob')).toBeInTheDocument()
   })
 
+  it('shows no clear button until the field has a query', () => {
+    setup()
+    expect(screen.queryByRole('button', { name: /clear search/i })).not.toBeInTheDocument()
+  })
+
+  it('clears the query and returns to the tab list when the clear button is used', async () => {
+    searchResults.mockResolvedValue({ data: [BOB], error: null })
+    const user = userEvent.setup()
+    setup()
+
+    const input = screen.getByRole('textbox', { name: /search/i })
+    await user.type(input, 'bob')
+    await screen.findByText('@bob')
+
+    await user.click(screen.getByRole('button', { name: /clear search/i }))
+
+    expect(input).toHaveValue('')
+    // Back to the Following tab, and the clear button is gone again.
+    expect(await screen.findByText('@alice')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /clear search/i })).not.toBeInTheDocument()
+  })
+
+  // isSearching is derived from the TRIMMED query, so gating the button on it
+  // would leave a spaces-only field looking non-empty with no way to clear it.
+  it('offers the clear button for a whitespace-only query', async () => {
+    const user = userEvent.setup()
+    setup()
+
+    await user.type(screen.getByRole('textbox', { name: /search/i }), '   ')
+
+    expect(screen.getByRole('button', { name: /clear search/i })).toBeInTheDocument()
+  })
+
 })
