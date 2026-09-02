@@ -47,7 +47,7 @@ export default function MakeupSetCard({
       rarity={row.rarity}
       showAlt={mode === 'alt'}
       title={row.title}
-      topLeft={<ToggleIcon image="/icons/makeup.png" size="xs" title="makeup" />}
+      topLeft={<ToggleIcon image="/icons/categories/full-makeup.png" size="xs" title="makeup" />}
       topRight={
         isLoggedIn ? <ProgressChip obtained={obtained} total={total} variant="parts" /> : undefined
       }

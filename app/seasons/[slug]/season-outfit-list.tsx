@@ -10,6 +10,7 @@ import { percent } from '@/hooks/count-obtained'
 import OutfitSetCard from '@/app/outfits/outfit-set-card'
 import OutfitVariantCard from '@/app/outfits/outfit-variant-card'
 import MakeupSetCard from './makeup-set-item'
+import MakeupPieceCard from './makeup-piece-item'
 import { useSeasonFilter } from './season-filter-context'
 import {
   countEntries,
@@ -132,12 +133,14 @@ export default function SeasonOutfitList({
   seasonSets,
   standaloneVariants,
   makeupSets,
+  seasonSlug,
   seasonCategories,
   isLoggedIn,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
+  seasonSlug: string
   seasonCategories: SeasonCategory[]
   isLoggedIn: boolean
 }) {
@@ -154,6 +157,7 @@ export default function SeasonOutfitList({
     seasonSets,
     standaloneVariants,
     makeupSets,
+    seasonSlug,
     hideEvolutions,
     hideGlowups,
     hidePieces,
@@ -171,6 +175,10 @@ export default function SeasonOutfitList({
       return (
         <OutfitVariantCard key={entry.key} isLoggedIn={isLoggedIn} outfitVariant={entry.variant} />
       )
+    }
+
+    if (entry.kind === 'makeup-standalone') {
+      return <MakeupPieceCard key={entry.key} variant={entry.variant} />
     }
 
     if (entry.kind === 'makeup') {

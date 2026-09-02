@@ -15,10 +15,12 @@ export default function SeasonProgress({
   seasonSets,
   standaloneVariants,
   makeupSets,
+  seasonSlug,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
+  seasonSlug: string
 }) {
   const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
@@ -27,6 +29,7 @@ export default function SeasonProgress({
     seasonSets,
     standaloneVariants,
     makeupSets,
+    seasonSlug,
     hideEvolutions,
     hideGlowups,
     hidePieces,

@@ -42,11 +42,13 @@ export default function SeasonOverview({
   seasonSets,
   standaloneVariants,
   makeupSets,
+  seasonSlug,
   isLoggedIn,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
+  seasonSlug: string
   isLoggedIn: boolean
 }) {
   const { obtainedOutfit } = useOutfitData()
@@ -56,6 +58,7 @@ export default function SeasonOverview({
     seasonSets,
     standaloneVariants,
     makeupSets,
+    seasonSlug,
     hideEvolutions,
     hideGlowups,
     hidePieces,

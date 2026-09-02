@@ -26,6 +26,7 @@ import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
 import { ViewAllButton } from '@/components/view-all-button'
 import { STANDALONE_SLUG } from '@/app/seasons/[slug]/season-entries'
+import { STANDALONE_MAKEUP_SLUG } from '@/hooks/makeup'
 import { Circle, Workspaces } from '@mui/icons-material'
 
 // Mirrors the row skeleton in ./loading.tsx so a card's categories keep the
@@ -86,7 +87,10 @@ export default function SeasonsContent({
   // sets only, matching how outfit sets are counted below.
   const makeupSetsIn = (seasonSlug: string, categorySlug: string) =>
     makeupSets.filter(
-      (set) => set.seasons === seasonSlug && set.season_category === categorySlug
+      (set) =>
+        set.slug !== STANDALONE_MAKEUP_SLUG &&
+        set.seasons === seasonSlug &&
+        set.season_category === categorySlug
     ).length
 
   const setsIn = (seasonSlug: string, categorySlug: string) =>
@@ -97,8 +101,17 @@ export default function SeasonsContent({
         set.season_category === categorySlug
     ).length + makeupSetsIn(seasonSlug, categorySlug)
 
+  // Standalone makeup pieces live in their own container set, which carries no
+  // season — each variant does — so they are counted per-variant just like the
+  // outfit pieces above.
+  const standaloneMakeupVariants =
+    makeupSets.find((set) => set.slug === STANDALONE_MAKEUP_SLUG)?.makeup_variants ?? []
+
   const piecesIn = (seasonSlug: string, categorySlug: string) =>
     standaloneVariants.filter(
+      (variant) => variant.seasons === seasonSlug && variant.season_category === categorySlug
+    ).length +
+    standaloneMakeupVariants.filter(
       (variant) => variant.seasons === seasonSlug && variant.season_category === categorySlug
     ).length
 
@@ -117,7 +130,12 @@ export default function SeasonsContent({
         ...standaloneVariants
           .filter((variant) => variant.seasons === seasonSlug)
           .map((variant) => variant.season_category),
-        ...makeupSets.filter((set) => set.seasons === seasonSlug).map((set) => set.season_category),
+        ...makeupSets
+          .filter((set) => set.slug !== STANDALONE_MAKEUP_SLUG && set.seasons === seasonSlug)
+          .map((set) => set.season_category),
+        ...standaloneMakeupVariants
+          .filter((variant) => variant.seasons === seasonSlug)
+          .map((variant) => variant.season_category),
       ]).values(),
     ].filter((slug): slug is string => Boolean(slug))
 

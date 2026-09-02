@@ -1,6 +1,7 @@
 import { MakeupSet, MakeupVariant } from '@/lib/types/makeup'
 import { Evolution, ObtainedOutfit, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { isEvolutionVisible, isGlowup } from '@/hooks/outfit'
+import { isStandaloneMakeupSet } from '@/hooks/makeup'
 
 // The container set that holds individually-authored standalone pieces. Its
 // variants each carry their own season / season_category, so they are grouped
@@ -38,10 +39,18 @@ export type SeasonEntry =
       evolution: MakeupSet | null
       variants: MakeupVariant[]
     }
+  // An individually-authored makeup piece. Like a standalone outfit variant it
+  // carries its own season / season_category and is grouped per-variant, since
+  // the container set it lives in has neither.
+  | {
+      kind: 'makeup-standalone'
+      key: string
+      variant: MakeupVariant
+    }
 
 /** Every variant a row counts toward its progress chip, regardless of kind. */
 export function entryVariants(entry: SeasonEntry): { obtained?: boolean }[] {
-  if (entry.kind === 'standalone') return [entry.variant]
+  if (entry.kind === 'standalone' || entry.kind === 'makeup-standalone') return [entry.variant]
   return entry.variants
 }
 
@@ -80,17 +89,20 @@ export function countEntryKinds(entries: SeasonEntry[]) {
   }
 
   const outfit = counts('outfit')
-  const standalone = counts('standalone')
+  const outfitPiece = counts('standalone')
   const makeup = counts('makeup')
+  const makeupPiece = counts('makeup-standalone')
 
   return {
     // Plain counts, kept as numbers so existing call sites read unchanged.
     outfit: outfit.total,
-    standalone: standalone.total,
+    // Both flavours of individually-authored piece — outfit and makeup — count
+    // as pieces, so callers get one number for the "pieces" readout.
+    standalone: outfitPiece.total + makeupPiece.total,
     makeup: makeup.total,
     obtained: {
       outfit: outfit.obtained,
-      standalone: standalone.obtained,
+      standalone: outfitPiece.obtained + makeupPiece.obtained,
       makeup: makeup.obtained,
     },
   }
@@ -209,6 +221,7 @@ export function groupSeasonEntries({
   seasonSets,
   standaloneVariants,
   makeupSets,
+  seasonSlug,
   hideEvolutions,
   hideGlowups,
   hidePieces = false,
@@ -219,6 +232,10 @@ export function groupSeasonEntries({
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
+  // Which season is being grouped. Standalone makeup pieces are matched against
+  // it per-variant; omit it to skip them entirely (the seasons index, which
+  // counts sets rather than expanding a single season).
+  seasonSlug?: string
   hideEvolutions: boolean
   hideGlowups: boolean
   // Drops the base state of every set (outfit and makeup), leaving only
@@ -273,7 +290,34 @@ export function groupSeasonEntries({
 
   if (!hideMakeup) {
     for (const set of makeupSets) {
+      // The standalone-makeup container has no season of its own — each of its
+      // variants carries one — so it is grouped per-variant below rather than
+      // expanded as a set. Expanding it here would file every piece in the
+      // season under one card in the "Other" bucket.
+      if (isStandaloneMakeupSet(set)) continue
       push(set.season_category, expandMakeupSet(set, hideEvolutions, hideBaseSets))
+    }
+  }
+
+  // Standalone makeup pieces, matched to this season the same way standalone
+  // outfit variants are: on the variant's own columns. Gated on `hidePieces`
+  // rather than `hideMakeup` — they are individual pieces, and the pieces
+  // toggle is what a reader expects to control them.
+  //
+  // `makeupSets` is already scoped to this season by the caller, but the
+  // container set is not (it has no season), so it survives that filter with
+  // every piece in the game inside it. Re-filter per variant here.
+  const standaloneMakeupVariants = seasonSlug
+    ? (makeupSets.find(isStandaloneMakeupSet)?.makeup_variants ?? []).filter(
+        (variant) => variant.seasons === seasonSlug
+      )
+    : []
+
+  if (!hidePieces) {
+    for (const variant of standaloneMakeupVariants) {
+      push(variant.season_category, [
+        { kind: 'makeup-standalone', key: `makeup-piece:${variant.slug}`, variant },
+      ])
     }
   }
 
