@@ -9,7 +9,7 @@ import ProgressChip from '@/components/progress-chip'
 import { percent } from '@/hooks/count-obtained'
 import OutfitSetCard from '@/app/outfits/outfit-set-card'
 import OutfitVariantCard from '@/app/outfits/outfit-variant-card'
-import MakeupPieceCard from './makeup-piece-item'
+import MakeupVariantCard from '@/app/makeup/makeup-variant-card'
 import { useSeasonFilter } from './season-filter-context'
 import {
   countEntries,
@@ -179,7 +179,16 @@ export default function SeasonOutfitList({
     }
 
     if (entry.kind === 'makeup-standalone') {
-      return <MakeupPieceCard key={entry.key} variant={entry.variant} />
+      // The same card the /makeup compact view renders, so a makeup piece looks
+      // and behaves identically in both places — including a working obtained
+      // toggle, which the seasons layout's MakeupDataProvider backs.
+      return (
+        <MakeupVariantCard
+          key={entry.key}
+          isLoggedIn={isLoggedIn}
+          makeupVariant={entry.variant}
+        />
+      )
     }
 
     const { obtained, total } = countEntries([entry])
