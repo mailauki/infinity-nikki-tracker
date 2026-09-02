@@ -13,6 +13,7 @@ import OutfitSetCard from '@/app/outfits/outfit-set-card'
 import OutfitVariantCard from '@/app/outfits/outfit-variant-card'
 import MakeupVariantCard from '@/app/makeup/makeup-variant-card'
 import { useSeasonFilter } from './season-filter-context'
+import { useSortOrder } from '@/components/sort-context'
 import {
   applySeasonFilters,
   countEntries,
@@ -21,6 +22,7 @@ import {
   groupSeasonEntries,
   OTHER_CATEGORY,
   SeasonEntry,
+  sortSeasonEntries,
 } from './season-entries'
 
 /** Anchor id for a category's section. Shared with the contents sidebar so the
@@ -102,6 +104,7 @@ export default function SeasonOutfitList({
     useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
   const { obtainedMakeup } = useMakeupData()
+  const { sortAxis, sortDir } = useSortOrder()
 
   const categoryTitle = (categorySlug: string) =>
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
@@ -112,7 +115,8 @@ export default function SeasonOutfitList({
   // entries, so a header always describes what is shown — and a category every
   // one of whose entries fails the active filter drops out of both the grid and
   // the contents sidebar, which derives from this same call.
-  const categoryGroups = applySeasonFilters(
+  const categoryGroups = sortSeasonEntries(
+    applySeasonFilters(
     groupSeasonEntries({
       seasonSets,
       standaloneVariants,
@@ -125,8 +129,11 @@ export default function SeasonOutfitList({
       hideBaseSets,
       obtainedOutfit,
       obtainedMakeup,
-    }),
-    filters
+      }),
+      filters
+    ),
+    sortAxis,
+    sortDir
   )
 
   if (!categoryGroups.length) {

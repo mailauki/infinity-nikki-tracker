@@ -2,6 +2,7 @@ import { MakeupSet, MakeupVariant, ObtainedMakeup } from '@/lib/types/makeup'
 import { Evolution, ObtainedOutfit, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { isEvolutionVisible, isGlowup } from '@/hooks/outfit'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
+import type { SortAxis, SortDir } from '@/components/sort-context'
 
 // The container set that holds individually-authored standalone pieces. Its
 // variants each carry their own season / season_category, so they are grouped
@@ -77,6 +78,58 @@ export function isEntryObtained(entry: SeasonEntry) {
  * set, which is a single card holding ten-odd variants. Use countEntries for a
  * single card's own progress (its variants are exactly what that card shows).
  */
+/**
+ * Sort the cards WITHIN each category, honouring the toolbar's sort axis and
+ * direction. Category sections keep their own order — only their contents move.
+ *
+ * Mirrors the outfits grid's comparator so the two pages agree on what each axis
+ * means: `desc` is newest / highest / most-complete first for date, rarity and
+ * progress, while `title` reads A-Z under `asc`. Ties break on id so the order is
+ * stable across renders.
+ *
+ * An entry's sortable fields come from the row it represents — a set card sorts
+ * on its set, a piece on its variant — so the three kinds interleave sensibly
+ * rather than clustering by kind.
+ */
+export function sortSeasonEntries(
+  groups: [string, SeasonEntry[]][],
+  sortAxis: SortAxis,
+  sortDir: SortDir
+): [string, SeasonEntry[]][] {
+  const row = (entry: SeasonEntry) =>
+    entry.kind === 'standalone' || entry.kind === 'makeup-standalone'
+      ? entry.variant
+      : (entry.evolution ?? entry.set)
+
+  const progress = (entry: SeasonEntry) => {
+    const variants = entryVariants(entry)
+    if (variants.length === 0) return 0
+    return variants.filter((v) => v.obtained).length / variants.length
+  }
+
+  const compare = (a: SeasonEntry, b: SeasonEntry) => {
+    const ra = row(a) as { id?: number | null; rarity?: number | null; title?: string | null }
+    const rb = row(b) as { id?: number | null; rarity?: number | null; title?: string | null }
+    let cmp = 0
+    switch (sortAxis) {
+      case 'rarity':
+        cmp = (ra.rarity ?? 0) - (rb.rarity ?? 0)
+        break
+      case 'progress':
+        cmp = progress(a) - progress(b)
+        break
+      case 'title':
+        cmp = (ra.title ?? '').localeCompare(rb.title ?? '')
+        break
+      default:
+        cmp = (ra.id ?? 0) - (rb.id ?? 0)
+    }
+    return (sortDir === 'asc' ? cmp : -cmp) || (ra.id ?? 0) - (rb.id ?? 0)
+  }
+
+  return groups.map(([category, entries]) => [category, [...entries].sort(compare)])
+}
+
 export function countEntryCards(entries: SeasonEntry[]) {
   return {
     total: entries.length,

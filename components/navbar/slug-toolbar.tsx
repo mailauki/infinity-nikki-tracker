@@ -6,6 +6,7 @@ import { useParams, usePathname } from 'next/navigation'
 import { ChevronLeft, Edit, InfoOutlined, Toc } from '@mui/icons-material'
 import ImageModeButton from '@/components/navbar/image-mode-button'
 import MakeupImageModeButton from '@/components/makeup/makeup-image-mode-button'
+import SeasonImageModeButton from '@/components/navbar/season-image-mode-button'
 import { SortButton } from '@/components/navbar/appbar-actions'
 import FilterMenu from '@/components/filter/filter-menu'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
@@ -49,6 +50,13 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
       ? `${pathname.split('/')[1]}`
       : pathname.split('/').slice(1, 3).join('/')
 
+  // A season page renders outfit AND makeup cards together, and each domain has
+  // its own image-mode context — so it needs the button that drives both, not
+  // the outfit-only one, which left every makeup piece on its main image.
+  let imageSwapButton = <ImageModeButton />
+  if (seasonFilter) imageSwapButton = <SeasonImageModeButton />
+  else if (isMakeupSlug) imageSwapButton = <MakeupImageModeButton />
+
   return (
     <ToolbarSlot
       lead={
@@ -57,7 +65,7 @@ export default function SlugToolBar({ isAdmin = false }: { isAdmin?: boolean }) 
         </IconButton>
       }
     >
-      {showImageSwap && (isMakeupSlug ? <MakeupImageModeButton /> : <ImageModeButton />)}
+      {showImageSwap && imageSwapButton}
       {isAdmin && (
         <IconButton aria-label="Edit in admin" component="a" href={`/admin/${path}/edit/${slug}`}>
           <Edit />

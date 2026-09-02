@@ -10,11 +10,13 @@ import { useMakeupData } from '@/components/makeup/makeup-context'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import SidebarBody from '@/components/sidebar/sidebar-body'
 import { useSeasonFilter } from './season-filter-context'
+import { useSortOrder } from '@/components/sort-context'
 import {
   applySeasonFilters,
   countEntryKinds,
   groupSeasonEntries,
   OTHER_CATEGORY,
+  sortSeasonEntries,
 } from './season-entries'
 import { seasonSectionId } from './season-outfit-list'
 
@@ -42,6 +44,7 @@ export default function SeasonContents({
     useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
   const { obtainedMakeup } = useMakeupData()
+  const { sortAxis, sortDir } = useSortOrder()
   const { activePanel, setActivePanel } = useSidebar()
 
   // The season page mounts two panelId'd SidebarBodys (this one, plus
@@ -62,7 +65,8 @@ export default function SeasonContents({
   const categoryTitle = (categorySlug: string) =>
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
 
-  const categoryGroups = applySeasonFilters(
+  const categoryGroups = sortSeasonEntries(
+    applySeasonFilters(
     groupSeasonEntries({
       seasonSets,
       standaloneVariants,
@@ -75,8 +79,11 @@ export default function SeasonContents({
       hideBaseSets,
       obtainedOutfit,
       obtainedMakeup,
-    }),
-    filters
+      }),
+      filters
+    ),
+    sortAxis,
+    sortDir
   )
 
   const scrollToCategory = (category: string) => {
