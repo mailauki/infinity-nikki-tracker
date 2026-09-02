@@ -46,7 +46,6 @@ export default function SeasonFilterBody() {
     filters,
     onFiltersChange,
     onClearFilters,
-    hasActiveFilters,
   } = useSeasonFilter()
 
   // "Reset" restores only the view controls — the five visibility toggles and
@@ -81,6 +80,15 @@ export default function SeasonFilterBody() {
   const shownCount = KINDS.filter((kind) => !state[kind.key].hidden).length
   const allShown = shownCount === KINDS.length
   const noneShown = shownCount === 0
+
+  // "Clear all" only resets the three filter axes (obtained/rarity/styles) —
+  // it must be gated on those axes alone, not on `hasActiveFilters` (which also
+  // covers the visibility toggles and density). Gating on the wider flag let
+  // the button appear from a visibility-only change and then no-op on click,
+  // since onClearFilters never touched those flags. See season-filter-body
+  // test for the regression this guards.
+  const hasActiveFilterAxes =
+    filters.obtained !== null || filters.rarity !== null || filters.styles.length > 0
 
   const closeFilter = () => {
     setSidebarOpen(false)
@@ -158,7 +166,7 @@ export default function SeasonFilterBody() {
               Reset
             </Button>
           )}
-          {hasActiveFilters && (
+          {hasActiveFilterAxes && (
             <Button color="secondary" variant="outlined" onClick={onClearFilters}>
               Clear all
             </Button>
