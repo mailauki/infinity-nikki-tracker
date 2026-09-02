@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { getSeasonCategoryRaw } from '@/hooks/data/admin/season-categories'
+import { getSeasonGroupsRaw } from '@/hooks/data/admin/season-groups'
 import EntityForm from '@/app/admin/entity-form'
 import { editSeasonCategory } from './actions'
 import { pageTitle } from '@/lib/page-titles'
@@ -28,7 +29,10 @@ export default async function EditSeasonCategoryPage({
 async function EditSeasonCategory({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  const category = await getSeasonCategoryRaw(slug)
+  const [category, seasonGroups] = await Promise.all([
+    getSeasonCategoryRaw(slug),
+    getSeasonGroupsRaw(),
+  ])
 
   if (!category) notFound()
 
@@ -44,7 +48,9 @@ async function EditSeasonCategory({ params }: { params: Promise<{ slug: string }
         slug: category.slug,
         description: category.description ?? '',
         image_url: category.image_url,
+        season_group: category.season_group ?? '',
       }}
+      lookups={{ seasonGroups }}
       mode="edit"
     />
   )

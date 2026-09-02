@@ -38,6 +38,7 @@ export type AdminLinks = {
     seasons: AdminLink
     variants: AdminLink
     seasonCategories: AdminLink
+    seasonGroups: AdminLink
   }
   makeup: { sets: AdminLink; variants: AdminLink }
   momoCloaks: { cloaks: AdminLink }

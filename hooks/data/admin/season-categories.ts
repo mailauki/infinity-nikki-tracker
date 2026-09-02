@@ -3,7 +3,7 @@ import { Tables } from '@/lib/types/supabase'
 
 export type SeasonCategoryRaw = Pick<
   Tables<'season_categories'>,
-  'id' | 'slug' | 'title' | 'image_url' | 'description'
+  'id' | 'slug' | 'title' | 'image_url' | 'description' | 'season_group'
 >
 
 export async function getSeasonCategoriesRaw(): Promise<SeasonCategoryRaw[]> {
@@ -11,7 +11,7 @@ export async function getSeasonCategoriesRaw(): Promise<SeasonCategoryRaw[]> {
 
   const { data } = await supabase
     .from('season_categories')
-    .select('id, slug, title, image_url, description')
+    .select('id, slug, title, image_url, description, season_group')
     .order('id', { ascending: true })
 
   return (data ?? []) as SeasonCategoryRaw[]
@@ -22,7 +22,7 @@ export async function getSeasonCategoryRaw(slug: string): Promise<SeasonCategory
 
   const { data } = await supabase
     .from('season_categories')
-    .select('id, slug, title, image_url, description')
+    .select('id, slug, title, image_url, description, season_group')
     .eq('slug', slug)
     .maybeSingle()
 

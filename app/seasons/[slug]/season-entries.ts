@@ -1,5 +1,12 @@
 import { MakeupSet, MakeupVariant, ObtainedMakeup } from '@/lib/types/makeup'
-import { Evolution, ObtainedOutfit, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
+import {
+  Evolution,
+  ObtainedOutfit,
+  OutfitSet,
+  OutfitVariant,
+  SeasonCategory,
+  SeasonGroup,
+} from '@/lib/types/outfit'
 import { isEvolutionVisible, isGlowup } from '@/hooks/outfit'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
 import type { SortAxis, SortDir } from '@/components/sort-context'
@@ -128,6 +135,65 @@ export function sortSeasonEntries(
   }
 
   return groups.map(([category, entries]) => [category, [...entries].sort(compare)])
+}
+
+/**
+ * A run of category sections that share a season_group, in the order the
+ * categories already came in. `group` is null for ungrouped categories, which
+ * render exactly as they did before groups existed — no heading, no wrapper.
+ */
+export type SeasonCategorySection = {
+  group: SeasonGroup | null
+  categories: [string, SeasonEntry[]][]
+}
+
+/**
+ * Fold the category list into season_group runs for display.
+ *
+ * Deliberately takes the ALREADY filtered and sorted groups rather than doing
+ * its own grouping pass: the grid and the contents sidebar each build that list
+ * from the same groupSeasonEntries + applySeasonFilters call, so folding at the
+ * end keeps them in lockstep and means a category emptied by a filter takes its
+ * heading with it.
+ *
+ * Whether a season groups at all is derived here, not stored: a season shows
+ * headings iff some category in it has a season_group. That is why there is no
+ * `uses_groups` flag on `seasons` — a stored flag would be a second source of
+ * truth that could contradict the categories themselves.
+ *
+ * Adjacent categories sharing a group collapse into one section. A group is NOT
+ * hoisted across the categories between its members: the incoming order is the
+ * sort the user chose, and reordering categories to gather a group would fight
+ * it. Categories are emitted in the order given, and a group interrupted by a
+ * different one simply opens a second section with the same heading.
+ */
+export function groupCategoriesBySeasonGroup(
+  categories: [string, SeasonEntry[]][],
+  seasonCategories: SeasonCategory[],
+  seasonGroups: SeasonGroup[]
+): SeasonCategorySection[] {
+  const groupBySlug = new Map(seasonGroups.map((group) => [group.slug, group]))
+  const groupForCategory = new Map(
+    seasonCategories.map((category) => [category.slug, category.season_group])
+  )
+
+  const sections: SeasonCategorySection[] = []
+
+  for (const entry of categories) {
+    const [categorySlug] = entry
+    // OTHER_CATEGORY is a synthetic bucket for rows with no category at all, so
+    // it has no row in season_categories and never carries a group.
+    const groupSlug = groupForCategory.get(categorySlug) ?? null
+    // An unresolvable slug (a group deleted between render and read) falls back
+    // to ungrouped rather than rendering a heading with no title.
+    const group = groupSlug ? (groupBySlug.get(groupSlug) ?? null) : null
+
+    const previous = sections.at(-1)
+    if (previous && previous.group?.slug === group?.slug) previous.categories.push(entry)
+    else sections.push({ group, categories: [entry] })
+  }
+
+  return sections
 }
 
 export function countEntryCards(entries: SeasonEntry[]) {

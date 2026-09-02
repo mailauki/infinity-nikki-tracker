@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { Box, Divider, List, ListItemButton, ListSubheader, Stack, Typography } from '@mui/material'
 import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 import { MakeupSet } from '@/lib/types/makeup'
-import { OutfitSet, OutfitVariant, SeasonCategory } from '@/lib/types/outfit'
+import { OutfitSet, OutfitVariant, SeasonCategory, SeasonGroup } from '@/lib/types/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useMakeupData } from '@/components/makeup/makeup-context'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
@@ -14,11 +14,12 @@ import { useSortOrder } from '@/components/sort-context'
 import {
   applySeasonFilters,
   countEntryKinds,
+  groupCategoriesBySeasonGroup,
   groupSeasonEntries,
   OTHER_CATEGORY,
   sortSeasonEntries,
 } from './season-entries'
-import { seasonSectionId } from './season-outfit-list'
+import { seasonGroupSectionId, seasonSectionId } from './season-outfit-list'
 
 /**
  * A clickable table of contents for the season page's category sections. Derives
@@ -33,6 +34,7 @@ export default function SeasonContents({
   makeupSets,
   seasonSlug,
   seasonCategories,
+  seasonGroups,
   isLoggedIn,
 }: {
   seasonSets: OutfitSet[]
@@ -40,6 +42,7 @@ export default function SeasonContents({
   makeupSets: MakeupSet[]
   seasonSlug: string
   seasonCategories: SeasonCategory[]
+  seasonGroups: SeasonGroup[]
   isLoggedIn: boolean
 }) {
   const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, filters } =
@@ -88,8 +91,16 @@ export default function SeasonContents({
     sortDir
   )
 
+  // Same fold the grid applies, from the same categoryGroups, so the TOC's
+  // headings and the page's sections can never disagree.
+  const sections = groupCategoriesBySeasonGroup(categoryGroups, seasonCategories, seasonGroups)
+
   const scrollToCategory = (category: string) => {
     document.getElementById(seasonSectionId(category))?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const scrollToGroup = (group: string) => {
+    document.getElementById(seasonGroupSectionId(group))?.scrollIntoView({ behavior: 'smooth' })
   }
 
   return (
@@ -102,34 +113,61 @@ export default function SeasonContents({
           </ListSubheader>
         }
       >
-        {categoryGroups.map(([category, entries]) => {
+        {sections.flatMap((section, index) => [
+          // A group heading is itself a link, so the sidebar can jump to the run
+          // as well as to any category inside it.
+          ...(section.group
+            ? [
+                <ListItemButton
+                  key={`group-${section.group.slug}-${index}`}
+                  sx={{ pb: 0.5, pt: 1.5 }}
+                  onClick={() => scrollToGroup(section.group!.slug)}
+                >
+                  <Typography
+                    color="text.secondary"
+                    component="span"
+                    size="small"
+                    sx={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}
+                    variant="label"
+                  >
+                    {section.group.title}
+                  </Typography>
+                </ListItemButton>,
+              ]
+            : []),
+          ...section.categories.map(([category, entries]) => {
           const kinds = countEntryKinds(entries)
           const title = category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)
 
-          return (
-            <ListItemButton key={category} onClick={() => scrollToCategory(category)}>
-              <Box sx={{ ...COMPOSITION_CONTAINER, width: '100%' }}>
-                <Stack
-                  direction="row"
-                  sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-                >
-                  <Typography component="span" variant="body">
-                    {title}
-                  </Typography>
-                  {/* Collected counts only when signed in, and only then — the
-                      same condition the category group headers use, so a row
-                      here reads exactly like the section it scrolls to. */}
-                  <CompositionCounts
-                    obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
-                    obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
-                    outfits={kinds.outfit}
-                    pieces={kinds.standalone}
-                  />
-                </Stack>
-              </Box>
-            </ListItemButton>
-          )
-        })}
+            return (
+              <ListItemButton
+                key={category}
+                sx={{ pl: section.group ? 4 : undefined }}
+                onClick={() => scrollToCategory(category)}
+              >
+                <Box sx={{ ...COMPOSITION_CONTAINER, width: '100%' }}>
+                  <Stack
+                    direction="row"
+                    sx={{ alignItems: 'center', justifyContent: 'space-between' }}
+                  >
+                    <Typography component="span" variant="body">
+                      {title}
+                    </Typography>
+                    {/* Collected counts only when signed in, and only then — the
+                        same condition the category group headers use, so a row
+                        here reads exactly like the section it scrolls to. */}
+                    <CompositionCounts
+                      obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
+                      obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
+                      outfits={kinds.outfit}
+                      pieces={kinds.standalone}
+                    />
+                  </Stack>
+                </Box>
+              </ListItemButton>
+            )
+          }),
+        ])}
       </List>
     </SidebarBody>
   )
