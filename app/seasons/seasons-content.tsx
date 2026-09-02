@@ -27,7 +27,7 @@ import LazyImage from '@/components/lazy-image'
 import { ViewAllButton } from '@/components/view-all-button'
 import { STANDALONE_SLUG } from '@/app/seasons/[slug]/season-entries'
 import { STANDALONE_MAKEUP_SLUG } from '@/hooks/makeup'
-import { Circle, Workspaces } from '@mui/icons-material'
+import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 
 // Mirrors the row skeleton in ./loading.tsx so a card's categories keep the
 // same shape from route-level fallback through to loaded data.
@@ -186,29 +186,8 @@ export default function SeasonsContent({
         <ListItem
           key={slug}
           disableGutters
-          secondaryAction={
-            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-              {outfits > 0 && (
-                <Typography
-                  aria-label={`${outfits} ${outfits === 1 ? 'outfit' : 'outfits'}`}
-                  size="small"
-                  variant="body"
-                >
-                  {outfits} <Workspaces color="action" fontSize="inherit" sx={{ mb: 0.3 }} />
-                </Typography>
-              )}
-              {pieces > 0 && (
-                <Typography
-                  aria-label={`${pieces} ${pieces === 1 ? 'piece' : 'pieces'}`}
-                  size="small"
-                  variant="body"
-                >
-                  {pieces}{' '}
-                  <Circle color="action" fontSize="inherit" sx={{ fontSize: 8, mb: 0.3 }} />
-                </Typography>
-              )}
-            </Stack>
-          }
+          secondaryAction={<CompositionCounts outfits={outfits} pieces={pieces} />}
+          sx={COMPOSITION_CONTAINER}
         >
           <ListItemText primary={categoryTitle(slug)} />
         </ListItem>
