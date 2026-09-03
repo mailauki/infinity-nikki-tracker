@@ -13,15 +13,15 @@ export type FollowTab = 'following' | 'followers'
 const SEARCH_DEBOUNCE_MS = 300
 const SEARCH_LIMIT = 20
 
-// The search field + list body shared by both presentations of Connections: the
-// FollowDialog modal and the profile page's Connections tab. Everything stateful
-// about the list lives here — the debounced profile search, the optimistic
-// follow overlay, and the derived Following list — so the two surfaces cannot
-// drift apart, and dropping either one is a delete of its wrapper alone.
+// The search field + list body behind the profile's Connections tab: the
+// debounced profile search, the optimistic follow overlay, and the derived
+// Following list.
 //
-// Deliberately owns no tab CHROME: the dialog renders MUI Tabs above it, the tab
-// page a ToggleButtonGroup in the sticky bar. Both pass the active tab down and
-// receive changes back.
+// Deliberately owns no tab CHROME — the Following/Followers switch lives in the
+// sticky bar, a separate portal — so the active direction is passed in and
+// changes go back out. It was extracted from the since-removed FollowDialog and
+// kept separate from ProfileConnections along that seam, which is what lets the
+// switch live somewhere else entirely.
 export default function FollowList({
   tab,
   following,

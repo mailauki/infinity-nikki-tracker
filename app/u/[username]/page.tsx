@@ -175,9 +175,6 @@ async function ProfileView({ params }: Props) {
           avatar_url={profile.avatar_url}
           banner_url={profile.banner_url}
           displayName={profile.display_name}
-          followers={followers}
-          followersCount={followCounts.followers}
-          following={following}
           followingCount={followCounts.following}
           isFollowing={isFollowing}
           isOwner={isOwner}
@@ -193,7 +190,6 @@ async function ProfileView({ params }: Props) {
             />
           }
           username={profile.username}
-          viewerFollowingIds={viewerFollowingIds}
           viewerId={viewerId}
         />
       }

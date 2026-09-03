@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { Button } from '@mui/material'
-import { Add, Check } from '@mui/icons-material'
+import { Add, PersonRemove } from '@mui/icons-material'
 import { enqueueSnackbar } from 'notistack'
 import { followUser, unfollowUser } from '@/lib/follow-actions'
 
@@ -48,16 +48,22 @@ export default function FollowButton({
     })
   }
 
+  // Once the relationship exists, changing it is the secondary action — the
+  // color and the outlined variant both step back on the same state.
   return (
     <Button
+      color={following ? 'secondary' : 'primary'}
       disabled={pending}
-      endIcon={following ? <Check /> : <Add />}
+      endIcon={following ? <PersonRemove /> : <Add />}
       size={size}
       sx={{ borderRadius: 40, whiteSpace: 'nowrap' }}
       variant={following ? 'outlined' : 'contained'}
       onClick={handleClick}
     >
-      {following ? 'Following' : 'Follow'}
+      {/* The label names the ACTION the click performs, not the current
+          state: "Following" reads as a status, leaving people unsure whether
+          clicking would unfollow. */}
+      {following ? 'Unfollow' : 'Follow'}
     </Button>
   )
 }
