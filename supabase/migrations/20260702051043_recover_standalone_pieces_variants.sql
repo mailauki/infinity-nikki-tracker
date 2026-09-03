@@ -6,6 +6,21 @@
 -- unrecoverable. The variant-sync itself is guarded against standalone-pieces in
 -- app/admin/outfits/sets/actions.ts so this cannot recur.
 
+-- REPLAY GUARD: this is a one-off recovery of rows that existed in production.
+-- It depends on lookup rows (outfit_category 'hair', the styles below) that no
+-- migration creates — they were entered through the admin UI — so on a fresh
+-- database it used to die on outfit_variants_outfit_category_fkey. Seeds run
+-- after migrations, so supabase/seed.sql cannot satisfy it either. On a database
+-- without that lookup data there is also nothing to recover, so skipping is the
+-- correct outcome, not a compromise. Production already ran this and is
+-- unaffected: the rows are present and the guard passes there.
+do $$
+begin
+if not exists (select 1 from public.outfit_categories where slug = 'hair') then
+  raise notice 'skipping standalone-piece recovery: lookup data absent (fresh database)';
+  return;
+end if;
+
 -- 1. Remove the bogus generated variant (title null, no obtained records).
 delete from public.outfit_variants
 where slug = 'standalone-pieces-hair' and outfit_set = 'standalone-pieces';
@@ -29,3 +44,4 @@ values
     'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/object/public/images/outfit_variants/an_easy_start-hair/image_url.png'),
   ('azure_sand-hair','standalone-pieces','hair','Azure Sand',3,'fresh',false,
     'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/object/public/images/outfit_variants/azure_sand-hair/image_url.png');
+end $$;
