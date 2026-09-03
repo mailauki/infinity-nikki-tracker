@@ -1375,6 +1375,7 @@ export type Database = {
           slug: string
           title: string
           updated_at: string | null
+          use_season_groups: boolean
         }
         Insert: {
           alt_image_url?: string | null
@@ -1386,6 +1387,7 @@ export type Database = {
           slug: string
           title: string
           updated_at?: string | null
+          use_season_groups?: boolean
         }
         Update: {
           alt_image_url?: string | null
@@ -1397,6 +1399,7 @@ export type Database = {
           slug?: string
           title?: string
           updated_at?: string | null
+          use_season_groups?: boolean
         }
         Relationships: [
           {

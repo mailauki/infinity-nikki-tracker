@@ -13,7 +13,7 @@ import {
 
 function CategoryRowSkeleton() {
   return (
-    <ListItem disableGutters secondaryAction={<Skeleton height={16} variant="text" width={16} />}>
+    <ListItem disableGutters secondaryAction={<Skeleton height={16} variant="text" width={24} />}>
       <ListItemText primary={<Skeleton height={20} variant="text" width="50%" />} />
     </ListItem>
   )

@@ -18,13 +18,14 @@ export async function editSeason(currentSlug: string, _: unknown, formData: Form
   const description = (formData.get('description') as string | null)?.trim() || null
   const image_url = (formData.get('image_url') as string | null) || null
   const alt_image_url = (formData.get('alt_image_url') as string | null) || null
+  const use_season_groups = formData.get('use_season_groups') === 'true'
 
   if (!title) return { error: 'Title is required.' }
   if (!slug) return { error: 'Slug is required.' }
 
   const { error } = await supabase
     .from('seasons')
-    .update({ title, slug, location, description, image_url, alt_image_url })
+    .update({ title, slug, location, description, image_url, alt_image_url, use_season_groups })
     .eq('slug', currentSlug)
 
   if (error) return { error: error.message }

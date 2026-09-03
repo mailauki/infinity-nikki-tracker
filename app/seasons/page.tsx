@@ -4,6 +4,7 @@ import SeasonsToolBar from '@/app/seasons/seasons-toolbar'
 import SeasonsLoading from './loading'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { getSeasonGroups } from '@/hooks/data/season-groups'
 import { getLocations } from '@/hooks/data/locations'
 import { getMakeupSets } from '@/hooks/data/makeup-sets'
 import SeasonsContent from '@/app/seasons/seasons-content'
@@ -15,9 +16,10 @@ export const metadata: Metadata = {
 }
 
 export default async function SeasonsPage() {
-  const [seasons, seasonCategories, locations, makeupSets] = await Promise.all([
+  const [seasons, seasonCategories, seasonGroups, locations, makeupSets] = await Promise.all([
     getSeasons(),
     getSeasonCategories(),
+    getSeasonGroups(),
     getLocations(),
     getMakeupSets(),
   ])
@@ -31,6 +33,7 @@ export default async function SeasonsPage() {
             locations={locations}
             makeupSets={makeupSets}
             seasonCategories={seasonCategories}
+            seasonGroups={seasonGroups}
             seasons={seasons}
           />
         </Suspense>
