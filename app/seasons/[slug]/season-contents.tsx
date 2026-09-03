@@ -105,7 +105,7 @@ export default function SeasonContents({
 
   return (
     <SidebarBody panelId="contents">
-      <List>
+      <List dense sx={{ pb: 3 }}>
         {sections.flatMap((section, index) => [
           // A group heading is itself a link, so the sidebar can jump to the run
           // as well as to any category inside it.
@@ -113,26 +113,18 @@ export default function SeasonContents({
             ? [
                 <ListItemButton
                   key={`group-${section.group.slug}-${index}`}
-                  sx={{ pb: 0, pt: 1.5 }}
                   onClick={() => scrollToGroup(section.group!.slug)}
                 >
-                  {/* Matches the QuickAccess / Helpful Links label treatment
-                      (components/quick-access.tsx, app/help/help-actions.tsx) so
-                      the two group-label sites and those headings all read the
-                      same. The row is a scroll link rather than a static
-                      heading, so the text has to fill the button for the
-                      centering to land — hence textAlign on the ListItemText
-                      itself, not just the label. */}
                   <ListItemText
                     primary={section.group.title}
                     slotProps={{
                       primary: {
-                        size: 'small',
-                        sx: { display: 'block', textTransform: 'uppercase' },
                         variant: 'label',
+                        size: 'small',
+                        color: 'secondary',
+                        sx: { textTransform: 'uppercase', fontWeight: 'bold' },
                       },
                     }}
-                    sx={{ textAlign: 'center' }}
                   />
                 </ListItemButton>,
               ]
@@ -145,9 +137,10 @@ export default function SeasonContents({
               <ListItemButton
                 key={category}
                 // The inline-size container CompositionCounts measures to pick
-                // its icon vs word form. Without it the query escapes to the
-                // page wrapper, which is far wider than 600px, and the narrow
-                // sidebar would render the wide "8 outfits" form.
+                // its icon vs word form. It has to sit on the row itself: the
+                // season page has no other containerType ancestor, and with none
+                // in scope the @container query can never match, which would
+                // pin the icon form and make the word form dead code.
                 sx={COMPOSITION_CONTAINER}
                 onClick={() => scrollToCategory(category)}
               >
@@ -157,9 +150,6 @@ export default function SeasonContents({
                   slotProps={{ primary: { variant: 'body' } }}
                   sx={{ pl: 3 }}
                 />
-                {/* Collected counts only when signed in, and only then — the
-                    same condition the category group headers use, so a row here
-                    reads exactly like the section it scrolls to. */}
                 <CompositionCounts
                   obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
                   obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}

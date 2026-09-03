@@ -247,7 +247,7 @@ export default function SeasonOutfitList({
             key={`${section.group.slug}-${index}`}
             id={seasonGroupSectionId(section.group.slug)}
             spacing={4}
-            sx={{ scrollMarginTop: 72 }}
+            sx={{ scrollMarginTop: 72, pt: 4 }}
           >
             {/* Same label treatment as the QuickAccess and Helpful Links
                 headings (components/quick-access.tsx, app/help/help-actions.tsx):
