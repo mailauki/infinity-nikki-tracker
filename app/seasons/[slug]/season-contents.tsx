@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Box, Divider, List, ListItemButton, ListSubheader, Stack, Typography } from '@mui/material'
+import { Box, Divider, List, ListItemButton, ListItemText, ListSubheader, Stack, Typography } from '@mui/material'
 import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 import { MakeupSet } from '@/lib/types/makeup'
 import { OutfitSet, OutfitVariant, SeasonCategory, SeasonGroup } from '@/lib/types/outfit'
@@ -106,12 +106,12 @@ export default function SeasonContents({
   return (
     <SidebarBody panelId="contents">
       <List
-        subheader={
-          <ListSubheader sx={{ bgcolor: 'transparent', position: 'relative' }}>
-            Contents
-            <Divider sx={{ mb: 2 }} />
-          </ListSubheader>
-        }
+        // subheader={
+        //   <ListSubheader sx={{ bgcolor: 'transparent', position: 'relative' }}>
+        //     Contents
+        //     <Divider sx={{ mb: 2 }} />
+        //   </ListSubheader>
+        // }
       >
         {sections.flatMap((section, index) => [
           // A group heading is itself a link, so the sidebar can jump to the run
@@ -120,18 +120,19 @@ export default function SeasonContents({
             ? [
                 <ListItemButton
                   key={`group-${section.group.slug}-${index}`}
-                  sx={{ pb: 0.5, pt: 1.5 }}
+                  sx={{ pb: 0, pt: 1.5 }}
                   onClick={() => scrollToGroup(section.group!.slug)}
                 >
-                  <Typography
-                    color="text.secondary"
+                  {/* <Typography
+                    color="secondary"
                     component="span"
                     size="small"
                     sx={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}
                     variant="label"
                   >
                     {section.group.title}
-                  </Typography>
+                  </Typography> */}
+									<ListItemText primary={section.group.title} slotProps={{ primary: { variant: 'label', size: 'small', color: "secondary", sx: { textTransform: 'uppercase' } }}} />
                 </ListItemButton>,
               ]
             : []),
@@ -142,10 +143,17 @@ export default function SeasonContents({
             return (
               <ListItemButton
                 key={category}
-                sx={{ pl: section.group ? 4 : undefined }}
+                // sx={{ pl: section.group ? 4 : undefined }}
                 onClick={() => scrollToCategory(category)}
               >
-                <Box sx={{ ...COMPOSITION_CONTAINER, width: '100%' }}>
+									<ListItemText inset primary={title} slotProps={{ primary: { variant: 'body' }}} sx={{ pl: 3 }} />
+									<CompositionCounts
+                      obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
+                      obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
+                      outfits={kinds.outfit}
+                      pieces={kinds.standalone}
+                    />
+                {/* <Box sx={{ ...COMPOSITION_CONTAINER, width: '100%' }}>
                   <Stack
                     direction="row"
                     sx={{ alignItems: 'center', justifyContent: 'space-between' }}
@@ -153,9 +161,9 @@ export default function SeasonContents({
                     <Typography component="span" variant="body">
                       {title}
                     </Typography>
-                    {/* Collected counts only when signed in, and only then — the
-                        same condition the category group headers use, so a row
-                        here reads exactly like the section it scrolls to. */}
+                    // {/* Collected counts only when signed in, and only then — the
+                    //     same condition the category group headers use, so a row
+                    //     here reads exactly like the section it scrolls to. 
                     <CompositionCounts
                       obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
                       obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
@@ -163,7 +171,7 @@ export default function SeasonContents({
                       pieces={kinds.standalone}
                     />
                   </Stack>
-                </Box>
+                </Box> */}
               </ListItemButton>
             )
           }),

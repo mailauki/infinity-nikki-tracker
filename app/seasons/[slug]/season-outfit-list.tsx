@@ -258,7 +258,7 @@ export default function SeasonOutfitList({
               color="text.secondary"
               component="h2"
               size="small"
-              sx={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}
+              sx={{ textTransform: 'uppercase' }}
               variant="title"
             >
               {section.group.title}
