@@ -26,6 +26,7 @@ import {
 import ProfileCard from '@/app/profile/profile-card'
 import ProfileStats from '@/app/profile/profile-stats'
 import ProfileTabs from '@/app/profile/profile-tabs'
+import ProfileConnections from '@/app/profile/profile-connections'
 import EurekaStats from '@/app/profile/eureka-stats'
 import MakeupStats from '@/app/profile/makeup-stats'
 import MomoCloakStats from '@/app/profile/momo-cloak-stats'
@@ -121,6 +122,16 @@ async function ProfileView({ params }: Props) {
             user_id
             cloaks={momoCloaks}
             recentObtained={recentObtainedMomoCloak || []}
+          />
+        </PageShell>
+      }
+      connections={
+        <PageShell maxWidth="sm">
+          <ProfileConnections
+            followers={followers}
+            following={following}
+            viewerFollowingIds={viewerFollowingIds}
+            viewerId={viewerId}
           />
         </PageShell>
       }
