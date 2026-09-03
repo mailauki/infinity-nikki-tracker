@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Box, Divider, List, ListItemButton, ListItemText, ListSubheader, Stack, Typography } from '@mui/material'
+import { List, ListItemButton, ListItemText } from '@mui/material'
 import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 import { MakeupSet } from '@/lib/types/makeup'
 import { OutfitSet, OutfitVariant, SeasonCategory, SeasonGroup } from '@/lib/types/outfit'
@@ -105,14 +105,7 @@ export default function SeasonContents({
 
   return (
     <SidebarBody panelId="contents">
-      <List
-        // subheader={
-        //   <ListSubheader sx={{ bgcolor: 'transparent', position: 'relative' }}>
-        //     Contents
-        //     <Divider sx={{ mb: 2 }} />
-        //   </ListSubheader>
-        // }
-      >
+      <List>
         {sections.flatMap((section, index) => [
           // A group heading is itself a link, so the sidebar can jump to the run
           // as well as to any category inside it.
@@ -123,55 +116,56 @@ export default function SeasonContents({
                   sx={{ pb: 0, pt: 1.5 }}
                   onClick={() => scrollToGroup(section.group!.slug)}
                 >
-                  {/* <Typography
-                    color="secondary"
-                    component="span"
-                    size="small"
-                    sx={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}
-                    variant="label"
-                  >
-                    {section.group.title}
-                  </Typography> */}
-									<ListItemText primary={section.group.title} slotProps={{ primary: { variant: 'label', size: 'small', color: "secondary", sx: { textTransform: 'uppercase' } }}} />
+                  {/* Matches the QuickAccess / Helpful Links label treatment
+                      (components/quick-access.tsx, app/help/help-actions.tsx) so
+                      the two group-label sites and those headings all read the
+                      same. The row is a scroll link rather than a static
+                      heading, so the text has to fill the button for the
+                      centering to land — hence textAlign on the ListItemText
+                      itself, not just the label. */}
+                  <ListItemText
+                    primary={section.group.title}
+                    slotProps={{
+                      primary: {
+                        size: 'small',
+                        sx: { display: 'block', textTransform: 'uppercase' },
+                        variant: 'label',
+                      },
+                    }}
+                    sx={{ textAlign: 'center' }}
+                  />
                 </ListItemButton>,
               ]
             : []),
           ...section.categories.map(([category, entries]) => {
-          const kinds = countEntryKinds(entries)
-          const title = category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)
+            const kinds = countEntryKinds(entries)
+            const title = category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)
 
             return (
               <ListItemButton
                 key={category}
-                // sx={{ pl: section.group ? 4 : undefined }}
+                // The inline-size container CompositionCounts measures to pick
+                // its icon vs word form. Without it the query escapes to the
+                // page wrapper, which is far wider than 600px, and the narrow
+                // sidebar would render the wide "8 outfits" form.
+                sx={COMPOSITION_CONTAINER}
                 onClick={() => scrollToCategory(category)}
               >
-									<ListItemText inset primary={title} slotProps={{ primary: { variant: 'body' }}} sx={{ pl: 3 }} />
-									<CompositionCounts
-                      obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
-                      obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
-                      outfits={kinds.outfit}
-                      pieces={kinds.standalone}
-                    />
-                {/* <Box sx={{ ...COMPOSITION_CONTAINER, width: '100%' }}>
-                  <Stack
-                    direction="row"
-                    sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-                  >
-                    <Typography component="span" variant="body">
-                      {title}
-                    </Typography>
-                    // {/* Collected counts only when signed in, and only then — the
-                    //     same condition the category group headers use, so a row
-                    //     here reads exactly like the section it scrolls to. 
-                    <CompositionCounts
-                      obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
-                      obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
-                      outfits={kinds.outfit}
-                      pieces={kinds.standalone}
-                    />
-                  </Stack>
-                </Box> */}
+                <ListItemText
+                  inset
+                  primary={title}
+                  slotProps={{ primary: { variant: 'body' } }}
+                  sx={{ pl: 3 }}
+                />
+                {/* Collected counts only when signed in, and only then — the
+                    same condition the category group headers use, so a row here
+                    reads exactly like the section it scrolls to. */}
+                <CompositionCounts
+                  obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
+                  obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
+                  outfits={kinds.outfit}
+                  pieces={kinds.standalone}
+                />
               </ListItemButton>
             )
           }),

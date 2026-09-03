@@ -126,18 +126,18 @@ export default function SeasonOutfitList({
   // the contents sidebar, which derives from this same call.
   const categoryGroups = sortSeasonEntries(
     applySeasonFilters(
-    groupSeasonEntries({
-      seasonSets,
-      standaloneVariants,
-      makeupSets,
-      seasonSlug,
-      hideEvolutions,
-      hideGlowups,
-      hidePieces,
-      hideMakeup,
-      hideBaseSets,
-      obtainedOutfit,
-      obtainedMakeup,
+      groupSeasonEntries({
+        seasonSets,
+        standaloneVariants,
+        makeupSets,
+        seasonSlug,
+        hideEvolutions,
+        hideGlowups,
+        hidePieces,
+        hideMakeup,
+        hideBaseSets,
+        obtainedOutfit,
+        obtainedMakeup,
       }),
       filters
     ),
@@ -185,49 +185,44 @@ export default function SeasonOutfitList({
   }
 
   const renderCategory = ([category, entries]: [string, SeasonEntry[]]) => {
-        // Cards, not variants — matches the outfits/pieces chips beside it.
-        //
-        // These count the cards actually rendered below, so a set showing its
-        // evolutions contributes one per visible state and the numbers move with
-        // the visibility toggles. The seasons index instead counts a season's
-        // full contents regardless of toggles, so with evolutions shown a
-        // category reads higher here than it does there.
-        const { obtained, total } = countEntryCards(entries)
-        const kinds = countEntryKinds(entries)
+    // Cards, not variants — matches the outfits/pieces chips beside it.
+    //
+    // These count the cards actually rendered below, so a set showing its
+    // evolutions contributes one per visible state and the numbers move with
+    // the visibility toggles. The seasons index instead counts a season's
+    // full contents regardless of toggles, so with evolutions shown a
+    // category reads higher here than it does there.
+    const { obtained, total } = countEntryCards(entries)
+    const kinds = countEntryKinds(entries)
 
-        // Set cards and piece cards are different shapes — a set card carries a
-        // poster image and title block, a piece card is a small square — so they
-        // get a grid each rather than sharing one. In a single grid the column
-        // width is set by the widest card, which left every piece floating in an
-        // oversized cell. Each grid also uses its own family's preset: the wider
-        // `outfit` columns for sets, the denser `eureka` ones for pieces.
-        const setEntries = entries.filter((entry) => entry.kind === 'outfit')
-        const pieceEntries = entries.filter((entry) => entry.kind !== 'outfit')
+    // Set cards and piece cards are different shapes — a set card carries a
+    // poster image and title block, a piece card is a small square — so they
+    // get a grid each rather than sharing one. In a single grid the column
+    // width is set by the widest card, which left every piece floating in an
+    // oversized cell. Each grid also uses its own family's preset: the wider
+    // `outfit` columns for sets, the denser `eureka` ones for pieces.
+    const setEntries = entries.filter((entry) => entry.kind === 'outfit')
+    const pieceEntries = entries.filter((entry) => entry.kind !== 'outfit')
 
-        const header = (
-          <CardGridHeader
-            title={
-              <CategoryProgress
-                isLoggedIn={isLoggedIn}
-                obtained={obtained}
-                obtainedOutfits={kinds.obtained.outfit}
-                obtainedPieces={kinds.obtained.standalone}
-                outfits={kinds.outfit}
-                pieces={kinds.standalone}
-                title={category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)}
-                total={total}
-              />
-            }
+    const header = (
+      <CardGridHeader
+        title={
+          <CategoryProgress
+            isLoggedIn={isLoggedIn}
+            obtained={obtained}
+            obtainedOutfits={kinds.obtained.outfit}
+            obtainedPieces={kinds.obtained.standalone}
+            outfits={kinds.outfit}
+            pieces={kinds.standalone}
+            title={category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)}
+            total={total}
           />
-        )
+        }
+      />
+    )
 
     return (
-      <Stack
-        key={category}
-        id={seasonSectionId(category)}
-        spacing={2}
-        sx={{ scrollMarginTop: 72 }}
-      >
+      <Stack key={category} id={seasonSectionId(category)} spacing={2} sx={{ scrollMarginTop: 72 }}>
         {setEntries.length > 0 && (
           <CardGrid columns="outfit" header={header}>
             {setEntries.map(renderEntry)}
@@ -254,12 +249,19 @@ export default function SeasonOutfitList({
             spacing={4}
             sx={{ scrollMarginTop: 72 }}
           >
+            {/* Same label treatment as the QuickAccess and Helpful Links
+                headings (components/quick-access.tsx, app/help/help-actions.tsx):
+                a centered small uppercase label. `component="h2"` is the one
+                departure — those two are decorative, while this one really does
+                open a section, so it keeps its place in the document outline.
+                Their `mb: 2` is dropped: the wrapping Stack's spacing={4} already
+                separates the heading from the first grid, and keeping both would
+                double the gap. */}
             <Typography
-              color="text.secondary"
               component="h2"
               size="small"
-              sx={{ textTransform: 'uppercase' }}
-              variant="title"
+              sx={{ display: 'block', textAlign: 'center', textTransform: 'uppercase' }}
+              variant="label"
             >
               {section.group.title}
             </Typography>
