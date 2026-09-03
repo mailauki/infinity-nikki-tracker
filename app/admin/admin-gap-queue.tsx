@@ -144,6 +144,38 @@ function containerGapCount(rows: GapWorkItem[], kind: GapKind): number {
   return rows.filter((r) => rowGapCount(r, kind) > 0).length
 }
 
+/** Sentinel for "no category filter" — a MenuItem value cannot be undefined. */
+const ALL_CATEGORIES = '__all__'
+
+/** Filter value for pieces whose category column is NULL. */
+const UNCATEGORIZED = '__uncategorized__'
+
+interface CategoryOption {
+  /** Namespaced `categorySlug` from the data layer, or ALL_CATEGORIES. */
+  value: string
+  label: string
+  count: number
+}
+
+/**
+ * Category options for the standalone bucket, counted over the rows already
+ * narrowed to the active gap kind, so the counts match what selecting one
+ * would show. Pieces with no category collapse into a single "Uncategorized"
+ * option rather than being dropped — a missing category is itself a gap worth
+ * seeing.
+ */
+function categoryOptions(rows: GapWorkItem[]): CategoryOption[] {
+  const byValue = new Map<string, CategoryOption>()
+  for (const row of rows) {
+    const value = row.categorySlug ?? UNCATEGORIZED
+    const label = row.category ?? 'Uncategorized'
+    const existing = byValue.get(value)
+    if (existing) existing.count++
+    else byValue.set(value, { value, label, count: 1 })
+  }
+  return [...byValue.values()].sort((a, b) => a.label.localeCompare(b.label))
+}
+
 /**
  * Default to the largest entity that actually has gaps, so the queue opens on
  * real work. Sourced from `stats`, which covers real entities only — the
@@ -169,6 +201,15 @@ function gapSummary(row: GapWorkItem): string {
   if (row.noSeason > 0) parts.push(`${row.noSeason.toLocaleString()} season`)
   if (row.noSeasonCategory > 0) parts.push(`${row.noSeasonCategory.toLocaleString()} season cat.`)
   return parts.join(', ') || 'no gaps'
+}
+
+/**
+ * Secondary line for a row: type, then category when the row has one, then its
+ * gap summary — "Outfit Variant · Bottoms · 1 image". Only standalone pieces
+ * carry a category, so every other bucket keeps the original two-part line.
+ */
+function rowSubtitle(row: GapWorkItem): string {
+  return [row.kind, row.category, gapSummary(row)].filter(Boolean).join(' · ')
 }
 
 /** Whether a bucket renders a chip for this gap kind. */
@@ -200,6 +241,7 @@ export default function AdminGapQueue({
 }) {
   const [entity, setEntity] = useState<GapQueueKey>(() => defaultEntity(stats))
   const [gap, setGap] = useState<GapKind>('image')
+  const [category, setCategory] = useState<string>(ALL_CATEGORIES)
   const [page, setPage] = useState(1)
 
   const e = queueBucket(entity)
@@ -210,10 +252,34 @@ export default function AdminGapQueue({
   // render an empty list with no chip active.
   const activeGap = resolveGap(entity, gap)
 
-  const filtered = useMemo(
+  // Only the standalone bucket carries per-row categories; every other bucket
+  // is container-shaped, so its rows have none and the control stays hidden.
+  const showCategoryFilter = entity === STANDALONE_QUEUE_KEY
+
+  const gapFiltered = useMemo(
     () => (items[entity] ?? []).filter((r) => rowGapCount(r, resolveGap(entity, gap)) > 0),
     [items, entity, gap]
   )
+
+  const categories = useMemo(
+    () => (showCategoryFilter ? categoryOptions(gapFiltered) : []),
+    [showCategoryFilter, gapFiltered]
+  )
+
+  // Resolve during render, like `activeGap`: a category can vanish from the
+  // options when the gap kind changes (its pieces all had, say, an image but
+  // no title), which would otherwise strand `category` on an empty selection.
+  const activeCategory =
+    showCategoryFilter && categories.some((c) => c.value === category) ? category : ALL_CATEGORIES
+
+  const filtered = useMemo(
+    () =>
+      activeCategory === ALL_CATEGORIES
+        ? gapFiltered
+        : gapFiltered.filter((r) => (r.categorySlug ?? UNCATEGORIZED) === activeCategory),
+    [gapFiltered, activeCategory]
+  )
+
   const allForEntity = items[entity] ?? []
 
   const total = filtered.length
@@ -227,11 +293,17 @@ export default function AdminGapQueue({
 
   function handleEntityChange(next: GapQueueKey) {
     setEntity(next)
+    setCategory(ALL_CATEGORIES)
     setPage(1)
   }
 
   function handleGapChange(next: GapKind) {
     setGap(next)
+    setPage(1)
+  }
+
+  function handleCategoryChange(next: string) {
+    setCategory(next)
     setPage(1)
   }
 
@@ -243,6 +315,33 @@ export default function AdminGapQueue({
             Needs attention
           </Typography>
           <Box sx={{ ml: 'auto' }} />
+          {/* Standalone pieces only: a flat list of 200+ unrelated pieces from
+              three tables is the one bucket where narrowing by category is how
+              you find a session's worth of work. Container buckets span many
+              categories per row, so there is nothing to filter on.
+
+              Rendered BEFORE the entity select so showing it grows the row
+              leftwards — the entity select stays put rather than shifting when
+              you switch into or out of the standalone bucket. */}
+          {showCategoryFilter && (
+            <TextField
+              select
+              label="Category"
+              size="small"
+              sx={{ minWidth: 200 }}
+              value={activeCategory}
+              onChange={(ev) => handleCategoryChange(ev.target.value)}
+            >
+              <MenuItem value={ALL_CATEGORIES}>
+                All categories ({gapFiltered.length.toLocaleString()})
+              </MenuItem>
+              {categories.map(({ value, label, count }) => (
+                <MenuItem key={value} value={value}>
+                  {label} ({count.toLocaleString()})
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
           {/* All 13 entities listed — confirming an entity is clean is worth
               doing — plus the standalone-pieces bucket, whose rows appear in no
               other entity because they are excluded from container grouping. */}
@@ -312,7 +411,7 @@ export default function AdminGapQueue({
                       </ListItemAvatar>
                       <ListItemText
                         primary={row.title}
-                        secondary={`${row.kind} · ${gapSummary(row)}`}
+                        secondary={rowSubtitle(row)}
                         slotProps={{
                           primary: { variant: 'body', noWrap: true },
                           secondary: { variant: 'body', size: 'small' },

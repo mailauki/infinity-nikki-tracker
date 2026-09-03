@@ -29,6 +29,20 @@ export interface GapWorkItem {
   title: string
   /** Row type label, e.g. "Evolution" or "Outfit Set". */
   kind: string
+  /**
+   * Display title of the row's own category, e.g. "Bottoms". Populated only
+   * for the standalone-pieces bucket, where a row is a single piece and its
+   * category is the useful way to slice a mixed list of 200+ pieces from three
+   * tables. Container rows have no single category, so they leave it null.
+   */
+  category: string | null
+  /**
+   * Stable filter value for `category`, namespaced by source entity
+   * (`outfit-variants:bottoms`). The three lookup tables are independent, so a
+   * bare slug could collide across them and merge two unrelated categories
+   * into one filter option.
+   */
+  categorySlug: string | null
   imageUrl: string | null
   /** Gap variants inside this container missing that field (1 for non-variant entities). */
   noTitle: number
@@ -239,6 +253,8 @@ async function fetchSimpleGapItems(supabase: Client, key: AdminEntityKey): Promi
       slug,
       title: rawTitle || toTitle(slug),
       kind: KIND_LABELS[key],
+      category: null,
+      categorySlug: null,
       imageUrl,
       noTitle: e.tracksTitle && isMissing(r.title) ? 1 : 0,
       noImage: e.tracksImage && isMissing(r.image_url) ? 1 : 0,
@@ -475,6 +491,10 @@ async function fetchGroupedContainers(
       slug: ownerSlug,
       title: owner?.title?.trim() || toTitle(ownerSlug),
       kind,
+      // A container spans many pieces across categories, so it has no single
+      // one to report — only the standalone bucket's per-piece rows do.
+      category: null,
+      categorySlug: null,
       imageUrl: owner?.imageUrl ?? null,
       noTitle: group.noTitle,
       noImage: group.noImage,
@@ -499,6 +519,21 @@ const UNASSIGNED_OWNER_COLUMNS: Record<
   'outfit-variants': OUTFIT_VARIANT_CONFIG.ownerColumn,
   'makeup-variants': MAKEUP_VARIANT_CONFIG.ownerColumn,
   'eureka-variants': EUREKA_VARIANT_CONFIG.ownerColumn,
+}
+
+/**
+ * Per-entity category wiring for the standalone bucket: the variant table's
+ * own category column and the lookup table its slugs resolve against. The
+ * three tables each name the column differently (`outfit_category`,
+ * `makeup_category`, plain `category`), so the mapping has to be explicit.
+ */
+const CATEGORY_CONFIG: Record<
+  'outfit-variants' | 'makeup-variants' | 'eureka-variants',
+  { column: string; lookupTable: TableName }
+> = {
+  'outfit-variants': { column: 'outfit_category', lookupTable: 'outfit_categories' },
+  'makeup-variants': { column: 'makeup_category', lookupTable: 'makeup_categories' },
+  'eureka-variants': { column: 'category', lookupTable: 'eureka_categories' },
 }
 
 /**
@@ -579,8 +614,9 @@ async function fetchStandalonePieces(
 ): Promise<GapWorkItem[]> {
   const e = ADMIN_ENTITIES[entityKey]
   const ownerColumn = UNASSIGNED_OWNER_COLUMNS[entityKey]
+  const { column: categoryColumn, lookupTable } = CATEGORY_CONFIG[entityKey]
   const select = selectColumns(
-    [ownerColumn],
+    [ownerColumn, categoryColumn],
     e.tracksTitle,
     e.tracksImage,
     e.tracksDescription,
@@ -599,7 +635,21 @@ async function fetchStandalonePieces(
     return q.order('slug', { ascending: true }).range(from, to)
   })
 
+  // Category titles come from the entity's own lookup table. Fetched
+  // unconditionally rather than only for the slugs in `rows` — these tables
+  // hold a couple dozen rows each, so one unfiltered read beats building an
+  // `in` list, and `toTitle` covers a slug the lookup somehow lacks.
+  const categoryRows = await fetchAllRows((from, to) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const q: any = supabase.from(lookupTable).select('slug, title')
+    return q.order('slug', { ascending: true }).range(from, to)
+  })
+  const categoryTitles = new Map(
+    categoryRows.map((c) => [c.slug as string, ((c.title as string | null)?.trim() ?? '') || null])
+  )
+
   return rows.map((r) => {
+    const categorySlug = (r[categoryColumn] as string | null) ?? null
     const slug = r.slug as string
     const rawTitle = e.tracksTitle ? ((r.title as string | null)?.trim() ?? '') : ''
 
@@ -610,6 +660,9 @@ async function fetchStandalonePieces(
       // Labelled by source table so the mixed list stays readable — the rows
       // come from three different variant tables.
       kind: KIND_LABELS[entityKey],
+      category:
+        categorySlug === null ? null : (categoryTitles.get(categorySlug) ?? toTitle(categorySlug)),
+      categorySlug: categorySlug === null ? null : `${entityKey}:${categorySlug}`,
       imageUrl: e.tracksImage ? ((r.image_url as string | null) ?? null) : null,
       noTitle: e.tracksTitle && isMissing(r.title) ? 1 : 0,
       noImage: e.tracksImage && isMissing(r.image_url) ? 1 : 0,
