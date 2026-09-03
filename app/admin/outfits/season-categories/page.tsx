@@ -1,4 +1,5 @@
 import { getSeasonCategoriesRaw } from '@/hooks/data/admin/season-categories'
+import { getSeasonGroupsRaw } from '@/hooks/data/admin/season-groups'
 import { byTitleThenSlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import OutfitSeasonCategoryView from './outfit-season-category-view'
@@ -15,8 +16,11 @@ export default function OutfitSeasonCategoriesAdminPage() {
 }
 
 async function AdminView() {
-  const categories = await getSeasonCategoriesRaw()
+  const [categories, seasonGroups] = await Promise.all([
+    getSeasonCategoriesRaw(),
+    getSeasonGroupsRaw(),
+  ])
   const sorted = [...categories].sort(byTitleThenSlug)
 
-  return <OutfitSeasonCategoryView categories={sorted} />
+  return <OutfitSeasonCategoryView categories={sorted} seasonGroups={seasonGroups} />
 }

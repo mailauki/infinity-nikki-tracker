@@ -3,6 +3,7 @@
 import { AbilityRaw } from '@/hooks/data/admin/abilities'
 import ListRow from '../../list-row'
 import { AdminList } from '../../admin-list'
+import { navLinksData } from '@/lib/nav-links'
 
 interface OutfitAbilityListProps {
   rows: AbilityRaw[]
@@ -21,6 +22,7 @@ export default function OutfitAbilityList({
 }: OutfitAbilityListProps) {
   return (
     <AdminList
+      addHref={navLinksData.admin.outfits.abilities.add}
       getKey={(ability) => ability.slug}
       page={page}
       renderRow={(row) => (

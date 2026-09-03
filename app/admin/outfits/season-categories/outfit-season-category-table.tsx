@@ -8,14 +8,20 @@ import { SeasonCategoryRaw } from '@/hooks/data/admin/season-categories'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 import ImageUpload from '@/components/forms/image-upload'
 import { Stack } from '@mui/material'
+import { toTitle } from '@/lib/utils'
 
 type Row = SeasonCategoryRaw
 
 interface OutfitSeasonCategoryTableProps {
   rows: Row[]
+  /** Season-group slug -> title, so the Group column shows a title not a slug. */
+  groupTitles: Map<string, string>
 }
 
-export function OutfitSeasonCategoryTable({ rows: initialRows }: OutfitSeasonCategoryTableProps) {
+export function OutfitSeasonCategoryTable({
+  rows: initialRows,
+  groupTitles,
+}: OutfitSeasonCategoryTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
   const editHref = (row: Row) => `${navLinksData.admin.outfits.seasonCategories.edit}/${row.slug}`
 
@@ -83,12 +89,11 @@ export function OutfitSeasonCategoryTable({ rows: initialRows }: OutfitSeasonCat
       field: 'season_group',
       headerName: 'Group',
       width: 200,
+      // Sort and filter on the resolved title so the column orders the way it reads.
+      valueGetter: (value: string | null) =>
+        value ? (groupTitles.get(value) ?? toTitle(value)) : '',
       renderCell: ({ value }: GridRenderCellParams<Row>) =>
-        value ? (
-          <span>{value}</span>
-        ) : (
-          <span style={{ opacity: 0.5 }}>—</span>
-        ),
+        value ? <span>{value}</span> : <span style={{ opacity: 0.5 }}>—</span>,
     },
     {
       field: 'description',
