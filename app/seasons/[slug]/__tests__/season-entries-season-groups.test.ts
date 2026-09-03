@@ -56,22 +56,65 @@ describe('groupCategoriesBySeasonGroup', () => {
       [group('rewards')]
     )
 
-    expect(sections.map((s) => s.group?.slug ?? null)).toEqual(['rewards', null, 'rewards'])
+    // The two "rewards" categories gather under one heading; the ungrouped one
+    // keeps its own section.
+    expect(sections.map((s) => s.group?.slug ?? null)).toEqual(['rewards', null])
   })
 
-  it('does not hoist a group across an intervening category', () => {
-    // The incoming order is the sort the user chose. Gathering the two "rewards"
-    // categories would silently reorder the page, so the group opens a second
-    // section instead.
+  it('gathers a group whose categories are not adjacent', () => {
+    // A group names a real grouping of categories, so all its members belong
+    // under one heading however they arrived. Categories reach here in data
+    // insertion order (nothing sorts the category list — sortSeasonEntries
+    // reorders only the entries WITHIN each category), so a group's members are
+    // routinely interleaved with other groups'.
     const sections = groupCategoriesBySeasonGroup(
       entriesFor('chests', 'solo', 'events'),
       [category('chests', 'rewards'), category('solo', null), category('events', 'rewards')],
       [group('rewards')]
     )
 
+    expect(sections).toHaveLength(2)
+    expect(sections[0].group?.slug).toBe('rewards')
+    expect(sections[0].categories.map(([slug]) => slug)).toEqual(['chests', 'events'])
+    expect(sections[1].group).toBeNull()
+    expect(sections[1].categories.map(([slug]) => slug)).toEqual(['solo'])
+  })
+
+  it('never repeats a heading, however interleaved the categories are', () => {
+    // Regression: the fold used to merge only ADJACENT categories, so an
+    // interleaved season rendered "Journey Momentos" once per run — three
+    // separate headings in Shooting Star Season rather than one section.
+    const sections = groupCategoriesBySeasonGroup(
+      entriesFor('a1', 'b1', 'a2', 'c1', 'a3', 'b2'),
+      [
+        category('a1', 'alpha'),
+        category('b1', 'beta'),
+        category('a2', 'alpha'),
+        category('c1', null),
+        category('a3', 'alpha'),
+        category('b2', 'beta'),
+      ],
+      [group('alpha'), group('beta')]
+    )
+
+    const headings = sections.map((s) => s.group?.slug ?? null)
+    expect(headings).toEqual(new Array(...new Set(headings)))
     expect(sections).toHaveLength(3)
-    expect(sections[0].categories.map(([slug]) => slug)).toEqual(['chests'])
-    expect(sections[2].categories.map(([slug]) => slug)).toEqual(['events'])
+    expect(sections[0].categories.map(([slug]) => slug)).toEqual(['a1', 'a2', 'a3'])
+    expect(sections[1].categories.map(([slug]) => slug)).toEqual(['b1', 'b2'])
+    expect(sections[2].categories.map(([slug]) => slug)).toEqual(['c1'])
+  })
+
+  it('places each group at its first member, keeping the incoming sequence', () => {
+    // Gathering must not reshuffle the page: a group lands where it first
+    // appeared, so the reading order still tracks the order categories arrived.
+    const sections = groupCategoriesBySeasonGroup(
+      entriesFor('solo', 'chests', 'events'),
+      [category('solo', null), category('chests', 'rewards'), category('events', 'rewards')],
+      [group('rewards')]
+    )
+
+    expect(sections.map((s) => s.group?.slug ?? null)).toEqual([null, 'rewards'])
   })
 
   it('treats the synthetic Other bucket as ungrouped', () => {

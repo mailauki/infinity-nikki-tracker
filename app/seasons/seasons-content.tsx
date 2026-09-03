@@ -16,29 +16,34 @@ import {
 } from '@mui/material'
 
 import { useOutfitData } from '@/components/outfits/outfit-context'
+import { useMakeupData } from '@/components/makeup/makeup-context'
 import {
   resolveOutfitImage,
   useOutfitImageMode,
 } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
 import { MakeupSet } from '@/lib/types/makeup'
-import { Location, Season, SeasonCategory } from '@/lib/types/outfit'
+import { Location, Season, SeasonCategory, SeasonGroup } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
 import { ViewAllButton } from '@/components/view-all-button'
-import { STANDALONE_SLUG } from '@/app/seasons/[slug]/season-entries'
-import { STANDALONE_MAKEUP_SLUG } from '@/hooks/makeup'
-import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
+import { isStandaloneMakeupSet } from '@/hooks/makeup'
+import {
+  countEntryCards,
+  groupSeasonEntries,
+  OTHER_CATEGORY,
+  SeasonEntry,
+  STANDALONE_SLUG,
+} from '@/app/seasons/[slug]/season-entries'
 
-// Mirrors the row skeleton in ./loading.tsx so a card's categories keep the
-// same shape from route-level fallback through to loaded data.
+// Mirrors the row skeleton in ./loading.tsx so a card's rows keep the same shape
+// from route-level fallback through to loaded data.
 function CategoryRowSkeleton() {
   return (
     <ListItem
       disableGutters
       secondaryAction={
         <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-          <Skeleton height={16} variant="text" width={16} />
-          <Skeleton height={16} variant="text" width={16} />
+          <Skeleton height={16} variant="text" width={24} />
         </Stack>
       }
     >
@@ -47,18 +52,30 @@ function CategoryRowSkeleton() {
   )
 }
 
+// One row of a season card: a season group where the season uses groups, a bare
+// category where it does not.
+type SeasonRow = {
+  key: string
+  title: string
+  obtained: number
+  total: number
+}
+
 export default function SeasonsContent({
   seasons,
   seasonCategories,
+  seasonGroups,
   locations,
   makeupSets,
 }: {
   seasons: Season[]
   seasonCategories: SeasonCategory[]
+  seasonGroups: SeasonGroup[]
   locations: Location[]
   makeupSets: MakeupSet[]
 }) {
-  const { outfitSets, isLoading, isError } = useOutfitData()
+  const { outfitSets, obtainedOutfit, isLoggedIn, isLoading, isError } = useOutfitData()
+  const { obtainedMakeup } = useMakeupData()
   const { mode } = useOutfitImageMode()
   const { sortOrder } = useSortOrder()
 
@@ -73,91 +90,101 @@ export default function SeasonsContent({
 
   const locationTitle = (slug: string) => locations.find((l) => l.slug === slug)?.title ?? slug
 
+  const groupBySlug = new Map(seasonGroups.map((group) => [group.slug, group]))
+  const groupForCategory = new Map(
+    seasonCategories.map((category) => [category.slug, category.season_group])
+  )
+
   // Standalone pieces are individual variants parked in one container set. The
-  // container carries no season of its own — each variant does — so counting
-  // pieces means looking inside it rather than at the set list. Mirrors the
-  // extraction in app/seasons/[slug]/page.tsx.
-  const standaloneVariants =
-    outfitSets.find((set) => set.slug === STANDALONE_SLUG)?.outfit_variants ?? []
+  // container carries no season of its own — each variant does — so this pulls
+  // the season's variants out of it, mirroring app/seasons/[slug]/page.tsx.
+  const standaloneContainer = outfitSets.find((set) => set.slug === STANDALONE_SLUG)
 
-  // Makeup sets carry their own seasons / season_category, exactly like outfit
-  // sets, and the season detail page counts them — so the card chips have to as
-  // well or the index undercounts what the season opens to.
+  // Every row of a season, counted in CARDS — the same unit the season page's
+  // progress chip and category chips report, so a card here and the page it
+  // opens can never show two different denominators. Building it from
+  // groupSeasonEntries (rather than counting sets and variants separately) is
+  // what guarantees that: it is the one expansion both pages share.
   //
-  // A makeup set counts as its individual wearables rather than as one set: it
-  // is five separate pieces (base makeup, contact lenses, eyebrows, eyelashes,
-  // lips), and the detail page lists them as five cards. `makeup_variants` on a
-  // base row already includes every evolution's variants (see createMakeupSet),
-  // so this sums the whole set graph in one go — which is what the detail page
-  // shows once the evolution toggles are off.
-  const makeupPiecesIn = (seasonSlug: string, categorySlug: string) =>
-    makeupSets
-      .filter(
-        (set) =>
-          set.slug !== STANDALONE_MAKEUP_SLUG &&
-          set.seasons === seasonSlug &&
-          set.season_category === categorySlug
-      )
-      .reduce((sum, set) => sum + set.makeup_variants.length, 0)
+  // A season with `use_season_groups` lists one row per season GROUP, summing
+  // across the categories inside it; otherwise it lists its categories. The flag
+  // is stored per season rather than derived from whether any category carries a
+  // group, because here a group row REPLACES the category rows it collects —
+  // deriving it would collapse every season that happens to have one grouped
+  // category, including the short ones that read better flat. (The detail page
+  // does derive its headings, which is fine: there a heading only decorates the
+  // same category sections rather than replacing them.)
+  //
+  // Categories with no group still stand as their own rows in a grouped season,
+  // so nothing is ever dropped from a card by turning the flag on.
+  const rowsForSeason = (seasonSlug: string, useGroups: boolean): SeasonRow[] => {
+    const seasonSets = outfitSets.filter(
+      (set) => set.seasons === seasonSlug && set.slug !== STANDALONE_SLUG
+    )
 
-  const outfitsIn = (seasonSlug: string, categorySlug: string) =>
-    outfitSets.filter(
-      (set) =>
-        set.slug !== STANDALONE_SLUG &&
-        set.seasons === seasonSlug &&
-        set.season_category === categorySlug
-    ).length
+    const standaloneVariants =
+      standaloneContainer?.outfit_variants.filter((variant) => variant.seasons === seasonSlug) ?? []
 
-  // Standalone makeup pieces live in their own container set, which carries no
-  // season — each variant does — so they are counted per-variant just like the
-  // outfit pieces above.
-  const standaloneMakeupVariants =
-    makeupSets.find((set) => set.slug === STANDALONE_MAKEUP_SLUG)?.makeup_variants ?? []
+    // The standalone-makeup container has no season of its own, so it has to
+    // survive this filter for groupSeasonEntries to pull this season's pieces
+    // out of it — exactly how the detail page scopes it.
+    const seasonMakeupSets = makeupSets.filter(
+      (set) => set.seasons === seasonSlug || isStandaloneMakeupSet(set)
+    )
 
-  const piecesIn = (seasonSlug: string, categorySlug: string) =>
-    standaloneVariants.filter(
-      (variant) => variant.seasons === seasonSlug && variant.season_category === categorySlug
-    ).length +
-    standaloneMakeupVariants.filter(
-      (variant) => variant.seasons === seasonSlug && variant.season_category === categorySlug
-    ).length +
-    makeupPiecesIn(seasonSlug, categorySlug)
+    // The index has no visibility toolbar, so nothing is hidden: every card the
+    // season can show is counted.
+    const categories = groupSeasonEntries({
+      seasonSets,
+      standaloneVariants,
+      makeupSets: seasonMakeupSets,
+      seasonSlug,
+      hideEvolutions: false,
+      hideGlowups: false,
+      obtainedOutfit,
+      obtainedMakeup,
+    })
 
-  // A season's categories are the distinct season_category values across all
-  // three sources: the outfit sets assigned to that season, the standalone
-  // pieces whose own season matches, and the season's makeup sets (the
-  // seasons<->categories link lives on the rows, not a join table). Some
-  // categories hold only pieces or only makeup, so counting outfit sets alone
-  // would drop them from the list entirely.
-  const categoriesForSeason = (seasonSlug: string) =>
-    [
-      ...new Set([
-        ...outfitSets
-          .filter((set) => set.slug !== STANDALONE_SLUG && set.seasons === seasonSlug)
-          .map((set) => set.season_category),
-        ...standaloneVariants
-          .filter((variant) => variant.seasons === seasonSlug)
-          .map((variant) => variant.season_category),
-        ...makeupSets
-          .filter((set) => set.slug !== STANDALONE_MAKEUP_SLUG && set.seasons === seasonSlug)
-          .map((set) => set.season_category),
-        ...standaloneMakeupVariants
-          .filter((variant) => variant.seasons === seasonSlug)
-          .map((variant) => variant.season_category),
-      ]).values(),
-    ].filter((slug): slug is string => Boolean(slug))
+    // Keyed by group slug where a category has one, by the category slug
+    // otherwise — so grouped categories merge and ungrouped ones stay distinct.
+    const rows = new Map<string, { title: string; entries: SeasonEntry[] }>()
 
-  // Outfit categories are derived from outfitSets, which the provider fetches on
-  // mount; makeup sets arrive server-rendered. Until the outfit fetch lands the
-  // outfit half of every season looks empty, so the rows skeleton rather than
-  // claiming "No categories" — that message is reserved for a season that really
-  // has none, and a failed fetch says so instead of blaming the data.
+    for (const [categorySlug, entries] of categories) {
+      // OTHER_CATEGORY is a synthetic bucket for rows with no category at all,
+      // so it has no season_categories row and never carries a group. An
+      // unresolvable slug (a group deleted between render and read) falls back
+      // to the category too, rather than titling a row with a raw slug.
+      const groupSlug = useGroups ? (groupForCategory.get(categorySlug) ?? null) : null
+      const group = groupSlug ? groupBySlug.get(groupSlug) : undefined
+
+      const key = group?.slug ?? categorySlug
+      const title =
+        group?.title ??
+        (categorySlug === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(categorySlug))
+
+      const row = rows.get(key)
+      if (row) row.entries.push(...entries)
+      else rows.set(key, { title, entries })
+    }
+
+    return [...rows.entries()].map(([key, { title, entries }]) => ({
+      key,
+      title,
+      ...countEntryCards(entries),
+    }))
+  }
+
+  // Rows are derived from outfitSets, which the provider fetches on mount;
+  // makeup sets arrive server-rendered. Until the outfit fetch lands the outfit
+  // half of every season looks empty, so the rows skeleton rather than claiming
+  // "No categories" — that message is reserved for a season that really has
+  // none, and a failed fetch says so instead of blaming the data.
   //
   // A season whose only rows are makeup is already complete before the provider
-  // resolves, so it renders its categories immediately rather than skeletoning
-  // (or, on a failed fetch, blanking) over data that is right there.
-  const renderCategories = (seasonSlug: string, categories: string[]) => {
-    if (isLoading && !categories.length) {
+  // resolves, so it renders immediately rather than skeletoning (or, on a failed
+  // fetch, blanking) over data that is right there.
+  const renderRows = (rows: SeasonRow[]) => {
+    if (isLoading && !rows.length) {
       return (
         <>
           <CategoryRowSkeleton />
@@ -167,7 +194,7 @@ export default function SeasonsContent({
       )
     }
 
-    if (!categories.length) {
+    if (!rows.length) {
       return (
         <ListItem disableGutters>
           <ListItemText
@@ -178,21 +205,30 @@ export default function SeasonsContent({
       )
     }
 
-    return categories.map((slug) => {
-      const outfits = outfitsIn(seasonSlug, slug)
-      const pieces = piecesIn(seasonSlug, slug)
-
-      return (
-        <ListItem
-          key={slug}
-          disableGutters
-          secondaryAction={<CompositionCounts outfits={outfits} pieces={pieces} />}
-          sx={COMPOSITION_CONTAINER}
-        >
-          <ListItemText primary={categoryTitle(slug)} />
-        </ListItem>
-      )
-    })
+    return rows.map((row) => (
+      <ListItem
+        key={row.key}
+        disableGutters
+        secondaryAction={
+          <Typography
+            aria-label={
+              isLoggedIn
+                ? `${row.obtained} of ${row.total} collected`
+                : `${row.total} ${row.total === 1 ? 'item' : 'items'}`
+            }
+            color="text.secondary"
+            component="span"
+            size="small"
+            sx={{ whiteSpace: 'nowrap' }}
+            variant="body"
+          >
+            {isLoggedIn ? `${row.obtained}/${row.total}` : row.total}
+          </Typography>
+        }
+      >
+        <ListItemText primary={row.title} />
+      </ListItem>
+    ))
   }
 
   // Group seasons by location, mirroring how trials group by realm. Seasons are
@@ -219,7 +255,7 @@ export default function SeasonsContent({
             }}
           >
             {group.map((season, index) => {
-              const categories = categoriesForSeason(season.slug)
+              const rows = rowsForSeason(season.slug, season.use_season_groups)
               // Keep each season's ordinal fixed to its position in old→new order,
               // so new→old sorting reverses the displayed numbers (highest first).
               const ordinal = sortOrder === 'new' ? group.length - index : index + 1
@@ -254,7 +290,7 @@ export default function SeasonsContent({
                   )}
                   <CardContent sx={{ flexGrow: 1 }}>
                     <List dense sx={{ width: '100%' }}>
-                      {renderCategories(season.slug, categories)}
+                      {renderRows(rows)}
                     </List>
                   </CardContent>
                   <CardActions>

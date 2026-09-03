@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { Box, Divider, List, ListItemButton, ListSubheader, Stack, Typography } from '@mui/material'
+import { List, ListItemButton, ListItemText } from '@mui/material'
 import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 import { MakeupSet } from '@/lib/types/makeup'
 import { OutfitSet, OutfitVariant, SeasonCategory, SeasonGroup } from '@/lib/types/outfit'
@@ -105,14 +105,7 @@ export default function SeasonContents({
 
   return (
     <SidebarBody panelId="contents">
-      <List
-        subheader={
-          <ListSubheader sx={{ bgcolor: 'transparent', position: 'relative' }}>
-            Contents
-            <Divider sx={{ mb: 2 }} />
-          </ListSubheader>
-        }
-      >
+      <List dense sx={{ pb: 3 }}>
         {sections.flatMap((section, index) => [
           // A group heading is itself a link, so the sidebar can jump to the run
           // as well as to any category inside it.
@@ -120,50 +113,49 @@ export default function SeasonContents({
             ? [
                 <ListItemButton
                   key={`group-${section.group.slug}-${index}`}
-                  sx={{ pb: 0.5, pt: 1.5 }}
                   onClick={() => scrollToGroup(section.group!.slug)}
                 >
-                  <Typography
-                    color="text.secondary"
-                    component="span"
-                    size="small"
-                    sx={{ letterSpacing: '0.08em', textTransform: 'uppercase' }}
-                    variant="label"
-                  >
-                    {section.group.title}
-                  </Typography>
+                  <ListItemText
+                    primary={section.group.title}
+                    slotProps={{
+                      primary: {
+                        variant: 'label',
+                        size: 'small',
+                        color: 'secondary',
+                        sx: { textTransform: 'uppercase', fontWeight: 'bold' },
+                      },
+                    }}
+                  />
                 </ListItemButton>,
               ]
             : []),
           ...section.categories.map(([category, entries]) => {
-          const kinds = countEntryKinds(entries)
-          const title = category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)
+            const kinds = countEntryKinds(entries)
+            const title = category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)
 
             return (
               <ListItemButton
                 key={category}
-                sx={{ pl: section.group ? 4 : undefined }}
+                // The inline-size container CompositionCounts measures to pick
+                // its icon vs word form. It has to sit on the row itself: the
+                // season page has no other containerType ancestor, and with none
+                // in scope the @container query can never match, which would
+                // pin the icon form and make the word form dead code.
+                sx={COMPOSITION_CONTAINER}
                 onClick={() => scrollToCategory(category)}
               >
-                <Box sx={{ ...COMPOSITION_CONTAINER, width: '100%' }}>
-                  <Stack
-                    direction="row"
-                    sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-                  >
-                    <Typography component="span" variant="body">
-                      {title}
-                    </Typography>
-                    {/* Collected counts only when signed in, and only then — the
-                        same condition the category group headers use, so a row
-                        here reads exactly like the section it scrolls to. */}
-                    <CompositionCounts
-                      obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
-                      obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
-                      outfits={kinds.outfit}
-                      pieces={kinds.standalone}
-                    />
-                  </Stack>
-                </Box>
+                <ListItemText
+                  inset
+                  primary={title}
+                  slotProps={{ primary: { variant: 'body' } }}
+                  sx={{ pl: 3 }}
+                />
+                <CompositionCounts
+                  obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
+                  obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
+                  outfits={kinds.outfit}
+                  pieces={kinds.standalone}
+                />
               </ListItemButton>
             )
           }),

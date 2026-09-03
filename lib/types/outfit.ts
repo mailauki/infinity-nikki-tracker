@@ -4,7 +4,14 @@ export type Ability = Pick<Tables<'abilities'>, 'slug' | 'title' | 'image_url'>
 
 export type Season = Pick<
   Tables<'seasons'>,
-  'id' | 'slug' | 'title' | 'location' | 'image_url' | 'alt_image_url' | 'description'
+  | 'id'
+  | 'slug'
+  | 'title'
+  | 'location'
+  | 'image_url'
+  | 'alt_image_url'
+  | 'description'
+  | 'use_season_groups'
 >
 
 export type SeasonCategory = Pick<

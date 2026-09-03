@@ -17,6 +17,13 @@ export function seasonFields(mode: 'add' | 'edit'): FieldConfig[] {
     },
     { type: 'select', name: 'location', label: 'Location', optionsKey: 'locations' },
     {
+      type: 'switch',
+      name: 'use_season_groups',
+      label: 'Group categories on the seasons index',
+      helperText:
+        "Lists this season's card by season group instead of category — worth it for a season with a long category list. Categories with no group stay their own rows either way, and the season page is unaffected.",
+    },
+    {
       type: 'textarea',
       name: 'description',
       label: 'Description',

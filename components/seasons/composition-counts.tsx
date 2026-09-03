@@ -3,25 +3,26 @@ import { Circle, Workspaces } from '@mui/icons-material'
 
 // Below this container width there is only room for the icon form. 600 is the
 // same sm threshold the grid presets use, and it sits well clear of both call
-// sites as measured: a category header spans ~913px of the content column, an
-// index category row ~413px inside its half-width season card. So the detail
-// page writes words and the index cards stay compact, but either flips if its
-// container actually changes — a narrow window, an open drawer, a one-column
-// index — rather than being pinned by which page it is on.
+// sites as measured: a category header spans ~913px of the content column, a
+// contents row ~290px inside the sidebar. So the section headers write words
+// and the sidebar rows stay compact, but either flips if its container actually
+// changes — a narrow window, a wider drawer — rather than being pinned by which
+// component it is in.
 const LABEL_MIN_WIDTH = 600
 
 // Put this on the ancestor whose width should decide the form — the category
-// header on the detail page, the category row on the index. Pairs with the
-// container queries inside Count below.
+// header in the grid, the row in the contents sidebar. Pairs with the container
+// queries inside Count below.
 export const COMPOSITION_CONTAINER = { containerType: 'inline-size' as const }
 
 // How many outfits and pieces a season category holds, optionally as
-// collected/total. Shared by the seasons index (inside a season card's category
-// row) and the season detail page (a category header), which is why it adapts
-// rather than taking a variant prop.
+// collected/total. Shared by the season page's category headers and its contents
+// sidebar, which is why it adapts rather than taking a variant prop. (The
+// seasons index deliberately does NOT use it: its rows report one card total
+// each, matching the season progress chip rather than splitting by kind.)
 //
-// The two call sites have very different room: a category row sits in a
-// half-width card beside its title, a category header spans the content column.
+// The two call sites have very different room: a sidebar row sits in a narrow
+// drawer beside its title, a category header spans the content column.
 // Rather than hard-code "icons here, words there" — which breaks as soon as a
 // card is resized, the drawer opens, or the viewport narrows — each instance
 // picks the form that fits the space it actually got. Wide enough for words, it

@@ -161,11 +161,21 @@ export type SeasonCategorySection = {
  * `uses_groups` flag on `seasons` — a stored flag would be a second source of
  * truth that could contradict the categories themselves.
  *
- * Adjacent categories sharing a group collapse into one section. A group is NOT
- * hoisted across the categories between its members: the incoming order is the
- * sort the user chose, and reordering categories to gather a group would fight
- * it. Categories are emitted in the order given, and a group interrupted by a
- * different one simply opens a second section with the same heading.
+ * ALL of a group's categories gather into one section, anchored at the position
+ * of its first member — a group names a real grouping, so every member belongs
+ * under one heading however the categories arrived. They routinely arrive
+ * interleaved: categories reach here in data insertion order, since nothing
+ * sorts the category list (sortSeasonEntries reorders only the entries WITHIN
+ * each category). Merging by adjacency instead rendered one heading per run, so
+ * Shooting Star Season showed "Journey Momentos" three separate times.
+ *
+ * Anchoring at the first member is what keeps gathering from reshuffling the
+ * page: sections still read in the order their groups first appeared.
+ *
+ * Ungrouped categories are the exception — they merge only when ADJACENT. They
+ * share no group to be gathered by, so pooling them would yank every stray
+ * category in the season into a single block wherever the first one happened to
+ * sit.
  */
 export function groupCategoriesBySeasonGroup(
   categories: [string, SeasonEntry[]][],
@@ -178,6 +188,9 @@ export function groupCategoriesBySeasonGroup(
   )
 
   const sections: SeasonCategorySection[] = []
+  // Where each group opened its section, so later members join it rather than
+  // starting a duplicate.
+  const sectionForGroup = new Map<string, SeasonCategorySection>()
 
   for (const entry of categories) {
     const [categorySlug] = entry
@@ -188,9 +201,21 @@ export function groupCategoriesBySeasonGroup(
     // to ungrouped rather than rendering a heading with no title.
     const group = groupSlug ? (groupBySlug.get(groupSlug) ?? null) : null
 
+    if (group) {
+      const existing = sectionForGroup.get(group.slug)
+      if (existing) {
+        existing.categories.push(entry)
+        continue
+      }
+      const section: SeasonCategorySection = { group, categories: [entry] }
+      sectionForGroup.set(group.slug, section)
+      sections.push(section)
+      continue
+    }
+
     const previous = sections.at(-1)
-    if (previous && previous.group?.slug === group?.slug) previous.categories.push(entry)
-    else sections.push({ group, categories: [entry] })
+    if (previous && previous.group === null) previous.categories.push(entry)
+    else sections.push({ group: null, categories: [entry] })
   }
 
   return sections
