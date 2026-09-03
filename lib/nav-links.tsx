@@ -137,6 +137,7 @@ export const navLinksData: {
           { title: navLabel('/admin/makeup/sets'), url: '/admin/makeup/sets' },
           { title: navLabel('/admin/makeup/variants'), url: '/admin/makeup/variants' },
           { title: navLabel('/admin/momo-cloaks'), url: '/admin/momo-cloaks' },
+          { title: navLabel('/admin/locations'), url: '/admin/locations' },
           { title: navLabel('/admin/feedback'), url: '/admin/feedback' },
         ],
       },
@@ -228,6 +229,14 @@ export const navLinksData: {
         add: '/admin/makeup/variants/new',
         edit: '/admin/makeup/variants/edit',
         main: '/makeup',
+      },
+    },
+    locations: {
+      locations: {
+        title: 'Location',
+        list: '/admin/locations',
+        add: '/admin/locations/new',
+        edit: '/admin/locations/edit',
       },
     },
     momoCloaks: {
