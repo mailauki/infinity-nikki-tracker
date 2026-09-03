@@ -78,12 +78,36 @@ from public.evolution_carousel_images eci;
 drop table public.evolution_carousel_images;
 
 -- 7. Glow-up remap: the evolution a set's glowup_evolution pointed at gets order 0.
-update public.outfit_sets ev
-set "order" = 0
-from public.outfit_sets base
-where base.glowup_evolution = ev.slug;
+--
+-- glowup_evolution was added to outfit_sets by hand in the dashboard and never
+-- captured in a migration, so it exists only on databases that predate this
+-- file. On a fresh replay (a `db reset`, a new local clone, a Supabase preview
+-- branch) the column is simply absent and this remap has nothing to do — the
+-- evolutions being merged in carry their own `order`, and step 8's NOT NULL
+-- still holds because step 1 defaulted every row to 1.
+--
+-- Guarded rather than deleted: on the databases that DO have the column the
+-- remap is still load-bearing (it is what makes a glow-up order 0), so the
+-- behaviour there must not change. Executed dynamically because a plain
+-- statement referencing a missing column fails to PARSE, guard or no guard.
+do $$
+begin
+  if exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'outfit_sets'
+      and column_name = 'glowup_evolution'
+  ) then
+    execute $sql$
+      update public.outfit_sets ev
+      set "order" = 0
+      from public.outfit_sets base
+      where base.glowup_evolution = ev.slug
+    $sql$;
 
-alter table public.outfit_sets drop column glowup_evolution;
+    alter table public.outfit_sets drop column glowup_evolution;
+  end if;
+end $$;
 
 -- 8. Constraints + triggers.
 alter table public.outfit_sets
