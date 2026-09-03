@@ -3,6 +3,7 @@
 import { SeasonGroupRaw } from '@/hooks/data/admin/season-groups'
 import ListRow from '../../list-row'
 import { AdminList } from '../../admin-list'
+import { navLinksData } from '@/lib/nav-links'
 
 interface OutfitSeasonGroupListProps {
   rows: SeasonGroupRaw[]
@@ -21,6 +22,7 @@ export default function OutfitSeasonGroupList({
 }: OutfitSeasonGroupListProps) {
   return (
     <AdminList
+      addHref={navLinksData.admin.outfits.seasonGroups.add}
       getKey={(group) => group.slug}
       page={page}
       renderRow={(row) => (
