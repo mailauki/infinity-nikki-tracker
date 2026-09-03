@@ -83,6 +83,9 @@ export const PAGE_NAMES = {
   '/admin/outfits/season-groups': { nav: 'Season Groups' },
   '/admin/outfits/season-groups/new': { nav: 'Add Season Group' },
   '/admin/outfits/season-groups/edit/[slug]': { nav: 'Edit Season Group' },
+  '/admin/locations': { nav: 'Locations' },
+  '/admin/locations/new': { nav: 'Add Location' },
+  '/admin/locations/edit/[slug]': { nav: 'Edit Location' },
 
   '/admin/eureka/sets': { nav: 'Sets', title: 'Eureka Sets' },
   '/admin/eureka/sets/new': { nav: 'Add Eureka Set' },

@@ -42,6 +42,7 @@ export type AdminLinks = {
   }
   makeup: { sets: AdminLink; variants: AdminLink }
   momoCloaks: { cloaks: AdminLink }
+  locations: { locations: AdminLink }
 }
 
 export interface NavLink {
