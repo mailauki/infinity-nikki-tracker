@@ -38,6 +38,7 @@ async function EditLocation({ params }: { params: Promise<{ slug: string }> }) {
       initialValues={{
         title: location.title,
         slug: location.slug,
+        image_url: location.image_url,
       }}
       mode="edit"
     />

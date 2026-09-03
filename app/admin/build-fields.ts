@@ -61,6 +61,6 @@ export function buildFields(
     case 'makeupVariant':
       return makeupVariantFields(mode)
     case 'location':
-      return locationFields()
+      return locationFields(mode)
   }
 }

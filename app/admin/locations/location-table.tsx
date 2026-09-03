@@ -1,10 +1,13 @@
 'use client'
 
+import { useState } from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { navLinksData } from '@/lib/nav-links'
 import { LocationRaw } from '@/hooks/data/admin/locations'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
+import ImageUpload from '@/components/forms/image-upload'
+import { Stack } from '@mui/material'
 
 type Row = LocationRaw
 
@@ -12,7 +15,8 @@ interface LocationTableProps {
   rows: Row[]
 }
 
-export function LocationTable({ rows }: LocationTableProps) {
+export function LocationTable({ rows: initialRows }: LocationTableProps) {
+  const [rows, setRows] = useState<Row[]>(initialRows)
   const editHref = (row: Row) => `${navLinksData.admin.locations.locations.edit}/${row.slug}`
 
   const columns: GridColDef<Row>[] = [
@@ -36,6 +40,28 @@ export function LocationTable({ rows }: LocationTableProps) {
       headerName: 'ID',
       type: 'number',
       width: TABLE_ROW_HEIGHT,
+    },
+    {
+      field: 'image_url',
+      headerName: 'Image',
+      width: TABLE_ROW_HEIGHT,
+      sortable: false,
+      renderCell: ({ row }: GridRenderCellParams<Row>) => (
+        <Stack sx={{ py: 0.5, justifyContent: 'center' }}>
+          <ImageUpload
+            column="image_url"
+            size="sm"
+            slug={row.slug}
+            table="locations"
+            url={row.image_url ?? null}
+            onUpload={(url) =>
+              setRows((prev) =>
+                prev.map((r) => (r.slug === row.slug ? { ...r, image_url: url } : r))
+              )
+            }
+          />
+        </Stack>
+      ),
     },
     {
       field: 'title',

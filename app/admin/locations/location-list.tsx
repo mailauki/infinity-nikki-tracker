@@ -26,9 +26,13 @@ export default function LocationList({
       getKey={(location) => location.slug}
       page={page}
       renderRow={(row) => (
-        // `locations` has no image_url column, so every row falls back to
-        // ListRow's icon placeholder.
-        <ListRow list="admin/locations" slug={row.slug} title={row.title} updated_at={null} />
+        <ListRow
+          image_url={row.image_url ?? undefined}
+          list="admin/locations"
+          slug={row.slug}
+          title={row.title}
+          updated_at={row.updated_at}
+        />
       )}
       rows={rows}
       rowsPerPage={rowsPerPage}

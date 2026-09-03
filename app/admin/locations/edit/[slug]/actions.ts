@@ -14,17 +14,25 @@ export async function editLocation(currentSlug: string, _: unknown, formData: Fo
 
   const title = (formData.get('title') as string | null)?.trim() ?? ''
   const slug = (formData.get('slug') as string | null)?.trim() ?? ''
+  const image_url = (formData.get('image_url') as string | null) || null
 
   if (!title) return { error: 'Title is required.' }
   if (!slug) return { error: 'Slug is required.' }
 
-  // Renaming the slug is safe: all three referencing FKs — seasons_location_fkey,
-  // trials_location_fkey and momo_cloaks_location_fkey — are ON UPDATE CASCADE
-  // (verified against the live schema), so seasons, trials and cloaks follow the
-  // rename rather than being orphaned. `locations` carries no image_url, so the
-  // storage-path caveat that applies to other slug renames in this admin does
-  // not apply here.
-  const { error } = await supabase.from('locations').update({ title, slug }).eq('slug', currentSlug)
+  // Renaming the slug is safe for referential integrity: all three referencing
+  // FKs — seasons_location_fkey, trials_location_fkey and
+  // momo_cloaks_location_fkey — are ON UPDATE CASCADE (verified against the live
+  // schema), so seasons, trials and cloaks follow the rename rather than being
+  // orphaned.
+  //
+  // An uploaded image, however, keeps its OLD storage path
+  // (`locations/{old-slug}/image_url.webp`). image_url is a stored absolute URL,
+  // so the image keeps rendering; it just no longer matches the new slug on
+  // disk. That is the same caveat as every other slug rename in this admin.
+  const { error } = await supabase
+    .from('locations')
+    .update({ title, slug, image_url })
+    .eq('slug', currentSlug)
 
   if (error) {
     if (error.code === '23505')
