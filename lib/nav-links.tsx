@@ -113,6 +113,10 @@ export const navLinksData: {
             title: navLabel('/admin/outfits/season-categories'),
             url: '/admin/outfits/season-categories',
           },
+          {
+            title: navLabel('/admin/outfits/season-groups'),
+            url: '/admin/outfits/season-groups',
+          },
         ],
       },
       {
