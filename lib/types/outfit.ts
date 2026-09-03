@@ -9,6 +9,14 @@ export type Season = Pick<
 
 export type SeasonCategory = Pick<
   Tables<'season_categories'>,
+  'id' | 'slug' | 'title' | 'image_url' | 'description' | 'season_group'
+>
+
+// A display-only heading that collects season categories on the busier season
+// pages. `SeasonCategory.season_group` is null for ungrouped categories, which
+// render flat — see supabase/migrations/20260902193000_add_season_groups_table.sql.
+export type SeasonGroup = Pick<
+  Tables<'season_groups'>,
   'id' | 'slug' | 'title' | 'image_url' | 'description'
 >
 

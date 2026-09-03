@@ -2,7 +2,7 @@
 
 import { FieldConfig } from '@/lib/types/form-fields'
 
-export function seasonCategoryFields(mode: 'add' | 'edit'): FieldConfig[] {
+export function seasonGroupFields(mode: 'add' | 'edit'): FieldConfig[] {
   return [
     { type: 'text', name: 'title', label: 'Title', required: true },
     {
@@ -18,20 +18,13 @@ export function seasonCategoryFields(mode: 'add' | 'edit'): FieldConfig[] {
       label: 'Description',
       helperText: mode === 'add' ? 'Image can be added after saving' : undefined,
     },
-    {
-      type: 'select',
-      name: 'season_group',
-      label: 'Season Group',
-      optionsKey: 'seasonGroups',
-      helperText: 'Optional heading that collects this category on busier season pages',
-    },
     ...(mode === 'edit'
       ? [
           {
             type: 'image',
             name: 'image_url',
-            label: 'Season Category Image',
-            table: 'season_categories',
+            label: 'Season Group Image',
+            table: 'season_groups',
             size: 'xl',
           } as FieldConfig,
         ]

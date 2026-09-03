@@ -202,6 +202,13 @@ export const navLinksData: {
         edit: '/admin/outfits/season-categories/edit',
         main: '/outfits',
       },
+      seasonGroups: {
+        title: 'Season Groups',
+        list: '/admin/outfits/season-groups',
+        add: '/admin/outfits/season-groups/new',
+        edit: '/admin/outfits/season-groups/edit',
+        main: '/outfits',
+      },
     },
     makeup: {
       sets: {

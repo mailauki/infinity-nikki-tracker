@@ -6,7 +6,7 @@ import { getUserRole } from '@/hooks/user'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { toSlug } from '@/lib/utils'
 
-export async function addSeasonCategory(_: unknown, formData: FormData) {
+export async function addSeasonGroup(_: unknown, formData: FormData) {
   const role = await getUserRole()
   if (role !== 'admin') return { error: 'Forbidden' }
 
@@ -15,16 +15,11 @@ export async function addSeasonCategory(_: unknown, formData: FormData) {
   const title = (formData.get('title') as string | null)?.trim() ?? ''
   const slug = (formData.get('slug') as string | null)?.trim() || toSlug(title)
   const description = (formData.get('description') as string | null)?.trim() || null
-  // Empty string is the "no group" option; store it as NULL so it reads as
-  // ungrouped rather than as an FK to a group whose slug is ''.
-  const season_group = (formData.get('season_group') as string | null)?.trim() || null
 
   if (!title) return { error: 'Title is required.' }
   if (!slug) return { error: 'Slug is required.' }
 
-  const { error } = await supabase
-    .from('season_categories')
-    .insert([{ title, slug, description, season_group }])
+  const { error } = await supabase.from('season_groups').insert([{ title, slug, description }])
 
   if (error) return { error: error.message }
 

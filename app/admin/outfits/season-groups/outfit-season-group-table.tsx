@@ -4,20 +4,20 @@ import { useState } from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { navLinksData } from '@/lib/nav-links'
-import { SeasonCategoryRaw } from '@/hooks/data/admin/season-categories'
+import { SeasonGroupRaw } from '@/hooks/data/admin/season-groups'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 import ImageUpload from '@/components/forms/image-upload'
 import { Stack } from '@mui/material'
 
-type Row = SeasonCategoryRaw
+type Row = SeasonGroupRaw
 
-interface OutfitSeasonCategoryTableProps {
+interface OutfitSeasonGroupTableProps {
   rows: Row[]
 }
 
-export function OutfitSeasonCategoryTable({ rows: initialRows }: OutfitSeasonCategoryTableProps) {
+export function OutfitSeasonGroupTable({ rows: initialRows }: OutfitSeasonGroupTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
-  const editHref = (row: Row) => `${navLinksData.admin.outfits.seasonCategories.edit}/${row.slug}`
+  const editHref = (row: Row) => `${navLinksData.admin.outfits.seasonGroups.edit}/${row.slug}`
 
   const columns: GridColDef<Row>[] = [
     {
@@ -52,7 +52,7 @@ export function OutfitSeasonCategoryTable({ rows: initialRows }: OutfitSeasonCat
             column="image_url"
             size="sm"
             slug={row.slug}
-            table="season_categories"
+            table="season_groups"
             url={row.image_url ?? null}
             onUpload={(url) =>
               setRows((prev) =>
@@ -78,17 +78,6 @@ export function OutfitSeasonCategoryTable({ rows: initialRows }: OutfitSeasonCat
       renderCell: ({ value }: GridRenderCellParams<Row>) => (
         <span style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{value}</span>
       ),
-    },
-    {
-      field: 'season_group',
-      headerName: 'Group',
-      width: 200,
-      renderCell: ({ value }: GridRenderCellParams<Row>) =>
-        value ? (
-          <span>{value}</span>
-        ) : (
-          <span style={{ opacity: 0.5 }}>—</span>
-        ),
     },
     {
       field: 'description',

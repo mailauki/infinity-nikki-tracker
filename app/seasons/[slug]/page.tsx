@@ -3,6 +3,7 @@ import { Stack, Typography } from '@mui/material'
 import { Metadata } from 'next'
 import { getSeasonRaw } from '@/hooks/data/admin/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { getSeasonGroups } from '@/hooks/data/season-groups'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import { getMakeupSets } from '@/hooks/data/makeup-sets'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
@@ -30,13 +31,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function SeasonPage({ params }: Props) {
   const { slug } = await params
 
-  const [season, seasonCategories, outfitSets, makeupSets, userId] = await Promise.all([
-    getSeasonRaw(slug),
-    getSeasonCategories(),
-    getOutfitSets(),
-    getMakeupSets(),
-    getUserID(),
-  ])
+  const [season, seasonCategories, seasonGroups, outfitSets, makeupSets, userId] =
+    await Promise.all([
+      getSeasonRaw(slug),
+      getSeasonCategories(),
+      getSeasonGroups(),
+      getOutfitSets(),
+      getMakeupSets(),
+      getUserID(),
+    ])
 
   if (!season) notFound()
 
@@ -99,6 +102,7 @@ export default async function SeasonPage({ params }: Props) {
           isLoggedIn={isLoggedIn}
           makeupSets={seasonMakeupSets}
           seasonCategories={seasonCategories}
+          seasonGroups={seasonGroups}
           seasonSets={seasonSets}
           seasonSlug={slug}
           standaloneVariants={standaloneVariants}
@@ -108,6 +112,7 @@ export default async function SeasonPage({ params }: Props) {
           isLoggedIn={isLoggedIn}
           makeupSets={seasonMakeupSets}
           seasonCategories={seasonCategories}
+          seasonGroups={seasonGroups}
           seasonSets={seasonSets}
           seasonSlug={slug}
           standaloneVariants={standaloneVariants}

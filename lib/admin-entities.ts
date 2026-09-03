@@ -13,6 +13,7 @@ export type AdminEntityKey =
   | 'trials'
   | 'seasons'
   | 'season-categories'
+  | 'season-groups'
   | 'abilities'
 
 export type GapKind = 'image' | 'alt-image' | 'title' | 'description' | 'season' | 'season-category'
@@ -245,6 +246,20 @@ export const ADMIN_ENTITIES: Record<AdminEntityKey, AdminEntity> = {
     addHref: A.outfits.seasonCategories.add,
     listHref: A.outfits.seasonCategories.list,
     editHref: A.outfits.seasonCategories.edit,
+  },
+  'season-groups': {
+    key: 'season-groups',
+    title: A.outfits.seasonGroups.title,
+    table: 'season_groups',
+    tracksTitle: true,
+    tracksImage: false,
+    tracksDescription: true,
+    tracksSeason: false,
+    tracksAltImage: false,
+    isVariant: false,
+    addHref: A.outfits.seasonGroups.add,
+    listHref: A.outfits.seasonGroups.list,
+    editHref: A.outfits.seasonGroups.edit,
   },
   abilities: {
     key: 'abilities',

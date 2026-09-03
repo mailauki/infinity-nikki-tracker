@@ -55,6 +55,7 @@ const KIND_LABELS: Record<AdminEntityKey, string> = {
   trials: 'Trial',
   seasons: 'Season',
   'season-categories': 'Season Category',
+  'season-groups': 'Season Group',
   abilities: 'Ability',
 }
 

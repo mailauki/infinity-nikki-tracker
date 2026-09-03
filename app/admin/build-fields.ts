@@ -7,6 +7,7 @@ import { eurekaVariantFields } from './eureka/variants/fields'
 import { outfitVariantFields } from './outfits/variants/fields'
 import { abilityFields } from './outfits/abilities/fields'
 import { seasonCategoryFields } from './outfits/season-categories/fields'
+import { seasonGroupFields } from './outfits/season-groups/fields'
 import { seasonFields } from './outfits/seasons/fields'
 import { makeupVariantFields } from './makeup/variants/fields'
 
@@ -23,6 +24,7 @@ export type FormKind =
   | 'outfitVariant'
   | 'ability'
   | 'seasonCategory'
+  | 'seasonGroup'
   | 'season'
   | 'makeupVariant'
 
@@ -50,6 +52,8 @@ export function buildFields(
       return abilityFields(mode)
     case 'seasonCategory':
       return seasonCategoryFields(mode)
+    case 'seasonGroup':
+      return seasonGroupFields(mode)
     case 'season':
       return seasonFields(mode)
     case 'makeupVariant':

@@ -3,7 +3,7 @@
 import { Box, LinearProgress, Stack, Typography } from '@mui/material'
 import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 import { MakeupSet } from '@/lib/types/makeup'
-import { OutfitSet, OutfitVariant, SeasonCategory } from '@/lib/types/outfit'
+import { OutfitSet, OutfitVariant, SeasonCategory, SeasonGroup } from '@/lib/types/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useMakeupData } from '@/components/makeup/makeup-context'
 import CardGrid, { CardGridHeader } from '@/components/card-grid'
@@ -19,6 +19,7 @@ import {
   countEntries,
   countEntryCards,
   countEntryKinds,
+  groupCategoriesBySeasonGroup,
   groupSeasonEntries,
   OTHER_CATEGORY,
   SeasonEntry,
@@ -29,6 +30,12 @@ import {
  *  link target and the rendered section can never drift apart. */
 export function seasonSectionId(category: string) {
   return `season-category-${category.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+}
+
+/** Anchor id for a season_group's run of categories. Same contract as
+ *  seasonSectionId — the contents sidebar links at it. */
+export function seasonGroupSectionId(group: string) {
+  return `season-group-${group.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
 }
 
 // The per-category header: title and obtained/total on one line, with a
@@ -91,6 +98,7 @@ export default function SeasonOutfitList({
   makeupSets,
   seasonSlug,
   seasonCategories,
+  seasonGroups,
   isLoggedIn,
 }: {
   seasonSets: OutfitSet[]
@@ -98,6 +106,7 @@ export default function SeasonOutfitList({
   makeupSets: MakeupSet[]
   seasonSlug: string
   seasonCategories: SeasonCategory[]
+  seasonGroups: SeasonGroup[]
   isLoggedIn: boolean
 }) {
   const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, filters } =
@@ -140,6 +149,11 @@ export default function SeasonOutfitList({
     return <Typography color="text.secondary">Nothing in this season yet.</Typography>
   }
 
+  // Fold the visible categories into their season_group runs. A season with no
+  // grouped categories yields one null-group section, which renders exactly as
+  // the page did before groups existed.
+  const sections = groupCategoriesBySeasonGroup(categoryGroups, seasonCategories, seasonGroups)
+
   const renderEntry = (entry: SeasonEntry) => {
     if (entry.kind === 'standalone') {
       return (
@@ -170,9 +184,7 @@ export default function SeasonOutfitList({
     )
   }
 
-  return (
-    <Stack spacing={4}>
-      {categoryGroups.map(([category, entries]) => {
+  const renderCategory = ([category, entries]: [string, SeasonEntry[]]) => {
         // Cards, not variants — matches the outfits/pieces chips beside it.
         //
         // These count the cards actually rendered below, so a set showing its
@@ -209,28 +221,58 @@ export default function SeasonOutfitList({
           />
         )
 
-        return (
+    return (
+      <Stack
+        key={category}
+        id={seasonSectionId(category)}
+        spacing={2}
+        sx={{ scrollMarginTop: 72 }}
+      >
+        {setEntries.length > 0 && (
+          <CardGrid columns="outfit" header={header}>
+            {setEntries.map(renderEntry)}
+          </CardGrid>
+        )}
+        {/* The header belongs to the category, not to either grid, so it
+            rides on whichever comes first. */}
+        {pieceEntries.length > 0 && (
+          <CardGrid columns="eureka" header={setEntries.length === 0 ? header : undefined}>
+            {pieceEntries.map(renderEntry)}
+          </CardGrid>
+        )}
+      </Stack>
+    )
+  }
+
+  return (
+    <Stack spacing={4}>
+      {sections.map((section, index) =>
+        section.group ? (
           <Stack
-            key={category}
-            id={seasonSectionId(category)}
-            spacing={2}
+            key={`${section.group.slug}-${index}`}
+            id={seasonGroupSectionId(section.group.slug)}
+            spacing={4}
             sx={{ scrollMarginTop: 72 }}
           >
-            {setEntries.length > 0 && (
-              <CardGrid columns="outfit" header={header}>
-                {setEntries.map(renderEntry)}
-              </CardGrid>
-            )}
-            {/* The header belongs to the category, not to either grid, so it
-                rides on whichever comes first. */}
-            {pieceEntries.length > 0 && (
-              <CardGrid columns="eureka" header={setEntries.length === 0 ? header : undefined}>
-                {pieceEntries.map(renderEntry)}
-              </CardGrid>
-            )}
+            <Typography
+              color="text.secondary"
+              component="h2"
+              size="small"
+              sx={{ textTransform: 'uppercase', letterSpacing: '0.08em' }}
+              variant="title"
+            >
+              {section.group.title}
+            </Typography>
+            {section.categories.map(renderCategory)}
+          </Stack>
+        ) : (
+          // Ungrouped categories render bare — no heading, no wrapper — so a
+          // season that uses no groups looks untouched.
+          <Stack key={`ungrouped-${index}`} spacing={4}>
+            {section.categories.map(renderCategory)}
           </Stack>
         )
-      })}
+      )}
     </Stack>
   )
 }

@@ -24,6 +24,7 @@ export type ImageUploadTable =
   | 'abilities'
   | 'seasons'
   | 'season_categories'
+  | 'season_groups'
   | 'custom_looks'
   | 'makeup_sets'
   | 'makeup_variants'

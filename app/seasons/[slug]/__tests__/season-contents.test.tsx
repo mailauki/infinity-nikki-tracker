@@ -38,6 +38,7 @@ const baseProps = {
   makeupSets: [],
   seasonSlug: 'exploration_season',
   seasonCategories: [],
+  seasonGroups: [],
   isLoggedIn: false,
 }
 
