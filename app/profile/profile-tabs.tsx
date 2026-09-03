@@ -13,6 +13,7 @@ export default function ProfileTabs({
   eureka,
   makeup,
   cloaks,
+  connections,
 }: {
   isAdmin: boolean
   /** The viewer is looking at their own profile — gates the edit affordances. */
@@ -22,6 +23,7 @@ export default function ProfileTabs({
   eureka: React.ReactNode
   makeup: React.ReactNode
   cloaks: React.ReactNode
+  connections: React.ReactNode
 }) {
   return (
     // ProfileToolbar and ProfileStatsBar both read the tab context, so they are
@@ -31,6 +33,7 @@ export default function ProfileTabs({
       <ProfileStatsBar />
       <ProfileTabsContent
         cloaks={cloaks}
+        connections={connections}
         eureka={eureka}
         makeup={makeup}
         outfits={outfits}

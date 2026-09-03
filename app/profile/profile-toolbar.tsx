@@ -24,6 +24,7 @@ export default function ProfileToolbar({
         >
           <Tab label="Profile" value="profile" />
           <Tab label="Stats" value="stats" />
+          <Tab label="Connections" value="connections" />
         </Tabs>
       }
     >

@@ -1,6 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import {
   Alert,
   alpha,
@@ -20,7 +19,7 @@ import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '@/components/color-theme-context'
 import FollowButton from '@/components/follow/follow-button'
 import FollowCountsRow from '@/components/follow/follow-counts'
-import type { FollowProfile } from '@/lib/types/follows'
+import { useProfileTabs } from './profile-tabs-context'
 
 // Shipped hero art, used when a profile has no banner of its own. Exported so
 // the settings banner picker previews the same fallback the card renders.
@@ -36,13 +35,9 @@ export default function ProfileCard({
   isOwner = false,
   stats,
   profileId,
-  following = [],
-  followers = [],
   followingCount = 0,
-  followersCount = 0,
   isFollowing = false,
   viewerId = null,
-  viewerFollowingIds,
 }: {
   displayName: string | null
   username: string | null
@@ -57,33 +52,18 @@ export default function ProfileCard({
   stats?: React.ReactNode
   /** This profile's id — the Follow button's target. */
   profileId: string
-  following?: FollowProfile[]
-  followers?: FollowProfile[]
   followingCount?: number
-  followersCount?: number
   /** Whether the viewer already follows this profile. */
   isFollowing?: boolean
   /** null when signed out. */
   viewerId?: string | null
-  viewerFollowingIds?: Set<string>
 }) {
   const theme = useTheme()
   const { colorTheme } = useColorTheme()
 
-  // The Follow button and FollowCountsRow are siblings here, so the +1/-1 from
-  // following/unfollowing THIS profile is tracked in the shared parent and
-  // handed down as a delta rather than lifting all of FollowCountsRow's state.
-  const [followerDelta, setFollowerDelta] = useState(0)
-
-  // This card is reconciled in place across a client-side navigation between
-  // two profiles (the follow modal's rows link straight to /u/[username]), so
-  // the delta has to be cleared when the profile changes. FollowCountsRow
-  // re-seeds its own counts from the new props the same way; without this the
-  // +1 earned on the previous profile would still be added to this one's
-  // follower count.
-  useEffect(() => {
-    setFollowerDelta(0)
-  }, [profileId])
+  // The card only shows a Following count, which the viewer following THIS
+  // profile does not change — so the Follow button needs no count wiring here.
+  const { setTab, setConnectionsView } = useProfileTabs()
 
   const preset = COLOR_THEME_PRESETS[colorTheme]
   const gradient = (surface: string) =>
@@ -152,24 +132,20 @@ export default function ProfileCard({
                 isLoggedIn={Boolean(viewerId)}
                 size="large"
                 targetId={profileId}
-                onChange={(nowFollowing) => setFollowerDelta(nowFollowing ? 1 : -1)}
               />
             )
           }
           subheader={
-            <Stack direction="row" spacing={2} sx={{ alignItems: 'baseline' }}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
               <Typography color="textSecondary" component="span" size="large" variant="body">
                 @{username ?? '—'}
               </Typography>
               <FollowCountsRow
-                followerDelta={followerDelta}
-                followers={followers}
-                followersCount={followersCount}
-                following={following}
                 followingCount={followingCount}
-                profileId={profileId}
-                viewerFollowingIds={viewerFollowingIds ?? new Set()}
-                viewerId={viewerId}
+                onOpenConnections={(view) => {
+                  setConnectionsView(view)
+                  setTab('connections')
+                }}
               />
             </Stack>
           }

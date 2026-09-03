@@ -10,12 +10,14 @@ export default function ProfileTabsContent({
   eureka,
   makeup,
   cloaks,
+  connections,
 }: {
   profile: React.ReactNode
   outfits: React.ReactNode
   eureka: React.ReactNode
   makeup: React.ReactNode
   cloaks: React.ReactNode
+  connections: React.ReactNode
 }) {
   const { tab, statsView } = useProfileTabs()
   const ref = React.useRef<HTMLDivElement>(null)
@@ -81,6 +83,10 @@ export default function ProfileTabsContent({
           {tab === 'stats' && statsView === view && content}
         </Box>
       ))}
+      {/* Unmounted while inactive, like the stats views: the list runs a
+          debounced search effect, and leaving it mounted would keep that alive
+          behind the other tabs. */}
+      <Box hidden={tab !== 'connections'}>{tab === 'connections' && connections}</Box>
     </>
   )
 }

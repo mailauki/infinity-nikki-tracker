@@ -32,26 +32,29 @@ describe('FollowButton', () => {
     expect(screen.getByRole('button', { name: /^follow$/i })).toBeInTheDocument()
   })
 
-  it('reads "Following" when already following', () => {
+  // The label names the ACTION a click performs, not the current state:
+  // "Following" reads as a status and leaves people unsure what clicking does.
+  it('reads "Unfollow" when already following', () => {
     render(<FollowButton isFollowing isLoggedIn targetId="u1" />)
-    expect(screen.getByRole('button', { name: /following/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^unfollow$/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^following$/i })).not.toBeInTheDocument()
   })
 
-  it('flips to Following optimistically before the request settles', async () => {
+  it('flips to Unfollow optimistically before the request settles', async () => {
     const user = userEvent.setup()
     render(<FollowButton isLoggedIn targetId="u1" />)
 
     await user.click(screen.getByRole('button', { name: /^follow$/i }))
 
     expect(followUser).toHaveBeenCalledWith('u1')
-    expect(screen.getByRole('button', { name: /following/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^unfollow$/i })).toBeInTheDocument()
   })
 
   it('unfollows when already following', async () => {
     const user = userEvent.setup()
     render(<FollowButton isFollowing isLoggedIn targetId="u1" />)
 
-    await user.click(screen.getByRole('button', { name: /following/i }))
+    await user.click(screen.getByRole('button', { name: /^unfollow$/i }))
 
     expect(unfollowUser).toHaveBeenCalledWith('u1')
     expect(screen.getByRole('button', { name: /^follow$/i })).toBeInTheDocument()

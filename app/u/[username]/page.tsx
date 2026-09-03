@@ -26,6 +26,7 @@ import {
 import ProfileCard from '@/app/profile/profile-card'
 import ProfileStats from '@/app/profile/profile-stats'
 import ProfileTabs from '@/app/profile/profile-tabs'
+import ProfileConnections from '@/app/profile/profile-connections'
 import EurekaStats from '@/app/profile/eureka-stats'
 import MakeupStats from '@/app/profile/makeup-stats'
 import MomoCloakStats from '@/app/profile/momo-cloak-stats'
@@ -124,6 +125,16 @@ async function ProfileView({ params }: Props) {
           />
         </PageShell>
       }
+      connections={
+        <PageShell maxWidth="sm">
+          <ProfileConnections
+            followers={followers}
+            following={following}
+            viewerFollowingIds={viewerFollowingIds}
+            viewerId={viewerId}
+          />
+        </PageShell>
+      }
       eureka={
         <PageShell maxWidth="md">
           {isOwner && !isPremium && <PremiumUpgrade />}
@@ -164,9 +175,6 @@ async function ProfileView({ params }: Props) {
           avatar_url={profile.avatar_url}
           banner_url={profile.banner_url}
           displayName={profile.display_name}
-          followers={followers}
-          followersCount={followCounts.followers}
-          following={following}
           followingCount={followCounts.following}
           isFollowing={isFollowing}
           isOwner={isOwner}
@@ -182,7 +190,6 @@ async function ProfileView({ params }: Props) {
             />
           }
           username={profile.username}
-          viewerFollowingIds={viewerFollowingIds}
           viewerId={viewerId}
         />
       }
