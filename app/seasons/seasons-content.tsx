@@ -2,11 +2,6 @@
 
 import {
   Box,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  List,
   ListItem,
   ListItemText,
   ListSubheader,
@@ -17,23 +12,21 @@ import {
 
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useMakeupData } from '@/components/makeup/makeup-context'
-import {
-  resolveOutfitImage,
-  useOutfitImageMode,
-} from '@/components/outfits/outfit-image-mode-context'
+import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
+import { useSeasonFilter } from './[slug]/season-filter-context'
 import { MakeupSet } from '@/lib/types/makeup'
 import { Location, Season, SeasonCategory, SeasonGroup } from '@/lib/types/outfit'
-import LazyImage from '@/components/lazy-image'
-import { ViewAllButton } from '@/components/view-all-button'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
 import {
+  countCountableEntries,
   countEntryCards,
   groupSeasonEntries,
   OTHER_CATEGORY,
   SeasonEntry,
   STANDALONE_SLUG,
 } from '@/app/seasons/[slug]/season-entries'
+import SeasonCard from './season-card'
 
 // Mirrors the row skeleton in ./loading.tsx so a card's rows keep the same shape
 // from route-level fallback through to loaded data.
@@ -54,7 +47,7 @@ function CategoryRowSkeleton() {
 
 // One row of a season card: a season group where the season uses groups, a bare
 // category where it does not.
-type SeasonRow = {
+export type SeasonRow = {
   key: string
   title: string
   obtained: number
@@ -78,6 +71,11 @@ export default function SeasonsContent({
   const { obtainedMakeup } = useMakeupData()
   const { mode } = useOutfitImageMode()
   const { sortOrder } = useSortOrder()
+  // The index reads the very same visibility toggles the season pages do — they
+  // live on one provider spanning the whole /seasons subtree. Without this the
+  // index expanded every evolution and glow-up (the toggles default to HIDDEN),
+  // so a card advertised a denominator the page it opened never showed.
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
 
   // The sort button orders seasons by their index (id): 'new' = highest id
   // first, 'old' = lowest first.
@@ -132,22 +130,30 @@ export default function SeasonsContent({
       (set) => set.seasons === seasonSlug || isStandaloneMakeupSet(set)
     )
 
-    // The index has no visibility toolbar, so nothing is hidden: every card the
-    // season can show is counted.
+    // Counted under the reader's own visibility toggles, so a row here reports
+    // exactly what its season page will show. Evolutions and glow-ups default to
+    // hidden: an evolution is another state of a set the season already lists,
+    // not another thing to collect.
     const categories = groupSeasonEntries({
       seasonSets,
       standaloneVariants,
       makeupSets: seasonMakeupSets,
       seasonSlug,
-      hideEvolutions: false,
-      hideGlowups: false,
+      hideEvolutions,
+      hideGlowups,
+      hidePieces,
+      hideMakeup,
+      hideBaseSets,
       obtainedOutfit,
       obtainedMakeup,
     })
 
     // Keyed by group slug where a category has one, by the category slug
     // otherwise — so grouped categories merge and ungrouped ones stay distinct.
-    const rows = new Map<string, { title: string; entries: SeasonEntry[] }>()
+    const rows = new Map<
+      string,
+      { title: string; entries: SeasonEntry[]; grouped: boolean }
+    >()
 
     for (const [categorySlug, entries] of categories) {
       // OTHER_CATEGORY is a synthetic bucket for rows with no category at all,
@@ -164,13 +170,24 @@ export default function SeasonsContent({
 
       const row = rows.get(key)
       if (row) row.entries.push(...entries)
-      else rows.set(key, { title, entries })
+      else rows.set(key, { title, entries, grouped: group !== undefined })
     }
 
-    return [...rows.entries()].map(([key, { title, entries }]) => ({
+    // A group row counts PIECES, a category row counts CARDS.
+    //
+    // A group gathers several categories under one line, so counting its cards
+    // reduced a whole run of the season to a single digit — "Active Moments"
+    // read 1/1 for an eight-piece set, which tells a reader nothing about what
+    // is left to collect there. Rolling a group up means its number has to
+    // measure the wearables inside it instead.
+    //
+    // Category rows keep counting cards: they name one section of the season
+    // page, and that page's own chips count cards, so switching them too would
+    // put every ungrouped season back out of step with the page it opens.
+    return [...rows.entries()].map(([key, { title, entries, grouped }]) => ({
       key,
       title,
-      ...countEntryCards(entries),
+      ...(grouped ? countCountableEntries(entries) : countEntryCards(entries)),
     }))
   }
 
@@ -256,47 +273,34 @@ export default function SeasonsContent({
           >
             {group.map((season, index) => {
               const rows = rowsForSeason(season.slug, season.use_season_groups)
+              // The card's chip sums the very rows it lists, so it can never
+              // disagree with the numbers printed beneath it. That holds across
+              // the unit split above: a grouped season sums pieces and an
+              // ungrouped one sums cards, but each card is internally
+              // consistent, and the chip renders a percentage — so the unit
+              // never reaches the reader, only the completion it implies.
+              const { obtained, total } = rows.reduce(
+                (sums, row) => ({
+                  obtained: sums.obtained + row.obtained,
+                  total: sums.total + row.total,
+                }),
+                { obtained: 0, total: 0 }
+              )
               // Keep each season's ordinal fixed to its position in old→new order,
               // so new→old sorting reverses the displayed numbers (highest first).
               const ordinal = sortOrder === 'new' ? group.length - index : index + 1
               return (
-                <Card key={season.slug} sx={{ display: 'flex', flexDirection: 'column' }}>
-                  <CardHeader
-                    disableTypography
-                    avatar={
-                      <Typography component="span" size="small" variant="display">
-                        {String(ordinal).padStart(2, '0')}
-                      </Typography>
-                    }
-                    sx={{ '& .MuiCardHeader-content': { width: 'calc(100% - 6rem)' } }}
-                    title={
-                      <Typography noWrap component="h2" size="small" variant="headline">
-                        {season.title}
-                      </Typography>
-                    }
-                  />
-                  {season.image_url && (
-                    <LazyImage
-                      image={
-                        resolveOutfitImage(mode, {
-                          image: season.image_url,
-                          alt: season.alt_image_url,
-                        }) ?? undefined
-                      }
-                      kind="media"
-                      sx={{ height: 160, mx: 1.5 }}
-                      title={season.title}
-                    />
-                  )}
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <List dense sx={{ width: '100%' }}>
-                      {renderRows(rows)}
-                    </List>
-                  </CardContent>
-                  <CardActions>
-                    <ViewAllButton href={`/seasons/${season.slug}`} />
-                  </CardActions>
-                </Card>
+                <SeasonCard
+                  key={season.slug}
+                  isLoggedIn={isLoggedIn}
+                  mode={mode}
+                  obtained={obtained}
+                  ordinal={ordinal}
+                  season={season}
+                  total={total}
+                >
+                  {renderRows(rows)}
+                </SeasonCard>
               )
             })}
           </Box>
