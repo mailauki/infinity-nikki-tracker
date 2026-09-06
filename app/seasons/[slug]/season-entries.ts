@@ -65,6 +65,47 @@ export function countEntries(entries: SeasonEntry[]) {
 }
 
 /**
+ * A set's handheld that the game does not count toward the set's total.
+ *
+ * `handheld_base_only` marks a set whose handheld exists only on the base state
+ * — it is a bonus piece awarded separately from the set itself, typically well
+ * after it, which is why the game lists e.g. Crystal Poems as 10 pieces while
+ * the set really holds 11. The piece is real and collectable, so it stays on the
+ * card and stays toggleable; it is only kept out of the DENOMINATOR, so a season
+ * total reads the number a player sees in-game.
+ *
+ * Deliberately not folded into `entryVariants`: that feeds `isEntryObtained`,
+ * `applySeasonFilters` and `sortSeasonEntries` too, and dropping the handheld
+ * there would call a set complete with the handheld missing and hide it from the
+ * obtained/missing filters.
+ */
+function isUncountedHandheld(entry: SeasonEntry, variant: { outfit_category?: string | null }) {
+  return (
+    entry.kind === 'outfit' &&
+    entry.set.handheld_base_only === true &&
+    variant.outfit_category === 'handhelds'
+  )
+}
+
+/**
+ * Variant progress with the game's own denominator — `countEntries` minus the
+ * separately-awarded handhelds above. Used for season totals, which are read
+ * against what the game reports; per-card chips keep using `countEntries` so a
+ * card still shows every piece it actually contains.
+ */
+export function countCountableEntries(entries: SeasonEntry[]) {
+  const variants = entries.flatMap((entry) =>
+    (entryVariants(entry) as Array<{ obtained?: boolean; outfit_category?: string | null }>).filter(
+      (variant) => !isUncountedHandheld(entry, variant)
+    )
+  )
+  return {
+    total: variants.length,
+    obtained: variants.reduce((sum, variant) => sum + (variant.obtained ? 1 : 0), 0),
+  }
+}
+
+/**
  * A card counts as obtained once every variant it shows is collected — the same
  * rule ProgressChip uses to render its complete state, so a row's composition
  * chip and its card's chip can never disagree. An entry with no variants is not
