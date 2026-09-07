@@ -3,6 +3,17 @@
     "supabase": {
       "type": "http",
       "url": "https://mcp.supabase.com"
+    },
+    "google-analytics": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "google-analytics-mcp",
+        "google-analytics-mcp"
+      ],
+      "env": {
+        "DISABLE_TELEMETRY": "1"
+      }
     }
   }
 }
