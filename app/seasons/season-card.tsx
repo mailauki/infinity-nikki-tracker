@@ -1,4 +1,12 @@
-import { Card, CardActions, CardContent, CardHeader, List, Typography } from '@mui/material'
+import {
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  List,
+  Skeleton,
+  Typography,
+} from '@mui/material'
 import type { ReactNode } from 'react'
 
 import LazyImage from '@/components/lazy-image'
@@ -20,6 +28,7 @@ export default function SeasonCard({
   obtained,
   total,
   isLoggedIn,
+  isLoading,
   children,
 }: {
   season: Season
@@ -30,13 +39,26 @@ export default function SeasonCard({
   // Signed-out visitors have no collection, so the chip would always read 0% —
   // the row counts drop their obtained half for the same reason.
   isLoggedIn: boolean
+  // The chip sums the very rows below it, so it is only as complete as they are.
+  // While either provider is still fetching it would report a partial
+  // percentage and then jump, so it skeletons in step with the rows rather than
+  // settling on its own.
+  isLoading: boolean
   children: ReactNode
 }) {
   return (
     <Card sx={{ display: 'flex', flexDirection: 'column' }}>
       <CardHeader
         disableTypography
-        action={isLoggedIn ? <ProgressChip obtained={obtained} total={total} /> : undefined}
+        action={
+          isLoggedIn ? (
+            isLoading ? (
+              <Skeleton height={32} variant="rounded" width={56} />
+            ) : (
+              <ProgressChip obtained={obtained} total={total} />
+            )
+          ) : undefined
+        }
         avatar={
           <Typography component="span" size="small" variant="display">
             {String(ordinal).padStart(2, '0')}

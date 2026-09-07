@@ -67,8 +67,30 @@ export default function SeasonsContent({
   locations: Location[]
   makeupSets: MakeupSet[]
 }) {
-  const { outfitSets, obtainedOutfit, isLoggedIn, isLoading, isError } = useOutfitData()
-  const { obtainedMakeup } = useMakeupData()
+  const {
+    outfitSets,
+    obtainedOutfit,
+    isLoggedIn,
+    isLoading: isOutfitLoading,
+    isError: isOutfitError,
+  } = useOutfitData()
+  const {
+    obtainedMakeup,
+    isLoading: isMakeupLoading,
+    isError: isMakeupError,
+  } = useMakeupData()
+
+  // A card's rows mix outfit and makeup data, and each arrives from its own
+  // provider fetch. Gating on just one of them let a season whose makeup
+  // resolved first paint makeup-only counts, then rewrite every number when the
+  // other landed — the card visibly counted up twice. Holding the skeleton until
+  // BOTH have settled costs the faster half a moment of skeleton and buys a card
+  // that only ever prints its final numbers.
+  //
+  // obtainedMakeup rides the makeup fetch too, so this also covers the logged-in
+  // case where totals were right but every row briefly read 0 obtained.
+  const isLoading = isOutfitLoading || isMakeupLoading
+  const isError = isOutfitError || isMakeupError
   const { mode } = useOutfitImageMode()
   const { sortOrder } = useSortOrder()
   // The index reads the very same visibility toggles the season pages do — they
@@ -201,7 +223,10 @@ export default function SeasonsContent({
   // resolves, so it renders immediately rather than skeletoning (or, on a failed
   // fetch, blanking) over data that is right there.
   const renderRows = (rows: SeasonRow[]) => {
-    if (isLoading && !rows.length) {
+    // Not `isLoading && !rows.length`: a season with makeup rows already has a
+    // non-empty list before the outfit fetch resolves, which is exactly the
+    // half-counted state this skeleton exists to hide.
+    if (isLoading) {
       return (
         <>
           <CategoryRowSkeleton />
@@ -292,6 +317,7 @@ export default function SeasonsContent({
               return (
                 <SeasonCard
                   key={season.slug}
+                  isLoading={isLoading}
                   isLoggedIn={isLoggedIn}
                   mode={mode}
                   obtained={obtained}
