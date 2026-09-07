@@ -20,6 +20,7 @@
     "@mui/material-nextjs": "^7.3.8",
     "@mui/x-charts": "^9",
     "@mui/x-data-grid": "^9.4.0",
+    "@next/third-parties": "^16.3.4",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "^2.107.0",
     "@tanstack/react-virtual": "^3.14.9",
