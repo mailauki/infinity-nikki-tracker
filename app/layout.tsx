@@ -6,6 +6,7 @@ import ThemeClientProvider from '@/components/theme-client-provider'
 import { CssBaseline } from '@mui/material'
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import { Suspense } from 'react'
 import { DrawerStateProvider } from '@/components/navbar/navbar-toolbar-context'
 import SnackbarAlertProvider from '@/components/snackbar-provider'
@@ -98,6 +99,8 @@ export const viewport: Viewport = {
   ],
 }
 
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
+
 const VALID_THEMES: ColorTheme[] = ['default', 'moonlight', 'blossom', 'forest']
 
 async function ThemedApp({ children }: { children: React.ReactNode }) {
@@ -163,6 +166,15 @@ export default function RootLayout({
             <ThemedApp>{children}</ThemedApp>
           </Suspense>
         </AppRouterCacheProvider>
+        {/*
+          Google Analytics sits here rather than beside <Analytics /> inside
+          ThemedApp: that subtree is behind `await connection()`, so it is
+          excluded from the prerendered shell and the tag would only load
+          after the dynamic render resolved. Rendering nothing when the env
+          var is unset keeps preview/local builds from reporting into the
+          production property.
+        */}
+        {GA_MEASUREMENT_ID && <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />}
       </body>
     </html>
   )

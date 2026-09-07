@@ -1787,6 +1787,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@next/third-parties@npm:^16.3.4":
+  version: 16.3.4
+  resolution: "@next/third-parties@npm:16.3.4"
+  dependencies:
+    third-party-capital: "npm:1.0.20"
+  peerDependencies:
+    next: ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0-beta.0
+    react: ^18.2.0 || 19.0.0-rc-de68d2f4-20241204 || ^19.0.0
+  checksum: 10c0/6d148a976da0f8e4df53e1820898479324248e33f2b0b233ab1adec0eb28591d45c7b116c0a4ab6684ed6d85e537b0171ca890db1fb40deb7b5b5467cbe88703
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -6923,6 +6935,7 @@ __metadata:
     "@mui/material-nextjs": "npm:^7.3.8"
     "@mui/x-charts": "npm:^9"
     "@mui/x-data-grid": "npm:^9.4.0"
+    "@next/third-parties": "npm:^16.3.4"
     "@supabase/ssr": "npm:latest"
     "@supabase/supabase-js": "npm:^2.107.0"
     "@tanstack/react-virtual": "npm:^3.14.9"
@@ -7685,6 +7698,13 @@ __metadata:
   dependencies:
     any-promise: "npm:^1.0.0"
   checksum: 10c0/f375aeb2b05c100a456a30bc3ed07ef03a39cbdefe02e0403fb714b8c7e57eeaad1a2f5c4ecfb9ce554ce3db9c2b024eba144843cd9e344566d9fcee73b04767
+  languageName: node
+  linkType: hard
+
+"third-party-capital@npm:1.0.20":
+  version: 1.0.20
+  resolution: "third-party-capital@npm:1.0.20"
+  checksum: 10c0/7f45ff156ec9d7e2957a5b39061be22b780ffbd2d93c127252d908e2bff6cdd09f827a95909d457c8096e036f155006a38e355a06ee11cb6d63c7f4b150bbfb0
   languageName: node
   linkType: hard
 
