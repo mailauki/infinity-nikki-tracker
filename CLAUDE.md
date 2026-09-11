@@ -234,3 +234,5 @@ MUI X Charts `PieChart.onItemClick` receives `{ seriesId, dataIndex }` — add a
 `NavBarToolbarContext` (`components/navbar/navbar-toolbar-context.tsx`) carries `toolbarSlot`, `drawerOpen`, and `setDrawerOpen`. `NavDrawer` writes `drawerOpen` on mount and on toggle; `NavBar` reads it to apply `ml`/`width` that match the drawer's open/closed widths with matching transition easing.
 
 Outfit base evolution is stored as `{set}-base` in the DB but must be `null` for client code — resolve via `createOutfitSet()`, never inline.
+
+`makeup_sets.order` is derived, not authored: a base set is 1 and an evolution is always 4 (the outfit line's max evolution, matching the order-4 `outfit_sets` row it is attached to). `makeupSetOrder()` in `hooks/makeup.ts` owns the rule; both mutation paths in `app/admin/makeup/sets/actions.ts` call it, the admin forms have no order field, and the sets DataGrid shows the column read-only.

@@ -10,9 +10,22 @@ import { EvolvableLinkedSet } from '@/lib/types/outfit'
 
 // Base vs evolution resolution lives here and nowhere else. A base row has
 // base_set === null (order 1); an evolution row points base_set at its base's
-// slug (order >= 2). Never inline this check at a call site.
+// slug (order 4 — see makeupSetOrder below). Never inline this check at a call
+// site.
 export function isBaseMakeupSet(row: Pick<MakeupSetRaw, 'base_set'>) {
   return row.base_set === null
+}
+
+// `order` is derived from base_set, never chosen: a base set is always 1, and a
+// makeup evolution is always the outfit line's max evolution — order 4, paired
+// with the order-4 outfit_sets row it hangs off. The admin forms and the sets
+// DataGrid therefore show no order control; both mutation paths in
+// app/admin/makeup/sets/actions.ts call makeupSetOrder() instead.
+export const MAKEUP_BASE_ORDER = 1
+export const MAKEUP_EVOLUTION_ORDER = 4
+
+export function makeupSetOrder(row: Pick<MakeupSetRaw, 'base_set'>) {
+  return isBaseMakeupSet(row) ? MAKEUP_BASE_ORDER : MAKEUP_EVOLUTION_ORDER
 }
 
 // The bucket for set-less variants. A standalone piece is a variant carrying

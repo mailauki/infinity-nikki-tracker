@@ -18,6 +18,7 @@ import { toSlug } from '@/lib/utils'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
+import { MAKEUP_EVOLUTION_ORDER } from '@/hooks/makeup'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
@@ -52,7 +53,6 @@ export default function AddMakeupSetForm({
   const [seasonCategory, setSeasonCategory] = useState('')
   const [outfitSet, setOutfitSet] = useState<string | null>(null)
   const [baseSet, setBaseSet] = useState<string | null>(null)
-  const [order, setOrder] = useState<number | ''>(1)
   const [slugEdited, setSlugEdited] = useState(false)
 
   // Every makeup set always has all of the categories — there is nothing to
@@ -64,11 +64,6 @@ export default function AddMakeupSetForm({
   function handleTitleChange(value: string) {
     setTitle(value)
     if (!slugEdited) setSlug(toSlug(value))
-  }
-
-  function handleBaseSetChange(value: string | null) {
-    setBaseSet(value)
-    setOrder(value ? 2 : 1)
   }
 
   const selectedOutfitSet = outfitSets.find((s) => s.slug === outfitSet) ?? null
@@ -103,7 +98,6 @@ export default function AddMakeupSetForm({
       setSeasonCategory('')
       setOutfitSet(null)
       setBaseSet(null)
-      setOrder(1)
       setSlugEdited(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -214,7 +208,17 @@ export default function AddMakeupSetForm({
           getOptionLabel={(option) => option.title ?? option.slug ?? ''}
           isOptionEqualToValue={(option, val) => option.slug === val.slug}
           options={makeupSets}
-          renderInput={(params) => <TextField {...params} label="Evolution of" />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              helperText={
+                baseSet
+                  ? `Order is automatic — a makeup evolution is always ${MAKEUP_EVOLUTION_ORDER}`
+                  : 'Leave empty for a base set'
+              }
+              label="Evolution of"
+            />
+          )}
           renderOption={(props, option) => {
             // Drop MUI's label-derived key in favour of the unique slug.
             const { key, ...optionProps } = props
@@ -226,24 +230,8 @@ export default function AddMakeupSetForm({
             )
           }}
           value={selectedBaseSet}
-          onChange={(_e, newValue) => handleBaseSetChange(newValue?.slug ?? null)}
+          onChange={(_e, newValue) => setBaseSet(newValue?.slug ?? null)}
         />
-
-        {baseSet && (
-          <Box sx={{ maxWidth: 160 }}>
-            <TextField
-              fullWidth
-              required
-              label="Order"
-              name="order"
-              slotProps={{ htmlInput: { min: 2 } }}
-              type="number"
-              value={order}
-              onChange={(e) => setOrder(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-            />
-          </Box>
-        )}
-        {!baseSet && <input name="order" type="hidden" value={1} />}
 
         <Stack spacing={1}>
           <Typography variant="title">Categories</Typography>

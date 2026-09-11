@@ -17,6 +17,7 @@ import {
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
+import { MAKEUP_EVOLUTION_ORDER } from '@/hooks/makeup'
 import { Tables } from '@/lib/types/supabase'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
 import SlugField from '@/components/forms/slug-field'
@@ -70,7 +71,6 @@ export default function EditMakeupSetForm({
   const [seasonCategory, setSeasonCategory] = useState(initial.season_category ?? '')
   const [outfitSet, setOutfitSet] = useState<string | null>(initial.outfit_set ?? null)
   const [baseSet, setBaseSet] = useState<string | null>(initial.base_set ?? null)
-  const [order, setOrder] = useState<number | ''>(initial.order ?? 1)
   const [setImage, setSetImage] = useState<string | null>(initial.image_url ?? null)
   const [altSetImage, setAltSetImage] = useState<string | null>(initial.alt_image_url ?? null)
   // Only the base set's variants get cards — evolutions are edited on their own pages.
@@ -113,11 +113,6 @@ export default function EditMakeupSetForm({
   // rule get their missing variants back-filled on the next save; only variants
   // not tied to a set differ, and those live on the makeup variants pages.
   const categorySlugs = makeupCategories.map((c) => c.slug)
-
-  function handleBaseSetChange(value: string | null) {
-    setBaseSet(value)
-    setOrder(value ? 2 : 1)
-  }
 
   const selectedOutfitSet = outfitSets.find((s) => s.slug === outfitSet) ?? null
   const selectedBaseSet = baseSetOptions.find((s) => s.slug === baseSet) ?? null
@@ -270,7 +265,17 @@ export default function EditMakeupSetForm({
           getOptionLabel={(option) => option.title ?? option.slug ?? ''}
           isOptionEqualToValue={(option, val) => option.slug === val.slug}
           options={baseSetOptions}
-          renderInput={(params) => <TextField {...params} label="Evolution of" />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              helperText={
+                baseSet
+                  ? `Order is automatic — a makeup evolution is always ${MAKEUP_EVOLUTION_ORDER}`
+                  : 'Leave empty for a base set'
+              }
+              label="Evolution of"
+            />
+          )}
           renderOption={(props, option) => {
             // Drop MUI's label-derived key in favour of the unique slug.
             const { key, ...optionProps } = props
@@ -282,24 +287,8 @@ export default function EditMakeupSetForm({
             )
           }}
           value={selectedBaseSet}
-          onChange={(_e, newValue) => handleBaseSetChange(newValue?.slug ?? null)}
+          onChange={(_e, newValue) => setBaseSet(newValue?.slug ?? null)}
         />
-
-        {baseSet && (
-          <Box sx={{ maxWidth: 160 }}>
-            <TextField
-              fullWidth
-              required
-              label="Order"
-              name="order"
-              slotProps={{ htmlInput: { min: 2 } }}
-              type="number"
-              value={order}
-              onChange={(e) => setOrder(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-            />
-          </Box>
-        )}
-        {!baseSet && <input name="order" type="hidden" value={1} />}
 
         <Stack spacing={1}>
           <Typography variant="title">Categories</Typography>

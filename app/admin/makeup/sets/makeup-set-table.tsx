@@ -26,7 +26,8 @@ interface MakeupSetTableProps {
   outfitSets: OutfitSetRaw[]
 }
 
-const LOCKED_FIELDS = ['slug', 'updated_at']
+// `order` is derived from base_set server-side, so it is display-only here.
+const LOCKED_FIELDS = ['slug', 'order', 'updated_at']
 
 export function MakeupSetTable({
   rows: initialRows,
@@ -57,7 +58,7 @@ export function MakeupSetTable({
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {
-      await updateMakeupSetRow(newRow.id, {
+      const updated = await updateMakeupSetRow(newRow.id, {
         title: newRow.title ?? undefined,
         description: newRow.description,
         rarity: newRow.rarity ?? undefined,
@@ -66,10 +67,12 @@ export function MakeupSetTable({
         season_category: newRow.season_category,
         outfit_set: newRow.outfit_set,
         base_set: newRow.base_set,
-        order: newRow.order ?? undefined,
       })
-      setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)))
-      return newRow
+      // `order` is derived from base_set server-side, so read it back off the
+      // written row — clearing or setting Base Set moves it between 1 and 4.
+      const merged = { ...newRow, order: updated.order }
+      setRows((prev) => prev.map((r) => (r.id === newRow.id ? merged : r)))
+      return merged
     } catch {
       return oldRow
     }
@@ -176,8 +179,8 @@ export function MakeupSetTable({
     {
       field: 'order',
       headerName: 'Order',
+      description: 'Automatic: 1 for a base set, 4 for an evolution.',
       width: 90,
-      editable: true,
       type: 'number',
     },
     {

@@ -7,6 +7,7 @@ import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { toSlugMakeup } from '@/lib/utils'
+import { makeupSetOrder } from '@/hooks/makeup'
 
 // The admin dashboard is a Server Component behind a client Router Cache entry.
 // Without this, redirecting back after a save re-renders the cached copy and
@@ -25,10 +26,10 @@ const STANDALONE_PIECES_SLUG = 'standalone_pieces'
 
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null
-  const orderRaw = formData.get('order') as string | null
   const makeupCategories = JSON.parse((formData.get('makeup_categories') as string) || '[]') as {
     slug: string
   }[]
+  const base_set = (formData.get('base_set') as string | null) || null
   return {
     title: (formData.get('title') as string | null)?.trim() ?? '',
     slug: (formData.get('slug') as string | null)?.trim() ?? '',
@@ -38,29 +39,25 @@ function readForm(formData: FormData) {
     seasons: (formData.get('seasons') as string | null) || null,
     season_category: (formData.get('season_category') as string | null) || null,
     outfit_set: (formData.get('outfit_set') as string | null) || null,
-    base_set: (formData.get('base_set') as string | null) || null,
-    order: orderRaw ? parseInt(orderRaw, 10) : 1,
+    base_set,
+    // Derived, never submitted — the forms have no order control.
+    order: makeupSetOrder({ base_set }),
     image_url: (formData.get('image_url') as string | null) || null,
     alt_image_url: (formData.get('alt_image_url') as string | null) || null,
     makeupCategories,
   }
 }
 
-// An evolution must point at a base set and sort after it; a base set must do
-// neither, and a set can never point at itself. Enforced here because the DB
-// allows any (base_set, order) pair. Shared by both mutation paths — the
-// FormData/slug-keyed add/update actions below AND the DataGrid's id-keyed
-// updateMakeupSetRow — so the invariant can't be bypassed by editing a single
-// cell (e.g. `order` alone) inline. Takes just the fields the rule needs so
-// either caller can feed it either a fresh form read or an existing-row +
-// patch merge.
-function validateBaseEvolutionInvariants(values: {
-  slug: string
-  base_set: string | null
-  order: number
-}) {
-  if (values.base_set && values.order < 2) return 'An evolution needs an order of 2 or higher.'
-  if (!values.base_set && values.order !== 1) return 'A base set must have order 1.'
+// A set can never point at itself. Enforced here because the DB's self-FK
+// allows it. Shared by both mutation paths — the FormData/slug-keyed add/update
+// actions below AND the DataGrid's id-keyed updateMakeupSetRow — so the
+// invariant can't be bypassed by editing a single cell inline. Takes just the
+// fields the rule needs so either caller can feed it either a fresh form read
+// or an existing-row + patch merge.
+//
+// `order` needs no validation: both paths derive it from base_set via
+// makeupSetOrder() rather than accepting a submitted value.
+function validateBaseSetInvariants(values: { slug: string; base_set: string | null }) {
   if (values.base_set && values.base_set === values.slug) return 'A set cannot be its own base.'
   return null
 }
@@ -69,7 +66,7 @@ function validate(values: ReturnType<typeof readForm>) {
   if (!values.title) return 'Title is required.'
   if (!values.slug) return 'Slug is required.'
   if (!values.rarity) return 'Rarity is required.'
-  return validateBaseEvolutionInvariants(values)
+  return validateBaseSetInvariants(values)
 }
 
 export async function addMakeupSet(_: unknown, formData: FormData) {
@@ -344,7 +341,6 @@ export async function updateMakeupSetRow(
     season_category?: string | null
     outfit_set?: string | null
     base_set?: string | null
-    order?: number
   }
 ) {
   const role = await getUserRole()
@@ -360,15 +356,13 @@ export async function updateMakeupSetRow(
     if (normalized[key] === '') normalized[key] = null
   }
 
-  // The grid only sends CHANGED fields (e.g. a lone `order` edit), so the
-  // base/evolution invariants can't be checked against `fields` alone — an
-  // edit to `order` must be validated against the row's existing `base_set`,
-  // and vice versa. Fetch the current row and validate the merged result.
-  // The self-base check also needs the row's slug, which `fields` never
-  // carries (slug isn't editable in the grid).
+  // The grid only sends CHANGED fields, so base_set may be absent from this
+  // patch while still deciding the row's derived `order`. Fetch the current row
+  // and resolve against the merged result. The self-base check also needs the
+  // row's slug, which `fields` never carries (slug isn't editable in the grid).
   const { data: existing, error: fetchError } = await supabase
     .from('makeup_sets')
-    .select('slug, base_set, order')
+    .select('slug, base_set')
     .eq('id', id)
     .single()
   if (fetchError) throw new Error(fetchError.message)
@@ -376,14 +370,17 @@ export async function updateMakeupSetRow(
   const merged = {
     slug: existing.slug,
     base_set: 'base_set' in normalized ? (normalized.base_set ?? null) : existing.base_set,
-    order: normalized.order ?? existing.order,
   }
-  const invalid = validateBaseEvolutionInvariants(merged)
+  const invalid = validateBaseSetInvariants(merged)
   if (invalid) throw new Error(invalid)
 
+  // `order` is written on every row edit rather than only when base_set moves:
+  // it costs nothing when the row already conforms, and it self-heals a legacy
+  // row whose stored order predates the derivation. The grid reads it back off
+  // the returned row.
   const { data, error } = await supabase
     .from('makeup_sets')
-    .update({ ...normalized, updated_at: new Date().toISOString() })
+    .update({ ...normalized, order: makeupSetOrder(merged), updated_at: new Date().toISOString() })
     .eq('id', id)
     .select()
     .single()
