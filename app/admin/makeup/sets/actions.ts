@@ -7,6 +7,7 @@ import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { toSlugMakeup } from '@/lib/utils'
+import { makeupSetOrder, OutfitLineRow, resolveEvolutionOutfitSet } from '@/hooks/makeup'
 
 // The admin dashboard is a Server Component behind a client Router Cache entry.
 // Without this, redirecting back after a save re-renders the cached copy and
@@ -23,12 +24,95 @@ function revalidateAdmin() {
 // skip it or it overwrites each piece with this page's snapshot.
 const STANDALONE_PIECES_SLUG = 'standalone_pieces'
 
+type MakeupSupabase = Awaited<ReturnType<typeof createClient>>
+
+// An evolution's `outfit_set` is derived from its base set's, so it needs the
+// base's pairing, that outfit row (which may itself be an evolution, so the line
+// root comes off it) and the line's siblings. The admin forms resolve the same
+// thing from the full outfit list they already hold; this is the server's route
+// to the identical answer, so both go through resolveEvolutionOutfitSet().
+async function deriveEvolutionOutfitSet(
+  supabase: MakeupSupabase,
+  baseSetSlug: string
+): Promise<string | null> {
+  const { data: base } = await supabase
+    .from('makeup_sets')
+    .select('outfit_set')
+    .eq('slug', baseSetSlug)
+    .maybeSingle()
+  if (!base?.outfit_set) return null
+
+  const { data: pairedRow } = await supabase
+    .from('outfit_sets')
+    .select('slug, base_set, "order"')
+    .eq('slug', base.outfit_set)
+    .maybeSingle()
+  const paired = pairedRow as OutfitLineRow | null
+  if (!paired) return null
+
+  const { data: siblingRows } = await supabase
+    .from('outfit_sets')
+    .select('slug, base_set, "order"')
+    .eq('base_set', paired.base_set ?? paired.slug)
+
+  // `paired` is prepended so the resolver can find it whether it is the line's
+  // base row (not returned by the sibling query) or one of the evolutions (in
+  // which case it appears twice, which changes no lookup).
+  return resolveEvolutionOutfitSet(base.outfit_set, [
+    paired,
+    ...((siblingRows ?? []) as OutfitLineRow[]),
+  ])
+}
+
+// The evolution rows a pairing cascade rewrote, for the DataGrid to merge into
+// its own copy of them.
+type EvolutionPairingSync = {
+  error: string | null
+  rows: { id: number; slug: string; outfit_set: string | null }[]
+}
+
+// Push a base set's pairing down to its evolutions. A base set is the only place
+// the pairing is authored, so repointing it has to move every evolution with it
+// or the derived links drift.
+//
+// Only mismatched rows are written: `trg_makeup_sets_updated_at` bumps
+// updated_at on every row an UPDATE touches, so writing unconditionally would
+// shuffle untouched evolutions to the front of the admin lists' "recently
+// updated" ordering on every save of their base.
+async function syncEvolutionOutfitSets(
+  supabase: MakeupSupabase,
+  baseSlug: string
+): Promise<EvolutionPairingSync> {
+  const derived = await deriveEvolutionOutfitSet(supabase, baseSlug)
+
+  const { data: evolutions } = await supabase
+    .from('makeup_sets')
+    .select('id, slug, outfit_set')
+    .eq('base_set', baseSlug)
+
+  const stale = (evolutions ?? []).filter((row) => row.outfit_set !== derived)
+  if (stale.length === 0) return { error: null, rows: [] }
+
+  const { error } = await supabase
+    .from('makeup_sets')
+    .update({ outfit_set: derived })
+    .in(
+      'id',
+      stale.map((row) => row.id)
+    )
+
+  return {
+    error: error?.message ?? null,
+    rows: stale.map((row) => ({ ...row, outfit_set: derived })),
+  }
+}
+
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null
-  const orderRaw = formData.get('order') as string | null
   const makeupCategories = JSON.parse((formData.get('makeup_categories') as string) || '[]') as {
     slug: string
   }[]
+  const base_set = (formData.get('base_set') as string | null) || null
   return {
     title: (formData.get('title') as string | null)?.trim() ?? '',
     slug: (formData.get('slug') as string | null)?.trim() ?? '',
@@ -38,29 +122,25 @@ function readForm(formData: FormData) {
     seasons: (formData.get('seasons') as string | null) || null,
     season_category: (formData.get('season_category') as string | null) || null,
     outfit_set: (formData.get('outfit_set') as string | null) || null,
-    base_set: (formData.get('base_set') as string | null) || null,
-    order: orderRaw ? parseInt(orderRaw, 10) : 1,
+    base_set,
+    // Derived, never submitted — the forms have no order control.
+    order: makeupSetOrder({ base_set }),
     image_url: (formData.get('image_url') as string | null) || null,
     alt_image_url: (formData.get('alt_image_url') as string | null) || null,
     makeupCategories,
   }
 }
 
-// An evolution must point at a base set and sort after it; a base set must do
-// neither, and a set can never point at itself. Enforced here because the DB
-// allows any (base_set, order) pair. Shared by both mutation paths — the
-// FormData/slug-keyed add/update actions below AND the DataGrid's id-keyed
-// updateMakeupSetRow — so the invariant can't be bypassed by editing a single
-// cell (e.g. `order` alone) inline. Takes just the fields the rule needs so
-// either caller can feed it either a fresh form read or an existing-row +
-// patch merge.
-function validateBaseEvolutionInvariants(values: {
-  slug: string
-  base_set: string | null
-  order: number
-}) {
-  if (values.base_set && values.order < 2) return 'An evolution needs an order of 2 or higher.'
-  if (!values.base_set && values.order !== 1) return 'A base set must have order 1.'
+// A set can never point at itself. Enforced here because the DB's self-FK
+// allows it. Shared by both mutation paths — the FormData/slug-keyed add/update
+// actions below AND the DataGrid's id-keyed updateMakeupSetRow — so the
+// invariant can't be bypassed by editing a single cell inline. Takes just the
+// fields the rule needs so either caller can feed it either a fresh form read
+// or an existing-row + patch merge.
+//
+// `order` needs no validation: both paths derive it from base_set via
+// makeupSetOrder() rather than accepting a submitted value.
+function validateBaseSetInvariants(values: { slug: string; base_set: string | null }) {
   if (values.base_set && values.base_set === values.slug) return 'A set cannot be its own base.'
   return null
 }
@@ -69,7 +149,7 @@ function validate(values: ReturnType<typeof readForm>) {
   if (!values.title) return 'Title is required.'
   if (!values.slug) return 'Slug is required.'
   if (!values.rarity) return 'Rarity is required.'
-  return validateBaseEvolutionInvariants(values)
+  return validateBaseSetInvariants(values)
 }
 
 export async function addMakeupSet(_: unknown, formData: FormData) {
@@ -80,10 +160,17 @@ export async function addMakeupSet(_: unknown, formData: FormData) {
   const invalid = validate(formValues)
   if (invalid) return { error: invalid }
   const { makeupCategories, ...values } = formValues
-  // validate() already rejected a falsy rarity — narrow the DB's NOT NULL column.
-  const insertValues = { ...values, rarity: values.rarity as number }
 
   const supabase = await createClient()
+
+  // An evolution's pairing is derived from its base set's, so the form submits
+  // no outfit for one and any stale value is discarded here.
+  const outfit_set = values.base_set
+    ? await deriveEvolutionOutfitSet(supabase, values.base_set)
+    : values.outfit_set
+  // validate() already rejected a falsy rarity — narrow the DB's NOT NULL column.
+  const insertValues = { ...values, outfit_set, rarity: values.rarity as number }
+
   const { error } = await supabase.from('makeup_sets').insert([insertValues])
   if (error) return { error: error.message }
 
@@ -124,10 +211,17 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
   const invalid = validate(formValues)
   if (invalid) return { error: invalid }
   const { makeupCategories, ...values } = formValues
-  // validate() already rejected a falsy rarity — narrow the DB's NOT NULL column.
-  const updateValues = { ...values, rarity: values.rarity as number }
 
   const supabase = await createClient()
+
+  // An evolution's pairing is derived from its base set's, so the form submits
+  // no outfit for one and any stale value is discarded here.
+  const outfit_set = values.base_set
+    ? await deriveEvolutionOutfitSet(supabase, values.base_set)
+    : values.outfit_set
+  // validate() already rejected a falsy rarity — narrow the DB's NOT NULL column.
+  const updateValues = { ...values, outfit_set, rarity: values.rarity as number }
+
   const { error } = await supabase.from('makeup_sets').update(updateValues).eq('slug', originalSlug)
   if (error) return { error: error.message }
 
@@ -150,6 +244,15 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
         .eq('slug', v.slug)
       if (renameError) return { error: renameError.message }
     }
+  }
+
+  // This set's evolutions read their pairing off it, so repointing a base set at
+  // a different outfit has to move them too. Runs after the write above (the
+  // derivation reads the base's stored pairing) and after the rename (base_set
+  // cascades on the slug change, so `slug` already matches them).
+  if (!values.base_set) {
+    const { error: pairingError } = await syncEvolutionOutfitSets(supabase, slug)
+    if (pairingError) return { error: pairingError }
   }
 
   // Sync variants: diff DB state against (state slugs × categories), covering
@@ -344,7 +447,6 @@ export async function updateMakeupSetRow(
     season_category?: string | null
     outfit_set?: string | null
     base_set?: string | null
-    order?: number
   }
 ) {
   const role = await getUserRole()
@@ -360,15 +462,13 @@ export async function updateMakeupSetRow(
     if (normalized[key] === '') normalized[key] = null
   }
 
-  // The grid only sends CHANGED fields (e.g. a lone `order` edit), so the
-  // base/evolution invariants can't be checked against `fields` alone — an
-  // edit to `order` must be validated against the row's existing `base_set`,
-  // and vice versa. Fetch the current row and validate the merged result.
-  // The self-base check also needs the row's slug, which `fields` never
-  // carries (slug isn't editable in the grid).
+  // The grid only sends CHANGED fields, so base_set may be absent from this
+  // patch while still deciding the row's derived `order`. Fetch the current row
+  // and resolve against the merged result. The self-base check also needs the
+  // row's slug, which `fields` never carries (slug isn't editable in the grid).
   const { data: existing, error: fetchError } = await supabase
     .from('makeup_sets')
-    .select('slug, base_set, order')
+    .select('slug, base_set')
     .eq('id', id)
     .single()
   if (fetchError) throw new Error(fetchError.message)
@@ -376,18 +476,43 @@ export async function updateMakeupSetRow(
   const merged = {
     slug: existing.slug,
     base_set: 'base_set' in normalized ? (normalized.base_set ?? null) : existing.base_set,
-    order: normalized.order ?? existing.order,
   }
-  const invalid = validateBaseEvolutionInvariants(merged)
+  const invalid = validateBaseSetInvariants(merged)
   if (invalid) throw new Error(invalid)
 
+  // An evolution's pairing is derived from its base set's, so the Associated
+  // Outfit cell is read-only on an evolution row and any value in the patch is
+  // replaced. A base row keeps whatever the patch carries — that cell is where
+  // the whole line's pairing is authored.
+  const derivedPairing = merged.base_set
+    ? { outfit_set: await deriveEvolutionOutfitSet(supabase, merged.base_set) }
+    : {}
+
+  // `order` is written on every row edit rather than only when base_set moves:
+  // it costs nothing when the row already conforms, and it self-heals a legacy
+  // row whose stored order predates the derivation. The grid reads both derived
+  // columns back off the returned row.
   const { data, error } = await supabase
     .from('makeup_sets')
-    .update({ ...normalized, updated_at: new Date().toISOString() })
+    .update({
+      ...normalized,
+      ...derivedPairing,
+      order: makeupSetOrder(merged),
+      updated_at: new Date().toISOString(),
+    })
     .eq('id', id)
     .select()
     .single()
 
   if (error) throw new Error(error.message)
-  return data
+
+  // Editing a base row's pairing moves its evolutions' too. They are separate
+  // grid rows, so they come back alongside the written row for the grid to merge
+  // — without that they would show a stale outfit until the page reloads.
+  const cascaded: EvolutionPairingSync = merged.base_set
+    ? { error: null, rows: [] }
+    : await syncEvolutionOutfitSets(supabase, data.slug)
+  if (cascaded.error) throw new Error(cascaded.error)
+
+  return { row: data, cascadedEvolutions: cascaded.rows }
 }

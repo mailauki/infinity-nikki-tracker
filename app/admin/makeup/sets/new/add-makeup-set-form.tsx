@@ -18,6 +18,7 @@ import { toSlug } from '@/lib/utils'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
+import { MAKEUP_EVOLUTION_ORDER, resolveEvolutionOutfitSet } from '@/hooks/makeup'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
@@ -52,7 +53,6 @@ export default function AddMakeupSetForm({
   const [seasonCategory, setSeasonCategory] = useState('')
   const [outfitSet, setOutfitSet] = useState<string | null>(null)
   const [baseSet, setBaseSet] = useState<string | null>(null)
-  const [order, setOrder] = useState<number | ''>(1)
   const [slugEdited, setSlugEdited] = useState(false)
 
   // Every makeup set always has all of the categories — there is nothing to
@@ -66,13 +66,17 @@ export default function AddMakeupSetForm({
     if (!slugEdited) setSlug(toSlug(value))
   }
 
-  function handleBaseSetChange(value: string | null) {
-    setBaseSet(value)
-    setOrder(value ? 2 : 1)
-  }
-
   const selectedOutfitSet = outfitSets.find((s) => s.slug === outfitSet) ?? null
   const selectedBaseSet = makeupSets.find((s) => s.slug === baseSet) ?? null
+
+  // The pairing an evolution resolves to, off its base set's own. Computed from
+  // the full outfit list this form already holds so the read-only field shows
+  // exactly what the Server Action will write.
+  const derivedOutfitSlug = resolveEvolutionOutfitSet(
+    selectedBaseSet?.outfit_set ?? null,
+    outfitSets
+  )
+  const derivedOutfitSet = outfitSets.find((s) => s.slug === derivedOutfitSlug) ?? null
 
   const [state, action, pending] = useActionState(addMakeupSet, null)
 
@@ -103,7 +107,6 @@ export default function AddMakeupSetForm({
       setSeasonCategory('')
       setOutfitSet(null)
       setBaseSet(null)
-      setOrder(1)
       setSlugEdited(false)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
@@ -184,29 +187,47 @@ export default function AddMakeupSetForm({
           </Select>
         </FormControl>
 
-        <input name="outfit_set" type="hidden" value={outfitSet ?? ''} />
-        {/* Titles are deliberately non-unique (evolution subtitles repeat across
-            sets, e.g. two "Rainbow" rows), so key the option on the slug —
-            MUI's default key is the label, which collides and warns. */}
-        <Autocomplete
-          clearOnEscape
-          getOptionLabel={(option) => option.title ?? option.slug ?? ''}
-          isOptionEqualToValue={(option, val) => option.slug === val.slug}
-          options={outfitSets}
-          renderInput={(params) => <TextField {...params} label="Associated Outfit" />}
-          renderOption={(props, option) => {
-            // Drop MUI's label-derived key in favour of the unique slug.
-            const { key, ...optionProps } = props
-            void key
-            return (
-              <li {...optionProps} key={option.slug}>
-                {option.title ?? option.slug}
-              </li>
-            )
-          }}
-          value={selectedOutfitSet}
-          onChange={(_e, newValue) => setOutfitSet(newValue?.slug ?? null)}
-        />
+        {/* An evolution's pairing is derived from its base set's, so it is shown
+            rather than chosen and no outfit_set is submitted — the Server Action
+            resolves the same value. Only a base set authors a pairing. */}
+        {baseSet ? (
+          <TextField
+            disabled
+            helperText="Follows the base set — the outfit line's max evolution."
+            label="Associated Outfit"
+            value={
+              derivedOutfitSet?.title ??
+              derivedOutfitSlug ??
+              'None — set one on the base makeup set'
+            }
+          />
+        ) : (
+          <>
+            <input name="outfit_set" type="hidden" value={outfitSet ?? ''} />
+            {/* Titles are deliberately non-unique (evolution subtitles repeat
+                across sets, e.g. two "Rainbow" rows), so key the option on the
+                slug — MUI's default key is the label, which collides and warns. */}
+            <Autocomplete
+              clearOnEscape
+              getOptionLabel={(option) => option.title ?? option.slug ?? ''}
+              isOptionEqualToValue={(option, val) => option.slug === val.slug}
+              options={outfitSets}
+              renderInput={(params) => <TextField {...params} label="Associated Outfit" />}
+              renderOption={(props, option) => {
+                // Drop MUI's label-derived key in favour of the unique slug.
+                const { key, ...optionProps } = props
+                void key
+                return (
+                  <li {...optionProps} key={option.slug}>
+                    {option.title ?? option.slug}
+                  </li>
+                )
+              }}
+              value={selectedOutfitSet}
+              onChange={(_e, newValue) => setOutfitSet(newValue?.slug ?? null)}
+            />
+          </>
+        )}
 
         <input name="base_set" type="hidden" value={baseSet ?? ''} />
         <Autocomplete
@@ -214,7 +235,17 @@ export default function AddMakeupSetForm({
           getOptionLabel={(option) => option.title ?? option.slug ?? ''}
           isOptionEqualToValue={(option, val) => option.slug === val.slug}
           options={makeupSets}
-          renderInput={(params) => <TextField {...params} label="Evolution of" />}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              helperText={
+                baseSet
+                  ? `Order is automatic — a makeup evolution is always ${MAKEUP_EVOLUTION_ORDER}`
+                  : 'Leave empty for a base set'
+              }
+              label="Evolution of"
+            />
+          )}
           renderOption={(props, option) => {
             // Drop MUI's label-derived key in favour of the unique slug.
             const { key, ...optionProps } = props
@@ -226,24 +257,8 @@ export default function AddMakeupSetForm({
             )
           }}
           value={selectedBaseSet}
-          onChange={(_e, newValue) => handleBaseSetChange(newValue?.slug ?? null)}
+          onChange={(_e, newValue) => setBaseSet(newValue?.slug ?? null)}
         />
-
-        {baseSet && (
-          <Box sx={{ maxWidth: 160 }}>
-            <TextField
-              fullWidth
-              required
-              label="Order"
-              name="order"
-              slotProps={{ htmlInput: { min: 2 } }}
-              type="number"
-              value={order}
-              onChange={(e) => setOrder(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-            />
-          </Box>
-        )}
-        {!baseSet && <input name="order" type="hidden" value={1} />}
 
         <Stack spacing={1}>
           <Typography variant="title">Categories</Typography>

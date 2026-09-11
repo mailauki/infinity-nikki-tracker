@@ -6,13 +6,77 @@ import {
   MakeupVariant,
   ObtainedMakeup,
 } from '@/lib/types/makeup'
-import { EvolvableLinkedSet } from '@/lib/types/outfit'
+import { EvolvableLinkedSet, OutfitSetRaw } from '@/lib/types/outfit'
 
 // Base vs evolution resolution lives here and nowhere else. A base row has
 // base_set === null (order 1); an evolution row points base_set at its base's
-// slug (order >= 2). Never inline this check at a call site.
+// slug (order 4 — see makeupSetOrder below). Never inline this check at a call
+// site.
 export function isBaseMakeupSet(row: Pick<MakeupSetRaw, 'base_set'>) {
   return row.base_set === null
+}
+
+// `order` is derived from base_set, never chosen: a base set is always 1, and a
+// makeup evolution is always the outfit line's max evolution — order 4, paired
+// with the order-4 outfit_sets row it hangs off. The admin forms and the sets
+// DataGrid therefore show no order control; both mutation paths in
+// app/admin/makeup/sets/actions.ts call makeupSetOrder() instead.
+export const MAKEUP_BASE_ORDER = 1
+export const MAKEUP_EVOLUTION_ORDER = 4
+
+export function makeupSetOrder(row: Pick<MakeupSetRaw, 'base_set'>) {
+  return isBaseMakeupSet(row) ? MAKEUP_BASE_ORDER : MAKEUP_EVOLUTION_ORDER
+}
+
+/** The outfit_sets columns the pairing derivation reads. */
+export type OutfitLineRow = Pick<OutfitSetRaw, 'slug' | 'base_set' | 'order'>
+
+/**
+ * Which outfit a makeup EVOLUTION pairs with, derived from the outfit its base
+ * makeup set pairs with. Makeup pairings are evolution-to-evolution (see
+ * EvolvableLinkedSet) — an evolution hangs off the outfit line's max evolution,
+ * order 4, the same order the makeup evolution itself carries — so the pairing
+ * follows from the base set's and is never picked by hand.
+ *
+ * `outfitSets` is any collection of outfit_sets rows containing the base's
+ * paired row and that line's siblings: the admin forms pass their full list,
+ * the Server Actions pass the rows they fetched for the one line.
+ *
+ * Returns null only when the base set has no pairing to derive from — there is
+ * nothing to point at then. Otherwise it always resolves to a row on the same
+ * line: the order-4 evolution, or, on a line that never reaches 4, its highest
+ * evolution and then the base's own pairing. Deriving must not silently blank
+ * out a link that exists, so it degrades instead of returning null.
+ */
+export function resolveEvolutionOutfitSet(
+  baseOutfitSet: string | null,
+  outfitSets: OutfitLineRow[]
+): string | null {
+  if (!baseOutfitSet) return null
+
+  const paired = outfitSets.find((outfit) => outfit.slug === baseOutfitSet)
+  if (!paired) return null
+
+  // The base's own pairing may already be an evolution, so walk up to the line
+  // root before collecting siblings off it.
+  const root = paired.base_set ?? paired.slug
+
+  // Orders on an outfit line: the base is 1 and a glow-up is 0, so an `>= 2`
+  // floor leaves exactly the ordinary evolutions. MAKEUP_EVOLUTION_ORDER is
+  // matched first to keep the rule exact; the highest is the graceful answer for
+  // a shorter line.
+  const evolutions = outfitSets.filter(
+    (outfit) => outfit.base_set === root && outfit.order >= MAKEUP_BASE_ORDER + 1
+  )
+
+  const atEvolutionOrder = evolutions.find((outfit) => outfit.order === MAKEUP_EVOLUTION_ORDER)
+  if (atEvolutionOrder) return atEvolutionOrder.slug
+
+  const highest = evolutions.reduce<OutfitLineRow | null>(
+    (best, outfit) => (best === null || outfit.order > best.order ? outfit : best),
+    null
+  )
+  return highest?.slug ?? paired.slug
 }
 
 // The bucket for set-less variants. A standalone piece is a variant carrying
