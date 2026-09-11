@@ -58,7 +58,7 @@ export function MakeupSetTable({
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {
-      const updated = await updateMakeupSetRow(newRow.id, {
+      const { row: updated, cascadedEvolutions } = await updateMakeupSetRow(newRow.id, {
         title: newRow.title ?? undefined,
         description: newRow.description,
         rarity: newRow.rarity ?? undefined,
@@ -68,10 +68,19 @@ export function MakeupSetTable({
         outfit_set: newRow.outfit_set,
         base_set: newRow.base_set,
       })
-      // `order` is derived from base_set server-side, so read it back off the
-      // written row — clearing or setting Base Set moves it between 1 and 4.
-      const merged = { ...newRow, order: updated.order }
-      setRows((prev) => prev.map((r) => (r.id === newRow.id ? merged : r)))
+      // Both are derived from base_set server-side, so read them back off the
+      // written row: setting or clearing Base Set moves `order` between 1 and 4
+      // and replaces an evolution's pairing with its base set's.
+      const merged = { ...newRow, order: updated.order, outfit_set: updated.outfit_set }
+      // Editing a base row's pairing re-derives its evolutions', which are their
+      // own rows here — patch them in or they show a stale outfit until reload.
+      const cascadedById = new Map(cascadedEvolutions.map((e) => [e.id, e.outfit_set] as const))
+      setRows((prev) =>
+        prev.map((r) => {
+          if (r.id === newRow.id) return merged
+          return cascadedById.has(r.id) ? { ...r, outfit_set: cascadedById.get(r.id) ?? null } : r
+        })
+      )
       return merged
     } catch {
       return oldRow
@@ -163,6 +172,8 @@ export function MakeupSetTable({
     {
       field: 'outfit_set',
       headerName: 'Associated Outfit',
+      description:
+        "Authored on a base set. An evolution derives it — the outfit line's max evolution.",
       width: 200,
       editable: true,
       type: 'singleSelect',
@@ -220,7 +231,9 @@ export function MakeupSetTable({
       {...DATA_GRID_DEFAULTS}
       columns={columns}
       getRowId={(row) => row.id}
-      isCellEditable={({ field }) => !LOCKED_FIELDS.includes(field)}
+      isCellEditable={({ field, row }) =>
+        !LOCKED_FIELDS.includes(field) && !(field === 'outfit_set' && Boolean(row.base_set))
+      }
       processRowUpdate={processRowUpdate}
       rowModesModel={rowModesModel}
       rows={rows}

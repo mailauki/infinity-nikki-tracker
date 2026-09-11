@@ -18,7 +18,7 @@ import { toSlug } from '@/lib/utils'
 import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
-import { MAKEUP_EVOLUTION_ORDER } from '@/hooks/makeup'
+import { MAKEUP_EVOLUTION_ORDER, resolveEvolutionOutfitSet } from '@/hooks/makeup'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
@@ -68,6 +68,15 @@ export default function AddMakeupSetForm({
 
   const selectedOutfitSet = outfitSets.find((s) => s.slug === outfitSet) ?? null
   const selectedBaseSet = makeupSets.find((s) => s.slug === baseSet) ?? null
+
+  // The pairing an evolution resolves to, off its base set's own. Computed from
+  // the full outfit list this form already holds so the read-only field shows
+  // exactly what the Server Action will write.
+  const derivedOutfitSlug = resolveEvolutionOutfitSet(
+    selectedBaseSet?.outfit_set ?? null,
+    outfitSets
+  )
+  const derivedOutfitSet = outfitSets.find((s) => s.slug === derivedOutfitSlug) ?? null
 
   const [state, action, pending] = useActionState(addMakeupSet, null)
 
@@ -178,29 +187,47 @@ export default function AddMakeupSetForm({
           </Select>
         </FormControl>
 
-        <input name="outfit_set" type="hidden" value={outfitSet ?? ''} />
-        {/* Titles are deliberately non-unique (evolution subtitles repeat across
-            sets, e.g. two "Rainbow" rows), so key the option on the slug —
-            MUI's default key is the label, which collides and warns. */}
-        <Autocomplete
-          clearOnEscape
-          getOptionLabel={(option) => option.title ?? option.slug ?? ''}
-          isOptionEqualToValue={(option, val) => option.slug === val.slug}
-          options={outfitSets}
-          renderInput={(params) => <TextField {...params} label="Associated Outfit" />}
-          renderOption={(props, option) => {
-            // Drop MUI's label-derived key in favour of the unique slug.
-            const { key, ...optionProps } = props
-            void key
-            return (
-              <li {...optionProps} key={option.slug}>
-                {option.title ?? option.slug}
-              </li>
-            )
-          }}
-          value={selectedOutfitSet}
-          onChange={(_e, newValue) => setOutfitSet(newValue?.slug ?? null)}
-        />
+        {/* An evolution's pairing is derived from its base set's, so it is shown
+            rather than chosen and no outfit_set is submitted — the Server Action
+            resolves the same value. Only a base set authors a pairing. */}
+        {baseSet ? (
+          <TextField
+            disabled
+            helperText="Follows the base set — the outfit line's max evolution."
+            label="Associated Outfit"
+            value={
+              derivedOutfitSet?.title ??
+              derivedOutfitSlug ??
+              'None — set one on the base makeup set'
+            }
+          />
+        ) : (
+          <>
+            <input name="outfit_set" type="hidden" value={outfitSet ?? ''} />
+            {/* Titles are deliberately non-unique (evolution subtitles repeat
+                across sets, e.g. two "Rainbow" rows), so key the option on the
+                slug — MUI's default key is the label, which collides and warns. */}
+            <Autocomplete
+              clearOnEscape
+              getOptionLabel={(option) => option.title ?? option.slug ?? ''}
+              isOptionEqualToValue={(option, val) => option.slug === val.slug}
+              options={outfitSets}
+              renderInput={(params) => <TextField {...params} label="Associated Outfit" />}
+              renderOption={(props, option) => {
+                // Drop MUI's label-derived key in favour of the unique slug.
+                const { key, ...optionProps } = props
+                void key
+                return (
+                  <li {...optionProps} key={option.slug}>
+                    {option.title ?? option.slug}
+                  </li>
+                )
+              }}
+              value={selectedOutfitSet}
+              onChange={(_e, newValue) => setOutfitSet(newValue?.slug ?? null)}
+            />
+          </>
+        )}
 
         <input name="base_set" type="hidden" value={baseSet ?? ''} />
         <Autocomplete
