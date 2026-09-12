@@ -34,12 +34,15 @@ via a PostgREST `.or()` filter, and its `escapeFilterValue` helper is reused her
 - Typo and accent tolerance — `blooom` and `eclair` find `Blooming Dreams` and `Éclair`.
 - A modal as the primary surface, showing the top 5 per type.
 - A `/search` page for the full, uncapped result list.
+- Multi-term queries that mix a name with an attribute — `moon iridescent` lands on the Moon set
+  already filtered to Iridescent, reusing the `?color=` param that page already reads.
 
 ## Non-Goals
 
 Explicitly out of scope for this pass:
 
-- Faceted filtering inside search (by rarity, season, obtained status).
+- Facets beyond the closed vocabularies listed under Facets — notably rarity, season, and obtained
+  status, none of which are matched as query terms in this pass.
 - Search history or saved/recent searches.
 - Typeahead suggestions or autocomplete of query terms.
 - Searching admin-only tables (`feedback`, `user_preferences`, `admin_preferences`).
@@ -169,32 +172,79 @@ and `similarity()`, so a single index covers both passes.
 
 `kind` → destination, resolved client-side in one map:
 
-| `kind`                                     | Destination                           |
-| ------------------------------------------ | ------------------------------------- |
-| `outfit_set`                               | `/outfits/[slug]`                     |
-| `outfit_evolution`                         | `/outfits/[parent_slug]`              |
-| `outfit_piece`                             | `/outfits/[parent_slug]?piece=[slug]` |
-| `eureka_set`                               | `/eureka/[slug]`                      |
-| `eureka_variant`                           | `/eureka/[parent_slug]?piece=[slug]`  |
-| `makeup_set`                               | `/makeup/[slug]`                      |
-| `makeup_variant`                           | `/makeup/[parent_slug]?piece=[slug]`  |
-| `momo_cloak`                               | `/momo-cloaks/[slug]`                 |
-| `season`                                   | `/seasons/[slug]`                     |
-| `trial`                                    | `/eureka/trials/[slug]`               |
-| `custom_look`                              | `/looks/[slug]`                       |
-| `profile`                                  | `/u/[username]`                       |
-| `ability` / `style` / `label` / `location` | no detail page — see below            |
+| `kind`                                     | Destination                               |
+| ------------------------------------------ | ----------------------------------------- |
+| `outfit_set`                               | `/outfits/[slug]`                         |
+| `outfit_evolution`                         | `/outfits/[parent_slug]`                  |
+| `outfit_piece`                             | `/outfits/[parent_slug]?evolution=[slug]` |
+| `eureka_set`                               | `/eureka/[slug]`                          |
+| `eureka_variant`                           | `/eureka/[parent_slug]?color=[color]`     |
+| `makeup_set`                               | `/makeup/[slug]`                          |
+| `makeup_variant`                           | `/makeup/[parent_slug]?evolution=[slug]`  |
+| `momo_cloak`                               | `/momo-cloaks/[slug]`                     |
+| `season`                                   | `/seasons/[slug]`                         |
+| `trial`                                    | `/eureka/trials/[slug]`                   |
+| `custom_look`                              | `/looks/[slug]`                           |
+| `profile`                                  | `/u/[username]`                           |
+| `ability` / `style` / `label` / `location` | a facet, not an entity — see Facets       |
 
-`ability`, `style`, `label` and `location` have no detail route. They are indexed because they are
-meaningful keywords, and their rows render as non-navigating context (e.g. "Style: Sweet") rather
-than links. A row without a destination is not rendered as a clickable target.
+### Reusing the existing detail-page params
 
-### Piece highlighting
+These params are **not new**. The detail pages already read them, so a search result is just a link
+someone could already have constructed by hand:
 
-A piece result carries `?piece=<slug>` to its parent set page. The set page already renders its
-variants; it reads the param and scrolls that variant into view with a transient highlight. Absent
-or unmatched, the param is ignored and the page renders normally — so a stale link degrades to the
-plain set page rather than erroring.
+- `app/eureka/[slug]/eureka-set-detail.tsx:29` reads `?color=` and validates it against that set's
+  own colors (`colors.some((c) => c.slug === colorParam)`), falling back to `null` when it does not
+  match. It drives real filtering — both the variant grid and the progress chip narrow to the
+  selected color.
+- `app/outfits/[slug]/outfit-set-detail.tsx:45` and `app/makeup/[slug]/makeup-set-detail.tsx:37`
+  read `?evolution=`.
+
+Because each page validates the param against its own data, a stale or wrong value degrades to the
+unfiltered page rather than erroring. An earlier draft of this design invented a `?piece=` param;
+it is dropped in favor of the conventions already in the codebase.
+
+## Facets
+
+Some query terms name a _filter_, not a thing. `ability`, `style`, `label` and `location` have no
+detail page, and eureka `color` / `category` are variant attributes rather than entities. All are
+small closed vocabularies — 5 styles, 30 labels, 48 abilities, 2 locations, plus the eureka color
+and category sets — so they can be loaded once and matched against query terms directly.
+
+### Multi-term resolution
+
+A query like `moon iridescent` is not one keyword. `moon` names a set; `iridescent` names a color.
+The result should be the Moon set's page _already filtered_ to Iridescent —
+`/eureka/moon?color=iridescent` — not two unrelated rows.
+
+The pipeline, in order:
+
+1. **Whole-query literal pass.** Run the full query as an entity search, exactly as described
+   above.
+2. **Facet split, only if that pass is thin.** Tokenize, claim any term that exactly matches a
+   facet value, and run the remaining terms as the entity search. Attach the claimed facets to each
+   result's destination as query params.
+3. **Combine**, literal matches first.
+
+Deferring the split until the literal pass is thin is the same rule already governing the fuzzy
+fallback: strict first, clever only on rescue. It resolves the ambiguous case by itself — `sweet
+bloom` finds the set "Sweet Bloom Dreams" literally, so it never splits into `style=sweet` +
+`bloom`. Only when there is no such set does `sweet` get claimed as a style facet.
+
+A claimed facet is applied only where it is meaningful: a `color` facet narrows eureka
+destinations, and is ignored for a season or profile result rather than appended as a dead param.
+
+### Facet-only queries
+
+When every term is claimed and nothing remains for the entity search, the result is the filter
+itself — a single row such as "All Iridescent items" or "Style: Sweet", linking to the relevant
+grid. These rows render in their own "Filters" section, above the entity sections.
+
+**Scope note:** the _grid_ routes (`/eureka`, `/outfits`) do not currently read filter params — their
+filters live in provider state and user preferences. So a facet-only row can link to a filtered
+**detail** page today, but linking to a filtered **grid** requires teaching those routes to accept a
+param and seed the provider from it. That work is deliberately staged last (see Rollout) and is the
+one part of this design that touches existing filter plumbing.
 
 ### Client components
 
@@ -228,10 +278,15 @@ Shareability is a side effect, not a goal.
   `follow-search.ts`; asserts an all-punctuation query is rejected rather than reduced to a
   match-everything filter.
 - **`components/__tests__/search-results.test.tsx`** — grouping, per-kind capping, the truncation
-  flag that drives the footer link, and that a `kind` with no destination renders unlinked.
+  flag that drives the footer link, and that the Filters section renders above the entity sections.
 - **`lib/__tests__/search-routing.test.ts`** — every `kind` in the view maps to a destination or is
-  explicitly marked non-navigating. This is the guard that a newly indexed table cannot silently
-  produce dead rows.
+  explicitly declared a facet. This is the guard that a newly indexed table cannot silently produce
+  dead rows.
+- **`lib/__tests__/search-facets.test.ts`** — the term-claiming pipeline, and the case that
+  motivated it: `moon iridescent` yields the Moon set with `color=iridescent` attached, while
+  `sweet bloom` stays a literal set match and does _not_ split into `style=sweet`. Also that a
+  claimed facet is dropped for destinations where it is meaningless rather than appended as a dead
+  param.
 - **One SQL check** — that the fuzzy fallback fires only when the strict pass is thin: a query with
   many exact matches returns no low-similarity rows, and a misspelling still returns its target.
 
@@ -240,12 +295,17 @@ Shareability is a side effect, not a goal.
 1. Migration: the view, the RPC, the trigram indexes.
 2. `search-results.tsx` + tests.
 3. `search-dialog.tsx`, wire the `search-collection.tsx` trigger and ⌘K.
-4. `/search` page.
-5. `?piece=` highlight handling on the set detail pages.
+4. Facet vocabulary + term-claiming, attaching params to detail destinations.
+5. `/search` page.
+6. Filter params on the grid routes (`/eureka`, `/outfits`), enabling facet-only rows to link to a
+   filtered grid.
 
-Steps 4 and 5 are additive — 1–3 ship a working modal on their own.
+Steps 1–3 ship a working modal on their own. Step 4 needs no route changes — it reuses `?color=`
+and `?evolution=`, which the detail pages already read. Step 6 is the only step that touches
+existing filter plumbing, and is last for that reason.
 
 ## Open Questions
 
-None blocking. Two knobs expected to need tuning against real queries once live: the `0.3`
-similarity threshold and the 5-row fuzzy trigger.
+None blocking. Three knobs expected to need tuning against real queries once live: the `0.3`
+similarity threshold, the 5-row fuzzy trigger, and the thinness threshold that decides when to
+attempt a facet split.
