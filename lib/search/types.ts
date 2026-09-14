@@ -43,9 +43,16 @@ export type SearchResult = {
   // `{set}-{category}-{color}` but the detail page's ?color= validates
   // against bare color slugs. Null for every other kind.
   filter_value: string | null
+  // The bare category slug a toggle must key on, when the row's `subtitle` is
+  // NOT that category. Only eureka variants set it (head/hands/feet): their
+  // subtitle is the parent set title ("Masked Magic"), and passing that as the
+  // category writes junk rows into obtained_eureka. Null for every other kind,
+  // where the subtitle already IS the category.
+  filter_category: string | null
   // Collection state for the four collectible kinds, resolved by the RPC for
   // the rows on screen only. Null for non-collectible kinds (seasons, trials,
-  // profiles) and null for signed-out viewers, since RLS returns them no rows.
+  // profiles). False -- not null -- for signed-out viewers: the RPC's EXISTS
+  // clauses are scoped to auth.uid(), which is null when signed out.
   obtained: boolean | null
   rank: number
 }

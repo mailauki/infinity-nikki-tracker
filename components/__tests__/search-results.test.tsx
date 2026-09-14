@@ -11,6 +11,7 @@ const result = (
   image_url: null,
   parent_slug: null,
   filter_value: null,
+  filter_category: null,
   obtained: null,
   rank: 1,
   ...over,

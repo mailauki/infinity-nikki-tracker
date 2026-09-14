@@ -13,7 +13,7 @@ export function isCollectible(result: SearchResult): boolean {
 }
 
 export function actionFor(result: SearchResult): ObtainedAction | null {
-  const { kind, slug, parent_slug, subtitle, filter_value } = result
+  const { kind, slug, parent_slug, subtitle, filter_value, filter_category } = result
 
   switch (kind) {
     case 'outfit_piece':
@@ -21,9 +21,16 @@ export function actionFor(result: SearchResult): ObtainedAction | null {
       return { fn: 'outfit', args: [parent_slug, subtitle ?? '', slug] }
     // Keys on the bare color, not the slug -- the slug is
     // `{set}-{category}-{color}` and obtained_eureka.color holds only the color.
+    //
+    // The category comes from filter_category, NEVER from subtitle: a eureka
+    // variant's subtitle is its parent SET TITLE ("Masked Magic"), while
+    // obtained_eureka.category only ever holds head/hands/feet. Passing the
+    // subtitle made the scoped DELETE match nothing and then INSERT a junk row,
+    // so the item never read as obtained, re-clicking duplicated the row, and
+    // every countObtained() progress chip was corrupted.
     case 'eureka_variant':
-      if (!parent_slug || !filter_value) return null
-      return { fn: 'eureka', args: [parent_slug, subtitle ?? '', filter_value] }
+      if (!parent_slug || !filter_value || !filter_category) return null
+      return { fn: 'eureka', args: [parent_slug, filter_category, filter_value] }
     case 'makeup_variant':
       if (!parent_slug) return null
       return { fn: 'makeup', args: [parent_slug, subtitle ?? '', slug] }

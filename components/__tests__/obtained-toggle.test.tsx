@@ -19,6 +19,7 @@ const base: SearchResult = {
   image_url: null,
   parent_slug: null,
   filter_value: null,
+  filter_category: null,
   obtained: false,
   rank: 1,
 }
