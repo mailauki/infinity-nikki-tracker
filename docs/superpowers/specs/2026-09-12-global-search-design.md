@@ -41,6 +41,12 @@ via a PostgREST `.or()` filter, and its `escapeFilterValue` helper is reused her
 
 Explicitly out of scope for this pass:
 
+- Filter/sort controls on search results, and collection progress chips. Search results carry an
+  obtained toggle (see Obtained State) but deliberately none of the browsing machinery the grid
+  pages own — a combined cross-domain browsing surface would need all four domain providers
+  mounted at once (1,145 lines of provider fetching every set and every obtained row before the
+  page is useful), which is the opposite of what a search surface is for. That belongs in its own
+  spec as a "collections" page.
 - Facets beyond the closed vocabularies listed under Facets — notably rarity, season, and obtained
   status, none of which are matched as query terms in this pass.
 - Search history or saved/recent searches.
@@ -271,6 +277,33 @@ The `/search` page reads its query from **`?q=`**. This is not a sharing feature
 only input. A "See all results" link must carry the query somehow, and a link that only works when
 the user arrived via the modal would make the page unreachable by refresh or direct load.
 Shareability is a side effect, not a goal.
+
+## Obtained State
+
+Search is a finding surface, but finding a piece and ticking it off is one gesture, not two. Each
+result for a collectible kind carries its own obtained state and a toggle, with none of the
+filter/sort/progress machinery the grid pages own.
+
+`search_all` returns an `obtained boolean` per row, resolved in the same query via an `EXISTS`
+against the relevant `obtained_*` table — scoped to the ~20 rows on screen rather than the whole
+collection. It is null for non-collectible kinds (seasons, trials, profiles, styles) and null for
+signed-out viewers, since RLS returns them no rows. `SECURITY INVOKER` is what enforces that: one
+user can never see another's collection state.
+
+Keying per domain, matching what each `toggle_obtained_*` RPC takes:
+
+| Kind | Obtained table | Key |
+|---|---|---|
+| `outfit_piece` | `obtained_outfit` | `outfit_set` = parent, `outfit_variant` = slug |
+| `eureka_variant` | `obtained_eureka` | `eureka_set` = parent, `color` = filter_value |
+| `makeup_variant` | `obtained_makeup` | `makeup_set` = parent, `makeup_variant` = slug |
+| `momo_cloak` | `obtained_momo_cloaks` | `momo_cloak` = slug |
+
+Toggling calls the existing `toggle_obtained`, `toggle_obtained_outfit`, `toggle_obtained_makeup`
+and `toggle_obtained_momo_cloak` RPCs — all four already exist and take exactly these keys. The
+update is optimistic, matching the grid pages' `useTransition` + `notistack` pattern, and a result
+never leaves the list when toggled: the missing-filter cull that `useExitHold` exists to manage has
+no equivalent here, because search results are not filtered by obtained state.
 
 ## Testing
 

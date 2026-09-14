@@ -40,6 +40,9 @@
 | `hooks/data/search.ts`                          | The `search_all` RPC call                                     |
 | `components/search/search-results.tsx`          | Container-agnostic grouped result list                        |
 | `components/search/search-dialog.tsx`           | The modal: input state, debounce, ⌘K                          |
+| `components/search/obtained-toggle.tsx`         | Per-row obtained toggle (Task 8b)                             |
+| `lib/search/obtained.ts`                        | Maps a result to its `toggle_obtained_*` RPC (Task 8b)        |
+| `app/search/search-page-results.tsx`            | Client results wrapper for `/search` (Task 8)                 |
 | `app/search/page.tsx`                           | Full uncapped results, reads `?q=`                            |
 
 **Modify:**
@@ -48,7 +51,7 @@
 - `components/navbar/layout-shell.tsx` — mount the dialog once, app-wide (verify the exact mount point when you get there).
 - `lib/types/supabase.ts` — regenerate after the migration; do not hand-edit.
 
-Tasks 1–6 ship a working modal. Tasks 7–8 are additive.
+Tasks 1–6 ship a working modal. Tasks 7, 8 and 8b are additive; Task 9 is deferred.
 
 ---
 
@@ -62,7 +65,7 @@ Tasks 1–6 ship a working modal. Tasks 7–8 are additive.
 **Interfaces:**
 
 - Consumes: nothing — first task.
-- Produces: view `public.search_index` with columns `(kind text, slug text, title text, subtitle text, image_url text, parent_slug text, filter_value text, haystack text)`; RPC `public.search_all(q text)` returning `setof` that same shape plus `rank real`.
+- Produces: view `public.search_index` with columns `(kind text, slug text, title text, subtitle text, image_url text, parent_slug text, filter_value text, haystack text)`; RPC `public.search_all(q text)` returning `setof` that same shape plus `obtained boolean` and `rank real`.
 
 **Context you need:**
 
@@ -456,6 +459,7 @@ const base = {
   image_url: null,
   parent_slug: null,
   filter_value: null,
+  obtained: null,
   rank: 1,
 }
 
@@ -558,6 +562,10 @@ export type SearchResult = {
   // `{set}-{category}-{color}` but the detail page's ?color= validates against
   // bare color slugs. Null for every other kind.
   filter_value: string | null
+  // Collection state for the four collectible kinds, resolved by the RPC for
+  // the rows on screen only. Null for non-collectible kinds (seasons, trials,
+  // profiles) and null for signed-out viewers, since RLS returns them no rows.
+  obtained: boolean | null
   rank: number
 }
 
@@ -731,6 +739,7 @@ const result = (
   image_url: null,
   parent_slug: null,
   filter_value: null,
+  obtained: null,
   rank: 1,
   ...over,
 })
@@ -1306,6 +1315,178 @@ yarn dev
 yarn tsc --noEmit && yarn test && yarn lint
 git add app/search components/search/search-dialog.tsx
 git commit -m "feat(search): add /search page for full results"
+```
+
+---
+
+### Task 8b: Obtained toggle on search results
+
+**Files:**
+
+- Create: `lib/search/obtained.ts`, `components/search/obtained-toggle.tsx`
+- Modify: `components/search/search-results.tsx`
+- Test: `lib/__tests__/search-obtained.test.ts`
+
+**Interfaces:**
+
+- Consumes: `SearchResult` (now carrying `obtained: boolean | null`).
+- Produces: `toggleObtainedFor(result): Promise<void>`, `isCollectible(result): boolean`, and the
+  `ObtainedToggle` component.
+
+**Context:** `search_all` already returns `obtained` per row (Task 1's migration). All four
+`toggle_obtained_*` RPCs already exist and take the keys below — do not write new ones. This task
+adds NO filter, sort, or progress UI: search stays a finding surface (see the spec's Non-Goals).
+
+| Kind | RPC | Args |
+|---|---|---|
+| `outfit_piece` | `toggle_obtained_outfit` | `p_outfit_set` = parent_slug, `p_outfit_category` = subtitle, `p_outfit_variant` = slug |
+| `eureka_variant` | `toggle_obtained` | `p_eureka_set` = parent_slug, `p_category` = subtitle, `p_color` = filter_value |
+| `makeup_variant` | `toggle_obtained_makeup` | `p_makeup_set` = parent_slug, `p_makeup_category` = subtitle, `p_makeup_variant` = slug |
+| `momo_cloak` | `toggle_obtained_momo_cloak` | `p_momo_cloak` = slug |
+
+- [ ] **Step 1: Write the failing test**
+
+```ts
+import { describe, expect, it } from 'vitest'
+import { isCollectible, rpcArgsFor } from '@/lib/search/obtained'
+
+const base = {
+  title: 'X', subtitle: 'head', image_url: null, parent_slug: 'moon',
+  filter_value: null, obtained: false, rank: 1,
+}
+
+describe('isCollectible', () => {
+  it('is true for the four collectible kinds', () => {
+    expect(isCollectible({ ...base, kind: 'outfit_piece', slug: 'a' })).toBe(true)
+    expect(isCollectible({ ...base, kind: 'momo_cloak', slug: 'a' })).toBe(true)
+  })
+
+  // A season has no obtained state -- it must render no toggle at all.
+  it('is false for a non-collectible kind', () => {
+    expect(isCollectible({ ...base, kind: 'season', slug: 'a' })).toBe(false)
+  })
+})
+
+describe('rpcArgsFor', () => {
+  it('maps an outfit piece to the outfit RPC', () => {
+    expect(rpcArgsFor({ ...base, kind: 'outfit_piece', slug: 'pin' })).toEqual({
+      fn: 'toggle_obtained_outfit',
+      args: { p_outfit_set: 'moon', p_outfit_category: 'head', p_outfit_variant: 'pin' },
+    })
+  })
+
+  // Eureka keys on the bare color, not the slug -- same reason routing does.
+  it('maps a eureka variant to the eureka RPC keyed on filter_value', () => {
+    expect(
+      rpcArgsFor({ ...base, kind: 'eureka_variant', slug: 'moon-head-blue', filter_value: 'blue' })
+    ).toEqual({
+      fn: 'toggle_obtained',
+      args: { p_eureka_set: 'moon', p_category: 'head', p_color: 'blue' },
+    })
+  })
+
+  it('returns null for a non-collectible kind', () => {
+    expect(rpcArgsFor({ ...base, kind: 'season', slug: 'a' })).toBeNull()
+  })
+})
+```
+
+- [ ] **Step 2: Run it and verify it fails**
+
+Run: `yarn test lib/__tests__/search-obtained.test.ts`
+Expected: FAIL — cannot resolve `@/lib/search/obtained`.
+
+- [ ] **Step 3: Implement `lib/search/obtained.ts`**
+
+```ts
+import { createClient } from '@/lib/supabase/client'
+import type { SearchResult } from './types'
+
+type RpcCall =
+  | { fn: 'toggle_obtained_outfit'; args: { p_outfit_set: string; p_outfit_category: string; p_outfit_variant: string } }
+  | { fn: 'toggle_obtained'; args: { p_eureka_set: string; p_category: string; p_color: string } }
+  | { fn: 'toggle_obtained_makeup'; args: { p_makeup_set: string; p_makeup_category: string; p_makeup_variant: string } }
+  | { fn: 'toggle_obtained_momo_cloak'; args: { p_momo_cloak: string } }
+
+// Only these four kinds have collection state. Everything else renders no
+// toggle at all rather than a disabled one.
+export function isCollectible(result: SearchResult): boolean {
+  return rpcArgsFor(result) !== null
+}
+
+export function rpcArgsFor(result: SearchResult): RpcCall | null {
+  const { kind, slug, parent_slug, subtitle, filter_value } = result
+
+  switch (kind) {
+    case 'outfit_piece':
+      if (!parent_slug) return null
+      return {
+        fn: 'toggle_obtained_outfit',
+        args: { p_outfit_set: parent_slug, p_outfit_category: subtitle ?? '', p_outfit_variant: slug },
+      }
+    // Keys on the bare color, not the slug -- the slug is
+    // `{set}-{category}-{color}` and obtained_eureka.color holds only the color.
+    case 'eureka_variant':
+      if (!parent_slug || !filter_value) return null
+      return {
+        fn: 'toggle_obtained',
+        args: { p_eureka_set: parent_slug, p_category: subtitle ?? '', p_color: filter_value },
+      }
+    case 'makeup_variant':
+      if (!parent_slug) return null
+      return {
+        fn: 'toggle_obtained_makeup',
+        args: { p_makeup_set: parent_slug, p_makeup_category: subtitle ?? '', p_makeup_variant: slug },
+      }
+    case 'momo_cloak':
+      return { fn: 'toggle_obtained_momo_cloak', args: { p_momo_cloak: slug } }
+    default:
+      return null
+  }
+}
+
+export async function toggleObtainedFor(result: SearchResult): Promise<void> {
+  const call = rpcArgsFor(result)
+  if (!call) return
+
+  const supabase = createClient()
+  const { error } = await supabase.rpc(call.fn, call.args)
+  if (error) throw error
+}
+```
+
+- [ ] **Step 4: Run tests and verify they pass**
+
+Run: `yarn test lib/__tests__/search-obtained.test.ts`
+Expected: PASS, 5 tests.
+
+- [ ] **Step 5: Add the toggle component**
+
+`components/search/obtained-toggle.tsx` — a `'use client'` `IconButton` in a `ListItemSecondaryAction`,
+optimistic via `useTransition`, `notistack` snackbar on failure, matching how the grid cards toggle.
+Filled icon when obtained, outline when not. It must render nothing when `isCollectible` is false,
+and nothing when `obtained` is null (signed out).
+
+Wire it into `search-results.tsx` as the row's secondary action. The row keeps its existing link
+behavior — the toggle must call `event.preventDefault()` and `event.stopPropagation()` so ticking a
+piece does not also navigate away from the results.
+
+- [ ] **Step 6: Verify by hand**
+
+```bash
+yarn dev
+```
+
+Search a piece you do not own. Expected: an outline icon; clicking fills it immediately and does
+NOT navigate; the row stays in the list; reopening search shows it still obtained. Signed out:
+no toggles render at all.
+
+- [ ] **Step 7: Type-check and commit**
+
+```bash
+yarn tsc --noEmit && yarn test
+git add lib/search/obtained.ts components/search lib/__tests__/search-obtained.test.ts
+git commit -m "feat(search): toggle obtained state from search results"
 ```
 
 ---
