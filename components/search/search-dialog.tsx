@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import {
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -183,6 +185,16 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
         />
         {isSearchableQuery(query) && (
           <SearchResults facets={facets} limitPerKind={5} results={results} onNavigate={onClose} />
+        )}
+        {results.length > 5 && (
+          <Button
+            fullWidth
+            component={Link}
+            href={`/search?q=${encodeURIComponent(query)}`}
+            onClick={onClose}
+          >
+            See all {results.length} results
+          </Button>
         )}
       </DialogContent>
     </Dialog>
