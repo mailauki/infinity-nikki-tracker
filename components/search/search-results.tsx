@@ -1,9 +1,20 @@
 'use client'
 
 import Link from 'next/link'
-import { Box, Chip, List, ListItemButton, ListItemText, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Chip,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Stack,
+  Typography,
+} from '@mui/material'
 
+import ObtainedToggle from '@/components/search/obtained-toggle'
 import { destinationFor } from '@/lib/search/routing'
+import { isCollectible } from '@/lib/search/obtained'
 import { KIND_LABELS, SEARCH_KINDS, type SearchFacet, type SearchResult } from '@/lib/search/types'
 
 export default function SearchResults({
@@ -55,15 +66,18 @@ export default function SearchResults({
                 const href = destinationFor(match, facets)
                 if (!href) return null
 
+                const showToggle = isCollectible(match) && match.obtained !== null
+
                 return (
-                  <ListItemButton
+                  <ListItem
                     key={`${match.kind}-${match.slug}`}
-                    component={Link}
-                    href={href}
-                    onClick={onNavigate}
+                    disablePadding
+                    secondaryAction={showToggle ? <ObtainedToggle result={match} /> : null}
                   >
-                    <ListItemText primary={match.title} secondary={match.subtitle} />
-                  </ListItemButton>
+                    <ListItemButton component={Link} href={href} onClick={onNavigate}>
+                      <ListItemText primary={match.title} secondary={match.subtitle} />
+                    </ListItemButton>
+                  </ListItem>
                 )
               })}
             </List>
