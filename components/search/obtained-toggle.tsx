@@ -29,11 +29,16 @@ async function runAction(result: SearchResult) {
 }
 
 export default function ObtainedToggle({ result }: { result: SearchResult }) {
-  // obtained is null for non-collectible kinds and for signed-out viewers
-  // (RLS returns no rows) -- both render no toggle at all.
-  const [obtained, setObtained] = useState(result.obtained)
+  // Optimistic override for the in-flight toggle only -- cleared once the
+  // action settles so a fresh result.obtained (a re-search, another tab)
+  // always wins rather than being shadowed by stale local state.
+  const [pending, setPending] = useState<boolean | null>(null)
   const [, startTransition] = useTransition()
 
+  const obtained = pending ?? result.obtained
+
+  // obtained is null for non-collectible kinds and for signed-out viewers
+  // (RLS returns no rows) -- both render no toggle at all.
   if (!isCollectible(result) || obtained === null) return null
 
   const label = obtained
@@ -44,15 +49,15 @@ export default function ObtainedToggle({ result }: { result: SearchResult }) {
     event.preventDefault()
     event.stopPropagation()
 
-    const previous = obtained
-    setObtained(!previous)
+    setPending(!obtained)
 
     startTransition(async () => {
       try {
         await runAction(result)
+        setPending(null)
       } catch (err) {
         console.error('Failed to toggle obtained state:', err)
-        setObtained(previous)
+        setPending(null)
         enqueueSnackbar('Failed to update your collection. Please try again.', {
           variant: 'error',
         })
