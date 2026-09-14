@@ -32,6 +32,12 @@ export default function ObtainedToggle({ result }: { result: SearchResult }) {
   // Optimistic override for the in-flight toggle only -- cleared once the
   // action settles so a fresh result.obtained (a re-search, another tab)
   // always wins rather than being shadowed by stale local state.
+  //
+  // ponytail: clearing on success briefly shows the pre-toggle value again,
+  // because the parent holds `results` from the last search_all call and does
+  // not refetch on a toggle. The icon flips back until the next search. Upgrade
+  // path if that reads as a glitch: have the parent patch the toggled row in
+  // its own results state on success, so the prop is already fresh here.
   const [pending, setPending] = useState<boolean | null>(null)
   const [, startTransition] = useTransition()
 
