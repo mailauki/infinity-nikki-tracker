@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from 'react'
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   InputAdornment,
   TextField,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
+import { visuallyHidden } from '@mui/utils'
 import { Search } from '@mui/icons-material'
 
 import { searchAll } from '@/hooks/data/search'
@@ -54,14 +56,8 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
   }, [open])
 
   return (
-    <Dialog
-      fullWidth
-      aria-label="Search"
-      fullScreen={fullScreen}
-      maxWidth="sm"
-      open={open}
-      onClose={onClose}
-    >
+    <Dialog fullWidth fullScreen={fullScreen} maxWidth="sm" open={open} onClose={onClose}>
+      <DialogTitle sx={visuallyHidden}>Search</DialogTitle>
       <DialogContent>
         <TextField
           autoFocus
