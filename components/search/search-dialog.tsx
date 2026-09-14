@@ -58,14 +58,29 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
     const supabase = createClient()
 
     async function loadVocabulary() {
-      const [styles, labels, colors, categories] = await Promise.all([
-        supabase.from('styles').select('slug, title'),
-        supabase.from('labels').select('slug, title'),
-        supabase.from('eureka_colors').select('slug, title'),
-        supabase.from('eureka_categories').select('slug, title'),
-      ])
+      let styles, labels, colors, categories
 
-      setVocabulary({
+      try {
+        ;[styles, labels, colors, categories] = await Promise.all([
+          supabase.from('styles').select('slug, title'),
+          supabase.from('labels').select('slug, title'),
+          supabase.from('eureka_colors').select('slug, title'),
+          supabase.from('eureka_categories').select('slug, title'),
+        ])
+      } catch (error) {
+        // Leave vocabulary at EMPTY_VOCABULARY so the guard above retries on
+        // the next open, instead of latching a permanently-broken session.
+        console.error('facet vocabulary fetch failed', error)
+        return
+      }
+
+      // A per-table RLS/permission failure resolves with { data: null, error }
+      // rather than rejecting -- it would otherwise vanish into `?? []`.
+      for (const result of [styles, labels, colors, categories]) {
+        if (result.error) console.error('facet vocabulary fetch failed', result.error)
+      }
+
+      const next: FacetVocabulary = {
         style: (styles.data ?? []).map((row) => ({
           value: row.slug,
           label: row.title ?? row.slug,
@@ -81,7 +96,18 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
           label: row.title ?? row.slug,
         })),
         category: (categories.data ?? []).map((row) => ({ value: row.slug, label: row.title })),
-      })
+      }
+
+      // A fetch that "succeeds" but returns nothing (e.g. every table erroring
+      // above) must not latch either -- writing a new-but-still-empty object
+      // is no longer === EMPTY_VOCABULARY, so the guard would never retry.
+      const gotSomething = Object.values(next).some((entries) => entries.length > 0)
+      if (!gotSomething) {
+        console.error('facet vocabulary fetch returned nothing; will retry next open')
+        return
+      }
+
+      setVocabulary(next)
     }
 
     loadVocabulary()
