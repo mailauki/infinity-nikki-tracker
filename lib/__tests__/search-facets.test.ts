@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { claimFacets, type FacetVocabulary } from '@/lib/search/facets'
+import { normalizeQuery } from '@/lib/search/query'
 
 const vocabulary: FacetVocabulary = {
   style: [{ value: 'sweet', label: 'Sweet' }],
@@ -28,6 +29,20 @@ describe('claimFacets', () => {
     const { facets, remainder } = claimFacets('blooming dreams', vocabulary)
     expect(facets).toEqual([])
     expect(remainder).toBe('blooming dreams')
+  })
+
+  // claimFacets matches lowercase slugs exactly and splits on single spaces,
+  // so callers MUST hand it a normalized query. Typing `Moon  Iridescent` is
+  // entirely natural, and raw input silently claimed nothing at all.
+  it('claims facets from a capitalized multi-term query once normalized', () => {
+    const { facets, remainder } = claimFacets(normalizeQuery('  Moon   Iridescent '), vocabulary)
+    expect(facets).toEqual([{ type: 'color', value: 'iridescent', label: 'Iridescent' }])
+    expect(remainder).toBe('moon')
+  })
+
+  // The bug this guards: the raw string claims nothing.
+  it('claims nothing from the same query un-normalized', () => {
+    expect(claimFacets('  Moon   Iridescent ', vocabulary).facets).toEqual([])
   })
 
   // Only whole terms are claimed. Substring claiming would let "sweetheart"

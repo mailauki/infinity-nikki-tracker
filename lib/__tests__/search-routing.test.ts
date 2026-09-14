@@ -18,12 +18,53 @@ describe('destinationFor', () => {
     expect(destinationFor({ ...base, kind: 'outfit_set', slug: 'moon' })).toBe('/outfits/moon')
   })
 
-  // Evolutions and pieces have no page of their own -- they resolve to the
-  // parent set, reusing the ?evolution= param that page already reads.
-  it('sends a piece to its parent set with the evolution param', () => {
+  // The set page reads ?evolution= as a SUFFIX and rebuilds `{set}-{param}`,
+  // so only the suffix may travel. Passing the whole slug produced
+  // `dustwoven_tribute-dustwoven_tribute-expedition`, which matched nothing.
+  it('sends an evolution to its parent set with only the slug suffix', () => {
     expect(
-      destinationFor({ ...base, kind: 'outfit_piece', slug: 'hairpin', parent_slug: 'moon' })
-    ).toBe('/outfits/moon?evolution=hairpin')
+      destinationFor({
+        ...base,
+        kind: 'outfit_evolution',
+        slug: 'dustwoven_tribute-expedition',
+        parent_slug: 'dustwoven_tribute',
+      })
+    ).toBe('/outfits/dustwoven_tribute?evolution=expedition')
+  })
+
+  // Defensive: an evolution whose slug is not `{parent}-{suffix}` has no
+  // suffix to send, so it falls back to the bare set page rather than
+  // emitting a param the page would resolve to a nonexistent evolution.
+  it('omits the param when an evolution slug lacks the parent prefix', () => {
+    expect(
+      destinationFor({
+        ...base,
+        kind: 'outfit_evolution',
+        slug: 'unrelated-expedition',
+        parent_slug: 'dustwoven_tribute',
+      })
+    ).toBe('/outfits/dustwoven_tribute')
+  })
+
+  // A piece is a variant (`{set}-{category}`), not an evolution state, and no
+  // piece-highlighting param exists -- so it gets the plain parent set URL.
+  it('sends a piece to its parent set with no param', () => {
+    expect(
+      destinationFor({
+        ...base,
+        kind: 'outfit_piece',
+        slug: 'blossoming_future-heart_voice-earrings',
+        parent_slug: 'blossoming_future',
+      })
+    ).toBe('/outfits/blossoming_future')
+  })
+
+  // Makeup variants are variants too, and makeup evolution slugs are opaque
+  // rather than parent-prefixed -- a variant slug never names one.
+  it('sends a makeup variant to its parent set with no param', () => {
+    expect(
+      destinationFor({ ...base, kind: 'makeup_variant', slug: 'moon-lips', parent_slug: 'moon' })
+    ).toBe('/makeup/moon')
   })
 
   it('sends a profile to its username path', () => {

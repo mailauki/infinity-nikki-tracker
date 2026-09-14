@@ -15,3 +15,9 @@ export function normalizeQuery(raw: string): string {
 export function isSearchableQuery(raw: string): boolean {
   return normalizeQuery(raw).length >= MIN_QUERY_LENGTH
 }
+
+// Mirrors the `limit 100` at the end of search_all() in
+// supabase/migrations/20260912000000_add_search_index.sql. A result set of
+// exactly this length is a CAP, not a total -- the UI must not state it as an
+// exact count. Change both together.
+export const SEARCH_RESULT_LIMIT = 100

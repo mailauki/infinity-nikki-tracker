@@ -18,6 +18,17 @@ function withFacets(path: string, kind: SearchKind, facets: SearchFacet[]): stri
   return query ? `${path}?${query}` : path
 }
 
+// An outfit evolution's slug is `{base_set}-{suffix}`, and the set page wants
+// only the suffix. Returns '' -- no param at all -- when the slug does not
+// carry the parent prefix, so an unexpected shape lands on the plain set page
+// rather than seeding a reconstructed slug that matches nothing.
+function evolutionSuffix(slug: string, parent_slug: string): string {
+  const prefix = `${parent_slug}-`
+  if (!slug.startsWith(prefix)) return ''
+  const suffix = slug.slice(prefix.length)
+  return suffix ? `?evolution=${encodeURIComponent(suffix)}` : ''
+}
+
 // Returns null when a result has no reachable page. Callers MUST render such
 // a row as non-navigating rather than linking to null.
 export function destinationFor(result: SearchResult, facets: SearchFacet[] = []): string | null {
@@ -26,11 +37,17 @@ export function destinationFor(result: SearchResult, facets: SearchFacet[] = [])
   switch (kind) {
     case 'outfit_set':
       return withFacets(`/outfits/${slug}`, kind, facets)
-    // Neither evolutions nor pieces have a page; both resolve to the parent
-    // set and highlight themselves with the ?evolution= param it already reads.
+    // NOT `slug` -- outfit-set-detail.tsx reads ?evolution= as a SUFFIX and
+    // rebuilds `{set}-{param}`, so passing the whole slug would resolve to
+    // `moon-moon-expedition` and select nothing.
     case 'outfit_evolution':
+      return parent_slug ? `/outfits/${parent_slug}${evolutionSuffix(slug, parent_slug)}` : null
+    // No param: an outfit piece is a VARIANT (`{set}-{category}`), not an
+    // evolution state, and ?evolution= is the only param the set page reads.
+    // There is no piece-highlighting param yet -- add one to the detail page
+    // before routing to one here; a dead param is worse than none.
     case 'outfit_piece':
-      return parent_slug ? `/outfits/${parent_slug}?evolution=${slug}` : null
+      return parent_slug ? `/outfits/${parent_slug}` : null
     case 'eureka_set':
       return withFacets(`/eureka/${slug}`, kind, facets)
     // NOT `slug` -- a eureka variant slug is `{set}-{category}-{color}`
@@ -41,8 +58,12 @@ export function destinationFor(result: SearchResult, facets: SearchFacet[] = [])
       return parent_slug && filter_value ? `/eureka/${parent_slug}?color=${filter_value}` : null
     case 'makeup_set':
       return withFacets(`/makeup/${slug}`, kind, facets)
+    // Same reasoning as outfit_piece. makeup-set-detail.tsx passes ?evolution=
+    // through whole (makeup evolution slugs are opaque, not `{base}-{suffix}`),
+    // but a makeup variant slug is a VARIANT and never names an evolution, so
+    // the param would select nothing. Parent set, no param.
     case 'makeup_variant':
-      return parent_slug ? `/makeup/${parent_slug}?evolution=${slug}` : null
+      return parent_slug ? `/makeup/${parent_slug}` : null
     case 'momo_cloak':
       return `/momo-cloaks/${slug}`
     case 'season':

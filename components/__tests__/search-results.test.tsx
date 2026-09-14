@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import SearchResults from '@/components/search/search-results'
+import { SEARCH_RESULT_LIMIT } from '@/lib/search/query'
 import type { SearchResult } from '@/lib/search/types'
 
 const result = (
@@ -48,6 +49,33 @@ describe('SearchResults', () => {
     // The header still reports 3 so the cap never hides how much matched.
     expect(screen.getByText('Outfits')).toBeInTheDocument()
     expect(screen.getByText('3')).toBeInTheDocument()
+  })
+
+  // A result set at the RPC's cap is truncated, so no section count in it is a
+  // total. `100+` is the honest rendering; a bare `100` is provably wrong for
+  // any query with more matches (e.g. "dream", which has 336).
+  it('marks section counts as a lower bound when the results hit the cap', () => {
+    render(
+      <SearchResults
+        results={Array.from({ length: SEARCH_RESULT_LIMIT }, (_, i) =>
+          result({ kind: 'outfit_set', slug: `s${i}` })
+        )}
+      />
+    )
+    expect(screen.getByText(`${SEARCH_RESULT_LIMIT}+`)).toBeInTheDocument()
+    expect(screen.queryByText(String(SEARCH_RESULT_LIMIT))).not.toBeInTheDocument()
+  })
+
+  it('states an exact section count below the cap', () => {
+    render(
+      <SearchResults
+        results={Array.from({ length: SEARCH_RESULT_LIMIT - 1 }, (_, i) =>
+          result({ kind: 'outfit_set', slug: `s${i}` })
+        )}
+      />
+    )
+    expect(screen.getByText(String(SEARCH_RESULT_LIMIT - 1))).toBeInTheDocument()
+    expect(screen.queryByText(`${SEARCH_RESULT_LIMIT - 1}+`)).not.toBeInTheDocument()
   })
 
   it('renders an empty state when there are no results', () => {

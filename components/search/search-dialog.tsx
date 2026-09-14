@@ -16,7 +16,7 @@ import { visuallyHidden } from '@mui/utils'
 import { Search } from '@mui/icons-material'
 
 import { searchAll } from '@/hooks/data/search'
-import { isSearchableQuery } from '@/lib/search/query'
+import { SEARCH_RESULT_LIMIT, isSearchableQuery, normalizeQuery } from '@/lib/search/query'
 import { claimFacets, type FacetVocabulary } from '@/lib/search/facets'
 import { createClient } from '@/lib/supabase/client'
 import SearchResults from './search-results'
@@ -134,7 +134,10 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
         return
       }
 
-      const { facets: claimed, remainder } = claimFacets(query, vocabulary)
+      // Facet matching is exact equality against lowercase slugs, and claimFacets
+      // splits on single spaces -- so it must see the SAME normalized string
+      // searchAll() normalizes internally, or `Moon Iridescent` claims nothing.
+      const { facets: claimed, remainder } = claimFacets(normalizeQuery(query), vocabulary)
       // Nothing claimed, or nothing left to search on -- keep the literal answer.
       if (claimed.length === 0 || remainder === '') {
         if (latest.current === token) {
@@ -193,7 +196,12 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
             href={`/search?q=${encodeURIComponent(query)}`}
             onClick={onClose}
           >
-            See all {results.length} results
+            {/* At the cap the count is a lower bound, not a total -- the RPC
+                stopped counting at SEARCH_RESULT_LIMIT, so stating it would be
+                provably wrong for any query with more matches. */}
+            {results.length === SEARCH_RESULT_LIMIT
+              ? 'See all results'
+              : `See all ${results.length} results`}
           </Button>
         )}
       </DialogContent>
