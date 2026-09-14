@@ -132,6 +132,24 @@ create or replace view public.search_index as
 -- SECURITY INVOKER (the default, stated explicitly) is what makes RLS apply:
 -- custom_looks and profiles rows are filtered to what the caller may see,
 -- with no filtering logic in this function at all.
+-- Two passes in one statement.
+--
+-- The fuzzy pass runs ONLY when the strict pass is thin. This is the core
+-- behavioral rule: a query with good exact matches never shows mystery
+-- results, while a typo still gets rescued.
+--
+-- Written as CTEs rather than a temp table: `create temp table` is DDL, which
+-- a STABLE function is not permitted to execute at call time (it would raise
+-- at runtime, not at CREATE FUNCTION time). CTEs also let the planner see the
+-- whole query at once.
+--
+-- Every function is schema-qualified, including public.similarity() -- under
+-- `search_path = ''` the bare name does not resolve, and pg_trgm is installed
+-- into the public schema on this project.
+--
+-- SECURITY INVOKER is what makes RLS apply: custom_looks and profiles rows are
+-- filtered to what the caller may see, and obtained_* is read as the caller, so
+-- one user can never see another's collection state.
 create or replace function public.search_all(q text)
 returns table (
   kind text,
@@ -141,49 +159,71 @@ returns table (
   image_url text,
   parent_slug text,
   filter_value text,
+  obtained boolean,
   rank real
 )
-language plpgsql
+language sql
 security invoker
 set search_path to ''
 stable
 as $function$
-declare
-  -- Tuning knobs. FUZZY_THRESHOLD: below this many strict hits, try fuzzy.
-  -- SIMILARITY_MIN: pg_trgm score a fuzzy candidate must clear.
-  fuzzy_threshold constant int := 5;
-  similarity_min constant real := 0.3;
-  folded text := public.unaccent_fallback(btrim(lower(coalesce(q, ''))));
-  strict_count int;
-begin
-  if folded = '' then
-    return;
-  end if;
-
-  create temp table strict_hits on commit drop as
+  with folded as (
+    select public.unaccent_fallback(btrim(lower(coalesce(q, '')))) as term
+  ),
+  strict_hits as (
     select s.kind, s.slug, s.title, s.subtitle, s.image_url, s.parent_slug, s.filter_value,
            -- A match at position 1 outranks one mid-string, so a prefix hit
            -- sorts above an incidental substring.
-           (1.0 / position(folded in lower(s.haystack)))::real as rank
-      from public.search_index s
-     where lower(s.haystack) like '%' || folded || '%';
-
-  select count(*) into strict_count from strict_hits;
-
-  return query select * from strict_hits order by rank desc, title asc;
-
-  if strict_count < fuzzy_threshold then
-    return query
-      select s.kind, s.slug, s.title, s.subtitle, s.image_url, s.parent_slug, s.filter_value,
-             similarity(s.haystack, folded) as rank
-        from public.search_index s
-       where similarity(s.haystack, folded) > similarity_min
-         and not exists (
-           select 1 from strict_hits h where h.kind = s.kind and h.slug = s.slug
-         )
-       order by rank desc, s.title asc;
-  end if;
-end;
+           (1.0 / position(f.term in lower(s.haystack)))::real as rank
+      from public.search_index s, folded f
+     where f.term <> ''
+       and lower(s.haystack) like '%' || f.term || '%'
+  ),
+  fuzzy_hits as (
+    select s.kind, s.slug, s.title, s.subtitle, s.image_url, s.parent_slug, s.filter_value,
+           public.similarity(s.haystack, f.term) as rank
+      from public.search_index s, folded f
+     where f.term <> ''
+       -- Rescue pass only: skipped entirely when the strict pass was rich
+       -- enough, so a good query never shows weak similarity matches.
+       and (select count(*) from strict_hits) < 5
+       and public.similarity(s.haystack, f.term) > 0.3
+       and not exists (
+         select 1 from strict_hits h where h.kind = s.kind and h.slug = s.slug
+       )
+  ),
+  combined as (
+    select * from strict_hits
+    union all
+    select * from fuzzy_hits
+  )
+  select c.kind, c.slug, c.title, c.subtitle, c.image_url, c.parent_slug, c.filter_value,
+         -- Obtained state for the rows on screen only -- keyed per domain by
+         -- the same natural keys the toggle_obtained_* RPCs take. Null for
+         -- kinds that are not collectible (seasons, profiles, trials, ...)
+         -- and null for everyone signed out, since RLS returns no rows.
+         case c.kind
+           when 'outfit_piece' then exists (
+             select 1 from public.obtained_outfit o
+              where o.outfit_set = c.parent_slug and o.outfit_variant = c.slug
+           )
+           when 'eureka_variant' then exists (
+             select 1 from public.obtained_eureka o
+              where o.eureka_set = c.parent_slug and o.color = c.filter_value
+           )
+           when 'makeup_variant' then exists (
+             select 1 from public.obtained_makeup o
+              where o.makeup_set = c.parent_slug and o.makeup_variant = c.slug
+           )
+           when 'momo_cloak' then exists (
+             select 1 from public.obtained_momo_cloaks o where o.momo_cloak = c.slug
+           )
+           else null
+         end as obtained,
+         c.rank
+    from combined c
+   order by c.rank desc, c.title asc
+   limit 100;
 $function$;
 
 grant execute on function public.search_all(text) to anon, authenticated;
