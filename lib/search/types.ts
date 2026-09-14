@@ -50,9 +50,13 @@ export type SearchResult = {
   // where the subtitle already IS the category.
   filter_category: string | null
   // Collection state for the four collectible kinds, resolved by the RPC for
-  // the rows on screen only. Null for non-collectible kinds (seasons, trials,
-  // profiles). False -- not null -- for signed-out viewers: the RPC's EXISTS
-  // clauses are scoped to auth.uid(), which is null when signed out.
+  // the rows on screen only.
+  //
+  // Null means "render no toggle", and covers BOTH non-collectible kinds
+  // (seasons, trials, profiles) and signed-out viewers. The RPC decides the
+  // signed-out case itself rather than letting each EXISTS return a bare
+  // false, which would read as a legitimate "you don't own this" and leave
+  // obtained-toggle.tsx rendering a control that throws 'Not authenticated'.
   obtained: boolean | null
   rank: number
 }

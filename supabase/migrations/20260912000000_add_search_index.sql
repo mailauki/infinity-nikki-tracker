@@ -250,32 +250,38 @@ as $function$
          -- not own runs a user-scoped DELETE that matches nothing and then
          -- INSERTs, silently ADDING it to your collection.
          --
-         -- Signed out, auth.uid() is null, so each EXISTS matches nothing and
-         -- obtained comes back false rather than null -- it is RLS-independent.
-         --
          -- `(select auth.uid())` rather than bare auth.uid(): the scalar
          -- subquery form lets the planner evaluate it once as an InitPlan
          -- instead of per row (Supabase's documented RLS performance guidance).
-         case c.kind
-           when 'outfit_piece' then exists (
+         --
+         -- The outer `when (select auth.uid()) is null then null` keeps ONE
+         -- meaning for null: "render no toggle". Signed out, each EXISTS would
+         -- otherwise return false -- a legitimate "you don't own this" -- and
+         -- components/search/obtained-toggle.tsx hides itself only on null, so
+         -- a signed-out visitor would get a toggle that throws
+         -- 'Not authenticated' on click. Deciding it here keeps every consumer
+         -- honest instead of making each one re-check auth.
+         case
+           when (select auth.uid()) is null then null
+           when c.kind = 'outfit_piece' then exists (
              select 1 from public.obtained_outfit o
               where o.outfit_set = c.parent_slug
                 and o.outfit_variant = c.slug
                 and o.user_id = (select auth.uid())
            )
-           when 'eureka_variant' then exists (
+           when c.kind = 'eureka_variant' then exists (
              select 1 from public.obtained_eureka o
               where o.eureka_set = c.parent_slug
                 and o.color = c.filter_value
                 and o.user_id = (select auth.uid())
            )
-           when 'makeup_variant' then exists (
+           when c.kind = 'makeup_variant' then exists (
              select 1 from public.obtained_makeup o
               where o.makeup_set = c.parent_slug
                 and o.makeup_variant = c.slug
                 and o.user_id = (select auth.uid())
            )
-           when 'momo_cloak' then exists (
+           when c.kind = 'momo_cloak' then exists (
              select 1 from public.obtained_momo_cloaks o
               where o.momo_cloak = c.slug
                 and o.user_id = (select auth.uid())
