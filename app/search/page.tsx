@@ -24,7 +24,9 @@ export default async function SearchPage({
   return (
     <PageShell titleVisible title={pageTitle('/search')}>
       <Suspense>
-        <SearchPageResults query={q ?? ''} />
+        {/* Seeds the field once; the page owns the query in state from there,
+            so editing it never rewrites the URL. */}
+        <SearchPageResults initialQuery={q ?? ''} />
       </Suspense>
     </PageShell>
   )
