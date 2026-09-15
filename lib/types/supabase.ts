@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       abilities: {
@@ -1653,6 +1678,20 @@ export type Database = {
         }
         Relationships: []
       }
+      search_index: {
+        Row: {
+          filter_category: string | null
+          filter_value: string | null
+          haystack: string | null
+          image_url: string | null
+          kind: string | null
+          parent_slug: string | null
+          slug: string | null
+          subtitle: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       current_user_has_password: { Args: never; Returns: boolean }
@@ -1679,6 +1718,21 @@ export type Database = {
         Returns: number
       }
       is_admin: { Args: never; Returns: boolean }
+      search_all: {
+        Args: { q: string }
+        Returns: {
+          filter_category: string
+          filter_value: string
+          image_url: string
+          kind: string
+          obtained: boolean
+          parent_slug: string
+          rank: number
+          slug: string
+          subtitle: string
+          title: string
+        }[]
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
       toggle_obtained: {
@@ -1835,6 +1889,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

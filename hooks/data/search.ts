@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/client'
 import { isSearchableQuery, normalizeQuery } from '@/lib/search/query'
-import type { SearchResult } from '@/lib/search/types'
+import { SEARCH_KINDS, type SearchKind, type SearchResult } from '@/lib/search/types'
 
 // Client-side: the query changes on every keystroke, so this is deliberately
 // NOT React cache()'d. The debounce lives in the dialog, not here.
@@ -9,28 +9,38 @@ export async function searchAll(query: string): Promise<SearchResult[]> {
 
   const supabase = createClient()
 
-  // The search_all RPC is defined in 20260912000000_add_search_index.sql, which
-  // is not yet applied, so it is absent from the generated types. Remove this
-  // cast after the migration is applied and types are regenerated.
-  //
-  // The cast is applied to the CALL, never by extracting `supabase.rpc` into a
-  // local: `const rpc = supabase.rpc` detaches the method from its receiver, so
-  // `this` is undefined inside it and the call dies with "Cannot read
-  // properties of undefined (reading 'rest')" before any request is made.
-  const { data, error } = (await (
-    supabase.rpc as unknown as (
-      fn: 'search_all',
-      args: { q: string }
-    ) => Promise<{ data: SearchResult[] | null; error: unknown }>
-  ).call(supabase, 'search_all', { q: normalizeQuery(query) })) as {
-    data: SearchResult[] | null
-    error: unknown
-  }
+  const { data, error } = await supabase.rpc('search_all', { q: normalizeQuery(query) })
 
   if (error) {
     console.error('search_all failed', error)
     return []
   }
 
-  return data ?? []
+  // Two mismatches between the generated RPC type and reality, neither of which
+  // the generator can see:
+  //   - `kind` is plain `text` in Postgres, so it widens to string while
+  //     SearchKind is a union of 12 literals.
+  //   - every RETURNS TABLE column is typed non-nullable, but subtitle,
+  //     image_url, parent_slug, filter_value and filter_category are all
+  //     genuinely null for most kinds.
+  // So map rather than assert: rows whose kind this client does not know about
+  // (a newer view against a stale deploy) are dropped instead of reaching
+  // destinationFor() as unroutable results, and the nullable columns are
+  // normalized to null rather than trusted as strings.
+  const known = new Set<string>(SEARCH_KINDS)
+
+  return (data ?? [])
+    .filter((row) => known.has(row.kind))
+    .map((row) => ({
+      kind: row.kind as SearchKind,
+      slug: row.slug,
+      title: row.title,
+      subtitle: row.subtitle ?? null,
+      image_url: row.image_url ?? null,
+      parent_slug: row.parent_slug ?? null,
+      filter_value: row.filter_value ?? null,
+      filter_category: row.filter_category ?? null,
+      obtained: row.obtained ?? null,
+      rank: row.rank,
+    }))
 }
