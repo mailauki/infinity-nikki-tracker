@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Box, CircularProgress, IconButton, InputAdornment, TextField } from '@mui/material'
 import { Close, Search } from '@mui/icons-material'
 
+import StickyBar from '@/components/navbar/sticky-bar'
+import { TRANSLUCENT_SURFACE } from '@/lib/theme'
 import { searchAll } from '@/hooks/data/search'
 import SearchResults from '@/components/search/search-results'
 import { isSearchableQuery } from '@/lib/search/query'
@@ -12,11 +14,9 @@ import type { SearchResult } from '@/lib/search/types'
 const DEBOUNCE_MS = 250
 
 export default function SearchPageResults({ initialQuery }: { initialQuery: string }) {
-  // The query is page state, seeded ONCE from ?q= and never written back to the
-  // URL. `?q=` is how the modal's "See all results" link hands a query over and
-  // how a refresh or a shared link arrives with one -- but editing the field
-  // afterwards is local, so typing here creates no history entries and does not
-  // re-run the page. The URL keeps whatever query the page was opened with.
+  // The query is page state, seeded ONCE from ?q=. The param is purely a
+  // handoff: the modal's "See all results" link is a plain href, so the query
+  // can only reach a freshly navigated page through the URL.
   const [query, setQuery] = useState(initialQuery)
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(isSearchableQuery(initialQuery))
@@ -25,6 +25,27 @@ export default function SearchPageResults({ initialQuery }: { initialQuery: stri
   const latest = useRef(0)
   // Lets the clear button hand focus back to the field it emptied.
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Strip ?q= once it has seeded state, so the URL does not keep asserting a
+  // query the field may no longer hold.
+  //
+  // replaceState, not router.replace: this must not navigate, add a history
+  // entry, or re-run the Server Component — the param has already done its one
+  // job by this point. Next's router is left untouched deliberately.
+  //
+  // KNOWN COST: a refresh or a copied link after this point no longer carries
+  // the query, so the field comes back empty. That is the accepted trade for a
+  // clean URL. generateMetadata already ran server-side, so the tab title keeps
+  // the arrival query.
+  useEffect(() => {
+    if (!initialQuery) return
+
+    const url = new URL(window.location.href)
+    if (!url.searchParams.has('q')) return
+
+    url.searchParams.delete('q')
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`)
+  }, [initialQuery])
 
   useEffect(() => {
     if (!isSearchableQuery(query)) {
@@ -48,43 +69,51 @@ export default function SearchPageResults({ initialQuery }: { initialQuery: stri
   }, [query])
 
   return (
-    <Box>
-      <TextField
-        autoFocus
-        fullWidth
-        inputRef={inputRef}
-        placeholder="Search outfits, pieces, seasons…"
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-            // Only rendered when there is something to clear, so the field does
-            // not carry a permanently dead control. Focus returns to the input
-            // rather than being left on a button that just vanished.
-            endAdornment: query ? (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="Clear search"
-                  edge="end"
-                  size="small"
-                  onClick={() => {
-                    setQuery('')
-                    inputRef.current?.focus()
-                  }}
-                >
-                  <Close fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            ) : null,
-          },
-        }}
-        sx={{ mb: 2 }}
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-      />
+    <>
+      {/* Portals into the shell's sticky sub-toolbar, pinned under the AppBar
+          — the same slot the four results bars use, so the field stays put as
+          results scroll without this component guessing at a top offset. */}
+      <StickyBar>
+        <TextField
+          autoFocus
+          fullWidth
+          inputRef={inputRef}
+          placeholder="Search outfits, pieces, seasons…"
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+              // Only rendered when there is something to clear, so the field does
+              // not carry a permanently dead control. Focus returns to the input
+              // rather than being left on a button that just vanished.
+              endAdornment: query ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="Clear search"
+                    edge="end"
+                    size="small"
+                    onClick={() => {
+                      setQuery('')
+                      inputRef.current?.focus()
+                    }}
+                  >
+                    <Close fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            },
+          }}
+          // Translucent + blurred, matching the four results bars: a sticky
+          // element keeps its own background, so rows would otherwise show
+          // through as they scroll underneath it.
+          sx={{ backgroundColor: TRANSLUCENT_SURFACE, backdropFilter: 'blur(8px)' }}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+      </StickyBar>
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
@@ -93,6 +122,6 @@ export default function SearchPageResults({ initialQuery }: { initialQuery: stri
       ) : (
         <SearchResults results={results} />
       )}
-    </Box>
+    </>
   )
 }
