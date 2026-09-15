@@ -7,13 +7,14 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  IconButton,
   InputAdornment,
   TextField,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
-import { Search } from '@mui/icons-material'
+import { Close, Search } from '@mui/icons-material'
 
 import { searchAll } from '@/hooks/data/search'
 import { SEARCH_RESULT_LIMIT, isSearchableQuery, normalizeQuery } from '@/lib/search/query'
@@ -168,7 +169,24 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
 
   return (
     <Dialog fullWidth fullScreen={fullScreen} maxWidth="sm" open={open} onClose={onClose}>
-      <DialogTitle sx={visuallyHidden}>Search</DialogTitle>
+      <DialogTitle
+        id="search-dialog-title"
+        // sx={visuallyHidden}
+        sx={{ m: 0, p: 2 }}
+      >
+        Search
+      </DialogTitle>
+      <IconButton
+        aria-label="close"
+        sx={{
+          position: 'absolute',
+          right: 8,
+          top: 8,
+        }}
+        onClick={onClose}
+      >
+        <Close />
+      </IconButton>
       <DialogContent>
         <TextField
           autoFocus
