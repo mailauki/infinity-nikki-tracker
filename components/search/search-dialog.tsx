@@ -51,6 +51,8 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
   // Guards against a slow early request resolving after a fast later one and
   // overwriting fresher results.
   const latest = useRef(0)
+  // Lets the clear button hand focus back to the field it emptied.
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Fetch the facet vocabulary once, the first time the dialog opens -- a
   // handful of rows that don't change during a session, not worth refetching
@@ -191,6 +193,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
         <TextField
           autoFocus
           fullWidth
+          inputRef={inputRef}
           placeholder="Search outfits, pieces, seasons…"
           slotProps={{
             input: {
@@ -199,6 +202,26 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
                   <Search />
                 </InputAdornment>
               ),
+              // Only rendered when there is something to clear, so the field
+              // does not carry a permanently dead control. Focus goes back to
+              // the input rather than being left on a button that just
+              // vanished, which would otherwise strand keyboard users at the
+              // top of the document.
+              endAdornment: query ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="Clear search"
+                    edge="end"
+                    size="small"
+                    onClick={() => {
+                      setQuery('')
+                      inputRef.current?.focus()
+                    }}
+                  >
+                    <Close fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
             },
           }}
           value={query}
