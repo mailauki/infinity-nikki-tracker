@@ -15,7 +15,6 @@ import {
 import ObtainedToggle from '@/components/search/obtained-toggle'
 import { destinationFor } from '@/lib/search/routing'
 import { isCollectible } from '@/lib/search/obtained'
-import { SEARCH_RESULT_LIMIT } from '@/lib/search/query'
 import { KIND_LABELS, SEARCH_KINDS, type SearchFacet, type SearchResult } from '@/lib/search/types'
 
 export default function SearchResults({
@@ -39,11 +38,6 @@ export default function SearchResults({
     )
   }
 
-  // The RPC stops at SEARCH_RESULT_LIMIT, so a full result set is truncated and
-  // every section count in it is a lower bound rather than a total. Say `N+`
-  // instead of asserting a number the cap made unknowable.
-  const truncated = results.length === SEARCH_RESULT_LIMIT
-
   // Grouped in SEARCH_KINDS order rather than by rank, so section order is
   // stable as the user types instead of reshuffling on every keystroke.
   const sections = SEARCH_KINDS.map((kind) => ({
@@ -64,8 +58,16 @@ export default function SearchResults({
               </Typography>
               {/* The full match count for this kind, not the per-section
                   display limit -- limitPerKind must never hide how much
-                  actually matched. */}
-              <Chip label={truncated ? `${matches.length}+` : matches.length} size="small" />
+                  actually matched.
+
+                  Deliberately NOT suffixed with `+` when the overall result
+                  set hits SEARCH_RESULT_LIMIT. Hitting the global cap does not
+                  mean THIS section was truncated, so the suffix was wrong on
+                  every section but the last; and beside a list the modal caps
+                  at 5, "5+" reads as "more than 5 shown here" rather than
+                  "more than 5 matched". An exact count that is occasionally a
+                  lower bound beats a qualifier that misleads on every row. */}
+              <Chip label={matches.length} size="small" />
             </Stack>
 
             <List dense disablePadding>
