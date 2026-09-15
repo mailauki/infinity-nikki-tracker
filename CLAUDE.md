@@ -4,40 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-```bash
-yarn dev          # Start dev server (localhost:3000)
-yarn build        # Production build
-yarn start        # Start production server
-yarn lint         # Run ESLint
-yarn lint:fix     # Run ESLint with auto-fix
-yarn format       # Format with Prettier
-yarn test         # Run Vitest once
-yarn test:watch   # Vitest in watch mode
-yarn tsc --noEmit                            # Type-check (runs the local TypeScript binary; NOT `yarn dlx tsc`, which fetches a bogus placeholder package)
-npx npm-check-updates --format group         # Check outdated deps (Yarn 4 has no yarn outdated)
-npx npm-check-updates --format group -u      # Write updates to package.json
-```
+Package manager: **Yarn** (not npm or pnpm). Standard scripts are in `package.json`; these two are not:
 
-Package manager: **Yarn** (not npm or pnpm). Only `dev/build/start/lint/format/lint:fix/test/test:watch` are package scripts.
+```bash
+yarn tsc --noEmit                            # Type-check via the local TypeScript binary; NOT `yarn dlx tsc`, which fetches a bogus placeholder package
+npx npm-check-updates --format group         # Check outdated deps (Yarn 4 has no yarn outdated); add -u to write package.json
+```
 
 ## Environment Variables
 
-Required in `.env.local`:
-
-```env
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
-SUPABASE_SERVICE_ROLE_KEY=          # server-only; used by API routes / webhooks
-NEXT_PUBLIC_SITE_URL=               # absolute base URL for redirects (falls back to VERCEL_URL)
-STRIPE_SECRET_KEY=
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
-STRIPE_PRICE_ID=
-STRIPE_WEBHOOK_SECRET=
-SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID=      # OAuth; local dev via supabase/config.toml
-SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET=
-SUPABASE_AUTH_EXTERNAL_DISCORD_CLIENT_ID=
-SUPABASE_AUTH_EXTERNAL_DISCORD_SECRET=
-```
+Required vars for `.env.local` are listed in `.env.example`.
 
 In production, OAuth provider credentials live in the Supabase dashboard instead, not in Vercel.
 
@@ -119,12 +95,10 @@ Column-level schema lives in `lib/types/supabase.ts` (generated — the source o
 
 ### UI Stack
 
-- **MUI (Material UI) v9** — primary component library, CSS variables (`cssVariables: { colorSchemeSelector: 'class' }`) + built-in dark mode (`colorSchemes: { light, dark }`)
-- **`@mui/x-data-grid` v9** — admin tables; **`@mui/x-charts` v9** — collection-stat charts
-- **notistack** — snackbar/toast notifications (`SnackbarAlertProvider`, `enqueueSnackbar`)
-- **Stripe** (`stripe` v22) — support payments via Checkout + webhook
-- **Tailwind CSS** — layout utilities only (not MUI replacements)
-- **MUI Icons** + **Lucide React** — icons
+Versions are in `package.json`. What it doesn't tell you:
+
+- **MUI** is the primary component library, configured with CSS variables (`cssVariables: { colorSchemeSelector: 'class' }`) + built-in dark mode (`colorSchemes: { light, dark }`)
+- **Tailwind CSS** — layout utilities only, NOT MUI replacements
 - **Not used:** shadcn/ui, Radix UI, next-themes, class-variance-authority
 
 ### Card Animations
@@ -175,16 +149,9 @@ There are **no `*Hover` palette tokens**. Translucency comes from `color-mix` ov
 
 ## Claude Automations
 
-Configured in `.claude/settings.json`:
+Hooks, skills, and enabled plugins are in `.claude/settings.json` and `.claude/skills/`. The one thing that isn't obvious from reading them:
 
-- **PostToolUse hooks** — after every Edit/Write: `prettier --write` + `eslint --fix` on **just the edited file** (~1.1s, blocking; skips non-source extensions), plus a project-wide `yarn tsc --noEmit` marked `"async": true` so the typecheck reports without blocking the loop. Don't revert these to the whole-repo `yarn format && yarn lint:fix` — that ran `prettier --write .` over 488 files on every single edit (~13s each).
-- **PreToolUse hook** — blocks edits to any `.env` file
-- **`/new-data-hook` skill** — scaffolds `hooks/data/` files with the correct `use cache` vs React `cache()` pattern
-- **`/format-fix` skill** — runs format/lint/tsc and fixes remaining issues
-- **`/git-workflow` skill** — branch/PR/merge workflow plus Vercel & Supabase CLI gotchas
-- **`a11y-reviewer` subagent** — audits MUI components for WCAG 2.1 AA violations
-- Stripe skills (`stripe-best-practices`, `upgrade-stripe`) and `ui-ux-pro-max` are installed
-- Enabled plugins: frontend-design, commit-commands, typescript-lsp, supabase, vercel
+- The Edit/Write PostToolUse hook runs `prettier --write` + `eslint --fix` on **just the edited file**. Don't revert it to the whole-repo `yarn format && yarn lint:fix` — that ran `prettier --write .` over 488 files on every single edit (~13s each).
 
 ## Git & Deployment
 

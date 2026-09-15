@@ -7,13 +7,14 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  IconButton,
   InputAdornment,
   TextField,
   useMediaQuery,
   useTheme,
 } from '@mui/material'
 import { visuallyHidden } from '@mui/utils'
-import { Search } from '@mui/icons-material'
+import { Close, Search } from '@mui/icons-material'
 
 import { searchAll } from '@/hooks/data/search'
 import { SEARCH_RESULT_LIMIT, isSearchableQuery, normalizeQuery } from '@/lib/search/query'
@@ -50,6 +51,8 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
   // Guards against a slow early request resolving after a fast later one and
   // overwriting fresher results.
   const latest = useRef(0)
+  // Lets the clear button hand focus back to the field it emptied.
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Fetch the facet vocabulary once, the first time the dialog opens -- a
   // handful of rows that don't change during a session, not worth refetching
@@ -168,11 +171,29 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
 
   return (
     <Dialog fullWidth fullScreen={fullScreen} maxWidth="sm" open={open} onClose={onClose}>
-      <DialogTitle sx={visuallyHidden}>Search</DialogTitle>
+      <DialogTitle
+        id="search-dialog-title"
+        // sx={visuallyHidden}
+        sx={{ m: 0, p: 2 }}
+      >
+        Search
+      </DialogTitle>
+      <IconButton
+        aria-label="close"
+        sx={{
+          position: 'absolute',
+          right: 8,
+          top: 8,
+        }}
+        onClick={onClose}
+      >
+        <Close />
+      </IconButton>
       <DialogContent>
         <TextField
           autoFocus
           fullWidth
+          inputRef={inputRef}
           placeholder="Search outfits, pieces, seasons…"
           slotProps={{
             input: {
@@ -181,6 +202,26 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
                   <Search />
                 </InputAdornment>
               ),
+              // Only rendered when there is something to clear, so the field
+              // does not carry a permanently dead control. Focus goes back to
+              // the input rather than being left on a button that just
+              // vanished, which would otherwise strand keyboard users at the
+              // top of the document.
+              endAdornment: query ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="Clear search"
+                    edge="end"
+                    size="small"
+                    onClick={() => {
+                      setQuery('')
+                      inputRef.current?.focus()
+                    }}
+                  >
+                    <Close fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
             },
           }}
           value={query}

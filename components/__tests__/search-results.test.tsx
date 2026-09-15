@@ -51,31 +51,23 @@ describe('SearchResults', () => {
     expect(screen.getByText('3')).toBeInTheDocument()
   })
 
-  // A result set at the RPC's cap is truncated, so no section count in it is a
-  // total. `100+` is the honest rendering; a bare `100` is provably wrong for
-  // any query with more matches (e.g. "dream", which has 336).
-  it('marks section counts as a lower bound when the results hit the cap', () => {
-    render(
-      <SearchResults
-        results={Array.from({ length: SEARCH_RESULT_LIMIT }, (_, i) =>
-          result({ kind: 'outfit_set', slug: `s${i}` })
-        )}
-      />
-    )
-    expect(screen.getByText(`${SEARCH_RESULT_LIMIT}+`)).toBeInTheDocument()
-    expect(screen.queryByText(String(SEARCH_RESULT_LIMIT))).not.toBeInTheDocument()
-  })
+  // Regression: a `+` suffix used to be applied to EVERY section whenever the
+  // overall result set hit the RPC's cap. Hitting the global cap says nothing
+  // about whether this particular kind was truncated, so a section with 5 real
+  // matches rendered "5+" -- which, beside a list the modal caps at 5, reads as
+  // "more than 5 shown" rather than "more than 5 matched".
+  it('states an exact section count even when the results hit the cap', () => {
+    const capped = [
+      ...Array.from({ length: SEARCH_RESULT_LIMIT - 5 }, (_, i) =>
+        result({ kind: 'outfit_set', slug: `s${i}` })
+      ),
+      ...Array.from({ length: 5 }, (_, i) => result({ kind: 'season', slug: `w${i}` })),
+    ]
 
-  it('states an exact section count below the cap', () => {
-    render(
-      <SearchResults
-        results={Array.from({ length: SEARCH_RESULT_LIMIT - 1 }, (_, i) =>
-          result({ kind: 'outfit_set', slug: `s${i}` })
-        )}
-      />
-    )
-    expect(screen.getByText(String(SEARCH_RESULT_LIMIT - 1))).toBeInTheDocument()
-    expect(screen.queryByText(`${SEARCH_RESULT_LIMIT - 1}+`)).not.toBeInTheDocument()
+    render(<SearchResults limitPerKind={5} results={capped} />)
+
+    expect(screen.getByText('5')).toBeInTheDocument()
+    expect(screen.queryByText('5+')).not.toBeInTheDocument()
   })
 
   it('renders an empty state when there are no results', () => {
