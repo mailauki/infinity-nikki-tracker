@@ -29,6 +29,7 @@ import { NAV_DRAWER_WIDTH } from '@/lib/layout-constants'
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '../color-theme-context'
 import { useNavDrawer, useSidebar, useStickyBar, useToolbar } from './navbar-toolbar-context'
+import SearchCollection from '../search/search-collection'
 
 const SIDEBAR_WIDTH = 420
 
@@ -298,7 +299,10 @@ export default function LayoutShell({ children }: { children?: React.ReactNode }
               {drawerOpen ? <MenuOpen /> : <Menu />}
             </IconButton>
             <PageTitle />
-            <NavUser />
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+              <SearchCollection />
+              <NavUser />
+            </Stack>
           </Stack>
         </Toolbar>
         {/* Second row: the injected page toolbar, split into two sections —

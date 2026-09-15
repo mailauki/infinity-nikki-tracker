@@ -38,6 +38,7 @@ export const PAGE_NAMES = {
   '/momo-cloaks': { nav: "Momo's Cloaks" },
   '/looks': { nav: 'Custom Looks' },
   '/looks/new': { nav: 'New Look' },
+  '/search': { nav: 'Search' },
 
   // Account
   '/profile': { nav: 'Profile' },
