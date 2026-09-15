@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Box, CircularProgress, IconButton, InputAdornment, TextField } from '@mui/material'
 import { Close, Search } from '@mui/icons-material'
 
+import StickyBar from '@/components/navbar/sticky-bar'
+import { TRANSLUCENT_SURFACE } from '@/lib/theme'
 import { searchAll } from '@/hooks/data/search'
 import SearchResults from '@/components/search/search-results'
 import { isSearchableQuery } from '@/lib/search/query'
@@ -48,43 +50,51 @@ export default function SearchPageResults({ initialQuery }: { initialQuery: stri
   }, [query])
 
   return (
-    <Box>
-      <TextField
-        autoFocus
-        fullWidth
-        inputRef={inputRef}
-        placeholder="Search outfits, pieces, seasons…"
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start">
-                <Search />
-              </InputAdornment>
-            ),
-            // Only rendered when there is something to clear, so the field does
-            // not carry a permanently dead control. Focus returns to the input
-            // rather than being left on a button that just vanished.
-            endAdornment: query ? (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="Clear search"
-                  edge="end"
-                  size="small"
-                  onClick={() => {
-                    setQuery('')
-                    inputRef.current?.focus()
-                  }}
-                >
-                  <Close fontSize="small" />
-                </IconButton>
-              </InputAdornment>
-            ) : null,
-          },
-        }}
-        sx={{ mb: 2 }}
-        value={query}
-        onChange={(event) => setQuery(event.target.value)}
-      />
+    <>
+      {/* Portals into the shell's sticky sub-toolbar, pinned under the AppBar
+          — the same slot the four results bars use, so the field stays put as
+          results scroll without this component guessing at a top offset. */}
+      <StickyBar>
+        <TextField
+          autoFocus
+          fullWidth
+          inputRef={inputRef}
+          placeholder="Search outfits, pieces, seasons…"
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+              // Only rendered when there is something to clear, so the field does
+              // not carry a permanently dead control. Focus returns to the input
+              // rather than being left on a button that just vanished.
+              endAdornment: query ? (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="Clear search"
+                    edge="end"
+                    size="small"
+                    onClick={() => {
+                      setQuery('')
+                      inputRef.current?.focus()
+                    }}
+                  >
+                    <Close fontSize="small" />
+                  </IconButton>
+                </InputAdornment>
+              ) : null,
+            },
+          }}
+          // Translucent + blurred, matching the four results bars: a sticky
+          // element keeps its own background, so rows would otherwise show
+          // through as they scroll underneath it.
+          sx={{ backgroundColor: TRANSLUCENT_SURFACE, backdropFilter: 'blur(8px)' }}
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+      </StickyBar>
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
@@ -93,6 +103,6 @@ export default function SearchPageResults({ initialQuery }: { initialQuery: stri
       ) : (
         <SearchResults results={results} />
       )}
-    </Box>
+    </>
   )
 }

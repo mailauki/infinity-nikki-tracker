@@ -4,16 +4,15 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import {
   Button,
+  CardContent,
   Dialog,
   DialogContent,
   DialogTitle,
   IconButton,
   InputAdornment,
   TextField,
-  useMediaQuery,
-  useTheme,
+  Typography,
 } from '@mui/material'
-import { visuallyHidden } from '@mui/utils'
 import { Close, Search } from '@mui/icons-material'
 
 import { searchAll } from '@/hooks/data/search'
@@ -39,8 +38,6 @@ const EMPTY_VOCABULARY: FacetVocabulary = {
 }
 
 export default function SearchDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const theme = useTheme()
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
 
   // Query is local state ONLY -- no router, so typing never creates history
   // entries. The /search page is the surface that owns a URL.
@@ -170,12 +167,25 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
   }, [open])
 
   return (
-    <Dialog fullWidth fullScreen={fullScreen} maxWidth="sm" open={open} onClose={onClose}>
-      <DialogTitle
-        id="search-dialog-title"
-        // sx={visuallyHidden}
-        sx={{ m: 0, p: 2 }}
-      >
+    <Dialog
+      fullWidth
+      maxWidth="sm"
+      open={open}
+      scroll="paper"
+      // Sizing goes on the PAPER slot, not `sx`. MUI's Dialog spreads unknown
+      // props onto the root Modal element, so an `sx` here styles the backdrop
+      // wrapper and leaves the paper unconstrained -- the same trap that made
+      // an `aria-label` here a no-op.
+      //
+      // A fixed card at every width is deliberate: no `fullScreen` on mobile.
+      // The height is pinned so only the results scroll, which is what keeps
+      // the field and the "See all" footer in place.
+      slotProps={{
+        paper: { sx: { minHeight: 370, maxHeight: 600, my: 'auto', mx: 2 } },
+      }}
+      onClose={onClose}
+    >
+      <DialogTitle id="search-dialog-title" sx={{ m: 0, p: 2 }}>
         Search
       </DialogTitle>
       <IconButton
@@ -189,7 +199,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
       >
         <Close />
       </IconButton>
-      <DialogContent>
+      <CardContent>
         <TextField
           autoFocus
           fullWidth
@@ -227,9 +237,20 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
-        {isSearchableQuery(query) && (
+      </CardContent>
+      <DialogContent dividers>
+        {isSearchableQuery(query) ? (
           <SearchResults facets={facets} limitPerKind={5} results={results} onNavigate={onClose} />
+        ) : (
+          <CardContent sx={{ textAlign: 'center', my: 4 }}>
+            <Typography size="small">Start searching</Typography>
+            <Typography color="textSecondary" variant="label">
+              Results will show here
+            </Typography>
+          </CardContent>
         )}
+      </DialogContent>
+      <CardContent>
         {results.length > 5 && (
           <Button
             fullWidth
@@ -245,7 +266,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
               : `See all ${results.length} results`}
           </Button>
         )}
-      </DialogContent>
+      </CardContent>
     </Dialog>
   )
 }
