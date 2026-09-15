@@ -14,11 +14,9 @@ import type { SearchResult } from '@/lib/search/types'
 const DEBOUNCE_MS = 250
 
 export default function SearchPageResults({ initialQuery }: { initialQuery: string }) {
-  // The query is page state, seeded ONCE from ?q= and never written back to the
-  // URL. `?q=` is how the modal's "See all results" link hands a query over and
-  // how a refresh or a shared link arrives with one -- but editing the field
-  // afterwards is local, so typing here creates no history entries and does not
-  // re-run the page. The URL keeps whatever query the page was opened with.
+  // The query is page state, seeded ONCE from ?q=. The param is purely a
+  // handoff: the modal's "See all results" link is a plain href, so the query
+  // can only reach a freshly navigated page through the URL.
   const [query, setQuery] = useState(initialQuery)
   const [results, setResults] = useState<SearchResult[]>([])
   const [loading, setLoading] = useState(isSearchableQuery(initialQuery))
@@ -27,6 +25,27 @@ export default function SearchPageResults({ initialQuery }: { initialQuery: stri
   const latest = useRef(0)
   // Lets the clear button hand focus back to the field it emptied.
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Strip ?q= once it has seeded state, so the URL does not keep asserting a
+  // query the field may no longer hold.
+  //
+  // replaceState, not router.replace: this must not navigate, add a history
+  // entry, or re-run the Server Component — the param has already done its one
+  // job by this point. Next's router is left untouched deliberately.
+  //
+  // KNOWN COST: a refresh or a copied link after this point no longer carries
+  // the query, so the field comes back empty. That is the accepted trade for a
+  // clean URL. generateMetadata already ran server-side, so the tab title keeps
+  // the arrival query.
+  useEffect(() => {
+    if (!initialQuery) return
+
+    const url = new URL(window.location.href)
+    if (!url.searchParams.has('q')) return
+
+    url.searchParams.delete('q')
+    window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`)
+  }, [initialQuery])
 
   useEffect(() => {
     if (!isSearchableQuery(query)) {
