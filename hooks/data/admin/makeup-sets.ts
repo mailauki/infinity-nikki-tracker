@@ -16,7 +16,9 @@ const RAW_COLUMNS = `
 	base_set,
 	image_url,
 	alt_image_url,
-	updated_at
+	updated_at,
+	released_at,
+	version
 `
 
 export const getMakeupSetsRaw = cache(async () => {

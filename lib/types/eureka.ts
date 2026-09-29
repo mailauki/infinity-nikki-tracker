@@ -1,6 +1,10 @@
 import { Release } from '@/hooks/release'
 import { Tables } from './supabase'
 
+// The public eureka-sets selects (hooks/data/eureka-sets.ts) also embed
+// `trials ( released_at, version )` on this join row to resolve
+// EurekaSet.release — this type stays narrower (trial slug only) since it's
+// the shape most callers (admin raw rows, etc.) actually need.
 export type EurekaSetTrial = Pick<Tables<'eureka_set_trials'>, 'trial'>
 
 export type EurekaSet = Tables<'eureka_sets'> & {

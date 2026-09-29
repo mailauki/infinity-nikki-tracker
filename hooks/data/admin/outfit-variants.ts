@@ -19,6 +19,8 @@ const SELECT = `
   alt_image_url,
   default,
   updated_at,
+  released_at,
+  version,
   outfit_sets ( title ),
   outfit_categories ( title ),
   season_categories ( title )
