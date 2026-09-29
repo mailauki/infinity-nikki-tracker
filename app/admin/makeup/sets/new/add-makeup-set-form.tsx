@@ -58,6 +58,10 @@ export default function AddMakeupSetForm({
   const [outfitSet, setOutfitSet] = useState<string | null>(null)
   const [baseSet, setBaseSet] = useState<string | null>(null)
   const [slugEdited, setSlugEdited] = useState(false)
+  // ReleaseFields is uncontrolled (defaultValue) so its inputs can stay
+  // read-only until an admin types — bumping this key remounts it fresh on
+  // "add another" instead of carrying the last save's date/version over.
+  const [releaseKey, setReleaseKey] = useState(0)
 
   // Every makeup set always has all of the categories — there is nothing to
   // choose, so the categories are derived rather than held in state. Only
@@ -112,6 +116,7 @@ export default function AddMakeupSetForm({
       setOutfitSet(null)
       setBaseSet(null)
       setSlugEdited(false)
+      setReleaseKey((k) => k + 1)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -146,7 +151,7 @@ export default function AddMakeupSetForm({
           onChange={setStyle}
         />
 
-        <ReleaseFields inherited={inherited} />
+        <ReleaseFields key={releaseKey} inherited={inherited} />
 
         <TextField
           multiline

@@ -155,6 +155,7 @@ export default function EditEurekaSetForm({
           defaultReleasedAt={eurekaSet.released_at}
           defaultVersion={eurekaSet.version}
           inherited={inherited}
+          inheritsFrom="its trials"
         />
 
         <TextField

@@ -66,6 +66,10 @@ export default function AddOutfitSetForm({
   const [categorySelect, setCategorySelect] = useState<string[]>([])
   const [handheldBaseOnly, setHandheldBaseOnly] = useState(false)
   const [slugEdited, setSlugEdited] = useState(false)
+  // ReleaseFields is uncontrolled (defaultValue) so its inputs can stay
+  // read-only until an admin types — bumping this key remounts it fresh on
+  // "add another" instead of carrying the last save's date/version over.
+  const [releaseKey, setReleaseKey] = useState(0)
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {
     const { value } = e.target
@@ -122,6 +126,7 @@ export default function AddOutfitSetForm({
       setCategorySelect([])
       setHandheldBaseOnly(false)
       setSlugEdited(false)
+      setReleaseKey((k) => k + 1)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -199,7 +204,7 @@ export default function AddOutfitSetForm({
           </Select>
         </FormControl>
 
-        <ReleaseFields inherited={inherited} />
+        <ReleaseFields key={releaseKey} inherited={inherited} />
 
         <TextField
           multiline

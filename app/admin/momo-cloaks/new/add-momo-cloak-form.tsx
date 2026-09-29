@@ -56,6 +56,10 @@ export default function AddMomoCloakForm({
   const [location, setLocation] = useState('')
   const [outfitSet, setOutfitSet] = useState<string | null>(null)
   const [slugEdited, setSlugEdited] = useState(false)
+  // ReleaseFields is uncontrolled (defaultValue) so its inputs can stay
+  // read-only until an admin types — bumping this key remounts it fresh on
+  // "add another" instead of carrying the last save's date/version over.
+  const [releaseKey, setReleaseKey] = useState(0)
 
   const selectedOutfitSet = outfitSets.find((s) => s.slug === outfitSet) ?? null
 
@@ -100,6 +104,7 @@ export default function AddMomoCloakForm({
       setLocation('')
       setOutfitSet(null)
       setSlugEdited(false)
+      setReleaseKey((k) => k + 1)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -162,7 +167,7 @@ export default function AddMomoCloakForm({
           </Select>
         </FormControl>
 
-        <ReleaseFields inherited={inherited} />
+        <ReleaseFields key={releaseKey} inherited={inherited} />
 
         <TextField
           multiline

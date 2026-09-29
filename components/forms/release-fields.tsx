@@ -10,10 +10,13 @@ export default function ReleaseFields({
   defaultReleasedAt,
   defaultVersion,
   inherited,
+  inheritsFrom = 'its season',
 }: {
   defaultReleasedAt?: string | null
   defaultVersion?: string | null
   inherited?: Release | null
+  /** What the fallback wording names when there's no resolved value to show yet. */
+  inheritsFrom?: string
 }) {
   const inheritedText = inherited ? formatRelease(inherited) : null
   const helperText =
@@ -21,7 +24,7 @@ export default function ReleaseFields({
       ? undefined
       : inheritedText
         ? `Blank inherits ${inheritedText}`
-        : 'Blank inherits from its season'
+        : `Blank inherits from ${inheritsFrom}`
 
   return (
     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>

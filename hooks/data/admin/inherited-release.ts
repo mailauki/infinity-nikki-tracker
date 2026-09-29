@@ -49,11 +49,23 @@ export async function getInheritedRelease(
 
   switch (kind) {
     case 'outfitSet':
-    case 'makeupSet':
     case 'momoCloak': {
-      const table =
-        kind === 'outfitSet' ? 'outfit_sets' : kind === 'makeupSet' ? 'makeup_sets' : 'momo_cloaks'
+      const table = kind === 'outfitSet' ? 'outfit_sets' : 'momo_cloaks'
       const { data } = await supabase.from(table).select('seasons').eq('slug', slug).maybeSingle()
+      return resolveRelease(await season(data?.seasons ?? null))
+    }
+    // Unlike outfit sets (whose edit page only ever loads a base_set IS NULL
+    // row — evolutions go through the separate `evolution` kind above), the
+    // makeup set edit form edits base AND evolution rows through this same
+    // kind. An evolution's blank override must fall back to its base set
+    // (then that base's season), never its own season column directly.
+    case 'makeupSet': {
+      const { data } = await supabase
+        .from('makeup_sets')
+        .select('base_set, seasons')
+        .eq('slug', slug)
+        .maybeSingle()
+      if (data?.base_set) return setChain('makeup_sets', data.base_set)
       return resolveRelease(await season(data?.seasons ?? null))
     }
     case 'evolution': {

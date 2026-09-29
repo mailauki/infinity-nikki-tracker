@@ -65,6 +65,10 @@ export default function AddEurekaSetForm({
   const [slugEdited, setSlugEdited] = useState(false)
   const [colorSelect, setColorSelect] = useState<string[]>([])
   const [defaultColor, setDefaultColor] = useState('')
+  // ReleaseFields is uncontrolled (defaultValue) so its inputs can stay
+  // read-only until an admin types — bumping this key remounts it fresh on
+  // "add another" instead of carrying the last save's date/version over.
+  const [releaseKey, setReleaseKey] = useState(0)
 
   const maxColorsByRarity: Record<number, number> = { 5: 5, 4: 3, 3: 1, 2: 0 }
   const maxColors = typeof rarity === 'number' ? (maxColorsByRarity[rarity] ?? 5) : 5
@@ -120,6 +124,7 @@ export default function AddEurekaSetForm({
       setSlugEdited(false)
       setColorSelect([])
       setDefaultColor('')
+      setReleaseKey((k) => k + 1)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -144,7 +149,7 @@ export default function AddEurekaSetForm({
           onUserEdit={() => setSlugEdited(true)}
         />
 
-        <ReleaseFields inherited={inherited} />
+        <ReleaseFields key={releaseKey} inherited={inherited} inheritsFrom="its trials" />
 
         <TextField
           multiline
