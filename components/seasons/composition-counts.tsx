@@ -130,7 +130,7 @@ export default function CompositionCounts({
       )}
       {eureka > 0 && (
         <Count
-          icon={<AutoAwesome fontSize="inherit" />}
+          icon={<AutoAwesome color="action" fontSize="inherit" />}
           obtained={obtainedEureka}
           plural="eureka"
           singular="eureka"

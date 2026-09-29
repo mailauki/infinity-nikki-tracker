@@ -30,6 +30,21 @@ async function fetchJson<T>(url: string): Promise<T> {
   return r.json()
 }
 
+// The user_preferences columns the filter state persists to. One function so the
+// hydrate snapshot and every later write serialize identically.
+function filtersToPrefs(filters: FilterState) {
+  return {
+    eureka_set_filter: filters.selectedEurekaSet,
+    eureka_category: filters.selectedCategory,
+    eureka_obtained_filter: filters.selectedObtainedFilter,
+    eureka_color: filters.selectedColor,
+    eureka_rarity: filters.selectedRarity ? String(filters.selectedRarity) : null,
+    eureka_style: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
+    eureka_label: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
+    eureka_trial: filters.selectedTrial.length ? filters.selectedTrial.join(',') : null,
+  }
+}
+
 interface EurekaBootstrap {
   sets: EurekaSet[]
   categories: EurekaCategory[]
@@ -72,6 +87,12 @@ export default function EurekaDataProvider({
   const { exitingKeys, holdExit } = useExitHold(CARD_EXIT_HOLD_MS)
   const supabase = useMemo(() => createClient(), [])
   const prefsLoaded = useRef(false)
+  // The last filter values known to be in user_preferences (the hydrated read,
+  // then each write). The persist effect skips when nothing differs from it —
+  // otherwise hydration itself triggers a write-back of the values just read,
+  // and that cookie-refreshing Server Action fires on every mount, including
+  // under /seasons where a remount is expensive.
+  const persistedFilters = useRef<string | null>(null)
 
   useEffect(() => {
     fetchJson<EurekaBootstrap>('/api/eureka/bootstrap')
@@ -108,7 +129,7 @@ export default function EurekaDataProvider({
       .then((prefs) => {
         setGroupBySet(prefs.group_by_set)
         setShowByColor(prefs.show_by_color)
-        setFilters({
+        const hydrated: FilterState = {
           selectedEurekaSet: prefs.eureka_set_filter ?? null,
           selectedCategory: (prefs.eureka_category as CategoryFilter) ?? null,
           selectedObtainedFilter: (prefs.eureka_obtained_filter as ObtainedFilter) ?? null,
@@ -117,7 +138,9 @@ export default function EurekaDataProvider({
           selectedStyle: prefs.eureka_style ? prefs.eureka_style.split(',').filter(Boolean) : [],
           selectedLabel: prefs.eureka_label ? prefs.eureka_label.split(',').filter(Boolean) : [],
           selectedTrial: prefs.eureka_trial ? prefs.eureka_trial.split(',').filter(Boolean) : [],
-        })
+        }
+        persistedFilters.current = JSON.stringify(filtersToPrefs(hydrated))
+        setFilters(hydrated)
         prefsLoaded.current = true
       })
       .catch(() => {
@@ -214,18 +237,11 @@ export default function EurekaDataProvider({
 
   useEffect(() => {
     if (!isLoggedIn || !prefsLoaded.current) return
-    startTransition(() =>
-      updateEurekaFilters({
-        eureka_set_filter: filters.selectedEurekaSet,
-        eureka_category: filters.selectedCategory,
-        eureka_obtained_filter: filters.selectedObtainedFilter,
-        eureka_color: filters.selectedColor,
-        eureka_rarity: filters.selectedRarity ? String(filters.selectedRarity) : null,
-        eureka_style: filters.selectedStyle.length ? filters.selectedStyle.join(',') : null,
-        eureka_label: filters.selectedLabel.length ? filters.selectedLabel.join(',') : null,
-        eureka_trial: filters.selectedTrial.length ? filters.selectedTrial.join(',') : null,
-      })
-    )
+    const prefs = filtersToPrefs(filters)
+    const key = JSON.stringify(prefs)
+    if (key === persistedFilters.current) return
+    persistedFilters.current = key
+    startTransition(() => updateEurekaFilters(prefs))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters])
 

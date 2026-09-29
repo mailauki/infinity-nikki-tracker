@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { enqueueSnackbar } from 'notistack'
 
 import { handleObtainedMomoCloak } from '@/app/momo-cloaks/actions'
@@ -19,6 +19,20 @@ import {
 // emit one onChange per checkbox click; collapse them into one preference write
 // instead of racing several concurrent upserts on the same user_preferences row.
 const PREFERENCE_DEBOUNCE_MS = 500
+
+// The user_preferences columns the filter state persists to. One function so the
+// hydrate snapshot and every later write serialize identically.
+function filtersToPrefs(filters: MomoCloakFilterState) {
+  return {
+    momo_rarity_filter: filters.selectedRarity ? String(filters.selectedRarity) : null,
+    momo_season_filter: filters.selectedSeason.length ? filters.selectedSeason.join(',') : null,
+    momo_season_category_filter: filters.selectedSeasonCategory.length
+      ? filters.selectedSeasonCategory.join(',')
+      : null,
+    momo_location_filter: filters.selectedLocation,
+    momo_obtained_filter: filters.selectedObtainedFilter,
+  }
+}
 
 export default function MomoCloakDataProvider({
   cloaks,
@@ -46,12 +60,17 @@ export default function MomoCloakDataProvider({
   // either replay the just-read values back or clobber a change the user made
   // mid-hydration.
   const [prefsLoaded, setPrefsLoaded] = useState(false)
+  // The last filter values known to be in user_preferences (the hydrated read,
+  // then each write). The persist effect skips when nothing differs from it, so
+  // hydration doesn't write back the values it just read on every mount — this
+  // provider also mounts under /seasons, where nothing edits these filters.
+  const persistedFilters = useRef<string | null>(null)
 
   useEffect(() => {
     if (!isLoggedIn) return
     fetchPreferencesOnce()
       .then((prefs) => {
-        setFilters({
+        const hydrated: MomoCloakFilterState = {
           selectedRarity: prefs.momo_rarity_filter
             ? Number(prefs.momo_rarity_filter) || null
             : null,
@@ -63,7 +82,9 @@ export default function MomoCloakDataProvider({
             : [],
           selectedLocation: prefs.momo_location_filter ?? null,
           selectedObtainedFilter: (prefs.momo_obtained_filter as ObtainedFilter) ?? null,
-        })
+        }
+        persistedFilters.current = JSON.stringify(filtersToPrefs(hydrated))
+        setFilters(hydrated)
         setPrefsLoaded(true)
       })
       .catch(() => {
@@ -81,16 +102,14 @@ export default function MomoCloakDataProvider({
   // user_preferences row.
   useEffect(() => {
     if (!isLoggedIn || !prefsLoaded) return
+    const prefs = filtersToPrefs(filters)
+    const key = JSON.stringify(prefs)
+    if (key === persistedFilters.current) return
     const id = setTimeout(() => {
-      savePreferences({
-        momo_rarity_filter: filters.selectedRarity ? String(filters.selectedRarity) : null,
-        momo_season_filter: filters.selectedSeason.length ? filters.selectedSeason.join(',') : null,
-        momo_season_category_filter: filters.selectedSeasonCategory.length
-          ? filters.selectedSeasonCategory.join(',')
-          : null,
-        momo_location_filter: filters.selectedLocation,
-        momo_obtained_filter: filters.selectedObtainedFilter,
-      }).catch((err) => {
+      // Recorded when the write actually fires, so a change reverted inside the
+      // debounce window compares equal again and never writes at all.
+      persistedFilters.current = key
+      savePreferences(prefs).catch((err) => {
         // Non-blocking: the filter still applies in-session.
         console.error('Failed to persist momo cloak filters:', err)
       })
