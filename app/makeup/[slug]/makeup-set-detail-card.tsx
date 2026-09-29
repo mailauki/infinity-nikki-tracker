@@ -4,7 +4,7 @@ import { Link as Anchor, Typography } from '@mui/material'
 import Link from 'next/link'
 import { MakeupSet } from '@/lib/types/makeup'
 import { linkedSetHref } from '@/lib/types/outfit'
-import { resolveRelease } from '@/hooks/release'
+import { formatRelease, resolveRelease } from '@/hooks/release'
 import LazyImage from '@/components/lazy-image'
 import LinkedSetCard from '@/components/linked-set-card'
 import ReleaseLine from '@/components/release-line'
@@ -71,16 +71,17 @@ export default function MakeupSetDetailCard({
     </>
   )
 
-  const releaseRow = (
-    <ReleaseLine
-      release={resolveRelease(
-        selectedEvolutionSet,
-        makeupSet,
-        selectedEvolutionSet?.season,
-        season
-      )}
-    />
+  // Only included when there's actually something to show — extraRows wraps
+  // every entry in its own row regardless of what it renders, so an
+  // unconditional ReleaseLine would leave a blank gap when no date/version data
+  // exists yet.
+  const release = resolveRelease(
+    selectedEvolutionSet,
+    makeupSet,
+    selectedEvolutionSet?.season,
+    season
   )
+  const releaseRow = formatRelease(release) ? <ReleaseLine release={release} /> : null
 
   // The pairing often points at an outfit evolution rather than the base set, so
   // linkedSetHref() resolves it to the base route plus an `?evolution=` param.

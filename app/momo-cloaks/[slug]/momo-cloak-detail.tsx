@@ -13,7 +13,7 @@ import {
 } from '@/components/outfits/outfit-image-mode-context'
 import ReleaseLine from '@/components/release-line'
 import SetDetailCard from '@/components/set-detail-card'
-import { setRelease } from '@/hooks/release'
+import { formatRelease, setRelease } from '@/hooks/release'
 import { MomoCloak } from '@/lib/types/momo'
 import { linkedSetHref } from '@/lib/types/outfit'
 
@@ -55,7 +55,12 @@ export default function MomoCloakDetail({
     </>
   )
 
-  const releaseRow = <ReleaseLine release={setRelease(cloak)} />
+  // Only included when there's actually something to show — extraRows wraps
+  // every entry in its own row regardless of what it renders, so an
+  // unconditional ReleaseLine would leave a blank gap when no date/version data
+  // exists yet.
+  const release = setRelease(cloak)
+  const releaseRow = formatRelease(release) ? <ReleaseLine release={release} /> : null
 
   // 74 of 119 cloaks have no season and 78 have no outfit_set, so each row is
   // dropped when its data is absent — otherwise they render an empty card and a

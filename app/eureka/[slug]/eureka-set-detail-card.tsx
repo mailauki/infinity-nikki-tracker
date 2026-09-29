@@ -4,6 +4,7 @@ import { Link as Anchor } from '@mui/material'
 import { Category } from '@mui/icons-material'
 import { EurekaSet } from '@/lib/types/eureka'
 import { toTitle } from '@/lib/utils'
+import { formatRelease } from '@/hooks/release'
 import LazyImage from '@/components/lazy-image'
 import ReleaseLine from '@/components/release-line'
 import SetDetailCard from '@/components/set-detail-card'
@@ -62,7 +63,11 @@ export default function EurekaSetDetailCard({
       </Anchor>
     ) : null
 
-  const releaseRow = <ReleaseLine release={release} />
+  // Only included when there's actually something to show — extraRows wraps
+  // every entry in its own row regardless of what it renders, so an
+  // unconditional ReleaseLine would leave a blank gap when no date/version data
+  // exists yet.
+  const releaseRow = formatRelease(release) ? <ReleaseLine release={release} /> : null
 
   return (
     <SetDetailCard

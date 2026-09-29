@@ -5,7 +5,7 @@ import { Collections } from '@mui/icons-material'
 import Link from 'next/link'
 import { CarouselImage, OutfitSet, linkedSetHref } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
-import { resolveRelease } from '@/hooks/release'
+import { formatRelease, resolveRelease } from '@/hooks/release'
 import LazyImage from '@/components/lazy-image'
 import LinkedSetCard from '@/components/linked-set-card'
 import ReleaseLine from '@/components/release-line'
@@ -100,9 +100,12 @@ export default function OutfitSetDetailCard({
     </>
   )
 
-  const releaseRow = (
-    <ReleaseLine release={resolveRelease(evolution, outfitSet, evolution?.season, season)} />
-  )
+  // Only included when there's actually something to show — extraRows wraps
+  // every entry in its own row regardless of what it renders, so an
+  // unconditional ReleaseLine would leave a blank gap when no date/version data
+  // exists yet.
+  const release = resolveRelease(evolution, outfitSet, evolution?.season, season)
+  const releaseRow = formatRelease(release) ? <ReleaseLine release={release} /> : null
 
   // Linked makeup set and Momo's Cloak, resolved from their `outfit_set` FKs
   // rather than guessed from the slug: only 39 of 292 outfits follow the
