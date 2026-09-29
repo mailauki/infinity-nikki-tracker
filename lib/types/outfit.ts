@@ -161,6 +161,8 @@ export type OutfitSetRaw = Pick<
   | 'base_set'
   | 'handheld_base_only'
   | 'updated_at'
+  | 'released_at'
+  | 'version'
 >
 
 export type OutfitVariant = Pick<

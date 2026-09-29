@@ -47,6 +47,8 @@ export type MomoCloakRaw = Pick<
   | 'image_url'
   | 'alt_image_url'
   | 'updated_at'
+  | 'released_at'
+  | 'version'
 >
 
 export type ObtainedMomoCloak = Pick<Tables<'obtained_momo_cloaks'>, 'id' | 'momo_cloak'>
