@@ -12,7 +12,15 @@ import { percent } from '@/hooks/count-obtained'
 import OutfitSetCard from '@/app/outfits/outfit-set-card'
 import OutfitVariantCard from '@/app/outfits/outfit-variant-card'
 import MakeupVariantCard from '@/app/makeup/makeup-variant-card'
+import SetCard from '@/components/set-card'
+import {
+  resolveOutfitImage,
+  useOutfitImageMode,
+} from '@/components/outfits/outfit-image-mode-context'
 import { useSeasonFilter } from './season-filter-context'
+import { useEurekaData } from '@/components/eureka/eureka-context'
+import { useMomoCloakData } from '@/app/momo-cloaks/momo-cloak-context'
+import { Release } from '@/hooks/release'
 import { useSortOrder } from '@/components/sort-context'
 import {
   applySeasonFilters,
@@ -21,6 +29,7 @@ import {
   countEntryKinds,
   groupCategoriesBySeasonGroup,
   groupSeasonEntries,
+  MOMO_CLOAKS_CATEGORY,
   OTHER_CATEGORY,
   SeasonEntry,
   sortSeasonEntries,
@@ -49,6 +58,8 @@ function CategoryProgress({
   pieces,
   obtainedOutfits,
   obtainedPieces,
+  eureka,
+  obtainedEureka,
   isLoggedIn,
 }: {
   title: string
@@ -58,6 +69,8 @@ function CategoryProgress({
   pieces: number
   obtainedOutfits: number
   obtainedPieces: number
+  eureka: number
+  obtainedEureka: number
   isLoggedIn: boolean
 }) {
   const percentage = total > 0 ? percent(obtained, total) : 0
@@ -71,16 +84,19 @@ function CategoryProgress({
         {isLoggedIn && (
           <Stack direction="row" spacing={1.5} sx={{ alignItems: 'center' }}>
             <CompositionCounts
+              eureka={eureka}
+              obtainedEureka={obtainedEureka}
               obtainedOutfits={obtainedOutfits}
               obtainedPieces={obtainedPieces}
               outfits={outfits}
               pieces={pieces}
             />
-            <ProgressChip obtained={obtained} total={total} variant="parts" />
+            {total > 0 && <ProgressChip obtained={obtained} total={total} variant="parts" />}
           </Stack>
         )}
       </Stack>
-      {isLoggedIn && (
+      {/* A category holding only cloaks counts nothing, so it shows a bare title. */}
+      {isLoggedIn && total > 0 && (
         <LinearProgress
           aria-label={`${title} progress`}
           sx={{ mt: 1 }}
@@ -97,6 +113,7 @@ export default function SeasonOutfitList({
   standaloneVariants,
   makeupSets,
   seasonSlug,
+  seasonRelease,
   seasonCategories,
   seasonGroups,
   isLoggedIn,
@@ -105,18 +122,38 @@ export default function SeasonOutfitList({
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
   seasonSlug: string
+  seasonRelease: Release
   seasonCategories: SeasonCategory[]
   seasonGroups: SeasonGroup[]
   isLoggedIn: boolean
 }) {
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, filters } =
-    useSeasonFilter()
+  const {
+    hideEvolutions,
+    hideGlowups,
+    hidePieces,
+    hideMakeup,
+    hideBaseSets,
+    hideEureka,
+    hideCloaks,
+    filters,
+  } = useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
   const { obtainedMakeup } = useMakeupData()
+  const { eurekaSets, onBatchToggleObtained } = useEurekaData()
+  const {
+    cloaks,
+    obtainedSlugs,
+    onToggleObtained: onToggleCloak,
+    isObtainedError: isCloakObtainedError,
+  } = useMomoCloakData()
+  const { mode } = useOutfitImageMode()
   const { sortAxis, sortDir } = useSortOrder()
 
   const categoryTitle = (categorySlug: string) =>
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
+
+  const categoryLabel = (slug: string) =>
+    slug === OTHER_CATEGORY || slug === MOMO_CLOAKS_CATEGORY ? slug : categoryTitle(slug)
 
   // Cards currently visible, grouped by season_category — respects every toggle
   // (base sets, evolutions, glow-ups, pieces, makeup) plus the obtained/rarity/
@@ -138,6 +175,12 @@ export default function SeasonOutfitList({
         hideBaseSets,
         obtainedOutfit,
         obtainedMakeup,
+        eurekaSets,
+        cloaks,
+        obtainedCloaks: obtainedSlugs,
+        hideEureka,
+        hideCloaks,
+        seasonRelease,
       }),
       filters
     ),
@@ -170,10 +213,59 @@ export default function SeasonOutfitList({
       )
     }
 
-    // Eureka and cloak cards: this grid doesn't pass eurekaSets/cloaks to
-    // groupSeasonEntries yet, so these kinds never actually reach here — their
-    // card rendering is wired up in a later task.
-    if (entry.kind === 'eureka' || entry.kind === 'momo-cloak') return null
+    // Eureka and cloak cards have no missing-filter exit hold, so `in` is
+    // pinned true with no animateExit (see Card Animations in CLAUDE.md).
+    if (entry.kind === 'eureka') {
+      const variants = entry.set.eureka_variants
+      const obtained = variants.filter((v) => v.obtained).length
+      return (
+        <SetCard
+          key={entry.key}
+          in
+          href={`/eureka/${entry.set.slug}`}
+          imageSrc={entry.set.image_url || variants[0]?.image_url || ''}
+          isLoggedIn={isLoggedIn}
+          obtained={obtained}
+          rarity={entry.set.rarity ?? 0}
+          showAlt={false}
+          title={entry.set.title}
+          total={variants.length}
+          onToggle={() =>
+            onBatchToggleObtained(
+              variants.map((v) => ({
+                eureka_set: v.eureka_set!,
+                category: v.category!,
+                color: v.color!,
+              })),
+              obtained !== variants.length
+            )
+          }
+        />
+      )
+    }
+
+    if (entry.kind === 'momo-cloak') {
+      return (
+        <SetCard
+          key={entry.key}
+          in
+          href={`/momo-cloaks/${entry.cloak.slug}`}
+          imageSrc={
+            resolveOutfitImage(mode, {
+              image: entry.cloak.image_url,
+              alt: entry.cloak.alt_image_url,
+            }) ?? ''
+          }
+          isLoggedIn={isLoggedIn && !isCloakObtainedError}
+          obtained={entry.obtained ? 1 : 0}
+          rarity={entry.cloak.rarity ?? 0}
+          showAlt={mode === 'alt'}
+          title={entry.cloak.title}
+          total={1}
+          onToggle={() => onToggleCloak(entry.cloak.slug)}
+        />
+      )
+    }
 
     const { obtained, total } = countEntries([entry])
     return (
@@ -206,20 +298,24 @@ export default function SeasonOutfitList({
     // width is set by the widest card, which left every piece floating in an
     // oversized cell. Each grid also uses its own family's preset: the wider
     // `outfit` columns for sets, the denser `eureka` ones for pieces.
-    const setEntries = entries.filter((entry) => entry.kind === 'outfit')
-    const pieceEntries = entries.filter((entry) => entry.kind !== 'outfit')
+    const isSetCard = (entry: SeasonEntry) =>
+      entry.kind === 'outfit' || entry.kind === 'eureka' || entry.kind === 'momo-cloak'
+    const setEntries = entries.filter(isSetCard)
+    const pieceEntries = entries.filter((entry) => !isSetCard(entry))
 
     const header = (
       <CardGridHeader
         title={
           <CategoryProgress
+            eureka={kinds.eureka}
             isLoggedIn={isLoggedIn}
             obtained={obtained}
+            obtainedEureka={kinds.obtained.eureka}
             obtainedOutfits={kinds.obtained.outfit}
             obtainedPieces={kinds.obtained.standalone}
             outfits={kinds.outfit}
             pieces={kinds.standalone}
-            title={category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)}
+            title={categoryLabel(category)}
             total={total}
           />
         }

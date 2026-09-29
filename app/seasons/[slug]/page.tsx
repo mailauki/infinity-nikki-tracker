@@ -46,6 +46,7 @@ export default async function SeasonPage({ params }: Props) {
   if (!season) notFound()
 
   const isLoggedIn = !!userId
+  const seasonRelease = resolveRelease(season)
 
   // Sets in this season (the season<->set link lives on outfit_sets). The
   // standalone-pieces container has no season of its own — each of its variants
@@ -84,18 +85,20 @@ export default async function SeasonPage({ params }: Props) {
           {isLoggedIn && (
             <SeasonProgress
               makeupSets={seasonMakeupSets}
+              seasonRelease={seasonRelease}
               seasonSets={seasonSets}
               seasonSlug={slug}
               standaloneVariants={standaloneVariants}
             />
           )}
         </Stack>
-        <ReleaseLine release={resolveRelease(season)} />
+        <ReleaseLine release={seasonRelease} />
         <Typography variant="body">{season.description}</Typography>
 
         <SeasonOverview
           isLoggedIn={isLoggedIn}
           makeupSets={seasonMakeupSets}
+          seasonRelease={seasonRelease}
           seasonSets={seasonSets}
           seasonSlug={slug}
           standaloneVariants={standaloneVariants}
@@ -106,6 +109,7 @@ export default async function SeasonPage({ params }: Props) {
           makeupSets={seasonMakeupSets}
           seasonCategories={seasonCategories}
           seasonGroups={seasonGroups}
+          seasonRelease={seasonRelease}
           seasonSets={seasonSets}
           seasonSlug={slug}
           standaloneVariants={standaloneVariants}
@@ -116,6 +120,7 @@ export default async function SeasonPage({ params }: Props) {
           makeupSets={seasonMakeupSets}
           seasonCategories={seasonCategories}
           seasonGroups={seasonGroups}
+          seasonRelease={seasonRelease}
           seasonSets={seasonSets}
           seasonSlug={slug}
           standaloneVariants={standaloneVariants}

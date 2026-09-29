@@ -10,12 +10,16 @@ import { useMakeupData } from '@/components/makeup/makeup-context'
 import { useSidebar } from '@/components/navbar/navbar-toolbar-context'
 import SidebarBody from '@/components/sidebar/sidebar-body'
 import { useSeasonFilter } from './season-filter-context'
+import { useEurekaData } from '@/components/eureka/eureka-context'
+import { useMomoCloakData } from '@/app/momo-cloaks/momo-cloak-context'
+import { Release } from '@/hooks/release'
 import { useSortOrder } from '@/components/sort-context'
 import {
   applySeasonFilters,
   countEntryKinds,
   groupCategoriesBySeasonGroup,
   groupSeasonEntries,
+  MOMO_CLOAKS_CATEGORY,
   OTHER_CATEGORY,
   sortSeasonEntries,
 } from './season-entries'
@@ -33,6 +37,7 @@ export default function SeasonContents({
   standaloneVariants,
   makeupSets,
   seasonSlug,
+  seasonRelease,
   seasonCategories,
   seasonGroups,
   isLoggedIn,
@@ -41,14 +46,25 @@ export default function SeasonContents({
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
   seasonSlug: string
+  seasonRelease: Release
   seasonCategories: SeasonCategory[]
   seasonGroups: SeasonGroup[]
   isLoggedIn: boolean
 }) {
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, filters } =
-    useSeasonFilter()
+  const {
+    hideEvolutions,
+    hideGlowups,
+    hidePieces,
+    hideMakeup,
+    hideBaseSets,
+    hideEureka,
+    hideCloaks,
+    filters,
+  } = useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
   const { obtainedMakeup } = useMakeupData()
+  const { eurekaSets } = useEurekaData()
+  const { cloaks, obtainedSlugs } = useMomoCloakData()
   const { sortAxis, sortDir } = useSortOrder()
   const { activePanel, setActivePanel } = useSidebar()
 
@@ -70,6 +86,9 @@ export default function SeasonContents({
   const categoryTitle = (categorySlug: string) =>
     seasonCategories.find((sc) => sc.slug === categorySlug)?.title ?? categorySlug
 
+  const categoryLabel = (slug: string) =>
+    slug === OTHER_CATEGORY || slug === MOMO_CLOAKS_CATEGORY ? slug : categoryTitle(slug)
+
   const categoryGroups = sortSeasonEntries(
     applySeasonFilters(
       groupSeasonEntries({
@@ -84,6 +103,12 @@ export default function SeasonContents({
         hideBaseSets,
         obtainedOutfit,
         obtainedMakeup,
+        eurekaSets,
+        cloaks,
+        obtainedCloaks: obtainedSlugs,
+        hideEureka,
+        hideCloaks,
+        seasonRelease,
       }),
       filters
     ),
@@ -131,7 +156,7 @@ export default function SeasonContents({
             : []),
           ...section.categories.map(([category, entries]) => {
             const kinds = countEntryKinds(entries)
-            const title = category === OTHER_CATEGORY ? OTHER_CATEGORY : categoryTitle(category)
+            const title = categoryLabel(category)
 
             return (
               <ListItemButton
@@ -151,6 +176,8 @@ export default function SeasonContents({
                   sx={{ pl: 3 }}
                 />
                 <CompositionCounts
+                  eureka={kinds.eureka}
+                  obtainedEureka={isLoggedIn ? kinds.obtained.eureka : undefined}
                   obtainedOutfits={isLoggedIn ? kinds.obtained.outfit : undefined}
                   obtainedPieces={isLoggedIn ? kinds.obtained.standalone : undefined}
                   outfits={kinds.outfit}
