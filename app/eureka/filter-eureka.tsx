@@ -132,7 +132,14 @@ export default function FilterEureka() {
       return { ...set, eureka_variants: filteredVariants, colors: filteredColors }
     })
     .filter((set) => (showByColor ? set.colors.length > 0 : set.eureka_variants.length > 0))
-    .sort((a, b) => compareRelease(a.release, b.release, orderToDir(sortOrder)) || a.id! - b.id!)
+    // Undated rows tie on release, so the id tie-break decides the whole order
+    // until real dates are entered — it must follow sortOrder (new: higher id
+    // first) or "newest first" silently flips to oldest-first.
+    .sort(
+      (a, b) =>
+        compareRelease(a.release, b.release, orderToDir(sortOrder)) ||
+        (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!)
+    )
 
   return (
     <>

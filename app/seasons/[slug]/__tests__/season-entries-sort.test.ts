@@ -18,8 +18,8 @@ const groups: [string, SeasonEntry[]][] = [
 const keys = (g: [string, SeasonEntry[]][]) => g[0][1].map((e) => e.key)
 
 describe('sortSeasonEntries', () => {
-  it('falls back to id order on the date axis when nothing is dated', () => {
-    expect(keys(sortSeasonEntries(groups, 'date', 'desc'))).toEqual(['p1', 'p2', 'p3'])
+  it('falls back to id order in the chosen direction on the date axis when nothing is dated', () => {
+    expect(keys(sortSeasonEntries(groups, 'date', 'desc'))).toEqual(['p3', 'p2', 'p1'])
     expect(keys(sortSeasonEntries(groups, 'date', 'asc'))).toEqual(['p1', 'p2', 'p3'])
   })
 

@@ -198,7 +198,13 @@ export default function FilterOutfits() {
         if (a.slug === STANDALONE_SLUG) return 1
         if (b.slug === STANDALONE_SLUG) return -1
         if (axis === 'date') {
-          return compareRelease(setRelease(a), setRelease(b), sortDir) || a.id! - b.id!
+          // Undated rows tie on release, so the id tie-break decides the whole
+          // order until real dates are entered — it must follow sortDir (desc:
+          // higher id first) or "newest first" silently flips to oldest-first.
+          return (
+            compareRelease(setRelease(a), setRelease(b), sortDir) ||
+            (sortDir === 'asc' ? a.id! - b.id! : b.id! - a.id!)
+          )
         }
         const progress = (s: FilteredSet) => {
           const total = s.outfit_variants.length

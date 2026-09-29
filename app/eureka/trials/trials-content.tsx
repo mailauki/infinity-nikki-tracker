@@ -54,9 +54,13 @@ export default function TrialsContent() {
         .slice(0, 2)
         .sort((a, b) => a.id! - b.id!),
     }))
+    // Undated rows tie on release, so the id tie-break decides the whole order
+    // until real dates are entered — it must follow sortOrder (new: higher id
+    // first) or "newest first" silently flips to oldest-first.
     .sort(
       (a, b) =>
-        compareRelease(resolveRelease(a), resolveRelease(b), orderToDir(sortOrder)) || a.id - b.id
+        compareRelease(resolveRelease(a), resolveRelease(b), orderToDir(sortOrder)) ||
+        (sortOrder === 'new' ? b.id - a.id : a.id - b.id)
     )
 
   const realmGroups = Object.entries(

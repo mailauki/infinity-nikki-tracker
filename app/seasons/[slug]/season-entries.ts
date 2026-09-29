@@ -205,9 +205,14 @@ export function sortSeasonEntries(
     const rb = row(b) as { id?: number | null; rarity?: number | null; title?: string | null }
 
     if (sortAxis === 'date') {
+      const idA = ra.id ?? 0
+      const idB = rb.id ?? 0
+      // Undated rows tie on release, so the id tie-break decides the whole
+      // order until real dates are entered — it has to follow sortDir (desc:
+      // higher id first) or "newest first" silently flips to oldest-first.
       return (
         compareRelease(a.release ?? NO_RELEASE, b.release ?? NO_RELEASE, sortDir) ||
-        (ra.id ?? 0) - (rb.id ?? 0)
+        (sortDir === 'asc' ? idA - idB : idB - idA)
       )
     }
 
