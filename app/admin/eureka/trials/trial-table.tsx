@@ -48,6 +48,8 @@ export function TrialTable({ rows: initialRows, locations }: TrialTableProps) {
         realm: newRow.realm,
         location: newRow.location,
         description: newRow.description,
+        released_at: newRow.released_at,
+        version: newRow.version,
       })
       setRows((prev) => prev.map((r) => (r.id === newRow.id ? newRow : r)))
       return newRow
@@ -142,6 +144,35 @@ export function TrialTable({ rows: initialRows, locations }: TrialTableProps) {
       sortable: false,
       editable: true,
       valueFormatter: (value: string | null) => value ?? '—',
+    },
+    {
+      field: 'version',
+      headerName: 'Version',
+      width: 90,
+      editable: true,
+      valueFormatter: (value: string | null) => value ?? '—',
+    },
+    {
+      field: 'released_at',
+      headerName: 'Released',
+      width: 120,
+      editable: true,
+      type: 'date',
+      // The grid's date editor works in Date objects; the column stores an ISO
+      // `YYYY-MM-DD` string. Parsed/formatted from local date parts (not
+      // UTC/toISOString) so the edited day never shifts a day off in a
+      // timezone west of UTC.
+      valueGetter: (value: string | null) => {
+        if (!value) return null
+        const [y, m, d] = value.split('-').map(Number)
+        return new Date(y, m - 1, d)
+      },
+      valueSetter: (value: Date | null, row: Row) => ({
+        ...row,
+        released_at: value
+          ? `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`
+          : null,
+      }),
     },
     {
       field: 'updated_at',

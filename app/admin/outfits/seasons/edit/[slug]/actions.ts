@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
+import { readReleaseFields } from '@/lib/release-form'
 
 export async function editSeason(currentSlug: string, _: unknown, formData: FormData) {
   const role = await getUserRole()
@@ -25,7 +26,16 @@ export async function editSeason(currentSlug: string, _: unknown, formData: Form
 
   const { error } = await supabase
     .from('seasons')
-    .update({ title, slug, location, description, image_url, alt_image_url, use_season_groups })
+    .update({
+      title,
+      slug,
+      location,
+      description,
+      image_url,
+      alt_image_url,
+      use_season_groups,
+      ...readReleaseFields(formData),
+    })
     .eq('slug', currentSlug)
 
   if (error) return { error: error.message }

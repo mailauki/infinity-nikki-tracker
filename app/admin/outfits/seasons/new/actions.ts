@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { toSlug } from '@/lib/utils'
+import { readReleaseFields } from '@/lib/release-form'
 
 export async function addSeason(_: unknown, formData: FormData) {
   const role = await getUserRole()
@@ -22,9 +23,17 @@ export async function addSeason(_: unknown, formData: FormData) {
   if (!title) return { error: 'Title is required.' }
   if (!slug) return { error: 'Slug is required.' }
 
-  const { error } = await supabase
-    .from('seasons')
-    .insert([{ title, slug, location, description, image_url, use_season_groups }])
+  const { error } = await supabase.from('seasons').insert([
+    {
+      title,
+      slug,
+      location,
+      description,
+      image_url,
+      use_season_groups,
+      ...readReleaseFields(formData),
+    },
+  ])
 
   if (error) return { error: error.message }
 

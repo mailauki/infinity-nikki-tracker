@@ -101,6 +101,8 @@ export function OutfitSeasonTable({ rows: initialRows }: OutfitSeasonTableProps)
         <span style={{ fontFamily: 'monospace', fontSize: '0.75rem' }}>{value}</span>
       ),
     },
+    { field: 'version', headerName: 'Version', width: 90 },
+    { field: 'released_at', headerName: 'Released', width: 120 },
   ]
 
   return (

@@ -15,13 +15,23 @@ export async function updateTrial(
     realm?: string | null
     location?: string | null
     description?: string | null
+    released_at?: string | null
+    version?: string | null
   }
 ) {
   await requireAdmin()
   const supabase = await createClient()
+
+  // The grid's date editor can send '' when a cell is cleared without going
+  // through the DataGrid's own valueSetter (e.g. a paste) — coerce to null so
+  // Postgres never sees an empty-string date.
+  const normalized = { ...fields }
+  if (normalized.released_at === '') normalized.released_at = null
+  if (normalized.version === '') normalized.version = null
+
   const { data, error } = await supabase
     .from('trials')
-    .update({ ...fields, updated_at: new Date().toISOString() })
+    .update({ ...normalized, updated_at: new Date().toISOString() })
     .eq('id', id)
     .select()
     .single()

@@ -44,6 +44,8 @@ async function EditSeason({ params }: { params: Promise<{ slug: string }> }) {
         image_url: season.image_url,
         alt_image_url: season.alt_image_url,
         use_season_groups: season.use_season_groups,
+        released_at: season.released_at ?? '',
+        version: season.version ?? '',
       }}
       lookups={{ locations }}
       mode="edit"

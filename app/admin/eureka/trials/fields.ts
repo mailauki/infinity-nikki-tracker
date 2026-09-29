@@ -21,5 +21,12 @@ export function trialFields(mode: 'add' | 'edit'): FieldConfig[] {
     ...(mode === 'edit'
       ? [{ type: 'image', name: 'image_url', table: 'trials', size: 'xl' } as FieldConfig]
       : []),
+    { type: 'date', name: 'released_at', label: 'Released' },
+    {
+      type: 'text',
+      name: 'version',
+      label: 'Version',
+      helperText: 'e.g. 1.5 — sets and pieces inherit this',
+    },
   ]
 }

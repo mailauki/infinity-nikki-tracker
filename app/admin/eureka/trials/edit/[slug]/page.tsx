@@ -42,6 +42,8 @@ async function EditTrial({ params }: { params: Promise<{ slug: string }> }) {
         description: trial.description ?? '',
         location: trial.location ?? '',
         image_url: trial.image_url,
+        released_at: trial.released_at ?? '',
+        version: trial.version ?? '',
       }}
       lookups={{ locations }}
       mode="edit"

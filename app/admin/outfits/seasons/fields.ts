@@ -48,5 +48,12 @@ export function seasonFields(mode: 'add' | 'edit'): FieldConfig[] {
           } as FieldConfig,
         ]
       : []),
+    { type: 'date', name: 'released_at', label: 'Released' },
+    {
+      type: 'text',
+      name: 'version',
+      label: 'Version',
+      helperText: 'e.g. 1.5 — sets and pieces inherit this',
+    },
   ]
 }
