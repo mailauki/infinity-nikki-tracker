@@ -28,12 +28,18 @@ interface SeasonFilterContextValue {
   // Makeup sets are a separate collection domain that shares a season, so they
   // get their own toggle rather than riding along with the pieces one.
   hideMakeup: boolean
+  // Eureka sets and Momo's Cloaks are their own collection domains that also
+  // share a season, so each gets its own toggle, mirroring hideMakeup.
+  hideEureka: boolean
+  hideCloaks: boolean
   onHideBaseSetsChange: () => void
   onHideEvolutionsChange: () => void
   onHideGlowupsChange: () => void
   onHidePiecesChange: () => void
   onHideMakeupChange: () => void
-  // Shows or hides every kind at once. Together the five flags cover everything a
+  onHideEurekaChange: () => void
+  onHideCloaksChange: () => void
+  // Shows or hides every kind at once. Together the seven flags cover everything a
   // season can display, so "show all" genuinely means all.
   onSetAllVisible: (visible: boolean) => void
   density: SeasonDensity
@@ -76,6 +82,12 @@ export function SeasonFilterProvider({
   )
   const [hideMakeup, setHideMakeup] = useState(
     preferences?.season_hide_makeup ?? DEFAULT_PREFERENCES.season_hide_makeup
+  )
+  const [hideEureka, setHideEureka] = useState(
+    preferences?.season_hide_eureka ?? DEFAULT_PREFERENCES.season_hide_eureka
+  )
+  const [hideCloaks, setHideCloaks] = useState(
+    preferences?.season_hide_cloaks ?? DEFAULT_PREFERENCES.season_hide_cloaks
   )
   // The control for this is deliberately NOT surfaced in SeasonFilterBody right
   // now: no season grid renderer reads `density` yet (SeasonOutfitList picks its
@@ -137,6 +149,22 @@ export function SeasonFilterProvider({
     })
   }, [isLoggedIn])
 
+  const onHideEurekaChange = useCallback(() => {
+    setHideEureka((prev) => {
+      const next = !prev
+      if (isLoggedIn) void savePreferences({ season_hide_eureka: next }).catch(persistFailed)
+      return next
+    })
+  }, [isLoggedIn])
+
+  const onHideCloaksChange = useCallback(() => {
+    setHideCloaks((prev) => {
+      const next = !prev
+      if (isLoggedIn) void savePreferences({ season_hide_cloaks: next }).catch(persistFailed)
+      return next
+    })
+  }, [isLoggedIn])
+
   // `visible` is the user-facing sense, so hiding everything means setting every
   // hide-flag true.
   const onSetAllVisible = useCallback(
@@ -147,6 +175,8 @@ export function SeasonFilterProvider({
       setHideGlowups(hidden)
       setHidePieces(hidden)
       setHideMakeup(hidden)
+      setHideEureka(hidden)
+      setHideCloaks(hidden)
       if (isLoggedIn) {
         void savePreferences({
           season_hide_base_sets: hidden,
@@ -154,6 +184,8 @@ export function SeasonFilterProvider({
           season_hide_glowups: hidden,
           season_hide_pieces: hidden,
           season_hide_makeup: hidden,
+          season_hide_eureka: hidden,
+          season_hide_cloaks: hidden,
         }).catch(persistFailed)
       }
     },
@@ -202,6 +234,8 @@ export function SeasonFilterProvider({
     hideGlowups !== DEFAULT_PREFERENCES.season_hide_glowups ||
     hidePieces !== DEFAULT_PREFERENCES.season_hide_pieces ||
     hideMakeup !== DEFAULT_PREFERENCES.season_hide_makeup ||
+    hideEureka !== DEFAULT_PREFERENCES.season_hide_eureka ||
+    hideCloaks !== DEFAULT_PREFERENCES.season_hide_cloaks ||
     density !== 'standard' ||
     filters.obtained !== null ||
     filters.rarity !== null ||
@@ -214,11 +248,15 @@ export function SeasonFilterProvider({
       hideGlowups,
       hidePieces,
       hideMakeup,
+      hideEureka,
+      hideCloaks,
       onHideBaseSetsChange,
       onHideEvolutionsChange,
       onHideGlowupsChange,
       onHidePiecesChange,
       onHideMakeupChange,
+      onHideEurekaChange,
+      onHideCloaksChange,
       onSetAllVisible,
       density,
       onDensityChange,
@@ -233,11 +271,15 @@ export function SeasonFilterProvider({
       hideGlowups,
       hidePieces,
       hideMakeup,
+      hideEureka,
+      hideCloaks,
       onHideBaseSetsChange,
       onHideEvolutionsChange,
       onHideGlowupsChange,
       onHidePiecesChange,
       onHideMakeupChange,
+      onHideEurekaChange,
+      onHideCloaksChange,
       onSetAllVisible,
       density,
       onDensityChange,

@@ -65,3 +65,65 @@ describe('SeasonFilterProvider', () => {
     expect(screen.getByTestId('rarity')).toHaveTextContent('5')
   })
 })
+
+function ToggleProbe() {
+  const { hideEureka, hideCloaks, onHideEurekaChange, onHideCloaksChange, onSetAllVisible } =
+    useSeasonFilter()
+  return (
+    <div>
+      <span data-testid="eureka">{String(hideEureka)}</span>
+      <span data-testid="cloaks">{String(hideCloaks)}</span>
+      <button onClick={onHideEurekaChange}>eureka</button>
+      <button onClick={onHideCloaksChange}>cloaks</button>
+      <button onClick={() => onSetAllVisible(false)}>hide all</button>
+    </div>
+  )
+}
+
+it('shows eureka and cloaks by default, and hydrates saved values', () => {
+  const { unmount } = render(
+    <SeasonFilterProvider isLoggedIn={false}>
+      <ToggleProbe />
+    </SeasonFilterProvider>
+  )
+  expect(screen.getByTestId('eureka')).toHaveTextContent('false')
+  expect(screen.getByTestId('cloaks')).toHaveTextContent('false')
+  unmount()
+
+  render(
+    <SeasonFilterProvider
+      isLoggedIn
+      preferences={{ season_hide_eureka: true, season_hide_cloaks: true }}
+    >
+      <ToggleProbe />
+    </SeasonFilterProvider>
+  )
+  expect(screen.getByTestId('eureka')).toHaveTextContent('true')
+  expect(screen.getByTestId('cloaks')).toHaveTextContent('true')
+})
+
+it('toggles and persists hideEureka and hideCloaks', () => {
+  render(
+    <SeasonFilterProvider isLoggedIn>
+      <ToggleProbe />
+    </SeasonFilterProvider>
+  )
+  act(() => screen.getByText('eureka').click())
+  act(() => screen.getByText('cloaks').click())
+  expect(screen.getByTestId('eureka')).toHaveTextContent('true')
+  expect(screen.getByTestId('cloaks')).toHaveTextContent('true')
+  expect(save).toHaveBeenCalledWith({ season_hide_eureka: true })
+  expect(save).toHaveBeenCalledWith({ season_hide_cloaks: true })
+})
+
+it('includes eureka and cloaks in hide-all', () => {
+  render(
+    <SeasonFilterProvider isLoggedIn>
+      <ToggleProbe />
+    </SeasonFilterProvider>
+  )
+  act(() => screen.getByText('hide all').click())
+  expect(save).toHaveBeenCalledWith(
+    expect.objectContaining({ season_hide_eureka: true, season_hide_cloaks: true })
+  )
+})

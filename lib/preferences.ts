@@ -43,6 +43,8 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   season_hide_pieces: false,
   season_hide_makeup: false,
   season_hide_base_sets: false,
+  season_hide_eureka: false,
+  season_hide_cloaks: false,
   season_density: 'standard',
   season_obtained_filter: null,
   season_rarity_filter: null,

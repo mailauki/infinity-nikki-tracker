@@ -144,6 +144,8 @@ export type UserPreferences = Pick<
   | 'season_hide_pieces'
   | 'season_hide_makeup'
   | 'season_hide_base_sets'
+  | 'season_hide_eureka'
+  | 'season_hide_cloaks'
   | 'season_density'
   | 'season_obtained_filter'
   | 'season_rarity_filter'
