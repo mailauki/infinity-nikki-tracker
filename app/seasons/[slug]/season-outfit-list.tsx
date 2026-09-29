@@ -170,6 +170,11 @@ export default function SeasonOutfitList({
       )
     }
 
+    // Eureka and cloak cards: this grid doesn't pass eurekaSets/cloaks to
+    // groupSeasonEntries yet, so these kinds never actually reach here — their
+    // card rendering is wired up in a later task.
+    if (entry.kind === 'eureka' || entry.kind === 'momo-cloak') return null
+
     const { obtained, total } = countEntries([entry])
     return (
       <OutfitSetCard

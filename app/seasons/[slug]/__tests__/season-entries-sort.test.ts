@@ -12,20 +12,14 @@ const piece = (id: number, title: string, rarity: number, obtained = false): Sea
 })
 
 const groups: [string, SeasonEntry[]][] = [
-  [
-    'cat-a',
-    [piece(1, 'Banana', 3), piece(2, 'Apple', 5, true), piece(3, 'Cherry', 4)],
-  ],
+  ['cat-a', [piece(1, 'Banana', 3), piece(2, 'Apple', 5, true), piece(3, 'Cherry', 4)]],
 ]
 
 const keys = (g: [string, SeasonEntry[]][]) => g[0][1].map((e) => e.key)
 
 describe('sortSeasonEntries', () => {
-  it('orders by id descending on the date axis, newest first', () => {
-    expect(keys(sortSeasonEntries(groups, 'date', 'desc'))).toEqual(['p3', 'p2', 'p1'])
-  })
-
-  it('reverses on the same axis, which is what the toolbar button toggles', () => {
+  it('falls back to id order on the date axis when nothing is dated', () => {
+    expect(keys(sortSeasonEntries(groups, 'date', 'desc'))).toEqual(['p1', 'p2', 'p3'])
     expect(keys(sortSeasonEntries(groups, 'date', 'asc'))).toEqual(['p1', 'p2', 'p3'])
   })
 

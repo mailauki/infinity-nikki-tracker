@@ -10,6 +10,9 @@ import {
 import { isEvolutionVisible, isGlowup } from '@/hooks/outfit'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
 import type { SortAxis, SortDir } from '@/components/sort-context'
+import type { EurekaSet } from '@/lib/types/eureka'
+import type { MomoCloak } from '@/lib/types/momo'
+import { compareRelease, NO_RELEASE, resolveRelease, type Release } from '@/hooks/release'
 
 // The container set that holds individually-authored standalone pieces. Its
 // variants each carry their own season / season_category, so they are grouped
@@ -18,6 +21,14 @@ export const STANDALONE_SLUG = 'standalone_pieces'
 
 // Sets without a season_category group here, matching the outfit-set behavior.
 export const OTHER_CATEGORY = 'Other'
+
+// eureka_sets carry no category of their own — every one lists under this
+// existing season category (Radiant Whim group).
+export const EUREKA_CATEGORY = 'eureka_collection'
+
+// Cloaks with no season_category get their own bucket rather than "Other":
+// they are a distinct collection, and "Other" reads as unfiled outfits.
+export const MOMO_CLOAKS_CATEGORY = "Momo's Cloaks"
 
 // One outfit card: either the base set (evolution === null) or one of its
 // evolutions / glow-up. `variants` are that state's own variants, so each card
@@ -34,11 +45,12 @@ export type OutfitSetListEntry = {
 // set or one evolution); outfit and makeup pieces add a kind each, so one
 // section can render all three.
 export type SeasonEntry =
-  | ({ kind: 'outfit' } & OutfitSetListEntry)
+  | ({ kind: 'outfit'; release?: Release } & OutfitSetListEntry)
   | {
       kind: 'standalone'
       key: string
       variant: OutfitVariant
+      release?: Release
     }
   // A makeup piece. Both individually-authored pieces and the members of a
   // makeup set land here: a set is five separate wearables (base makeup,
@@ -48,16 +60,45 @@ export type SeasonEntry =
       kind: 'makeup-standalone'
       key: string
       variant: MakeupVariant
+      release?: Release
     }
+  | { kind: 'eureka'; key: string; set: EurekaSet; release?: Release }
+  // Shown on the season page but counted nowhere — see countedEntries.
+  | { kind: 'momo-cloak'; key: string; cloak: MomoCloak; obtained: boolean; release?: Release }
 
 /** Every variant a row counts toward its progress chip, regardless of kind. */
 export function entryVariants(entry: SeasonEntry): { obtained?: boolean }[] {
   if (entry.kind === 'standalone' || entry.kind === 'makeup-standalone') return [entry.variant]
+  // A eureka set is ONE unit toward the season: complete when every variant is.
+  // Rarity and style ride along so the filter axes can read them.
+  if (entry.kind === 'eureka') {
+    const variants = entry.set.eureka_variants
+    return [
+      {
+        obtained: variants.length > 0 && variants.every((v) => v.obtained),
+        rarity: entry.set.rarity,
+        style: entry.set.style,
+      } as { obtained?: boolean },
+    ]
+  }
+  if (entry.kind === 'momo-cloak') {
+    return [
+      { obtained: entry.obtained, rarity: entry.cloak.rarity, style: entry.cloak.style } as {
+        obtained?: boolean
+      },
+    ]
+  }
   return entry.variants
 }
 
+/** Cloaks are listed on season pages but never counted — the game's season
+ *  totals don't include them. Every counter goes through this. */
+function countedEntries(entries: SeasonEntry[]) {
+  return entries.filter((entry) => entry.kind !== 'momo-cloak')
+}
+
 export function countEntries(entries: SeasonEntry[]) {
-  const variants = entries.flatMap(entryVariants)
+  const variants = countedEntries(entries).flatMap(entryVariants)
   return {
     total: variants.length,
     obtained: variants.reduce((sum, variant) => sum + (variant.obtained ? 1 : 0), 0),
@@ -94,7 +135,7 @@ function isUncountedHandheld(entry: SeasonEntry, variant: { outfit_category?: st
  * card still shows every piece it actually contains.
  */
 export function countCountableEntries(entries: SeasonEntry[]) {
-  const variants = entries.flatMap((entry) =>
+  const variants = countedEntries(entries).flatMap((entry) =>
     (entryVariants(entry) as Array<{ obtained?: boolean; outfit_category?: string | null }>).filter(
       (variant) => !isUncountedHandheld(entry, variant)
     )
@@ -147,7 +188,11 @@ export function sortSeasonEntries(
   const row = (entry: SeasonEntry) =>
     entry.kind === 'standalone' || entry.kind === 'makeup-standalone'
       ? entry.variant
-      : (entry.evolution ?? entry.set)
+      : entry.kind === 'eureka'
+        ? entry.set
+        : entry.kind === 'momo-cloak'
+          ? entry.cloak
+          : (entry.evolution ?? entry.set)
 
   const progress = (entry: SeasonEntry) => {
     const variants = entryVariants(entry)
@@ -158,6 +203,14 @@ export function sortSeasonEntries(
   const compare = (a: SeasonEntry, b: SeasonEntry) => {
     const ra = row(a) as { id?: number | null; rarity?: number | null; title?: string | null }
     const rb = row(b) as { id?: number | null; rarity?: number | null; title?: string | null }
+
+    if (sortAxis === 'date') {
+      return (
+        compareRelease(a.release ?? NO_RELEASE, b.release ?? NO_RELEASE, sortDir) ||
+        (ra.id ?? 0) - (rb.id ?? 0)
+      )
+    }
+
     let cmp = 0
     switch (sortAxis) {
       case 'rarity':
@@ -166,11 +219,8 @@ export function sortSeasonEntries(
       case 'progress':
         cmp = progress(a) - progress(b)
         break
-      case 'title':
-        cmp = (ra.title ?? '').localeCompare(rb.title ?? '')
-        break
       default:
-        cmp = (ra.id ?? 0) - (rb.id ?? 0)
+        cmp = (ra.title ?? '').localeCompare(rb.title ?? '')
     }
     return (sortDir === 'asc' ? cmp : -cmp) || (ra.id ?? 0) - (rb.id ?? 0)
   }
@@ -263,9 +313,10 @@ export function groupCategoriesBySeasonGroup(
 }
 
 export function countEntryCards(entries: SeasonEntry[]) {
+  const counted = countedEntries(entries)
   return {
-    total: entries.length,
-    obtained: entries.filter(isEntryObtained).length,
+    total: counted.length,
+    obtained: counted.filter(isEntryObtained).length,
   }
 }
 
@@ -274,7 +325,7 @@ export function countEntryCards(entries: SeasonEntry[]) {
  * collected — drives the overview stat row and the category composition chips.
  */
 export function countEntryKinds(entries: SeasonEntry[]) {
-  const of = (kind: SeasonEntry['kind']) => entries.filter((e) => e.kind === kind)
+  const of = (kind: SeasonEntry['kind']) => countedEntries(entries).filter((e) => e.kind === kind)
   const counts = (kind: SeasonEntry['kind']) => {
     const kindEntries = of(kind)
     return {
@@ -286,6 +337,7 @@ export function countEntryKinds(entries: SeasonEntry[]) {
   const outfit = counts('outfit')
   const outfitPiece = counts('standalone')
   const makeupPiece = counts('makeup-standalone')
+  const eureka = counts('eureka')
 
   return {
     // Outfit-set cards (base states, evolutions, glow-ups).
@@ -293,9 +345,11 @@ export function countEntryKinds(entries: SeasonEntry[]) {
     // Every individual wearable — standalone outfit variants plus makeup, whether
     // individually authored or a member of a makeup set — counts as a piece.
     standalone: outfitPiece.total + makeupPiece.total,
+    eureka: eureka.total,
     obtained: {
       outfit: outfit.obtained,
       standalone: outfitPiece.obtained + makeupPiece.obtained,
+      eureka: eureka.obtained,
     },
   }
 }
@@ -395,23 +449,32 @@ export function expandSet(
 function expandMakeupSet(
   set: MakeupSet,
   hideEvolutions: boolean,
-  hideBaseSets = false
+  hideBaseSets = false,
+  seasonRelease: Release = NO_RELEASE
 ): SeasonEntry[] {
-  const asPieces = (stateSlug: string, variants: MakeupVariant[]): SeasonEntry[] =>
+  // The chain for a piece: the piece's own override, then its state set (the
+  // evolution row, or the base set itself for a base piece), then the base
+  // set, then the season default.
+  const asPieces = (
+    stateSlug: string,
+    variants: MakeupVariant[],
+    state: MakeupSet
+  ): SeasonEntry[] =>
     variants
       .filter((variant) => variant.makeup_set === stateSlug)
       .map((variant) => ({
         kind: 'makeup-standalone' as const,
         key: `makeup-piece:${variant.slug}`,
         variant,
+        release: resolveRelease(variant, state, set, seasonRelease),
       }))
 
-  const entries: SeasonEntry[] = hideBaseSets ? [] : asPieces(set.slug, set.makeup_variants)
+  const entries: SeasonEntry[] = hideBaseSets ? [] : asPieces(set.slug, set.makeup_variants, set)
 
   if (hideEvolutions) return entries
 
   for (const evolution of set.evolutions) {
-    entries.push(...asPieces(evolution.slug, evolution.makeup_variants))
+    entries.push(...asPieces(evolution.slug, evolution.makeup_variants, evolution))
   }
 
   return entries
@@ -437,6 +500,12 @@ export function groupSeasonEntries({
   hideBaseSets = false,
   obtainedOutfit,
   obtainedMakeup,
+  eurekaSets = [],
+  cloaks = [],
+  obtainedCloaks,
+  hideEureka = false,
+  hideCloaks = false,
+  seasonRelease = NO_RELEASE,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
@@ -463,6 +532,17 @@ export function groupSeasonEntries({
   // render-time snapshot, so without this a toggle updates provider state while
   // these stay stale and the card never repaints.
   obtainedMakeup?: ObtainedMakeup[]
+  eurekaSets?: EurekaSet[]
+  cloaks?: MomoCloak[]
+  // Live obtained cloak slugs. Cloaks carry no `obtained` flag of their own
+  // (see MomoCloak), so this is required to render anything but "missing".
+  obtainedCloaks?: ReadonlySet<string>
+  hideEureka?: boolean
+  hideCloaks?: boolean
+  // The season's own release, threaded down as the last fallback in every
+  // chain — a piece with no override and no set-level date still resolves to
+  // the season's.
+  seasonRelease?: Release
 }): [string, SeasonEntry[]][] {
   const groups = new Map<string, SeasonEntry[]>()
 
@@ -486,6 +566,7 @@ export function groupSeasonEntries({
       expandSet(live, hideEvolutions, hideGlowups, hideBaseSets).map((entry) => ({
         kind: 'outfit' as const,
         ...entry,
+        release: resolveRelease(entry.evolution, entry.set, seasonRelease),
       }))
     )
   }
@@ -497,7 +578,12 @@ export function groupSeasonEntries({
   if (!hidePieces) {
     for (const variant of liveStandalone) {
       push(variant.season_category, [
-        { kind: 'standalone', key: `standalone:${variant.slug}`, variant },
+        {
+          kind: 'standalone',
+          key: `standalone:${variant.slug}`,
+          variant,
+          release: resolveRelease(variant, seasonRelease),
+        },
       ])
     }
   }
@@ -522,7 +608,7 @@ export function groupSeasonEntries({
           makeup_variants: liveMakeupVariants(evolution.makeup_variants),
         })),
       }
-      push(set.season_category, expandMakeupSet(live, hideEvolutions, hideBaseSets))
+      push(set.season_category, expandMakeupSet(live, hideEvolutions, hideBaseSets, seasonRelease))
     }
   }
 
@@ -545,7 +631,36 @@ export function groupSeasonEntries({
   if (!hidePieces) {
     for (const variant of standaloneMakeupVariants) {
       push(variant.season_category, [
-        { kind: 'makeup-standalone', key: `makeup-piece:${variant.slug}`, variant },
+        {
+          kind: 'makeup-standalone',
+          key: `makeup-piece:${variant.slug}`,
+          variant,
+          release: resolveRelease(variant, seasonRelease),
+        },
+      ])
+    }
+  }
+
+  if (!hideEureka && seasonSlug) {
+    for (const set of eurekaSets) {
+      if (set.seasons !== seasonSlug) continue
+      push(EUREKA_CATEGORY, [
+        { kind: 'eureka', key: `eureka:${set.slug}`, set, release: set.release },
+      ])
+    }
+  }
+
+  if (!hideCloaks && seasonSlug) {
+    for (const cloak of cloaks) {
+      if (cloak.seasons !== seasonSlug) continue
+      push(cloak.season_category ?? MOMO_CLOAKS_CATEGORY, [
+        {
+          kind: 'momo-cloak',
+          key: `momo-cloak:${cloak.slug}`,
+          cloak,
+          obtained: obtainedCloaks?.has(cloak.slug) ?? false,
+          release: resolveRelease(cloak, seasonRelease),
+        },
       ])
     }
   }
