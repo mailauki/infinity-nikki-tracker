@@ -9,6 +9,7 @@ import { getUserRole } from '@/hooks/user'
 import { toSlug } from '@/lib/utils'
 import { recategorizeVariant } from '@/lib/variant-recategorize'
 import { deriveVariantSlug } from '@/lib/variant-slug'
+import { readReleaseFields } from '@/lib/release-form'
 
 const STANDALONE_SLUG = 'standalone_pieces'
 
@@ -72,6 +73,7 @@ function readForm(formData: FormData) {
     title: (formData.get('title') as string | null)?.trim() || null,
     description: (formData.get('description') as string | null)?.trim() || null,
     slug: (formData.get('slug') as string | null)?.trim() ?? '',
+    ...readReleaseFields(formData),
   }
 }
 

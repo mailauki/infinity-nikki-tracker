@@ -9,6 +9,7 @@ import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getEvolutionsBySet } from '@/hooks/data/evolutions'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
+import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { EvolutionDraft } from '@/lib/types/outfit'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
@@ -36,13 +37,15 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
     .select(
-      'id, slug, title, subtitle, description, rarity, style, label, label_2, ability, seasons, season_category, image_url, alt_image_url, "order", base_set, handheld_base_only, updated_at'
+      'id, slug, title, subtitle, description, rarity, style, label, label_2, ability, seasons, season_category, image_url, alt_image_url, "order", base_set, handheld_base_only, updated_at, released_at, version'
     )
     .eq('slug', slug)
     .is('base_set', null)
     .single()
 
   if (!outfitSet || !outfitSet.slug) notFound()
+
+  const inherited = await getInheritedRelease('outfitSet', outfitSet.slug)
 
   const [
     styles,
@@ -104,6 +107,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
   return (
     <EditOutfitSetForm
       abilities={abilities}
+      inherited={inherited}
       initialCarouselImages={carouselRows}
       initialCategorySelect={initialCategorySelect}
       initialDrafts={initialDrafts}

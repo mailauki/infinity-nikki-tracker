@@ -9,6 +9,7 @@ import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { EvolutionDraft } from '@/lib/types/outfit'
 import { evolutionTitle } from '@/hooks/outfit'
+import { readReleaseFields } from '@/lib/release-form'
 
 // The admin dashboard is a Server Component behind a client Router Cache entry.
 // Without this, redirecting back after a save re-renders the cached copy and
@@ -70,6 +71,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
       handheld_base_only: handheldBaseOnly,
       order: 1,
       base_set: null,
+      ...readReleaseFields(formData),
     },
   ])
 
@@ -238,13 +240,20 @@ export async function editOutfitSet(id: number, _: unknown, formData: FormData) 
     .from('outfit_sets')
     .update(
       isStandaloneSet
-        ? { title, slug, description, updated_at: new Date().toISOString() }
+        ? {
+            title,
+            slug,
+            description,
+            ...readReleaseFields(formData),
+            updated_at: new Date().toISOString(),
+          }
         : {
             title,
             slug,
             description,
             ...sharedFields,
             handheld_base_only: handheldBaseOnly,
+            ...readReleaseFields(formData),
             updated_at: new Date().toISOString(),
           }
     )

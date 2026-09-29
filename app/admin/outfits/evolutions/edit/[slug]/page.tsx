@@ -5,6 +5,7 @@ import EditEvolutionForm from './edit-evolution-form'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { isGlowup } from '@/hooks/outfit'
+import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { pageTitle } from '@/lib/page-titles'
 
 export const metadata: Metadata = {
@@ -28,12 +29,16 @@ async function EditEvolution({ params }: { params: Promise<{ slug: string }> }) 
 
   const { data: evolution } = await supabase
     .from('outfit_sets')
-    .select('slug, title, subtitle, description, "order", base_set, image_url, alt_image_url')
+    .select(
+      'slug, title, subtitle, description, "order", base_set, image_url, alt_image_url, released_at, version'
+    )
     .eq('slug', slug)
     .not('base_set', 'is', null)
     .single()
 
   if (!evolution) notFound()
+
+  const inherited = await getInheritedRelease('evolution', slug)
 
   const [{ data: variantRows }, carouselRows] = await Promise.all([
     supabase
@@ -69,6 +74,7 @@ async function EditEvolution({ params }: { params: Promise<{ slug: string }> }) 
     <EditEvolutionForm
       baseTitleByCategory={baseTitleByCategory}
       evolution={evolution}
+      inherited={inherited}
       initialCarouselImages={carouselRows}
       variants={variantRows ?? []}
     />

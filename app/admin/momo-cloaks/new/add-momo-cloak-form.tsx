@@ -16,7 +16,9 @@ import { toSlug } from '@/lib/utils'
 import { MOMO_CLOAK_TITLE_PREFIX, withMomoCloakPrefix } from '@/lib/types/momo'
 import { Location, OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
+import { type Release } from '@/hooks/release'
 import SlugField from '@/components/forms/slug-field'
+import ReleaseFields from '@/components/forms/release-fields'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
 import { useFormConfig } from '@/app/admin/form-context'
@@ -32,6 +34,7 @@ export default function AddMomoCloakForm({
   seasonCategories,
   locations,
   outfitSets,
+  inherited = null,
 }: {
   styles: Style[]
   labels: Label[]
@@ -39,6 +42,7 @@ export default function AddMomoCloakForm({
   seasonCategories: SeasonCategory[]
   locations: Location[]
   outfitSets: OutfitSetRaw[]
+  inherited?: Release | null
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')
@@ -157,6 +161,8 @@ export default function AddMomoCloakForm({
             ))}
           </Select>
         </FormControl>
+
+        <ReleaseFields inherited={inherited} />
 
         <TextField
           multiline

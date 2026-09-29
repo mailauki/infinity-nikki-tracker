@@ -8,6 +8,7 @@ import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getLocations } from '@/hooks/data/locations'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
+import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 
@@ -41,8 +42,11 @@ async function EditMomoCloak({ params }: { params: Promise<{ slug: string }> }) 
 
   if (!momoCloak) notFound()
 
+  const inherited = await getInheritedRelease('momoCloak', slug)
+
   return (
     <EditMomoCloakForm
+      inherited={inherited}
       initial={momoCloak}
       labels={labels}
       locations={locations}

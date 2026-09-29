@@ -2,6 +2,7 @@
 
 import { FieldConfig, FieldValues } from '@/lib/types/form-fields'
 import { deriveVariantSlug, STANDALONE_PIECES_SLUG } from '@/lib/variant-slug'
+import { formatRelease, type Release } from '@/hooks/release'
 
 // A "bag" set (standalone or no set) derives its slug from title + category so
 // multiple pieces in the same category don't collide (e.g. `silverplume-hair`).
@@ -18,7 +19,10 @@ function deriveSlug(v: FieldValues): string {
   })
 }
 
-export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
+export function outfitVariantFields(
+  mode: 'add' | 'edit',
+  inheritedRelease?: Release | null
+): FieldConfig[] {
   return [
     {
       type: 'custom',
@@ -61,5 +65,14 @@ export function outfitVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
     // No `default` switch: the `trg_enforce_base_variant_default` DB trigger
     // derives the column on every write (true when the owning set's order is 1),
     // overwriting whatever the form posts. Editing it here was always a no-op.
+    {
+      type: 'date',
+      name: 'released_at',
+      label: 'Released',
+      helperText: inheritedRelease
+        ? `Blank inherits ${formatRelease(inheritedRelease) ?? 'from its set or season'}`
+        : 'Blank inherits from its set or season',
+    },
+    { type: 'text', name: 'version', label: 'Version' },
   ]
 }

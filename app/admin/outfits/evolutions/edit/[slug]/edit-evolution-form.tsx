@@ -3,9 +3,11 @@
 import { useActionState, useEffect, useState } from 'react'
 import { Alert, Box, Stack, TextField, Typography } from '@mui/material'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
+import ReleaseFields from '@/components/forms/release-fields'
 import CarouselImageUpload from '@/app/admin/outfits/carousel-image-upload'
 import { useFormConfig } from '@/app/admin/form-context'
 import { CarouselImage } from '@/lib/types/outfit'
+import { type Release } from '@/hooks/release'
 import { editEvolution } from './actions'
 import { Tables } from '@/lib/types/supabase'
 import OutfitVariantImageCard from '@/components/outfits/outfit-variant-image-card'
@@ -21,6 +23,8 @@ type EvolutionRow = Pick<
   | 'base_set'
   | 'image_url'
   | 'alt_image_url'
+  | 'released_at'
+  | 'version'
 >
 
 type VariantRow = Pick<
@@ -69,11 +73,13 @@ export default function EditEvolutionForm({
   variants,
   baseTitleByCategory = {},
   initialCarouselImages = [],
+  inherited = null,
 }: {
   evolution: EvolutionRow
   variants: VariantRow[]
   baseTitleByCategory?: Record<string, string>
   initialCarouselImages?: CarouselImage[]
+  inherited?: Release | null
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
   const [description, setDescription] = useState(evolution.description ?? '')
@@ -144,6 +150,12 @@ export default function EditEvolutionForm({
 
         <TextField disabled label="Set Title" value={evolution.title} />
         <TextField disabled label="Base Set" value={evolution.base_set ?? ''} />
+
+        <ReleaseFields
+          defaultReleasedAt={evolution.released_at}
+          defaultVersion={evolution.version}
+          inherited={inherited}
+        />
 
         <TextField
           multiline

@@ -19,7 +19,9 @@ import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
 import { MAKEUP_EVOLUTION_ORDER, resolveEvolutionOutfitSet } from '@/hooks/makeup'
+import { type Release } from '@/hooks/release'
 import SlugField from '@/components/forms/slug-field'
+import ReleaseFields from '@/components/forms/release-fields'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
 import { useFormConfig } from '@/app/admin/form-context'
@@ -35,6 +37,7 @@ export default function AddMakeupSetForm({
   seasons,
   seasonCategories,
   makeupCategories,
+  inherited = null,
 }: {
   makeupSets: MakeupSetRaw[]
   outfitSets: OutfitSetRaw[]
@@ -42,6 +45,7 @@ export default function AddMakeupSetForm({
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   makeupCategories: MakeupCategory[]
+  inherited?: Release | null
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')
@@ -141,6 +145,8 @@ export default function AddMakeupSetForm({
           value={style}
           onChange={setStyle}
         />
+
+        <ReleaseFields inherited={inherited} />
 
         <TextField
           multiline

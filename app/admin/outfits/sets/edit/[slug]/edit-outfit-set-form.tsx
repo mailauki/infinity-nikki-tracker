@@ -31,7 +31,9 @@ import {
 } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
 import { Tables } from '@/lib/types/supabase'
+import { type Release } from '@/hooks/release'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
+import ReleaseFields from '@/components/forms/release-fields'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
@@ -73,6 +75,7 @@ export default function EditOutfitSetForm({
   initialCategorySelect = [],
   initialVariants = [],
   initialCarouselImages = [],
+  inherited = null,
 }: {
   outfitSet: OutfitSetRaw
   styles: Style[]
@@ -87,6 +90,7 @@ export default function EditOutfitSetForm({
   initialCategorySelect?: string[]
   initialVariants?: OutfitVariantRow[]
   initialCarouselImages?: CarouselImage[]
+  inherited?: Release | null
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
   const [title, setTitle] = useState(outfitSet.title)
@@ -275,6 +279,12 @@ export default function EditOutfitSetForm({
             </FormControl>
           </>
         )}
+
+        <ReleaseFields
+          defaultReleasedAt={outfitSet.released_at}
+          defaultVersion={outfitSet.version}
+          inherited={inherited}
+        />
 
         <TextField
           multiline

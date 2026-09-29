@@ -9,6 +9,7 @@ import { getUserRole } from '@/hooks/user'
 import { toSlug } from '@/lib/utils'
 import { recategorizeVariant } from '@/lib/variant-recategorize'
 import { deriveVariantSlug } from '@/lib/variant-slug'
+import { readReleaseFields } from '@/lib/release-form'
 
 const STANDALONE_SLUG = 'standalone_pieces'
 
@@ -100,6 +101,7 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
       title,
       description,
       slug,
+      ...readReleaseFields(formData),
     },
   ])
 
@@ -205,6 +207,7 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
           label_2,
           title,
           description,
+          ...readReleaseFields(formData),
           updated_at: new Date().toISOString(),
         })
         .eq('id', id)
@@ -236,6 +239,7 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
       title,
       description,
       slug,
+      ...readReleaseFields(formData),
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)

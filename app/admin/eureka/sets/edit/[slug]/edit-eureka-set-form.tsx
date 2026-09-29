@@ -31,7 +31,10 @@ import {
   Style,
   Trial,
 } from '@/lib/types/eureka'
+import { Season } from '@/lib/types/outfit'
+import { type Release } from '@/hooks/release'
 import ColorSelect from '@/components/forms/eureka-set/color-select'
+import ReleaseFields from '@/components/forms/release-fields'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
@@ -49,9 +52,11 @@ export default function EditEurekaSetForm({
   labels,
   colors,
   categories,
+  seasons,
   initialColors,
   initialDefaultColor = '',
   initialVariants = [],
+  inherited = null,
 }: {
   eurekaSet: EurekaSetRaw
   trials: Trial[]
@@ -59,9 +64,11 @@ export default function EditEurekaSetForm({
   labels: Label[]
   colors: EurekaColor[]
   categories: EurekaCategory[]
+  seasons: Season[]
   initialColors: string[]
   initialDefaultColor?: string
   initialVariants?: EurekaVariant[]
+  inherited?: Release | null
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
   const [title, setTitle] = useState(eurekaSet.title)
@@ -70,6 +77,7 @@ export default function EditEurekaSetForm({
   const [description, setDescription] = useState(eurekaSet.description ?? '')
   const [style, setStyle] = useState(eurekaSet.style ?? '')
   const [label, setLabel] = useState(eurekaSet.label ?? '')
+  const [season, setSeason] = useState(eurekaSet.seasons ?? '')
   const [selectedTrials, setSelectedTrials] = useState<string[]>(
     eurekaSet.eureka_set_trials?.map((t) => t.trial) ?? []
   )
@@ -143,6 +151,12 @@ export default function EditEurekaSetForm({
           onChange={setSlug}
         />
 
+        <ReleaseFields
+          defaultReleasedAt={eurekaSet.released_at}
+          defaultVersion={eurekaSet.version}
+          inherited={inherited}
+        />
+
         <TextField
           multiline
           label="Description"
@@ -175,6 +189,24 @@ export default function EditEurekaSetForm({
             {labels.map((l) => (
               <MenuItem key={l.slug} value={l.slug}>
                 {l.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl>
+          <InputLabel>Season</InputLabel>
+          <Select
+            MenuProps={MENU_PROPS}
+            label="Season"
+            name="seasons"
+            value={season}
+            onChange={(e) => setSeason(e.target.value)}
+          >
+            <MenuItem value="">—</MenuItem>
+            {seasons.map((s) => (
+              <MenuItem key={s.slug} value={s.slug}>
+                {s.title}
               </MenuItem>
             ))}
           </Select>
