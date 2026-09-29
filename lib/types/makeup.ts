@@ -1,4 +1,4 @@
-import { EvolvableLinkedSet } from './outfit'
+import { EmbeddedSeason, EvolvableLinkedSet } from './outfit'
 import { Tables } from './supabase'
 
 export type MakeupCategory = Pick<Tables<'makeup_categories'>, 'slug' | 'title' | 'image_url'>
@@ -19,6 +19,8 @@ export type MakeupSetRaw = Pick<
   | 'image_url'
   | 'alt_image_url'
   | 'updated_at'
+  | 'released_at'
+  | 'version'
 >
 
 export type MakeupVariant = Pick<
@@ -39,6 +41,8 @@ export type MakeupVariant = Pick<
   // per-variant off these two columns.
   | 'seasons'
   | 'season_category'
+  | 'released_at'
+  | 'version'
 > & { obtained?: boolean }
 
 export type MakeupVariantRaw = Tables<'makeup_variants'> & {
@@ -52,7 +56,7 @@ export type MakeupSet = Tables<'makeup_sets'> & {
   // is the lookup list, not a per-set subset. Populated by createMakeupSet().
   makeup_categories: MakeupCategory[]
   evolutions: MakeupEvolution[]
-  season: { title: string } | null
+  season: EmbeddedSeason | null
   seasonCategory: { title: string } | null
   // The paired outfit set, resolved from makeup_sets.outfit_set. Null when the
   // set has no pairing. Populated by createMakeupSet().

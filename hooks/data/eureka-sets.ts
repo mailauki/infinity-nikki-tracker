@@ -1,12 +1,14 @@
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { EurekaSet, EurekaVariant } from '@/lib/types/eureka'
+import { firstLinked } from '@/lib/types/outfit'
 import { cache } from 'react'
 import { getUserID } from '../user'
 import { getEurekaColors } from './eureka-colors'
 import { getEurekaCategories } from './eureka-categories'
 import { createEurekaSet, sortVariants, updateEurekaSet } from '../eureka'
 import { getObtainedEureka } from './obtained-eureka'
+import { earliestRelease, resolveRelease } from '../release'
 
 // `forUserId` scopes the obtained flags to a specific user instead of the
 // viewer. Public profile pages need it: without it every visitor would see
@@ -27,7 +29,10 @@ export const getEurekaSets = cache(async (forUserId?: string) => {
 			style,
 			label,
 			updated_at,
-			eureka_set_trials ( trial ),
+			released_at,
+			version,
+			seasons,
+			eureka_set_trials ( trial, trials ( released_at, version ) ),
 			eureka_variants (
 				id,
 				slug,
@@ -70,8 +75,12 @@ export const getEurekaSets = cache(async (forUserId?: string) => {
         defaultColorSlug,
         categoryOrder
       ),
+      release: resolveRelease(
+        eurekaSet,
+        earliestRelease(eurekaSet.eureka_set_trials.map((link) => firstLinked(link.trials)))
+      ),
     }
-  }) as EurekaSet[]
+  }) as unknown as EurekaSet[]
 
   const user_id = forUserId ?? (await getUserID())
 
@@ -110,7 +119,10 @@ export const getEurekaSet = cache(async (slug: string) => {
 			style,
 			label,
 			updated_at,
-			eureka_set_trials ( trial ),
+			released_at,
+			version,
+			seasons,
+			eureka_set_trials ( trial, trials ( released_at, version ) ),
 			eureka_variants (
 				id,
 				slug,
@@ -131,7 +143,12 @@ export const getEurekaSet = cache(async (slug: string) => {
   const categories = await getEurekaCategories()
   const colors = await getEurekaColors()
 
-  const eureka = createEurekaSet({ eurekaSet, categories, colors })
+  const release = resolveRelease(
+    eurekaSet,
+    earliestRelease(eurekaSet.eureka_set_trials.map((link) => firstLinked(link.trials)))
+  )
+
+  const eureka = createEurekaSet({ eurekaSet: { ...eurekaSet, release }, categories, colors })
 
   const user_id = await getUserID()
 

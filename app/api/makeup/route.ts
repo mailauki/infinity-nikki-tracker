@@ -11,7 +11,8 @@ import { getSeasonCategories } from '@/hooks/data/season-categories'
 
 const SET_COLUMNS = `
   id, slug, title, description, rarity, style, seasons, season_category,
-  outfit_set, "order", base_set, image_url, alt_image_url, created_at, updated_at
+  outfit_set, "order", base_set, image_url, alt_image_url, created_at, updated_at,
+  released_at, version
 `
 
 export async function GET() {

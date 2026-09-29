@@ -36,7 +36,9 @@ export const getOutfitSets = cache(async (forUserId?: string) => {
         "order",
         base_set,
         handheld_base_only,
-        season:seasons!outfit_sets_seasons_fkey ( title ),
+        released_at,
+        version,
+        season:seasons!outfit_sets_seasons_fkey ( title, released_at, version ),
         seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
         image_url,
         alt_image_url,
@@ -99,7 +101,9 @@ export const getOutfitSet = cache(async (slug: string) => {
       "order",
       base_set,
       handheld_base_only,
-      season:seasons!outfit_sets_seasons_fkey ( title ),
+      released_at,
+      version,
+      season:seasons!outfit_sets_seasons_fkey ( title, released_at, version ),
       seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
       image_url,
       alt_image_url,
@@ -116,7 +120,9 @@ export const getOutfitSet = cache(async (slug: string) => {
         rarity,
         style,
         seasons,
-        season_category
+        season_category,
+        released_at,
+        version
       ),
       outfit_set_carousel_images (
         id,

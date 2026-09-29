@@ -23,7 +23,8 @@ export async function GET() {
         `
         id, slug, title, subtitle, description, rarity, style, label, label_2, ability,
         image_url, alt_image_url, "order", base_set, handheld_base_only, seasons, season_category, updated_at,
-        season:seasons!outfit_sets_seasons_fkey ( title ),
+        released_at, version,
+        season:seasons!outfit_sets_seasons_fkey ( title, released_at, version ),
         seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
         outfit_set_carousel_images ( id, image_url, sort_order )
         `

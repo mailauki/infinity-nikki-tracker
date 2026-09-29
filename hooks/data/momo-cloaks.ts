@@ -16,19 +16,22 @@ const CLOAK_COLUMNS = `
 	image_url,
 	alt_image_url,
 	created_at,
-	updated_at
+	updated_at,
+	released_at,
+	version,
+	season:seasons!momo_cloaks_seasons_fkey ( title, released_at, version )
 `
 
 // getMomoCloak only: the list query has no use for these joins. The columns
 // themselves hold slugs, so these resolve the referenced rows for display —
 // the detail page shows real titles ("Golden Dust") rather than slug-derived
-// ones, and populates the `season`/`seasonCategory`/`outfitSet` fields that
-// `MomoCloak` declares.
+// ones, and populates the `seasonCategory`/`outfitSet` fields that
+// `MomoCloak` declares (`season` is already on CLOAK_COLUMNS — a repeated
+// alias is a PostgREST error).
 const CLOAK_DETAIL_COLUMNS = `
 	${CLOAK_COLUMNS},
 	outfit_set,
 	outfitSet:outfit_sets!momo_cloaks_outfit_set_fkey ( slug, title, image_url, alt_image_url, base_set ),
-	season:seasons!momo_cloaks_seasons_fkey ( title ),
 	seasonCategory:season_categories!momo_cloaks_season_category_fkey ( title )
 `
 

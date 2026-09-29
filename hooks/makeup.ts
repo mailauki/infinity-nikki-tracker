@@ -93,7 +93,12 @@ export type OutfitSetRef = EvolvableLinkedSet
 
 // Lookup rows used only to resolve display titles for makeup_sets.seasons /
 // season_category, whose stored values are slug-shaped rather than titles.
-export type SeasonRef = { slug: string; title: string }
+export type SeasonRef = {
+  slug: string
+  title: string
+  released_at: string | null
+  version: string | null
+}
 export type SeasonCategoryRef = { title: string }
 
 export function isStandaloneMakeupSet(set: Pick<MakeupSet, 'slug'>) {
@@ -131,7 +136,7 @@ export function createMakeupSet(
   }
 
   const outfitSetBySlug = new Map(outfitSets.map((o) => [o.slug, o]))
-  const seasonTitleBySlug = new Map(seasons.map((s) => [s.slug, s.title]))
+  const seasonBySlug = new Map(seasons.map((s) => [s.slug, s]))
   // season_categories has no slug column, so match on a normalized title.
   // `toSlug` alone is not enough: it maps "Limited-Time Resonance" to
   // 'limited-time_resonance', but makeup_sets stores 'limited_time_resonance'
@@ -169,7 +174,13 @@ export function createMakeupSet(
       //
       // The raw `seasons` column stays untouched — it is what the
       // /seasons/{slug} href needs.
-      season: row.seasons ? { title: seasonTitleBySlug.get(row.seasons) ?? row.seasons } : null,
+      season: row.seasons
+        ? {
+            title: seasonBySlug.get(row.seasons)?.title ?? row.seasons,
+            released_at: seasonBySlug.get(row.seasons)?.released_at ?? null,
+            version: seasonBySlug.get(row.seasons)?.version ?? null,
+          }
+        : null,
       seasonCategory: row.season_category
         ? {
             title:

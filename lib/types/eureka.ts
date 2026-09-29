@@ -1,3 +1,4 @@
+import { Release } from '@/hooks/release'
 import { Tables } from './supabase'
 
 export type EurekaSetTrial = Pick<Tables<'eureka_set_trials'>, 'trial'>
@@ -8,11 +9,24 @@ export type EurekaSet = Tables<'eureka_sets'> & {
   eureka_set_trials: EurekaSetTrial[]
   categories: EurekaCategory[]
   colors: EurekaColor[]
+  // The fully resolved release: this set's own override, falling back to the
+  // earliest of the trials it drops from. See hooks/release.ts.
+  release: Release
 }
 
 export type EurekaSetRaw = Pick<
   Tables<'eureka_sets'>,
-  'id' | 'slug' | 'title' | 'description' | 'rarity' | 'style' | 'label' | 'updated_at'
+  | 'id'
+  | 'slug'
+  | 'title'
+  | 'description'
+  | 'rarity'
+  | 'style'
+  | 'label'
+  | 'updated_at'
+  | 'released_at'
+  | 'version'
+  | 'seasons'
 > & {
   eureka_set_trials: EurekaSetTrial[]
 }
@@ -70,7 +84,16 @@ export type Label = Pick<Tables<'labels'>, 'slug' | 'title'>
 
 export type Trial = Pick<
   Tables<'trials'>,
-  'id' | 'slug' | 'title' | 'image_url' | 'realm' | 'description' | 'location' | 'updated_at'
+  | 'id'
+  | 'slug'
+  | 'title'
+  | 'image_url'
+  | 'realm'
+  | 'description'
+  | 'location'
+  | 'updated_at'
+  | 'released_at'
+  | 'version'
 >
 
 export type UserPreferences = Pick<

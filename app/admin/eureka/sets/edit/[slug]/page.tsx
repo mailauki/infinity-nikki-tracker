@@ -33,7 +33,7 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: eurekaSet } = await supabase
     .from('eureka_sets')
     .select(
-      'id, slug, title, description, rarity, style, label, updated_at, eureka_set_trials ( trial )'
+      'id, slug, title, description, rarity, style, label, updated_at, released_at, version, seasons, eureka_set_trials ( trial )'
     )
     .eq('slug', slug)
     .single()
