@@ -12,6 +12,7 @@ import {
 } from '@/components/outfits/outfit-image-mode-context'
 import SetCard from '@/components/set-card'
 import { useSortOrder } from '@/components/sort-context'
+import { compareRelease, setRelease } from '@/hooks/release'
 
 import { useMomoCloakData } from './momo-cloak-context'
 import { CLOAK_SORT_AXES } from './momo-cloak-filter-menu'
@@ -32,8 +33,7 @@ export default function FilterMomoCloaks() {
 
   // Mirrors the outfits comparator, minus `progress` — a cloak is a single unit,
   // so obtained is a boolean and that axis would only replay the obtained filter.
-  // `date` sorts on id: created_at holds bulk-import timestamps, so id is the
-  // same ordering without parsing a date on every comparison.
+  // date sorts on the cloak's release (override → season); see hooks/release.ts.
   const sorted = useMemo(() => {
     // Collapse runs of whitespace before comparing. A stray double space (the
     // stored titles have had one) sorts before every letter, which would drag
@@ -42,16 +42,16 @@ export default function FilterMomoCloaks() {
     const sortKey = (title: string) => title.replace(/\s+/g, ' ').trim()
 
     return [...visible].sort((a, b) => {
+      if (axis === 'date') {
+        return compareRelease(setRelease(a), setRelease(b), sortDir) || a.id - b.id
+      }
       let cmp: number
       switch (axis) {
         case 'rarity':
           cmp = (a.rarity ?? 0) - (b.rarity ?? 0)
           break
-        case 'title':
-          cmp = sortKey(a.title).localeCompare(sortKey(b.title))
-          break
         default:
-          cmp = a.id - b.id
+          cmp = sortKey(a.title).localeCompare(sortKey(b.title))
       }
       // `desc` is the default direction for date/rarity (newest / highest
       // first); for title, `asc` is A→Z. Stable tiebreak on id.

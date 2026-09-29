@@ -24,6 +24,7 @@ import { useSortOrder } from '@/components/sort-context'
 import { EurekaSet, Total } from '@/lib/types/eureka'
 import ProgressChip from '@/components/progress-chip'
 import { countObtained } from '@/hooks/count-obtained'
+import { compareRelease, orderToDir, resolveRelease } from '@/hooks/release'
 import { SimpleGrid } from '@/components/card-grid'
 
 export default function TrialsContent() {
@@ -53,7 +54,10 @@ export default function TrialsContent() {
         .slice(0, 2)
         .sort((a, b) => a.id! - b.id!),
     }))
-    .sort((a, b) => (sortOrder === 'new' ? b.id - a.id : a.id - b.id))
+    .sort(
+      (a, b) =>
+        compareRelease(resolveRelease(a), resolveRelease(b), orderToDir(sortOrder)) || a.id - b.id
+    )
 
   const realmGroups = Object.entries(
     totalTrials.reduce<Record<string, typeof totalTrials>>((groups, trial) => {

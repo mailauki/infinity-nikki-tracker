@@ -78,6 +78,18 @@ export function compareRelease(a: Release, b: Release, dir: SortDir): number {
   )
 }
 
+/** A set or cloak row: its own override, then the season the hook embedded. */
+export function setRelease(row: {
+  released_at?: string | null
+  version?: string | null
+  season?: ReleaseSource
+}): Release {
+  return resolveRelease(row, row.season)
+}
+
+/** The legacy 'new'/'old' date direction as a SortDir: new = newest first. */
+export const orderToDir = (order: 'new' | 'old'): SortDir => (order === 'new' ? 'desc' : 'asc')
+
 /** "v1.5 · Apr 29, 2025", either half alone, or null when nothing is known. */
 export function formatRelease({ released_at, version }: Release): string | null {
   const date = released_at

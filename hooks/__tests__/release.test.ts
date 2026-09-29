@@ -5,6 +5,7 @@ import {
   earliestRelease,
   formatRelease,
   resolveRelease,
+  setRelease,
   type Release,
 } from '../release'
 
@@ -81,6 +82,17 @@ describe('compareRelease', () => {
 
   it('returns 0 for identical releases so the caller can tie-break on id', () => {
     expect(compareRelease(late, r('2025-04-29', '1.5'), 'desc')).toBe(0)
+  })
+})
+
+describe('setRelease', () => {
+  it('prefers the row override, then its embedded season', () => {
+    expect(
+      setRelease({ released_at: null, version: '1.5.5', season: r('2025-04-29', '1.5') })
+    ).toEqual(r('2025-04-29', '1.5.5'))
+  })
+  it('handles a row with no season', () => {
+    expect(setRelease({ released_at: null, version: null, season: null })).toEqual(r(null, null))
   })
 })
 

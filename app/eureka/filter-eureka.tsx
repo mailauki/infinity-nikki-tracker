@@ -12,6 +12,7 @@ import EurekaVariantCard from './eureka-variant-card'
 import ProgressChip from '@/components/progress-chip'
 import LoginAlert from '@/components/login-alert'
 import { countObtained } from '@/hooks/count-obtained'
+import { compareRelease, orderToDir } from '@/hooks/release'
 
 function GroupHeaderSkeleton() {
   return (
@@ -131,7 +132,7 @@ export default function FilterEureka() {
       return { ...set, eureka_variants: filteredVariants, colors: filteredColors }
     })
     .filter((set) => (showByColor ? set.colors.length > 0 : set.eureka_variants.length > 0))
-    .sort((a, b) => (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!))
+    .sort((a, b) => compareRelease(a.release, b.release, orderToDir(sortOrder)) || a.id! - b.id!)
 
   return (
     <>

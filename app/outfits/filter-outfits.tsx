@@ -12,6 +12,7 @@ import CardGrid from '@/components/card-grid'
 // them to cull hidden evolutions and glow-ups outright. Only the redundant
 // `shouldHide` exit-animation use was removed.
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
+import { compareRelease, setRelease } from '@/hooks/release'
 import VirtualGroupedGrid from './virtual-grouped-grid'
 import VirtualSetGrid, { type SetGridItem } from './virtual-set-grid'
 import VirtualVariantGrid from './virtual-variant-grid'
@@ -196,6 +197,9 @@ export default function FilterOutfits() {
         // so both-standalone never happens.
         if (a.slug === STANDALONE_SLUG) return 1
         if (b.slug === STANDALONE_SLUG) return -1
+        if (axis === 'date') {
+          return compareRelease(setRelease(a), setRelease(b), sortDir) || a.id! - b.id!
+        }
         const progress = (s: FilteredSet) => {
           const total = s.outfit_variants.length
           return total === 0 ? 0 : s.outfit_variants.filter((v) => v.obtained).length / total
@@ -208,11 +212,8 @@ export default function FilterOutfits() {
           case 'progress':
             cmp = progress(a) - progress(b)
             break
-          case 'title':
-            cmp = a.title.localeCompare(b.title)
-            break
           default:
-            cmp = a.id! - b.id!
+            cmp = a.title.localeCompare(b.title)
         }
         // `desc` is the default direction for date/rarity/progress (newest /
         // highest first); for title, `asc` is A→Z. Stable tiebreak on id.

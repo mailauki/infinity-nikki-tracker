@@ -10,6 +10,7 @@ import CardGrid, { CardGridHeader } from '@/components/card-grid'
 import EurekaColorSetCard from '@/app/eureka/eureka-color-set-card'
 import ProgressChip from '@/components/progress-chip'
 import { countObtained } from '@/hooks/count-obtained'
+import { compareRelease, orderToDir } from '@/hooks/release'
 
 function SetSkeleton() {
   return (
@@ -56,7 +57,7 @@ export default function SetsContent() {
   const sortedSets = [...eurekaSets].sort((a, b) => {
     const rarityDiff = (b.rarity ?? 0) - (a.rarity ?? 0)
     if (rarityDiff !== 0) return rarityDiff
-    return sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!
+    return compareRelease(a.release, b.release, orderToDir(sortOrder)) || a.id! - b.id!
   })
 
   return (

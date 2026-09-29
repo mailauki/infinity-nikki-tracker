@@ -10,6 +10,7 @@ import { useSortOrder } from '@/components/sort-context'
 import CardGrid from '@/components/card-grid'
 import { matchesObtainedFilter } from '@/hooks/outfit'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
+import { compareRelease, setRelease } from '@/hooks/release'
 import VirtualGroupedGrid from './virtual-grouped-grid'
 import VirtualSetGrid, { type SetGridItem } from './virtual-set-grid'
 import VirtualVariantGrid from './virtual-variant-grid'
@@ -164,6 +165,9 @@ export default function FilterMakeup() {
         // happens.
         if (isStandaloneMakeupSet(a)) return 1
         if (isStandaloneMakeupSet(b)) return -1
+        if (axis === 'date') {
+          return compareRelease(setRelease(a), setRelease(b), sortDir) || a.id! - b.id!
+        }
         const progress = (s: FilteredSet) => {
           const total = s.makeup_variants.length
           return total === 0 ? 0 : s.makeup_variants.filter((v) => v.obtained).length / total
@@ -176,11 +180,8 @@ export default function FilterMakeup() {
           case 'progress':
             cmp = progress(a) - progress(b)
             break
-          case 'title':
-            cmp = a.title.localeCompare(b.title)
-            break
           default:
-            cmp = a.id! - b.id!
+            cmp = a.title.localeCompare(b.title)
         }
         // `desc` is the default direction for date/rarity/progress (newest /
         // highest first); for title, `asc` is A→Z. Stable tiebreak on id.

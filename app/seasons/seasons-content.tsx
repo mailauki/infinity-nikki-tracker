@@ -26,6 +26,7 @@ import {
   SeasonEntry,
   STANDALONE_SLUG,
 } from '@/app/seasons/[slug]/season-entries'
+import { compareRelease, orderToDir, resolveRelease } from '@/hooks/release'
 import SeasonCard from './season-card'
 
 // Mirrors the row skeleton in ./loading.tsx so a card's rows keep the same shape
@@ -74,11 +75,7 @@ export default function SeasonsContent({
     isLoading: isOutfitLoading,
     isError: isOutfitError,
   } = useOutfitData()
-  const {
-    obtainedMakeup,
-    isLoading: isMakeupLoading,
-    isError: isMakeupError,
-  } = useMakeupData()
+  const { obtainedMakeup, isLoading: isMakeupLoading, isError: isMakeupError } = useMakeupData()
 
   // A card's rows mix outfit and makeup data, and each arrives from its own
   // provider fetch. Gating on just one of them let a season whose makeup
@@ -99,10 +96,11 @@ export default function SeasonsContent({
   // so a card advertised a denominator the page it opened never showed.
   const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
 
-  // The sort button orders seasons by their index (id): 'new' = highest id
-  // first, 'old' = lowest first.
-  const sortedSeasons = [...seasons].sort((a, b) =>
-    sortOrder === 'new' ? b.id - a.id : a.id - b.id
+  // Seasons order by their release (id as the fallback while dates are blank).
+  const sortedSeasons = [...seasons].sort(
+    (a, b) =>
+      compareRelease(resolveRelease(a), resolveRelease(b), orderToDir(sortOrder)) ||
+      (sortOrder === 'new' ? b.id - a.id : a.id - b.id)
   )
 
   const categoryTitle = (slug: string) =>
@@ -172,10 +170,7 @@ export default function SeasonsContent({
 
     // Keyed by group slug where a category has one, by the category slug
     // otherwise — so grouped categories merge and ungrouped ones stay distinct.
-    const rows = new Map<
-      string,
-      { title: string; entries: SeasonEntry[]; grouped: boolean }
-    >()
+    const rows = new Map<string, { title: string; entries: SeasonEntry[]; grouped: boolean }>()
 
     for (const [categorySlug, entries] of categories) {
       // OTHER_CATEGORY is a synthetic bucket for rows with no category at all,
