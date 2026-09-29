@@ -5,6 +5,7 @@ import { Category } from '@mui/icons-material'
 import { EurekaSet } from '@/lib/types/eureka'
 import { toTitle } from '@/lib/utils'
 import LazyImage from '@/components/lazy-image'
+import ReleaseLine from '@/components/release-line'
 import SetDetailCard from '@/components/set-detail-card'
 import Link from 'next/link'
 
@@ -28,7 +29,8 @@ export default function EurekaSetDetailCard({
   total,
   colorImage,
 }: EurekaSetDetailCardProps) {
-  const { title, image_url, rarity, label, style, description, eureka_set_trials } = eurekaSet
+  const { title, image_url, rarity, label, style, description, eureka_set_trials, release } =
+    eurekaSet
 
   const media = (
     <LazyImage
@@ -60,10 +62,12 @@ export default function EurekaSetDetailCard({
       </Anchor>
     ) : null
 
+  const releaseRow = <ReleaseLine release={release} />
+
   return (
     <SetDetailCard
       description={description}
-      extraRows={trialsRow ? [trialsRow] : []}
+      extraRows={[trialsRow, releaseRow].filter(Boolean)}
       isLoggedIn={isLoggedIn}
       labels={[label]}
       media={media}

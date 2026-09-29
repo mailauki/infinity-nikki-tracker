@@ -8,8 +8,10 @@ import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import { getMakeupSets } from '@/hooks/data/makeup-sets'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
 import { getUserID } from '@/hooks/user'
+import { resolveRelease } from '@/hooks/release'
 import { STANDALONE_SLUG } from './season-entries'
 import SlugToolBar from '@/components/navbar/slug-toolbar'
+import ReleaseLine from '@/components/release-line'
 import SeasonBanner from './season-banner'
 import SeasonContents from './season-contents'
 import SeasonOutfitList from './season-outfit-list'
@@ -88,6 +90,7 @@ export default async function SeasonPage({ params }: Props) {
             />
           )}
         </Stack>
+        <ReleaseLine release={resolveRelease(season)} />
         <Typography variant="body">{season.description}</Typography>
 
         <SeasonOverview
