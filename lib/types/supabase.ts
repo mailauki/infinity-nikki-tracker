@@ -221,10 +221,13 @@ export type Database = {
           id: number
           label: string | null
           rarity: number | null
+          released_at: string | null
+          seasons: string | null
           slug: string
           style: string | null
           title: string
           updated_at: string | null
+          version: string | null
         }
         Insert: {
           created_at?: string
@@ -232,10 +235,13 @@ export type Database = {
           id?: number
           label?: string | null
           rarity?: number | null
+          released_at?: string | null
+          seasons?: string | null
           slug: string
           style?: string | null
           title?: string
           updated_at?: string | null
+          version?: string | null
         }
         Update: {
           created_at?: string
@@ -243,10 +249,13 @@ export type Database = {
           id?: number
           label?: string | null
           rarity?: number | null
+          released_at?: string | null
+          seasons?: string | null
           slug?: string
           style?: string | null
           title?: string
           updated_at?: string | null
+          version?: string | null
         }
         Relationships: [
           {
@@ -254,6 +263,13 @@ export type Database = {
             columns: ["label"]
             isOneToOne: false
             referencedRelation: "labels"
+            referencedColumns: ["slug"]
+          },
+          {
+            foreignKeyName: "eureka_sets_seasons_fkey"
+            columns: ["seasons"]
+            isOneToOne: false
+            referencedRelation: "seasons"
             referencedColumns: ["slug"]
           },
           {
@@ -546,12 +562,14 @@ export type Database = {
           order: number
           outfit_set: string | null
           rarity: number
+          released_at: string | null
           season_category: string | null
           seasons: string | null
           slug: string
           style: string | null
           title: string
           updated_at: string | null
+          version: string | null
         }
         Insert: {
           alt_image_url?: string | null
@@ -563,12 +581,14 @@ export type Database = {
           order?: number
           outfit_set?: string | null
           rarity: number
+          released_at?: string | null
           season_category?: string | null
           seasons?: string | null
           slug: string
           style?: string | null
           title: string
           updated_at?: string | null
+          version?: string | null
         }
         Update: {
           alt_image_url?: string | null
@@ -580,12 +600,14 @@ export type Database = {
           order?: number
           outfit_set?: string | null
           rarity?: number
+          released_at?: string | null
           season_category?: string | null
           seasons?: string | null
           slug?: string
           style?: string | null
           title?: string
           updated_at?: string | null
+          version?: string | null
         }
         Relationships: [
           {
@@ -637,12 +659,14 @@ export type Database = {
           makeup_category: string | null
           makeup_set: string | null
           rarity: number | null
+          released_at: string | null
           season_category: string | null
           seasons: string | null
           slug: string
           style: string | null
           title: string | null
           updated_at: string | null
+          version: string | null
         }
         Insert: {
           alt_image_url?: string | null
@@ -655,12 +679,14 @@ export type Database = {
           makeup_category?: string | null
           makeup_set?: string | null
           rarity?: number | null
+          released_at?: string | null
           season_category?: string | null
           seasons?: string | null
           slug: string
           style?: string | null
           title?: string | null
           updated_at?: string | null
+          version?: string | null
         }
         Update: {
           alt_image_url?: string | null
@@ -673,12 +699,14 @@ export type Database = {
           makeup_category?: string | null
           makeup_set?: string | null
           rarity?: number | null
+          released_at?: string | null
           season_category?: string | null
           seasons?: string | null
           slug?: string
           style?: string | null
           title?: string | null
           updated_at?: string | null
+          version?: string | null
         }
         Relationships: [
           {
@@ -729,12 +757,14 @@ export type Database = {
           location: string | null
           outfit_set: string | null
           rarity: number | null
+          released_at: string | null
           season_category: string | null
           seasons: string | null
           slug: string
           style: string | null
           title: string
           updated_at: string | null
+          version: string | null
         }
         Insert: {
           alt_image_url?: string | null
@@ -746,12 +776,14 @@ export type Database = {
           location?: string | null
           outfit_set?: string | null
           rarity?: number | null
+          released_at?: string | null
           season_category?: string | null
           seasons?: string | null
           slug: string
           style?: string | null
           title: string
           updated_at?: string | null
+          version?: string | null
         }
         Update: {
           alt_image_url?: string | null
@@ -763,12 +795,14 @@ export type Database = {
           location?: string | null
           outfit_set?: string | null
           rarity?: number | null
+          released_at?: string | null
           season_category?: string | null
           seasons?: string | null
           slug?: string
           style?: string | null
           title?: string
           updated_at?: string | null
+          version?: string | null
         }
         Relationships: [
           {
@@ -1064,6 +1098,7 @@ export type Database = {
           label_2: string | null
           order: number
           rarity: number
+          released_at: string | null
           season_category: string | null
           seasons: string | null
           slug: string
@@ -1071,6 +1106,7 @@ export type Database = {
           subtitle: string | null
           title: string
           updated_at: string | null
+          version: string | null
         }
         Insert: {
           ability?: string | null
@@ -1085,6 +1121,7 @@ export type Database = {
           label_2?: string | null
           order: number
           rarity: number
+          released_at?: string | null
           season_category?: string | null
           seasons?: string | null
           slug: string
@@ -1092,6 +1129,7 @@ export type Database = {
           subtitle?: string | null
           title: string
           updated_at?: string | null
+          version?: string | null
         }
         Update: {
           ability?: string | null
@@ -1106,6 +1144,7 @@ export type Database = {
           label_2?: string | null
           order?: number
           rarity?: number
+          released_at?: string | null
           season_category?: string | null
           seasons?: string | null
           slug?: string
@@ -1113,6 +1152,7 @@ export type Database = {
           subtitle?: string | null
           title?: string
           updated_at?: string | null
+          version?: string | null
         }
         Relationships: [
           {
@@ -1180,12 +1220,14 @@ export type Database = {
           outfit_category: string | null
           outfit_set: string | null
           rarity: number | null
+          released_at: string | null
           season_category: string | null
           seasons: string | null
           slug: string
           style: string | null
           title: string | null
           updated_at: string | null
+          version: string | null
         }
         Insert: {
           alt_image_url?: string | null
@@ -1200,12 +1242,14 @@ export type Database = {
           outfit_category?: string | null
           outfit_set?: string | null
           rarity?: number | null
+          released_at?: string | null
           season_category?: string | null
           seasons?: string | null
           slug: string
           style?: string | null
           title?: string | null
           updated_at?: string | null
+          version?: string | null
         }
         Update: {
           alt_image_url?: string | null
@@ -1220,12 +1264,14 @@ export type Database = {
           outfit_category?: string | null
           outfit_set?: string | null
           rarity?: number | null
+          released_at?: string | null
           season_category?: string | null
           seasons?: string | null
           slug?: string
           style?: string | null
           title?: string | null
           updated_at?: string | null
+          version?: string | null
         }
         Relationships: [
           {
@@ -1397,10 +1443,12 @@ export type Database = {
           id: number
           image_url: string | null
           location: string | null
+          released_at: string | null
           slug: string
           title: string
           updated_at: string | null
           use_season_groups: boolean
+          version: string | null
         }
         Insert: {
           alt_image_url?: string | null
@@ -1409,10 +1457,12 @@ export type Database = {
           id?: number
           image_url?: string | null
           location?: string | null
+          released_at?: string | null
           slug: string
           title: string
           updated_at?: string | null
           use_season_groups?: boolean
+          version?: string | null
         }
         Update: {
           alt_image_url?: string | null
@@ -1421,10 +1471,12 @@ export type Database = {
           id?: number
           image_url?: string | null
           location?: string | null
+          released_at?: string | null
           slug?: string
           title?: string
           updated_at?: string | null
           use_season_groups?: boolean
+          version?: string | null
         }
         Relationships: [
           {
@@ -1465,9 +1517,11 @@ export type Database = {
           image_url: string | null
           location: string | null
           realm: string | null
+          released_at: string | null
           slug: string
           title: string
           updated_at: string | null
+          version: string | null
         }
         Insert: {
           created_at?: string
@@ -1476,9 +1530,11 @@ export type Database = {
           image_url?: string | null
           location?: string | null
           realm?: string | null
+          released_at?: string | null
           slug: string
           title: string
           updated_at?: string | null
+          version?: string | null
         }
         Update: {
           created_at?: string
@@ -1487,9 +1543,11 @@ export type Database = {
           image_url?: string | null
           location?: string | null
           realm?: string | null
+          released_at?: string | null
           slug?: string
           title?: string
           updated_at?: string | null
+          version?: string | null
         }
         Relationships: [
           {
@@ -1539,6 +1597,8 @@ export type Database = {
           outfit_style_filter: string | null
           season_density: string | null
           season_hide_base_sets: boolean
+          season_hide_cloaks: boolean
+          season_hide_eureka: boolean
           season_hide_evolutions: boolean
           season_hide_glowups: boolean
           season_hide_makeup: boolean
@@ -1590,6 +1650,8 @@ export type Database = {
           outfit_style_filter?: string | null
           season_density?: string | null
           season_hide_base_sets?: boolean
+          season_hide_cloaks?: boolean
+          season_hide_eureka?: boolean
           season_hide_evolutions?: boolean
           season_hide_glowups?: boolean
           season_hide_makeup?: boolean
@@ -1641,6 +1703,8 @@ export type Database = {
           outfit_style_filter?: string | null
           season_density?: string | null
           season_hide_base_sets?: boolean
+          season_hide_cloaks?: boolean
+          season_hide_eureka?: boolean
           season_hide_evolutions?: boolean
           season_hide_glowups?: boolean
           season_hide_makeup?: boolean
