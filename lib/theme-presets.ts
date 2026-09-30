@@ -172,7 +172,7 @@ export const COLOR_THEME_PRESETS: Record<ColorTheme, ColorThemePreset> = {
   },
   moonlight: {
     label: 'Moonlight',
-    description: 'Soft purples and lavender',
+    description: 'Cool purples and lavender',
     light: {
       primary: {
         main: '#6750A4',
@@ -276,7 +276,7 @@ export const COLOR_THEME_PRESETS: Record<ColorTheme, ColorThemePreset> = {
   },
   blossom: {
     label: 'Cherry Blossom',
-    description: 'Deep rose and soft pink',
+    description: 'Deep rose and soft pinks',
     light: {
       primary: {
         main: '#9C4063',
@@ -380,7 +380,7 @@ export const COLOR_THEME_PRESETS: Record<ColorTheme, ColorThemePreset> = {
   },
   forest: {
     label: 'Forest',
-    description: 'Lush greens and earth',
+    description: 'Lush greens and foliage',
     light: {
       primary: {
         main: '#3A6A2F',
