@@ -140,7 +140,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
         .insert([...baseVariants, ...evoVariants])
       if (variantError) {
         await rollback()
-        return { error: 'Failed to save variants. The set was not created — please try again.' }
+        return { error: 'Failed to save pieces. The set was not created — please try again.' }
       }
     }
   } else if (outfitCategories.length > 0) {
@@ -155,7 +155,7 @@ export async function addOutfitSet(_: unknown, formData: FormData) {
     const { error: variantError } = await supabase.from('outfit_variants').insert(variants)
     if (variantError) {
       await rollback()
-      return { error: 'Failed to save variants. The set was not created — please try again.' }
+      return { error: 'Failed to save pieces. The set was not created — please try again.' }
     }
   }
 

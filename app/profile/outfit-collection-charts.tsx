@@ -75,7 +75,7 @@ function OutfitRingsChart({
       outerRadius: 90,
     },
     {
-      label: 'Variants',
+      label: 'Pieces',
       obtained: variantsObtained,
       total: variantsTotal,
       color: ringColors[3],

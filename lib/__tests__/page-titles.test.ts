@@ -16,8 +16,8 @@ describe('page name registry', () => {
     expect(navLabel('/seasons')).toBe('Seasons')
     expect(pageTitle('/seasons')).toBe('Outfits by Season')
 
-    expect(navLabel('/admin/outfits/variants')).toBe('Variants')
-    expect(pageTitle('/admin/outfits/variants')).toBe('Outfit Variants')
+    expect(navLabel('/admin/outfits/variants')).toBe('Pieces')
+    expect(pageTitle('/admin/outfits/variants')).toBe('Outfit Pieces')
   })
 
   it('has no entry whose title merely repeats its nav label', () => {

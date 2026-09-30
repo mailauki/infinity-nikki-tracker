@@ -205,7 +205,7 @@ function gapSummary(row: GapWorkItem): string {
 
 /**
  * Secondary line for a row: type, then category when the row has one, then its
- * gap summary — "Outfit Variant · Bottoms · 1 image". Only standalone pieces
+ * gap summary — "Outfit Piece · Bottoms · 1 image". Only standalone pieces
  * carry a category, so every other bucket keeps the original two-part line.
  */
 function rowSubtitle(row: GapWorkItem): string {

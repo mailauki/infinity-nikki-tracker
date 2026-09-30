@@ -46,7 +46,7 @@ export default function OutfitVariantList({
       )}
       rows={rows}
       rowsPerPage={rowsPerPage}
-      title="Outfit Variant"
+      title="Outfit Piece"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}
     />

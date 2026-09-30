@@ -55,7 +55,7 @@ async function findSetOwnedDuplicate(
   const { data } = await query.limit(1).maybeSingle()
   if (!data) return null
 
-  return `"${title}" already exists in the set "${data.makeup_set}" (${data.slug}). Edit that variant instead of adding a duplicate standalone piece.`
+  return `"${title}" already exists in the set "${data.makeup_set}" (${data.slug}). Edit that piece instead of adding a duplicate standalone piece.`
 }
 
 // makeup_set is nullable — a variant with no set is a standalone piece with
@@ -148,7 +148,7 @@ export async function editMakeupVariant(id: number, _: unknown, formData: FormDa
     // it would otherwise reach deriveVariantSlug/recategorizeVariant below and
     // strand two copied images before the row update fails on the FK to
     // makeup_categories.slug. Reject it before any storage copy happens.
-    if (!values.makeup_category) return { error: 'Category is required to recategorize a variant.' }
+    if (!values.makeup_category) return { error: 'Category is required to recategorize a piece.' }
 
     const derivedSlug = deriveVariantSlug({
       set: values.makeup_set,

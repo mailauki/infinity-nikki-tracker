@@ -48,7 +48,7 @@ function MakeupVariantCard({
     <VariantCard
       animateExit={isMissingFilter}
       disableToggle={disableToggle}
-      imageAlt={makeupVariant.slug || 'Makeup Variant'}
+      imageAlt={makeupVariant.slug || 'Makeup Piece'}
       imageSrc={imageSrc}
       in={!exiting}
       isLoggedIn={isLoggedIn}

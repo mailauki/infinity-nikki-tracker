@@ -284,7 +284,7 @@ export const ADMIN_DOMAINS = [
   {
     title: 'Outfits',
     lead: 'outfit-variants',
-    leadNoun: 'variants',
+    leadNoun: 'pieces',
     chips: [
       { key: 'outfit-sets', label: 'sets' },
       { key: 'evolutions', label: 'evo' },
@@ -302,7 +302,7 @@ export const ADMIN_DOMAINS = [
   {
     title: 'Makeup',
     lead: 'makeup-variants',
-    leadNoun: 'variants',
+    leadNoun: 'pieces',
     chips: [
       { key: 'makeup-sets', label: 'sets' },
       { key: 'makeup-evolutions', label: 'evo' },
