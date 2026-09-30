@@ -6,6 +6,7 @@ import { getUserRole } from '@/hooks/user'
 import { navLinksData } from '@/lib/nav-links'
 import { evolutionSortKey } from '@/hooks/outfit'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
+import { readReleaseFields } from '@/lib/release-form'
 
 export async function editEvolution(
   currentSlug: string,
@@ -22,7 +23,7 @@ export async function editEvolution(
 
   const { error } = await supabase
     .from('outfit_sets')
-    .update({ description })
+    .update({ description, ...readReleaseFields(formData) })
     .eq('slug', currentSlug)
 
   if (error) return { error: error.message }

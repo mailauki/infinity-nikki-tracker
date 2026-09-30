@@ -12,6 +12,8 @@ export type Season = Pick<
   | 'alt_image_url'
   | 'description'
   | 'use_season_groups'
+  | 'released_at'
+  | 'version'
 >
 
 export type SeasonCategory = Pick<
@@ -56,6 +58,10 @@ export type LinkedSet = {
   image_url: string | null
   alt_image_url: string | null
 }
+
+// A row's season as the data hooks embed it: the title for display plus the
+// release fields hooks/release.ts inherits from.
+export type EmbeddedSeason = { title: string; released_at: string | null; version: string | null }
 
 /**
  * momo_cloaks/makeup_sets point AT outfit_sets, so those embeds come back as
@@ -121,7 +127,7 @@ export type OutfitSet = Tables<'outfit_sets'> & {
   outfit_categories: OutfitCategory[]
   evolutions: Evolution[]
   carousel_images: CarouselImage[]
-  season: { title: string } | null
+  season: EmbeddedSeason | null
   seasonCategory: { title: string } | null
   // Reverse FK lookups (momo_cloaks.outfit_set / makeup_sets.outfit_set).
   // Populated only by getOutfitSet — the list query has no use for them.
@@ -155,6 +161,8 @@ export type OutfitSetRaw = Pick<
   | 'base_set'
   | 'handheld_base_only'
   | 'updated_at'
+  | 'released_at'
+  | 'version'
 >
 
 export type OutfitVariant = Pick<
@@ -171,6 +179,8 @@ export type OutfitVariant = Pick<
   | 'style'
   | 'seasons'
   | 'season_category'
+  | 'released_at'
+  | 'version'
 > & { obtained?: boolean }
 
 export type OutfitVariantRaw = Tables<'outfit_variants'> & {

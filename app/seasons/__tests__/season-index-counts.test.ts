@@ -3,8 +3,11 @@ import {
   countCountableEntries,
   countEntries,
   countEntryCards,
+  EUREKA_CATEGORY,
   groupSeasonEntries,
 } from '@/app/seasons/[slug]/season-entries'
+import type { EurekaSet } from '@/lib/types/eureka'
+import type { MomoCloak } from '@/lib/types/momo'
 import type { MakeupSet } from '@/lib/types/makeup'
 import type { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 
@@ -133,7 +136,6 @@ describe('seasons index row totals', () => {
   })
 })
 
-
 // A grouped row rolls several categories onto one line, so counting its CARDS
 // collapsed a whole run of the season to a single digit: Bloom Beneath Bright
 // Skies' "Active Moments" gathers one category holding one eight-piece set, and
@@ -186,7 +188,6 @@ describe('grouped season rows count pieces', () => {
     expect(countEntryCards(entries).total).toBe(1)
   })
 })
-
 
 // The game does not count a `handheld_base_only` set's handheld toward the set
 // total — it is a bonus piece awarded separately, long after the set. Exploration
@@ -250,5 +251,32 @@ describe('handheld_base_only handhelds are left out of season totals', () => {
 
   it('leaves the card count alone — a set is one card either way', () => {
     expect(countEntryCards(entriesFor(true)).total).toBe(1)
+  })
+})
+
+describe('eureka and cloaks on the index', () => {
+  const set = (slug: string) =>
+    ({
+      slug,
+      seasons: SEASON,
+      eureka_variants: [{ obtained: true }],
+      release: { released_at: null, version: null },
+    }) as unknown as EurekaSet
+  const cloak = { slug: 'c', seasons: SEASON, season_category: null } as unknown as MomoCloak
+
+  it('adds one card per eureka set and nothing for cloaks', () => {
+    const groups = groupSeasonEntries({
+      seasonSets: [],
+      standaloneVariants: [],
+      makeupSets: [],
+      seasonSlug: SEASON,
+      hideEvolutions: true,
+      hideGlowups: true,
+      eurekaSets: [set('a'), set('b')],
+      cloaks: [cloak],
+    })
+    const all = groups.flatMap(([, e]) => e)
+    expect(countEntryCards(all)).toEqual({ total: 2, obtained: 2 })
+    expect(groups.find(([c]) => c === EUREKA_CATEGORY)?.[1]).toHaveLength(2)
   })
 })

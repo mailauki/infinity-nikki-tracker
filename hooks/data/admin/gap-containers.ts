@@ -59,10 +59,10 @@ export interface GapWorkItem {
 const KIND_LABELS: Record<AdminEntityKey, string> = {
   'outfit-sets': 'Outfit Set',
   evolutions: 'Evolution',
-  'outfit-variants': 'Outfit Variant',
+  'outfit-variants': 'Outfit Piece',
   'makeup-sets': 'Makeup Set',
   'makeup-evolutions': 'Makeup Evolution',
-  'makeup-variants': 'Makeup Variant',
+  'makeup-variants': 'Makeup Piece',
   'momo-cloaks': "Momo's Cloak",
   'eureka-sets': 'Eureka Set',
   'eureka-variants': 'Eureka Variant',

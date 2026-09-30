@@ -9,6 +9,7 @@ import { getUserRole } from '@/hooks/user'
 import { toSlug } from '@/lib/utils'
 import { recategorizeVariant } from '@/lib/variant-recategorize'
 import { deriveVariantSlug } from '@/lib/variant-slug'
+import { readReleaseFields } from '@/lib/release-form'
 
 const STANDALONE_SLUG = 'standalone_pieces'
 
@@ -54,7 +55,7 @@ async function findSetOwnedDuplicate(
   const { data } = await query.limit(1).maybeSingle()
   if (!data) return null
 
-  return `"${title}" already exists in the set "${data.outfit_set}" (${data.slug}). Edit that variant instead of adding a duplicate standalone piece.`
+  return `"${title}" already exists in the set "${data.outfit_set}" (${data.slug}). Edit that piece instead of adding a duplicate standalone piece.`
 }
 
 export async function addOutfitVariant(_: unknown, formData: FormData) {
@@ -100,6 +101,7 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
       title,
       description,
       slug,
+      ...readReleaseFields(formData),
     },
   ])
 
@@ -164,7 +166,7 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
     // it would otherwise reach deriveVariantSlug/recategorizeVariant below and
     // strand two copied images before the row update fails on the FK to
     // outfit_categories.slug. Reject it before any storage copy happens.
-    if (!outfit_category) return { error: 'Category is required to recategorize a variant.' }
+    if (!outfit_category) return { error: 'Category is required to recategorize a piece.' }
 
     const derivedSlug = deriveVariantSlug({
       set: outfit_set,
@@ -205,6 +207,7 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
           label_2,
           title,
           description,
+          ...readReleaseFields(formData),
           updated_at: new Date().toISOString(),
         })
         .eq('id', id)
@@ -236,6 +239,7 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
       title,
       description,
       slug,
+      ...readReleaseFields(formData),
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)

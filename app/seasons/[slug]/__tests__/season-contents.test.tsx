@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 import { act, render, screen } from '@testing-library/react'
 import SeasonContents from '../season-contents'
+import { NO_RELEASE } from '@/hooks/release'
 import { DrawerStateProvider, useSidebar } from '@/components/navbar/navbar-toolbar-context'
 
 vi.mock('@/components/outfits/outfit-context', () => ({
@@ -37,6 +38,7 @@ const baseProps = {
   standaloneVariants: [],
   makeupSets: [],
   seasonSlug: 'exploration_season',
+  seasonRelease: NO_RELEASE,
   seasonCategories: [],
   seasonGroups: [],
   isLoggedIn: false,

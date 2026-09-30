@@ -6,6 +6,8 @@ import { OutfitSet, OutfitVariant } from '@/lib/types/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useMakeupData } from '@/components/makeup/makeup-context'
 import { useSeasonFilter } from './season-filter-context'
+import { useEurekaData } from '@/components/eureka/eureka-context'
+import { Release } from '@/hooks/release'
 import { applySeasonFilters, countEntryCards, groupSeasonEntries } from './season-entries'
 
 // Season completion counts every card currently shown — i.e. it reflects the
@@ -17,16 +19,19 @@ export default function SeasonProgress({
   standaloneVariants,
   makeupSets,
   seasonSlug,
+  seasonRelease,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
   seasonSlug: string
+  seasonRelease: Release
 }) {
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, filters } =
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, hideEureka, filters } =
     useSeasonFilter()
   const { obtainedOutfit } = useOutfitData()
   const { obtainedMakeup } = useMakeupData()
+  const { eurekaSets } = useEurekaData()
 
   // Same filtered output the grid renders, so this chip never disagrees with
   // what the page actually shows beneath it.
@@ -43,6 +48,9 @@ export default function SeasonProgress({
       hideBaseSets,
       obtainedOutfit,
       obtainedMakeup,
+      eurekaSets,
+      hideEureka,
+      seasonRelease,
     }),
     filters
   ).flatMap(([, groupEntries]) => groupEntries)

@@ -1,5 +1,10 @@
+import { Release } from '@/hooks/release'
 import { Tables } from './supabase'
 
+// The public eureka-sets selects (hooks/data/eureka-sets.ts) also embed
+// `trials ( released_at, version )` on this join row to resolve
+// EurekaSet.release — this type stays narrower (trial slug only) since it's
+// the shape most callers (admin raw rows, etc.) actually need.
 export type EurekaSetTrial = Pick<Tables<'eureka_set_trials'>, 'trial'>
 
 export type EurekaSet = Tables<'eureka_sets'> & {
@@ -8,11 +13,24 @@ export type EurekaSet = Tables<'eureka_sets'> & {
   eureka_set_trials: EurekaSetTrial[]
   categories: EurekaCategory[]
   colors: EurekaColor[]
+  // The fully resolved release: this set's own override, falling back to the
+  // earliest of the trials it drops from. See hooks/release.ts.
+  release: Release
 }
 
 export type EurekaSetRaw = Pick<
   Tables<'eureka_sets'>,
-  'id' | 'slug' | 'title' | 'description' | 'rarity' | 'style' | 'label' | 'updated_at'
+  | 'id'
+  | 'slug'
+  | 'title'
+  | 'description'
+  | 'rarity'
+  | 'style'
+  | 'label'
+  | 'updated_at'
+  | 'released_at'
+  | 'version'
+  | 'seasons'
 > & {
   eureka_set_trials: EurekaSetTrial[]
 }
@@ -70,7 +88,16 @@ export type Label = Pick<Tables<'labels'>, 'slug' | 'title'>
 
 export type Trial = Pick<
   Tables<'trials'>,
-  'id' | 'slug' | 'title' | 'image_url' | 'realm' | 'description' | 'location' | 'updated_at'
+  | 'id'
+  | 'slug'
+  | 'title'
+  | 'image_url'
+  | 'realm'
+  | 'description'
+  | 'location'
+  | 'updated_at'
+  | 'released_at'
+  | 'version'
 >
 
 export type UserPreferences = Pick<
@@ -117,6 +144,8 @@ export type UserPreferences = Pick<
   | 'season_hide_pieces'
   | 'season_hide_makeup'
   | 'season_hide_base_sets'
+  | 'season_hide_eureka'
+  | 'season_hide_cloaks'
   | 'season_density'
   | 'season_obtained_filter'
   | 'season_rarity_filter'

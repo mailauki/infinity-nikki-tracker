@@ -22,6 +22,8 @@ const KINDS = [
   { key: 'glowups', label: 'Glow-ups', icon: '/icons/glowup.png' },
   { key: 'pieces', label: 'Pieces', icon: '/icons/accessories.png' },
   { key: 'makeup', label: 'Makeup', icon: '/icons/makeup.png' },
+  { key: 'eureka', label: 'Eureka', icon: '/icons/eureka.png' },
+  { key: 'cloaks', label: "Momo's Cloaks", icon: '/icons/momo-cloak.png' },
 ] as const
 
 export default function SeasonFilterBody() {
@@ -34,18 +36,22 @@ export default function SeasonFilterBody() {
     hideGlowups,
     hidePieces,
     hideMakeup,
+    hideEureka,
+    hideCloaks,
     onHideBaseSetsChange,
     onHideEvolutionsChange,
     onHideGlowupsChange,
     onHidePiecesChange,
     onHideMakeupChange,
+    onHideEurekaChange,
+    onHideCloaksChange,
     onSetAllVisible,
     filters,
     onFiltersChange,
     onClearFilters,
   } = useSeasonFilter()
 
-  // "Reset" restores only the view controls — the five visibility toggles — to
+  // "Reset" restores only the view controls — the seven visibility toggles — to
   // their defaults, leaving the obtained/rarity/style filter selections intact.
   // Mirrors the Reset/Clear split in the outfits and makeup branches of
   // FilterMenu. Density is deliberately NOT part of this: no season grid reads
@@ -57,7 +63,9 @@ export default function SeasonFilterBody() {
     hideEvolutions !== DEFAULT_PREFERENCES.season_hide_evolutions ||
     hideGlowups !== DEFAULT_PREFERENCES.season_hide_glowups ||
     hidePieces !== DEFAULT_PREFERENCES.season_hide_pieces ||
-    hideMakeup !== DEFAULT_PREFERENCES.season_hide_makeup
+    hideMakeup !== DEFAULT_PREFERENCES.season_hide_makeup ||
+    hideEureka !== DEFAULT_PREFERENCES.season_hide_eureka ||
+    hideCloaks !== DEFAULT_PREFERENCES.season_hide_cloaks
 
   const handleReset = () => {
     if (hideBaseSets !== DEFAULT_PREFERENCES.season_hide_base_sets) onHideBaseSetsChange()
@@ -65,6 +73,8 @@ export default function SeasonFilterBody() {
     if (hideGlowups !== DEFAULT_PREFERENCES.season_hide_glowups) onHideGlowupsChange()
     if (hidePieces !== DEFAULT_PREFERENCES.season_hide_pieces) onHidePiecesChange()
     if (hideMakeup !== DEFAULT_PREFERENCES.season_hide_makeup) onHideMakeupChange()
+    if (hideEureka !== DEFAULT_PREFERENCES.season_hide_eureka) onHideEurekaChange()
+    if (hideCloaks !== DEFAULT_PREFERENCES.season_hide_cloaks) onHideCloaksChange()
   }
 
   const state = {
@@ -73,6 +83,8 @@ export default function SeasonFilterBody() {
     glowups: { hidden: hideGlowups, toggle: onHideGlowupsChange },
     pieces: { hidden: hidePieces, toggle: onHidePiecesChange },
     makeup: { hidden: hideMakeup, toggle: onHideMakeupChange },
+    eureka: { hidden: hideEureka, toggle: onHideEurekaChange },
+    cloaks: { hidden: hideCloaks, toggle: onHideCloaksChange },
   }
 
   const shownCount = KINDS.filter((kind) => !state[kind.key].hidden).length

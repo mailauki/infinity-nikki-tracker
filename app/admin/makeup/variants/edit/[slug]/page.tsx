@@ -5,6 +5,7 @@ import { Metadata } from 'next'
 import { getMakeupSetsRaw } from '@/hooks/data/admin/makeup-sets'
 import { getMakeupCategories } from '@/hooks/data/makeup-categories'
 import { getMakeupVariantRaw } from '@/hooks/data/admin/makeup-variants'
+import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
@@ -45,11 +46,14 @@ async function EditMakeupVariant({ params }: { params: Promise<{ slug: string }>
 
   if (!variant) notFound()
 
+  const inheritedRelease = await getInheritedRelease('makeupVariant', slug)
+
   return (
     <EntityForm
       showUpdateNext
       showUpdateOnly
       action={editMakeupVariant.bind(null, variant.id)}
+      builderData={{ inheritedRelease }}
       formId="edit-makeup-variant"
       formKind="makeupVariant"
       initialValues={{
@@ -64,6 +68,8 @@ async function EditMakeupVariant({ params }: { params: Promise<{ slug: string }>
         slug: variant.slug,
         image_url: variant.image_url,
         image_url_alt: variant.alt_image_url,
+        released_at: variant.released_at ?? '',
+        version: variant.version ?? '',
       }}
       lookups={{ makeupSets, makeupCategories, seasons, seasonCategories, styles }}
       mode="edit"

@@ -36,6 +36,10 @@ interface TextareaField extends BaseField {
   defaultValue?: string
 }
 
+interface DateField extends BaseField {
+  type: 'date'
+}
+
 interface SlugField extends BaseField {
   type: 'slug'
   /**
@@ -119,6 +123,7 @@ interface CustomField extends BaseField {
 export type FieldConfig =
   | TextField
   | TextareaField
+  | DateField
   | SlugField
   | SelectField
   | MultiSelectField

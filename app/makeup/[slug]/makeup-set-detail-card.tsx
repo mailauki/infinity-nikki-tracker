@@ -4,8 +4,10 @@ import { Link as Anchor, Typography } from '@mui/material'
 import Link from 'next/link'
 import { MakeupSet } from '@/lib/types/makeup'
 import { linkedSetHref } from '@/lib/types/outfit'
+import { formatRelease, resolveRelease } from '@/hooks/release'
 import LazyImage from '@/components/lazy-image'
 import LinkedSetCard from '@/components/linked-set-card'
+import ReleaseLine from '@/components/release-line'
 import SetDetailCard from '@/components/set-detail-card'
 
 export interface MakeupSetDetailCardProps {
@@ -69,6 +71,18 @@ export default function MakeupSetDetailCard({
     </>
   )
 
+  // Only included when there's actually something to show — extraRows wraps
+  // every entry in its own row regardless of what it renders, so an
+  // unconditional ReleaseLine would leave a blank gap when no date/version data
+  // exists yet.
+  const release = resolveRelease(
+    selectedEvolutionSet,
+    makeupSet,
+    selectedEvolutionSet?.season,
+    season
+  )
+  const releaseRow = formatRelease(release) ? <ReleaseLine release={release} /> : null
+
   // The pairing often points at an outfit evolution rather than the base set, so
   // linkedSetHref() resolves it to the base route plus an `?evolution=` param.
   // The alt image is preferred, matching the detail pages' default image mode.
@@ -83,7 +97,7 @@ export default function MakeupSetDetailCard({
   return (
     <SetDetailCard
       description={description}
-      extraRows={[seasonRow, outfitRow].filter(Boolean)}
+      extraRows={[seasonRow, releaseRow, outfitRow].filter(Boolean)}
       isLoggedIn={isLoggedIn}
       media={media}
       obtained={obtained}

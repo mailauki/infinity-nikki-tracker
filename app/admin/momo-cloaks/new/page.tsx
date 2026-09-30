@@ -35,6 +35,7 @@ async function NewMomoCloak() {
 
   return (
     <AddMomoCloakForm
+      inherited={null}
       labels={labels}
       locations={locations}
       outfitSets={outfitSets}

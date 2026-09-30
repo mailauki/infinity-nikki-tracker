@@ -7,6 +7,7 @@ import { getStyles } from '@/hooks/data/styles'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getMakeupCategories } from '@/hooks/data/makeup-categories'
+import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { createClient } from '@/lib/supabase/server'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
@@ -42,6 +43,8 @@ async function EditMakeupSet({ params }: { params: Promise<{ slug: string }> }) 
 
   if (!makeupSet) notFound()
 
+  const inherited = await getInheritedRelease('makeupSet', slug)
+
   const supabase = await createClient()
   const { data: variantRows } = await supabase
     .from('makeup_variants')
@@ -50,6 +53,7 @@ async function EditMakeupSet({ params }: { params: Promise<{ slug: string }> }) 
 
   return (
     <EditMakeupSetForm
+      inherited={inherited}
       initial={makeupSet}
       initialVariants={variantRows ?? []}
       makeupCategories={makeupCategories}

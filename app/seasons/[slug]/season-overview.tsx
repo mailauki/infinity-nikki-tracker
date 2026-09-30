@@ -8,6 +8,8 @@ import { useMakeupData } from '@/components/makeup/makeup-context'
 import { SimpleGrid } from '@/components/card-grid'
 import { percent } from '@/hooks/count-obtained'
 import { useSeasonFilter } from './season-filter-context'
+import { useEurekaData } from '@/components/eureka/eureka-context'
+import { Release } from '@/hooks/release'
 import {
   applySeasonFilters,
   countEntryCards,
@@ -49,17 +51,20 @@ export default function SeasonOverview({
   standaloneVariants,
   makeupSets,
   seasonSlug,
+  seasonRelease,
   isLoggedIn,
 }: {
   seasonSets: OutfitSet[]
   standaloneVariants: OutfitVariant[]
   makeupSets: MakeupSet[]
   seasonSlug: string
+  seasonRelease: Release
   isLoggedIn: boolean
 }) {
   const { obtainedOutfit } = useOutfitData()
   const { obtainedMakeup } = useMakeupData()
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, filters } =
+  const { eurekaSets } = useEurekaData()
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, hideEureka, filters } =
     useSeasonFilter()
 
   // Same filtered output the grid renders (groupSeasonEntries + applySeasonFilters),
@@ -77,6 +82,9 @@ export default function SeasonOverview({
       hideBaseSets,
       obtainedOutfit,
       obtainedMakeup,
+      eurekaSets,
+      hideEureka,
+      seasonRelease,
     }),
     filters
   )

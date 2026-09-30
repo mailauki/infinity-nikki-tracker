@@ -198,6 +198,21 @@ export default function EntityForm({
           />
         )
 
+      case 'date':
+        return (
+          <TextField
+            disabled={disabled}
+            helperText={helperText}
+            label={label}
+            name={field.name}
+            required={required}
+            slotProps={{ inputLabel: { shrink: true } }}
+            type="date"
+            value={String(values[field.name] ?? '')}
+            onChange={(e) => setValue(field.name, e.target.value)}
+          />
+        )
+
       case 'textarea':
         return (
           <TextField

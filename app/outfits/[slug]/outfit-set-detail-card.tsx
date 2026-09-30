@@ -5,8 +5,10 @@ import { Collections } from '@mui/icons-material'
 import Link from 'next/link'
 import { CarouselImage, OutfitSet, linkedSetHref } from '@/lib/types/outfit'
 import { toTitle } from '@/lib/utils'
+import { formatRelease, resolveRelease } from '@/hooks/release'
 import LazyImage from '@/components/lazy-image'
 import LinkedSetCard from '@/components/linked-set-card'
+import ReleaseLine from '@/components/release-line'
 import SetDetailCard from '@/components/set-detail-card'
 import OutfitCarousel from './outfit-carousel'
 
@@ -47,10 +49,10 @@ export default function OutfitSetDetailCard({
   onToggleCarousel,
 }: OutfitSetDetailCardProps) {
   const { ability, rarity, label, label_2, style, description, season, seasonCategory } = outfitSet
+  const evolution = outfitSet.evolutions.find((evolution) => evolution.slug === selected) ?? null
   // Rendered as a suffix beside the base title, which is already the card heading —
   // so this uses the short `subtitle`, not the composed "{base}: {subtitle}" title.
-  const selectedEvolution =
-    outfitSet.evolutions.find((evolution) => evolution.slug === selected)?.subtitle || null
+  const selectedEvolution = evolution?.subtitle || null
 
   const media =
     showCarousel && hasCarousel ? (
@@ -98,6 +100,13 @@ export default function OutfitSetDetailCard({
     </>
   )
 
+  // Only included when there's actually something to show — extraRows wraps
+  // every entry in its own row regardless of what it renders, so an
+  // unconditional ReleaseLine would leave a blank gap when no date/version data
+  // exists yet.
+  const release = resolveRelease(evolution, outfitSet, evolution?.season, season)
+  const releaseRow = formatRelease(release) ? <ReleaseLine release={release} /> : null
+
   // Linked makeup set and Momo's Cloak, resolved from their `outfit_set` FKs
   // rather than guessed from the slug: only 39 of 292 outfits follow the
   // `<slug>_makeup` pattern and 1 of 292 follows `momos_cloak_<slug>`, so a
@@ -144,7 +153,7 @@ export default function OutfitSetDetailCard({
   return (
     <SetDetailCard
       description={description}
-      extraRows={[seasonRow, associatedRow, abilityRow].filter(Boolean)}
+      extraRows={[seasonRow, releaseRow, associatedRow, abilityRow].filter(Boolean)}
       isLoggedIn={isLoggedIn}
       labels={[label, label_2]}
       media={media}

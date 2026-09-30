@@ -23,7 +23,7 @@ const featurePages = [
     subtitle:
       'Track full outfit sets along with their evolutions and glow-ups, and mark what you own.',
     bullets: [
-      'Group by set or view variants individually, and filter to a single outfit set',
+      'Group by set or view pieces individually, and filter to a single outfit set',
       'Filter by evolution stage, or hide evolutions and glow-ups to focus on base sets',
       'Filter by one or more outfit categories and by rarity',
       'Adjust the display density and sort order, and when signed in filter to only obtained or only missing items',
@@ -40,11 +40,11 @@ const featurePages = [
   },
   {
     title: 'Makeup',
-    subtitle: 'Track makeup sets and their individual variants.',
+    subtitle: 'Track makeup sets and their individual pieces.',
     bullets: [
-      'Group by set or view variants individually',
+      'Group by set or view pieces individually',
       'Filter by makeup category, season, and season category',
-      'When signed in, filter to only obtained or only missing variants',
+      'When signed in, filter to only obtained or only missing pieces',
     ],
   },
   {
@@ -289,7 +289,7 @@ export default function AboutPage() {
         <SectionSubtitle>Planned features and improvements:</SectionSubtitle>
         <SectionList
           bullets={[
-            'Search — quickly find sets and variants by name',
+            'Search — quickly find sets and pieces by name',
             'Outfit Pieces — tracking support for pieces not part of any outfit sets',
             'Favorites — save your favorite sets and pieces',
             'Friends — follow friends to compare collection progress',

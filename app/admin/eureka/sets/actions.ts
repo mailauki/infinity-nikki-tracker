@@ -6,6 +6,7 @@ import { toSlugVariant } from '@/lib/utils'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
+import { readReleaseFields } from '@/lib/release-form'
 
 export async function addEurekaSet(_: unknown, formData: FormData) {
   const role = await getUserRole()
@@ -20,6 +21,7 @@ export async function addEurekaSet(_: unknown, formData: FormData) {
   const rarity = rarityRaw ? parseInt(rarityRaw, 10) : null
   const style = (formData.get('style') as string | null) || null
   const label = (formData.get('label') as string | null) || null
+  const seasons = (formData.get('seasons') as string | null) || null
   const selectedTrials = JSON.parse((formData.get('selected_trials') as string) || '[]') as string[]
   const colorSelect = JSON.parse((formData.get('color_select') as string) || '[]') as string[]
   const defaultColor = (formData.get('default_color') as string | null) || ''
@@ -27,9 +29,18 @@ export async function addEurekaSet(_: unknown, formData: FormData) {
     slug: string
   }[]
 
-  const { error } = await supabase
-    .from('eureka_sets')
-    .insert([{ title, slug, description, rarity, style, label }])
+  const { error } = await supabase.from('eureka_sets').insert([
+    {
+      title,
+      slug,
+      description,
+      rarity,
+      style,
+      label,
+      seasons,
+      ...readReleaseFields(formData),
+    },
+  ])
 
   if (error) return { error: error.message }
 
@@ -87,6 +98,7 @@ export async function editEurekaSet(
   const rarity = rarityRaw ? parseInt(rarityRaw, 10) : null
   const style = (formData.get('style') as string | null) || null
   const label = (formData.get('label') as string | null) || null
+  const seasons = (formData.get('seasons') as string | null) || null
   const selectedTrials = JSON.parse((formData.get('selected_trials') as string) || '[]') as string[]
   const colorSelect = JSON.parse((formData.get('color_select') as string) || '[]') as string[]
   const defaultColor = (formData.get('default_color') as string | null) || ''
@@ -104,6 +116,8 @@ export async function editEurekaSet(
       rarity,
       style,
       label,
+      seasons,
+      ...readReleaseFields(formData),
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)

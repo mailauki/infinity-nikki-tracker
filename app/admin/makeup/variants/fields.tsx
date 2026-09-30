@@ -2,6 +2,7 @@
 
 import { FieldConfig, FieldValues } from '@/lib/types/form-fields'
 import { deriveVariantSlug, STANDALONE_PIECES_SLUG } from '@/lib/variant-slug'
+import { formatRelease, type Release } from '@/hooks/release'
 
 // A standalone piece has no set, so its slug derives from title + category
 // (multiple pieces share a category and would otherwise collide). A set-owned
@@ -18,7 +19,10 @@ function deriveSlug(v: FieldValues): string {
   })
 }
 
-export function makeupVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
+export function makeupVariantFields(
+  mode: 'add' | 'edit',
+  inheritedRelease?: Release | null
+): FieldConfig[] {
   return [
     {
       type: 'select',
@@ -56,5 +60,14 @@ export function makeupVariantFields(mode: 'add' | 'edit'): FieldConfig[] {
     ...(mode === 'edit'
       ? [{ type: 'imagePair', name: 'image_url', table: 'makeup_variants' } as FieldConfig]
       : []),
+    {
+      type: 'date',
+      name: 'released_at',
+      label: 'Released',
+      helperText: inheritedRelease
+        ? `Blank inherits ${formatRelease(inheritedRelease) ?? 'from its set or season'}`
+        : 'Blank inherits from its set or season',
+    },
+    { type: 'text', name: 'version', label: 'Version' },
   ]
 }

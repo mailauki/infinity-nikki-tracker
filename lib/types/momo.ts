@@ -1,4 +1,4 @@
-import { EvolvableLinkedSet } from './outfit'
+import { EmbeddedSeason, EvolvableLinkedSet } from './outfit'
 import { Tables } from './supabase'
 
 // Every cloak's stored title carries this prefix (e.g. "Momo’s Cloak: Dream"),
@@ -22,7 +22,7 @@ export function withMomoCloakPrefix(title: string): string {
 // outfits need — the DB row is already the whole thing.
 export type MomoCloak = Tables<'momo_cloaks'> & {
   // Resolved lookup titles; the columns themselves hold slugs.
-  season?: { title: string } | null
+  season?: EmbeddedSeason | null
   seasonCategory?: { title: string } | null
   // The associated outfit, mirroring MakeupSet.outfitSet. Populated only by
   // getMomoCloak (the detail query) — the list query has no use for the join,
@@ -47,6 +47,8 @@ export type MomoCloakRaw = Pick<
   | 'image_url'
   | 'alt_image_url'
   | 'updated_at'
+  | 'released_at'
+  | 'version'
 >
 
 export type ObtainedMomoCloak = Pick<Tables<'obtained_momo_cloaks'>, 'id' | 'momo_cloak'>

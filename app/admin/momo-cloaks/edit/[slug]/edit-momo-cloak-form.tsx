@@ -14,10 +14,12 @@ import {
 import { MomoCloakRaw } from '@/lib/types/momo'
 import { Location, OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
+import { type Release } from '@/hooks/release'
 import SlugField from '@/components/forms/slug-field'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
+import ReleaseFields from '@/components/forms/release-fields'
 import { useFormConfig } from '@/app/admin/form-context'
 import { updateMomoCloak } from '../../actions'
 import { MENU_PROPS } from '@/lib/types/props'
@@ -32,6 +34,7 @@ export default function EditMomoCloakForm({
   seasonCategories,
   locations,
   outfitSets,
+  inherited = null,
 }: {
   initial: MomoCloakRaw
   styles: Style[]
@@ -40,6 +43,7 @@ export default function EditMomoCloakForm({
   seasonCategories: SeasonCategory[]
   locations: Location[]
   outfitSets: OutfitSetRaw[]
+  inherited?: Release | null
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
   const [title, setTitle] = useState(initial.title ?? '')
@@ -130,6 +134,12 @@ export default function EditMomoCloakForm({
             ))}
           </Select>
         </FormControl>
+
+        <ReleaseFields
+          defaultReleasedAt={initial.released_at}
+          defaultVersion={initial.version}
+          inherited={inherited}
+        />
 
         <TextField
           multiline

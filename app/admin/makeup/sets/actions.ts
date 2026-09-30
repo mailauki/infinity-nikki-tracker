@@ -8,6 +8,7 @@ import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { toSlugMakeup } from '@/lib/utils'
 import { makeupSetOrder, OutfitLineRow, resolveEvolutionOutfitSet } from '@/hooks/makeup'
+import { readReleaseFields } from '@/lib/release-form'
 
 // The admin dashboard is a Server Component behind a client Router Cache entry.
 // Without this, redirecting back after a save re-renders the cached copy and
@@ -128,6 +129,7 @@ function readForm(formData: FormData) {
     image_url: (formData.get('image_url') as string | null) || null,
     alt_image_url: (formData.get('alt_image_url') as string | null) || null,
     makeupCategories,
+    ...readReleaseFields(formData),
   }
 }
 
@@ -192,7 +194,7 @@ export async function addMakeupSet(_: unknown, formData: FormData) {
     const { error: variantError } = await supabase.from('makeup_variants').insert(variants)
     if (variantError) {
       await rollback()
-      return { error: 'Failed to save variants. The set was not created — please try again.' }
+      return { error: 'Failed to save pieces. The set was not created — please try again.' }
     }
   }
 

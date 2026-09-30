@@ -21,7 +21,9 @@ import { toSlug } from '@/lib/utils'
 import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
 import { Ability, EvolutionDraft, OutfitCategory, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
+import { type Release } from '@/hooks/release'
 import SlugField from '@/components/forms/slug-field'
+import ReleaseFields from '@/components/forms/release-fields'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
 import { DRESS_SLUGS, SEPARATES_SLUGS } from '@/components/filter/outfit-category-select'
@@ -39,6 +41,7 @@ export default function AddOutfitSetForm({
   seasons,
   seasonCategories,
   outfitCategories,
+  inherited = null,
 }: {
   styles: Style[]
   labels: Label[]
@@ -46,6 +49,7 @@ export default function AddOutfitSetForm({
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   outfitCategories: OutfitCategory[]
+  inherited?: Release | null
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')
@@ -62,6 +66,10 @@ export default function AddOutfitSetForm({
   const [categorySelect, setCategorySelect] = useState<string[]>([])
   const [handheldBaseOnly, setHandheldBaseOnly] = useState(false)
   const [slugEdited, setSlugEdited] = useState(false)
+  // ReleaseFields is uncontrolled (defaultValue) so its inputs can stay
+  // read-only until an admin types — bumping this key remounts it fresh on
+  // "add another" instead of carrying the last save's date/version over.
+  const [releaseKey, setReleaseKey] = useState(0)
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {
     const { value } = e.target
@@ -118,6 +126,7 @@ export default function AddOutfitSetForm({
       setCategorySelect([])
       setHandheldBaseOnly(false)
       setSlugEdited(false)
+      setReleaseKey((k) => k + 1)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -194,6 +203,8 @@ export default function AddOutfitSetForm({
             })}
           </Select>
         </FormControl>
+
+        <ReleaseFields key={releaseKey} inherited={inherited} />
 
         <TextField
           multiline

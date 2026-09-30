@@ -8,7 +8,9 @@ export const getTrials = cache(async () => {
 
   const { data: trials } = await supabase
     .from('trials')
-    .select('id, slug, title, image_url, realm, description, location, updated_at')
+    .select(
+      'id, slug, title, image_url, realm, description, location, updated_at, released_at, version'
+    )
     .order('id', { ascending: true })
 
   return (trials ?? []) as Trial[]
@@ -19,7 +21,9 @@ export const getTrial = cache(async (slug: string) => {
 
   const { data: trial } = await supabase
     .from('trials')
-    .select('id, slug, title, image_url, realm, description, location, updated_at')
+    .select(
+      'id, slug, title, image_url, realm, description, location, updated_at, released_at, version'
+    )
     .eq('slug', slug)
     .maybeSingle()
 

@@ -17,6 +17,9 @@ export const getEurekaSetsRaw = cache(async () => {
 			style,
 			label,
 			updated_at,
+			released_at,
+			version,
+			seasons,
 			eureka_set_trials ( trial )
 			`
     )
@@ -40,6 +43,9 @@ export const getEurekaSetRaw = cache(async (slug: string) => {
 			style,
 			label,
 			updated_at,
+			released_at,
+			version,
+			seasons,
 			eureka_set_trials ( trial )
 			`
     )

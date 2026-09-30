@@ -7,6 +7,8 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getEurekaColors } from '@/hooks/data/eureka-colors'
 import { getEurekaCategories } from '@/hooks/data/eureka-categories'
+import { getSeasons } from '@/hooks/data/seasons'
+import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { pageTitle } from '@/lib/page-titles'
@@ -33,19 +35,21 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
   const { data: eurekaSet } = await supabase
     .from('eureka_sets')
     .select(
-      'id, slug, title, description, rarity, style, label, updated_at, eureka_set_trials ( trial )'
+      'id, slug, title, description, rarity, style, label, updated_at, released_at, version, seasons, eureka_set_trials ( trial )'
     )
     .eq('slug', slug)
     .single()
 
   if (!eurekaSet || !eurekaSet.slug) notFound()
 
-  const [trials, styles, labels, colors, categories] = await Promise.all([
+  const [trials, styles, labels, colors, categories, seasons, inherited] = await Promise.all([
     getTrials(),
     getStyles(),
     getLabels(),
     getEurekaColors(),
     getEurekaCategories(),
+    getSeasons(),
+    getInheritedRelease('eurekaSet', eurekaSet.slug),
   ])
 
   const { data: variantRows, error: variantRowsError } = await supabase
@@ -63,10 +67,12 @@ async function EditEurekaSet({ params }: { params: Promise<{ slug: string }> }) 
       categories={categories ?? []}
       colors={colors ?? []}
       eurekaSet={eurekaSet}
+      inherited={inherited}
       initialColors={initialColors}
       initialDefaultColor={initialDefaultColor}
       initialVariants={initialVariants}
       labels={labels ?? []}
+      seasons={seasons}
       styles={styles ?? []}
       trials={trials ?? []}
     />

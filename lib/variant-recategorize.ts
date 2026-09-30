@@ -48,7 +48,7 @@ export async function recategorizeVariant(
   if (clash) {
     const name = clash.title ? ` ("${clash.title}")` : ''
     return {
-      error: `"${newSlug}" already exists${name}. Resolve that variant before recategorizing this one.`,
+      error: `"${newSlug}" already exists${name}. Resolve that piece before recategorizing this one.`,
     }
   }
 

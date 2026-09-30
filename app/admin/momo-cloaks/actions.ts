@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
+import { readReleaseFields } from '@/lib/release-form'
 
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null
@@ -21,6 +22,7 @@ function readForm(formData: FormData) {
     outfit_set: (formData.get('outfit_set') as string | null) || null,
     image_url: (formData.get('image_url') as string | null) || null,
     alt_image_url: (formData.get('alt_image_url') as string | null) || null,
+    ...readReleaseFields(formData),
   }
 }
 

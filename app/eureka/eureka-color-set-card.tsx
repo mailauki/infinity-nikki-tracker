@@ -1,5 +1,6 @@
 'use client'
 
+import { variantsToToggle } from '@/hooks/eureka'
 import { countObtained } from '@/hooks/count-obtained'
 import { EurekaColor, EurekaSet } from '@/lib/types/eureka'
 import { useEurekaData } from '@/components/eureka/eureka-context'
@@ -21,14 +22,8 @@ export default function EurekaColorSetCard({
   const { obtained, total } = countObtained(variants)
 
   function handleToggle() {
-    onBatchToggleObtained(
-      variants.map((variant) => ({
-        eureka_set: variant.eureka_set!,
-        category: variant.category!,
-        color: variant.color!,
-      })),
-      obtained !== total
-    )
+    const toggle = variantsToToggle(variants)
+    onBatchToggleObtained(toggle.variants, toggle.target)
   }
 
   // `in` is pinned true and no `animateExit` is passed: this card has no

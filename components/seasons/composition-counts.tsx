@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from '@mui/material'
-import { Circle, Workspaces } from '@mui/icons-material'
+import { AutoAwesome, Circle, Workspaces } from '@mui/icons-material'
 
 // Below this container width there is only room for the icon form. 600 is the
 // same sm threshold the grid presets use, and it sits well clear of both call
@@ -15,7 +15,7 @@ const LABEL_MIN_WIDTH = 600
 // queries inside Count below.
 export const COMPOSITION_CONTAINER = { containerType: 'inline-size' as const }
 
-// How many outfits and pieces a season category holds, optionally as
+// How many outfits, pieces and eureka sets a season category holds, optionally as
 // collected/total. Shared by the season page's category headers and its contents
 // sidebar, which is why it adapts rather than taking a variant prop. (The
 // seasons index deliberately does NOT use it: its rows report one card total
@@ -94,15 +94,19 @@ export default function CompositionCounts({
   pieces,
   obtainedOutfits,
   obtainedPieces,
+  eureka = 0,
+  obtainedEureka,
 }: {
   outfits: number
   pieces: number
+  eureka?: number
   // Omit both to show plain totals rather than collected/total — the logged-out
   // and index cases, which have no collection to report against.
   obtainedOutfits?: number
   obtainedPieces?: number
+  obtainedEureka?: number
 }) {
-  if (outfits === 0 && pieces === 0) return null
+  if (outfits === 0 && pieces === 0 && eureka === 0) return null
 
   return (
     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
@@ -122,6 +126,15 @@ export default function CompositionCounts({
           plural="pieces"
           singular="piece"
           value={pieces}
+        />
+      )}
+      {eureka > 0 && (
+        <Count
+          icon={<AutoAwesome color="action" fontSize="inherit" />}
+          obtained={obtainedEureka}
+          plural="eureka"
+          singular="eureka"
+          value={eureka}
         />
       )}
     </Stack>

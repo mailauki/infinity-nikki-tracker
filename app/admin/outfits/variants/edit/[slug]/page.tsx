@@ -5,6 +5,7 @@ import { Metadata } from 'next'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getOutfitVariantRaw, getBaseVariantTitle } from '@/hooks/data/admin/outfit-variants'
+import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
@@ -48,6 +49,8 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
 
   if (!variant) notFound()
 
+  const inheritedRelease = await getInheritedRelease('outfitVariant', slug)
+
   // For a glow-up variant with no stored title, pre-fill the Title field with
   // "{base variant title}: {glow-up set title}". Persisted only when the admin
   // saves — nothing is written here.
@@ -70,6 +73,7 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
       showUpdateNext
       showUpdateOnly
       action={editOutfitVariant.bind(null, variant.id)}
+      builderData={{ inheritedRelease }}
       formId="edit-outfit-variant"
       formKind="outfitVariant"
       initialValues={{
@@ -86,6 +90,8 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
         slug: variant.slug,
         image_url: variant.image_url,
         image_url_alt: variant.alt_image_url,
+        released_at: variant.released_at ?? '',
+        version: variant.version ?? '',
       }}
       lookups={{ outfitSets, outfitCategories, seasons, seasonCategories, styles, labels }}
       mode="edit"

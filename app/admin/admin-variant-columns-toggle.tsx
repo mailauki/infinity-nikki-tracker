@@ -20,9 +20,9 @@ export default function AdminVariantColumnsToggle() {
   if (view !== 'table' || !hasVariantColumns) return null
 
   return (
-    <Tooltip title={showVariantColumns ? 'Hide variant images' : 'Show variant images'}>
+    <Tooltip title={showVariantColumns ? 'Hide piece images' : 'Show piece images'}>
       <ToggleButton
-        aria-label="toggle variant image columns"
+        aria-label="toggle piece image columns"
         selected={showVariantColumns}
         size="small"
         sx={{ height: 'fit-content' }}

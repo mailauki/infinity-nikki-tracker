@@ -7,8 +7,8 @@ import { getOutfitVariantsBySet } from './outfit-variants'
 // "order" is a reserved word in Postgres — always quoted in select strings.
 const EVOLUTION_SELECT = `
   id, slug, title, subtitle, "order", base_set, handheld_base_only, description, image_url, alt_image_url,
-  style, label, label_2, ability, seasons, season_category, rarity, created_at, updated_at,
-  season:seasons!outfit_sets_seasons_fkey ( title ),
+  style, label, label_2, ability, seasons, season_category, rarity, created_at, updated_at, released_at, version,
+  season:seasons!outfit_sets_seasons_fkey ( title, released_at, version ),
   seasonCategory:season_categories!outfit_sets_season_category_fkey ( title ),
   outfit_set_carousel_images ( id, image_url, sort_order ),
   momoCloak:momo_cloaks!momo_cloaks_outfit_set_fkey ( slug, title, image_url, alt_image_url ),

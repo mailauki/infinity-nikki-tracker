@@ -16,7 +16,9 @@ import { toSlug } from '@/lib/utils'
 import { MOMO_CLOAK_TITLE_PREFIX, withMomoCloakPrefix } from '@/lib/types/momo'
 import { Location, OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Label, Style } from '@/lib/types/eureka'
+import { type Release } from '@/hooks/release'
 import SlugField from '@/components/forms/slug-field'
+import ReleaseFields from '@/components/forms/release-fields'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
 import { useFormConfig } from '@/app/admin/form-context'
@@ -32,6 +34,7 @@ export default function AddMomoCloakForm({
   seasonCategories,
   locations,
   outfitSets,
+  inherited = null,
 }: {
   styles: Style[]
   labels: Label[]
@@ -39,6 +42,7 @@ export default function AddMomoCloakForm({
   seasonCategories: SeasonCategory[]
   locations: Location[]
   outfitSets: OutfitSetRaw[]
+  inherited?: Release | null
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')
@@ -52,6 +56,10 @@ export default function AddMomoCloakForm({
   const [location, setLocation] = useState('')
   const [outfitSet, setOutfitSet] = useState<string | null>(null)
   const [slugEdited, setSlugEdited] = useState(false)
+  // ReleaseFields is uncontrolled (defaultValue) so its inputs can stay
+  // read-only until an admin types — bumping this key remounts it fresh on
+  // "add another" instead of carrying the last save's date/version over.
+  const [releaseKey, setReleaseKey] = useState(0)
 
   const selectedOutfitSet = outfitSets.find((s) => s.slug === outfitSet) ?? null
 
@@ -96,6 +104,7 @@ export default function AddMomoCloakForm({
       setLocation('')
       setOutfitSet(null)
       setSlugEdited(false)
+      setReleaseKey((k) => k + 1)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -157,6 +166,8 @@ export default function AddMomoCloakForm({
             ))}
           </Select>
         </FormControl>
+
+        <ReleaseFields key={releaseKey} inherited={inherited} />
 
         <TextField
           multiline

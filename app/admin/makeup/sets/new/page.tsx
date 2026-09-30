@@ -37,6 +37,7 @@ async function NewMakeupSet() {
 
   return (
     <AddMakeupSetForm
+      inherited={null}
       makeupCategories={makeupCategories}
       makeupSets={makeupSets}
       outfitSets={outfitSets}

@@ -38,6 +38,7 @@ async function NewOutfitSet() {
   return (
     <AddOutfitSetForm
       abilities={abilities}
+      inherited={null}
       labels={labels}
       outfitCategories={outfitCategories}
       seasonCategories={seasonCategories}

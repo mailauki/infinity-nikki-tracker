@@ -9,6 +9,8 @@ const SEASON_KEYS = [
   'season_hide_pieces',
   'season_hide_makeup',
   'season_hide_base_sets',
+  'season_hide_eureka',
+  'season_hide_cloaks',
   'season_density',
   'season_obtained_filter',
   'season_rarity_filter',
@@ -25,10 +27,12 @@ describe('season preference defaults', () => {
     expect(DEFAULT_PREFERENCES.season_hide_glowups).toBe(true)
   })
 
-  it('shows base sets, pieces and makeup by default', () => {
+  it('shows base sets, pieces, makeup, eureka and cloaks by default', () => {
     expect(DEFAULT_PREFERENCES.season_hide_base_sets).toBe(false)
     expect(DEFAULT_PREFERENCES.season_hide_pieces).toBe(false)
     expect(DEFAULT_PREFERENCES.season_hide_makeup).toBe(false)
+    expect(DEFAULT_PREFERENCES.season_hide_eureka).toBe(false)
+    expect(DEFAULT_PREFERENCES.season_hide_cloaks).toBe(false)
   })
 
   it('defaults density to standard and the filter axes to null', () => {

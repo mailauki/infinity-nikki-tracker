@@ -45,7 +45,7 @@ export default function MakeupVariantList({
       )}
       rows={rows}
       rowsPerPage={rowsPerPage}
-      title="Makeup Variant"
+      title="Makeup Piece"
       onPageChange={onPageChange}
       onRowsPerPageChange={onRowsPerPageChange}
     />

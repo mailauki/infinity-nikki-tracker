@@ -12,6 +12,7 @@ import {
 
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useMakeupData } from '@/components/makeup/makeup-context'
+import { useEurekaData } from '@/components/eureka/eureka-context'
 import { useOutfitImageMode } from '@/components/outfits/outfit-image-mode-context'
 import { useSortOrder } from '@/components/sort-context'
 import { useSeasonFilter } from './[slug]/season-filter-context'
@@ -26,6 +27,7 @@ import {
   SeasonEntry,
   STANDALONE_SLUG,
 } from '@/app/seasons/[slug]/season-entries'
+import { compareRelease, orderToDir, resolveRelease } from '@/hooks/release'
 import SeasonCard from './season-card'
 
 // Mirrors the row skeleton in ./loading.tsx so a card's rows keep the same shape
@@ -74,35 +76,34 @@ export default function SeasonsContent({
     isLoading: isOutfitLoading,
     isError: isOutfitError,
   } = useOutfitData()
-  const {
-    obtainedMakeup,
-    isLoading: isMakeupLoading,
-    isError: isMakeupError,
-  } = useMakeupData()
+  const { obtainedMakeup, isLoading: isMakeupLoading, isError: isMakeupError } = useMakeupData()
+  const { eurekaSets, isLoading: isEurekaLoading, isError: isEurekaError } = useEurekaData()
 
-  // A card's rows mix outfit and makeup data, and each arrives from its own
+  // A card's rows mix outfit, makeup and eureka data, and each arrives from its own
   // provider fetch. Gating on just one of them let a season whose makeup
   // resolved first paint makeup-only counts, then rewrite every number when the
   // other landed — the card visibly counted up twice. Holding the skeleton until
-  // BOTH have settled costs the faster half a moment of skeleton and buys a card
+  // every provider has settled costs the faster half a moment of skeleton and buys a card
   // that only ever prints its final numbers.
   //
   // obtainedMakeup rides the makeup fetch too, so this also covers the logged-in
   // case where totals were right but every row briefly read 0 obtained.
-  const isLoading = isOutfitLoading || isMakeupLoading
-  const isError = isOutfitError || isMakeupError
+  const isLoading = isOutfitLoading || isMakeupLoading || isEurekaLoading
+  const isError = isOutfitError || isMakeupError || isEurekaError
   const { mode } = useOutfitImageMode()
   const { sortOrder } = useSortOrder()
   // The index reads the very same visibility toggles the season pages do — they
   // live on one provider spanning the whole /seasons subtree. Without this the
   // index expanded every evolution and glow-up (the toggles default to HIDDEN),
   // so a card advertised a denominator the page it opened never showed.
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets } = useSeasonFilter()
+  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, hideEureka } =
+    useSeasonFilter()
 
-  // The sort button orders seasons by their index (id): 'new' = highest id
-  // first, 'old' = lowest first.
-  const sortedSeasons = [...seasons].sort((a, b) =>
-    sortOrder === 'new' ? b.id - a.id : a.id - b.id
+  // Seasons order by their release (id as the fallback while dates are blank).
+  const sortedSeasons = [...seasons].sort(
+    (a, b) =>
+      compareRelease(resolveRelease(a), resolveRelease(b), orderToDir(sortOrder)) ||
+      (sortOrder === 'new' ? b.id - a.id : a.id - b.id)
   )
 
   const categoryTitle = (slug: string) =>
@@ -168,14 +169,13 @@ export default function SeasonsContent({
       hideBaseSets,
       obtainedOutfit,
       obtainedMakeup,
+      eurekaSets,
+      hideEureka,
     })
 
     // Keyed by group slug where a category has one, by the category slug
     // otherwise — so grouped categories merge and ungrouped ones stay distinct.
-    const rows = new Map<
-      string,
-      { title: string; entries: SeasonEntry[]; grouped: boolean }
-    >()
+    const rows = new Map<string, { title: string; entries: SeasonEntry[]; grouped: boolean }>()
 
     for (const [categorySlug, entries] of categories) {
       // OTHER_CATEGORY is a synthetic bucket for rows with no category at all,

@@ -19,7 +19,9 @@ import { OutfitSetRaw, Season, SeasonCategory } from '@/lib/types/outfit'
 import { Style } from '@/lib/types/eureka'
 import { MakeupCategory, MakeupSetRaw } from '@/lib/types/makeup'
 import { MAKEUP_EVOLUTION_ORDER, resolveEvolutionOutfitSet } from '@/hooks/makeup'
+import { type Release } from '@/hooks/release'
 import SlugField from '@/components/forms/slug-field'
+import ReleaseFields from '@/components/forms/release-fields'
 import RarityField from '@/components/forms/rarity-field'
 import ToggleField from '@/components/forms/toggle-field'
 import { useFormConfig } from '@/app/admin/form-context'
@@ -35,6 +37,7 @@ export default function AddMakeupSetForm({
   seasons,
   seasonCategories,
   makeupCategories,
+  inherited = null,
 }: {
   makeupSets: MakeupSetRaw[]
   outfitSets: OutfitSetRaw[]
@@ -42,6 +45,7 @@ export default function AddMakeupSetForm({
   seasons: Season[]
   seasonCategories: SeasonCategory[]
   makeupCategories: MakeupCategory[]
+  inherited?: Release | null
 }) {
   const { setFormConfig, clearFormConfig } = useFormConfig()
   const [title, setTitle] = useState('')
@@ -54,6 +58,10 @@ export default function AddMakeupSetForm({
   const [outfitSet, setOutfitSet] = useState<string | null>(null)
   const [baseSet, setBaseSet] = useState<string | null>(null)
   const [slugEdited, setSlugEdited] = useState(false)
+  // ReleaseFields is uncontrolled (defaultValue) so its inputs can stay
+  // read-only until an admin types — bumping this key remounts it fresh on
+  // "add another" instead of carrying the last save's date/version over.
+  const [releaseKey, setReleaseKey] = useState(0)
 
   // Every makeup set always has all of the categories — there is nothing to
   // choose, so the categories are derived rather than held in state. Only
@@ -108,6 +116,7 @@ export default function AddMakeupSetForm({
       setOutfitSet(null)
       setBaseSet(null)
       setSlugEdited(false)
+      setReleaseKey((k) => k + 1)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -141,6 +150,8 @@ export default function AddMakeupSetForm({
           value={style}
           onChange={setStyle}
         />
+
+        <ReleaseFields key={releaseKey} inherited={inherited} />
 
         <TextField
           multiline

@@ -80,7 +80,7 @@ function MakeupRingsChart({
       outerRadius: 86,
     },
     {
-      label: 'Variants',
+      label: 'Pieces',
       obtained: variantsObtained,
       total: variantsTotal,
       color: ringColors[2],

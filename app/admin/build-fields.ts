@@ -2,6 +2,7 @@
 
 import { FieldConfig } from '@/lib/types/form-fields'
 import { EurekaVariantRaw } from '@/lib/types/eureka'
+import { Release } from '@/hooks/release'
 import { trialFields } from './eureka/trials/fields'
 import { eurekaVariantFields } from './eureka/variants/fields'
 import { outfitVariantFields } from './outfits/variants/fields'
@@ -36,6 +37,8 @@ export interface BuilderData {
   eurekaVariants?: EurekaVariantRaw[]
   /** eurekaVariant edit: the row being edited, excluded from the default check. */
   currentId?: number
+  /** outfitVariant/makeupVariant: the resolved release its blank override falls back to. */
+  inheritedRelease?: Release | null
 }
 
 export function buildFields(
@@ -49,7 +52,7 @@ export function buildFields(
     case 'eurekaVariant':
       return eurekaVariantFields(mode, data.eurekaVariants ?? [], data.currentId)
     case 'outfitVariant':
-      return outfitVariantFields(mode)
+      return outfitVariantFields(mode, data.inheritedRelease)
     case 'ability':
       return abilityFields(mode)
     case 'seasonCategory':
@@ -59,7 +62,7 @@ export function buildFields(
     case 'season':
       return seasonFields(mode)
     case 'makeupVariant':
-      return makeupVariantFields(mode)
+      return makeupVariantFields(mode, data.inheritedRelease)
     case 'location':
       return locationFields(mode)
   }

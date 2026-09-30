@@ -194,7 +194,7 @@ export const navLinksData: {
         main: '/outfits',
       },
       variants: {
-        title: 'Outfit Variants',
+        title: 'Outfit Pieces',
         list: '/admin/outfits/variants',
         add: '/admin/outfits/variants/new',
         edit: '/admin/outfits/variants/edit',
@@ -224,7 +224,7 @@ export const navLinksData: {
         main: '/makeup',
       },
       variants: {
-        title: 'Makeup Variants',
+        title: 'Makeup Pieces',
         list: '/admin/makeup/variants',
         add: '/admin/makeup/variants/new',
         edit: '/admin/makeup/variants/edit',

@@ -11,6 +11,8 @@ export type SeasonRaw = Pick<
   | 'alt_image_url'
   | 'description'
   | 'use_season_groups'
+  | 'released_at'
+  | 'version'
 >
 
 export async function getSeasonsRaw(): Promise<SeasonRaw[]> {
@@ -18,7 +20,9 @@ export async function getSeasonsRaw(): Promise<SeasonRaw[]> {
 
   const { data } = await supabase
     .from('seasons')
-    .select('id, slug, title, location, image_url, alt_image_url, description, use_season_groups')
+    .select(
+      'id, slug, title, location, image_url, alt_image_url, description, use_season_groups, released_at, version'
+    )
     .order('id', { ascending: true })
 
   return (data ?? []) as SeasonRaw[]
@@ -29,7 +33,9 @@ export async function getSeasonRaw(slug: string): Promise<SeasonRaw | null> {
 
   const { data } = await supabase
     .from('seasons')
-    .select('id, slug, title, location, image_url, alt_image_url, description, use_season_groups')
+    .select(
+      'id, slug, title, location, image_url, alt_image_url, description, use_season_groups, released_at, version'
+    )
     .eq('slug', slug)
     .maybeSingle()
 
