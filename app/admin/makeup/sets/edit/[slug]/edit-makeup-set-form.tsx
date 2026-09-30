@@ -367,7 +367,7 @@ export default function EditMakeupSetForm({
             this page's snapshot — so this set edits set-level fields only. */}
         {!isStandalone && variantRows.length > 0 && (
           <Stack spacing={1}>
-            <Typography variant="title">Variant Images</Typography>
+            <Typography variant="title">Piece Images</Typography>
             <Box
               sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}
             >

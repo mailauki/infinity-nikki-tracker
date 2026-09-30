@@ -183,3 +183,19 @@ describe('date sort on the season page', () => {
     ])
   })
 })
+
+describe('progress sort with eureka sets', () => {
+  it('uses the real variant ratio, not the all-or-nothing unit', () => {
+    const flags = (n: number) => Array.from({ length: 21 }, (_, i) => i < n)
+    const e = (slug: string, n: number): SeasonEntry => ({
+      kind: 'eureka',
+      key: slug,
+      set: eureka(slug, flags(n)),
+    }) as unknown as SeasonEntry
+    const groups: [string, SeasonEntry[]][] = [
+      ['g', [e('zero', 0), e('almost', 20), e('full', 21)]],
+    ]
+    const out = sortSeasonEntries(groups, 'progress', 'desc')[0][1].map((x) => x.key)
+    expect(out).toEqual(['full', 'almost', 'zero'])
+  })
+})

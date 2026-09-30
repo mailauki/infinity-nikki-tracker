@@ -1,5 +1,6 @@
 'use client'
 
+import { variantsToToggle } from '@/hooks/eureka'
 import { Box, LinearProgress, Stack, Typography } from '@mui/material'
 import CompositionCounts, { COMPOSITION_CONTAINER } from '@/components/seasons/composition-counts'
 import { MakeupSet } from '@/lib/types/makeup'
@@ -230,16 +231,10 @@ export default function SeasonOutfitList({
           showAlt={false}
           title={entry.set.title}
           total={variants.length}
-          onToggle={() =>
-            onBatchToggleObtained(
-              variants.map((v) => ({
-                eureka_set: v.eureka_set!,
-                category: v.category!,
-                color: v.color!,
-              })),
-              obtained !== variants.length
-            )
-          }
+          onToggle={() => {
+            const toggle = variantsToToggle(variants)
+            onBatchToggleObtained(toggle.variants, toggle.target)
+          }}
         />
       )
     }

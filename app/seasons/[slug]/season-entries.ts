@@ -195,6 +195,12 @@ export function sortSeasonEntries(
           : (entry.evolution ?? entry.set)
 
   const progress = (entry: SeasonEntry) => {
+    // A eureka set counts as one unit elsewhere, but sorts on its real ratio so
+    // 20/21 ranks above 0/21.
+    if (entry.kind === 'eureka') {
+      const vs = entry.set.eureka_variants
+      return vs.length === 0 ? 0 : vs.filter((v) => v.obtained).length / vs.length
+    }
     const variants = entryVariants(entry)
     if (variants.length === 0) return 0
     return variants.filter((v) => v.obtained).length / variants.length

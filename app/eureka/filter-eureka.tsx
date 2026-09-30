@@ -12,6 +12,7 @@ import EurekaVariantCard from './eureka-variant-card'
 import ProgressChip from '@/components/progress-chip'
 import LoginAlert from '@/components/login-alert'
 import { countObtained } from '@/hooks/count-obtained'
+import { variantsToToggle } from '@/hooks/eureka'
 import { compareRelease, orderToDir } from '@/hooks/release'
 
 function GroupHeaderSkeleton() {
@@ -171,14 +172,8 @@ export default function FilterEureka() {
             // Batch-toggle the whole set: when fully obtained, clear it; otherwise
             // mark the remaining (not-yet-obtained) variants obtained.
             const handleToggle = () => {
-              const toToggle = groupVariants
-                .filter((v) => !!v.obtained === allObtained)
-                .map((v) => ({
-                  eureka_set: v.eureka_set!,
-                  category: v.category!,
-                  color: v.color!,
-                }))
-              onBatchToggleObtained(toToggle, !allObtained)
+              const { variants, target } = variantsToToggle(groupVariants)
+              onBatchToggleObtained(variants, target)
             }
             return (
               <React.Fragment key={set.slug}>

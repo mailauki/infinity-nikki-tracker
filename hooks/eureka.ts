@@ -135,3 +135,19 @@ export function updateEurekaVariants({
 
   return eurekaWithObtained
 }
+
+// `toggle_obtained` is a pure flip, so a batch toggle must send only the variants
+// that differ from the target: all obtained -> clear everything; otherwise mark
+// just the missing ones (sending an owned one would delete it).
+export function variantsToToggle(variants: EurekaVariant[]): {
+  variants: { eureka_set: string; category: string; color: string }[]
+  target: boolean
+} {
+  const allObtained = variants.length > 0 && variants.every((v) => v.obtained)
+  return {
+    variants: variants
+      .filter((v) => !!v.obtained === allObtained)
+      .map((v) => ({ eureka_set: v.eureka_set!, category: v.category!, color: v.color! })),
+    target: !allObtained,
+  }
+}
