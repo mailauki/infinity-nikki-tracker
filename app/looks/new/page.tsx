@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 import { Suspense } from 'react'
 import { Skeleton, Stack } from '@mui/material'
 import { getUserID } from '@/hooks/user'
-import { createClient } from '@/lib/supabase/server'
+import { getIsPremium } from '@/hooks/data/user'
 import { getEurekaSets } from '@/hooks/data/eureka-sets'
 import { getOutfitSets } from '@/hooks/data/outfit-sets'
 import { getEurekaCategories } from '@/hooks/data/eureka-categories'
@@ -29,18 +29,16 @@ async function NewLookContent() {
   const user_id = await getUserID()
   if (!user_id) redirect('/login')
 
-  const supabase = await createClient()
-  const [looks, { data: profile }, eurekaSets, outfitSets, eurekaCategories, outfitCategories] =
+  const [looks, isPremium, eurekaSets, outfitSets, eurekaCategories, outfitCategories] =
     await Promise.all([
       getCustomLooks(user_id),
-      supabase.from('profiles').select('is_premium').eq('id', user_id).single(),
+      getIsPremium(user_id),
       getEurekaSets(),
       getOutfitSets(),
       getEurekaCategories(),
       getOutfitCategories(),
     ])
 
-  const isPremium = profile?.is_premium ?? false
   if (!isPremium && looks.length >= FREE_LOOKS_LIMIT) redirect('/looks')
 
   const eurekaVariants = flattenEurekaVariants(eurekaSets ?? [], eurekaCategories)

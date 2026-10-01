@@ -38,15 +38,14 @@ export function NavUser() {
     const supabase = createClient()
 
     async function loadProfile(userId: string) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('avatar_url, role')
-        .eq('id', userId)
-        .single()
+      const [{ data: profile }, { data: isAdmin }] = await Promise.all([
+        supabase.from('profiles').select('avatar_url').eq('id', userId).single(),
+        supabase.rpc('is_admin'),
+      ])
 
       if (mounted && profile) {
         setAvatarUrl(profile.avatar_url)
-        setIsAdmin(profile.role === 'admin')
+        setIsAdmin(!!isAdmin)
       }
     }
 

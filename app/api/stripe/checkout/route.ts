@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
+import { getIsPremium } from '@/hooks/data/user'
 
 const stripe = process.env.STRIPE_SECRET_KEY
   ? new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2026-05-27.dahlia' })
@@ -18,13 +19,7 @@ export async function POST() {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_premium')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.is_premium) {
+  if (await getIsPremium(user.id)) {
     return NextResponse.json({ error: 'Already a supporter' }, { status: 400 })
   }
 

@@ -70,7 +70,7 @@ Admin list pages use **`@mui/x-data-grid` (v9)** with inline row editing, not a 
 
 ### Role-Based Access
 
-`getUserRole()` reads `profiles.role` server-side. `app/admin/layout.tsx` redirects non-admins. The `isAdmin` boolean prop flows down to nav (filters `adminOnly` links) and the data providers (`isAdmin` enables admin-only UI).
+`getUserRole()` calls the `is_admin()` RPC server-side (the nav does the same client-side). Admin status is a row in `admins` — no policies, so only the service role or SQL editor can read or grant it (`insert into public.admins (user_id) values (...)`); every admin RLS policy goes through `is_admin()` too. Don't put a role column back on `profiles`: its UPDATE policy lets users write their own columns. `app/admin/layout.tsx` redirects non-admins. The `isAdmin` boolean prop flows down to nav (filters `adminOnly` links) and the data providers (`isAdmin` enables admin-only UI).
 
 ### Supabase Clients
 
@@ -86,6 +86,7 @@ Column-level schema lives in `lib/types/supabase.ts` (generated — the source o
 - `eureka_sets` — CHECK rarity BETWEEN 2 AND 5
 - `eureka_categories` / `eureka_colors` / `obtained_eureka` — renamed from `categories` / `colors` / `obtained`; older migrations and code comments may use the old names
 - `user_preferences` — exactly one row per user_id; `admin_preferences` is separate (admin view mode)
+- `user_premium` — a row's existence IS premium (no boolean); read via `getIsPremium()`. Public read, NO user write policies — only the service-role Stripe webhook writes it. Don't move it back onto `profiles`, whose update policy lets users write their own columns
 - `styles`, `labels` — UNIQUE on title; RLS public read / admin write
 - RPCs (not in the generated table types): `is_admin`, `toggle_obtained`, `toggle_obtained_outfit`
 
