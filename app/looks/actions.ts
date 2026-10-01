@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { getUserID } from '@/hooks/user'
 import { getCustomLooks } from '@/hooks/data/custom-looks'
+import { getIsPremium } from '@/hooks/data/user'
 import { FREE_LOOKS_LIMIT } from '@/lib/types/looks'
 import { toSlug } from '@/lib/utils'
 import type { SupabaseClient } from '@supabase/supabase-js'
@@ -39,14 +40,9 @@ export async function createLook(data: {
 
   const supabase = await createClient()
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('is_premium')
-    .eq('id', user_id)
-    .single()
-
+  const isPremium = await getIsPremium(user_id)
   const existing = await getCustomLooks(user_id)
-  if (!profile?.is_premium && existing.length >= FREE_LOOKS_LIMIT) {
+  if (!isPremium && existing.length >= FREE_LOOKS_LIMIT) {
     return { error: 'free_limit_reached' }
   }
 

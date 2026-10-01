@@ -26,9 +26,19 @@ export const getProfile = cache(async (user_id: UUID | string) => {
     status,
   } = await supabase
     .from('profiles')
-    .select(`display_name, username, avatar_url, is_premium, premium_purchased_at`)
+    .select(`display_name, username, avatar_url`)
     .eq('id', user_id)
     .single()
 
   return { profile, error, status }
+})
+
+export const getIsPremium = cache(async (user_id: UUID | string) => {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('user_premium')
+    .select('user_id')
+    .eq('user_id', user_id)
+    .maybeSingle()
+  return !!data
 })

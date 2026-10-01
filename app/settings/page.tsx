@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import SettingsTabs from '@/app/settings/settings-tabs'
 import { getUserID, getUserRole } from '@/hooks/user'
 import { createClient } from '@/lib/supabase/server'
+import { getIsPremium } from '@/hooks/data/user'
 import PageShell from '@/components/page-shell'
 import { pageTitle } from '@/lib/page-titles'
 
@@ -26,15 +27,7 @@ async function SettingsContent() {
     data: { user },
   } = await supabase.auth.getUser()
 
-  let isPremium = false
-  if (user_id) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('is_premium')
-      .eq('id', user_id)
-      .single()
-    isPremium = profile?.is_premium ?? false
-  }
+  const isPremium = user_id ? await getIsPremium(user_id) : false
 
   return (
     <PageShell maxWidth="md">

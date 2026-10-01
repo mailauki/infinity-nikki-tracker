@@ -56,7 +56,7 @@ async function ProfileView({ params }: Props) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, display_name, username, avatar_url, banner_url, is_premium')
+    .select('id, display_name, username, avatar_url, banner_url, user_premium(user_id)')
     .eq('username', username)
     .single()
 
@@ -111,7 +111,7 @@ async function ProfileView({ params }: Props) {
   const recentObtainedMakeup = await getRecentObtainedMakeup(profile.id)
   const recentObtainedMomoCloak = await getRecentObtainedMomoCloaks(profile.id)
 
-  const isPremium = profile.is_premium ?? false
+  const isPremium = !!profile.user_premium
 
   return (
     <ProfileTabs

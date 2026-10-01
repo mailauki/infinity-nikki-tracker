@@ -31,12 +31,8 @@ export async function POST(req: NextRequest) {
 
     const supabase = createAdminClient()
     const { error } = await supabase
-      .from('profiles')
-      .update({
-        is_premium: true,
-        premium_purchased_at: new Date().toISOString(),
-      })
-      .eq('id', userId)
+      .from('user_premium')
+      .upsert({ user_id: userId }, { onConflict: 'user_id', ignoreDuplicates: true })
 
     if (error) {
       console.error('Failed to update premium status:', error)

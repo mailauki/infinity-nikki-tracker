@@ -28,6 +28,6 @@ export const getUserRole = cache(async () => {
   const supabase = await createClient()
   const user_id = await getUserID()
   if (!user_id) return null
-  const { data } = await supabase.from('profiles').select('role').eq('id', user_id).single()
-  return data?.role as 'user' | 'admin' | null
+  const { data: isAdmin } = await supabase.rpc('is_admin')
+  return isAdmin ? 'admin' : 'user'
 })
