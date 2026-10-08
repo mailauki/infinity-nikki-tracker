@@ -16,8 +16,9 @@ import {
   Tooltip,
 } from '@mui/material'
 import React from 'react'
-import { navLinksData } from '@/lib/nav-links'
+import { navLinksData } from '@/lib/sitemap/routes'
 import { List, Person } from '@mui/icons-material'
+import { NavIcon } from '@/lib/sitemap/nav-icons'
 import { LogoutButton } from './logout-button'
 import LazyImage from '@/components/lazy-image'
 
@@ -137,7 +138,7 @@ export function NavUser() {
               href={link.url}
               onClick={() => setAnchorElUser(null)}
             >
-              <ListItemIcon>{link.icon || <List />}</ListItemIcon>
+              <ListItemIcon>{link.icon ? <NavIcon name={link.icon} /> : <List />}</ListItemIcon>
               {link.title}
             </MenuItem>
           ))}

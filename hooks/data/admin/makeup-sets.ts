@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { MakeupSetRaw } from '@/lib/types/makeup'
 import { cache } from 'react'
 
 const RAW_COLUMNS = '*'

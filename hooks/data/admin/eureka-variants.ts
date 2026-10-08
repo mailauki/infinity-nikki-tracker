@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { EurekaVariantRaw } from '@/lib/types/eureka'
 import { cache } from 'react'
 
 export const getEurekaVariantsRaw = cache(async () => {

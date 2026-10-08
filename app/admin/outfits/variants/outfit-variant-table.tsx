@@ -5,7 +5,6 @@ import { Stack } from '@mui/material'
 import { CheckBox, Checkroom } from '@mui/icons-material'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toTitle } from '@/lib/utils'
-import { navLinksData } from '@/lib/nav-links'
 import { OutfitCategory, OutfitSetRaw, OutfitVariantRaw } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
 import { updateOutfitVariant } from '@/app/admin/actions'
@@ -16,6 +15,7 @@ import {
   useRowActions,
 } from '@/app/admin/eureka/table-utils'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
+import { editPath } from '@/lib/sitemap/routes'
 
 type Row = OutfitVariantRaw
 
@@ -42,7 +42,7 @@ export function OutfitVariantTable({
     handleCancelClick,
   } = useRowActions()
 
-  const editHref = (row: Row) => `${navLinksData.admin.outfits.variants.edit}/${row.slug}`
+  const editHref = (row: Row) => editPath('/admin/outfits/variants', row.slug)
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {

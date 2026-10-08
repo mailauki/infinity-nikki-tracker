@@ -3,8 +3,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
-import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
+import { editPath } from '@/lib/sitemap/routes'
 
 export async function editLocation(currentSlug: string, _: unknown, formData: FormData) {
   const role = await getUserRole()
@@ -56,7 +56,7 @@ export async function editLocation(currentSlug: string, _: unknown, formData: Fo
       .limit(1)
       .maybeSingle()
 
-    if (next?.slug) redirect(`${navLinksData.admin.locations.locations.edit}/${next.slug}`)
+    if (next?.slug) redirect(editPath('/admin/locations', next.slug))
     redirect(ADMIN_DASHBOARD)
   }
 

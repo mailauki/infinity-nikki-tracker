@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { MakeupSet, MakeupSetRaw } from '@/lib/types/makeup'
+import { MakeupSet } from '@/lib/types/makeup'
 import { createClient } from '@/lib/supabase/server'
 import { applyObtainedMakeupKeys, buildObtainedMakeupKeySet, createMakeupSet } from '@/hooks/makeup'
 import { getMakeupCategories } from './makeup-categories'

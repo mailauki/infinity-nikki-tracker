@@ -1,5 +1,6 @@
-import { NavLink } from '@/lib/types/props'
+import type { NavLink } from '@/lib/sitemap/routes'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
+import { NavIcon } from '@/lib/sitemap/nav-icons'
 import {
   Avatar,
   Collapse,
@@ -112,7 +113,7 @@ export default function NavSection({
                       mr: 3.5,
                     }}
                   >
-                    {item.icon}
+                    {item.icon && <NavIcon name={item.icon} />}
                   </ListItemIcon>
                 )}
                 <ListItemText

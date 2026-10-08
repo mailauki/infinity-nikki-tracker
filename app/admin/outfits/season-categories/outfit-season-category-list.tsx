@@ -3,8 +3,8 @@
 import { SeasonCategoryRaw } from '@/hooks/data/admin/season-categories'
 import ListRow from '../../list-row'
 import { AdminList } from '../../admin-list'
-import { navLinksData } from '@/lib/nav-links'
 import { toTitle } from '@/lib/utils'
+import { newPath } from '@/lib/sitemap/routes'
 
 interface OutfitSeasonCategoryListProps {
   rows: SeasonCategoryRaw[]
@@ -26,7 +26,7 @@ export default function OutfitSeasonCategoryList({
 }: OutfitSeasonCategoryListProps) {
   return (
     <AdminList
-      addHref={navLinksData.admin.outfits.seasonCategories.add}
+      addHref={newPath('/admin/outfits/season-categories')}
       getKey={(category) => category.slug}
       page={page}
       renderRow={(row) => (

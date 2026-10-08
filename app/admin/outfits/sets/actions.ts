@@ -4,12 +4,12 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { toSlug } from '@/lib/utils'
-import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { EvolutionDraft } from '@/lib/types/outfit'
 import { evolutionTitle } from '@/hooks/outfit'
 import { readReleaseFields } from '@/lib/release-form'
+import { editPath } from '@/lib/sitemap/routes'
 
 // The admin dashboard is a Server Component behind a client Router Cache entry.
 // Without this, redirecting back after a save re-renders the cached copy and
@@ -554,7 +554,7 @@ export async function editOutfitSet(id: number, _: unknown, formData: FormData) 
     // Revalidate before either redirect — redirect() throws, so anything after
     // the first one never runs.
     revalidateAdmin()
-    if (next?.slug) redirect(`${navLinksData.admin.outfits.sets.edit}/${next.slug}`)
+    if (next?.slug) redirect(editPath('/admin/outfits/sets', next.slug))
     redirect(ADMIN_DASHBOARD)
   }
   revalidateAdmin()

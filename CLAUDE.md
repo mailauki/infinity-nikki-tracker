@@ -88,6 +88,10 @@ Column-level schema lives in `lib/types/supabase.ts` (generated — the source o
 - `styles`, `labels` — UNIQUE on title; RLS public read / admin write
 - RPCs (not in the generated table types): `is_admin`, `toggle_obtained`, `toggle_obtained_outfit`
 
+### Routes, Nav & Sitemap
+
+`lib/sitemap/routes.ts` is the route registry, and the one place to edit routes: every entry holds its nav label, page title, nav image, icon key, `sitemap` flag, and nav placement (`section`, `parent`, `adminOnly`, `adminTab`). Everything else is derived from it — `navLinksData` (sidebar sections and admin tabs, listed in registry order, so reordering entries reorders the nav), `app/sitemap.ts` (`SITEMAP_ROUTES` plus DB-driven detail pages, `'use cache'` + `cacheLife('days')` via `createPublicClient()`), metadata titles (`pageTitle()`), and admin CRUD links (`editPath(list, slug)` / `newPath(list)`, typed so only routes with a registered form compile). Admin sections are registered with `adminPages(path, name)`, which also generates the `/new` and `/edit/[slug]` entries, labelled "Add …" / "Edit …" from the list name in the singular (`{ add: false }` for edit-only lists). The file has no imports, so Server Actions and metadata can use it; icons are string keys rendered by `<NavIcon>` (`lib/sitemap/nav-icons.tsx`), the only file that imports MUI icons. Add a route by adding one registry entry.
+
 ### Slug Helpers
 
 `lib/utils.ts` exports `cn()` (clsx + tailwind-merge), `toSlug(name)` (spaces→`_`, lowercase), `toSlugVariant(set, category, color)` → `{set}-{category}-{color}`, and `toTitle(slug)`. Variant forms auto-generate the slug from set/category/color via `useEffect`; the slug field is read-only until an edit icon unlocks it.
@@ -178,7 +182,7 @@ Note: some `hooks/data/` files and `lib/theme.ts` use relative imports rather th
 
 React `cache()` is for reads only — wrapping a mutation in `cache()` makes it silently no-op on repeated calls with the same args. Mutations (in route `actions.ts` and `hooks/data/admin/`) must NOT use `cache()`.
 
-`use cache` vs React `cache()`: public lookup hooks (e.g. `getEurekaCategories`, `getEurekaColors`, `getStyles`, `getLabels`, `getTrials`, `getSeasons`) use `use cache` + `cacheLife` for cross-request caching via `createPublicClient()`. Auth-dependent hooks (`getEurekaSets`, `getObtainedEureka`, `getUserID`, `getPreferences`, …) must use React `cache()` — they call `cookies()`, which is blocked inside `use cache`.
+`use cache` vs React `cache()`: every hook in `hooks/data/` — public lookups (`getEurekaCategories`, `getStyles`, `getSeasons`, …) and auth-dependent ones (`getEurekaSets`, `getUserID`, `getPreferences`, …) alike — uses React `cache()` (per-request dedupe) with the cookie-based `createClient()`. The only `use cache` + `cacheLife` function is the sitemap's data helper in `app/sitemap.ts`, which goes through the cookie-free `createPublicClient()` because `cookies()` is blocked inside `use cache`. Follow that pattern for any future cross-request cache.
 
 API routes that read auth (e.g. `/api/eureka/bootstrap`) must call `await connection()` before reading cookies so PPR doesn't try to prerender them — keep it outside the try/catch so the prerender-abort signal propagates to React instead of being swallowed as a 500.
 

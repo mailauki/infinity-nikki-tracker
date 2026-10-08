@@ -11,7 +11,7 @@ import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { createClient } from '@/lib/supabase/server'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/makeup/sets/edit/[slug]'),

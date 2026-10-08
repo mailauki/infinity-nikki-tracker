@@ -2,7 +2,7 @@ import { getLocationsRaw } from '@/hooks/data/admin/locations'
 import { byTitleThenSlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import LocationView from './location-view'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata = { title: pageTitle('/admin/locations') }
 

@@ -1,6 +1,5 @@
 import { cache } from 'react'
 import { createClient } from '@/lib/supabase/server'
-import { OutfitSetRaw } from '@/lib/types/outfit'
 
 export const getOutfitSetsRaw = cache(async () => {
   const supabase = await createClient()

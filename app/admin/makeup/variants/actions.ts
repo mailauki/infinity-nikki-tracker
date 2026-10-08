@@ -3,13 +3,13 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { toSlug } from '@/lib/utils'
 import { recategorizeVariant } from '@/lib/variant-recategorize'
 import { deriveVariantSlug } from '@/lib/variant-slug'
 import { readReleaseFields } from '@/lib/release-form'
+import { editPath } from '@/lib/sitemap/routes'
 
 const STANDALONE_SLUG = 'standalone_pieces'
 
@@ -194,7 +194,7 @@ export async function editMakeupVariant(id: number, _: unknown, formData: FormDa
       // form's cached old slug would misdirect a later image upload to the
       // abandoned folder. Send the admin to the new slug's edit page instead.
       revalidatePath(ADMIN_DASHBOARD)
-      redirect(`${navLinksData.admin.makeup.variants.edit}/${result.newSlug}`)
+      redirect(editPath('/admin/makeup/variants', result.newSlug))
     }
   }
 
@@ -218,7 +218,7 @@ export async function editMakeupVariant(id: number, _: unknown, formData: FormDa
       .limit(1)
       .maybeSingle()
 
-    if (next?.slug) redirect(`${navLinksData.admin.makeup.variants.edit}/${next.slug}`)
+    if (next?.slug) redirect(editPath('/admin/makeup/variants', next.slug))
     redirect(ADMIN_DASHBOARD)
   }
 

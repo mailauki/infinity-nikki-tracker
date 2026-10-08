@@ -1,3 +1,4 @@
+import { SITE_URL } from '@/lib/sitemap/site-url'
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import { createClient } from '@/lib/supabase/server'
@@ -27,15 +28,11 @@ export async function POST() {
     return NextResponse.json({ error: 'Stripe not configured' }, { status: 503 })
   }
 
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
-
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     line_items: [{ price: PRICE_ID, quantity: 1 }],
-    success_url: `${baseUrl}/profile?upgraded=1`,
-    cancel_url: `${baseUrl}/profile`,
+    success_url: `${SITE_URL}/profile?upgraded=1`,
+    cancel_url: `${SITE_URL}/profile`,
     customer_email: user.email,
     metadata: { user_id: user.id },
   })

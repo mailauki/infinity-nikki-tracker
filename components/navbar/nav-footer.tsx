@@ -14,9 +14,9 @@ import { useEffect, useState } from 'react'
 import CoffeeButton from './coffee-button'
 import ThemeSwitcher from './theme-switcher'
 import ReportIssueLink from '@/components/feedback/report-issue-link'
-import { navLabel } from '@/lib/page-titles'
+import { navLabel } from '@/lib/sitemap/routes'
 import { createClient } from '@/lib/supabase/client'
-import type { PageRoute } from '@/lib/page-titles'
+import type { PageRoute } from '@/lib/sitemap/routes'
 
 // Column definitions. Routes are listed as page paths and labelled through
 // navLabel() rather than hardcoded strings, so a rename in PAGE_NAMES reaches

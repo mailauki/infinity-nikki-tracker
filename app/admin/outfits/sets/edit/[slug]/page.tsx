@@ -13,7 +13,7 @@ import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { EvolutionDraft } from '@/lib/types/outfit'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/outfits/sets/edit/[slug]'),

@@ -3,7 +3,7 @@ import { Metadata } from 'next'
 import { Section, SectionList, SectionSubtitle, SectionTitle } from '@/components/section'
 import PageShell from '@/components/page-shell'
 import { SimpleGrid } from '@/components/card-grid'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 const featurePages = [
   {

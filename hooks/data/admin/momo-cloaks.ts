@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { MomoCloakRaw } from '@/lib/types/momo'
 import { cache } from 'react'
 
 const RAW_COLUMNS = '*'

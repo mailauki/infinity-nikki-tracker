@@ -3,10 +3,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
-import { navLinksData } from '@/lib/nav-links'
 import { evolutionSortKey } from '@/hooks/outfit'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { readReleaseFields } from '@/lib/release-form'
+import { editPath } from '@/lib/sitemap/routes'
 
 export async function editEvolution(
   currentSlug: string,
@@ -111,7 +111,7 @@ export async function editEvolution(
     const currentIndex = rows.findIndex((e) => e.slug === currentSlug)
     const next = currentIndex >= 0 ? rows[currentIndex + 1] : undefined
 
-    if (next?.slug) redirect(`${navLinksData.admin.outfits.evolutions.edit}/${next.slug}`)
+    if (next?.slug) redirect(editPath('/admin/outfits/evolutions', next.slug))
     redirect(ADMIN_DASHBOARD)
   }
 

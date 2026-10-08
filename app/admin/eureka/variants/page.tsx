@@ -5,7 +5,7 @@ import { getEurekaVariantsRaw } from '@/hooks/data/admin/eureka-variants'
 import { bySlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import EurekaVariantView from './eureka-variant-view'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata = { title: pageTitle('/admin/eureka/variants') }
 

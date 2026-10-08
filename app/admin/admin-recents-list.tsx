@@ -17,30 +17,21 @@ import { Category, Edit } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
 import { RecentAdminItem } from '@/hooks/data/admin/recents'
 import { formatDate } from '@/lib/utils'
-import { navLinksData } from '@/lib/nav-links'
+import { navLinksData, pageTitle } from '@/lib/sitemap/routes'
 import AdminRecentsToggle from './admin-recents-toggle'
 
 const defaultTab = navLinksData.admin.tabs[0]
 const defaultItem = defaultTab.items?.[0]
 
 // Tab items are labelled for the toggle ("Sets"), while `RecentAdminItem.type` carries
-// the fully-qualified AdminLink title ("Outfit Sets"). Resolve by the item's `url`, which
+// the list route's full page title ("Outfit Sets"). Resolve by the item's `url`, which
 // is the one value both sides already agree on — matching on the label alone breaks as
 // soon as two tabs share one ("Sets" under both Outfits and Eureka).
-const typeByUrl = new Map(
-  [
-    ...Object.values(navLinksData.admin.outfits),
-    ...Object.values(navLinksData.admin.eureka),
-    ...Object.values(navLinksData.admin.makeup),
-    ...Object.values(navLinksData.admin.momoCloaks),
-  ].map((link) => [link.list, link.title])
-)
-
 function typeForSelection(tab: string, item: string): string {
   const url = navLinksData.admin.tabs
     .find((t) => t.title === tab)
     ?.items?.find((i) => i.title === item)?.url
-  return (url && typeByUrl.get(url)) ?? ''
+  return url ? pageTitle(url) : ''
 }
 
 export default function AdminRecentsList({

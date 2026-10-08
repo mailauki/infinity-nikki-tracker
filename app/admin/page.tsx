@@ -9,7 +9,7 @@ import AdminTotalsStrip from './admin-totals-strip'
 import AdminCompletenessList from './admin-completeness-list'
 import AdminGapQueue from './admin-gap-queue'
 import AdminUnassignedPieces from './admin-unassigned-pieces'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin'),

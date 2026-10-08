@@ -3,12 +3,12 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { toSlugMakeup } from '@/lib/utils'
 import { makeupSetOrder, OutfitLineRow, resolveEvolutionOutfitSet } from '@/hooks/makeup'
 import { readReleaseFields } from '@/lib/release-form'
+import { editPath } from '@/lib/sitemap/routes'
 
 // The admin dashboard is a Server Component behind a client Router Cache entry.
 // Without this, redirecting back after a save re-renders the cached copy and
@@ -416,7 +416,7 @@ export async function updateMakeupSet(_: unknown, formData: FormData) {
     // Revalidate before either redirect — redirect() throws, so anything after
     // the first one never runs.
     revalidateAdmin()
-    if (next?.slug) redirect(`${navLinksData.admin.makeup.sets.edit}/${next.slug}`)
+    if (next?.slug) redirect(editPath('/admin/makeup/sets', next.slug))
     redirect(ADMIN_DASHBOARD)
   }
   revalidateAdmin()

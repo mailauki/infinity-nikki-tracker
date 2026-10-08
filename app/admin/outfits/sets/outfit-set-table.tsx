@@ -16,7 +16,6 @@ import {
   GridRowModesModel,
 } from '@mui/x-data-grid'
 import { formatDate, toSlug, toTitle } from '@/lib/utils'
-import { navLinksData } from '@/lib/nav-links'
 import {
   Ability,
   Evolution,
@@ -32,6 +31,7 @@ import ImageUpload from '@/components/forms/image-upload'
 import { categoryImageColumns } from '@/app/admin/outfits/variant-image-cell'
 import { useAdminView } from '@/app/admin/admin-view-context'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
+import { editPath } from '@/lib/sitemap/routes'
 
 type Row = OutfitSet
 
@@ -70,8 +70,7 @@ export function OutfitSetTable({
   const [rows, setRows] = useState<Row[]>(initialRows)
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  const editHref = (row: Row) =>
-    `${navLinksData.admin.outfits.sets.edit}/${row.slug ?? toSlug(row.title)}`
+  const editHref = (row: Row) => editPath('/admin/outfits/sets', row.slug ?? toSlug(row.title))
 
   const isEditing = (id: GridRowId) => rowModesModel[id]?.mode === GridRowModes.Edit
 

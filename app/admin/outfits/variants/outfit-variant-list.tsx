@@ -3,8 +3,8 @@
 import { OutfitVariantRaw } from '@/lib/types/outfit'
 import ListRow from '../../list-row'
 import { toTitle } from '@/lib/utils'
-import { navLinksData } from '@/lib/nav-links'
 import { AdminList } from '../../admin-list'
+import { newPath } from '@/lib/sitemap/routes'
 
 interface OutfitVariantListProps {
   rows: OutfitVariantRaw[]
@@ -23,7 +23,7 @@ export default function OutfitVariantList({
 }: OutfitVariantListProps) {
   return (
     <AdminList
-      addHref={navLinksData.admin.outfits.variants.add}
+      addHref={newPath('/admin/outfits/variants')}
       getKey={(variant) => variant.id}
       page={page}
       renderRow={(row) => (

@@ -1,5 +1,5 @@
 import { ForgotPasswordForm } from './forgot-password-form'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata = { title: pageTitle('/forgot-password') }
 

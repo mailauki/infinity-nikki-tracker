@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { cache } from 'react'
-import { navLinksData } from '@/lib/nav-links'
 import { toTitle } from '@/lib/utils'
+import { editPath, pageTitle } from '@/lib/sitemap/routes'
 
 export type RecentAdminItem = {
   slug: string
@@ -23,21 +23,18 @@ export type RecentAdminItem = {
 // the variant's `outfit_set` column instead.
 function eurekaVariantHref(slug: string): string {
   const parts = slug.split('-')
-  return `${navLinksData.admin.eureka.variants.main}/${parts[0]}?color=${parts[parts.length - 1]}`
+  return `/eureka/${parts[0]}?color=${parts[parts.length - 1]}`
 }
 
 function outfitSetHref(setSlug: string): string {
   return setSlug.includes('-')
-    ? `${navLinksData.admin.outfits.sets.main}/${setSlug.replace('-', '?evolution=')}`
-    : `${navLinksData.admin.outfits.sets.main}/${setSlug}?evolution=base`
+    ? `/outfits/${setSlug.replace('-', '?evolution=')}`
+    : `/outfits/${setSlug}?evolution=base`
 }
 
-// Makeup and Momo's Cloaks have no public `[slug]` detail route yet — `/makeup` and
-// `/momo-cloaks` are still ComingSoon stubs. Point the row at its admin edit form so the
-// primary click lands somewhere real instead of 404ing; swap to the public page once it exists.
-function editOnlyHref(link: { edit: string }, slug: string): string {
-  return `${link.edit}/${slug}`
-}
+// Makeup, momo cloak, season category and ability rows link to their admin edit
+// form. Makeup and momo cloaks have public detail pages now, so those two could
+// switch to them (makeup evolutions need linkedSetHref-style URLs).
 
 // The eureka set thumbnail is its default head variant's image (default variant
 // as fallback), matching createEurekaSet / the eureka slug page. The set rows
@@ -159,17 +156,17 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       slug: s.slug,
       title: s.title,
       image_url: eurekaImages.get(s.slug) ?? null,
-      type: navLinksData.admin.eureka.sets.title,
-      editHref: `${navLinksData.admin.eureka.sets.edit}/${s.slug}`,
-      href: `${navLinksData.admin.eureka.sets.main}/${s.slug}`,
+      type: pageTitle('/admin/eureka/sets'),
+      editHref: editPath('/admin/eureka/sets', s.slug),
+      href: `/eureka/${s.slug}`,
       date: s.created_at,
     })),
     ...(eurekaVariants ?? []).map((v) => ({
       slug: v.slug,
       title: toTitle(v.slug),
       image_url: v.image_url,
-      type: navLinksData.admin.eureka.variants.title,
-      editHref: `${navLinksData.admin.eureka.variants.edit}/${v.slug}`,
+      type: pageTitle('/admin/eureka/variants'),
+      editHref: editPath('/admin/eureka/variants', v.slug),
       href: eurekaVariantHref(v.slug),
       date: v.created_at,
     })),
@@ -177,17 +174,17 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       slug: t.slug,
       title: t.title,
       image_url: t.image_url,
-      type: navLinksData.admin.eureka.trials.title,
-      editHref: `${navLinksData.admin.eureka.trials.edit}/${t.slug}`,
-      href: `${navLinksData.admin.eureka.trials.main}/${t.slug}`,
+      type: pageTitle('/admin/eureka/trials'),
+      editHref: editPath('/admin/eureka/trials', t.slug),
+      href: `/eureka/trials/${t.slug}`,
       date: t.created_at,
     })),
     ...(outfitSets ?? []).map((o) => ({
       slug: o.slug,
       title: o.title,
       image_url: o.image_url,
-      type: navLinksData.admin.outfits.sets.title,
-      editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}`,
+      type: pageTitle('/admin/outfits/sets'),
+      editHref: editPath('/admin/outfits/sets', o.slug),
       href: outfitSetHref(o.slug),
       date: o.created_at!,
     })),
@@ -195,8 +192,8 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       slug: v.slug,
       title: v.title ?? toTitle(v.slug),
       image_url: v.image_url,
-      type: navLinksData.admin.outfits.variants.title,
-      editHref: `${navLinksData.admin.outfits.variants.edit}/${v.slug}`,
+      type: pageTitle('/admin/outfits/variants'),
+      editHref: editPath('/admin/outfits/variants', v.slug),
       href: outfitSetHref(v.outfit_set ?? v.slug),
       date: v.created_at,
     })),
@@ -204,8 +201,8 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       slug: e.slug,
       title: e.title,
       image_url: e.image_url,
-      type: navLinksData.admin.outfits.evolutions.title,
-      editHref: `${navLinksData.admin.outfits.evolutions.edit}/${e.slug}`,
+      type: pageTitle('/admin/outfits/evolutions'),
+      editHref: editPath('/admin/outfits/evolutions', e.slug),
       href: outfitSetHref(e.slug),
       date: e.created_at,
     })),
@@ -213,56 +210,56 @@ export const getRecentlyAdded = cache(async (limit = 5): Promise<RecentAdminItem
       slug: m.slug,
       title: m.title,
       image_url: m.image_url,
-      type: navLinksData.admin.makeup.sets.title,
-      editHref: `${navLinksData.admin.makeup.sets.edit}/${m.slug}`,
-      href: editOnlyHref(navLinksData.admin.makeup.sets, m.slug),
+      type: pageTitle('/admin/makeup/sets'),
+      editHref: editPath('/admin/makeup/sets', m.slug),
+      href: editPath('/admin/makeup/sets', m.slug),
       date: m.created_at,
     })),
     ...(makeupVariants ?? []).map((v) => ({
       slug: v.slug,
       title: v.title ?? toTitle(v.slug),
       image_url: v.image_url,
-      type: navLinksData.admin.makeup.variants.title,
-      editHref: `${navLinksData.admin.makeup.variants.edit}/${v.slug}`,
-      href: editOnlyHref(navLinksData.admin.makeup.variants, v.slug),
+      type: pageTitle('/admin/makeup/variants'),
+      editHref: editPath('/admin/makeup/variants', v.slug),
+      href: editPath('/admin/makeup/variants', v.slug),
       date: v.created_at,
     })),
     ...(momoCloaks ?? []).map((c) => ({
       slug: c.slug,
       title: c.title,
       image_url: c.image_url,
-      type: navLinksData.admin.momoCloaks.cloaks.title,
-      editHref: `${navLinksData.admin.momoCloaks.cloaks.edit}/${c.slug}`,
-      href: editOnlyHref(navLinksData.admin.momoCloaks.cloaks, c.slug),
+      type: pageTitle('/admin/momo-cloaks'),
+      editHref: editPath('/admin/momo-cloaks', c.slug),
+      href: editPath('/admin/momo-cloaks', c.slug),
       date: c.created_at,
     })),
     ...(seasons ?? []).map((s) => ({
       slug: s.slug,
       title: s.title,
       image_url: s.image_url,
-      type: navLinksData.admin.outfits.seasons.title,
-      editHref: `${navLinksData.admin.outfits.seasons.edit}/${s.slug}`,
-      href: `${navLinksData.admin.outfits.seasons.main}/seasons/${s.slug}`,
+      type: pageTitle('/admin/outfits/seasons'),
+      editHref: editPath('/admin/outfits/seasons', s.slug),
+      href: `/seasons/${s.slug}`,
       date: s.created_at,
     })),
     ...(seasonCategories ?? []).map((c) => ({
       slug: c.slug,
       title: c.title,
       image_url: c.image_url,
-      type: navLinksData.admin.outfits.seasonCategories.title,
-      editHref: `${navLinksData.admin.outfits.seasonCategories.edit}/${c.slug}`,
+      type: pageTitle('/admin/outfits/season-categories'),
+      editHref: editPath('/admin/outfits/season-categories', c.slug),
       // Season categories have no public page of their own — only a filter on /outfits.
-      href: editOnlyHref(navLinksData.admin.outfits.seasonCategories, c.slug),
+      href: editPath('/admin/outfits/season-categories', c.slug),
       date: c.created_at,
     })),
     ...(abilities ?? []).map((a) => ({
       slug: a.slug,
       title: a.title,
       image_url: a.image_url,
-      type: navLinksData.admin.outfits.abilities.title,
-      editHref: `${navLinksData.admin.outfits.abilities.edit}/${a.slug}`,
+      type: pageTitle('/admin/outfits/abilities'),
+      editHref: editPath('/admin/outfits/abilities', a.slug),
       // Abilities are a lookup surfaced as a field on outfit sets, not a page.
-      href: editOnlyHref(navLinksData.admin.outfits.abilities, a.slug),
+      href: editPath('/admin/outfits/abilities', a.slug),
       date: a.created_at,
     })),
   ]
@@ -371,17 +368,17 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       slug: s.slug,
       title: s.title,
       image_url: eurekaImages.get(s.slug) ?? null,
-      type: navLinksData.admin.eureka.sets.title,
-      editHref: `${navLinksData.admin.eureka.sets.edit}/${s.slug}`,
-      href: `${navLinksData.admin.eureka.sets.main}/${s.slug}`,
+      type: pageTitle('/admin/eureka/sets'),
+      editHref: editPath('/admin/eureka/sets', s.slug),
+      href: `/eureka/${s.slug}`,
       date: s.updated_at!,
     })),
     ...(eurekaVariants ?? []).map((v) => ({
       slug: v.slug,
       title: toTitle(v.slug),
       image_url: v.image_url,
-      type: navLinksData.admin.eureka.variants.title,
-      editHref: `${navLinksData.admin.eureka.variants.edit}/${v.slug}`,
+      type: pageTitle('/admin/eureka/variants'),
+      editHref: editPath('/admin/eureka/variants', v.slug),
       href: eurekaVariantHref(v.slug),
       date: v.updated_at!,
     })),
@@ -389,17 +386,17 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       slug: t.slug,
       title: t.title,
       image_url: t.image_url,
-      type: navLinksData.admin.eureka.trials.title,
-      editHref: `${navLinksData.admin.eureka.trials.edit}/${t.slug}`,
-      href: `${navLinksData.admin.eureka.trials.main}/${t.slug}`,
+      type: pageTitle('/admin/eureka/trials'),
+      editHref: editPath('/admin/eureka/trials', t.slug),
+      href: `/eureka/trials/${t.slug}`,
       date: t.updated_at!,
     })),
     ...(outfitSets ?? []).map((o) => ({
       slug: o.slug,
       title: o.title,
       image_url: o.image_url,
-      type: navLinksData.admin.outfits.sets.title,
-      editHref: `${navLinksData.admin.outfits.sets.edit}/${o.slug}`,
+      type: pageTitle('/admin/outfits/sets'),
+      editHref: editPath('/admin/outfits/sets', o.slug),
       href: outfitSetHref(o.slug),
       date: o.updated_at!,
     })),
@@ -407,8 +404,8 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       slug: v.slug,
       title: v.title ?? toTitle(v.slug),
       image_url: v.image_url,
-      type: navLinksData.admin.outfits.variants.title,
-      editHref: `${navLinksData.admin.outfits.variants.edit}/${v.slug}`,
+      type: pageTitle('/admin/outfits/variants'),
+      editHref: editPath('/admin/outfits/variants', v.slug),
       href: outfitSetHref(v.outfit_set ?? v.slug),
       date: v.updated_at!,
     })),
@@ -416,8 +413,8 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       slug: e.slug,
       title: e.title,
       image_url: e.image_url,
-      type: navLinksData.admin.outfits.evolutions.title,
-      editHref: `${navLinksData.admin.outfits.evolutions.edit}/${e.slug}`,
+      type: pageTitle('/admin/outfits/evolutions'),
+      editHref: editPath('/admin/outfits/evolutions', e.slug),
       href: outfitSetHref(e.slug),
       date: e.updated_at!,
     })),
@@ -425,54 +422,54 @@ export const getRecentlyEdited = cache(async (limit = 5): Promise<RecentAdminIte
       slug: m.slug,
       title: m.title,
       image_url: m.image_url,
-      type: navLinksData.admin.makeup.sets.title,
-      editHref: `${navLinksData.admin.makeup.sets.edit}/${m.slug}`,
-      href: editOnlyHref(navLinksData.admin.makeup.sets, m.slug),
+      type: pageTitle('/admin/makeup/sets'),
+      editHref: editPath('/admin/makeup/sets', m.slug),
+      href: editPath('/admin/makeup/sets', m.slug),
       date: m.updated_at!,
     })),
     ...(makeupVariants ?? []).map((v) => ({
       slug: v.slug,
       title: v.title ?? toTitle(v.slug),
       image_url: v.image_url,
-      type: navLinksData.admin.makeup.variants.title,
-      editHref: `${navLinksData.admin.makeup.variants.edit}/${v.slug}`,
-      href: editOnlyHref(navLinksData.admin.makeup.variants, v.slug),
+      type: pageTitle('/admin/makeup/variants'),
+      editHref: editPath('/admin/makeup/variants', v.slug),
+      href: editPath('/admin/makeup/variants', v.slug),
       date: v.updated_at!,
     })),
     ...(momoCloaks ?? []).map((c) => ({
       slug: c.slug,
       title: c.title,
       image_url: c.image_url,
-      type: navLinksData.admin.momoCloaks.cloaks.title,
-      editHref: `${navLinksData.admin.momoCloaks.cloaks.edit}/${c.slug}`,
-      href: editOnlyHref(navLinksData.admin.momoCloaks.cloaks, c.slug),
+      type: pageTitle('/admin/momo-cloaks'),
+      editHref: editPath('/admin/momo-cloaks', c.slug),
+      href: editPath('/admin/momo-cloaks', c.slug),
       date: c.updated_at!,
     })),
     ...(seasons ?? []).map((s) => ({
       slug: s.slug,
       title: s.title,
       image_url: s.image_url,
-      type: navLinksData.admin.outfits.seasons.title,
-      editHref: `${navLinksData.admin.outfits.seasons.edit}/${s.slug}`,
-      href: `${navLinksData.admin.outfits.seasons.main}/seasons/${s.slug}`,
+      type: pageTitle('/admin/outfits/seasons'),
+      editHref: editPath('/admin/outfits/seasons', s.slug),
+      href: `/seasons/${s.slug}`,
       date: s.updated_at!,
     })),
     ...(seasonCategories ?? []).map((c) => ({
       slug: c.slug,
       title: c.title,
       image_url: c.image_url,
-      type: navLinksData.admin.outfits.seasonCategories.title,
-      editHref: `${navLinksData.admin.outfits.seasonCategories.edit}/${c.slug}`,
-      href: editOnlyHref(navLinksData.admin.outfits.seasonCategories, c.slug),
+      type: pageTitle('/admin/outfits/season-categories'),
+      editHref: editPath('/admin/outfits/season-categories', c.slug),
+      href: editPath('/admin/outfits/season-categories', c.slug),
       date: c.updated_at!,
     })),
     ...(abilities ?? []).map((a) => ({
       slug: a.slug,
       title: a.title,
       image_url: a.image_url,
-      type: navLinksData.admin.outfits.abilities.title,
-      editHref: `${navLinksData.admin.outfits.abilities.edit}/${a.slug}`,
-      href: editOnlyHref(navLinksData.admin.outfits.abilities, a.slug),
+      type: pageTitle('/admin/outfits/abilities'),
+      editHref: editPath('/admin/outfits/abilities', a.slug),
+      href: editPath('/admin/outfits/abilities', a.slug),
       date: a.updated_at!,
     })),
   ]

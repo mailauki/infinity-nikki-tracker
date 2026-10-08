@@ -1,12 +1,12 @@
 'use client'
 
-import { resolveNavLabel } from '@/lib/page-titles'
+import { resolveNavLabel } from '@/lib/sitemap/routes'
 import { Typography } from '@mui/material'
 import { usePathname } from 'next/navigation'
 
 export default function PageTitle() {
   const pathname = usePathname()
-  // Resolution lives in lib/page-titles.ts so the app bar, `metadata.title`,
+  // Resolution lives in lib/sitemap/routes.ts so the app bar, `metadata.title`,
   // and PageShell's h1 all read the same registry instead of each deriving a
   // name of its own.
   const pageTitle = resolveNavLabel(pathname)

@@ -1,5 +1,3 @@
-import { ReactNode } from 'react'
-
 export type CardSize = 'xs' | 'sm' | 'md' | 'lg'
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -7,47 +5,6 @@ export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 export type CategoryFilter = 'head' | 'hands' | 'feet'
 
 export type ObtainedFilter = 'missing' | 'obtained'
-
-type AdminLink = {
-  title: string
-  list: string
-  add?: string
-  edit: string
-  main?: string
-}
-
-export type AdminLinks = {
-  tabs: NavLink[]
-  eureka: { sets: AdminLink; variants: AdminLink; trials: AdminLink }
-  outfits: {
-    sets: AdminLink
-    evolutions: AdminLink
-    abilities: AdminLink
-    seasons: AdminLink
-    variants: AdminLink
-    seasonCategories: AdminLink
-    seasonGroups: AdminLink
-  }
-  makeup: { sets: AdminLink; variants: AdminLink }
-  momoCloaks: { cloaks: AdminLink }
-  locations: { locations: AdminLink }
-}
-
-export interface NavLink {
-  title: string
-  url: string
-  image?: string
-  isActive?: boolean
-  icon?: ReactNode
-  adminOnly?: boolean
-  exclusiveItems?: boolean
-  items?: {
-    title: string
-    url: string
-    image?: string
-    icon?: ReactNode
-  }[]
-}
 
 // Container-query grid: column counts respond to the CONTENT width, not the
 // viewport, so grids reflow when the filter panel opens and narrows the content

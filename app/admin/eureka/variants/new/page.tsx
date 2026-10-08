@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { getAdminData } from '@/hooks/data/user'
 import EntityForm from '@/app/admin/entity-form'
 import { addEurekaVariant } from '../actions'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/eureka/variants/new'),

@@ -5,7 +5,6 @@ import { Box, Chip, Stack } from '@mui/material'
 import { Category } from '@mui/icons-material'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toSlug, toTitle } from '@/lib/utils'
-import { navLinksData } from '@/lib/nav-links'
 import { EurekaSet, Label, Style } from '@/lib/types/eureka'
 import LazyImage from '@/components/lazy-image'
 import RarityStars from '@/components/rarity-stars'
@@ -17,6 +16,7 @@ import {
   useRowActions,
 } from '@/app/admin/eureka/table-utils'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
+import { editPath } from '@/lib/sitemap/routes'
 
 type Row = EurekaSet
 
@@ -39,8 +39,7 @@ export function EurekaSetTable({ rows: initialRows, styles, labels }: EurekaSetT
     handleCancelClick,
   } = useRowActions()
 
-  const editHref = (row: Row) =>
-    `${navLinksData.admin.eureka.sets.edit}/${row.slug ?? toSlug(row.title)}`
+  const editHref = (row: Row) => editPath('/admin/eureka/sets', row.slug ?? toSlug(row.title))
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {
