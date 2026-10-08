@@ -17,8 +17,7 @@ import { Category, Edit } from '@mui/icons-material'
 import LazyImage from '@/components/lazy-image'
 import { RecentAdminItem } from '@/hooks/data/admin/recents'
 import { formatDate } from '@/lib/utils'
-import { navLinksData } from '@/lib/sitemap/nav-links'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { navLinksData, pageTitle } from '@/lib/sitemap/page-titles'
 import AdminRecentsToggle from './admin-recents-toggle'
 
 const defaultTab = navLinksData.admin.tabs[0]

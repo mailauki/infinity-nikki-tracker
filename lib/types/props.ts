@@ -1,5 +1,3 @@
-import type { NavIconKey, PageRoute } from '@/lib/sitemap/page-titles'
-
 export type CardSize = 'xs' | 'sm' | 'md' | 'lg'
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
@@ -7,15 +5,6 @@ export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 export type CategoryFilter = 'head' | 'hands' | 'feet'
 
 export type ObtainedFilter = 'missing' | 'obtained'
-
-export interface NavLink {
-  title: string
-  url: PageRoute
-  image?: string
-  icon?: NavIconKey
-  adminOnly?: boolean
-  items?: NavLink[]
-}
 
 // Container-query grid: column counts respond to the CONTENT width, not the
 // viewport, so grids reflow when the filter panel opens and narrows the content

@@ -1,6 +1,6 @@
 // The single source of truth for every route: what it's called, how it shows
-// in the nav, and whether it belongs in the sitemap. lib/sitemap/nav-links.ts
-// groups these into nav sections and app/sitemap.ts lists the indexable ones.
+// in the nav (and which nav section it sits in — `navLinksData` at the bottom),
+// and whether it belongs in the sitemap (app/sitemap.ts lists the flagged ones).
 //
 // A page name used to be written in up to three independent places — the nav
 // entry, the route's `metadata.title`, and PageShell's `title` prop. They
@@ -24,6 +24,16 @@ export type NavIconKey =
   | 'info'
   | 'settings'
 
+/** A nav row, built from a registry entry by `link()`. */
+export interface NavLink {
+  title: string
+  url: PageRoute
+  image?: string
+  icon?: NavIconKey
+  adminOnly?: boolean
+  items?: NavLink[]
+}
+
 export interface PageName {
   /** Sidebar / breadcrumb label. Kept short so nav rows don't wrap. */
   nav: string
@@ -38,6 +48,28 @@ export interface PageName {
   icon?: NavIconKey
   /** List this public page in /sitemap.xml. */
   sitemap?: true
+}
+
+// An admin list page plus its add and edit forms. The form labels reuse the
+// list's name in the singular — 'Outfit Sets' -> 'Add Outfit Set' / 'Edit
+// Outfit Set' — so a section is named once. Pass `{ add: false }` for a list
+// with no create form (evolutions are created from their base set).
+function adminPages<const P extends string>(
+  path: P,
+  name: PageName
+): Record<P | `${P}/new` | `${P}/edit/[slug]`, PageName>
+function adminPages<const P extends string>(
+  path: P,
+  name: PageName,
+  options: { add: false }
+): Record<P | `${P}/edit/[slug]`, PageName>
+function adminPages(path: string, name: PageName, { add = true } = {}) {
+  const one = (name.title ?? name.nav).replace(/ies$/, 'y').replace(/s$/, '')
+  return {
+    [path]: name,
+    ...(add && { [`${path}/new`]: { nav: `Add ${one}` } }),
+    [`${path}/edit/[slug]`]: { nav: `Edit ${one}` },
+  }
 }
 
 // Keyed by route path, matching the app/ directory structure. Dynamic segments
@@ -69,7 +101,12 @@ export const PAGE_NAMES = {
     sitemap: true,
   },
   '/makeup': { nav: 'Makeup', image: '/icons/makeup.png', sitemap: true },
-  '/momo-cloaks': { nav: "Cloaks", title: "Momo's Cloaks", image: '/icons/momo-cloak.png', sitemap: true },
+  '/momo-cloaks': {
+    nav: 'Cloaks',
+    title: "Momo's Cloaks",
+    image: '/icons/momo-cloak.png',
+    sitemap: true,
+  },
   '/looks': { nav: 'Custom Looks', image: '/icons/wardrobe.png', icon: 'checkroom' },
   '/looks/new': { nav: 'New Look' },
   '/search': { nav: 'Search' },
@@ -98,50 +135,23 @@ export const PAGE_NAMES = {
   '/admin/feedback': { nav: 'Feedback' },
   '/admin/feedback/[id]': { nav: 'Feedback detail' },
 
-  '/admin/outfits/sets': { nav: 'Sets', title: 'Outfit Sets' },
-  '/admin/outfits/sets/new': { nav: 'Add Outfit Set' },
-  '/admin/outfits/sets/edit/[slug]': { nav: 'Edit Outfit Set' },
-  '/admin/outfits/variants': { nav: 'Pieces', title: 'Outfit Pieces' },
-  '/admin/outfits/variants/new': { nav: 'Add Outfit Piece' },
-  '/admin/outfits/variants/edit/[slug]': { nav: 'Edit Outfit Piece' },
-  '/admin/outfits/evolutions': { nav: 'Evolutions' },
-  '/admin/outfits/evolutions/edit/[slug]': { nav: 'Edit Evolution' },
-  '/admin/outfits/abilities': { nav: 'Abilities' },
-  '/admin/outfits/abilities/new': { nav: 'Add Ability' },
-  '/admin/outfits/abilities/edit/[slug]': { nav: 'Edit Ability' },
-  '/admin/outfits/seasons': { nav: 'Seasons' },
-  '/admin/outfits/seasons/new': { nav: 'Add Season' },
-  '/admin/outfits/seasons/edit/[slug]': { nav: 'Edit Season' },
-  '/admin/outfits/season-categories': { nav: 'Season Categories' },
-  '/admin/outfits/season-categories/new': { nav: 'Add Season Category' },
-  '/admin/outfits/season-categories/edit/[slug]': { nav: 'Edit Season Category' },
-  '/admin/outfits/season-groups': { nav: 'Season Groups' },
-  '/admin/outfits/season-groups/new': { nav: 'Add Season Group' },
-  '/admin/outfits/season-groups/edit/[slug]': { nav: 'Edit Season Group' },
-  '/admin/locations': { nav: 'Locations' },
-  '/admin/locations/new': { nav: 'Add Location' },
-  '/admin/locations/edit/[slug]': { nav: 'Edit Location' },
+  ...adminPages('/admin/outfits/sets', { nav: 'Sets', title: 'Outfit Sets' }),
+  ...adminPages('/admin/outfits/variants', { nav: 'Pieces', title: 'Outfit Pieces' }),
+  ...adminPages('/admin/outfits/evolutions', { nav: 'Evolutions' }, { add: false }),
+  ...adminPages('/admin/outfits/abilities', { nav: 'Abilities' }),
+  ...adminPages('/admin/outfits/seasons', { nav: 'Seasons' }),
+  ...adminPages('/admin/outfits/season-categories', { nav: 'Season Categories' }),
+  ...adminPages('/admin/outfits/season-groups', { nav: 'Season Groups' }),
+  ...adminPages('/admin/locations', { nav: 'Locations' }),
 
-  '/admin/eureka/sets': { nav: 'Sets', title: 'Eureka Sets' },
-  '/admin/eureka/sets/new': { nav: 'Add Eureka Set' },
-  '/admin/eureka/sets/edit/[slug]': { nav: 'Edit Eureka Set' },
-  '/admin/eureka/variants': { nav: 'Variants', title: 'Eureka Variants' },
-  '/admin/eureka/variants/new': { nav: 'Add Eureka Variant' },
-  '/admin/eureka/variants/edit/[slug]': { nav: 'Edit Eureka Variant' },
-  '/admin/eureka/trials': { nav: 'Trials' },
-  '/admin/eureka/trials/new': { nav: 'Add Trial' },
-  '/admin/eureka/trials/edit/[slug]': { nav: 'Edit Trial' },
+  ...adminPages('/admin/eureka/sets', { nav: 'Sets', title: 'Eureka Sets' }),
+  ...adminPages('/admin/eureka/variants', { nav: 'Variants', title: 'Eureka Variants' }),
+  ...adminPages('/admin/eureka/trials', { nav: 'Trials' }),
 
-  '/admin/makeup/sets': { nav: 'Makeup Sets' },
-  '/admin/makeup/sets/new': { nav: 'Add Makeup Set' },
-  '/admin/makeup/sets/edit/[slug]': { nav: 'Edit Makeup Set' },
-  '/admin/makeup/variants': { nav: 'Makeup Pieces' },
-  '/admin/makeup/variants/new': { nav: 'Add Makeup Piece' },
-  '/admin/makeup/variants/edit/[slug]': { nav: 'Edit Makeup Piece' },
+  ...adminPages('/admin/makeup/sets', { nav: 'Makeup Sets' }),
+  ...adminPages('/admin/makeup/variants', { nav: 'Makeup Pieces' }),
 
-  '/admin/momo-cloaks': { nav: "Momo's Cloaks" },
-  '/admin/momo-cloaks/new': { nav: "Add Momo's Cloak" },
-  '/admin/momo-cloaks/edit/[slug]': { nav: "Edit Momo's Cloak" },
+  ...adminPages('/admin/momo-cloaks', { nav: "Momo's Cloaks" }),
 } as const satisfies Record<string, PageName>
 
 export type PageRoute = keyof typeof PAGE_NAMES
@@ -231,3 +241,65 @@ export function resolveNavLabel(pathname: string): string {
 
   return titleFromSlug(last)
 }
+
+// ---- Nav sections -------------------------------------------------------------
+// Which routes appear in which section, in what order. Each row takes its label,
+// image and icon from the registry above; pass overrides only where a row
+// differs (the admin tab headers).
+function link(url: PageRoute, extra: Partial<Omit<NavLink, 'url'>> = {}): NavLink {
+  const { image, icon } = pageEntry(url)
+  return { title: navLabel(url), url, image, icon, ...extra }
+}
+
+export const navLinksData = {
+  home: [link('/')],
+  collection: [
+    link('/outfits'),
+    link('/eureka', { items: [link('/eureka/trials')] }),
+    link('/makeup'),
+    link('/momo-cloaks'),
+    link('/seasons'),
+    link('/looks'),
+  ],
+  account: [link('/profile'), link('/settings'), link('/admin', { adminOnly: true })],
+  support: [link('/about'), link('/help')],
+  admin: {
+    // Tab headers carry their own short title and artwork; their items take the
+    // registry's nav labels.
+    tabs: [
+      link('/admin/outfits/sets', {
+        title: 'Outfits',
+        image: '/icons/outfits.png',
+        items: [
+          link('/admin/outfits/sets'),
+          link('/admin/outfits/variants'),
+          link('/admin/outfits/evolutions'),
+          link('/admin/outfits/abilities'),
+          link('/admin/outfits/seasons'),
+          link('/admin/outfits/season-categories'),
+          link('/admin/outfits/season-groups'),
+        ],
+      }),
+      link('/admin/eureka/sets', {
+        title: 'Eureka',
+        image: '/icons/eureka.png',
+        items: [
+          link('/admin/eureka/sets'),
+          link('/admin/eureka/variants'),
+          link('/admin/eureka/trials'),
+        ],
+      }),
+      link('/admin/makeup/sets', {
+        title: 'Other',
+        image: '/icons/makeup.png',
+        items: [
+          link('/admin/makeup/sets'),
+          link('/admin/makeup/variants'),
+          link('/admin/momo-cloaks'),
+          link('/admin/locations'),
+          link('/admin/feedback'),
+        ],
+      }),
+    ],
+  },
+} satisfies Record<string, NavLink[] | { tabs: NavLink[] }>

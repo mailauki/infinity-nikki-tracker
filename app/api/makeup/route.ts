@@ -1,6 +1,6 @@
 import { NextResponse, connection } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { MakeupSetRaw, ObtainedMakeup } from '@/lib/types/makeup'
+import { ObtainedMakeup } from '@/lib/types/makeup'
 import { createMakeupSet } from '@/hooks/makeup'
 import { getMakeupCategories } from '@/hooks/data/makeup-categories'
 import { getMakeupVariants } from '@/hooks/data/makeup-variants'

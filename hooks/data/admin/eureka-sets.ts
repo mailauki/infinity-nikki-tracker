@@ -1,5 +1,4 @@
 import { createClient } from '@/lib/supabase/server'
-import { EurekaSetRaw } from '@/lib/types/eureka'
 import { cache } from 'react'
 
 export const getEurekaSetsRaw = cache(async () => {

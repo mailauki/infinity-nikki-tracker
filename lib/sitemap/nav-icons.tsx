@@ -12,7 +12,7 @@ import type { SvgIconProps } from '@mui/material'
 import type { NavIconKey } from './page-titles'
 
 // The one place nav icon keys become MUI components. Kept out of page-titles.ts
-// and nav-links.ts so those stay plain data that server code can import.
+// so the registry stays plain data that server code can import.
 const NAV_ICONS = {
   account: AccountCircle,
   admin: AdminPanelSettings,

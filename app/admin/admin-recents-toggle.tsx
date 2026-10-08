@@ -1,7 +1,7 @@
 'use client'
 import { useId, useState } from 'react'
 import ToggleIcon from '@/components/toggle-icon'
-import { navLinksData } from '@/lib/sitemap/nav-links'
+import { navLinksData } from '@/lib/sitemap/page-titles'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import {
   Box,

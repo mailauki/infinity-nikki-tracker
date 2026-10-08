@@ -1,4 +1,4 @@
-import { NavLink } from '@/lib/types/props'
+import type { NavLink } from '@/lib/sitemap/page-titles'
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
 import { NavIcon } from '@/lib/sitemap/nav-icons'
 import {
