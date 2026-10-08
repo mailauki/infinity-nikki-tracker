@@ -4,7 +4,7 @@ import { createContext, useContext, useState, useMemo, useEffect, useRef } from 
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { baseThemeOptions } from '@/lib/theme'
 import { COLOR_THEME_PRESETS, buildColorSchemes } from '@/lib/theme-presets'
-import type { ColorTheme } from '@/lib/types/eureka'
+import type { ColorTheme } from '@/lib/types/preferences'
 import {
   DEFAULT_TEXT_SCALE,
   TEXT_SCALE_STORAGE_KEY,

@@ -1,4 +1,4 @@
-import { ColorTheme } from './types/eureka'
+import { ColorTheme } from './types/preferences'
 
 /**
  * An M3 tonal color role: the accent itself, the content drawn on top of it,

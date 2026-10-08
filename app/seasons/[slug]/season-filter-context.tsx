@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import { savePreferences } from '@/lib/save-preferences'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
-import type { UserPreferences } from '@/lib/types/eureka'
+import type { UserPreferences } from '@/lib/types/preferences'
 import type { SeasonFilters } from './season-entries'
 
 export type SeasonDensity = 'standard' | 'compact'

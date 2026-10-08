@@ -8,14 +8,14 @@ import {
   Typography,
 } from '@mui/material'
 
-import { CardSize, Percentage } from '@/lib/types/props'
+import { CardSize } from '@/lib/types/props'
 import PercentLabel from '@/components/percent-label'
 
 export default function EurekaCardProgress({
   percentage,
   size = 'md',
 }: {
-  percentage: Percentage
+  percentage: number
   size?: CardSize
 }) {
   if (size === 'xs')

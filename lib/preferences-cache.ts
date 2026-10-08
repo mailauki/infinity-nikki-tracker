@@ -1,4 +1,4 @@
-import type { UserPreferences } from '@/lib/types/eureka'
+import type { UserPreferences } from '@/lib/types/preferences'
 
 // Three providers mount together on /outfits and each used to fetch preferences
 // independently — three identical round-trips on every page load. They share one

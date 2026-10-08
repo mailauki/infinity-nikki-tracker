@@ -12,7 +12,7 @@ import { DrawerStateProvider } from '@/components/navbar/navbar-toolbar-context'
 import SnackbarAlertProvider from '@/components/snackbar-provider'
 import { connection } from 'next/server'
 import { cookies } from 'next/headers'
-import type { ColorTheme } from '@/lib/types/eureka'
+import type { ColorTheme } from '@/lib/types/preferences'
 import { getUserID } from '@/hooks/user'
 import { getPreferences } from '@/hooks/data/preferences'
 import {

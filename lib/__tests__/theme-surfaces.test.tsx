@@ -8,7 +8,7 @@ import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { baseThemeOptions } from '../theme'
 import { COLOR_THEME_PRESETS, buildColorSchemes } from '../theme-presets'
-import type { ColorTheme } from '../types/eureka'
+import type { ColorTheme } from '../types/preferences'
 
 // Every tone a filled surface can render, and so every background the surface
 // content tones have to stay readable against.

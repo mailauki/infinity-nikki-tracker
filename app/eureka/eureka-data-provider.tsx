@@ -15,8 +15,8 @@ import {
   ObtainedEureka,
   Style,
   Trial,
-  UserPreferences,
 } from '@/lib/types/eureka'
+import { UserPreferences } from '@/lib/types/preferences'
 import { CategoryFilter, ObtainedFilter } from '@/lib/types/props'
 import { updateEurekaFilters, updateGroupBySet, updateShowByColor } from '@/app/actions/preferences'
 import { handleObtained } from '@/app/eureka/actions'
