@@ -2,24 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { MakeupSetRaw } from '@/lib/types/makeup'
 import { cache } from 'react'
 
-const RAW_COLUMNS = `
-	id,
-	slug,
-	title,
-	description,
-	rarity,
-	style,
-	seasons,
-	season_category,
-	outfit_set,
-	"order",
-	base_set,
-	image_url,
-	alt_image_url,
-	updated_at,
-	released_at,
-	version
-`
+const RAW_COLUMNS = '*'
 
 export const getMakeupSetsRaw = cache(async () => {
   const supabase = await createClient()
@@ -29,7 +12,7 @@ export const getMakeupSetsRaw = cache(async () => {
     .select(RAW_COLUMNS)
     .order('updated_at', { ascending: false, nullsFirst: false })
 
-  return (makeupSets ?? []) as MakeupSetRaw[]
+  return makeupSets ?? []
 })
 
 export const getMakeupSetRaw = cache(async (slug: string) => {
@@ -41,5 +24,5 @@ export const getMakeupSetRaw = cache(async (slug: string) => {
     .eq('slug', slug)
     .maybeSingle()
 
-  return makeupSet as MakeupSetRaw | null
+  return makeupSet
 })

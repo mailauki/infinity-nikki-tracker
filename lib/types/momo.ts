@@ -31,25 +31,8 @@ export type MomoCloak = Tables<'momo_cloaks'> & {
   obtained?: boolean
 }
 
-export type MomoCloakRaw = Pick<
-  Tables<'momo_cloaks'>,
-  | 'id'
-  | 'slug'
-  | 'title'
-  | 'description'
-  | 'rarity'
-  | 'style'
-  | 'label'
-  | 'seasons'
-  | 'season_category'
-  | 'location'
-  | 'outfit_set'
-  | 'image_url'
-  | 'alt_image_url'
-  | 'updated_at'
-  | 'released_at'
-  | 'version'
->
+// Admin rows: the whole table row (queries select `*`).
+export type MomoCloakRaw = Tables<'momo_cloaks'>
 
 export type ObtainedMomoCloak = Pick<Tables<'obtained_momo_cloaks'>, 'id' | 'momo_cloak'>
 
