@@ -14,8 +14,16 @@ import CardGrid from '@/components/card-grid'
 import { isEvolutionVisible, isGlowup, matchesObtainedFilter } from '@/hooks/outfit'
 import { compareRelease, setRelease } from '@/hooks/release'
 import VirtualGroupedGrid from './virtual-grouped-grid'
-import VirtualSetGrid, { type SetGridItem } from './virtual-set-grid'
-import VirtualVariantGrid from './virtual-variant-grid'
+import OutfitSetCard from './outfit-set-card'
+import OutfitVariantCard from './outfit-variant-card'
+import {
+  VirtualSetGrid,
+  VirtualVariantGrid,
+  type SetGridItem as SharedSetGridItem,
+} from '@/components/virtual-grid'
+import type { Evolution, OutfitSet, OutfitVariant } from '@/lib/types/outfit'
+
+type SetGridItem = SharedSetGridItem<OutfitSet, Evolution, OutfitVariant>
 
 const STANDALONE_SLUG = 'standalone_pieces'
 
@@ -60,7 +68,7 @@ export default function FilterOutfits() {
     filters,
     exitingKeys,
   } = useOutfitData()
-  const { density } = useOutfitImageMode()
+  const { density, mode } = useOutfitImageMode()
   const { sortAxis, sortDir } = useSortOrder()
   // Progress sorting needs obtained data; fall back to date when logged out.
   const axis = !isLoggedIn && sortAxis === 'progress' ? 'date' : sortAxis
@@ -346,9 +354,20 @@ export default function FilterOutfits() {
       {filteredSets.length > 0 && density === 'standard' && (
         <VirtualSetGrid
           isFiltering={isFiltering}
-          isLoggedIn={isLoggedIn}
-          isMissingFilter={selectedObtainedFilter === 'missing'}
           items={setGridItems}
+          renderItem={(item) => (
+            <OutfitSetCard
+              key={item.key}
+              evolution={item.evolution}
+              isLoggedIn={isLoggedIn}
+              isMissingFilter={selectedObtainedFilter === 'missing'}
+              obtained={item.obtained}
+              set={item.set}
+              total={item.total}
+              variants={item.variants}
+            />
+          )}
+          showAlt={mode === 'alt'}
         />
       )}
 
@@ -365,9 +384,15 @@ export default function FilterOutfits() {
       {filteredSets.length > 0 && density === 'compact' && !groupBySet && (
         <VirtualVariantGrid
           isFiltering={isFiltering}
-          isLoggedIn={isLoggedIn}
-          isMissingFilter={selectedObtainedFilter === 'missing'}
-          variants={flatVariants}
+          items={flatVariants}
+          renderItem={(variant) => (
+            <OutfitVariantCard
+              key={variant.id}
+              isLoggedIn={isLoggedIn}
+              isMissingFilter={selectedObtainedFilter === 'missing'}
+              outfitVariant={variant}
+            />
+          )}
         />
       )}
     </>
