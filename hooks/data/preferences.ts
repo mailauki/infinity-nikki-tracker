@@ -1,7 +1,7 @@
 import { cache } from 'react'
 
 import { createClient } from '../../lib/supabase/server'
-import { AdminPreferences, UserPreferences } from '../../lib/types/eureka'
+import { AdminPreferences, UserPreferences } from '../../lib/types/preferences'
 import { DEFAULT_ADMIN_PREFERENCES, DEFAULT_PREFERENCES } from '../../lib/preferences'
 
 export const getPreferences = cache(async (user_id: string): Promise<UserPreferences> => {

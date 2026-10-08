@@ -54,7 +54,7 @@ The app moved away from MUI realtime `postgres_changes` subscriptions to a **cli
 2. The provider (`app/eureka/eureka-data-provider.tsx`, `app/outfits/outfit-data-provider.tsx`) `fetch`es its initial payload from an API route on mount — Eureka from `/api/eureka/bootstrap`, plus `/api/preferences`. The bootstrap route runs `await connection()` first so PPR doesn't prerender it (cookies would reject at build), then `Promise.all`s the React-`cache()`-deduped data hooks.
 3. The provider holds collection + filter state, exposes it via context (`eureka-context.tsx`, `outfit-context.tsx`), and calls Server Actions (`handleObtained`, `handleObtainedOutfit`, `app/actions/preferences.ts`) to persist toggles/filters. Optimistic updates use `useTransition` + `notistack` snackbars.
 
-`hooks/data/` holds the Supabase queries (React `cache()` or `use cache`, see Code Style). `hooks/eureka.ts` / `hooks/outfit.ts` hold pure transforms (`createEurekaSet`, `updateEurekaVariants`, `createOutfitSet`, `sortVariants`, `applyObtainedKeys`, `buildObtainedKeySet`, `isVariantObtained`, `isEvolutionVisible`, etc.). `hooks/count-obtained.ts` → `countObtained()`, `percent()`.
+`hooks/data/` holds the Supabase queries (React `cache()` or `use cache`, see Code Style). `hooks/eureka.ts` / `hooks/outfit.ts` hold pure transforms (`createEurekaSet`, `createOutfitSet`, `sortVariants`, `applyObtainedKeys`, `buildObtainedKeySet`, `isVariantObtained`, `isEvolutionVisible`, etc.). `hooks/count-obtained.ts` → `countObtained()`, `percent()`.
 
 ### Component Organization
 
@@ -169,8 +169,9 @@ Path alias `@/` maps to the project root.
 Types live in `lib/types/`:
 
 - `supabase.ts` — generated DB types (`Tables<>`, `TablesInsert<>`, etc.) — the source of truth; regenerate, don't hand-edit
-- `eureka.ts` — Eureka domain types derived from `Tables<>` (`EurekaSet`, `EurekaVariant`, `EurekaCategory`, `EurekaColor`, `Trial`, `ObtainedEureka`, `UserPreferences`, …)
+- `eureka.ts` — Eureka domain types derived from `Tables<>` (`EurekaSet`, `EurekaVariant`, `EurekaCategory`, `EurekaColor`, `Trial`, `ObtainedEureka`, plus the cross-domain `Style`/`Label` lookups, …)
 - `outfit.ts` — Outfit domain types; `looks.ts` — Custom Looks types
+- `preferences.ts` — `UserPreferences` (an `Omit` over the table, so new columns are typed automatically), `AdminPreferences`, `ColorTheme`
 - `props.ts` — UI/nav types (`NavLink`, `CardSize`, `AvatarSize`, `CategoryFilter`, `ObtainedFilter`, sort enums)
 
 Note: some `hooks/data/` files and `lib/theme.ts` use relative imports rather than `@/` — grep both patterns when searching for type usages.

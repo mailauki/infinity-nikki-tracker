@@ -1,4 +1,4 @@
-import { AdminPreferences, UserPreferences } from './types/eureka'
+import { AdminPreferences, UserPreferences } from './types/preferences'
 
 export const DEFAULT_PREFERENCES: UserPreferences = {
   group_by_set: true,

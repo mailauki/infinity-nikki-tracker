@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { UserPreferences } from '@/lib/types/eureka'
+import { UserPreferences } from '@/lib/types/preferences'
 import { fetchPreferencesOnce } from '@/lib/preferences-cache'
 import { savePreferences } from '@/lib/save-preferences'
 
