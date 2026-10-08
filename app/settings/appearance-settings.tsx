@@ -26,7 +26,7 @@ import {
 import { COLOR_THEME_PRESETS } from '@/lib/theme-presets'
 import { useColorTheme } from '@/components/color-theme-context'
 import type { SortOrder } from '@/components/sort-context'
-import type { ColorTheme } from '@/lib/types/eureka'
+import type { ColorTheme } from '@/lib/types/preferences'
 import { TEXT_SCALES, TEXT_SCALE_LABELS, toTextScale, type TextScale } from '@/lib/text-scale'
 
 const modes = [

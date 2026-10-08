@@ -1,8 +1,7 @@
-import { Percentage } from '@/lib/types/props'
 import { Check } from '@mui/icons-material'
 import { Typography } from '@mui/material'
 
-export default function PercentLabel({ percentage }: { percentage: Percentage }) {
+export default function PercentLabel({ percentage }: { percentage: number }) {
   return (
     <Typography
       color={percentage === 100 ? 'primary' : 'textPrimary'}

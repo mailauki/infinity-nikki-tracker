@@ -1,7 +1,7 @@
 'use client'
 
 import { ColorThemeProvider } from '@/components/color-theme-context'
-import type { ColorTheme } from '@/lib/types/eureka'
+import type { ColorTheme } from '@/lib/types/preferences'
 import type { TextScale } from '@/lib/text-scale'
 
 export default function ThemeClientProvider({

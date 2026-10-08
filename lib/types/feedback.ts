@@ -1,7 +1,6 @@
 import type { Tables } from '@/lib/types/supabase'
 
 export type Feedback = Tables<'feedback'>
-export type FeedbackImage = Tables<'feedback_images'>
 
 export type FeedbackType = 'feature' | 'issue'
 export type FeedbackStatus = 'new' | 'in_progress' | 'resolved' | 'declined'
