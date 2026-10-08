@@ -4,17 +4,6 @@ import { cache } from 'react'
 
 import { createClient } from '@/lib/supabase/server'
 
-export const getUserClaims = cache(async () => {
-  const supabase = await createClient()
-  const { data } = await supabase.auth.getClaims()
-
-  const user = data?.claims
-
-  if (!user) return null
-
-  return user
-})
-
 export const getUserID = cache(async () => {
   const supabase = await createClient()
   const { data } = await supabase.auth.getClaims()

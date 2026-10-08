@@ -9,7 +9,7 @@ import { toSlugVariant } from '@/lib/utils'
 
 // Build an O(1) membership Set of obtained variants keyed by
 // `${set}-${category}-${color}`. Lets callers resolve `obtained` without the
-// O(variants × obtained) `.find` that updateEurekaSet/updateEurekaVariants run.
+// O(variants × obtained) `.find` that updateEurekaSet runs.
 export function buildObtainedKeySet(obtainedEureka: ObtainedEureka[] | null): Set<string> {
   const keys = new Set<string>()
   for (const o of obtainedEureka ?? []) {
@@ -112,26 +112,6 @@ export function updateEurekaSet({
       ),
     })) as EurekaVariant[],
   } as EurekaSet
-
-  return eurekaWithObtained
-}
-
-export function updateEurekaVariants({
-  eurekaVariants,
-  obtainedEureka,
-}: {
-  eurekaVariants: EurekaVariant[]
-  obtainedEureka: ObtainedEureka[] | null
-}) {
-  const eurekaWithObtained = eurekaVariants.map((variant) => ({
-    ...variant,
-    obtained: !!obtainedEureka?.find(
-      (obtained) =>
-        variant.eureka_set === obtained.eureka_set &&
-        variant.category === obtained.category &&
-        variant.color === obtained.color
-    ),
-  })) as EurekaVariant[]
 
   return eurekaWithObtained
 }

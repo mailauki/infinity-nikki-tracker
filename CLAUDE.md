@@ -62,8 +62,6 @@ The app moved away from MUI realtime `postgres_changes` subscriptions to a **cli
 
 Admin sub-trees additionally colocate their `*-table.tsx` list views and `{new,edit/[slug]}/*-form.tsx` forms next to their pages, plus DataGrid helpers in `app/admin/eureka/table-utils.tsx` (`LockedCell`, `useRowActions`).
 
-Note: `components/eureka/` still holds `eureka-button`, `eureka-variant-grid`, `category-image`, and `category-item`, which are currently unreferenced — don't assume they're live code.
-
 ### Admin Tables
 
 Admin list pages use **`@mui/x-data-grid` (v9)** with inline row editing, not a custom table component. `app/admin/eureka/table-utils.tsx` provides shared helpers: `useRowActions()` (manages `GridRowModesModel` edit/save/cancel state) and `LockedCell` (links to the full edit form). Each admin list page is a Server Component that `Promise.all`s its data hooks inside a `Suspense` boundary and passes plain rows to a colocated `'use client'` `*-view.tsx` that owns the `GridColDef[]`. Full add/edit forms live under each `admin/.../{new,edit/[slug]}/` route with their own `actions.ts`.

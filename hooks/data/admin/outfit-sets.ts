@@ -14,17 +14,3 @@ export const getOutfitSetsRaw = cache(async () => {
 
   return (outfitSets ?? []) as OutfitSetRaw[]
 })
-
-export const getOutfitSetRaw = cache(async (slug: string) => {
-  const supabase = await createClient()
-
-  const { data: outfitSet } = await supabase
-    .from('outfit_sets')
-    .select(
-      'id, slug, title, subtitle, description, rarity, style, label, label_2, ability, "order", base_set, image_url, alt_image_url, updated_at, released_at, version'
-    )
-    .eq('slug', slug)
-    .maybeSingle()
-
-  return outfitSet as OutfitSetRaw | null
-})

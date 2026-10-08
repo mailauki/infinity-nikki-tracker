@@ -60,10 +60,6 @@ export function deriveGlowupVariantTitle({
   return `${base}: ${glowup}`
 }
 
-export function isBaseRow(row: { base_set: string | null }): boolean {
-  return row.base_set === null
-}
-
 export function sortOutfitVariants(
   variants: OutfitVariant[],
   defaultStateSlug: string | null | undefined,
@@ -196,19 +192,6 @@ export function updateOutfitSet({
   if (!changed) return outfitSet
 
   return { ...outfitSet, outfit_variants } as OutfitSet
-}
-
-export function updateOutfitVariants({
-  outfitVariants,
-  obtainedOutfit,
-}: {
-  outfitVariants: OutfitVariant[]
-  obtainedOutfit: ObtainedOutfit[] | null
-}): OutfitVariant[] {
-  return outfitVariants.map((variant) => ({
-    ...variant,
-    obtained: !!obtainedOutfit?.find((o) => o.outfit_variant === variant.slug),
-  })) as OutfitVariant[]
 }
 
 /**
