@@ -17,22 +17,6 @@ export const getAdminData = cache(async () => {
   return { eurekaSets, categories, colors, eurekaVariants, trials }
 })
 
-export const getProfile = cache(async (user_id: UUID | string) => {
-  const supabase = await createClient()
-
-  const {
-    data: profile,
-    error,
-    status,
-  } = await supabase
-    .from('profiles')
-    .select(`display_name, username, avatar_url`)
-    .eq('id', user_id)
-    .single()
-
-  return { profile, error, status }
-})
-
 export const getIsPremium = cache(async (user_id: UUID | string) => {
   const supabase = await createClient()
   const { data } = await supabase

@@ -27,30 +27,3 @@ export const getEurekaSetsRaw = cache(async () => {
 
   return eurekaSets as EurekaSetRaw[]
 })
-
-export const getEurekaSetRaw = cache(async (slug: string) => {
-  const supabase = await createClient()
-
-  const { data: eurekaSet } = await supabase
-    .from('eureka_sets')
-    .select(
-      `
-			id,
-			slug,
-			title,
-			description,
-			rarity,
-			style,
-			label,
-			updated_at,
-			released_at,
-			version,
-			seasons,
-			eureka_set_trials ( trial )
-			`
-    )
-    .eq('slug', slug)
-    .maybeSingle()
-
-  return eurekaSet as EurekaSetRaw | null
-})

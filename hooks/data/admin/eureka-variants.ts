@@ -26,29 +26,3 @@ export const getEurekaVariantsRaw = cache(async () => {
 
   return eurekaVariants as EurekaVariantRaw[]
 })
-
-export const getEurekaVariantRaw = cache(async (slug: string) => {
-  const supabase = await createClient()
-
-  const { data: eurekaVariant } = await supabase
-    .from('eureka_variants')
-    .select(
-      `
-			id,
-			slug,
-			eureka_set,
-			color,
-			category,
-			image_url,
-			default,
-			updated_at,
-			eureka_sets ( title ),
-			eureka_categories ( title ),
-			eureka_colors ( title )
-			`
-    )
-    .eq('slug', slug)
-    .maybeSingle()
-
-  return eurekaVariant as EurekaVariantRaw | null
-})
