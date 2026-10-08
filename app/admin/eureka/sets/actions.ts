@@ -6,7 +6,7 @@ import { toSlugVariant } from '@/lib/utils'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { readReleaseFields } from '@/lib/release-form'
-import { editPath } from '@/lib/sitemap/page-titles'
+import { editPath } from '@/lib/sitemap/routes'
 
 export async function addEurekaSet(_: unknown, formData: FormData) {
   const role = await getUserRole()

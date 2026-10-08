@@ -13,7 +13,7 @@ import LooksToolbar from './looks-toolbar'
 import LooksEmptyState from './looks-empty-state'
 import PageShell from '@/components/page-shell'
 import { SimpleGrid } from '@/components/card-grid'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = { title: pageTitle('/looks') }
 

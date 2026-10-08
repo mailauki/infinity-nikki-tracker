@@ -4,7 +4,7 @@ import { Box, Card, CardActionArea, Stack, Typography, CardContent } from '@mui/
 import Link from 'next/link'
 import { SimpleGrid } from './card-grid'
 import ToggleIcon from './toggle-icon'
-import { navLinksData } from '@/lib/sitemap/page-titles'
+import { navLinksData } from '@/lib/sitemap/routes'
 
 export function QuickAccess() {
   return (

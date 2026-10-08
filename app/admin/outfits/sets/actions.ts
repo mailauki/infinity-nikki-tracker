@@ -9,7 +9,7 @@ import { getUserRole } from '@/hooks/user'
 import { EvolutionDraft } from '@/lib/types/outfit'
 import { evolutionTitle } from '@/hooks/outfit'
 import { readReleaseFields } from '@/lib/release-form'
-import { editPath } from '@/lib/sitemap/page-titles'
+import { editPath } from '@/lib/sitemap/routes'
 
 // The admin dashboard is a Server Component behind a client Router Cache entry.
 // Without this, redirecting back after a save re-renders the cached copy and

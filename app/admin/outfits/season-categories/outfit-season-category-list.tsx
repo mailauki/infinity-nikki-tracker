@@ -4,7 +4,7 @@ import { SeasonCategoryRaw } from '@/hooks/data/admin/season-categories'
 import ListRow from '../../list-row'
 import { AdminList } from '../../admin-list'
 import { toTitle } from '@/lib/utils'
-import { newPath } from '@/lib/sitemap/page-titles'
+import { newPath } from '@/lib/sitemap/routes'
 
 interface OutfitSeasonCategoryListProps {
   rows: SeasonCategoryRaw[]

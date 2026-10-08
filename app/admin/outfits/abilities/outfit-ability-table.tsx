@@ -7,7 +7,7 @@ import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from 
 import { AbilityRaw } from '@/hooks/data/admin/abilities'
 import ImageUpload from '@/components/forms/image-upload'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
-import { editPath } from '@/lib/sitemap/page-titles'
+import { editPath } from '@/lib/sitemap/routes'
 
 type Row = AbilityRaw
 

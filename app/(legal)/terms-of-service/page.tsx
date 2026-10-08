@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { Link as Anchor } from '@mui/material'
 import { Section, SectionList, SectionSubtitle, SectionTitle } from '@/components/section'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 import LegalPage from '../legal-page'
 
 export const metadata: Metadata = {

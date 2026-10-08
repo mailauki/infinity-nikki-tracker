@@ -3,7 +3,7 @@
 import { SeasonGroupRaw } from '@/hooks/data/admin/season-groups'
 import ListRow from '../../list-row'
 import { AdminList } from '../../admin-list'
-import { newPath } from '@/lib/sitemap/page-titles'
+import { newPath } from '@/lib/sitemap/routes'
 
 interface OutfitSeasonGroupListProps {
   rows: SeasonGroupRaw[]

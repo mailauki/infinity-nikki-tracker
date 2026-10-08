@@ -7,7 +7,7 @@ import { getAdminData } from '@/hooks/data/user'
 import { toSlugVariant } from '@/lib/utils'
 import EntityForm from '@/app/admin/entity-form'
 import { editEurekaVariant } from '../../actions'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/eureka/variants/edit/[slug]'),

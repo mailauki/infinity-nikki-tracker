@@ -8,7 +8,7 @@ import { getLocations } from '@/hooks/data/locations'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { byTitleThenSlug } from '@/lib/utils'
 import MomoCloakView from './momo-cloak-view'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata = { title: pageTitle('/admin/momo-cloaks') }
 

@@ -3,7 +3,7 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import EntityForm from '@/app/admin/entity-form'
 import { addLocation } from './actions'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/locations/new'),

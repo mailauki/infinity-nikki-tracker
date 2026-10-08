@@ -3,7 +3,7 @@
 import { LocationRaw } from '@/hooks/data/admin/locations'
 import ListRow from '../list-row'
 import { AdminList } from '../admin-list'
-import { newPath } from '@/lib/sitemap/page-titles'
+import { newPath } from '@/lib/sitemap/routes'
 
 interface LocationListProps {
   rows: LocationRaw[]

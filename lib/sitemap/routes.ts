@@ -1,6 +1,6 @@
-// The single source of truth for every route: what it's called, how it shows
-// in the nav (and which nav section it sits in — `navLinksData` at the bottom),
-// and whether it belongs in the sitemap (app/sitemap.ts lists the flagged ones).
+// The single source of truth for every route: what it's called, where it sits
+// in the nav, and whether it belongs in the sitemap. Edit a route here and the
+// sidebar (`navLinksData`), page titles, admin links and app/sitemap.ts follow.
 //
 // A page name used to be written in up to three independent places — the nav
 // entry, the route's `metadata.title`, and PageShell's `title` prop. They
@@ -34,6 +34,17 @@ export interface NavLink {
   items?: NavLink[]
 }
 
+/** Main sidebar sections, top to bottom. */
+export type NavSection = 'home' | 'collection' | 'account' | 'support'
+
+/** Admin dashboard tabs, in order, with their header artwork. */
+const ADMIN_TABS = {
+  Outfits: '/icons/outfits.png',
+  Eureka: '/icons/eureka.png',
+  Other: '/icons/makeup.png',
+} as const
+type AdminTab = keyof typeof ADMIN_TABS
+
 export interface PageName {
   /** Sidebar / breadcrumb label. Kept short so nav rows don't wrap. */
   nav: string
@@ -48,6 +59,17 @@ export interface PageName {
   icon?: NavIconKey
   /** List this public page in /sitemap.xml. */
   sitemap?: true
+  /**
+   * Sidebar section this route appears in. Rows show in registry order, so
+   * reordering entries below reorders the sidebar.
+   */
+  section?: NavSection
+  /** Nest under another sidebar row (an expandable sub-item). */
+  parent?: string
+  /** Only shown to admins. */
+  adminOnly?: true
+  /** Admin dashboard tab this list page appears under, in registry order. */
+  adminTab?: AdminTab
 }
 
 // An admin list page plus its add and edit forms. The form labels reuse the
@@ -81,41 +103,60 @@ export const PAGE_NAMES = {
     title: 'Infinity Nikki Tracker',
     image: '/infinity-nikki-logo.png',
     sitemap: true,
+    section: 'home',
   },
 
-  // Collection domains
-  '/outfits': { nav: 'Outfits', image: '/icons/outfits.png', sitemap: true },
+  // Collection domains — in sidebar order
+  '/outfits': { nav: 'Outfits', image: '/icons/outfits.png', sitemap: true, section: 'collection' },
+  '/eureka': {
+    nav: 'Eureka',
+    title: 'Eureka Sets',
+    image: '/icons/eureka.png',
+    sitemap: true,
+    section: 'collection',
+  },
+  '/eureka/trials': {
+    nav: 'Trials',
+    image: '/icons/realm-of-breakthrough.png',
+    icon: 'construction',
+    sitemap: true,
+    section: 'collection',
+    parent: '/eureka',
+  },
+  '/makeup': { nav: 'Makeup', image: '/icons/makeup.png', sitemap: true, section: 'collection' },
+  '/momo-cloaks': {
+    nav: 'Cloaks',
+    title: "Momo's Cloaks",
+    image: '/icons/momo-cloak.png',
+    sitemap: true,
+    section: 'collection',
+  },
   '/seasons': {
     nav: 'Seasons',
     title: 'Outfits by Season',
     image: '/icons/compendium.png',
     icon: 'book',
     sitemap: true,
+    section: 'collection',
   },
-  '/eureka': { nav: 'Eureka', title: 'Eureka Sets', image: '/icons/eureka.png', sitemap: true },
+  '/looks': {
+    nav: 'Custom Looks',
+    image: '/icons/wardrobe.png',
+    icon: 'checkroom',
+    section: 'collection',
+  },
   '/eureka/sets': { nav: 'Eureka Sets' },
-  '/eureka/trials': {
-    nav: 'Trials',
-    image: '/icons/realm-of-breakthrough.png',
-    icon: 'construction',
-    sitemap: true,
-  },
-  '/makeup': { nav: 'Makeup', image: '/icons/makeup.png', sitemap: true },
-  '/momo-cloaks': {
-    nav: 'Cloaks',
-    title: "Momo's Cloaks",
-    image: '/icons/momo-cloak.png',
-    sitemap: true,
-  },
-  '/looks': { nav: 'Custom Looks', image: '/icons/wardrobe.png', icon: 'checkroom' },
   '/looks/new': { nav: 'New Look' },
   '/search': { nav: 'Search' },
 
   // Account
-  '/profile': { nav: 'Profile', icon: 'account' },
-  '/settings': { nav: 'Settings', icon: 'settings' },
-  '/about': { nav: 'About', icon: 'info', sitemap: true },
-  '/help': { nav: 'Help', icon: 'help', sitemap: true },
+  '/profile': { nav: 'Profile', icon: 'account', section: 'account' },
+  '/settings': { nav: 'Settings', icon: 'settings', section: 'account' },
+  '/admin': { nav: 'Admin', icon: 'admin', section: 'account', adminOnly: true },
+
+  // Support
+  '/about': { nav: 'About', icon: 'info', sitemap: true, section: 'support' },
+  '/help': { nav: 'Help', icon: 'help', sitemap: true, section: 'support' },
 
   // Legal — the (legal) route group is not part of the URL, so these are
   // registered at their real top-level paths.
@@ -130,28 +171,40 @@ export const PAGE_NAMES = {
   '/update-password': { nav: 'Update password' },
   '/auth/error': { nav: 'Authentication error' },
 
-  // Admin
-  '/admin': { nav: 'Admin', icon: 'admin' },
-  '/admin/feedback': { nav: 'Feedback' },
+  // Admin — grouped by dashboard tab, in tab order
+  ...adminPages('/admin/outfits/sets', { nav: 'Sets', title: 'Outfit Sets', adminTab: 'Outfits' }),
+  ...adminPages('/admin/outfits/variants', {
+    nav: 'Pieces',
+    title: 'Outfit Pieces',
+    adminTab: 'Outfits',
+  }),
+  ...adminPages(
+    '/admin/outfits/evolutions',
+    { nav: 'Evolutions', adminTab: 'Outfits' },
+    { add: false }
+  ),
+  ...adminPages('/admin/outfits/abilities', { nav: 'Abilities', adminTab: 'Outfits' }),
+  ...adminPages('/admin/outfits/seasons', { nav: 'Seasons', adminTab: 'Outfits' }),
+  ...adminPages('/admin/outfits/season-categories', {
+    nav: 'Season Categories',
+    adminTab: 'Outfits',
+  }),
+  ...adminPages('/admin/outfits/season-groups', { nav: 'Season Groups', adminTab: 'Outfits' }),
+
+  ...adminPages('/admin/eureka/sets', { nav: 'Sets', title: 'Eureka Sets', adminTab: 'Eureka' }),
+  ...adminPages('/admin/eureka/variants', {
+    nav: 'Variants',
+    title: 'Eureka Variants',
+    adminTab: 'Eureka',
+  }),
+  ...adminPages('/admin/eureka/trials', { nav: 'Trials', adminTab: 'Eureka' }),
+
+  ...adminPages('/admin/makeup/sets', { nav: 'Makeup Sets', adminTab: 'Other' }),
+  ...adminPages('/admin/makeup/variants', { nav: 'Makeup Pieces', adminTab: 'Other' }),
+  ...adminPages('/admin/momo-cloaks', { nav: "Momo's Cloaks", adminTab: 'Other' }),
+  ...adminPages('/admin/locations', { nav: 'Locations', adminTab: 'Other' }),
+  '/admin/feedback': { nav: 'Feedback', adminTab: 'Other' },
   '/admin/feedback/[id]': { nav: 'Feedback detail' },
-
-  ...adminPages('/admin/outfits/sets', { nav: 'Sets', title: 'Outfit Sets' }),
-  ...adminPages('/admin/outfits/variants', { nav: 'Pieces', title: 'Outfit Pieces' }),
-  ...adminPages('/admin/outfits/evolutions', { nav: 'Evolutions' }, { add: false }),
-  ...adminPages('/admin/outfits/abilities', { nav: 'Abilities' }),
-  ...adminPages('/admin/outfits/seasons', { nav: 'Seasons' }),
-  ...adminPages('/admin/outfits/season-categories', { nav: 'Season Categories' }),
-  ...adminPages('/admin/outfits/season-groups', { nav: 'Season Groups' }),
-  ...adminPages('/admin/locations', { nav: 'Locations' }),
-
-  ...adminPages('/admin/eureka/sets', { nav: 'Sets', title: 'Eureka Sets' }),
-  ...adminPages('/admin/eureka/variants', { nav: 'Variants', title: 'Eureka Variants' }),
-  ...adminPages('/admin/eureka/trials', { nav: 'Trials' }),
-
-  ...adminPages('/admin/makeup/sets', { nav: 'Makeup Sets' }),
-  ...adminPages('/admin/makeup/variants', { nav: 'Makeup Pieces' }),
-
-  ...adminPages('/admin/momo-cloaks', { nav: "Momo's Cloaks" }),
 } as const satisfies Record<string, PageName>
 
 export type PageRoute = keyof typeof PAGE_NAMES
@@ -242,64 +295,37 @@ export function resolveNavLabel(pathname: string): string {
   return titleFromSlug(last)
 }
 
-// ---- Nav sections -------------------------------------------------------------
-// Which routes appear in which section, in what order. Each row takes its label,
-// image and icon from the registry above; pass overrides only where a row
-// differs (the admin tab headers).
-function link(url: PageRoute, extra: Partial<Omit<NavLink, 'url'>> = {}): NavLink {
-  const { image, icon } = pageEntry(url)
-  return { title: navLabel(url), url, image, icon, ...extra }
+// ---- Nav ------------------------------------------------------------------------
+// Built entirely from the registry above — nothing to edit here when a route
+// moves. Sections and tabs list their routes in registry order.
+const ROUTES = Object.keys(PAGE_NAMES) as PageRoute[]
+
+function link(url: PageRoute): NavLink {
+  const { nav, image, icon, adminOnly } = pageEntry(url)
+  const items = ROUTES.filter((route) => pageEntry(route).parent === url).map(link)
+  return {
+    title: nav,
+    url,
+    image,
+    icon,
+    ...(adminOnly && { adminOnly }),
+    ...(items.length > 0 && { items }),
+  }
 }
 
+const section = (name: NavSection) =>
+  ROUTES.filter((route) => pageEntry(route).section === name && !pageEntry(route).parent).map(link)
+
 export const navLinksData = {
-  home: [link('/')],
-  collection: [
-    link('/outfits'),
-    link('/eureka', { items: [link('/eureka/trials')] }),
-    link('/makeup'),
-    link('/momo-cloaks'),
-    link('/seasons'),
-    link('/looks'),
-  ],
-  account: [link('/profile'), link('/settings'), link('/admin', { adminOnly: true })],
-  support: [link('/about'), link('/help')],
+  home: section('home'),
+  collection: section('collection'),
+  account: section('account'),
+  support: section('support'),
   admin: {
-    // Tab headers carry their own short title and artwork; their items take the
-    // registry's nav labels.
-    tabs: [
-      link('/admin/outfits/sets', {
-        title: 'Outfits',
-        image: '/icons/outfits.png',
-        items: [
-          link('/admin/outfits/sets'),
-          link('/admin/outfits/variants'),
-          link('/admin/outfits/evolutions'),
-          link('/admin/outfits/abilities'),
-          link('/admin/outfits/seasons'),
-          link('/admin/outfits/season-categories'),
-          link('/admin/outfits/season-groups'),
-        ],
-      }),
-      link('/admin/eureka/sets', {
-        title: 'Eureka',
-        image: '/icons/eureka.png',
-        items: [
-          link('/admin/eureka/sets'),
-          link('/admin/eureka/variants'),
-          link('/admin/eureka/trials'),
-        ],
-      }),
-      link('/admin/makeup/sets', {
-        title: 'Other',
-        image: '/icons/makeup.png',
-        items: [
-          link('/admin/makeup/sets'),
-          link('/admin/makeup/variants'),
-          link('/admin/momo-cloaks'),
-          link('/admin/locations'),
-          link('/admin/feedback'),
-        ],
-      }),
-    ],
+    // A tab header links to its first list page, under the tab's own name.
+    tabs: Object.entries(ADMIN_TABS).map(([title, image]): NavLink => {
+      const items = ROUTES.filter((route) => pageEntry(route).adminTab === title).map(link)
+      return { ...items[0], title, image, items }
+    }),
   },
-} satisfies Record<string, NavLink[] | { tabs: NavLink[] }>
+}

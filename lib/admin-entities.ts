@@ -1,4 +1,4 @@
-import { newPath, pageTitle } from '@/lib/sitemap/page-titles'
+import { newPath, pageTitle } from '@/lib/sitemap/routes'
 
 export type AdminEntityKey =
   | 'outfit-sets'

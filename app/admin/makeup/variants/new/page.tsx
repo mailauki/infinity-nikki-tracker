@@ -8,7 +8,7 @@ import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getStyles } from '@/hooks/data/styles'
 import EntityForm from '@/app/admin/entity-form'
 import { addMakeupVariant } from '../actions'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/makeup/variants/new'),

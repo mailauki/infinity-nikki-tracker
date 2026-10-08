@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { PAGE_NAMES, navLabel, pageTitle, resolveNavLabel } from '../page-titles'
+import { PAGE_NAMES, navLabel, pageTitle, resolveNavLabel } from '../routes'
 
 describe('page name registry', () => {
   it('falls back to the nav label when no longer title is set', () => {

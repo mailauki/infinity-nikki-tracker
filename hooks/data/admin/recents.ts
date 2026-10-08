@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { cache } from 'react'
 import { toTitle } from '@/lib/utils'
-import { editPath, pageTitle } from '@/lib/sitemap/page-titles'
+import { editPath, pageTitle } from '@/lib/sitemap/routes'
 
 export type RecentAdminItem = {
   slug: string

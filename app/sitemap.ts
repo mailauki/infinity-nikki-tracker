@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { cacheLife } from 'next/cache'
 import { createPublicClient } from '@/lib/supabase/public'
-import { SITEMAP_ROUTES } from '@/lib/sitemap/page-titles'
+import { SITEMAP_ROUTES } from '@/lib/sitemap/routes'
 import { SITE_URL } from '@/lib/sitemap/site-url'
 
 type Row = { slug: string; updated_at: string | null }

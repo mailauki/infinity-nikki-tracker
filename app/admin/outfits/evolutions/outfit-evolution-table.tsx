@@ -9,7 +9,7 @@ import ImageUpload from '@/components/forms/image-upload'
 import { categoryImageColumns } from '@/app/admin/outfits/variant-image-cell'
 import { useAdminView } from '@/app/admin/admin-view-context'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
-import { editPath } from '@/lib/sitemap/page-titles'
+import { editPath } from '@/lib/sitemap/routes'
 
 type Row = Evolution
 

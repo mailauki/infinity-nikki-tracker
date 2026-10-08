@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { getLocations } from '@/hooks/data/locations'
 import EntityForm from '@/app/admin/entity-form'
 import { addSeason } from './actions'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/outfits/seasons/new'),

@@ -7,7 +7,7 @@ import { getLocations } from '@/hooks/data/locations'
 import { toSlug } from '@/lib/utils'
 import EntityForm from '@/app/admin/entity-form'
 import { editTrial } from '../../actions'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/eureka/trials/edit/[slug]'),

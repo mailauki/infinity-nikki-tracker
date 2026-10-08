@@ -5,7 +5,7 @@ import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { readReleaseFields } from '@/lib/release-form'
-import { editPath } from '@/lib/sitemap/page-titles'
+import { editPath } from '@/lib/sitemap/routes'
 
 export async function editSeason(currentSlug: string, _: unknown, formData: FormData) {
   const role = await getUserRole()

@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
-import { editPath } from '@/lib/sitemap/page-titles'
+import { editPath } from '@/lib/sitemap/routes'
 
 export async function addTrial(_: unknown, formData: FormData) {
   const role = await getUserRole()

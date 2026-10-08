@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { Box, Chip, Divider, Skeleton, Stack, Typography } from '@mui/material'
 import { getFeedbackById, getFeedbackImageUrls } from '@/hooks/data/admin/feedback'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata = { title: pageTitle('/admin/feedback/[id]') }
 

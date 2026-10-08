@@ -6,7 +6,7 @@ import { getUserRole } from '@/hooks/user'
 import { evolutionSortKey } from '@/hooks/outfit'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { readReleaseFields } from '@/lib/release-form'
-import { editPath } from '@/lib/sitemap/page-titles'
+import { editPath } from '@/lib/sitemap/routes'
 
 export async function editEvolution(
   currentSlug: string,

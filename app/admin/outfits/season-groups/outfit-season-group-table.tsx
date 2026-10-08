@@ -7,7 +7,7 @@ import { SeasonGroupRaw } from '@/hooks/data/admin/season-groups'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 import ImageUpload from '@/components/forms/image-upload'
 import { Stack } from '@mui/material'
-import { editPath } from '@/lib/sitemap/page-titles'
+import { editPath } from '@/lib/sitemap/routes'
 
 type Row = SeasonGroupRaw
 

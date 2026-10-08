@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { readReleaseFields } from '@/lib/release-form'
-import { editPath } from '@/lib/sitemap/page-titles'
+import { editPath } from '@/lib/sitemap/routes'
 
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null

@@ -1,5 +1,5 @@
 import { SignUpForm } from './sign-up-form'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata = { title: pageTitle('/sign-up') }
 

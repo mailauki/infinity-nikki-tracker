@@ -4,7 +4,7 @@ import { EurekaSet } from '@/lib/types/eureka'
 import ListRow from '../../list-row'
 import { toTitle } from '@/lib/utils'
 import { AdminList } from '../../admin-list'
-import { newPath } from '@/lib/sitemap/page-titles'
+import { newPath } from '@/lib/sitemap/routes'
 
 interface EurekaSetListProps {
   rows: EurekaSet[]

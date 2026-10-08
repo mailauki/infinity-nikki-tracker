@@ -8,7 +8,7 @@ import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { byTitleThenSlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import OutfitSetView from './outfit-set-view'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata = { title: pageTitle('/admin/outfits/sets') }
 

@@ -5,7 +5,7 @@ import { Metadata } from 'next'
 import { getSeasonGroupRaw } from '@/hooks/data/admin/season-groups'
 import EntityForm from '@/app/admin/entity-form'
 import { editSeasonGroup } from './actions'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/outfits/season-groups/edit/[slug]'),

@@ -9,7 +9,7 @@ import { toSlug } from '@/lib/utils'
 import { recategorizeVariant } from '@/lib/variant-recategorize'
 import { deriveVariantSlug } from '@/lib/variant-slug'
 import { readReleaseFields } from '@/lib/release-form'
-import { editPath } from '@/lib/sitemap/page-titles'
+import { editPath } from '@/lib/sitemap/routes'
 
 const STANDALONE_SLUG = 'standalone_pieces'
 

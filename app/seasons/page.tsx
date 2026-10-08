@@ -9,7 +9,7 @@ import { getLocations } from '@/hooks/data/locations'
 import { getMakeupSets } from '@/hooks/data/makeup-sets'
 import SeasonsContent from '@/app/seasons/seasons-content'
 import PageShell from '@/components/page-shell'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata: Metadata = {
   title: pageTitle('/seasons'),

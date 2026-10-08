@@ -2,7 +2,7 @@ import { getSeasonGroupsRaw } from '@/hooks/data/admin/season-groups'
 import { byTitleThenSlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import OutfitSeasonGroupView from './outfit-season-group-view'
-import { pageTitle } from '@/lib/sitemap/page-titles'
+import { pageTitle } from '@/lib/sitemap/routes'
 
 export const metadata = { title: pageTitle('/admin/outfits/season-groups') }
 

@@ -16,7 +16,7 @@ import {
   Tooltip,
 } from '@mui/material'
 import React from 'react'
-import { navLinksData } from '@/lib/sitemap/page-titles'
+import { navLinksData } from '@/lib/sitemap/routes'
 import { List, Person } from '@mui/icons-material'
 import { NavIcon } from '@/lib/sitemap/nav-icons'
 import { LogoutButton } from './logout-button'
