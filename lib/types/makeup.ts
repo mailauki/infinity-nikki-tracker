@@ -3,25 +3,8 @@ import { Tables } from './supabase'
 
 export type MakeupCategory = Pick<Tables<'makeup_categories'>, 'slug' | 'title' | 'image_url'>
 
-export type MakeupSetRaw = Pick<
-  Tables<'makeup_sets'>,
-  | 'id'
-  | 'slug'
-  | 'title'
-  | 'description'
-  | 'rarity'
-  | 'style'
-  | 'seasons'
-  | 'season_category'
-  | 'outfit_set'
-  | 'order'
-  | 'base_set'
-  | 'image_url'
-  | 'alt_image_url'
-  | 'updated_at'
-  | 'released_at'
-  | 'version'
->
+// The whole table row — admin and the public makeup queries both select `*`.
+export type MakeupSetRaw = Tables<'makeup_sets'>
 
 export type MakeupVariant = Pick<
   Tables<'makeup_variants'>,

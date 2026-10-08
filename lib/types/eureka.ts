@@ -18,27 +18,13 @@ export type EurekaSet = Tables<'eureka_sets'> & {
   release: Release
 }
 
-export type EurekaSetRaw = Pick<
-  Tables<'eureka_sets'>,
-  | 'id'
-  | 'slug'
-  | 'title'
-  | 'description'
-  | 'rarity'
-  | 'style'
-  | 'label'
-  | 'updated_at'
-  | 'released_at'
-  | 'version'
-  | 'seasons'
-> & {
+// Admin rows: the whole table row plus the join the admin views display. The
+// queries select `*`, so the type is exactly what was fetched.
+export type EurekaSetRaw = Tables<'eureka_sets'> & {
   eureka_set_trials: EurekaSetTrial[]
 }
 
-export type EurekaVariantRaw = Pick<
-  Tables<'eureka_variants'>,
-  'id' | 'slug' | 'eureka_set' | 'color' | 'category' | 'image_url' | 'default' | 'updated_at'
-> & {
+export type EurekaVariantRaw = Tables<'eureka_variants'> & {
   eureka_sets: { title: string } | null
   eureka_categories: { title: string } | null
   eureka_colors: { title: string | null } | null

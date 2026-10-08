@@ -9,11 +9,7 @@ import { getStyles } from '@/hooks/data/styles'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
 
-const SET_COLUMNS = `
-  id, slug, title, description, rarity, style, seasons, season_category,
-  outfit_set, "order", base_set, image_url, alt_image_url, created_at, updated_at,
-  released_at, version
-`
+const SET_COLUMNS = '*'
 
 export async function GET() {
   // Must precede any cookie read and stay outside the try/catch below: this is
@@ -57,7 +53,7 @@ export async function GET() {
   ])
 
   const makeupSets = createMakeupSet(
-    (rows ?? []) as MakeupSetRaw[],
+    rows ?? [],
     variants,
     makeupCategories,
     outfitSets ?? [],

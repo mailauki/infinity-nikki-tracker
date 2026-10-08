@@ -9,24 +9,7 @@ import { getSeasons } from './seasons'
 import { getSeasonCategories } from './season-categories'
 import { getUserID } from '../user'
 
-const SET_COLUMNS = `
-	id,
-	slug,
-	title,
-	description,
-	rarity,
-	style,
-	seasons,
-	season_category,
-	outfit_set,
-	"order",
-	base_set,
-	image_url,
-	alt_image_url,
-	updated_at,
-	released_at,
-	version
-`
+const SET_COLUMNS = '*'
 
 // `forUserId` scopes the obtained flags to a specific user instead of the
 // viewer — see the note on getOutfitSets. Omit it to resolve the signed-in user.
@@ -61,7 +44,7 @@ export const getMakeupSets = cache(async (forUserId?: string) => {
     : { data: [] }
 
   const sets = createMakeupSet(
-    (rows ?? []) as MakeupSetRaw[],
+    rows ?? [],
     variants,
     makeupCategories,
     outfitSets ?? [],

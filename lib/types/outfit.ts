@@ -141,29 +141,9 @@ export type OutfitSet = Tables<'outfit_sets'> & {
 // (i.e. order >= 2 for regular evolutions, order = 0 for glow-ups).
 export type Evolution = OutfitSet
 
-export type OutfitSetRaw = Pick<
-  Tables<'outfit_sets'>,
-  | 'id'
-  | 'slug'
-  | 'title'
-  | 'subtitle'
-  | 'description'
-  | 'rarity'
-  | 'style'
-  | 'label'
-  | 'label_2'
-  | 'ability'
-  | 'seasons'
-  | 'season_category'
-  | 'image_url'
-  | 'alt_image_url'
-  | 'order'
-  | 'base_set'
-  | 'handheld_base_only'
-  | 'updated_at'
-  | 'released_at'
-  | 'version'
->
+// Admin rows: the whole table row (queries select `*`, so the type is exactly
+// what was fetched). Also feeds the outfit pickers in the makeup/momo forms.
+export type OutfitSetRaw = Tables<'outfit_sets'>
 
 export type OutfitVariant = Pick<
   Tables<'outfit_variants'>,

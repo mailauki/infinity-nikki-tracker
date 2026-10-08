@@ -7,22 +7,8 @@ export const getEurekaVariantsRaw = cache(async () => {
 
   const { data: eurekaVariants } = await supabase
     .from('eureka_variants')
-    .select(
-      `
-			id,
-			slug,
-			eureka_set,
-			color,
-			category,
-			image_url,
-			default,
-			updated_at,
-			eureka_sets ( title ),
-			eureka_categories ( title ),
-			eureka_colors ( title )
-			`
-    )
+    .select('*, eureka_sets ( title ), eureka_categories ( title ), eureka_colors ( title )')
     .order('id', { ascending: false })
 
-  return eurekaVariants as EurekaVariantRaw[]
+  return eurekaVariants ?? []
 })

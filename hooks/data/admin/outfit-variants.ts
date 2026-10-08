@@ -3,24 +3,7 @@ import { OutfitVariantRaw } from '@/lib/types/outfit'
 import { cache } from 'react'
 
 const SELECT = `
-  id,
-  slug,
-  outfit_set,
-  outfit_category,
-  seasons,
-  season_category,
-  rarity,
-  style,
-  label,
-  label_2,
-  title,
-  description,
-  image_url,
-  alt_image_url,
-  default,
-  updated_at,
-  released_at,
-  version,
+  *,
   outfit_sets ( title ),
   outfit_categories ( title ),
   season_categories ( title )
@@ -40,7 +23,7 @@ export const getOutfitVariantsRaw = cache(async () => {
       .order('id', { ascending: false })
       .range(from, from + PAGE - 1)
     if (error) throw error
-    all.push(...((data ?? []) as OutfitVariantRaw[]))
+    all.push(...(data ?? []))
     if (!data || data.length < PAGE) break
   }
 
@@ -56,7 +39,7 @@ export const getOutfitVariantRaw = cache(async (slug: string) => {
     .eq('slug', slug)
     .maybeSingle()
 
-  return (outfitVariant ?? null) as OutfitVariantRaw | null
+  return outfitVariant ?? null
 })
 
 // Base-set variant title for a given category — used to pre-fill a glow-up

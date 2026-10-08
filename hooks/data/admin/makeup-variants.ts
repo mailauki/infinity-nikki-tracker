@@ -16,7 +16,7 @@ export const getMakeupVariantsRaw = cache(async () => {
     .select(RAW_COLUMNS)
     .order('updated_at', { ascending: false, nullsFirst: false })
 
-  return (makeupVariants ?? []) as MakeupVariantRaw[]
+  return makeupVariants ?? []
 })
 
 export const getMakeupVariantRaw = cache(async (slug: string) => {
@@ -28,5 +28,5 @@ export const getMakeupVariantRaw = cache(async (slug: string) => {
     .eq('slug', slug)
     .maybeSingle()
 
-  return makeupVariant as MakeupVariantRaw | null
+  return makeupVariant
 })

@@ -36,9 +36,7 @@ async function EditOutfitSet({ params }: { params: Promise<{ slug: string }> }) 
 
   const { data: outfitSet } = await supabase
     .from('outfit_sets')
-    .select(
-      'id, slug, title, subtitle, description, rarity, style, label, label_2, ability, seasons, season_category, image_url, alt_image_url, "order", base_set, handheld_base_only, updated_at, released_at, version'
-    )
+    .select('*')
     .eq('slug', slug)
     .is('base_set', null)
     .single()

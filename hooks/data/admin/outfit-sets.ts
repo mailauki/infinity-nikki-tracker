@@ -7,10 +7,8 @@ export const getOutfitSetsRaw = cache(async () => {
 
   const { data: outfitSets } = await supabase
     .from('outfit_sets')
-    .select(
-      'id, slug, title, subtitle, description, rarity, style, label, label_2, ability, "order", base_set, image_url, alt_image_url, updated_at, released_at, version'
-    )
+    .select('*')
     .order('updated_at', { ascending: false, nullsFirst: false })
 
-  return (outfitSets ?? []) as OutfitSetRaw[]
+  return outfitSets ?? []
 })
