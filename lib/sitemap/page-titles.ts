@@ -19,7 +19,7 @@ export type NavIconKey =
   | 'admin'
   | 'checkroom'
   | 'construction'
-  | 'forest'
+  | 'book'
   | 'help'
   | 'info'
   | 'settings'
@@ -57,7 +57,7 @@ export const PAGE_NAMES = {
     nav: 'Seasons',
     title: 'Outfits by Season',
     image: '/icons/compendium.png',
-    icon: 'forest',
+    icon: 'book',
     sitemap: true,
   },
   '/eureka': { nav: 'Eureka', title: 'Eureka Sets', image: '/icons/eureka.png', sitemap: true },
@@ -69,7 +69,7 @@ export const PAGE_NAMES = {
     sitemap: true,
   },
   '/makeup': { nav: 'Makeup', image: '/icons/makeup.png', sitemap: true },
-  '/momo-cloaks': { nav: "Momo's Cloaks", image: '/icons/momo-cloak.png', sitemap: true },
+  '/momo-cloaks': { nav: "Cloaks", title: "Momo's Cloaks", image: '/icons/momo-cloak.png', sitemap: true },
   '/looks': { nav: 'Custom Looks', image: '/icons/wardrobe.png', icon: 'checkroom' },
   '/looks/new': { nav: 'New Look' },
   '/search': { nav: 'Search' },

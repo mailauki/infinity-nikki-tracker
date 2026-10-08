@@ -182,7 +182,7 @@ Note: some `hooks/data/` files and `lib/theme.ts` use relative imports rather th
 
 React `cache()` is for reads only — wrapping a mutation in `cache()` makes it silently no-op on repeated calls with the same args. Mutations (in route `actions.ts` and `hooks/data/admin/`) must NOT use `cache()`.
 
-`use cache` vs React `cache()`: public lookup hooks (e.g. `getEurekaCategories`, `getEurekaColors`, `getStyles`, `getLabels`, `getTrials`, `getSeasons`) use `use cache` + `cacheLife` for cross-request caching via `createPublicClient()`. Auth-dependent hooks (`getEurekaSets`, `getObtainedEureka`, `getUserID`, `getPreferences`, …) must use React `cache()` — they call `cookies()`, which is blocked inside `use cache`.
+`use cache` vs React `cache()`: every hook in `hooks/data/` — public lookups (`getEurekaCategories`, `getStyles`, `getSeasons`, …) and auth-dependent ones (`getEurekaSets`, `getUserID`, `getPreferences`, …) alike — uses React `cache()` (per-request dedupe) with the cookie-based `createClient()`. The only `use cache` + `cacheLife` function is the sitemap's data helper in `app/sitemap.ts`, which goes through the cookie-free `createPublicClient()` because `cookies()` is blocked inside `use cache`. Follow that pattern for any future cross-request cache.
 
 API routes that read auth (e.g. `/api/eureka/bootstrap`) must call `await connection()` before reading cookies so PPR doesn't try to prerender them — keep it outside the try/catch so the prerender-abort signal propagates to React instead of being swallowed as a 500.
 
