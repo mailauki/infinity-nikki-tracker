@@ -150,6 +150,9 @@ export const PAGE_NAMES = {
   '/search': { nav: 'Search' },
 
   // Account
+  // Not a page of its own: app/profile/page.tsx redirects to the viewer's public
+  // /u/[username] (or /login when signed out, /settings if no username yet).
+  // Kept as the nav entry so the sidebar link stays stable across usernames.
   '/profile': { nav: 'Profile', icon: 'account', section: 'account' },
   '/settings': { nav: 'Settings', icon: 'settings', section: 'account' },
   '/admin': { nav: 'Admin', icon: 'admin', section: 'account', adminOnly: true },
