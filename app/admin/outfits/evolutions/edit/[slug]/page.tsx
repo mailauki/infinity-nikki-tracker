@@ -6,7 +6,7 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { isGlowup } from '@/hooks/outfit'
 import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/outfits/evolutions/edit/[slug]'),

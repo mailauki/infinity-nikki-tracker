@@ -2,8 +2,8 @@
 
 import { OutfitSet } from '@/lib/types/outfit'
 import ListRow from '../../list-row'
-import { navLinksData } from '@/lib/nav-links'
 import { AdminList } from '../../admin-list'
+import { newPath } from '@/lib/sitemap/page-titles'
 
 interface OutfitSetListProps {
   rows: OutfitSet[]
@@ -22,7 +22,7 @@ export default function OutfitSetList({
 }: OutfitSetListProps) {
   return (
     <AdminList
-      addHref={navLinksData.admin.outfits.sets.add}
+      addHref={newPath('/admin/outfits/sets')}
       getKey={(set) => set.id}
       page={page}
       renderRow={(row) => (

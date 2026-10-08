@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import TrialsContent from './trials-content'
 import TrialsToolBar from './trials-toolbar'
 import PageShell from '@/components/page-shell'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/eureka/trials'),

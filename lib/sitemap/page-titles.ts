@@ -1,16 +1,28 @@
-// The single source of truth for what a route is called.
+// The single source of truth for every route: what it's called, how it shows
+// in the nav, and whether it belongs in the sitemap. lib/sitemap/nav-links.ts
+// groups these into nav sections and app/sitemap.ts lists the indexable ones.
 //
 // A page name used to be written in up to three independent places — the nav
-// entry in lib/nav-links.tsx, the route's `metadata.title`, and (since the
-// reader-mode fix) PageShell's `title` prop. They drifted: /eureka was "Eureka"
-// in the sidebar but "Eureka Sets" in the browser tab, and 30 of 68 routes had
-// no metadata.title at all, so their tab fell back to the bare site name.
+// entry, the route's `metadata.title`, and PageShell's `title` prop. They
+// drifted: /eureka was "Eureka" in the sidebar but "Eureka Sets" in the browser
+// tab, and 30 of 68 routes had no metadata.title at all.
 //
-// This module has NO imports and NO JSX, deliberately. lib/nav-links.tsx pulls
-// in MUI icon components, so a `metadata` export that reached for a title there
-// would drag the icon graph into every server module that reads it — the same
-// class of client/server bleed documented at length in lib/admin-routes.ts.
-// Keep this file plain data so both sides can read it freely.
+// This module has NO imports and NO JSX, deliberately, so metadata exports and
+// Server Actions can read it without pulling client code into the server graph
+// (see lib/admin-routes.ts for what that bleed breaks). Icons are therefore
+// string keys here; lib/sitemap/nav-icons.tsx maps them to MUI components on
+// the client.
+
+/** Icon names a nav entry can use — rendered by `<NavIcon>`. */
+export type NavIconKey =
+  | 'account'
+  | 'admin'
+  | 'checkroom'
+  | 'construction'
+  | 'forest'
+  | 'help'
+  | 'info'
+  | 'settings'
 
 export interface PageName {
   /** Sidebar / breadcrumb label. Kept short so nav rows don't wrap. */
@@ -20,36 +32,58 @@ export interface PageName {
    * already reads well on its own — `pageTitle()` falls back to `nav`.
    */
   title?: string
+  /** Nav artwork (a `/public` path). */
+  image?: string
+  /** Nav icon, for rows without artwork or where both are shown. */
+  icon?: NavIconKey
+  /** List this public page in /sitemap.xml. */
+  sitemap?: true
 }
 
 // Keyed by route path, matching the app/ directory structure. Dynamic segments
 // use their literal bracket form ('/outfits/[slug]') but are generally absent:
 // those routes build a title from the record they load, via generateMetadata.
 export const PAGE_NAMES = {
-  '/': { nav: 'Home', title: 'Infinity Nikki Tracker' },
+  '/': {
+    nav: 'Home',
+    title: 'Infinity Nikki Tracker',
+    image: '/infinity-nikki-logo.png',
+    sitemap: true,
+  },
 
   // Collection domains
-  '/outfits': { nav: 'Outfits' },
-  '/seasons': { nav: 'Seasons', title: 'Outfits by Season' },
-  '/eureka': { nav: 'Eureka', title: 'Eureka Sets' },
+  '/outfits': { nav: 'Outfits', image: '/icons/outfits.png', sitemap: true },
+  '/seasons': {
+    nav: 'Seasons',
+    title: 'Outfits by Season',
+    image: '/icons/compendium.png',
+    icon: 'forest',
+    sitemap: true,
+  },
+  '/eureka': { nav: 'Eureka', title: 'Eureka Sets', image: '/icons/eureka.png', sitemap: true },
   '/eureka/sets': { nav: 'Eureka Sets' },
-  '/eureka/trials': { nav: 'Trials' },
-  '/makeup': { nav: 'Makeup' },
-  '/momo-cloaks': { nav: "Momo's Cloaks" },
-  '/looks': { nav: 'Custom Looks' },
+  '/eureka/trials': {
+    nav: 'Trials',
+    image: '/icons/realm-of-breakthrough.png',
+    icon: 'construction',
+    sitemap: true,
+  },
+  '/makeup': { nav: 'Makeup', image: '/icons/makeup.png', sitemap: true },
+  '/momo-cloaks': { nav: "Momo's Cloaks", image: '/icons/momo-cloak.png', sitemap: true },
+  '/looks': { nav: 'Custom Looks', image: '/icons/wardrobe.png', icon: 'checkroom' },
   '/looks/new': { nav: 'New Look' },
   '/search': { nav: 'Search' },
 
   // Account
-  '/profile': { nav: 'Profile' },
-  '/settings': { nav: 'Settings' },
-  '/about': { nav: 'About' },
-  '/help': { nav: 'Help' },
+  '/profile': { nav: 'Profile', icon: 'account' },
+  '/settings': { nav: 'Settings', icon: 'settings' },
+  '/about': { nav: 'About', icon: 'info', sitemap: true },
+  '/help': { nav: 'Help', icon: 'help', sitemap: true },
 
   // Legal — the (legal) route group is not part of the URL, so these are
   // registered at their real top-level paths.
-  '/privacy-policy': { nav: 'Privacy', title: 'Privacy Policy' },
-  '/terms-of-service': { nav: 'Terms', title: 'Terms of Service' },
+  '/privacy-policy': { nav: 'Privacy', title: 'Privacy Policy', sitemap: true },
+  '/terms-of-service': { nav: 'Terms', title: 'Terms of Service', sitemap: true },
 
   // Auth
   '/login': { nav: 'Log in' },
@@ -60,7 +94,7 @@ export const PAGE_NAMES = {
   '/auth/error': { nav: 'Authentication error' },
 
   // Admin
-  '/admin': { nav: 'Admin' },
+  '/admin': { nav: 'Admin', icon: 'admin' },
   '/admin/feedback': { nav: 'Feedback' },
   '/admin/feedback/[id]': { nav: 'Feedback detail' },
 
@@ -112,6 +146,33 @@ export const PAGE_NAMES = {
 
 export type PageRoute = keyof typeof PAGE_NAMES
 
+/** The full registry entry for a route. */
+export function pageEntry(route: PageRoute): PageName {
+  return PAGE_NAMES[route]
+}
+
+/** Static routes flagged for the sitemap, in registry order. */
+export const SITEMAP_ROUTES = (Object.keys(PAGE_NAMES) as PageRoute[]).filter(
+  (route) => pageEntry(route).sitemap
+)
+
+// Routes with a registered `/edit/[slug]` or `/new` child. Typing the helpers
+// below on these means a typo, or a list page that has no form, fails to compile.
+type EditableRoute = {
+  [R in PageRoute]: `${R}/edit/[slug]` extends PageRoute ? R : never
+}[PageRoute]
+type NewableRoute = { [R in PageRoute]: `${R}/new` extends PageRoute ? R : never }[PageRoute]
+
+/** `/admin/outfits/sets` + `abc` -> `/admin/outfits/sets/edit/abc` */
+export function editPath(list: EditableRoute, slug: string): string {
+  return `${list}/edit/${slug}`
+}
+
+/** `/admin/outfits/sets` -> `/admin/outfits/sets/new` */
+export function newPath(list: NewableRoute): string {
+  return `${list}/new`
+}
+
 /** Short label for sidebars and breadcrumbs. */
 export function navLabel(route: PageRoute): string {
   return PAGE_NAMES[route].nav
@@ -122,7 +183,7 @@ export function navLabel(route: PageRoute): string {
  * so a route only needs the longer form when it actually differs.
  */
 export function pageTitle(route: PageRoute): string {
-  const entry: PageName = PAGE_NAMES[route]
+  const entry = pageEntry(route)
   return entry.title ?? entry.nav
 }
 

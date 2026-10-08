@@ -2,9 +2,9 @@
 
 import { Trial } from '@/lib/types/eureka'
 import ListRow from '../../list-row'
-import { navLinksData } from '@/lib/nav-links'
 import { toTitle } from '@/lib/utils'
 import { AdminList } from '../../admin-list'
+import { newPath } from '@/lib/sitemap/page-titles'
 
 interface TrialListProps {
   rows: Trial[]
@@ -23,7 +23,7 @@ export default function TrialList({
 }: TrialListProps) {
   return (
     <AdminList
-      addHref={navLinksData.admin.eureka.trials.add}
+      addHref={newPath('/admin/eureka/trials')}
       getKey={(trial) => trial.id}
       page={page}
       renderRow={(trial) => (

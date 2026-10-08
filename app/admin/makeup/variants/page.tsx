@@ -6,7 +6,7 @@ import { bySlug } from '@/lib/utils'
 import { Suspense } from 'react'
 import MakeupVariantView from './makeup-variant-view'
 import { Metadata } from 'next'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/makeup/variants'),

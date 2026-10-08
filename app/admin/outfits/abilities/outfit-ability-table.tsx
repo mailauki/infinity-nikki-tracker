@@ -4,10 +4,10 @@ import { useState } from 'react'
 import { Stack } from '@mui/material'
 import EditIcon from '@mui/icons-material/Edit'
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import { navLinksData } from '@/lib/nav-links'
 import { AbilityRaw } from '@/hooks/data/admin/abilities'
 import ImageUpload from '@/components/forms/image-upload'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
+import { editPath } from '@/lib/sitemap/page-titles'
 
 type Row = AbilityRaw
 
@@ -17,7 +17,7 @@ interface OutfitAbilityTableProps {
 
 export function OutfitAbilityTable({ rows: initialRows }: OutfitAbilityTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
-  const editHref = (row: Row) => `${navLinksData.admin.outfits.abilities.edit}/${row.slug}`
+  const editHref = (row: Row) => editPath('/admin/outfits/abilities', row.slug)
 
   const columns: GridColDef<Row>[] = [
     {

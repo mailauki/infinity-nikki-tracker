@@ -5,7 +5,7 @@ import EurekaLoading from './loading'
 import EurekaToolBar from './eureka-toolbar'
 import EurekaResultsBar from './eureka-results-bar'
 import PageShell from '@/components/page-shell'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/eureka'),

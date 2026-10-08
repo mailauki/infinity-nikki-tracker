@@ -1,6 +1,6 @@
 'use client'
 
-import { navLinksData } from '@/lib/nav-links'
+import { navLinksData } from '@/lib/sitemap/nav-links'
 import { AdminPanelSettings, ChevronLeft, ExpandMore } from '@mui/icons-material'
 import { Button, IconButton, Menu, MenuItem, Stack } from '@mui/material'
 import Link from 'next/link'

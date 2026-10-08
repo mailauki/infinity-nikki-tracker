@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { getUserID } from '@/hooks/user'
 
 import { LoginForm } from './login-form'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata = { title: pageTitle('/login') }
 

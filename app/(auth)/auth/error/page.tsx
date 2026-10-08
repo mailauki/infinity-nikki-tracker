@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 
 import { Card, CardContent, CardHeader, Typography } from '@mui/material'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata = { title: pageTitle('/auth/error') }
 

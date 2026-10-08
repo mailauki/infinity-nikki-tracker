@@ -8,7 +8,7 @@ import { getSeasonCategories } from '@/hooks/data/season-categories'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/outfits/sets/new'),

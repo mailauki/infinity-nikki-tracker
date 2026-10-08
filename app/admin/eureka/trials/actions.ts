@@ -2,9 +2,9 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
-import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
+import { editPath } from '@/lib/sitemap/page-titles'
 
 export async function addTrial(_: unknown, formData: FormData) {
   const role = await getUserRole()
@@ -70,7 +70,7 @@ export async function editTrial(id: number, _: unknown, formData: FormData) {
       .limit(1)
       .maybeSingle()
 
-    if (next?.slug) redirect(`${navLinksData.admin.eureka.trials.edit}/${next.slug}`)
+    if (next?.slug) redirect(editPath('/admin/eureka/trials', next.slug))
     redirect(ADMIN_DASHBOARD)
   }
 

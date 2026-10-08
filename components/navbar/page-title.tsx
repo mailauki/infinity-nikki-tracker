@@ -1,6 +1,6 @@
 'use client'
 
-import { resolveNavLabel } from '@/lib/page-titles'
+import { resolveNavLabel } from '@/lib/sitemap/page-titles'
 import { Typography } from '@mui/material'
 import { usePathname } from 'next/navigation'
 

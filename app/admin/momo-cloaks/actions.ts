@@ -2,10 +2,10 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
 import { getUserRole } from '@/hooks/user'
 import { readReleaseFields } from '@/lib/release-form'
+import { editPath } from '@/lib/sitemap/page-titles'
 
 function readForm(formData: FormData) {
   const rarityRaw = formData.get('rarity') as string | null
@@ -82,7 +82,7 @@ export async function updateMomoCloak(_: unknown, formData: FormData) {
       .limit(1)
       .maybeSingle()
 
-    if (next?.slug) redirect(`${navLinksData.admin.momoCloaks.cloaks.edit}/${next.slug}`)
+    if (next?.slug) redirect(editPath('/admin/momo-cloaks', next.slug))
     redirect(ADMIN_DASHBOARD)
   }
   redirect(ADMIN_DASHBOARD)

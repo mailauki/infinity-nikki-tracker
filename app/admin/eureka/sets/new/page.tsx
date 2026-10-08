@@ -8,7 +8,7 @@ import { getEurekaCategories } from '@/hooks/data/eureka-categories'
 import { getSeasons } from '@/hooks/data/seasons'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/eureka/sets/new'),

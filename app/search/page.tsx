@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import type { Metadata } from 'next'
 
 import PageShell from '@/components/page-shell'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 import SearchPageResults from './search-page-results'
 
 export async function generateMetadata({

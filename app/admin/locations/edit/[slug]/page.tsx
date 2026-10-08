@@ -5,7 +5,7 @@ import { Metadata } from 'next'
 import { getLocationRaw } from '@/hooks/data/admin/locations'
 import EntityForm from '@/app/admin/entity-form'
 import { editLocation } from './actions'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/locations/edit/[slug]'),

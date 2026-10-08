@@ -9,7 +9,7 @@ import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import EntityForm from '@/app/admin/entity-form'
 import { addOutfitVariant } from '../actions'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/outfits/variants/new'),

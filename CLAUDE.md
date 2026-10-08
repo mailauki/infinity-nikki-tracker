@@ -88,6 +88,10 @@ Column-level schema lives in `lib/types/supabase.ts` (generated — the source o
 - `styles`, `labels` — UNIQUE on title; RLS public read / admin write
 - RPCs (not in the generated table types): `is_admin`, `toggle_obtained`, `toggle_obtained_outfit`
 
+### Routes, Nav & Sitemap
+
+`lib/sitemap/page-titles.ts` is the route registry: every route's nav label, page title, nav image, icon key, and `sitemap` flag. Everything else derives from it — `navLinksData` (`lib/sitemap/nav-links.ts`, section grouping only), `app/sitemap.ts` (`SITEMAP_ROUTES` plus DB-driven detail pages, `'use cache'` + `cacheLife('days')` via `createPublicClient()`), metadata titles (`pageTitle()`), and admin CRUD links (`editPath(list, slug)` / `newPath(list)`, typed so only routes with a registered form compile). Both files are plain `.ts` with no imports beyond each other, so Server Actions and metadata can use them; icons are string keys rendered by `<NavIcon>` (`lib/sitemap/nav-icons.tsx`), the only file that imports MUI icons. Add a route by adding one registry entry.
+
 ### Slug Helpers
 
 `lib/utils.ts` exports `cn()` (clsx + tailwind-merge), `toSlug(name)` (spaces→`_`, lowercase), `toSlugVariant(set, category, color)` → `{set}-{category}-{color}`, and `toTitle(slug)`. Variant forms auto-generate the slug from set/category/color via `useEffect`; the slug field is read-only until an edit icon unlocks it.

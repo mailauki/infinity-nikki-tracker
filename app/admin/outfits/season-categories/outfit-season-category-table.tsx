@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import { navLinksData } from '@/lib/nav-links'
 import { SeasonCategoryRaw } from '@/hooks/data/admin/season-categories'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
 import ImageUpload from '@/components/forms/image-upload'
 import { Stack } from '@mui/material'
 import { toTitle } from '@/lib/utils'
+import { editPath } from '@/lib/sitemap/page-titles'
 
 type Row = SeasonCategoryRaw
 
@@ -23,7 +23,7 @@ export function OutfitSeasonCategoryTable({
   groupTitles,
 }: OutfitSeasonCategoryTableProps) {
   const [rows, setRows] = useState<Row[]>(initialRows)
-  const editHref = (row: Row) => `${navLinksData.admin.outfits.seasonCategories.edit}/${row.slug}`
+  const editHref = (row: Row) => editPath('/admin/outfits/season-categories', row.slug)
 
   const columns: GridColDef<Row>[] = [
     {

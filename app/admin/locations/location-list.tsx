@@ -3,7 +3,7 @@
 import { LocationRaw } from '@/hooks/data/admin/locations'
 import ListRow from '../list-row'
 import { AdminList } from '../admin-list'
-import { navLinksData } from '@/lib/nav-links'
+import { newPath } from '@/lib/sitemap/page-titles'
 
 interface LocationListProps {
   rows: LocationRaw[]
@@ -22,7 +22,7 @@ export default function LocationList({
 }: LocationListProps) {
   return (
     <AdminList
-      addHref={navLinksData.admin.locations.locations.add}
+      addHref={newPath('/admin/locations')}
       getKey={(location) => location.slug}
       page={page}
       renderRow={(row) => (

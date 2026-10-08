@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation'
 import { ViewColumn, ViewWeek } from '@mui/icons-material'
 import { ToggleButton, Tooltip } from '@mui/material'
 import { useAdminView } from './admin-view-context'
-import { navLinksData } from '@/lib/nav-links'
 
 // Toggles the per-category variant image columns in the outfit set and evolution
 // admin tables. Only shown on those two pages and only in table view (the
@@ -14,8 +13,7 @@ export default function AdminVariantColumnsToggle() {
   const { view, showVariantColumns, setShowVariantColumns } = useAdminView()
 
   const hasVariantColumns =
-    pathname === navLinksData.admin.outfits.sets.list ||
-    pathname === navLinksData.admin.outfits.evolutions.list
+    pathname === '/admin/outfits/sets' || pathname === '/admin/outfits/evolutions'
 
   if (view !== 'table' || !hasVariantColumns) return null
 

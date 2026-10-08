@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { Link as Anchor } from '@mui/material'
 import { Section, SectionList, SectionSubtitle, SectionTitle } from '@/components/section'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 import LegalPage from '../legal-page'
 import { LEGAL_CONTACT_EMAIL } from '../legal-meta'
 

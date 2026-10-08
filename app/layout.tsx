@@ -28,21 +28,14 @@ import LayoutShell from '@/components/navbar/layout-shell'
 import { OG_ALT } from '@/lib/og-image'
 import SplashScreen from './splash-screen'
 
+import { SITE_URL } from '@/lib/sitemap/site-url'
 import '@fontsource/roboto/300.css'
 import '@fontsource/roboto/400.css'
 import '@fontsource/roboto/500.css'
 import '@fontsource/roboto/700.css'
 
-// Prefer the stable site URL over VERCEL_URL, which is the per-deployment
-// preview host — resolving metadataBase against it would point every og:image
-// and canonical URL at a throwaway deployment. Same precedence the Stripe
-// checkout route uses for its redirect URLs.
-const defaultUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
-
 export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
+  metadataBase: new URL(SITE_URL),
   title: {
     template: '%s | Infinity Nikki Tracker',
     default: 'Infinity Nikki Tracker',

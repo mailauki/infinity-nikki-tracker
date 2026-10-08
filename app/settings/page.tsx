@@ -5,7 +5,7 @@ import { getUserID, getUserRole } from '@/hooks/user'
 import { createClient } from '@/lib/supabase/server'
 import { getIsPremium } from '@/hooks/data/user'
 import PageShell from '@/components/page-shell'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/settings'),

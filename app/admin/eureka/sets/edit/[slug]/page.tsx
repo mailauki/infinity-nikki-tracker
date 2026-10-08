@@ -11,7 +11,7 @@ import { getSeasons } from '@/hooks/data/seasons'
 import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { Stack } from '@mui/material'
 import { Metadata } from 'next'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/eureka/sets/edit/[slug]'),

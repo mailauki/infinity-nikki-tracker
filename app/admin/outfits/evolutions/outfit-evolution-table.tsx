@@ -4,12 +4,12 @@ import { useState } from 'react'
 import { Stack } from '@mui/material'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
 import { DataGrid, GridActionsCellItem, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
-import { navLinksData } from '@/lib/nav-links'
 import { Evolution, OutfitCategory } from '@/lib/types/outfit'
 import ImageUpload from '@/components/forms/image-upload'
 import { categoryImageColumns } from '@/app/admin/outfits/variant-image-cell'
 import { useAdminView } from '@/app/admin/admin-view-context'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
+import { editPath } from '@/lib/sitemap/page-titles'
 
 type Row = Evolution
 
@@ -24,7 +24,7 @@ export function OutfitEvolutionTable({
 }: OutfitEvolutionTableProps) {
   const { showVariantColumns } = useAdminView()
   const [rows, setRows] = useState<Row[]>(initialRows)
-  const editHref = (row: Row) => `${navLinksData.admin.outfits.evolutions.edit}/${row.slug}`
+  const editHref = (row: Row) => editPath('/admin/outfits/evolutions', row.slug)
 
   const columns: GridColDef<Row>[] = [
     {

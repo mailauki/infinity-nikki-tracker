@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import EntityForm from '@/app/admin/entity-form'
 import { getSeasonGroupsRaw } from '@/hooks/data/admin/season-groups'
 import { addSeasonCategory } from './actions'
-import { pageTitle } from '@/lib/page-titles'
+import { pageTitle } from '@/lib/sitemap/page-titles'
 
 export const metadata: Metadata = {
   title: pageTitle('/admin/outfits/season-categories/new'),

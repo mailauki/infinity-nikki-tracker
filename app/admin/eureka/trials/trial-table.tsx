@@ -5,7 +5,6 @@ import { Stack } from '@mui/material'
 import { Category } from '@mui/icons-material'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toSlug } from '@/lib/utils'
-import { navLinksData } from '@/lib/nav-links'
 import { Trial } from '@/lib/types/eureka'
 import { Location } from '@/lib/types/outfit'
 import LazyImage from '@/components/lazy-image'
@@ -17,6 +16,7 @@ import {
   useRowActions,
 } from '@/app/admin/eureka/table-utils'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
+import { editPath } from '@/lib/sitemap/page-titles'
 
 type Row = Trial
 
@@ -38,8 +38,7 @@ export function TrialTable({ rows: initialRows, locations }: TrialTableProps) {
     handleCancelClick,
   } = useRowActions()
 
-  const editHref = (row: Row) =>
-    `${navLinksData.admin.eureka.trials.edit}/${row.slug ?? toSlug(row.title)}`
+  const editHref = (row: Row) => editPath('/admin/eureka/trials', row.slug ?? toSlug(row.title))
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {

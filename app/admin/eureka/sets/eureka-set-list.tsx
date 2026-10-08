@@ -3,8 +3,8 @@
 import { EurekaSet } from '@/lib/types/eureka'
 import ListRow from '../../list-row'
 import { toTitle } from '@/lib/utils'
-import { navLinksData } from '@/lib/nav-links'
 import { AdminList } from '../../admin-list'
+import { newPath } from '@/lib/sitemap/page-titles'
 
 interface EurekaSetListProps {
   rows: EurekaSet[]
@@ -23,7 +23,7 @@ export default function EurekaSetList({
 }: EurekaSetListProps) {
   return (
     <AdminList
-      addHref={navLinksData.admin.eureka.sets.add}
+      addHref={newPath('/admin/eureka/sets')}
       getKey={(set) => set.id}
       page={page}
       renderRow={(row) => (

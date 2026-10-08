@@ -3,8 +3,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { getUserRole } from '@/hooks/user'
-import { navLinksData } from '@/lib/nav-links'
 import { ADMIN_DASHBOARD } from '@/lib/admin-routes'
+import { editPath } from '@/lib/sitemap/page-titles'
 
 export async function editSeasonCategory(currentSlug: string, _: unknown, formData: FormData) {
   const role = await getUserRole()
@@ -42,7 +42,7 @@ export async function editSeasonCategory(currentSlug: string, _: unknown, formDa
       .limit(1)
       .maybeSingle()
 
-    if (next?.slug) redirect(`${navLinksData.admin.outfits.seasonCategories.edit}/${next.slug}`)
+    if (next?.slug) redirect(editPath('/admin/outfits/season-categories', next.slug))
     redirect(ADMIN_DASHBOARD)
   }
 

@@ -5,7 +5,6 @@ import { Stack } from '@mui/material'
 import { Category, CheckBox } from '@mui/icons-material'
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid'
 import { formatDate, toSlugVariant, toTitle } from '@/lib/utils'
-import { navLinksData } from '@/lib/nav-links'
 import { EurekaCategory, EurekaColor, EurekaSet, EurekaVariantRaw } from '@/lib/types/eureka'
 import LazyImage from '@/components/lazy-image'
 import { updateEurekaVariant } from '@/app/admin/actions'
@@ -16,6 +15,7 @@ import {
   useRowActions,
 } from '@/app/admin/eureka/table-utils'
 import { TABLE_ROW_HEIGHT } from '@/lib/types/props'
+import { editPath } from '@/lib/sitemap/page-titles'
 
 type Row = EurekaVariantRaw
 
@@ -45,7 +45,10 @@ export function EurekaVariantTable({
   } = useRowActions()
 
   const editHref = (row: Row) =>
-    `${navLinksData.admin.eureka.variants.edit}/${row.slug ?? toSlugVariant(row.eureka_set ?? '', row.category ?? '', row.color ?? '')}`
+    editPath(
+      '/admin/eureka/variants',
+      row.slug ?? toSlugVariant(row.eureka_set ?? '', row.category ?? '', row.color ?? '')
+    )
 
   const processRowUpdate = useCallback(async (newRow: Row, oldRow: Row) => {
     try {
