@@ -3,7 +3,7 @@
 **Filed:** 2026-07-30
 **Updated:** 2026-07-31 — **RESOLVED.** See "Resolution" below.
 **Status:** Fixed. Zero overlap frames measured on both triggers.
-**Files:** `app/outfits/virtual-set-grid.tsx`, `app/outfits/outfit-set-card.tsx`
+**Files:** `components/virtual-grid.tsx` (`VirtualSetGrid`; was `app/outfits/virtual-set-grid.tsx`), `app/outfits/outfit-set-card.tsx`
 **Severity:** Was cosmetic. No data or interaction impact.
 
 ## Resolution part 2 (2026-07-31) — the mount-in animation

@@ -12,8 +12,16 @@ import { matchesObtainedFilter } from '@/hooks/outfit'
 import { isStandaloneMakeupSet } from '@/hooks/makeup'
 import { compareRelease, setRelease } from '@/hooks/release'
 import VirtualGroupedGrid from './virtual-grouped-grid'
-import VirtualSetGrid, { type SetGridItem } from './virtual-set-grid'
-import VirtualVariantGrid from './virtual-variant-grid'
+import MakeupSetCard from './makeup-set-card'
+import MakeupVariantCard from './makeup-variant-card'
+import {
+  VirtualSetGrid,
+  VirtualVariantGrid,
+  type SetGridItem as SharedSetGridItem,
+} from '@/components/virtual-grid'
+import type { MakeupEvolution, MakeupSet, MakeupVariant } from '@/lib/types/makeup'
+
+type SetGridItem = SharedSetGridItem<MakeupSet, MakeupEvolution, MakeupVariant>
 
 function GroupHeaderSkeleton() {
   return (
@@ -54,7 +62,7 @@ export default function FilterMakeup() {
     filters,
     exitingKeys,
   } = useMakeupData()
-  const { density } = useMakeupImageMode()
+  const { density, mode } = useMakeupImageMode()
   const { sortAxis, sortDir } = useSortOrder()
   // Progress sorting needs obtained data; fall back to date when logged out.
   const axis = !isLoggedIn && sortAxis === 'progress' ? 'date' : sortAxis
@@ -310,9 +318,20 @@ export default function FilterMakeup() {
       {filteredSets.length > 0 && density === 'standard' && (
         <VirtualSetGrid
           isFiltering={isFiltering}
-          isLoggedIn={isLoggedIn}
-          isMissingFilter={selectedObtainedFilter === 'missing'}
           items={setGridItems}
+          renderItem={(item) => (
+            <MakeupSetCard
+              key={item.key}
+              evolution={item.evolution}
+              isLoggedIn={isLoggedIn}
+              isMissingFilter={selectedObtainedFilter === 'missing'}
+              obtained={item.obtained}
+              set={item.set}
+              total={item.total}
+              variants={item.variants}
+            />
+          )}
+          showAlt={mode === 'alt'}
         />
       )}
 
@@ -329,9 +348,15 @@ export default function FilterMakeup() {
       {filteredSets.length > 0 && density === 'compact' && !groupBySet && (
         <VirtualVariantGrid
           isFiltering={isFiltering}
-          isLoggedIn={isLoggedIn}
-          isMissingFilter={selectedObtainedFilter === 'missing'}
-          variants={flatVariants}
+          items={flatVariants}
+          renderItem={(variant) => (
+            <MakeupVariantCard
+              key={variant.id}
+              isLoggedIn={isLoggedIn}
+              isMissingFilter={selectedObtainedFilter === 'missing'}
+              makeupVariant={variant}
+            />
+          )}
         />
       )}
     </>
