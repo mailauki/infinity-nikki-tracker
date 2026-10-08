@@ -1,6 +1,10 @@
-// Prefer the stable site URL over VERCEL_URL, which is the per-deployment
-// preview host — resolving metadataBase, sitemap entries or Stripe redirects
-// against it would point them at a throwaway deployment.
+// The site's canonical origin, for metadataBase, sitemap entries and Stripe
+// redirects. NEXT_PUBLIC_SITE_URL wins when set. Otherwise prefer Vercel's
+// production domain over VERCEL_URL: VERCEL_URL is the per-deployment host
+// (`…-git-branch-….vercel.app`), so resolving against it would point canonical
+// URLs, og:images and sitemap entries at a throwaway deployment.
+const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL
+
 export const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  (vercelHost ? `https://${vercelHost}` : 'http://localhost:3000')

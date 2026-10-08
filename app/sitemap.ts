@@ -13,6 +13,17 @@ async function detailEntries(): Promise<MetadataRoute.Sitemap> {
   'use cache'
   cacheLife('days')
 
+  // The sitemap is prerendered at build time, and Vercel only provides the
+  // Supabase env vars to Production builds — preview builds have none. List
+  // just the static pages there rather than failing the build. Production must
+  // never ship a sitemap without its detail pages, so it still fails loudly.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    if (process.env.VERCEL_ENV === 'production') {
+      throw new Error('NEXT_PUBLIC_SUPABASE_URL is not set; cannot build the sitemap')
+    }
+    return []
+  }
+
   const supabase = createPublicClient()
   const [outfits, makeup, eureka, trials, cloaks, seasons] = await Promise.all([
     supabase.from('outfit_sets').select('slug, updated_at').is('base_set', null),
