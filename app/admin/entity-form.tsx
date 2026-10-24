@@ -1,6 +1,6 @@
 'use client'
 
-import { Fragment, useActionState, useEffect, useMemo, useState } from 'react'
+import { Fragment, useActionState, useEffect, useMemo, useRef, useState } from 'react'
 import {
   Alert,
   Box,
@@ -75,6 +75,11 @@ function buildInitialValues(fields: FieldConfig[], initial?: FieldValues): Field
   return values
 }
 
+/** Fields unique to one item, cleared on "add another"; every other value carries over. */
+function isPerItem(field: FieldConfig): boolean {
+  return field.name === 'title' || ['slug', 'textarea', 'image', 'imagePair'].includes(field.type)
+}
+
 function resolveText(
   value: string | ((values: FieldValues) => string) | undefined,
   values: FieldValues
@@ -126,6 +131,8 @@ export default function EntityForm({
   )
   const [values, setValues] = useState<FieldValues>(() => buildInitialValues(fields, initialValues))
   const [slugEdited, setSlugEdited] = useState(false)
+  // MUI Select's inputRef exposes focus() for the field flagged focusOnAddAnother.
+  const focusRef = useRef<{ focus: () => void } | null>(null)
 
   const setValue = (name: string, value: unknown) =>
     setValues((prev) => ({ ...prev, [name]: value }))
@@ -163,13 +170,17 @@ export default function EntityForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formId, pending])
 
-  // React to the action result: reset on add-another, surface savedTitle on edit.
+  // React to the action result: on add-another clear the per-item fields but keep
+  // the rest (season, category, …) for the next item; surface savedTitle on edit.
   useEffect(() => {
     if (!state) return
     if ('addAnother' in state) {
       setFormConfig({ savedTitle: state.savedTitle })
-      setValues(buildInitialValues(fields))
+      const kept: FieldValues = {}
+      for (const field of fields) if (!isPerItem(field)) kept[field.name] = values[field.name]
+      setValues(buildInitialValues(fields, kept))
       setSlugEdited(false)
+      focusRef.current?.focus()
     } else if ('savedTitle' in state && !('error' in state)) {
       setFormConfig({ savedTitle: state.savedTitle })
     }
@@ -249,6 +260,7 @@ export default function EntityForm({
             <Select
               MenuProps={MENU_PROPS}
               disabled={disabled}
+              inputRef={field.focusOnAddAnother ? focusRef : undefined}
               label={label}
               name={field.name}
               value={String(values[field.name] ?? '')}
