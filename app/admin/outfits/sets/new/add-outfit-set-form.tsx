@@ -111,9 +111,11 @@ export default function AddOutfitSetForm({
   useEffect(() => {
     if (state && 'addAnother' in state) {
       setFormConfig({ savedTitle: state.savedTitle })
-      // Clear only the per-set fields; season, style, rarity, etc. carry over.
+      // Clear only the per-set fields; season, rarity, etc. carry over.
       setTitle('')
       setSlug('')
+      setStyle('')
+      setLabelSelect([])
       setDescription('')
       setEvolutionDrafts([])
       setGlowupEvolutionOrder('')
