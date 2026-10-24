@@ -16,11 +16,6 @@ import { matchesOutfitFilter } from '@/hooks/outfit'
 import { useOutfitData } from '@/components/outfits/outfit-context'
 import { useSearchParams } from 'next/navigation'
 
-// The standalone-pieces set is a container of individually-authored variants
-// with no cohesive identity, so its detail card is hidden and its toggle
-// filters by outfit category instead of evolution state.
-const STANDALONE_SLUG = 'standalone_pieces'
-
 export default function OutfitSetDetail({
   outfitSet,
   isLoggedIn,
@@ -39,34 +34,20 @@ export default function OutfitSetDetail({
     obtained: obtainedOutfit.some((o) => o.outfit_variant === v.slug),
   }))
 
-  const isStandalone = outfitSet.slug === STANDALONE_SLUG
-
   const searchParams = useSearchParams()
   const evolutionParams = searchParams.get('evolution')
-  // Standalone has no evolution states, so never seed a selection from the param.
   // The base state's slug is the bare set slug (no `{set}-base`), so `evolution=base`
   // seeds the set slug itself; every other evolution seeds `{set}-{evolution}`.
   const resolveEvolutionSlug = () => {
-    if (isStandalone || !evolutionParams) return null
+    if (!evolutionParams) return null
     if (evolutionParams === 'base') return outfitSet.slug
     return `${outfitSet.slug}-${evolutionParams}`
   }
   const [selected, setSelected] = useState<string | null>(resolveEvolutionSlug())
-  // Standalone-only extra filter axes; evolution sets have no per-variant season.
-  const [selectedSeason, setSelectedSeason] = useState<string | null>(null)
-  const [selectedSeasonCategory, setSelectedSeasonCategory] = useState<string | null>(null)
   const [showCarousel, setShowCarousel] = useState(false)
 
   function handleSelectEvolution(slug: string | null) {
     setSelected(slug)
-    setShowCarousel(false)
-  }
-
-  // Reverts every standalone filter axis back to "All" in one click.
-  function handleClearFilters() {
-    setSelected(null)
-    setSelectedSeason(null)
-    setSelectedSeasonCategory(null)
     setShowCarousel(false)
   }
 
@@ -87,9 +68,7 @@ export default function OutfitSetDetail({
   const hasCarousel = carouselImages.length > 0
 
   // Scope progress to the current filters so the card's chip matches the grid.
-  const scopedVariants = outfit_variants.filter((v) =>
-    matchesOutfitFilter(v, { selected, selectedSeason, selectedSeasonCategory, isStandalone })
-  )
+  const scopedVariants = outfit_variants.filter((v) => matchesOutfitFilter(v, selected))
   const obtained = scopedVariants.reduce((sum, v) => sum + (v.obtained ? 1 : 0), 0)
   const total = scopedVariants.length
 
@@ -98,44 +77,33 @@ export default function OutfitSetDetail({
       <SlugToolBar isAdmin={isAdmin} />
       <OutfitToggleBar
         isLoggedIn={isLoggedIn}
-        isStandalone={isStandalone}
         obtained={obtained}
         outfitSet={outfitSet}
         selected={selected}
-        selectedSeason={selectedSeason}
-        selectedSeasonCategory={selectedSeasonCategory}
         total={total}
-        onClearFilters={handleClearFilters}
         onSelect={handleSelectEvolution}
-        onSelectSeason={setSelectedSeason}
-        onSelectSeasonCategory={setSelectedSeasonCategory}
       />
-      {!isStandalone && (
-        <SidebarBody>
-          <OutfitSetDetailCard
-            carouselImages={carouselImages}
-            hasCarousel={hasCarousel}
-            imageSrc={imageSrc}
-            isLoggedIn={isLoggedIn}
-            obtained={obtained}
-            outfitSet={outfitSet}
-            selected={selected && evolutions.length > 0 ? selected : null}
-            showCarousel={showCarousel}
-            showingAlt={showingAlt}
-            total={total}
-            onToggleCarousel={() => setShowCarousel((v) => !v)}
-          />
-        </SidebarBody>
-      )}
+      <SidebarBody>
+        <OutfitSetDetailCard
+          carouselImages={carouselImages}
+          hasCarousel={hasCarousel}
+          imageSrc={imageSrc}
+          isLoggedIn={isLoggedIn}
+          obtained={obtained}
+          outfitSet={outfitSet}
+          selected={selected && evolutions.length > 0 ? selected : null}
+          showCarousel={showCarousel}
+          showingAlt={showingAlt}
+          total={total}
+          onToggleCarousel={() => setShowCarousel((v) => !v)}
+        />
+      </SidebarBody>
 
       <PageShell maxWidth="wide">
         <OutfitEvolutionVariants
           isLoggedIn={isLoggedIn}
-          isStandalone={isStandalone}
           outfitSet={outfitSet}
-          selected={isStandalone || evolutions.length > 0 ? selected : null}
-          selectedSeason={selectedSeason}
-          selectedSeasonCategory={selectedSeasonCategory}
+          selected={evolutions.length > 0 ? selected : null}
         />
       </PageShell>
     </>

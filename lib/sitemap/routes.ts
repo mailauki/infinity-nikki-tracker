@@ -108,6 +108,13 @@ export const PAGE_NAMES = {
 
   // Collection domains — in sidebar order
   '/outfits': { nav: 'Outfits', image: '/icons/outfits.png', sitemap: true, section: 'collection' },
+  '/outfits/standalone_pieces': {
+    nav: 'Standalone Pieces',
+    image: '/icons/accessories.png',
+    sitemap: true,
+    section: 'collection',
+    parent: '/outfits',
+  },
   '/eureka': {
     nav: 'Eureka',
     title: 'Eureka Sets',

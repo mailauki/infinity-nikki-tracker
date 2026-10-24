@@ -96,143 +96,130 @@ export default function FilterOutfits() {
   type FilteredSet = (typeof outfitSets)[number]
 
   const filteredSets = useMemo(() => {
-    return outfitSets
-      .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
-      .filter((set) => {
-        if (!selectedRarity) return true
-        // Standalone is a mixed bag: keep it if any of its pieces match the rarity.
-        // Every other set has a single set-level rarity.
-        if (set.slug === STANDALONE_SLUG) {
-          return set.outfit_variants.some((v) => v.rarity === selectedRarity)
-        }
-        return set.rarity === selectedRarity
-      })
-      .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
-      .filter(
-        (set) =>
-          !selectedLabel.length || selectedLabel.some((l) => l === set.label || l === set.label_2)
-      )
-      .filter((set) => !selectedSeason.length || selectedSeason.includes(set.seasons ?? ''))
-      .filter(
-        (set) =>
-          !selectedSeasonCategory.length ||
-          selectedSeasonCategory.includes(set.season_category ?? '')
-      )
-      .map((set) => {
-        const baseSlug = set.slug
-        // Map each state slug to its display order for the selectedEvolution filter.
-        const orderByStateSlug = new Map<string, number>([
-          [baseSlug, 1],
-          ...set.evolutions.map((e) => [e.slug, e.order] as [string, number]),
-        ])
-        // Variants in scope for this set after the structural filters (evolution
-        // visibility + evolution order). The group-level obtained state is judged
-        // over these — the FULL group — so it reflects true set progress rather
-        // than the category-filtered subset.
-        const scopedVariants = set.outfit_variants
-          .filter((v) => {
-            const evo = set.evolutions.find((e) => e.slug === v.outfit_set) ?? null
-            return isEvolutionVisible({
-              stateSlug: v.outfit_set,
-              baseSlug,
-              isGlowupState: !!evo && isGlowup(evo),
-              hideEvolutions,
-              hideGlowups,
+    return (
+      outfitSets
+        // Standalone pieces have their own page (/outfits/standalone_pieces), where
+        // every filter reads the piece's own fields rather than the set's.
+        .filter((set) => set.slug !== STANDALONE_SLUG)
+        .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
+        .filter((set) => !selectedRarity || set.rarity === selectedRarity)
+        .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
+        .filter(
+          (set) =>
+            !selectedLabel.length || selectedLabel.some((l) => l === set.label || l === set.label_2)
+        )
+        .filter((set) => !selectedSeason.length || selectedSeason.includes(set.seasons ?? ''))
+        .filter(
+          (set) =>
+            !selectedSeasonCategory.length ||
+            selectedSeasonCategory.includes(set.season_category ?? '')
+        )
+        .map((set) => {
+          const baseSlug = set.slug
+          // Map each state slug to its display order for the selectedEvolution filter.
+          const orderByStateSlug = new Map<string, number>([
+            [baseSlug, 1],
+            ...set.evolutions.map((e) => [e.slug, e.order] as [string, number]),
+          ])
+          // Variants in scope for this set after the structural filters (evolution
+          // visibility + evolution order). The group-level obtained state is judged
+          // over these — the FULL group — so it reflects true set progress rather
+          // than the category-filtered subset.
+          const scopedVariants = set.outfit_variants
+            .filter((v) => {
+              const evo = set.evolutions.find((e) => e.slug === v.outfit_set) ?? null
+              return isEvolutionVisible({
+                stateSlug: v.outfit_set,
+                baseSlug,
+                isGlowupState: !!evo && isGlowup(evo),
+                hideEvolutions,
+                hideGlowups,
+              })
             })
-          })
-          .filter(
-            // selectedEvolution is null for "any" and 0 for glow-up, so compare to
-            // null explicitly — `!selectedEvolution` would treat glow-up as no filter.
-            (v) =>
-              selectedEvolution === null ||
-              orderByStateSlug.get(v.outfit_set ?? '') === selectedEvolution
-          )
-        // Group-level obtained filter: drop whole evolution groups whose full-group
-        // state doesn't match the selected missing / obtained state.
-        let inMatchingGroup = scopedVariants
-        if (groupLevelObtained && selectedObtainedFilter) {
-          // Group once by state slug, then judge each group a single time, instead of
-          // re-scanning every variant for every variant (quadratic per set).
-          const byState = new Map<string, typeof scopedVariants>()
-          for (const v of scopedVariants) {
-            const key = v.outfit_set ?? ''
-            const group = byState.get(key)
-            if (group) group.push(v)
-            else byState.set(key, [v])
-          }
-          const keptStates = new Set<string>()
-          for (const [key, group] of byState) {
-            // A group holding a card that is animating out stays until it has gone.
-            if (
-              matchesObtainedFilter(group, selectedObtainedFilter) ||
-              group.some((v) => exitingKeys.has(v.slug))
-            ) {
-              keptStates.add(key)
+            .filter(
+              // selectedEvolution is null for "any" and 0 for glow-up, so compare to
+              // null explicitly — `!selectedEvolution` would treat glow-up as no filter.
+              (v) =>
+                selectedEvolution === null ||
+                orderByStateSlug.get(v.outfit_set ?? '') === selectedEvolution
+            )
+          // Group-level obtained filter: drop whole evolution groups whose full-group
+          // state doesn't match the selected missing / obtained state.
+          let inMatchingGroup = scopedVariants
+          if (groupLevelObtained && selectedObtainedFilter) {
+            // Group once by state slug, then judge each group a single time, instead of
+            // re-scanning every variant for every variant (quadratic per set).
+            const byState = new Map<string, typeof scopedVariants>()
+            for (const v of scopedVariants) {
+              const key = v.outfit_set ?? ''
+              const group = byState.get(key)
+              if (group) group.push(v)
+              else byState.set(key, [v])
             }
+            const keptStates = new Set<string>()
+            for (const [key, group] of byState) {
+              // A group holding a card that is animating out stays until it has gone.
+              if (
+                matchesObtainedFilter(group, selectedObtainedFilter) ||
+                group.some((v) => exitingKeys.has(v.slug))
+              ) {
+                keptStates.add(key)
+              }
+            }
+            inMatchingGroup = scopedVariants.filter((v) => keptStates.has(v.outfit_set ?? ''))
           }
-          inMatchingGroup = scopedVariants.filter((v) => keptStates.has(v.outfit_set ?? ''))
-        }
-        // Apply the category filter last so it only narrows what is displayed,
-        // without affecting the group-level obtained classification above. In
-        // ungrouped mode the obtained filter is still per variant.
-        const culledVariants = inMatchingGroup
-          .filter(
-            (v) =>
-              selectedOutfitCategory.length === 0 ||
-              (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
-          )
-          .filter((v) => {
-            if (groupLevelObtained) return true
-            // Completed under the "missing" filter and still animating out: keep it
-            // in the list so the card has something to animate. The obtained data
-            // itself already updated — only the disappearance waits.
-            if (exitingKeys.has(v.slug)) return true
-            if (selectedObtainedFilter === 'obtained') return v.obtained === true
-            if (selectedObtainedFilter === 'missing') return v.obtained !== true
-            return true
-          })
-          // Standalone is a mixed bag: when a rarity is selected, show only the
-          // matching pieces. Other sets are single-rarity, so this is a no-op for them.
-          .filter(
-            (v) => !selectedRarity || set.slug !== STANDALONE_SLUG || v.rarity === selectedRarity
-          )
-        return { ...set, outfit_variants: culledVariants }
-      })
-      .filter((set) => set.outfit_variants.length > 0)
-      .sort((a, b) => {
-        // Standalone Pieces is a catch-all bucket — always render it dead last,
-        // regardless of sort axis or direction. Only one standalone set exists,
-        // so both-standalone never happens.
-        if (a.slug === STANDALONE_SLUG) return 1
-        if (b.slug === STANDALONE_SLUG) return -1
-        if (axis === 'date') {
-          // Undated rows tie on release, so the id tie-break decides the whole
-          // order until real dates are entered — it must follow sortDir (desc:
-          // higher id first) or "newest first" silently flips to oldest-first.
-          return (
-            compareRelease(setRelease(a), setRelease(b), sortDir) ||
-            (sortDir === 'asc' ? a.id! - b.id! : b.id! - a.id!)
-          )
-        }
-        const progress = (s: FilteredSet) => {
-          const total = s.outfit_variants.length
-          return total === 0 ? 0 : s.outfit_variants.filter((v) => v.obtained).length / total
-        }
-        let cmp: number
-        switch (axis) {
-          case 'rarity':
-            cmp = a.rarity - b.rarity
-            break
-          case 'progress':
-            cmp = progress(a) - progress(b)
-            break
-          default:
-            cmp = a.title.localeCompare(b.title)
-        }
-        // `desc` is the default direction for date/rarity/progress (newest /
-        // highest first); for title, `asc` is A→Z. Stable tiebreak on id.
-        return (sortDir === 'asc' ? cmp : -cmp) || a.id! - b.id!
-      })
+          // Apply the category filter last so it only narrows what is displayed,
+          // without affecting the group-level obtained classification above. In
+          // ungrouped mode the obtained filter is still per variant.
+          const culledVariants = inMatchingGroup
+            .filter(
+              (v) =>
+                selectedOutfitCategory.length === 0 ||
+                (v.outfit_category !== null && selectedOutfitCategory.includes(v.outfit_category))
+            )
+            .filter((v) => {
+              if (groupLevelObtained) return true
+              // Completed under the "missing" filter and still animating out: keep it
+              // in the list so the card has something to animate. The obtained data
+              // itself already updated — only the disappearance waits.
+              if (exitingKeys.has(v.slug)) return true
+              if (selectedObtainedFilter === 'obtained') return v.obtained === true
+              if (selectedObtainedFilter === 'missing') return v.obtained !== true
+              return true
+            })
+          return { ...set, outfit_variants: culledVariants }
+        })
+        .filter((set) => set.outfit_variants.length > 0)
+        .sort((a, b) => {
+          if (axis === 'date') {
+            // Undated rows tie on release, so the id tie-break decides the whole
+            // order until real dates are entered — it must follow sortDir (desc:
+            // higher id first) or "newest first" silently flips to oldest-first.
+            return (
+              compareRelease(setRelease(a), setRelease(b), sortDir) ||
+              (sortDir === 'asc' ? a.id! - b.id! : b.id! - a.id!)
+            )
+          }
+          const progress = (s: FilteredSet) => {
+            const total = s.outfit_variants.length
+            return total === 0 ? 0 : s.outfit_variants.filter((v) => v.obtained).length / total
+          }
+          let cmp: number
+          switch (axis) {
+            case 'rarity':
+              cmp = a.rarity - b.rarity
+              break
+            case 'progress':
+              cmp = progress(a) - progress(b)
+              break
+            default:
+              cmp = a.title.localeCompare(b.title)
+          }
+          // `desc` is the default direction for date/rarity/progress (newest /
+          // highest first); for title, `asc` is A→Z. Stable tiebreak on id.
+          return (sortDir === 'asc' ? cmp : -cmp) || a.id! - b.id!
+        })
+    )
   }, [
     outfitSets,
     selectedOutfitSet,

@@ -588,6 +588,9 @@ export function groupSeasonEntries({
 
   if (!hidePieces) {
     for (const variant of liveStandalone) {
+      // A standalone glow-up piece is the glow-up state of another piece, so it
+      // follows the glow-up toggle exactly like a set's glow-up evolution does.
+      if (hideGlowups && variant.glowup_of) continue
       push(variant.season_category, [
         {
           kind: 'standalone',

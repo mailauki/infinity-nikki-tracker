@@ -96,8 +96,7 @@ export default function SeasonsContent({
   // live on one provider spanning the whole /seasons subtree. Without this the
   // index expanded every evolution and glow-up (the toggles default to HIDDEN),
   // so a card advertised a denominator the page it opened never showed.
-  const { hideEvolutions, hideGlowups, hidePieces, hideMakeup, hideBaseSets, hideEureka } =
-    useSeasonFilter()
+  const { hideEvolutions, hidePieces, hideMakeup, hideBaseSets, hideEureka } = useSeasonFilter()
 
   // Seasons order by their release (id as the fallback while dates are blank).
   const sortedSeasons = [...seasons].sort(
@@ -154,16 +153,20 @@ export default function SeasonsContent({
     )
 
     // Counted under the reader's own visibility toggles, so a row here reports
-    // exactly what its season page will show. Evolutions and glow-ups default to
-    // hidden: an evolution is another state of a set the season already lists,
-    // not another thing to collect.
+    // exactly what its season page will show. Evolutions default to hidden: an
+    // evolution is another state of a set the season already lists, not another
+    // thing to collect.
+    //
+    // Glow-ups are the exception: the index NEVER counts them, whatever the
+    // toggle says. They are later re-releases of a set the season already lists,
+    // so they belong to a season page's glow-up view, not to the season's total.
     const categories = groupSeasonEntries({
       seasonSets,
       standaloneVariants,
       makeupSets: seasonMakeupSets,
       seasonSlug,
       hideEvolutions,
-      hideGlowups,
+      hideGlowups: true,
       hidePieces,
       hideMakeup,
       hideBaseSets,

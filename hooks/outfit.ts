@@ -194,29 +194,9 @@ export function updateOutfitSet({
   return { ...outfitSet, outfit_variants } as OutfitSet
 }
 
-/**
- * Filter axes for the outfit detail grid. Evolution sets select a single state
- * slug (`selected`); the standalone-pieces bag instead filters on up to three
- * independent variant axes. A null axis matches everything.
- */
-export type OutfitVariantFilter = {
-  selected: string | null
-  selectedSeason?: string | null
-  selectedSeasonCategory?: string | null
-  isStandalone?: boolean
-}
-
-// Shared by the detail card's progress chip and the variant grid so the two
-// always scope to the same set of variants.
-export function matchesOutfitFilter(
-  variant: OutfitVariant,
-  { selected, selectedSeason, selectedSeasonCategory, isStandalone }: OutfitVariantFilter
-): boolean {
-  if (!isStandalone) return !selected || variant.outfit_set === selected
-
-  return (
-    (!selected || variant.outfit_category === selected) &&
-    (!selectedSeason || variant.seasons === selectedSeason) &&
-    (!selectedSeasonCategory || variant.season_category === selectedSeasonCategory)
-  )
+// The outfit detail grid's evolution filter: `selected` is one state slug, or
+// null for every state. Shared by the detail card's progress chip and the
+// variant grid so the two always scope to the same set of variants.
+export function matchesOutfitFilter(variant: OutfitVariant, selected: string | null): boolean {
+  return !selected || variant.outfit_set === selected
 }
