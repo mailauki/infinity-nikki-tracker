@@ -61,18 +61,18 @@ export const getBaseVariantTitle = cache(
   }
 )
 
-// Standalone 4★/5★ pieces that aren't glow-ups themselves — the bases a glow-up
-// piece can point at via `glowup_of`.
-export const getGlowupBaseOptions = cache(async () => {
+// The standalone glow-up piece linked to `baseSlug`, if any — seeds the base
+// piece's glow-up editor in the admin edit form.
+export const getStandaloneGlowup = cache(async (baseSlug: string) => {
   const supabase = await createClient()
 
   const { data } = await supabase
     .from('outfit_variants')
-    .select('slug, title')
+    .select('slug, subtitle')
     .eq('outfit_set', STANDALONE_PIECES_SLUG)
-    .gte('rarity', 4)
-    .is('glowup_of', null)
-    .order('title')
+    .eq('glowup_of', baseSlug)
+    .limit(1)
+    .maybeSingle()
 
-  return data ?? []
+  return data
 })

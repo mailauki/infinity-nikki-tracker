@@ -10,8 +10,96 @@ import { recategorizeVariant } from '@/lib/variant-recategorize'
 import { deriveVariantSlug } from '@/lib/variant-slug'
 import { readReleaseFields } from '@/lib/release-form'
 import { editPath } from '@/lib/sitemap/routes'
+import { deriveGlowupVariantTitle } from '@/hooks/outfit'
 
 const STANDALONE_SLUG = 'standalone_pieces'
+
+const OUTFIT_RECATEGORIZE = {
+  table: 'outfit_variants',
+  obtainedTable: 'obtained_outfit',
+  categoryColumn: 'outfit_category',
+  variantColumn: 'outfit_variant',
+} as const
+
+type Supabase = Awaited<ReturnType<typeof createClient>>
+
+/** Set-level fields a standalone glow-up piece mirrors from its base piece. */
+type GlowupShared = {
+  outfit_category: string | null
+  seasons: string | null
+  season_category: string | null
+  rarity: number | null
+  style: string | null
+  label: string | null
+  label_2: string | null
+}
+
+/**
+ * Create, update or unlink the standalone glow-up piece of `base`, as edited in
+ * the glow-up editor on the base piece's form. The glow-up piece mirrors its
+ * base's category and set-level fields and is titled "{base title}: {subtitle}".
+ * An empty subtitle (or a base that is no longer a standalone piece) only
+ * UNLINKS the glow-up piece: deleting it would cascade every user's obtained
+ * record. Returns an error message, or null on success.
+ */
+async function syncStandaloneGlowup(
+  supabase: Supabase,
+  formData: FormData,
+  base: { slug: string; title: string | null; outfit_set: string | null } & GlowupShared
+): Promise<string | null> {
+  const subtitle = (formData.get('glowup_subtitle') as string | null)?.trim() || null
+  const title =
+    base.outfit_set === STANDALONE_SLUG
+      ? deriveGlowupVariantTitle({ baseVariantTitle: base.title, glowupSubtitle: subtitle })
+      : null
+
+  const { data: existing } = await supabase
+    .from('outfit_variants')
+    .select('id, slug, outfit_category')
+    .eq('outfit_set', STANDALONE_SLUG)
+    .eq('glowup_of', base.slug)
+    .limit(1)
+    .maybeSingle()
+
+  if (!title) {
+    if (!existing) return null
+    const { error } = await supabase
+      .from('outfit_variants')
+      .update({ glowup_of: null, updated_at: new Date().toISOString() })
+      .eq('id', existing.id)
+    return error?.message ?? null
+  }
+
+  const { outfit_category, seasons, season_category, rarity, style, label, label_2 } = base
+  const shared = { seasons, season_category, rarity, style, label, label_2, title, subtitle }
+  const slug = deriveVariantSlug({ set: STANDALONE_SLUG, category: outfit_category, title })
+
+  if (!existing) {
+    const { error } = await supabase
+      .from('outfit_variants')
+      .insert([
+        { outfit_set: STANDALONE_SLUG, outfit_category, glowup_of: base.slug, slug, ...shared },
+      ])
+    return error?.message ?? null
+  }
+
+  // The base moved category: move the glow-up piece (and its images) with it.
+  if (outfit_category && existing.outfit_category !== outfit_category) {
+    const result = await recategorizeVariant(supabase, OUTFIT_RECATEGORIZE, {
+      id: existing.id,
+      currentSlug: existing.slug,
+      newSlug: slug,
+      newCategory: outfit_category,
+    })
+    if ('error' in result) return result.error
+  }
+
+  const { error } = await supabase
+    .from('outfit_variants')
+    .update({ ...shared, updated_at: new Date().toISOString() })
+    .eq('id', existing.id)
+  return error?.message ?? null
+}
 
 /**
  * Guard against re-adding a piece as standalone when it already ships inside a
@@ -70,9 +158,6 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
   const season_category = (formData.get('season_category') as string | null) || null
   const rarityRaw = parseInt(formData.get('rarity') as string)
   const rarity = isNaN(rarityRaw) ? null : rarityRaw
-  // Posted only for 4★/5★ standalone pieces; a set piece's null is overwritten
-  // by the trg_set_outfit_variant_glowup_of trigger with its derived link.
-  const glowup_of = (formData.get('glowup_of') as string | null) || null
   const style = (formData.get('style') as string | null) || null
   const label = (formData.get('label') as string | null) || null
   const label_2 = (formData.get('label_2') as string | null) || null
@@ -98,7 +183,6 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
       seasons,
       season_category,
       rarity,
-      glowup_of,
       style,
       label,
       label_2,
@@ -110,6 +194,20 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
   ])
 
   if (error) return { error: error.message }
+
+  const glowupError = await syncStandaloneGlowup(supabase, formData, {
+    slug,
+    title,
+    outfit_set,
+    outfit_category,
+    seasons,
+    season_category,
+    rarity,
+    style,
+    label,
+    label_2,
+  })
+  if (glowupError) return { error: `Saved "${slug}", but its glow-up failed: ${glowupError}` }
 
   if (formData.get('add_another') === 'true') return { addAnother: true as const, savedTitle: slug }
   redirect(ADMIN_DASHBOARD)
@@ -127,9 +225,6 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
   const season_category = (formData.get('season_category') as string | null) || null
   const rarityRaw = parseInt(formData.get('rarity') as string)
   const rarity = isNaN(rarityRaw) ? null : rarityRaw
-  // Posted only for 4★/5★ standalone pieces; a set piece's null is overwritten
-  // by the trg_set_outfit_variant_glowup_of trigger with its derived link.
-  const glowup_of = (formData.get('glowup_of') as string | null) || null
   const style = (formData.get('style') as string | null) || null
   const label = (formData.get('label') as string | null) || null
   const label_2 = (formData.get('label_2') as string | null) || null
@@ -182,21 +277,12 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
     })
 
     if (derivedSlug !== existing.slug) {
-      const result = await recategorizeVariant(
-        supabase,
-        {
-          table: 'outfit_variants',
-          obtainedTable: 'obtained_outfit',
-          categoryColumn: 'outfit_category',
-          variantColumn: 'outfit_variant',
-        },
-        {
-          id,
-          currentSlug: existing.slug,
-          newSlug: derivedSlug,
-          newCategory: outfit_category,
-        }
-      )
+      const result = await recategorizeVariant(supabase, OUTFIT_RECATEGORIZE, {
+        id,
+        currentSlug: existing.slug,
+        newSlug: derivedSlug,
+        newCategory: outfit_category,
+      })
 
       if ('error' in result) return { error: result.error }
 
@@ -209,7 +295,6 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
           seasons,
           season_category,
           rarity,
-          glowup_of,
           style,
           label,
           label_2,
@@ -221,6 +306,20 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
         .eq('id', id)
 
       if (restError) return { error: restError.message }
+
+      const glowupError = await syncStandaloneGlowup(supabase, formData, {
+        slug: result.newSlug,
+        title,
+        outfit_set,
+        outfit_category,
+        seasons,
+        season_category,
+        rarity,
+        style,
+        label,
+        label_2,
+      })
+      if (glowupError) return { error: `Saved, but the glow-up failed: ${glowupError}` }
 
       // Always redirect (never honor update_only here): the slug just
       // changed, so the edit page the admin is on no longer resolves, and the
@@ -241,7 +340,6 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
       seasons,
       season_category,
       rarity,
-      glowup_of,
       style,
       label,
       label_2,
@@ -254,6 +352,20 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
     .eq('id', id)
 
   if (error) return { error: error.message }
+
+  const glowupError = await syncStandaloneGlowup(supabase, formData, {
+    slug,
+    title,
+    outfit_set,
+    outfit_category,
+    seasons,
+    season_category,
+    rarity,
+    style,
+    label,
+    label_2,
+  })
+  if (glowupError) return { error: `Saved, but the glow-up failed: ${glowupError}` }
 
   if (formData.get('update_only') === 'true') return { savedTitle: slug }
 

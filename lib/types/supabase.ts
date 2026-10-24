@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.1"
   }
   graphql_public: {
     Tables: {
@@ -39,29 +39,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      admins: {
-        Row: {
-          created_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "admins_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       abilities: {
         Row: {
           created_at: string | null
@@ -105,6 +82,29 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "admin_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admins: {
+        Row: {
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admins_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "profiles"
@@ -1249,6 +1249,7 @@ export type Database = {
           seasons: string | null
           slug: string
           style: string | null
+          subtitle: string | null
           title: string | null
           updated_at: string | null
           version: string | null
@@ -1272,6 +1273,7 @@ export type Database = {
           seasons?: string | null
           slug: string
           style?: string | null
+          subtitle?: string | null
           title?: string | null
           updated_at?: string | null
           version?: string | null
@@ -1295,6 +1297,7 @@ export type Database = {
           seasons?: string | null
           slug?: string
           style?: string | null
+          subtitle?: string | null
           title?: string | null
           updated_at?: string | null
           version?: string | null
@@ -1822,6 +1825,10 @@ export type Database = {
         }
         Returns: string
       }
+      derive_outfit_variant_glowup_of: {
+        Args: { p_category: string; p_set: string }
+        Returns: string
+      }
       generate_unique_username: { Args: never; Returns: string }
       generate_username: { Args: { len?: number }; Returns: string }
       increment_feedback_rate_limit: {
@@ -1829,6 +1836,7 @@ export type Database = {
         Returns: number
       }
       is_admin: { Args: never; Returns: boolean }
+      refresh_outfit_glowup_of: { Args: { p_base: string }; Returns: undefined }
       search_all: {
         Args: { q: string }
         Returns: {

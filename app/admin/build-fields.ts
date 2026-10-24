@@ -39,6 +39,8 @@ export interface BuilderData {
   currentId?: number
   /** outfitVariant/makeupVariant: the resolved release its blank override falls back to. */
   inheritedRelease?: Release | null
+  /** outfitVariant edit: the piece is itself a glow-up, so it gets no glow-up editor. */
+  isGlowupPiece?: boolean
 }
 
 export function buildFields(
@@ -52,7 +54,7 @@ export function buildFields(
     case 'eurekaVariant':
       return eurekaVariantFields(mode, data.eurekaVariants ?? [], data.currentId)
     case 'outfitVariant':
-      return outfitVariantFields(mode, data.inheritedRelease)
+      return outfitVariantFields(mode, data.inheritedRelease, data.isGlowupPiece)
     case 'ability':
       return abilityFields(mode)
     case 'seasonCategory':

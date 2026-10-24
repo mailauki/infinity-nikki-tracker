@@ -7,7 +7,7 @@ import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import {
   getOutfitVariantRaw,
   getBaseVariantTitle,
-  getGlowupBaseOptions,
+  getStandaloneGlowup,
 } from '@/hooks/data/admin/outfit-variants'
 import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { getSeasons } from '@/hooks/data/seasons'
@@ -40,30 +40,19 @@ export default async function EditOutfitVariantPage({
 async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  const [
-    variant,
-    outfitSets,
-    outfitCategories,
-    seasons,
-    seasonCategories,
-    styles,
-    labels,
-    glowupBaseOptions,
-  ] = await Promise.all([
-    getOutfitVariantRaw(slug),
-    getOutfitSetsRaw(),
-    getOutfitCategories(),
-    getSeasons(),
-    getSeasonCategories(),
-    getStyles(),
-    getLabels(),
-    getGlowupBaseOptions(),
-  ])
+  const [variant, outfitSets, outfitCategories, seasons, seasonCategories, styles, labels, glowup] =
+    await Promise.all([
+      getOutfitVariantRaw(slug),
+      getOutfitSetsRaw(),
+      getOutfitCategories(),
+      getSeasons(),
+      getSeasonCategories(),
+      getStyles(),
+      getLabels(),
+      getStandaloneGlowup(slug),
+    ])
 
   if (!variant) notFound()
-
-  // A piece can't be its own glow-up.
-  const glowupBases = glowupBaseOptions.filter((o) => o.slug !== variant.slug)
 
   const inheritedRelease = await getInheritedRelease('outfitVariant', slug)
 
@@ -89,7 +78,7 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
       showUpdateNext
       showUpdateOnly
       action={editOutfitVariant.bind(null, variant.id)}
-      builderData={{ inheritedRelease }}
+      builderData={{ inheritedRelease, isGlowupPiece: !!variant.glowup_of }}
       formId="edit-outfit-variant"
       formKind="outfitVariant"
       initialValues={{
@@ -98,27 +87,19 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
         seasons: variant.seasons ?? '',
         season_category: variant.season_category ?? '',
         rarity: variant.rarity ?? '',
-        glowup_of: variant.glowup_of ?? '',
         style: variant.style ?? '',
         label: variant.label ?? '',
         label_2: variant.label_2 ?? '',
         title: prefillTitle,
         description: variant.description ?? '',
+        glowup_subtitle: glowup ? (glowup.subtitle ?? '') : null,
         slug: variant.slug,
         image_url: variant.image_url,
         image_url_alt: variant.alt_image_url,
         released_at: variant.released_at ?? '',
         version: variant.version ?? '',
       }}
-      lookups={{
-        outfitSets,
-        outfitCategories,
-        seasons,
-        seasonCategories,
-        styles,
-        labels,
-        glowupBases,
-      }}
+      lookups={{ outfitSets, outfitCategories, seasons, seasonCategories, styles, labels }}
       mode="edit"
     />
   )

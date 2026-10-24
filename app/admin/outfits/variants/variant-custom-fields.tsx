@@ -2,15 +2,26 @@
 
 import {
   Box,
+  Button,
   Chip,
   FormControl,
+  IconButton,
   InputLabel,
   ListSubheader,
   MenuItem,
   OutlinedInput,
   Select,
+  Stack,
+  TextField,
+  Typography,
 } from '@mui/material'
-import { CheckBox, CheckBoxOutlineBlank } from '@mui/icons-material'
+import {
+  AddCircleOutline,
+  CheckBox,
+  CheckBoxOutlineBlank,
+  RemoveCircleOutline,
+} from '@mui/icons-material'
+import { deriveGlowupVariantTitle } from '@/hooks/outfit'
 import { OutfitSetRaw } from '@/lib/types/outfit'
 import { Label } from '@/lib/types/eureka'
 import { FieldValues } from '@/lib/types/form-fields'
@@ -186,5 +197,66 @@ export function LabelPairSelect({
         </Select>
       </FormControl>
     </>
+  )
+}
+
+/**
+ * One optional glow-up per standalone 4★/5★ piece, laid out like the outfit set
+ * form's evolution editor. `glowup_subtitle` is null while there is no glow-up;
+ * "Add glow-up" opens a subtitle row. Saving creates or updates the glow-up
+ * piece "{title}: {subtitle}"; removing the row unlinks that piece but keeps it.
+ */
+export function GlowupEditor({
+  values,
+  setValue,
+}: {
+  values: FieldValues
+  setValue: (name: string, value: unknown) => void
+}) {
+  const subtitle = values.glowup_subtitle as string | null
+  const preview = deriveGlowupVariantTitle({
+    baseVariantTitle: values.title as string | null,
+    glowupSubtitle: subtitle,
+  })
+
+  return (
+    <Stack spacing={1.5}>
+      <input name="glowup_subtitle" type="hidden" value={subtitle ?? ''} />
+      <Typography color="text.secondary" variant="title">
+        Glow-up ({subtitle === null ? 0 : 1}/1)
+      </Typography>
+
+      {subtitle === null ? (
+        <Box sx={{ pb: 1 }}>
+          <Button
+            startIcon={<AddCircleOutline />}
+            variant="text"
+            onClick={() => setValue('glowup_subtitle', '')}
+          >
+            Add glow-up
+          </Button>
+        </Box>
+      ) : (
+        <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <TextField
+            required
+            helperText={preview ? `Glow-up piece: ${preview}` : 'Composed as "{title}: {subtitle}"'}
+            label="Subtitle"
+            size="small"
+            slotProps={{ htmlInput: { maxLength: 100 } }}
+            sx={{ flex: 1 }}
+            value={subtitle}
+            onChange={(e) => setValue('glowup_subtitle', e.target.value)}
+          />
+          <IconButton
+            aria-label="Remove glow-up"
+            size="small"
+            onClick={() => setValue('glowup_subtitle', null)}
+          >
+            <RemoveCircleOutline fontSize="small" />
+          </IconButton>
+        </Stack>
+      )}
+    </Stack>
   )
 }
