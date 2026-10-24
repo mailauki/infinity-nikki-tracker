@@ -52,8 +52,8 @@ export function outfitVariantFields(
       name: 'glowup_of',
       label: 'Glow-up of',
       optionsKey: 'glowupBases',
-      // Only standalone 4★/5★ pieces have piece-level glow-ups; a set piece gets
-      // its glow-up from the set's glow-up evolution instead.
+      // Only standalone 4★/5★ pieces are linked by hand; a set piece's link is
+      // derived by the trg_set_outfit_variant_glowup_of trigger.
       hidden: (v) => !isBagSet(v) || Number(v.rarity) < 4,
       helperText: 'Set only when this piece is the glow-up of another standalone piece',
     },
