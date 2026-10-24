@@ -31,6 +31,7 @@ import ToggleField from '@/components/forms/toggle-field'
 import ImageUpload from '@/components/forms/image-upload'
 import ImageUploadPair from '@/components/forms/image-upload-pair'
 import {
+  GlowupEditor,
   GroupedOutfitSetSelect,
   LabelPairSelect,
 } from '@/app/admin/outfits/variants/variant-custom-fields'
@@ -55,7 +56,7 @@ function typeDefault(field: FieldConfig): unknown {
     case 'imagePair':
       return null
     case 'custom':
-      return field.defaultValue ?? ''
+      return field.defaultValue === undefined ? '' : field.defaultValue
     default:
       return field.type === 'text' || field.type === 'textarea' || field.type === 'select'
         ? (field.defaultValue ?? '')
@@ -78,7 +79,7 @@ function buildInitialValues(fields: FieldConfig[], initial?: FieldValues): Field
 /** Fields unique to one item, cleared on "add another"; every other value carries over. */
 function isPerItem(field: FieldConfig): boolean {
   return (
-    ['title', 'style', 'label', 'glowup_of'].includes(field.name) ||
+    ['title', 'style', 'label', 'glowup_subtitle'].includes(field.name) ||
     ['slug', 'textarea', 'image', 'imagePair'].includes(field.type)
   )
 }
@@ -130,7 +131,13 @@ export default function EntityForm({
     // builderData is a fresh literal each render; key on its stable members so
     // fields (and everything derived from it) doesn't churn every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [formKind, mode, builderData?.eurekaVariants, builderData?.currentId]
+    [
+      formKind,
+      mode,
+      builderData?.eurekaVariants,
+      builderData?.currentId,
+      builderData?.isGlowupPiece,
+    ]
   )
   const [values, setValues] = useState<FieldValues>(() => buildInitialValues(fields, initialValues))
   const [slugEdited, setSlugEdited] = useState(false)
@@ -427,6 +434,8 @@ export default function EntityForm({
                 values={values}
               />
             )
+          case 'glowupEditor':
+            return <GlowupEditor setValue={setValue} values={values} />
         }
     }
   }

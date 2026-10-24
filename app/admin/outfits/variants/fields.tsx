@@ -21,7 +21,8 @@ function deriveSlug(v: FieldValues): string {
 
 export function outfitVariantFields(
   mode: 'add' | 'edit',
-  inheritedRelease?: Release | null
+  inheritedRelease?: Release | null,
+  isGlowupPiece = false
 ): FieldConfig[] {
   return [
     {
@@ -47,16 +48,6 @@ export function outfitVariantFields(
       focusOnAddAnother: true,
     },
     { type: 'rarity', name: 'rarity' },
-    {
-      type: 'select',
-      name: 'glowup_of',
-      label: 'Glow-up of',
-      optionsKey: 'glowupBases',
-      // Only standalone 4★/5★ pieces are linked by hand; a set piece's link is
-      // derived by the trg_set_outfit_variant_glowup_of trigger.
-      hidden: (v) => !isBagSet(v) || Number(v.rarity) < 4,
-      helperText: 'Set only when this piece is the glow-up of another standalone piece',
-    },
     { type: 'toggle', name: 'style', label: 'Style', optionsKey: 'styles' },
     {
       type: 'custom',
@@ -65,6 +56,16 @@ export function outfitVariantFields(
     },
     { type: 'text', name: 'title', label: 'Title', required: (v) => isBagSet(v) },
     { type: 'textarea', name: 'description', label: 'Description' },
+    {
+      type: 'custom',
+      name: 'glowup_subtitle',
+      component: 'glowupEditor',
+      // null = no glow-up; a string (even '') = the editor row is open.
+      defaultValue: null,
+      // Only standalone 4★/5★ pieces get one here; a set piece's glow-up comes
+      // from its set's glow-up evolution (trg_set_outfit_variant_glowup_of).
+      hidden: (v) => isGlowupPiece || !isBagSet(v) || Number(v.rarity) < 4,
+    },
     {
       type: 'slug',
       name: 'slug',
