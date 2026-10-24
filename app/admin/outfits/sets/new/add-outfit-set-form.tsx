@@ -66,10 +66,9 @@ export default function AddOutfitSetForm({
   const [categorySelect, setCategorySelect] = useState<string[]>([])
   const [handheldBaseOnly, setHandheldBaseOnly] = useState(false)
   const [slugEdited, setSlugEdited] = useState(false)
-  // ReleaseFields is uncontrolled (defaultValue) so its inputs can stay
-  // read-only until an admin types — bumping this key remounts it fresh on
-  // "add another" instead of carrying the last save's date/version over.
-  const [releaseKey, setReleaseKey] = useState(0)
+  // EvolutionEditor keeps its own drafts state, so clearing evolutionDrafts alone
+  // leaves the old rows on screen — bumping this key remounts it empty on "add another".
+  const [evolutionKey, setEvolutionKey] = useState(0)
 
   function handleCategoryChange(e: SelectChangeEvent<string[]>) {
     const { value } = e.target
@@ -112,21 +111,15 @@ export default function AddOutfitSetForm({
   useEffect(() => {
     if (state && 'addAnother' in state) {
       setFormConfig({ savedTitle: state.savedTitle })
+      // Clear only the per-set fields; season, style, rarity, etc. carry over.
       setTitle('')
       setSlug('')
-      setRarity('')
-      setStyle('')
-      setLabelSelect([])
-      setAbility('')
-      setSeason('')
-      setSeasonCategory('')
       setDescription('')
       setEvolutionDrafts([])
       setGlowupEvolutionOrder('')
-      setCategorySelect([])
       setHandheldBaseOnly(false)
       setSlugEdited(false)
-      setReleaseKey((k) => k + 1)
+      setEvolutionKey((k) => k + 1)
     }
   }, [state]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -204,7 +197,7 @@ export default function AddOutfitSetForm({
           </Select>
         </FormControl>
 
-        <ReleaseFields key={releaseKey} inherited={inherited} />
+        <ReleaseFields inherited={inherited} />
 
         <TextField
           multiline
@@ -330,6 +323,7 @@ export default function AddOutfitSetForm({
         )}
 
         <EvolutionEditor
+          key={evolutionKey}
           glowupEvolutionOrder={glowupEvolutionOrder}
           maxEvolutions={maxEvolutions}
           onChange={setEvolutionDrafts}

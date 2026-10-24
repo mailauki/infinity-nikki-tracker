@@ -64,6 +64,8 @@ interface SelectField extends BaseField {
   includeEmpty?: boolean
   sortOptions?: (a: FieldOption, b: FieldOption) => number
   defaultValue?: string
+  /** Focus this field after "save & add another", ready for the next item. */
+  focusOnAddAnother?: boolean
 }
 
 interface MultiSelectField extends BaseField {

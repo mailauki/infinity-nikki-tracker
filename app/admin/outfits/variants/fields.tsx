@@ -32,13 +32,19 @@ export function outfitVariantFields(
       // Edit mode seeds from the variant's own saved set instead.
       ...(mode === 'add' ? { defaultValue: STANDALONE_PIECES_SLUG } : {}),
     },
-    { type: 'select', name: 'outfit_category', label: 'Category', optionsKey: 'outfitCategories' },
     { type: 'select', name: 'seasons', label: 'Season', optionsKey: 'seasons' },
     {
       type: 'select',
       name: 'season_category',
       label: 'Season Category',
       optionsKey: 'seasonCategories',
+    },
+    {
+      type: 'select',
+      name: 'outfit_category',
+      label: 'Category',
+      optionsKey: 'outfitCategories',
+      focusOnAddAnother: true,
     },
     { type: 'rarity', name: 'rarity' },
     { type: 'toggle', name: 'style', label: 'Style', optionsKey: 'styles' },

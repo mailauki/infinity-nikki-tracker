@@ -33,13 +33,19 @@ export function makeupVariantFields(
       // Edit mode seeds from the variant's own saved set instead.
       ...(mode === 'add' ? { defaultValue: STANDALONE_PIECES_SLUG } : {}),
     },
-    { type: 'select', name: 'makeup_category', label: 'Category', optionsKey: 'makeupCategories' },
     { type: 'select', name: 'seasons', label: 'Season', optionsKey: 'seasons' },
     {
       type: 'select',
       name: 'season_category',
       label: 'Season Category',
       optionsKey: 'seasonCategories',
+    },
+    {
+      type: 'select',
+      name: 'makeup_category',
+      label: 'Category',
+      optionsKey: 'makeupCategories',
+      focusOnAddAnother: true,
     },
     { type: 'rarity', name: 'rarity' },
     { type: 'toggle', name: 'style', label: 'Style', optionsKey: 'styles' },
