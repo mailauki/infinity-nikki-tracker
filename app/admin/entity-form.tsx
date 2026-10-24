@@ -64,8 +64,11 @@ function typeDefault(field: FieldConfig): unknown {
   }
 }
 
-function buildInitialValues(fields: FieldConfig[], initial?: FieldValues): FieldValues {
-  const values: FieldValues = {}
+// Starts from every initial value, not just field names: some fields own extra
+// keys (the labelPair field writes `label_2`), and dropping them silently blanks
+// that column on the next save.
+export function buildInitialValues(fields: FieldConfig[], initial?: FieldValues): FieldValues {
+  const values: FieldValues = { ...initial }
   for (const field of fields) {
     values[field.name] = initial?.[field.name] ?? typeDefault(field)
     if (field.type === 'imagePair') {
