@@ -15,6 +15,8 @@ import {
   ListItemText,
   MenuItem,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from '@mui/material'
 import { Add, Category } from '@mui/icons-material'
@@ -29,7 +31,7 @@ import {
 } from '@/lib/admin-entities'
 // Type-only: this module imports the server-only Supabase client, so a value
 // import here would pull it into the browser bundle.
-import type { GapWorkItem } from '@/hooks/data/admin/gap-containers'
+import type { GapWorkItem, PieceQueueKey } from '@/hooks/data/admin/gap-containers'
 import type { AdminStat } from '@/hooks/data/admin/stats'
 import { GapEmptyState, GapFilterChips, GapPaginationFooter } from './admin-gap-list-parts'
 
@@ -93,18 +95,20 @@ const GAPS: { kind: GapKind; label: string }[] = [
   { kind: 'season-category', label: 'No season cat.' },
 ]
 
+/** Grouped-variant entities, which can be listed by set or one row per piece. */
+const PIECE_KEYS = new Set<GapQueueKey>(['outfit-variants', 'makeup-variants', 'eureka-variants'])
+
+function isPieceKey(key: GapQueueKey): key is PieceQueueKey {
+  return PIECE_KEYS.has(key)
+}
+
 /**
  * Buckets whose rows are fetched with an image/title-only gate: the three
  * grouped-variant entities and the standalone-pieces bucket. Simple entities
  * gate on every tracked field instead (see `fetchSimpleGapItems` in
  * hooks/data/admin/gap-containers.ts).
  */
-const PARTIALLY_GATED_BUCKETS = new Set<GapQueueKey>([
-  'outfit-variants',
-  'makeup-variants',
-  'eureka-variants',
-  STANDALONE_QUEUE_KEY,
-])
+const PARTIALLY_GATED_BUCKETS = new Set<GapQueueKey>([...PIECE_KEYS, STANDALONE_QUEUE_KEY])
 
 /**
  * Whether a chip should render de-emphasized: true when its count describes a
@@ -117,12 +121,15 @@ const PARTIALLY_GATED_BUCKETS = new Set<GapQueueKey>([
  * separate ungated pass, so those counts are exact even though inclusion is
  * not gated on it.
  */
-function isNonGating(key: GapQueueKey, kind: GapKind): boolean {
+function isNonGating(key: GapQueueKey, kind: GapKind, pieceView: boolean): boolean {
   if (!PARTIALLY_GATED_BUCKETS.has(key)) return false
   if (kind === 'description') return true
-  // Standalone pieces have no ungated season pass, so their season counts are
-  // subset-scoped; grouped variants do, so theirs are exact.
-  return key === STANDALONE_QUEUE_KEY && (kind === 'season' || kind === 'season-category')
+  // Per-piece rows (the standalone bucket, or the "Pieces" view) have no ungated
+  // season pass, so their season counts are subset-scoped; set containers do,
+  // so theirs are exact.
+  return (
+    (key === STANDALONE_QUEUE_KEY || pieceView) && (kind === 'season' || kind === 'season-category')
+  )
 }
 
 /** Per-row count for a gap kind — the single place the kind→field mapping lives. */
@@ -234,12 +241,16 @@ function resolveGap(key: GapQueueKey, gap: GapKind): GapKind {
 
 export default function AdminGapQueue({
   items,
+  pieceItems,
   stats,
 }: {
   items: Record<GapQueueKey, GapWorkItem[]>
+  /** Per-piece rows for the "Pieces" view of each grouped-variant entity. */
+  pieceItems: Record<PieceQueueKey, GapWorkItem[]>
   stats: AdminStat[]
 }) {
   const [entity, setEntity] = useState<GapQueueKey>(() => defaultEntity(stats))
+  const [byPiece, setByPiece] = useState(false)
   const [gap, setGap] = useState<GapKind>('image')
   const [category, setCategory] = useState<string>(ALL_CATEGORIES)
   const [page, setPage] = useState(1)
@@ -252,13 +263,21 @@ export default function AdminGapQueue({
   // render an empty list with no chip active.
   const activeGap = resolveGap(entity, gap)
 
-  // Only the standalone bucket carries per-row categories; every other bucket
-  // is container-shaped, so its rows have none and the control stays hidden.
-  const showCategoryFilter = entity === STANDALONE_QUEUE_KEY
+  // Grouped-variant entities list one row per set by default; "Pieces" lists
+  // each gap-bearing piece on its own instead.
+  const pieceView = byPiece && isPieceKey(entity)
+  const source = useMemo(
+    () => (pieceView && isPieceKey(entity) ? pieceItems[entity] : (items[entity] ?? [])),
+    [pieceView, entity, items, pieceItems]
+  )
+
+  // Only per-piece rows (standalone bucket, "Pieces" view) carry categories;
+  // set containers span many, so their rows have none and the control hides.
+  const showCategoryFilter = entity === STANDALONE_QUEUE_KEY || pieceView
 
   const gapFiltered = useMemo(
-    () => (items[entity] ?? []).filter((r) => rowGapCount(r, resolveGap(entity, gap)) > 0),
-    [items, entity, gap]
+    () => source.filter((r) => rowGapCount(r, resolveGap(entity, gap)) > 0),
+    [source, entity, gap]
   )
 
   const categories = useMemo(
@@ -280,7 +299,7 @@ export default function AdminGapQueue({
     [gapFiltered, activeCategory]
   )
 
-  const allForEntity = items[entity] ?? []
+  const allForEntity = source
 
   const total = filtered.length
   const lastPage = Math.max(1, Math.ceil(total / PAGE_SIZE))
@@ -293,6 +312,12 @@ export default function AdminGapQueue({
 
   function handleEntityChange(next: GapQueueKey) {
     setEntity(next)
+    setCategory(ALL_CATEGORIES)
+    setPage(1)
+  }
+
+  function handleByPieceChange(next: boolean) {
+    setByPiece(next)
     setCategory(ALL_CATEGORIES)
     setPage(1)
   }
@@ -342,6 +367,18 @@ export default function AdminGapQueue({
               ))}
             </TextField>
           )}
+          {isPieceKey(entity) && (
+            <ToggleButtonGroup
+              exclusive
+              aria-label="List by"
+              size="small"
+              value={byPiece ? 'pieces' : 'sets'}
+              onChange={(_, v) => v && handleByPieceChange(v === 'pieces')}
+            >
+              <ToggleButton value="sets">Sets</ToggleButton>
+              <ToggleButton value="pieces">Pieces</ToggleButton>
+            </ToggleButtonGroup>
+          )}
           {/* All 13 entities listed — confirming an entity is clean is worth
               doing — plus the standalone-pieces bucket, whose rows appear in no
               other entity because they are excluded from container grouping. */}
@@ -373,7 +410,7 @@ export default function AdminGapQueue({
             kind,
             label,
             count: containerGapCount(allForEntity, kind),
-            dashed: isNonGating(entity, kind),
+            dashed: isNonGating(entity, kind, pieceView),
           }))}
           trailing={
             e.addHref && (

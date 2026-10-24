@@ -2,7 +2,11 @@ import { Suspense } from 'react'
 import { Alert, Box, Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { getAdminStats } from '@/hooks/data/admin/stats'
-import { getGapWorkItems, getUnassignedPieces } from '@/hooks/data/admin/gap-containers'
+import {
+  getGapPieceItems,
+  getGapWorkItems,
+  getUnassignedPieces,
+} from '@/hooks/data/admin/gap-containers'
 import { getRecentlyAdded, getRecentlyEdited } from '@/hooks/data/admin/recents'
 import AdminRecentsList from './admin-recents-list'
 import AdminTotalsStrip from './admin-totals-strip'
@@ -38,14 +42,18 @@ async function AdminOverview() {
     return <Alert severity="error">Could not load admin statistics. Try reloading.</Alert>
   }
 
-  const [items, unassignedPieces] = await Promise.all([getGapWorkItems(), getUnassignedPieces()])
+  const [items, pieceItems, unassignedPieces] = await Promise.all([
+    getGapWorkItems(),
+    getGapPieceItems(),
+    getUnassignedPieces(),
+  ])
 
   return (
     <Stack spacing={2}>
       <AdminTotalsStrip stats={stats} />
       <AdminCompletenessList stats={stats} />
       <Suspense>
-        <AdminGapQueue items={items} stats={stats} />
+        <AdminGapQueue items={items} pieceItems={pieceItems} stats={stats} />
       </Suspense>
       {/* Only rendered when rows are genuinely ownerless (NULL owning set) —
           under healthy data there are none, so the card stays hidden rather

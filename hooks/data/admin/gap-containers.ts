@@ -599,18 +599,23 @@ async function fetchUnassignedPieces(
 }
 
 /**
- * Gap-bearing variants assigned to a STANDALONE_SET_SLUGS set, as individual
- * per-piece rows rather than one catch-all container.
+ * Gap-bearing variants as individual per-piece rows rather than set containers.
  *
- * These are excluded from container grouping (see `fetchGroupedContainers`),
- * so without this they'd appear nowhere on the dashboard. Each `GapWorkItem`
- * describes one variant: the counts are 0/1 like any non-variant entity, and
- * `editHref` points at the piece's own variant form — never the shared
- * "Standalone Pieces" set form, which is not where you fix a single piece.
+ * `owners: 'standalone'` is the STANDALONE_QUEUE_KEY bucket: pieces in a
+ * STANDALONE_SET_SLUGS set, which container grouping excludes (see
+ * `fetchGroupedContainers`), so without this they'd appear nowhere.
+ * `owners: 'sets'` is the queue's "Pieces" view of a grouped entity: every
+ * set-owned piece listed on its own (NULL owners are left to
+ * `getUnassignedPieces()`, as in grouping).
+ *
+ * Each `GapWorkItem` describes one variant: the counts are 0/1 like any
+ * non-variant entity, and `editHref` points at the piece's own variant form —
+ * never a set form, which is not where you fix a single piece.
  */
-async function fetchStandalonePieces(
+async function fetchPieceRows(
   supabase: Client,
-  entityKey: 'outfit-variants' | 'makeup-variants' | 'eureka-variants'
+  entityKey: 'outfit-variants' | 'makeup-variants' | 'eureka-variants',
+  owners: 'standalone' | 'sets'
 ): Promise<GapWorkItem[]> {
   const e = ADMIN_ENTITIES[entityKey]
   const ownerColumn = UNASSIGNED_OWNER_COLUMNS[entityKey]
@@ -627,11 +632,15 @@ async function fetchStandalonePieces(
 
   const rows = await fetchAllRows((from, to) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const q: any = supabase
+    let q: any = supabase
       .from(e.table as TableName)
       .select(select)
       .or(orFilter)
-      .in(ownerColumn, STANDALONE_SET_SLUGS)
+    // `not in` also drops NULL owners, which belong to getUnassignedPieces().
+    q =
+      owners === 'standalone'
+        ? q.in(ownerColumn, STANDALONE_SET_SLUGS)
+        : q.not(ownerColumn, 'in', `(${STANDALONE_SET_SLUGS.join(',')})`)
     return q.order('slug', { ascending: true }).range(from, to)
   })
 
@@ -700,7 +709,7 @@ export const getGapWorkItems = cache(async (): Promise<Record<GapQueueKey, GapWo
       fetchGroupedContainers(supabase, EUREKA_VARIANT_CONFIG),
       Promise.all(
         (['outfit-variants', 'makeup-variants', 'eureka-variants'] as const).map((key) =>
-          fetchStandalonePieces(supabase, key)
+          fetchPieceRows(supabase, key, 'standalone')
         )
       ),
     ])
@@ -718,4 +727,26 @@ export const getGapWorkItems = cache(async (): Promise<Record<GapQueueKey, GapWo
     .sort((a, b) => a.title.localeCompare(b.title))
 
   return result
+})
+
+/** The variant entities the queue can show grouped by set or one row per piece. */
+export type PieceQueueKey = 'outfit-variants' | 'makeup-variants' | 'eureka-variants'
+
+// Auth-dependent (createClient reads cookies), so React cache(), not `use cache`.
+/** Per-piece rows for the queue's "Pieces" view of each grouped variant entity. */
+export const getGapPieceItems = cache(async (): Promise<Record<PieceQueueKey, GapWorkItem[]>> => {
+  const supabase = await createClient()
+
+  const [outfit, makeup, eureka] = await Promise.all(
+    (['outfit-variants', 'makeup-variants', 'eureka-variants'] as const).map((key) =>
+      fetchPieceRows(supabase, key, 'sets')
+    )
+  )
+  const byTitle = (a: GapWorkItem, b: GapWorkItem) => a.title.localeCompare(b.title)
+
+  return {
+    'outfit-variants': outfit.sort(byTitle),
+    'makeup-variants': makeup.sort(byTitle),
+    'eureka-variants': eureka.sort(byTitle),
+  }
 })
