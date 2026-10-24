@@ -86,6 +86,7 @@ Column-level schema lives in `lib/types/supabase.ts` (generated — the source o
 - `user_preferences` — exactly one row per user_id; `admin_preferences` is separate (admin view mode)
 - `user_premium` — a row's existence IS premium (no boolean); read via `getIsPremium()`. Public read, NO user write policies — only the service-role Stripe webhook writes it. Don't move it back onto `profiles`, whose update policy lets users write their own columns
 - `styles`, `labels` — UNIQUE on title; RLS public read / admin write
+- `outfit_variants.glowup_of` — a glow-up piece's base piece (FK to `slug`). Hand-set only for standalone pieces; for set pieces triggers derive it (piece in an order-0 set → same-category piece in its `base_set`) on every variant or set write, so app code never writes it for sets. Negative `outfit_sets.order` (the set-edit "park" step) is ignored
 - RPCs (not in the generated table types): `is_admin`, `toggle_obtained`, `toggle_obtained_outfit`
 
 ### Routes, Nav & Sitemap

@@ -1236,6 +1236,7 @@ export type Database = {
           created_at: string | null
           default: boolean
           description: string | null
+          glowup_of: string | null
           id: number
           image_url: string | null
           label: string | null
@@ -1258,6 +1259,7 @@ export type Database = {
           created_at?: string | null
           default?: boolean
           description?: string | null
+          glowup_of?: string | null
           id?: number
           image_url?: string | null
           label?: string | null
@@ -1280,6 +1282,7 @@ export type Database = {
           created_at?: string | null
           default?: boolean
           description?: string | null
+          glowup_of?: string | null
           id?: number
           image_url?: string | null
           label?: string | null
@@ -1297,6 +1300,13 @@ export type Database = {
           version?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "outfit_variants_glowup_of_fkey"
+            columns: ["glowup_of"]
+            isOneToOne: false
+            referencedRelation: "outfit_variants"
+            referencedColumns: ["slug"]
+          },
           {
             foreignKeyName: "outfit_variants_label_2_fkey"
             columns: ["label_2"]

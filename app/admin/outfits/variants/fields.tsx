@@ -47,6 +47,16 @@ export function outfitVariantFields(
       focusOnAddAnother: true,
     },
     { type: 'rarity', name: 'rarity' },
+    {
+      type: 'select',
+      name: 'glowup_of',
+      label: 'Glow-up of',
+      optionsKey: 'glowupBases',
+      // Only standalone 4★/5★ pieces are linked by hand; a set piece's link is
+      // derived by the trg_set_outfit_variant_glowup_of trigger.
+      hidden: (v) => !isBagSet(v) || Number(v.rarity) < 4,
+      helperText: 'Set only when this piece is the glow-up of another standalone piece',
+    },
     { type: 'toggle', name: 'style', label: 'Style', optionsKey: 'styles' },
     {
       type: 'custom',

@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { OutfitVariantRaw } from '@/lib/types/outfit'
+import { STANDALONE_PIECES_SLUG } from '@/lib/variant-slug'
 import { cache } from 'react'
 
 const SELECT = `
@@ -59,3 +60,19 @@ export const getBaseVariantTitle = cache(
     return title ? title : null
   }
 )
+
+// Standalone 4★/5★ pieces that aren't glow-ups themselves — the bases a glow-up
+// piece can point at via `glowup_of`.
+export const getGlowupBaseOptions = cache(async () => {
+  const supabase = await createClient()
+
+  const { data } = await supabase
+    .from('outfit_variants')
+    .select('slug, title')
+    .eq('outfit_set', STANDALONE_PIECES_SLUG)
+    .gte('rarity', 4)
+    .is('glowup_of', null)
+    .order('title')
+
+  return data ?? []
+})
