@@ -43,6 +43,7 @@ import SortAxisToggle from './sort-axis-toggle'
 import StyleLabelSelect from './style-label-select'
 import ToggleGroupLabel from '../forms/toggle-group-label'
 import SeasonFilterBody from './season-filter-body'
+import { STANDALONE_PIECES_SLUG } from '@/lib/variant-slug'
 
 export default function FilterMenu() {
   const pathname = usePathname()
@@ -128,6 +129,9 @@ export default function FilterMenu() {
   } = useMakeupImageMode()
 
   const isOutfits = pathname.startsWith('/outfits')
+  // The standalone pieces page lists single pieces, so set grouping, the set
+  // picker, evolutions and density don't apply there; category always does.
+  const isPieces = pathname === '/outfits/standalone_pieces'
   const isMakeup = pathname.startsWith('/makeup')
   const isSeasons = pathname.startsWith('/seasons/')
 
@@ -154,10 +158,10 @@ export default function FilterMenu() {
   )
 
   React.useEffect(() => {
-    if (isOutfits && density === 'standard' && selectedOutfitCategory.length > 0) {
+    if (isOutfits && !isPieces && density === 'standard' && selectedOutfitCategory.length > 0) {
       onOutfitFiltersChange({ selectedOutfitCategory: [] })
     }
-  }, [isOutfits, density, selectedOutfitCategory, onOutfitFiltersChange])
+  }, [isOutfits, isPieces, density, selectedOutfitCategory, onOutfitFiltersChange])
 
   React.useEffect(() => {
     if (!isOutfits) return
@@ -277,35 +281,39 @@ export default function FilterMenu() {
         </IconButton>
         <SidebarBody>
           <List>
-            <ListItem>
-              <DensityToggle
-                density={density}
-                setDensity={setDensity}
-                onDensityChange={(next) => {
-                  // Category filtering only applies in compact view; clear the
-                  // selection when switching back to standard so it isn't retained
-                  // while the (disabled) control is hidden from effect.
-                  if (next === 'standard' && selectedOutfitCategory.length > 0) {
-                    onOutfitFiltersChange({ selectedOutfitCategory: [] })
-                  }
-                }}
-              />
-            </ListItem>
+            {!isPieces && (
+              <ListItem>
+                <DensityToggle
+                  density={density}
+                  setDensity={setDensity}
+                  onDensityChange={(next) => {
+                    // Category filtering only applies in compact view; clear the
+                    // selection when switching back to standard so it isn't retained
+                    // while the (disabled) control is hidden from effect.
+                    if (next === 'standard' && selectedOutfitCategory.length > 0) {
+                      onOutfitFiltersChange({ selectedOutfitCategory: [] })
+                    }
+                  }}
+                />
+              </ListItem>
+            )}
             <ListItem>
               <SortAxisToggle isLoggedIn={outfitLoggedIn} />
             </ListItem>
-            <ListItem sx={{ gap: 1 }}>
-              <SortOutfitToggle
-                disabled={density === 'standard'}
-                groupBySet={outfitGroupBySet}
-                onGroupBySetChange={onOutfitGroupBySetChange}
-              />
-              <OutfitSelect
-                outfitSets={outfitSets}
-                selectedOutfitSet={selectedOutfitSet}
-                onOutfitSetChange={(slug) => onOutfitFiltersChange({ selectedOutfitSet: slug })}
-              />
-            </ListItem>
+            {!isPieces && (
+              <ListItem sx={{ gap: 1 }}>
+                <SortOutfitToggle
+                  disabled={density === 'standard'}
+                  groupBySet={outfitGroupBySet}
+                  onGroupBySetChange={onOutfitGroupBySetChange}
+                />
+                <OutfitSelect
+                  outfitSets={outfitSets.filter((s) => s.slug !== STANDALONE_PIECES_SLUG)}
+                  selectedOutfitSet={selectedOutfitSet}
+                  onOutfitSetChange={(slug) => onOutfitFiltersChange({ selectedOutfitSet: slug })}
+                />
+              </ListItem>
+            )}
             {outfitLoggedIn && (
               <ListItem>
                 <ObtainedToggle
@@ -318,26 +326,30 @@ export default function FilterMenu() {
             )}
             <ListItem>
               <Stack sx={{ flexGrow: 1 }}>
-                <ToggleGroupLabel>Evolutions</ToggleGroupLabel>
+                <ToggleGroupLabel>{isPieces ? 'Glow-ups' : 'Evolutions'}</ToggleGroupLabel>
                 <Stack
                   direction="row"
                   spacing={1}
                   sx={{ alignItems: 'center', justifyContent: 'space-between' }}
                 >
-                  <EvolutionOrderToggle
-                    availableOrders={availableOrders}
-                    isOrderDisabled={(o) => !isOrderShown(o)}
-                    selectedEvolution={selectedEvolution}
-                    onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
-                  />
-                  <Stack direction="row" spacing={1}>
-                    <EvolutionToggle
-                      disabled={selectedEvolution !== null}
-                      hideEvolutions={hideEvolutions}
-                      onHideEvolutionsChange={onHideEvolutionsChange}
+                  {!isPieces && (
+                    <EvolutionOrderToggle
+                      availableOrders={availableOrders}
+                      isOrderDisabled={(o) => !isOrderShown(o)}
+                      selectedEvolution={selectedEvolution}
+                      onEvolutionChange={(_e, v) => onOutfitFiltersChange({ selectedEvolution: v })}
                     />
+                  )}
+                  <Stack direction="row" spacing={1}>
+                    {!isPieces && (
+                      <EvolutionToggle
+                        disabled={selectedEvolution !== null}
+                        hideEvolutions={hideEvolutions}
+                        onHideEvolutionsChange={onHideEvolutionsChange}
+                      />
+                    )}
                     <GlowupToggle
-                      disabled={selectedEvolution !== null}
+                      disabled={!isPieces && selectedEvolution !== null}
                       hideGlowups={hideGlowups}
                       onHideGlowupsChange={onHideGlowupsChange}
                     />
@@ -349,7 +361,7 @@ export default function FilterMenu() {
               <OutfitCategorySelect
                 multiple
                 categories={outfitCategories}
-                disabled={density === 'standard'}
+                disabled={!isPieces && density === 'standard'}
                 selectedCategory={selectedOutfitCategory}
                 onCategoryChange={(e) =>
                   onOutfitFiltersChange({

@@ -136,6 +136,39 @@ describe('seasons index row totals', () => {
   })
 })
 
+// A standalone glow-up piece (`glowup_of` set) is the glow-up state of another
+// piece, so it follows the glow-up toggle like a set's glow-up evolution: the
+// seasons index (which always hides glow-ups) never counts it, and a season page
+// counts it only while glow-ups are shown.
+describe('standalone glow-up pieces follow the glow-up toggle', () => {
+  const glowupPiece = {
+    ...variant('collected_memories_bright-neckwear', 'standalone_pieces'),
+    glowup_of: 'collected_memories-neckwear',
+  } as OutfitVariant
+
+  const cards = (hideGlowups: boolean) =>
+    countEntryCards(
+      groupSeasonEntries({
+        seasonSets: [],
+        standaloneVariants: [...standaloneVariants, glowupPiece],
+        makeupSets: [],
+        seasonSlug: SEASON,
+        hideEvolutions: true,
+        hideGlowups,
+        obtainedOutfit: [],
+        obtainedMakeup: [],
+      }).flatMap(([, categoryEntries]) => categoryEntries)
+    ).total
+
+  it('is left out while glow-ups are hidden', () => {
+    expect(cards(true)).toBe(6)
+  })
+
+  it('is counted once glow-ups are shown', () => {
+    expect(cards(false)).toBe(7)
+  })
+})
+
 // A grouped row rolls several categories onto one line, so counting its CARDS
 // collapsed a whole run of the season to a single digit: Bloom Beneath Bright
 // Skies' "Active Moments" gathers one category holding one eight-piece set, and

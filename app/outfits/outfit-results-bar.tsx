@@ -34,16 +34,11 @@ export default function OutfitResultsBar({
   const groupLevelObtained = groupBySet
 
   const filtered = outfitSets
+    // Standalone pieces have their own page (/outfits/standalone_pieces), where
+    // every filter reads the piece's own fields rather than the set's.
+    .filter((set) => set.slug !== STANDALONE_SLUG)
     .filter((set) => !selectedOutfitSet || set.slug === selectedOutfitSet)
-    .filter((set) => {
-      if (!selectedRarity) return true
-      // Standalone is a mixed bag: keep it if any of its pieces match the rarity.
-      // Every other set has a single set-level rarity.
-      if (set.slug === STANDALONE_SLUG) {
-        return set.outfit_variants.some((v) => v.rarity === selectedRarity)
-      }
-      return set.rarity === selectedRarity
-    })
+    .filter((set) => !selectedRarity || set.rarity === selectedRarity)
     .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
     .filter(
       (set) =>
@@ -102,11 +97,6 @@ export default function OutfitResultsBar({
           if (selectedObtainedFilter === 'missing') return v.obtained !== true
           return true
         })
-        // Standalone is a mixed bag: when a rarity is selected, show only the
-        // matching pieces. Other sets are single-rarity, so this is a no-op for them.
-        .filter(
-          (v) => !selectedRarity || set.slug !== STANDALONE_SLUG || v.rarity === selectedRarity
-        )
       return { outfit_variants: culled }
     })
     .filter((set) => set.outfit_variants.length > 0)

@@ -10,18 +10,12 @@ export default function OutfitEvolutionVariants({
   outfitSet,
   isLoggedIn,
   selected,
-  selectedSeason = null,
-  selectedSeasonCategory = null,
-  isStandalone = false,
 }: {
   outfitSet: OutfitSet
   isLoggedIn: boolean
   selected: string | null
-  selectedSeason?: string | null
-  selectedSeasonCategory?: string | null
-  isStandalone?: boolean
 }) {
-  const { obtainedOutfit, outfitCategories } = useOutfitData()
+  const { obtainedOutfit } = useOutfitData()
   const { evolutions, outfit_variants: rawVariants } = outfitSet
   const baseSlug = outfitSet.slug
 
@@ -30,24 +24,15 @@ export default function OutfitEvolutionVariants({
     obtained: obtainedOutfit.some((o) => o.outfit_variant === v.slug),
   }))
 
-  const categoryOrder = outfitCategories.map((c) => c.slug)
-
   const stateOrder = new Map<string, number>([
     [baseSlug, -Infinity],
     ...evolutions.map((e) => [e.slug, evolutionSortKey(e)] as [string, number]),
   ])
   const orderOf = (stateSlug: string) => stateOrder.get(stateSlug) ?? Infinity
 
-  const matchesSelected = (v: (typeof outfit_variants)[number]) =>
-    matchesOutfitFilter(v, { selected, selectedSeason, selectedSeasonCategory, isStandalone })
-
-  const sortKey = (v: (typeof outfit_variants)[number]) =>
-    isStandalone ? categoryOrder.indexOf(v.outfit_category ?? '') : orderOf(v.outfit_set ?? '')
-
   const variants = outfit_variants
-    .filter(matchesSelected)
-    .slice()
-    .sort((a, b) => sortKey(a) - sortKey(b))
+    .filter((v) => matchesOutfitFilter(v, selected))
+    .sort((a, b) => orderOf(a.outfit_set ?? '') - orderOf(b.outfit_set ?? ''))
 
   return (
     <CardGrid
