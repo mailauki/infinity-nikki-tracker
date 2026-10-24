@@ -78,7 +78,7 @@ function buildInitialValues(fields: FieldConfig[], initial?: FieldValues): Field
 /** Fields unique to one item, cleared on "add another"; every other value carries over. */
 function isPerItem(field: FieldConfig): boolean {
   return (
-    ['title', 'style', 'label'].includes(field.name) ||
+    ['title', 'style', 'label', 'glowup_of'].includes(field.name) ||
     ['slug', 'textarea', 'image', 'imagePair'].includes(field.type)
   )
 }

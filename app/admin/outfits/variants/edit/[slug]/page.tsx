@@ -4,7 +4,11 @@ import { Stack } from '@mui/material'
 import { Metadata } from 'next'
 import { getOutfitSetsRaw } from '@/hooks/data/admin/outfit-sets'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
-import { getOutfitVariantRaw, getBaseVariantTitle } from '@/hooks/data/admin/outfit-variants'
+import {
+  getOutfitVariantRaw,
+  getBaseVariantTitle,
+  getGlowupBaseOptions,
+} from '@/hooks/data/admin/outfit-variants'
 import { getInheritedRelease } from '@/hooks/data/admin/inherited-release'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
@@ -36,18 +40,30 @@ export default async function EditOutfitVariantPage({
 async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  const [variant, outfitSets, outfitCategories, seasons, seasonCategories, styles, labels] =
-    await Promise.all([
-      getOutfitVariantRaw(slug),
-      getOutfitSetsRaw(),
-      getOutfitCategories(),
-      getSeasons(),
-      getSeasonCategories(),
-      getStyles(),
-      getLabels(),
-    ])
+  const [
+    variant,
+    outfitSets,
+    outfitCategories,
+    seasons,
+    seasonCategories,
+    styles,
+    labels,
+    glowupBaseOptions,
+  ] = await Promise.all([
+    getOutfitVariantRaw(slug),
+    getOutfitSetsRaw(),
+    getOutfitCategories(),
+    getSeasons(),
+    getSeasonCategories(),
+    getStyles(),
+    getLabels(),
+    getGlowupBaseOptions(),
+  ])
 
   if (!variant) notFound()
+
+  // A piece can't be its own glow-up.
+  const glowupBases = glowupBaseOptions.filter((o) => o.slug !== variant.slug)
 
   const inheritedRelease = await getInheritedRelease('outfitVariant', slug)
 
@@ -82,6 +98,7 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
         seasons: variant.seasons ?? '',
         season_category: variant.season_category ?? '',
         rarity: variant.rarity ?? '',
+        glowup_of: variant.glowup_of ?? '',
         style: variant.style ?? '',
         label: variant.label ?? '',
         label_2: variant.label_2 ?? '',
@@ -93,7 +110,15 @@ async function EditOutfitVariant({ params }: { params: Promise<{ slug: string }>
         released_at: variant.released_at ?? '',
         version: variant.version ?? '',
       }}
-      lookups={{ outfitSets, outfitCategories, seasons, seasonCategories, styles, labels }}
+      lookups={{
+        outfitSets,
+        outfitCategories,
+        seasons,
+        seasonCategories,
+        styles,
+        labels,
+        glowupBases,
+      }}
       mode="edit"
     />
   )

@@ -70,6 +70,8 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
   const season_category = (formData.get('season_category') as string | null) || null
   const rarityRaw = parseInt(formData.get('rarity') as string)
   const rarity = isNaN(rarityRaw) ? null : rarityRaw
+  // The field is hidden (so not posted) unless this is a 4★/5★ standalone piece.
+  const glowup_of = (formData.get('glowup_of') as string | null) || null
   const style = (formData.get('style') as string | null) || null
   const label = (formData.get('label') as string | null) || null
   const label_2 = (formData.get('label_2') as string | null) || null
@@ -95,6 +97,7 @@ export async function addOutfitVariant(_: unknown, formData: FormData) {
       seasons,
       season_category,
       rarity,
+      glowup_of,
       style,
       label,
       label_2,
@@ -123,6 +126,8 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
   const season_category = (formData.get('season_category') as string | null) || null
   const rarityRaw = parseInt(formData.get('rarity') as string)
   const rarity = isNaN(rarityRaw) ? null : rarityRaw
+  // The field is hidden (so not posted) unless this is a 4★/5★ standalone piece.
+  const glowup_of = (formData.get('glowup_of') as string | null) || null
   const style = (formData.get('style') as string | null) || null
   const label = (formData.get('label') as string | null) || null
   const label_2 = (formData.get('label_2') as string | null) || null
@@ -202,6 +207,7 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
           seasons,
           season_category,
           rarity,
+          glowup_of,
           style,
           label,
           label_2,
@@ -233,6 +239,7 @@ export async function editOutfitVariant(id: number, _: unknown, formData: FormDa
       seasons,
       season_category,
       rarity,
+      glowup_of,
       style,
       label,
       label_2,
