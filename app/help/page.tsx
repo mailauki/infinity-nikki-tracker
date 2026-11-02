@@ -1,11 +1,12 @@
 import HelpActions from './help-actions'
 import { getUserRole } from '@/hooks/user'
-import { Alert, Button, Link as Anchor, Container } from '@mui/material'
+import { Alert, Button, Container } from '@mui/material'
 import { Metadata } from 'next'
-import { Suspense } from 'react'
+import { Fragment, Suspense } from 'react'
 import AddToHomeScreenAccordion from './add-to-accordion'
 import { AdminPanelSettings } from '@mui/icons-material'
-import { Section, SectionList, SectionSubtitle, SectionTitle } from '@/components/section'
+import { MarkdownSection } from '@/components/markdown-body'
+import { getPageSections } from '@/hooks/data/page-sections'
 import PageShell from '@/components/page-shell'
 import { pageTitle } from '@/lib/sitemap/routes'
 
@@ -13,100 +14,37 @@ export const metadata: Metadata = {
   title: pageTitle('/help'),
 }
 
+// The copy lives in page_sections (edit at /admin/content). The interactive
+// pieces stay in code, anchored to their section's slug.
 export default function HelpPage() {
   return (
     <PageShell component="article" maxWidth="md" title={pageTitle('/help')}>
-      <Section>
-        <SectionTitle>How to use</SectionTitle>
-        <SectionSubtitle>
-          No account needed — browse freely as a guest. Sign in to save and track your own
-          collection; progress won&apos;t be saved without an account.
-        </SectionSubtitle>
-        <SectionList
-          ordered
-          bullets={[
-            <>
-              Track full outfit sets, evolutions, and glow-ups from the{' '}
-              <Anchor color="textSecondary" href="/outfits">
-                Outfits
-              </Anchor>{' '}
-              page, and explore them by season on the{' '}
-              <Anchor color="textSecondary" href="/seasons">
-                Seasons
-              </Anchor>{' '}
-              page.
-            </>,
-            <>
-              Browse every Eureka set and its pieces from the{' '}
-              <Anchor color="textSecondary" href="/eureka">
-                Eureka
-              </Anchor>{' '}
-              page. Click an item to mark it as obtained — from the grid or a set&apos;s detail
-              page.
-            </>,
-            <>
-              Use the{' '}
-              <Anchor color="textSecondary" href="/eureka/trials">
-                Trials
-              </Anchor>{' '}
-              view to see your Eureka progress grouped by in-game trial.
-            </>,
-            <>
-              Open the filter menu to narrow things down by category, color, rarity, evolution, or
-              completion status — and to switch grouping, density, and sort order.
-            </>,
-            <>
-              To see only what you&apos;re still missing, set completion status to{' '}
-              <strong>Missing</strong> in the filter menu (available once you&apos;re signed in).
-            </>,
-            <>
-              Build and save your own outfit combinations from the{' '}
-              <Anchor color="textSecondary" href="/looks">
-                Custom Looks
-              </Anchor>{' '}
-              page.
-            </>,
-            <>
-              View your collection stats and recent updates on the{' '}
-              <Anchor color="textSecondary" href="/profile">
-                Profile
-              </Anchor>{' '}
-              page.
-            </>,
-            <>
-              Personalize the app and manage your account from the{' '}
-              <Anchor color="textSecondary" href="/settings">
-                Settings
-              </Anchor>{' '}
-              page — theme mode, default sort, color theme, profile details, and account options.
-            </>,
-          ]}
-        />
-      </Section>
-
-      <Container disableGutters maxWidth="sm">
-        <AddToHomeScreenAccordion />
-      </Container>
-
-      <Section>
-        <SectionTitle>
-          Admin access <AdminPanelSettings color="action" />
-        </SectionTitle>
-        <SectionSubtitle>
-          As an admin, you can manage the data that powers this tracker. Use the{' '}
-          <Anchor color="textSecondary" href="/admin">
-            Admin Panel
-          </Anchor>{' '}
-          to add and edit database items, and track counts and recent activity.
-        </SectionSubtitle>
-        <Suspense>
-          <AdminButton />
-        </Suspense>
-      </Section>
-
+      <Suspense>
+        <HelpSections />
+      </Suspense>
       <HelpActions />
     </PageShell>
   )
+}
+
+async function HelpSections() {
+  const sections = await getPageSections('help')
+  return sections.map((section) => (
+    <Fragment key={section.id}>
+      {section.slug === 'admin-access' ? (
+        <MarkdownSection adornment={<AdminPanelSettings color="action" />} section={section}>
+          <AdminButton />
+        </MarkdownSection>
+      ) : (
+        <MarkdownSection section={section} />
+      )}
+      {section.slug === 'how-to-use' && (
+        <Container disableGutters maxWidth="sm">
+          <AddToHomeScreenAccordion />
+        </Container>
+      )}
+    </Fragment>
+  ))
 }
 
 async function AdminButton() {

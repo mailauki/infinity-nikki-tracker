@@ -35,6 +35,7 @@ import {
   GroupedOutfitSetSelect,
   LabelPairSelect,
 } from '@/app/admin/outfits/variants/variant-custom-fields'
+import { MarkdownBodyField } from '@/app/admin/content/markdown-body-field'
 
 /** Result shapes the admin server actions return (they otherwise redirect). */
 type ActionState =
@@ -439,6 +440,15 @@ export default function EntityForm({
             )
           case 'glowupEditor':
             return <GlowupEditor setValue={setValue} values={values} />
+          case 'markdownBody':
+            return (
+              <MarkdownBodyField
+                label={label}
+                name={field.name}
+                setValue={setValue}
+                values={values}
+              />
+            )
         }
     }
   }

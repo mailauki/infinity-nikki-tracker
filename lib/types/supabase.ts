@@ -1361,6 +1361,39 @@ export type Database = {
           },
         ]
       }
+      page_sections: {
+        Row: {
+          body: string
+          id: string
+          layout: string
+          order: number
+          page: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          id?: string
+          layout?: string
+          order: number
+          page: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          id?: string
+          layout?: string
+          order?: number
+          page?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
