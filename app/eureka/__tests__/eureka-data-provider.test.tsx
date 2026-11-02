@@ -33,14 +33,13 @@ const PREFS = {
   eureka_trial: null,
 }
 
-const BOOTSTRAP = {
+const CATALOG = {
   sets: [],
   categories: [],
   colors: [],
   trials: [],
   styles: [],
   labels: [],
-  obtained: [],
 }
 
 // Captured in an effect, not during render, to keep the probe pure.
@@ -61,7 +60,8 @@ describe('EurekaDataProvider filter persistence', () => {
       vi.fn(async (url: string) => ({
         ok: true,
         status: 200,
-        json: async () => (url === '/api/preferences' ? PREFS : BOOTSTRAP),
+        json: async () =>
+          url === '/api/preferences' ? PREFS : url === '/api/obtained-eureka' ? [] : CATALOG,
       }))
     )
   })

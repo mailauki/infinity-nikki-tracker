@@ -1,17 +1,19 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { ObtainedOutfit, OutfitSet } from '@/lib/types/outfit'
-import { createOutfitSet, updateOutfitSet } from '@/hooks/outfit'
+import { OutfitSet } from '@/lib/types/outfit'
+import { createOutfitSet } from '@/hooks/outfit'
 import { getOutfitCategories } from '@/hooks/data/outfit-categories'
 import { getEvolutions } from '@/hooks/data/evolutions'
-import { getObtainedOutfit } from '@/hooks/data/obtained-outfit'
 import { getOutfitVariantsBySet } from '@/hooks/data/outfit-variants'
 import { getStyles } from '@/hooks/data/styles'
 import { getLabels } from '@/hooks/data/labels'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { catalogHeaders } from '@/lib/catalog-cache'
 
-export async function GET() {
+// Public catalogue only, CDN-cached (lib/catalog-cache.ts). The viewer's obtained
+// rows come from /api/obtained-outfit, which the provider merges client-side.
+export async function GET(request: Request) {
   const supabase = await createClient()
 
   // Variants are fetched separately (paginated) and injected — a PostgREST embed
@@ -62,32 +64,8 @@ export async function GET() {
     })
   ) as OutfitSet[]
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return NextResponse.json({ outfitSets: outfits, styles, labels, seasons, seasonCategories })
-  }
-
-  let obtainedOutfit: ObtainedOutfit[]
-  try {
-    obtainedOutfit = await getObtainedOutfit(user.id)
-  } catch (obtainedError) {
-    const message =
-      obtainedError instanceof Error ? obtainedError.message : 'Failed to fetch obtained outfits'
-    return NextResponse.json({ error: message }, { status: 500 })
-  }
-
-  const outfitsWithObtained = outfits.map((outfitSet) =>
-    updateOutfitSet({ outfitSet, obtainedOutfit })
+  return NextResponse.json(
+    { outfitSets: outfits, outfitCategories, styles, labels, seasons, seasonCategories },
+    { headers: catalogHeaders(request) }
   )
-
-  return NextResponse.json({
-    outfitSets: outfitsWithObtained,
-    styles,
-    labels,
-    seasons,
-    seasonCategories,
-  })
 }

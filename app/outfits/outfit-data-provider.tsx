@@ -15,6 +15,7 @@ import {
 import { ObtainedFilter } from '@/lib/types/props'
 import { Label, Style } from '@/lib/types/eureka'
 import { DEFAULT_PREFERENCES } from '@/lib/preferences'
+import { fetchCatalog, fetchJson } from '@/lib/catalog-cache'
 import { fetchPreferencesOnce } from '@/lib/preferences-cache'
 import { savePreferences } from '@/lib/save-preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
@@ -24,12 +25,6 @@ import {
   OutfitDataContext,
   OutfitFilterState,
 } from '@/components/outfits/outfit-context'
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const r = await fetch(url)
-  if (!r.ok) throw new Error(`${url} returned ${r.status}`)
-  return r.json()
-}
 
 // Filter changes arrive in bursts as the user adjusts several controls; collapse
 // them into one preference write instead of one write per click.
@@ -79,19 +74,25 @@ export default function OutfitDataProvider({
   const supabase = useMemo(() => createClient(), [])
 
   useEffect(() => {
-    fetchJson<{
+    fetchCatalog<{
       outfitSets: OutfitSet[]
+      outfitCategories: OutfitCategory[]
       styles: Style[]
       labels: Label[]
       seasons: Season[]
       seasonCategories: SeasonCategory[]
-    }>('/api/outfits')
+    }>('/api/outfits', isAdmin)
       .then(
-        ({ outfitSets: sets, styles: sty, labels: lbl, seasons: sea, seasonCategories: sec }) => {
+        ({
+          outfitSets: sets,
+          outfitCategories: cats,
+          styles: sty,
+          labels: lbl,
+          seasons: sea,
+          seasonCategories: sec,
+        }) => {
           setOutfitSets(sets)
-          if (sets.length > 0) {
-            setOutfitCategories(sets[0].outfit_categories)
-          }
+          setOutfitCategories(cats)
           setStyles(sty)
           setLabels(lbl)
           setSeasons(sea)
@@ -104,7 +105,7 @@ export default function OutfitDataProvider({
         setIsError(true)
         setIsLoading(false)
       })
-  }, [])
+  }, [isAdmin])
 
   useEffect(() => {
     if (!isLoggedIn) return

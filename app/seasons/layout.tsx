@@ -21,7 +21,7 @@ import SeasonsLoading from './loading'
 // The makeup providers are here so a season's makeup pieces can use the same
 // MakeupVariantCard the /makeup compact view uses — a shared card that toggles
 // through MakeupDataProvider rather than a read-only copy. It costs one extra
-// /api/makeup fetch on mount, which the provider already dedupes per session.
+// /api/makeup fetch on mount — CDN-cached and deduped by fetchCatalog().
 //
 // Season pages now also list eureka sets and cloaks through their real
 // providers, so their toggles work.

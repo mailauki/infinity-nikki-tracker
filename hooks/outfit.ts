@@ -154,8 +154,11 @@ export function createOutfitSet({
       allVariants.find((v) => v.outfit_set === baseSlug && v.outfit_category === 'hair')
         ?.image_url ??
       allVariants.find((v) => v.outfit_set === baseSlug)?.image_url,
-    outfit_categories: outfitCategories ?? [],
-    evolutions: resolvedEvolutions,
+    // Both trimmed to keep /api/outfits small: the category list is the same for
+    // every set (the route sends it once), and each evolution's variants are
+    // already merged into `outfit_variants` — carrying them twice cost ~2 MB.
+    outfit_categories: [] as OutfitCategory[],
+    evolutions: resolvedEvolutions.map((e): Evolution => ({ ...e, outfit_variants: [] })),
     outfit_variants: sortOutfitVariants(allVariants as OutfitVariant[], baseSlug, categoryOrder),
   } as OutfitSet
 }

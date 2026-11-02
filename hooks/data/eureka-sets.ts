@@ -6,15 +6,19 @@ import { cache } from 'react'
 import { getUserID } from '../user'
 import { getEurekaColors } from './eureka-colors'
 import { getEurekaCategories } from './eureka-categories'
-import { createEurekaSet, sortVariants, updateEurekaSet } from '../eureka'
+import {
+  applyObtainedKeys,
+  buildObtainedKeySet,
+  createEurekaSet,
+  sortVariants,
+  updateEurekaSet,
+} from '../eureka'
 import { getObtainedEureka } from './obtained-eureka'
 import { earliestRelease, resolveRelease } from '../release'
 
-// `forUserId` scopes the obtained flags to a specific user instead of the
-// viewer. Public profile pages need it: without it every visitor would see
-// their OWN progress rendered under someone else's name. Omit it (the default)
-// and it resolves the signed-in viewer as before.
-export const getEurekaSets = cache(async (forUserId?: string) => {
+// Every set with its variants, no obtained flags — the same for every viewer,
+// which is what lets /api/eureka be CDN-cached (see lib/catalog-cache.ts).
+export const getEurekaCatalogSets = cache(async () => {
   const supabase = await createClient()
 
   const { data: eurekaSets } = await supabase
@@ -46,8 +50,7 @@ export const getEurekaSets = cache(async (forUserId?: string) => {
     )
     .order('id', { ascending: true })
     .order('id', { referencedTable: 'eureka_variants', ascending: true })
-  const categories = await getEurekaCategories()
-  const colors = await getEurekaColors()
+  const [categories, colors] = await Promise.all([getEurekaCategories(), getEurekaColors()])
 
   const categoryOrder = (categories ?? []).map((c) => c.slug)
   const eureka = eurekaSets?.map((eurekaSet) => {
@@ -82,26 +85,21 @@ export const getEurekaSets = cache(async (forUserId?: string) => {
     }
   }) as unknown as EurekaSet[]
 
+  return eureka ?? []
+})
+
+// `forUserId` scopes the obtained flags to a specific user instead of the
+// viewer. Public profile pages need it: without it every visitor would see
+// their OWN progress rendered under someone else's name. Omit it (the default)
+// and it resolves the signed-in viewer as before.
+export const getEurekaSets = cache(async (forUserId?: string) => {
+  const eureka = await getEurekaCatalogSets()
   const user_id = forUserId ?? (await getUserID())
 
   if (!user_id) return eureka
 
   const obtainedEureka = await getObtainedEureka(user_id)
-
-  const eurekaWithObtained = eureka?.map((eurekaSet) => ({
-    ...eurekaSet,
-    eureka_variants: eurekaSet.eureka_variants.map((variant) => ({
-      ...variant,
-      obtained: !!obtainedEureka?.find(
-        (obtained) =>
-          variant.eureka_set === obtained.eureka_set &&
-          variant.category === obtained.category &&
-          variant.color === obtained.color
-      ),
-    })) as EurekaVariant[],
-  })) as EurekaSet[]
-
-  return eurekaWithObtained
+  return applyObtainedKeys(eureka, buildObtainedKeySet(obtainedEureka))
 })
 
 export const getEurekaSet = cache(async (slug: string) => {
