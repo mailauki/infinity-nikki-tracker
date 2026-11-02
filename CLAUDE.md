@@ -51,7 +51,7 @@ actually set.
 The app moved away from MUI realtime `postgres_changes` subscriptions to a **client data-provider + context** model:
 
 1. A domain `layout.tsx` reads `getUserID()` server-side and renders a client provider with `isLoggedIn`/`userId` props.
-2. The provider (`app/eureka/eureka-data-provider.tsx`, `app/outfits/outfit-data-provider.tsx`) `fetch`es its initial payload from an API route on mount — Eureka from `/api/eureka/bootstrap`, plus `/api/preferences`. The bootstrap route runs `await connection()` first so PPR doesn't prerender it (cookies would reject at build), then `Promise.all`s the React-`cache()`-deduped data hooks.
+2. The provider (`app/eureka/eureka-data-provider.tsx`, `app/outfits/outfit-data-provider.tsx`, `app/makeup/makeup-data-provider.tsx`) fetches the **public catalogue** on mount (`/api/eureka`, `/api/outfits`, `/api/makeup`) and the viewer's obtained rows separately (`/api/obtained-*`), plus `/api/preferences`. Catalogue routes must stay viewer-independent — they are CDN-cached via `catalogHeaders()` (`lib/catalog-cache.ts`, 5 min + stale-while-revalidate); never merge per-user data back into them. Providers load them through `fetchCatalog()`, which dedupes across remounts and lets admins bypass the CDN with `?fresh=` so their edits show immediately.
 3. The provider holds collection + filter state, exposes it via context (`eureka-context.tsx`, `outfit-context.tsx`), and calls Server Actions (`handleObtained`, `handleObtainedOutfit`, `app/actions/preferences.ts`) to persist toggles/filters. Optimistic updates use `useTransition` + `notistack` snackbars.
 
 `hooks/data/` holds the Supabase queries (React `cache()` or `use cache`, see Code Style). `hooks/eureka.ts` / `hooks/outfit.ts` hold pure transforms (`createEurekaSet`, `createOutfitSet`, `sortVariants`, `applyObtainedKeys`, `buildObtainedKeySet`, `isVariantObtained`, `isEvolutionVisible`, etc.). `hooks/count-obtained.ts` → `countObtained()`, `percent()`.
@@ -185,7 +185,7 @@ React `cache()` is for reads only — wrapping a mutation in `cache()` makes it 
 
 `use cache` vs React `cache()`: every hook in `hooks/data/` — public lookups (`getEurekaCategories`, `getStyles`, `getSeasons`, …) and auth-dependent ones (`getEurekaSets`, `getUserID`, `getPreferences`, …) alike — uses React `cache()` (per-request dedupe) with the cookie-based `createClient()`. The only `use cache` + `cacheLife` function is the sitemap's data helper in `app/sitemap.ts`, which goes through the cookie-free `createPublicClient()` because `cookies()` is blocked inside `use cache`. Follow that pattern for any future cross-request cache.
 
-API routes that read auth (e.g. `/api/eureka/bootstrap`) must call `await connection()` before reading cookies so PPR doesn't try to prerender them — keep it outside the try/catch so the prerender-abort signal propagates to React instead of being swallowed as a 500.
+API routes that read cookies (e.g. `/api/eureka`) must call `await connection()` before reading cookies so PPR doesn't try to prerender them — keep it outside the try/catch so the prerender-abort signal propagates to React instead of being swallowed as a 500.
 
 `getUserID()` returns `null` for unauthenticated users — always guard before passing to user-scoped queries: `if (!user_id) return data`.
 

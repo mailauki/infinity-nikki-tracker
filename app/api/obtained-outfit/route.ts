@@ -1,21 +1,14 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { getUserID } from '@/hooks/user'
 import { getObtainedOutfit } from '@/hooks/data/obtained-outfit'
 
 export async function GET() {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return NextResponse.json([])
-  }
+  const userId = await getUserID()
+  if (!userId) return NextResponse.json([])
 
   try {
     // Reads every page (PostgREST caps a single response at 1000 rows).
-    const obtainedOutfit = await getObtainedOutfit(user.id)
+    const obtainedOutfit = await getObtainedOutfit(userId)
     return NextResponse.json(obtainedOutfit)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to fetch obtained outfit'

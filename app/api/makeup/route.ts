@@ -1,17 +1,18 @@
 import { NextResponse, connection } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { ObtainedMakeup } from '@/lib/types/makeup'
 import { createMakeupSet } from '@/hooks/makeup'
 import { getMakeupCategories } from '@/hooks/data/makeup-categories'
 import { getMakeupVariants } from '@/hooks/data/makeup-variants'
-import { getObtainedMakeup } from '@/hooks/data/obtained-makeup'
 import { getStyles } from '@/hooks/data/styles'
 import { getSeasons } from '@/hooks/data/seasons'
 import { getSeasonCategories } from '@/hooks/data/season-categories'
+import { catalogHeaders } from '@/lib/catalog-cache'
 
 const SET_COLUMNS = '*'
 
-export async function GET() {
+// Public catalogue only, CDN-cached (lib/catalog-cache.ts). The viewer's obtained
+// rows come from /api/obtained-makeup.
+export async function GET(request: Request) {
   // Must precede any cookie read and stay outside the try/catch below: this is
   // what stops PPR from prerendering the route at build time, and the abort
   // signal it raises has to reach React rather than be caught as a 500.
@@ -61,23 +62,8 @@ export async function GET() {
     seasonCategories
   )
 
-  const base = { makeupSets, makeupCategories, styles, seasons, seasonCategories }
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // getUserID() is null when logged out — never call the user-scoped query with it.
-  if (!user) return NextResponse.json(base)
-
-  let obtainedMakeup: ObtainedMakeup[]
-  try {
-    obtainedMakeup = await getObtainedMakeup(user.id)
-  } catch (obtainedError) {
-    const message =
-      obtainedError instanceof Error ? obtainedError.message : 'Failed to fetch obtained makeup'
-    return NextResponse.json({ error: message }, { status: 500 })
-  }
-
-  return NextResponse.json({ ...base, obtainedMakeup })
+  return NextResponse.json(
+    { makeupSets, makeupCategories, styles, seasons, seasonCategories },
+    { headers: catalogHeaders(request) }
+  )
 }

@@ -5,6 +5,7 @@ import { useExitHold } from '@/hooks/use-exit-hold'
 import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 import { MakeupCategory, MakeupSet, ObtainedMakeup } from '@/lib/types/makeup'
+import { fetchCatalog, fetchJson } from '@/lib/catalog-cache'
 import { Season, SeasonCategory } from '@/lib/types/outfit'
 import { Style } from '@/lib/types/eureka'
 import { handleObtainedMakeup } from '@/app/makeup/actions'
@@ -19,19 +20,12 @@ import {
   MakeupFilterState,
 } from '@/components/makeup/makeup-context'
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const r = await fetch(url)
-  if (!r.ok) throw new Error(`${url} returned ${r.status}`)
-  return r.json()
-}
-
 type MakeupPayload = {
   makeupSets: MakeupSet[]
   makeupCategories: MakeupCategory[]
   styles: Style[]
   seasons: Season[]
   seasonCategories: SeasonCategory[]
-  obtainedMakeup?: ObtainedMakeup[]
 }
 
 export default function MakeupDataProvider({
@@ -69,7 +63,7 @@ export default function MakeupDataProvider({
 
   useEffect(() => {
     let cancelled = false
-    fetchJson<MakeupPayload>('/api/makeup')
+    fetchCatalog<MakeupPayload>('/api/makeup', isAdmin)
       .then((payload) => {
         if (cancelled) return
         setRawMakeupSets(payload.makeupSets ?? [])
@@ -77,7 +71,6 @@ export default function MakeupDataProvider({
         setStyles(payload.styles ?? [])
         setSeasons(payload.seasons ?? [])
         setSeasonCategories(payload.seasonCategories ?? [])
-        setObtainedMakeup(payload.obtainedMakeup ?? [])
         setIsError(false)
       })
       .catch((err) => {
@@ -91,7 +84,24 @@ export default function MakeupDataProvider({
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [isAdmin])
+
+  useEffect(() => {
+    if (!isLoggedIn) return
+    let cancelled = false
+    fetchJson<ObtainedMakeup[]>('/api/obtained-makeup')
+      .then((data) => {
+        if (!cancelled) setObtainedMakeup(data)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        console.error('Failed to load obtained makeup:', err)
+        setIsObtainedError(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [isLoggedIn])
 
   // `obtainedMakeup` is the single source of truth for collection state; the
   // per-variant `obtained` flag every card, count, and filter reads is derived

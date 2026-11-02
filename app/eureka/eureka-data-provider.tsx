@@ -7,6 +7,7 @@ import { enqueueSnackbar } from 'notistack'
 
 import { applyObtainedKeys, buildObtainedKeySet } from '@/hooks/eureka'
 import { createClient } from '@/lib/supabase/client'
+import { fetchCatalog, fetchJson } from '@/lib/catalog-cache'
 import {
   EurekaCategory,
   EurekaColor,
@@ -24,12 +25,6 @@ import { DEFAULT_PREFERENCES } from '@/lib/preferences'
 
 import { DEFAULT_FILTERS, EurekaDataContext, FilterState } from '@/components/eureka/eureka-context'
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const r = await fetch(url)
-  if (!r.ok) throw new Error(`${url} returned ${r.status}`)
-  return r.json()
-}
-
 // The user_preferences columns the filter state persists to. One function so the
 // hydrate snapshot and every later write serialize identically.
 function filtersToPrefs(filters: FilterState) {
@@ -45,14 +40,13 @@ function filtersToPrefs(filters: FilterState) {
   }
 }
 
-interface EurekaBootstrap {
+interface EurekaCatalog {
   sets: EurekaSet[]
   categories: EurekaCategory[]
   colors: EurekaColor[]
   trials: Trial[]
   styles: Style[]
   labels: Label[]
-  obtained: ObtainedEureka[]
 }
 
 export default function EurekaDataProvider({
@@ -95,33 +89,22 @@ export default function EurekaDataProvider({
   const persistedFilters = useRef<string | null>(null)
 
   useEffect(() => {
-    fetchJson<EurekaBootstrap>('/api/eureka/bootstrap')
-      .then(
-        ({
-          sets,
-          categories: cats,
-          colors: cols,
-          trials: trls,
-          styles: sty,
-          labels: lbl,
-          obtained,
-        }) => {
-          setEurekaSets(sets)
-          setCategories(cats)
-          setColors(cols)
-          setTrials(trls)
-          setStyles(sty)
-          setLabels(lbl)
-          setObtainedEureka(obtained)
-          setIsLoading(false)
-        }
-      )
+    fetchCatalog<EurekaCatalog>('/api/eureka', isAdmin)
+      .then(({ sets, categories: cats, colors: cols, trials: trls, styles: sty, labels: lbl }) => {
+        setEurekaSets(sets)
+        setCategories(cats)
+        setColors(cols)
+        setTrials(trls)
+        setStyles(sty)
+        setLabels(lbl)
+        setIsLoading(false)
+      })
       .catch((err) => {
         console.error('Failed to load eureka data:', err)
         setIsError(true)
         setIsLoading(false)
       })
-  }, [])
+  }, [isAdmin])
 
   useEffect(() => {
     if (!isLoggedIn) return
@@ -248,8 +231,11 @@ export default function EurekaDataProvider({
   useEffect(() => {
     if (!isLoggedIn) return
 
-    // obtainedEureka is seeded from /api/eureka/bootstrap; this effect only owns
-    // the realtime subscription that keeps it in sync across tabs/devices.
+    // Seed obtainedEureka, then keep it in sync across tabs/devices via realtime.
+    fetchJson<ObtainedEureka[]>('/api/obtained-eureka')
+      .then((data) => setObtainedEureka(data))
+      .catch((err) => console.error('Failed to load obtained eureka:', err))
+
     const obtainedChannel = supabase
       .channel(`obtained-filter-channel:${userId}`)
       .on(
