@@ -61,7 +61,7 @@ describe('EurekaDataProvider filter persistence', () => {
         ok: true,
         status: 200,
         json: async () =>
-          url === '/api/preferences' ? PREFS : url === '/api/obtained-eureka' ? [] : CATALOG,
+          ({ '/api/preferences': PREFS, '/api/obtained-eureka': [] })[url] ?? CATALOG,
       }))
     )
   })

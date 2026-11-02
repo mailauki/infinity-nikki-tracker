@@ -19,7 +19,7 @@ import { fetchCatalog, fetchJson } from '@/lib/catalog-cache'
 import { fetchPreferencesOnce } from '@/lib/preferences-cache'
 import { savePreferences } from '@/lib/save-preferences'
 import { handleObtainedOutfit } from '@/app/outfits/actions'
-import { updateOutfitSet } from '@/hooks/outfit'
+import { obtainedSlugSet, updateOutfitSet } from '@/hooks/outfit'
 import {
   DEFAULT_OUTFIT_FILTERS,
   OutfitDataContext,
@@ -348,7 +348,10 @@ export default function OutfitDataProvider({
   }, [userId])
 
   const outfitSetsWithObtained = useMemo(
-    () => outfitSets.map((outfitSet) => updateOutfitSet({ outfitSet, obtainedOutfit })),
+    () => {
+      const obtainedSlugs = obtainedSlugSet(obtainedOutfit)
+      return outfitSets.map((outfitSet) => updateOutfitSet({ outfitSet, obtainedSlugs }))
+    },
     [outfitSets, obtainedOutfit]
   )
 

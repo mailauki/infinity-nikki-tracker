@@ -163,14 +163,21 @@ export function createOutfitSet({
   } as OutfitSet
 }
 
+// Callers mapping over every set should build `obtainedSlugs` once with
+// obtainedSlugSet() and pass it in, rather than rebuilding it per set.
+export function obtainedSlugSet(obtainedOutfit: ObtainedOutfit[] | null): Set<string> {
+  return new Set((obtainedOutfit ?? []).map((o) => o.outfit_variant))
+}
+
 export function updateOutfitSet({
   outfitSet,
-  obtainedOutfit,
+  obtainedOutfit = null,
+  obtainedSlugs = obtainedSlugSet(obtainedOutfit),
 }: {
   outfitSet: OutfitSet
-  obtainedOutfit: ObtainedOutfit[] | null
+  obtainedOutfit?: ObtainedOutfit[] | null
+  obtainedSlugs?: Set<string>
 }): OutfitSet {
-  const obtainedSlugs = new Set((obtainedOutfit ?? []).map((o) => o.outfit_variant))
 
   // Preserve object identity for variants whose `obtained` value is unchanged, so
   // `React.memo` on the outfit cards can skip them. A single toggle changes one
