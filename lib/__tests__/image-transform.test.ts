@@ -1,46 +1,49 @@
-import { beforeEach, describe, expect, it } from 'vitest'
-import {
-  reportTransformFailure,
-  resetTransformAvailability,
-  thumbnailSrc,
-} from '@/lib/image-transform'
+import { describe, expect, it } from 'vitest'
+import { thumbPath, thumbnailSrc } from '@/lib/image-transform'
 
-const STORAGE = 'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1'
-const OBJECT = `${STORAGE}/object/public/images/outfit_variants/silverplume-hair/image_url.png`
-const RENDER = `${STORAGE}/render/image/public/images/outfit_variants/silverplume-hair/image_url.png`
+const BUCKET = 'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/object/public/images'
+const ORIGINAL = `${BUCKET}/outfit_variants/silverplume-hair/image_url.webp`
+const THUMB = `${BUCKET}/outfit_variants/silverplume-hair/image_url.thumb.webp`
 
 describe('thumbnailSrc', () => {
-  beforeEach(() => {
-    resetTransformAvailability()
+  it('points a public images-bucket WebP at its .thumb.webp sibling', () => {
+    expect(thumbnailSrc(ORIGINAL)).toBe(THUMB)
   })
 
-  it('rewrites a public storage object to the resize endpoint at 2x the box', () => {
-    expect(thumbnailSrc(OBJECT, 40)).toBe(`${RENDER}?width=80&height=80&resize=cover&quality=75`)
+  it('carries the ?v= cache-buster over to the thumbnail', () => {
+    expect(thumbnailSrc(`${ORIGINAL}?v=1783910545045`)).toBe(`${THUMB}?v=1783910545045`)
   })
 
-  it('leaves local icon paths alone', () => {
-    expect(thumbnailSrc('/icons/categories/blue.png', 24)).toBe('/icons/categories/blue.png')
+  it('leaves a URL with any other query alone', () => {
+    const odd = `${ORIGINAL}?token=abc`
+    expect(thumbnailSrc(odd)).toBe(odd)
   })
 
-  it('leaves object URLs and data URIs alone', () => {
-    expect(thumbnailSrc('blob:http://localhost/abc', 40)).toBe('blob:http://localhost/abc')
-    expect(thumbnailSrc('data:image/png;base64,AAA', 40)).toBe('data:image/png;base64,AAA')
+  it('leaves non-WebP and already-thumbnail objects alone', () => {
+    const png = `${BUCKET}/a/image_url.png`
+    expect(thumbnailSrc(png)).toBe(png)
+    expect(thumbnailSrc(THUMB)).toBe(THUMB)
   })
 
-  it('leaves a URL that already carries query params alone', () => {
-    // Signed URLs and anything already parameterized: rewriting the path would
-    // invalidate the token, and appending would fight the existing params.
-    const signed = `${STORAGE}/object/sign/images/a.png?token=abc`
-    expect(thumbnailSrc(signed, 40)).toBe(signed)
+  it('leaves other buckets, local paths, blob: and data: URIs alone', () => {
+    const avatar =
+      'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/object/public/avatars/u1/avatar.webp'
+    for (const src of [
+      avatar,
+      '/icons/categories/blue.png',
+      'blob:http://localhost/abc',
+      'data:image/webp;base64,AAA',
+      'https://example.test/a.webp',
+    ]) {
+      expect(thumbnailSrc(src)).toBe(src)
+    }
   })
+})
 
-  it('leaves URLs from other hosts alone', () => {
-    expect(thumbnailSrc('https://example.test/a.png', 40)).toBe('https://example.test/a.png')
-  })
-
-  it('stops rewriting once a transform has been reported as unavailable', () => {
-    expect(thumbnailSrc(OBJECT, 40)).not.toBe(OBJECT)
-    reportTransformFailure()
-    expect(thumbnailSrc(OBJECT, 40)).toBe(OBJECT)
+describe('thumbPath', () => {
+  it('maps an object path to its thumbnail path', () => {
+    expect(thumbPath('outfit_variants/x/image_url.webp')).toBe(
+      'outfit_variants/x/image_url.thumb.webp'
+    )
   })
 })
