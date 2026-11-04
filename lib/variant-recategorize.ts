@@ -1,6 +1,7 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { ImageColumn, objectPathFor, objectPathFromUrl, publicUrlFor } from '@/lib/storage-paths'
+import { thumbPath } from '@/lib/image-transform'
 
 const IMAGE_COLUMNS: ImageColumn[] = ['image_url', 'alt_image_url']
 
@@ -93,6 +94,9 @@ export async function recategorizeVariant(
         error: `Could not copy ${column} to the new category folder for "${currentSlug}": ${copyError.message}`,
       }
     }
+    // Best-effort: a missing thumbnail only means the cards fall back to the
+    // full-size original (lib/image-transform.ts).
+    await supabase.storage.from('images').copy(thumbPath(from), thumbPath(to))
     newUrls[column] = publicUrlFor(baseUrl, to)
   }
 

@@ -2,13 +2,12 @@ import { act, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import LazyImage from '@/components/lazy-image'
 import { resetLazyImageCache } from '@/hooks/use-lazy-image'
-import { resetTransformAvailability } from '@/lib/image-transform'
 
 const SRC = 'https://example.test/images/outfit.png'
 const STORAGE_SRC =
-  'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/object/public/images/a/image_url.png'
+  'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/object/public/images/a/image_url.webp'
 const STORAGE_THUMB =
-  'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/render/image/public/images/a/image_url.png?width=80&height=80&resize=cover&quality=75'
+  'https://ykfuevyqpjvtxidjnhxm.supabase.co/storage/v1/object/public/images/a/image_url.thumb.webp'
 
 // The <img> only exists once there is something worth painting, so its presence
 // is the assertion for "not showing a broken image".
@@ -38,7 +37,6 @@ async function failAttempts(count: number) {
 describe('LazyImage', () => {
   beforeEach(() => {
     resetLazyImageCache()
-    resetTransformAvailability()
     vi.useFakeTimers()
   })
 
@@ -182,19 +180,24 @@ describe('LazyImage', () => {
     vi.unstubAllGlobals()
   })
 
-  describe('small-avatar thumbnails', () => {
-    it('requests a resized thumbnail at sm', () => {
+  describe('avatar thumbnails', () => {
+    it('requests the generated thumbnail at sm', () => {
       render(<LazyImage alt="Avatar" size="sm" src={STORAGE_SRC} />)
       expect(img()).toHaveAttribute('src', STORAGE_THUMB)
     })
 
-    it('requests a resized thumbnail at the default size', () => {
+    it('requests the generated thumbnail at the default size', () => {
       render(<LazyImage alt="Avatar" src={STORAGE_SRC} />)
       expect(img()).toHaveAttribute('src', STORAGE_THUMB)
     })
 
-    it('leaves the larger sizes on the full-resolution source', () => {
+    it('requests the thumbnail for the 94px variant cards (lg)', () => {
       render(<LazyImage alt="Avatar" size="lg" src={STORAGE_SRC} />)
+      expect(img()).toHaveAttribute('src', STORAGE_THUMB)
+    })
+
+    it('leaves xl on the full-resolution source', () => {
+      render(<LazyImage alt="Avatar" size="xl" src={STORAGE_SRC} />)
       expect(img()).toHaveAttribute('src', STORAGE_SRC)
     })
 
@@ -217,7 +220,7 @@ describe('LazyImage', () => {
       expect(skeleton()).not.toBeInTheDocument()
     })
 
-    it('stops requesting thumbnails once one fails where the original loads', async () => {
+    it('a missing thumbnail for one object does not stop others using theirs', async () => {
       const first = render(<LazyImage alt="Avatar" size="sm" src={STORAGE_SRC} />)
       await act(async () => {
         img()!.dispatchEvent(new Event('error'))
@@ -227,12 +230,9 @@ describe('LazyImage', () => {
       })
       first.unmount()
 
-      // Transformations are evidently not enabled — later avatars shouldn't
-      // spend a doomed request discovering that again. A second, distinct
-      // object (no query string, so nothing else would exempt it).
       const other = STORAGE_SRC.replace('/a/', '/b/')
       render(<LazyImage alt="Avatar" size="sm" src={other} />)
-      expect(img()).toHaveAttribute('src', other)
+      expect(img()).toHaveAttribute('src', STORAGE_THUMB.replace('/a/', '/b/'))
     })
 
     it('still gives up to the placeholder when both the thumbnail and the original fail', async () => {

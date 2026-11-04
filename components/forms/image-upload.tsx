@@ -13,7 +13,8 @@ import {
 import ImageIcon from '@mui/icons-material/Image'
 import FileUploadIcon from '@mui/icons-material/FileUpload'
 import { AvatarSize } from '@/lib/types/props'
-import { fileToWebp } from '@/lib/image-to-webp'
+import { fileToWebp, webpThumbnail } from '@/lib/image-to-webp'
+import { thumbPath } from '@/lib/image-transform'
 import { enqueueSnackbar } from 'notistack'
 
 export type ImageUploadTable =
@@ -66,7 +67,10 @@ export default function ImageUpload({
       if (!slug) throw new Error('Cannot upload image: record has no slug yet.')
       // Re-encode to WebP so every object in the bucket has a consistent
       // `.webp` extension and content type.
-      const file = await fileToWebp(event.target.files[0], column)
+      const [file, thumb] = await Promise.all([
+        fileToWebp(event.target.files[0], column),
+        webpThumbnail(event.target.files[0], column),
+      ])
       // Stable path per record+column so a re-upload overwrites the same object
       // instead of orphaning the previous one. Default and alt live in the same
       // slug folder but differ by `column` (image_url vs alt_image_url).
@@ -85,7 +89,7 @@ export default function ImageUpload({
         prevPath = undefined
       }
       if (prevPath && prevPath !== filePath) {
-        await supabase.storage.from('images').remove([prevPath])
+        await supabase.storage.from('images').remove([prevPath, thumbPath(prevPath)])
       }
 
       const { error: uploadError } = await supabase.storage
@@ -93,6 +97,13 @@ export default function ImageUpload({
         .upload(filePath, file, { upsert: true, contentType: 'image/webp' })
 
       if (uploadError) throw uploadError
+
+      // The small-avatar thumbnail (lib/image-transform.ts). Not fatal: without
+      // it the cards fall back to the original, just at full size.
+      const { error: thumbError } = await supabase.storage
+        .from('images')
+        .upload(thumbPath(filePath), thumb, { upsert: true, contentType: 'image/webp' })
+      if (thumbError) console.warn('Thumbnail upload failed:', thumbError)
 
       const { data } = supabase.storage.from('images').getPublicUrl(filePath)
       // The public URL is stable across re-uploads, so bust the CDN/browser

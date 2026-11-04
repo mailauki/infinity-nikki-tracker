@@ -1,64 +1,41 @@
-// Thumbnail URLs for the small avatars.
+// Thumbnail URLs for the avatar-sized images (up to the 94px variant cards).
 //
 // `images.unoptimized: true` (next.config.ts) means every <img> gets the raw
-// source file, so a 40px avatar in the nav bar or an Autocomplete row downloads
-// the same full-resolution art the 94px cards use — and profile avatars aren't
-// resized on upload at all, so that one is whatever the user picked.
+// source file, and Supabase Storage image transformations are not enabled on
+// this project (the /render/image endpoint returns 403). So a 94px card used to
+// download the full ~520×724 original — ~63 KB on average, 236 KB at worst.
 //
-// Supabase Storage can resize on its edge: the same object served from
-// /storage/v1/render/image/public/ instead of /storage/v1/object/public/ takes
-// width/height/resize/quality params and negotiates WebP from the Accept header.
-// This module rewrites eligible URLs to that endpoint.
-//
-// It is deliberately conservative — anything it doesn't positively recognize is
-// returned untouched — because image transformations are a paid Storage feature
-// and may not be enabled. `useLazyImage` is given the original URL as a
-// fallback, and the first time a transform fails where the original succeeds,
-// `reportTransformFailure()` switches this module off for the rest of the
-// session so nothing else pays for a doomed request.
+// Instead, every `X.webp` in the `images` bucket has a pre-generated sibling
+// `X.thumb.webp` (short side THUMB_SHORT_SIDE px): written next to the original
+// by the admin upload field (components/forms/image-upload.tsx) and backfilled
+// for existing objects by scripts/generate-thumbnails.mjs. This module only
+// rewrites the URL; `useLazyImage` is given the original as a fallback, so an
+// object without a thumbnail still shows — it just costs one failed request.
 
-// Rendered CSS pixels are doubled so the thumbnail still holds up on a 2x
-// display. Matches the `sizes` hint the optimized avatar path already uses.
-const DPR = 2
+// Short side of a generated thumbnail. Covers the 94px `lg` Avatar at 2x
+// (188px) with a little headroom; `object-fit: cover` crops the long side.
+export const THUMB_SHORT_SIDE = 200
 
-// Supabase's default is 80. 75 is visually indistinguishable at 48–80px.
-const QUALITY = 75
+const IMAGES_BUCKET_PATH = '/storage/v1/object/public/images/'
 
-const PUBLIC_OBJECT_PATH = '/storage/v1/object/public/'
-const PUBLIC_RENDER_PATH = '/storage/v1/render/image/public/'
-
-let transformsAvailable = true
-
-/**
- * Called when a transformed URL failed but the original loaded — the signature
- * of transformations being unavailable on the project rather than of a missing
- * object. Stops this module rewriting anything for the rest of the session.
- */
-export function reportTransformFailure() {
-  transformsAvailable = false
-}
-
-/** Test seam — module state is session-scoped by design. */
-export function resetTransformAvailability() {
-  transformsAvailable = true
+/** Storage object path of the thumbnail for an object path (`a/b.webp` → `a/b.thumb.webp`). */
+export function thumbPath(objectPath: string): string {
+  return objectPath.replace(/\.webp$/, '.thumb.webp')
 }
 
 /**
- * A resized variant of `src` sized for a `px` CSS-pixel box, or `src` unchanged
- * when it isn't a plain public Storage object (local /icons, blob:, data:,
- * signed URLs, anything already carrying query params) or transforms are off.
+ * The thumbnail URL for `src`, or `src` unchanged when it isn't a public
+ * `.webp` object in the `images` bucket (local /icons, blob:, data:, signed
+ * URLs, profile avatars in the `avatars` bucket, legacy non-WebP files).
+ * A `?v=` cache-buster is carried over: the thumbnail is uploaded alongside the
+ * original, so it changes exactly when the original does.
  */
-export function thumbnailSrc(src: string, px: number): string {
-  if (!transformsAvailable) return src
-  // A query string means the caller already parameterized this URL (a signed
-  // token, an existing transform, a cache-buster). Don't second-guess it.
-  if (src.includes('?')) return src
-  const index = src.indexOf(PUBLIC_OBJECT_PATH)
-  if (index === -1) return src
-
-  const size = Math.round(px * DPR)
-  const rewritten = src.replace(PUBLIC_OBJECT_PATH, PUBLIC_RENDER_PATH)
-  // resize=cover with a square box matches the `object-fit: cover` the avatar
-  // renders with, so nothing is downloaded that won't be painted.
-  return `${rewritten}?width=${size}&height=${size}&resize=cover&quality=${QUALITY}`
+export function thumbnailSrc(src: string): string {
+  if (!src.includes(IMAGES_BUCKET_PATH)) return src
+  const [path, query] = src.split('?', 2)
+  if (!path.endsWith('.webp') || path.endsWith('.thumb.webp')) return src
+  // Anything other than our own cache-buster (a signed token, say) means the URL
+  // was parameterized for a reason — don't second-guess it.
+  if (query !== undefined && !/^v=\d+$/.test(query)) return src
+  return thumbPath(path) + (query !== undefined ? `?${query}` : '')
 }
