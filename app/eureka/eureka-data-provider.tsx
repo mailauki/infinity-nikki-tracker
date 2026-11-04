@@ -2,7 +2,7 @@
 
 import { CARD_EXIT_HOLD_MS } from '@/components/card-shell'
 import { useExitHold } from '@/hooks/use-exit-hold'
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { enqueueSnackbar } from 'notistack'
 
 import { applyObtainedKeys, buildObtainedKeySet } from '@/hooks/eureka'
@@ -131,23 +131,23 @@ export default function EurekaDataProvider({
       })
   }, [isLoggedIn])
 
-  const handleGroupBySetChange = () => {
+  const handleGroupBySetChange = useCallback(() => {
     const next = !groupBySet
     setGroupBySet(next)
     if (isLoggedIn) startTransition(() => updateGroupBySet(next))
-  }
+  }, [groupBySet, isLoggedIn])
 
-  const handleShowByColorChange = () => {
+  const handleShowByColorChange = useCallback(() => {
     const next = !showByColor
     setShowByColor(next)
     if (isLoggedIn) startTransition(() => updateShowByColor(next))
-  }
+  }, [showByColor, isLoggedIn])
 
-  const handleFiltersChange = (updates: Partial<FilterState>) => {
+  const handleFiltersChange = useCallback((updates: Partial<FilterState>) => {
     setFilters((prev) => ({ ...prev, ...updates }))
-  }
+  }, [])
 
-  const handleClearFilters = () => {
+  const handleClearFilters = useCallback(() => {
     // Reset every control in the eureka filter menu — the filters plus the
     // group-by-set and show-by-color toggles — back to their defaults. The
     // filters reset is persisted by the [filters] effect; the toggles here.
@@ -160,63 +160,71 @@ export default function EurekaDataProvider({
         updateShowByColor(DEFAULT_PREFERENCES.show_by_color)
       })
     }
-  }
+  }, [isLoggedIn])
 
-  const handleToggleObtained = async (eureka_set: string, category: string, color: string) => {
-    const saved = obtainedEureka
-    const isObtained = obtainedEureka.some(
-      (o) => o.eureka_set === eureka_set && o.category === category && o.color === color
-    )
-    if (isObtained) {
-      setObtainedEureka((prev) =>
-        prev.filter(
-          (o) => !(o.eureka_set === eureka_set && o.category === category && o.color === color)
-        )
+  const handleToggleObtained = useCallback(
+    async (eureka_set: string, category: string, color: string) => {
+      const saved = obtainedEureka
+      const isObtained = obtainedEureka.some(
+        (o) => o.eureka_set === eureka_set && o.category === category && o.color === color
       )
-    } else {
-      setObtainedEureka((prev) => [...prev, { id: -1, eureka_set, category, color }])
-    }
-    try {
-      await handleObtained(eureka_set, category, color)
-    } catch (err) {
-      console.error('Failed to toggle obtained eureka:', err)
-      setObtainedEureka(saved)
-      enqueueSnackbar('Failed to update your collection. Please try again.', { variant: 'error' })
-    }
-  }
-
-  const handleBatchToggleObtained = async (
-    variants: Array<{ eureka_set: string; category: string; color: string }>,
-    targetObtained: boolean
-  ) => {
-    const saved = obtainedEureka
-    const matches = (
-      o: { eureka_set: string | null; category: string | null; color: string | null },
-      v: { eureka_set: string; category: string; color: string }
-    ) => o.eureka_set === v.eureka_set && o.category === v.category && o.color === v.color
-
-    if (targetObtained) {
-      setObtainedEureka((prev) => {
-        const toAdd = variants
-          .filter((v) => !prev.some((o) => matches(o, v)))
-          .map((v) => ({ id: -1, ...v }))
-        return [...prev, ...toAdd]
-      })
-    } else {
-      setObtainedEureka((prev) => prev.filter((o) => !variants.some((v) => matches(o, v))))
-    }
-
-    for (const v of variants) {
+      if (isObtained) {
+        setObtainedEureka((prev) =>
+          prev.filter(
+            (o) => !(o.eureka_set === eureka_set && o.category === category && o.color === color)
+          )
+        )
+      } else {
+        setObtainedEureka((prev) => [...prev, { id: -1, eureka_set, category, color }])
+      }
       try {
-        await handleObtained(v.eureka_set, v.category, v.color)
+        await handleObtained(eureka_set, category, color)
       } catch (err) {
-        console.error('Failed to batch toggle obtained eureka:', err)
+        console.error('Failed to toggle obtained eureka:', err)
         setObtainedEureka(saved)
         enqueueSnackbar('Failed to update your collection. Please try again.', { variant: 'error' })
-        return
       }
-    }
-  }
+    },
+    [obtainedEureka]
+  )
+
+  const handleBatchToggleObtained = useCallback(
+    async (
+      variants: Array<{ eureka_set: string; category: string; color: string }>,
+      targetObtained: boolean
+    ) => {
+      const saved = obtainedEureka
+      const matches = (
+        o: { eureka_set: string | null; category: string | null; color: string | null },
+        v: { eureka_set: string; category: string; color: string }
+      ) => o.eureka_set === v.eureka_set && o.category === v.category && o.color === v.color
+
+      if (targetObtained) {
+        setObtainedEureka((prev) => {
+          const toAdd = variants
+            .filter((v) => !prev.some((o) => matches(o, v)))
+            .map((v) => ({ id: -1, ...v }))
+          return [...prev, ...toAdd]
+        })
+      } else {
+        setObtainedEureka((prev) => prev.filter((o) => !variants.some((v) => matches(o, v))))
+      }
+
+      for (const v of variants) {
+        try {
+          await handleObtained(v.eureka_set, v.category, v.color)
+        } catch (err) {
+          console.error('Failed to batch toggle obtained eureka:', err)
+          setObtainedEureka(saved)
+          enqueueSnackbar('Failed to update your collection. Please try again.', {
+            variant: 'error',
+          })
+          return
+        }
+      }
+    },
+    [obtainedEureka]
+  )
 
   useEffect(() => {
     if (!isLoggedIn || !prefsLoaded.current) return
@@ -295,36 +303,62 @@ export default function EurekaDataProvider({
     [eurekaSets, obtainedKeys]
   )
 
-  return (
-    <EurekaDataContext.Provider
-      value={{
-        eurekaSets: eurekaSetsWithObtained,
-        obtainedKeys,
-        obtainedEureka,
-        categories,
-        colors,
-        trials,
-        styles,
-        labels,
-        isLoggedIn,
-        isAdmin,
-        isLoading,
-        isError,
-        userId,
-        groupBySet,
-        showByColor,
-        onGroupBySetChange: handleGroupBySetChange,
-        onShowByColorChange: handleShowByColorChange,
-        filters,
-        onFiltersChange: handleFiltersChange,
-        onClearFilters: handleClearFilters,
-        exitingKeys,
-        onHoldExit: holdExit,
-        onToggleObtained: handleToggleObtained,
-        onBatchToggleObtained: handleBatchToggleObtained,
-      }}
-    >
-      {children}
-    </EurekaDataContext.Provider>
+  const contextValue = useMemo(
+    () => ({
+      eurekaSets: eurekaSetsWithObtained,
+      obtainedKeys,
+      obtainedEureka,
+      categories,
+      colors,
+      trials,
+      styles,
+      labels,
+      isLoggedIn,
+      isAdmin,
+      isLoading,
+      isError,
+      userId,
+      groupBySet,
+      showByColor,
+      onGroupBySetChange: handleGroupBySetChange,
+      onShowByColorChange: handleShowByColorChange,
+      filters,
+      onFiltersChange: handleFiltersChange,
+      onClearFilters: handleClearFilters,
+      exitingKeys,
+      onHoldExit: holdExit,
+      onToggleObtained: handleToggleObtained,
+      onBatchToggleObtained: handleBatchToggleObtained,
+    }),
+    // startTransition's pending flips re-render this provider; memoizing keeps
+    // them from re-rendering every eureka card and the navbar/sidebar consumers.
+    [
+      eurekaSetsWithObtained,
+      obtainedKeys,
+      obtainedEureka,
+      categories,
+      colors,
+      trials,
+      styles,
+      labels,
+      isLoggedIn,
+      isAdmin,
+      isLoading,
+      isError,
+      userId,
+      groupBySet,
+      showByColor,
+      handleGroupBySetChange,
+      handleShowByColorChange,
+      filters,
+      handleFiltersChange,
+      handleClearFilters,
+      exitingKeys,
+      holdExit,
+      handleToggleObtained,
+      handleBatchToggleObtained,
+    ]
   )
+
+  return <EurekaDataContext.Provider value={contextValue}>{children}</EurekaDataContext.Provider>
 }

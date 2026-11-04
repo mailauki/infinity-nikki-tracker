@@ -7,7 +7,7 @@ import { getOutfitCategories } from './outfit-categories'
 import { getEvolutions } from './evolutions'
 import { getObtainedOutfit } from './obtained-outfit'
 import { getOutfitVariantsBySet } from './outfit-variants'
-import { createOutfitSet, updateOutfitSet } from '../outfit'
+import { createOutfitSet, obtainedSlugSet, updateOutfitSet } from '../outfit'
 
 // `forUserId` scopes the obtained flags to a specific user instead of the
 // viewer — see the note on getEurekaSets. Omit it to resolve the signed-in user.
@@ -76,7 +76,8 @@ export const getOutfitSets = cache(async (forUserId?: string) => {
 
   const obtainedOutfit = await getObtainedOutfit(user_id)
 
-  return outfits.map((outfitSet) => updateOutfitSet({ outfitSet, obtainedOutfit }))
+  const obtainedSlugs = obtainedSlugSet(obtainedOutfit)
+  return outfits.map((outfitSet) => updateOutfitSet({ outfitSet, obtainedSlugs }))
 })
 
 export const getOutfitSet = cache(async (slug: string) => {

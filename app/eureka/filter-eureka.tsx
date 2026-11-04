@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { Box, Button, Divider, IconButton, Skeleton, Stack, Typography } from '@mui/material'
 import { ChevronRight, RadioButtonUncheckedOutlined, TaskAlt } from '@mui/icons-material'
 
@@ -67,6 +67,70 @@ export default function FilterEureka() {
     selectedTrial,
   } = filters
 
+  // Memoized so renders that don't touch the data or filters (the sort menu,
+  // pending transitions) skip re-filtering every set and variant.
+  const filteredSets = useMemo(
+    () =>
+      eurekaSets
+        .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
+        .filter((set) => !selectedRarity || set.rarity === selectedRarity)
+        .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
+        .filter((set) => !selectedLabel.length || selectedLabel.includes(set.label ?? ''))
+        // A set belongs to many trials, so it matches if ANY of its trials is selected.
+        .filter(
+          (set) =>
+            !selectedTrial.length ||
+            set.eureka_set_trials.some((t) => selectedTrial.includes(t.trial ?? ''))
+        )
+        .map((set) => {
+          const filteredColors = set.colors.filter(
+            (color) => !selectedColor || color.slug === selectedColor
+          )
+          if (showByColor) {
+            return { ...set, colors: filteredColors }
+          }
+
+          const filteredVariants = set.eureka_variants
+            .filter((variant) => !selectedColor || variant.color === selectedColor)
+            .filter((variant) => !selectedCategory || variant.category === selectedCategory)
+            .filter((variant) => {
+              // Completed under the "missing" filter and still animating out: keep it
+              // in the list so the card has something to animate. The obtained data
+              // itself already updated — only the disappearance waits.
+              if (exitingKeys.has(variant.slug)) return true
+              if (selectedObtainedFilter === 'obtained') return variant.obtained === true
+              if (selectedObtainedFilter === 'missing') return variant.obtained !== true
+              return true
+            })
+
+          return { ...set, eureka_variants: filteredVariants, colors: filteredColors }
+        })
+        .filter((set) => (showByColor ? set.colors.length > 0 : set.eureka_variants.length > 0))
+        // Undated rows tie on release, so the id tie-break decides the whole order
+        // until real dates are entered — it must follow sortOrder (new: higher id
+        // first) or "newest first" silently flips to oldest-first.
+        .sort(
+          (a, b) =>
+            compareRelease(a.release, b.release, orderToDir(sortOrder)) ||
+            (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!)
+        ),
+    [
+      eurekaSets,
+      selectedEurekaSet,
+      selectedCategory,
+      selectedObtainedFilter,
+      selectedColor,
+      selectedRarity,
+      selectedStyle,
+      selectedLabel,
+      selectedTrial,
+      showByColor,
+      exitingKeys,
+      sortOrder,
+    ]
+  )
+  const setsById = useMemo(() => new Map(eurekaSets.map((s) => [s.id, s])), [eurekaSets])
+
   if (isError) {
     return (
       <Box sx={{ flexGrow: 1, py: 3 }}>
@@ -98,50 +162,6 @@ export default function FilterEureka() {
     )
   }
 
-  const filteredSets = eurekaSets
-    .filter((set) => !selectedEurekaSet || set.slug === selectedEurekaSet)
-    .filter((set) => !selectedRarity || set.rarity === selectedRarity)
-    .filter((set) => !selectedStyle.length || selectedStyle.includes(set.style ?? ''))
-    .filter((set) => !selectedLabel.length || selectedLabel.includes(set.label ?? ''))
-    // A set belongs to many trials, so it matches if ANY of its trials is selected.
-    .filter(
-      (set) =>
-        !selectedTrial.length ||
-        set.eureka_set_trials.some((t) => selectedTrial.includes(t.trial ?? ''))
-    )
-    .map((set) => {
-      const filteredColors = set.colors.filter(
-        (color) => !selectedColor || color.slug === selectedColor
-      )
-      if (showByColor) {
-        return { ...set, colors: filteredColors }
-      }
-
-      const filteredVariants = set.eureka_variants
-        .filter((variant) => !selectedColor || variant.color === selectedColor)
-        .filter((variant) => !selectedCategory || variant.category === selectedCategory)
-        .filter((variant) => {
-          // Completed under the "missing" filter and still animating out: keep it
-          // in the list so the card has something to animate. The obtained data
-          // itself already updated — only the disappearance waits.
-          if (exitingKeys.has(variant.slug)) return true
-          if (selectedObtainedFilter === 'obtained') return variant.obtained === true
-          if (selectedObtainedFilter === 'missing') return variant.obtained !== true
-          return true
-        })
-
-      return { ...set, eureka_variants: filteredVariants, colors: filteredColors }
-    })
-    .filter((set) => (showByColor ? set.colors.length > 0 : set.eureka_variants.length > 0))
-    // Undated rows tie on release, so the id tie-break decides the whole order
-    // until real dates are entered — it must follow sortOrder (new: higher id
-    // first) or "newest first" silently flips to oldest-first.
-    .sort(
-      (a, b) =>
-        compareRelease(a.release, b.release, orderToDir(sortOrder)) ||
-        (sortOrder === 'new' ? b.id! - a.id! : a.id! - b.id!)
-    )
-
   return (
     <>
       {!isLoggedIn && (
@@ -164,7 +184,7 @@ export default function FilterEureka() {
           {filteredSets.map((set) => {
             // `set.eureka_variants` is already filtered, so read the full set from
             // context for the true count and the batch-toggle target.
-            const fullSet = eurekaSets.find((s) => s.id === set.id) ?? set
+            const fullSet = setsById.get(set.id) ?? set
             const groupVariants = fullSet.eureka_variants
             const { obtained, total } = countObtained(groupVariants)
             const allObtained = total > 0 && obtained === total
