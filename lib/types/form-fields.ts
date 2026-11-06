@@ -107,7 +107,11 @@ interface ToggleField extends BaseField {
 }
 
 /** Names of the client-side custom field components EntityForm knows how to render. */
-export type CustomFieldComponent = 'groupedOutfitSet' | 'labelPair' | 'glowupEditor'
+export type CustomFieldComponent =
+  | 'groupedOutfitSet'
+  | 'labelPair'
+  | 'glowupEditor'
+  | 'markdownBody'
 
 interface CustomField extends BaseField {
   type: 'custom'

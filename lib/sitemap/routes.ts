@@ -213,6 +213,7 @@ export const PAGE_NAMES = {
   ...adminPages('/admin/makeup/variants', { nav: 'Makeup Pieces', adminTab: 'Other' }),
   ...adminPages('/admin/momo-cloaks', { nav: "Momo's Cloaks", adminTab: 'Other' }),
   ...adminPages('/admin/locations', { nav: 'Locations', adminTab: 'Other' }),
+  ...adminPages('/admin/content', { nav: 'Page Content', adminTab: 'Other' }, { add: false }),
   '/admin/feedback': { nav: 'Feedback', adminTab: 'Other' },
   '/admin/feedback/[id]': { nav: 'Feedback detail' },
 } as const satisfies Record<string, PageName>
